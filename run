@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# A script to make working with docker/compose to have
+# less typing.
+#
+# For local development only.
+
+UI_PATH="source/frontend"
+API_PATH="source/SIL.AppBuilder.Portal.Backend"
+COMPOSE="docker-compose -f deployment/development/docker-compose.yml --project-directory ./source -p appbuilder-portal"
+
+function runstuff {
+  # First arg
+  given_command=$1
+  # The rest of the args
+  arguments=${@:2}
+
+  case $given_command in
+    # docker-compose proxy
+    dc)       ${COMPOSE} $arguments;;
+    up:build) ${COMPOSE} up --build $arguments;;
+    up)       ${COMPOSE} up $arguments;;
+
+    bash)     ${COMPOSE} run --rm $arguments bash;;
+
+    restart) ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
+
+    # frontend things
+    yarn) ( cd $UI_PATH && yarn $arguments );;
+
+    # backend / api things
+    dotnet) ( cd $API_PATH && dotnet $arguments );;
+    # dotnet:api)
+
+    # Don't name any folders bin, obj, tmp, dist, or node_modules
+    clean:all)
+      echo "Cleaning..."
+      runstuff clean:frontend
+      runstuff clean:relays
+    ;;
+
+    clean:api)
+      shopt -s globstar
+      rm -rf **/bin && \
+      rm -rf **/obj
+    ;;
+
+    clean:frontend)
+      shopt -s globstar
+      rm -rf **/dist && \
+      rm -rf **/node_modules && \
+      rm -rf **/tmp
+    ;;
+
+    *) print_help;;
+  esac
+}
+
+function print_help {
+
+  echo ""
+  echo "Available Commands:"
+  echo ""
+  echo "dc             : short for docker-compose"
+  echo "up:build"
+  echo "up"
+  echo "bash           : drop into a bash shell in a temporary docker-compose service"
+  echo "restart        : restart a specific docker-compose service"
+  echo ""
+  echo "yarn"
+  echo ""
+  echo "dotnet"
+  echo ""
+  echo "clean:all      : recursively removes dist, node_modules, and tmp directories"
+  echo "clean:api"
+  echo "clean:frontend"
+}
+
+if [ $1 ]; then
+  runstuff $*
+else
+  print_help
+fi

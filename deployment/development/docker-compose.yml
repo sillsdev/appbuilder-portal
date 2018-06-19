@@ -1,0 +1,35 @@
+version: '3'
+
+volumes:
+  ui-tmp:
+  ui-dist:
+  ui-node_modules:
+  api-obj:
+  api-bin:
+  postgres-data:
+
+services:
+  db:
+    image: postgres:10
+    environment:
+      POSTGRES_DB: development
+      POSTGRES_USER: db-user
+      POSTGRES_PASSWORD: 1234
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    # # Debugging
+    # ports:
+    #   # Host:Container
+    #   - "15432:5432"
+
+  api:
+    volumes:
+      - api-obj:/app/obj
+      - api-bin:/app/bin
+  ui:
+    volumes:
+      - ui-tmp:/app/tmp
+      - ui-dist:/app/dist
+      - ui-node_modules:/app/node_modules
