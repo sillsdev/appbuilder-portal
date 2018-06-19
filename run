@@ -5,7 +5,7 @@
 #
 # For local development only.
 
-UI_PATH="source/frontend"
+UI_PATH="source/SIL.AppBuilder.Portal.Frontend"
 API_PATH="source/SIL.AppBuilder.Portal.Backend"
 COMPOSE="docker-compose -f deployment/development/docker-compose.yml --project-directory ./source -p appbuilder-portal"
 
