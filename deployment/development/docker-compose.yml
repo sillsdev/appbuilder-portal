@@ -39,8 +39,11 @@ services:
     command: bash -c " dotnet watch run"
     ports:
       - "7081:7081"
+    links:
+      - db:db.docker
     environment:
       PORT: 7081
+      ConnectionStrings:default: "User ID=db-user;Password=1234;Host=db.docker;Port=5432;Database=development;"
 
     volumes:
       - ./:/app
