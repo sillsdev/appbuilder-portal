@@ -26,11 +26,13 @@ function runstuff {
 
     bootstrap)
       # Setup Database
-      PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -U \$POSTGRES_USER -d \$POSTGRES_DB"
+      PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER -d \$POSTGRES_DB"
 
-      ${COMPOSE} run --rm db psql -c "CREATE DATABASE \$POSTGRES_DB WITH ENCODING 'UTF8'" \
-        && ${COMPOSE} run --rm db bash -c "${PSQL} -f /scripts/PostgreSQL/DWKitScript.sql" \
-        && ${COMPOSE} run --rm db bash -c "${PSQL} -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql" \
+      ${COMPOSE} exec db bash -c "${PSQL} -c \"DROP DATABASE \$POSTGRES_DB\""
+      ${COMPOSE} exec db bash -c "${PSQL} -c \"CREATE DATABASE \$POSTGRES_DB WITH ENCODING 'UTF8'\""
+
+      ${COMPOSE} exec db bash -c "${PSQL} -f /scripts/PostgreSQL/DWKitScript.sql" \
+        && ${COMPOSE} exec db bash -c "${PSQL} -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql" \
         && echo "DB setup with DWKit Scripts"
 
 
