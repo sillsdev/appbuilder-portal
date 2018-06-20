@@ -20,6 +20,7 @@
         "src/ui/*"
       ],
       "tests/*": [ "tests/*" ],
+      "vendor/*": [ "src/vendor/*" ],
       "*": [
         "types/*"
       ]

@@ -2,14 +2,14 @@ import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ReduxProvider } from '../redux-store';
-import TodoMVC from './components/todo-mvc';
+import RootRoute from './routes/root';
 
 export default class Application extends React.Component {
   render() {
     return (
       <ReduxProvider>
         <BrowserRouter>
-          <TodoMVC />
+          <RootRoute />
         </BrowserRouter>
       </ReduxProvider>
     );

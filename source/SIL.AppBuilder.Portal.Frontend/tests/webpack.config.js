@@ -23,10 +23,10 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     alias: {
-      // this is only the 3rd or 4th places these are all defined...
       '@store': locate('src/redux-store'),
       '@ui': locate('src/ui'),
       'tests': locate('tests'),
+      'vendor': locate('src/vendor'),
       'example-app': locate('src'),
       'example-app/src': locate('src'),
     }

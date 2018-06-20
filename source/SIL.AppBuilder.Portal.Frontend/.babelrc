@@ -5,7 +5,8 @@
             "alias": {
                 "@store": ["./src/redux-store"],
                 "@ui": ["./src/ui"],
-                "tests": ["./tests"]
+                "tests": ["./tests"],
+                "vendor": ["./src/vendor"]
             }
         }]
     ]
