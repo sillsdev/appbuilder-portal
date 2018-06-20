@@ -1,9 +1,14 @@
-version: '3'
+version: '3.4'
+
+# Note that --project-directory ./source
+# must be passed to every docker-compose command
+# ./source is the docker-compose context
 
 volumes:
   ui-tmp:
   ui-dist:
   ui-node_modules:
+  ui-yarn-cache:
   api-obj:
   api-bin:
   postgres-data:
@@ -25,11 +30,33 @@ services:
     #   - "15432:5432"
 
   api:
+    build:
+      context: ./
+      dockerfile: ./SIL.AppBuilder.Portal.Backend/Dockerfile
+      target: development
+    command: bash -c " dotnet watch run"
+    ports:
+      - "7081:7081"
+    environment:
+      PORT: 7081
+
     volumes:
       - api-obj:/app/obj
       - api-bin:/app/bin
+
   ui:
+    build:
+      context: ./SIL.AppBuilder.Portal.Frontend
+      dockerfile: Dockerfile
+    command: yarn start
+    ports:
+      - "9091:9091"
+      - "9092:9092"
+    environment:
+      PORT: 9091
+      HMR_PORT: 9092
     volumes:
       - ui-tmp:/app/tmp
       - ui-dist:/app/dist
       - ui-node_modules:/app/node_modules
+      - ui-yarn-cache:/.yarn-cache

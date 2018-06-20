@@ -1,5 +1,4 @@
 ﻿var webpack = require('webpack');
-var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 var login = {
     entry: "./wwwroot/js/app/login.jsx",
@@ -18,8 +17,7 @@ var login = {
             }
         ]
     },
-    plugins: [
-        new HardSourceWebpackPlugin(),
+    plugins:[
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': JSON.stringify('production')
@@ -36,7 +34,6 @@ var login = {
 
 var app = {
     entry: "./wwwroot/js/app/app.jsx",
-    devtool: 'source-map',
     output: {
         filename: "./wwwroot/js/app.js"
     },
@@ -52,8 +49,7 @@ var app = {
             }
         ]
     },
-    plugins: [
-        new HardSourceWebpackPlugin(),
+    plugins:[
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': JSON.stringify('production')
@@ -85,8 +81,7 @@ var admin = {
             }
         ]
     },
-    plugins: [
-        new HardSourceWebpackPlugin(),
+    plugins:[
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': JSON.stringify('production')
@@ -101,4 +96,4 @@ var admin = {
     ]
 };
 
-module.exports = [app, admin, login];
+module.exports = [app,  admin, login];
