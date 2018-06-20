@@ -3,6 +3,9 @@ import * as ReactDOM from 'react-dom';
 
 import 'vendor/legacy-support';
 
+import 'semantic-ui-css/semantic.min.css';
+// require('public/images/*');
+
 import Application from './ui/application';
 
 ReactDOM.render(

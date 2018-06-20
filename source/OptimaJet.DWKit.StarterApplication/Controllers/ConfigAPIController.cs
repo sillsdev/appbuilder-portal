@@ -13,7 +13,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     [Authorize]
     public class ConfigAPIController : Controller
-    {   
+    {
         private IHostingEnvironment _env;
         private IConfigurationRoot _configuration;
         public ConfigAPIController(IHostingEnvironment env)
@@ -38,7 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             }
             return View("Admin");
         }
-        
+
         [Route("ConfigAPI")]
         public async Task<ActionResult> API()
         {
@@ -52,7 +52,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             {
                 pars.Add(item.Key, item.Value);
             }
-            
+
             if(Request.HasFormContentType)
             {
                 foreach (var item in Request.Form)

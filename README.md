@@ -29,5 +29,5 @@ DWKitForm requires
 - jquery
 
 TODO:
-- see if jQuery can be removed (84KB)
-- see if optimajet-form can be smaller (569KB)
+- see if jQuery can be removed (~85KB)
+- see if optimajet-form can be smaller (~569KB)

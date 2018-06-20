@@ -1,12 +1,13 @@
 {
-  "name": "react-vs-ember_state-management_react",
+  "name": "App-Builder-Portal-Frontend",
   "version": "1.0.0",
   "license": "MIT",
   "main": "src/index.html",
   "scripts": {
-    "parcel": "./node_modules/.bin/parcel",
+    "parcel": "./node_modules/.bin/parcel --no-autoinstall",
     "ts-node": "./node_modules/.bin/ts-node",
     "karma": "./node_modules/.bin/karma",
+    "build": "yarn parcel build src/index.html",
     "start:no-proxy": "yarn parcel src/index.html --hmr-port $HMR_PORT -p $PORT",
     "start:dev": "yarn ts-node src/devproxyserver.ts",
     "start:dev:on-host": "API_HOST=localhost:7081 yarn start:dev",
@@ -17,16 +18,17 @@
     "test:ci": "CI=true yarn karma:start --single-run"
   },
   "dependencies": {
-    "react": "^15.0.0 || ^16.0.0",
+    "react": "^16.4.1",
     "react-data-grid": "^4.0.7",
     "react-data-grid-addons": "^4.0.8",
-    "react-dom": "^15.0.0 || ^16.0.0",
+    "react-dom": "^16.0.0",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "recompose": "^0.27.1",
     "redux": "^4.0.0",
     "reflux": "^6.4.1",
+    "semantic-ui-css": "^2.3.2",
     "semantic-ui-react": "^0.81.1"
   },
   "devDependencies": {
@@ -55,6 +57,7 @@
     "@types/webpack": "^4.4.0",
     "@types/webpack-env": "^1.13.6",
     "babel-plugin-module-resolver": "^3.1.1",
+    "babel-plugin-wildcard": "^5.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",

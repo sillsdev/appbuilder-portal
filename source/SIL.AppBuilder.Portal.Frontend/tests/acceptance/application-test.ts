@@ -14,10 +14,6 @@ describe('Acceptance | Application | renders', () => {
     app = await setupAppForTesting(Application);
   })
 
-  it('renders', async () => {
-    expect(page.headingText).to.equal('todos');
-  });
-
   it('resolves with the app', async () => {
     expect(app).to.be.an.instanceOf(Application);
   });

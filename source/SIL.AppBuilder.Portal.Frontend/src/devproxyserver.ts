@@ -16,7 +16,9 @@ const httpProxy = proxy({
   ws: true,
   secure: false,
   changeOrigin: true,
-  target: `http://${process.env.API_HOST}`
+  target: `http://${process.env.API_HOST}`,
+  autoinstall: false,
+  publicUrl: 'dist/public/'
 });
 
 // everything *should* have an api route
