@@ -47,12 +47,12 @@ services:
 
     volumes:
       - ./:/app
-      - api-obj:/app/obj
-      - api-bin:/app/bin
+      # - api-obj:/app/obj
+      # - api-bin:/app/bin
 
   ui:
     build:
-      context: ./SIL.AppBuilder.Portal.Frontend
+      context: ./SIL.AppBuilder.Portal.Frontend/
       dockerfile: Dockerfile
     command: yarn start
     ports:
@@ -62,6 +62,15 @@ services:
       PORT: 9091
       HMR_PORT: 9092
     volumes:
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/src:/app/src
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tests:/app/tests
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/types:/app/types
+
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/.babelrc:/app/.babelrc
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/package.json:/app/package.json
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tsconfig.json:/app/tsconfig.json
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/yarn.lock:/app/yarn.lock
+
       - ui-tmp:/app/tmp
       - ui-dist:/app/dist
       - ui-node_modules:/app/node_modules
