@@ -75,6 +75,7 @@ services:
       - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/.babelrc:/app/.babelrc
       - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/package.json:/app/package.json
       - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tsconfig.json:/app/tsconfig.json
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tslint.json:/app/tslint.json
       - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/yarn.lock:/app/yarn.lock
 
       - ui-tmp:/app/tmp

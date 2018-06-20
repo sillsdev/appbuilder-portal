@@ -1,12 +1,12 @@
 export const namespace = 'todos'
 
-export type Todo = {
+export interface Todo {
   text: string,
   id: number,
   completed: boolean
 }
 
-export type State = {
+export interface State {
   all: Todo[]
 }
 
@@ -20,4 +20,4 @@ export const initialState: State = {
   ]
 }
 
-export type OtherAction = { type: '' };
+export interface OtherAction { type: '' }

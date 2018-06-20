@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 
 import {
-  State as TodoState,
-  reducer as todosReducer
+  reducer as todosReducer,
+  State as TodoState
 } from './todos';
 
 export interface State{

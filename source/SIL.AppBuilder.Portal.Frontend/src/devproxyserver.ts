@@ -1,24 +1,22 @@
-const proxy = require('http-proxy-middleware')
-const Bundler = require('parcel-bundler')
-const express = require('express')
+import * as express from 'express';
+import * as proxy from 'http-proxy-middleware';
+import Bundler from 'parcel-bundler';
 
 const port = Number(process.env.PORT || 1234);
 const hmrPort = Number(process.env.HMR_PORT || 0);
 
 const bundler = new Bundler('src/index.html', {
   cache: false,
-  logLevel: 2,
-  hmrPort: hmrPort
+  hmrPort,
+  logLevel: 2
 });
 
 const app = express();
 const httpProxy = proxy({
-  ws: true,
-  secure: false,
   changeOrigin: true,
+  secure: false,
   target: `http://${process.env.API_HOST}`,
-  autoinstall: false,
-  publicUrl: 'dist/public/'
+  ws: true,
 });
 
 // everything *should* have an api route
@@ -33,5 +31,6 @@ app.use('/ui', httpProxy);
 app.use(bundler.middleware());
 
 app.listen(port, '0.0.0.0', () => {
+  // tslint:disable-next-line:no-console
   console.log(`Listening on 0.0.0.0:${port}, and HMRing on port ${hmrPort}`);
 });

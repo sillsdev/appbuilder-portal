@@ -1,7 +1,7 @@
 import { namespace, State } from '../shared';
 
 export const TOGGLE = `${namespace}/TOGGLE`;
-export type ToggleAction = { type: string, id: number }
+export interface ToggleAction { type: string, id: number }
 
 // Action Creator
 export const toggle = (id: number): ToggleAction => ({ type: TOGGLE, id });

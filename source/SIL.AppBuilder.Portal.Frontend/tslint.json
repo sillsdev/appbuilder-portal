@@ -1,0 +1,26 @@
+{
+    "defaultSeverity": "warning",
+    "linterOptions": {
+        "exclude": [
+          "dist",
+          "public",
+          "node_modules",
+          "src/vendor",
+          "tests/index.ts"
+        ]
+    },
+    "extends": [
+      "tslint:recommended",
+      "tslint-react",
+      "tslint-eslint-rules",
+      "tslint-config-prettier",
+      "tslint-no-unused-expression-chai"
+    ],
+    "jsRules": {},
+    "rules": {
+      "interface-name": [false],
+      "ordered-imports": [false],
+      "object-literal-sort-keys": [false]
+    },
+    "rulesDirectory": []
+}

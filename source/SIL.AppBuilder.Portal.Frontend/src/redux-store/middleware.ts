@@ -1,4 +1,4 @@
-import { Store, Middleware } from "redux";
+import { Middleware, Store } from "redux";
 
 // This project does not need sagas, as
 // as async behavior will be covered in a subsequent blog post

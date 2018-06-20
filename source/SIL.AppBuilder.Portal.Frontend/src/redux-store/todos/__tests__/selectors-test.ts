@@ -5,7 +5,7 @@ import {
 } from '../selectors';
 
 describe('Unit | Redux | Todos | Selectors', () => {
-  const makeTodo = (completed = false, id = 0, text = 'hi') => ({ id, text, completed });
+  const makeTodo = (isCompleted = false, id = 0, text = 'hi') => ({ id, text, completed: isCompleted });
   let state;
 
   beforeEach(() => {
