@@ -20,6 +20,10 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 ./run dotnet test
 ```
 
+### Backend Notes
+
+- All endpoints should be behind an `api/` path
+
 
 ### Frontend Notes
 
