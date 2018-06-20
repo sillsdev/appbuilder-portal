@@ -23,16 +23,17 @@ services:
 
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ../scripts/DB:/scripts
 
-    # # Debugging
-    # ports:
-    #   # Host:Container
-    #   - "15432:5432"
+    # Debugging
+    ports:
+      # Host:Container
+      - "15432:5432"
 
   api:
     build:
       context: ./
-      dockerfile: ./OptimaJet.DWKit.StarterApplication/Dockerfile
+      dockerfile: Dockerfile.backend
       target: development
     command: bash -c " dotnet watch run"
     ports:
@@ -41,6 +42,7 @@ services:
       PORT: 7081
 
     volumes:
+      - ./:/app
       - api-obj:/app/obj
       - api-bin:/app/bin
 
