@@ -1,9 +1,5 @@
 {
     "plugins": [
-        ["wildcard", {
-            "noModifyCase": true,
-            "nostrip": true
-        }],
         ["module-resolver", {
             "root": ["./src"],
             "alias": {
