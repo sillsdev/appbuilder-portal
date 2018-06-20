@@ -1,0 +1,42 @@
+# sdk/latest as of 2018-06-20
+
+###############################
+# Dependencies
+FROM microsoft/dotnet:2.1.301-sdk as dependencies
+WORKDIR /app
+
+COPY OptimaJet.DWKit.Application/*.csproj /app/OptimaJet.DWKit.Application/
+COPY OptimaJet.DWKit.StarterApplication/*.csproj /app/OptimaJet.DWKit.StarterApplication/
+WORKDIR /app/OptimaJet.DWKit.StarterApplication/
+RUN dotnet restore
+
+###############################
+# Development
+FROM dependencies as development
+COPY . /app
+COPY --from=dependencies /app /app
+WORKDIR /app/OptimaJet.DWKit.StarterApplication
+
+
+
+###############################
+# Tests
+FROM dependencies as testrunner
+WORKDIR /app/OptimaJet.DWKit.StarterApplication.Tests/
+COPY OptimaJet.DWKit.StarterApplication.Tests/. .
+ENTRYPOINT ["dotnet", "test", "--logger:trx"]
+
+###############################
+# Release
+FROM dependencies as build-release
+WORKDIR /app/
+COPY OptimaJet.DWKit.StarterApplication/. /app/OptimaJet.DWKit.StarterApplication/
+COPY OptimaJet.DWKit.Application/. /app/OptimaJet.DWKit.Application/
+COPY --from=dependencies /app /app
+WORKDIR /app/OptimaJet.DWKit.StarterApplication
+RUN dotnet publish -c Release -o out
+
+FROM microsoft/dotnet:2.1.301-runtime AS runtime-release
+WORKDIR /app
+COPY --from=build-release /app/OptimaJet.DWKit.StarterApplication/out ./
+ENTRYPOINT ["dotnet", "dotnetapp.dll"]

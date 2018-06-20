@@ -6,7 +6,7 @@
 # For local development only.
 
 UI_PATH="source/SIL.AppBuilder.Portal.Frontend"
-API_PATH="source/SIL.AppBuilder.Portal.Backend"
+API_PATH="source/OptimaJet.DWKit.StarterApplication"
 COMPOSE="docker-compose -f deployment/development/docker-compose.yml --project-directory ./source -p appbuilder-portal"
 
 function runstuff {
@@ -22,8 +22,13 @@ function runstuff {
     up)       ${COMPOSE} up $arguments;;
 
     bash)     ${COMPOSE} run --rm $arguments bash;;
+    restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
 
-    restart) ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
+    bootstrap)
+      # Setup Database
+
+      # other things...?
+    ;;
 
     # frontend things
     yarn) ( cd $UI_PATH && yarn $arguments );;

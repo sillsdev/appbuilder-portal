@@ -8,6 +8,9 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 
 ```bash
 ./run up:build
+
+# first time only, after up:build, separate terminal
+./run bootstrap
 ```
 
 ### Testing

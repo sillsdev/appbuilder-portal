@@ -32,7 +32,7 @@ services:
   api:
     build:
       context: ./
-      dockerfile: ./SIL.AppBuilder.Portal.Backend/Dockerfile
+      dockerfile: ./OptimaJet.DWKit.StarterApplication/Dockerfile
       target: development
     command: bash -c " dotnet watch run"
     ports:
