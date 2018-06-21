@@ -1,0 +1,11 @@
+language: generic
+sudo: false
+
+matrix:
+  include:
+    - env: PROJECT=source/SIL.AppBuilder.Portal.Frontend
+
+    # - env: PROJECT=source/SIL.AppBuilder.Portal.Backend.Tests
+    # - env: PROJECT=source/OptimaJet.DWKit.StarterApplication
+
+script: ./scripts/ci-travis.sh
