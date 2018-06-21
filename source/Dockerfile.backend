@@ -5,7 +5,6 @@
 FROM microsoft/dotnet:2.1.301-sdk as dependencies
 WORKDIR /app
 
-
 COPY OptimaJet.DWKit.Application/*.csproj /app/OptimaJet.DWKit.Application/
 COPY OptimaJet.DWKit.StarterApplication/*.csproj /app/OptimaJet.DWKit.StarterApplication/
 WORKDIR /app/OptimaJet.DWKit.StarterApplication/
@@ -13,22 +12,10 @@ RUN dotnet restore
 
 ###############################
 # Development
-# https://github.com/sleemer/docker.dotnet.debug
 FROM dependencies as development
-
-# Installing vsdbg debbuger into our container 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       unzip \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
-
 COPY . /app
 COPY --from=dependencies /app /app
-
 WORKDIR /app/OptimaJet.DWKit.StarterApplication
-RUN dotnet restore
-RUN dotnet publish -c Debug -o out
 
 
 
