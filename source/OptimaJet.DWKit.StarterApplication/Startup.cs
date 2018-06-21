@@ -10,9 +10,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using OptimaJet.DWKit.Application;
 using React.AspNet;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -38,20 +39,34 @@ namespace OptimaJet.DWKit.StarterApplication
             // Add framework services.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddReact();
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options => {
-		options.ExpireTimeSpan = TimeSpan.FromDays(365);
-                options.LoginPath = "/Account/Login/";
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
+                options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");
             });
 
+            // Authentication handeled by auth0
+            // no cokkies needed, as auth0 / jwt auth is state-less
+            // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(options => {
+            //         options.ExpireTimeSpan = TimeSpan.FromDays(365);
+            //         options.LoginPath = "/Account/Login/";
+            // });
+
+            // Don't need cache
             services.AddMvc(options => {
-                options.Filters.Add(typeof(Security.AuthorizationFilter));
-                options.Filters.Add(
-                         new ResponseCacheFilter(
-                            new CacheProfile()
-                            {
-                                NoStore = true
-                            }));
+                // options.Filters.Add(typeof(Security.AuthorizationFilter));
+                // options.Filters.Add(
+                //          new ResponseCacheFilter(
+                //             new CacheProfile()
+                //             {
+                //                 NoStore = true
+                //             }));
             });
         }
 

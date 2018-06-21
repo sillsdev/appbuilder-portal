@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 
+export const pathName = '/';
+
 export default class IndexRoute extends React.Component {
   state = { data: {}, errors: {} };
   render() {
@@ -16,6 +18,6 @@ export default class IndexRoute extends React.Component {
           errors={this.state.errors}
         />
       </div>
-    )
+    );
   }
 }
