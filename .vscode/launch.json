@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    //
+    // TODO: figure out how to adapt this to docker-compose
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Docker Launch (console)",
+            "type": "coreclr",
+            "request": "launch",                   
+            "preLaunchTask": "buildForDebug",      
+            "program": "/app/out/App.dll",         
+            "cwd": "/app/out",                     
+            "sourceFileMap": {
+                "/app": "${workspaceRoot}/src"     
+            },
+            "pipeTransport": {
+                "pipeProgram": "docker",           
+                "pipeCwd": "${workspaceRoot}",
+                "pipeArgs": [
+                    "exec -i docker.dotnet.debug_1"
+                ],
+                "quoteArgs": false,
+                "debuggerPath": "/vsdbg/vsdbg"
+            }
+        }
+    ]
+}
