@@ -4,6 +4,7 @@
 // TODO: consider localForage instead of localstorage.
 //       localForage will use better storage mechanisms
 //       if available
+import Auth0Lock from 'auth0-lock';
 import * as Auth0 from 'auth0-js';
 import * as jwtDecode from 'jwt-decode';
 
@@ -11,12 +12,6 @@ import { auth0 as auth0Env } from '@env';
 
 const storageKey = 'userToken';
 
-const auth0 = new Auth0.WebAuth({
-  domain: auth0Env.domain,
-  clientID: auth0Env.clientId,
-  responseType: 'token id_token',
-  scope: auth0Env.scope
-});
 
 export function getToken(): string {
   return localStorage.getItem(storageKey);
@@ -65,6 +60,36 @@ export function isLoggedOut(): boolean {
   return !isLoggedIn();
 }
 
+let lockInstance: Auth0LockStatic;
+export function getAuth0LockInstance(): Auth0LockStatic {
+  if (lockInstance === undefined) {
+    lockInstance = new Auth0Lock(auth0Env.clientId, auth0Env.domain, {
+      auth: {
+        responseType: 'token id_token',
+        sso: false,
+      }
+    });
+  }
+
+  return lockInstance;
+}
+
+export function showLock(): Auth0LockStatic {
+  const lock = getAuth0LockInstance();
+
+  lock.show();
+
+  return lock;
+}
+
+export function hideLock(): Auth0LockStatic {
+  const lock = getAuth0LockInstance();
+
+  lock.hide();
+
+  return lock;
+}
+
 export function login(username: string, password: string): Promise<string> {
   const loginPayload = {
     realm: auth0Env.connection,
@@ -72,6 +97,13 @@ export function login(username: string, password: string): Promise<string> {
     password,
     scope: auth0Env.scope
   };
+
+  const auth0 = new Auth0.WebAuth({
+    domain: auth0Env.domain,
+    clientID: auth0Env.clientId,
+    responseType: 'token id_token',
+    scope: auth0Env.scope
+  });
 
   return new Promise((resolve, reject) => {
     auth0.client.login(loginPayload, (err, data) => {
