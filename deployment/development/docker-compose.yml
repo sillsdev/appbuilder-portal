@@ -26,10 +26,15 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ../scripts/DB:/scripts
 
-    # Debugging
+  # Debugging database
+  adminer:
+    image: adminer
+    restart: always
     ports:
       # Host:Container
-      - "15432:5432"
+      - "18080:8080"
+    links:
+      - db:db.docker
 
   api:
     build:
