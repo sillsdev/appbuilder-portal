@@ -1,21 +1,14 @@
 import { Middleware, Store } from "redux";
+import createSagaMiddleWare from 'redux-saga';
 
-// This project does not need sagas, as
-// as async behavior will be covered in a subsequent blog post
+import { sagas } from './sagas';
 
-
-// import createSagaMiddleWare from 'redux-saga';
-
-// const createSaga = createSagaMiddleWare.default ?
-//   createSagaMiddleWare.default :
-//   createSagaMiddleWare;
-
-// const sagaMiddleware = createSaga();
+const sagaMiddleware = createSagaMiddleWare();
 
 export const setup = (store: Store<any>) => {
-  // sagaMiddleware.run(addAsync);
+  sagaMiddleware.run(sagas);
 };
 
 export const middleware: Middleware[] =  [
-  // sagaMiddleware
+  sagaMiddleware
 ]

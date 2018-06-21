@@ -1,6 +1,8 @@
+import "regenerator-runtime/runtime";
+
 import * as express from 'express';
 import * as proxy from 'http-proxy-middleware';
-import Bundler from 'parcel-bundler';
+const Bundler = require('parcel-bundler');
 
 const port = Number(process.env.PORT || 1234);
 const hmrPort = Number(process.env.HMR_PORT || 0);
