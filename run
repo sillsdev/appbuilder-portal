@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# A script to make working with docker/compose to have
+# less typing.
+#
+# For local development only.
+
+UI_PATH="source/SIL.AppBuilder.Portal.Frontend"
+API_PATH="source/OptimaJet.DWKit.StarterApplication"
+COMPOSE="docker-compose -f deployment/development/docker-compose.yml --project-directory ./source -p appbuilder-portal"
+
+function runstuff {
+  # First arg
+  given_command=$1
+  # The rest of the args
+  arguments=${@:2}
+
+  case $given_command in
+    # docker-compose proxy
+    dc)       ${COMPOSE} $arguments;;
+    up:build) ${COMPOSE} up --build $arguments;;
+    up)       ${COMPOSE} up $arguments;;
+
+    bash)     ${COMPOSE} run --rm $arguments bash;;
+    restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
+
+    bootstrap)
+      # Setup Database
+      PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER -d \$POSTGRES_DB"
+
+      ${COMPOSE} exec db bash -c "${PSQL} -c \"DROP DATABASE \$POSTGRES_DB\""
+      ${COMPOSE} exec db bash -c "${PSQL} -c \"CREATE DATABASE \$POSTGRES_DB WITH ENCODING 'UTF8'\""
+
+      ${COMPOSE} exec db bash -c "${PSQL} -f /scripts/PostgreSQL/DWKitScript.sql" \
+        && ${COMPOSE} exec db bash -c "${PSQL} -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql" \
+        && echo "DB setup with DWKit Scripts"
+
+
+      # other things...?
+    ;;
+
+    # frontend things
+    yarn) ( cd $UI_PATH && yarn $arguments );;
+
+    # backend / api things
+    dotnet) ( cd $API_PATH && dotnet $arguments );;
+    # dotnet:api)
+
+    # Don't name any folders bin, obj, tmp, dist, or node_modules
+    clean:all)
+      echo "Cleaning..."
+      runstuff clean:frontend
+      runstuff clean:relays
+    ;;
+
+    clean:api)
+      shopt -s globstar
+      rm -rf **/bin && \
+      rm -rf **/obj
+    ;;
+
+    clean:frontend)
+      shopt -s globstar
+      rm -rf **/dist && \
+      rm -rf **/node_modules && \
+      rm -rf **/tmp
+    ;;
+
+    *) print_help;;
+  esac
+}
+
+function print_help {
+
+  echo ""
+  echo "Available Commands:"
+  echo ""
+  echo "dc             : short for docker-compose"
+  echo "up:build"
+  echo "up"
+  echo ""
+  echo "bash           : drop into a bash shell in a temporary docker-compose service"
+  echo "restart        : restart a specific docker-compose service"
+  echo ""
+  echo "bootstrap      : runs initial scripts for project setup"
+  echo ""
+  echo "yarn"
+  echo ""
+  echo "dotnet"
+  echo ""
+  echo "clean:all      : recursively removes dist, node_modules, and tmp directories"
+  echo "clean:api"
+  echo "clean:frontend"
+}
+
+if [ $1 ]; then
+  runstuff $*
+else
+  print_help
+fi
