@@ -14,8 +14,8 @@ env:
 # https://docs.travis-ci.com/user/docker/#Using-Docker-Compose
 before_install:
   # docker-compose
-  - pip install --upgrade pip
-  - pip install -U docker-compose
+  - sudo pip install --upgrade pip
+  - sudo pip install -U docker-compose
   - chmod +x /usr/local/bin/docker-compose
 
   # Build The Project
