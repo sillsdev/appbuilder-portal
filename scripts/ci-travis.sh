@@ -1,8 +1,10 @@
 #!/bin/bash
 # https://github.com/sagikazarmark/travis-monorepo-demo
 
+echo "============================================"
 if .travis/build-condition.sh $TRAVIS_COMMIT_RANGE $PROJECT; then
     echo "$PROJECT is being built";
+    echo ""
 
     if [[ $PROJECT = *"Frontend" ]]; then
         ./run test:ui:ci
@@ -11,4 +13,5 @@ if .travis/build-condition.sh $TRAVIS_COMMIT_RANGE $PROJECT; then
     fi
 else
     echo "$PROJECT is NOT being built";
+    echo ""
 fi
