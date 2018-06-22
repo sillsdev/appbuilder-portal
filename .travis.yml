@@ -13,8 +13,8 @@ env:
 
 # https://docs.travis-ci.com/user/docker/#Using-Docker-Compose
 before_install:
-  # docker-compose
-  - sudo pip install --upgrade pip
+  # pip 10 is broken, I guess
+  - sudo pip install --upgrade --force-reinstall pip==9.0.3
   - sudo pip install -U docker-compose
   - chmod +x /usr/local/bin/docker-compose
 
