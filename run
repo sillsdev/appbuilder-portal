@@ -41,7 +41,8 @@ function runstuff {
 
     ##################
     # Testing
-    test:ui:ci) bash -c "./run dc run --rm ui yarn test:ci";;
+    ci:test:ui) bash -c "./run dc run --rm ui yarn test:ci";;
+    ci:lint:ui) bash -c "./run dc run --rm ui yarn lint";;
 
 
     ################
