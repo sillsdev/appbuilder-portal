@@ -13,8 +13,9 @@ if .travis/build-condition.sh $TRAVIS_COMMIT_RANGE $PROJECT; then
 
     if [[ $PROJECT = *"Frontend" ]]; then
         # TODO: eventually, linting should be required to pass
-        ./run ci:lint:ui
-        ./run ci:test:ui
+        time ./run dc build
+        time ./run ci:lint:ui
+        time ./run ci:test:ui
     else
         echo "Only the frontend project is configured for contiuous testing"
     fi
