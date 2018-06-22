@@ -49,6 +49,7 @@ before_install:
       fi
     )
 
+before_script:
   # Build The Project
   - time ./run dc build
 
