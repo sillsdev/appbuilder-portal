@@ -48,6 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication
             {
                 options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
                 options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");
+                options.RequireHttpsMetadata = false;
             });
 
             // Authentication handeled by auth0

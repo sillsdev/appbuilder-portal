@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 
+console.log(DWKitForm);
 export const pathName = '/';
 
 export default class IndexRoute extends React.Component {
