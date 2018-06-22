@@ -8,6 +8,17 @@ addons:
   apt:
     packages:
       - docker-ce
+
+
+# Cache shennanigans
+# https://github.com/travis-ci/travis-ci/issues/5358#issuecomment-248915326
+before_cache:
+  # Save tagged docker images
+  - >
+    mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
+    | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
+
+before_install:
 env:
   - DOCKER_COMPOSE_VERSION=1.17.0
 
@@ -17,6 +28,9 @@ before_install:
   - sudo pip install --upgrade --force-reinstall pip==9.0.3
   - sudo pip install -U docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
+
+  # Load cached docker images
+  - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
   # Build The Project
   - ./run dc build
