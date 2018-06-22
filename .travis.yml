@@ -11,13 +11,17 @@ addons:
 
 
 # Cache shennanigans
+# Based off of:
 # https://github.com/travis-ci/travis-ci/issues/5358#issuecomment-248915326
 before_cache:
   # Save tagged docker images
   - >
+    mkdir -p $HOME/docker
+
+    KNOWN_IMAGES=$(docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}')
+
     time (
-      mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
-      | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
+      echo $KNOWN_IMAGES | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
     )
 
 cache:
@@ -40,7 +44,9 @@ before_install:
   # Load cached docker images
   - >
     time (
-      if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
+      if [[ -d $HOME/docker ]]; then
+        ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load";
+      fi
     )
 
   # Build The Project
