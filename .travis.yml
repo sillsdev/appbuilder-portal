@@ -15,25 +15,36 @@ addons:
 before_cache:
   # Save tagged docker images
   - >
-    mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
-    | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
+    time (
+      mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
+      | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
+    )
 
-before_install:
+cache:
+  directories:
+    - $HOME/docker
+
 env:
   - DOCKER_COMPOSE_VERSION=1.17.0
 
 # https://docs.travis-ci.com/user/docker/#Using-Docker-Compose
 before_install:
   # pip 10 is broken, I guess
-  - sudo pip install --upgrade --force-reinstall pip==9.0.3
-  - sudo pip install -U docker-compose
-  - sudo chmod +x /usr/local/bin/docker-compose
+  - >
+    time (
+      sudo pip install --upgrade --force-reinstall pip==9.0.3
+      sudo pip install -U docker-compose
+      sudo chmod +x /usr/local/bin/docker-compose
+    )
 
   # Load cached docker images
-  - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
+  - >
+    time (
+      if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
+    )
 
   # Build The Project
-  - ./run dc build
+  - time ./run dc build
 
 
 matrix:
@@ -43,4 +54,4 @@ matrix:
     # - env: PROJECT=source/SIL.AppBuilder.Portal.Backend.Tests
     # - env: PROJECT=source/OptimaJet.DWKit.StarterApplication
 
-script: ./scripts/ci-travis.sh
+script: time ./scripts/ci-travis.sh
