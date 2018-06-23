@@ -39,6 +39,15 @@ function runstuff {
       # other things...?
     ;;
 
+    ##################
+    # Testing
+    ci:test:ui) bash -c "./run dc run --rm ui yarn test:ci";;
+    ci:lint:ui) bash -c "./run dc run --rm ui yarn lint";;
+
+
+    ################
+    # Host-Machine Utils
+
     # frontend things
     yarn) ( cd $UI_PATH && yarn $arguments );;
 
