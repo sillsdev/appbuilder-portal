@@ -21,7 +21,14 @@
       "interface-name": [false],
       "ordered-imports": [false],
       "object-literal-sort-keys": [false],
-      "no-var-requires": [false]
+      "no-var-requires": [false],
+      "semicolon": [ true, "always"],
+      "member-access": [
+        false
+      ],
+      "jsx-boolean-value": [
+        false
+      ]      
     },
     "rulesDirectory": []
 }

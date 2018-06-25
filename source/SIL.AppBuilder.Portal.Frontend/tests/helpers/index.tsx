@@ -5,7 +5,6 @@ import createHistory from 'history/createMemoryHistory';
 import { setupAppForTesting, mount } from '@bigtest/react';
 
 import { ReduxProvider } from '@store/index';
-import TodoMVC from '@ui/components/todo-mvc';
 
 // the same as @ui/application, but allows
 // setting the initial state
@@ -14,7 +13,7 @@ class TestWrapper extends React.Component<any, any> {
     const { initialState, history } = this.props;
     // mount the whole app by default, but allow testing individual
     // components.
-    const ComponentToTest = this.props.component || TodoMVC;
+    const ComponentToTest = this.props.component;
     const componentProps = this.props.componentProps || {};
 
     return (
