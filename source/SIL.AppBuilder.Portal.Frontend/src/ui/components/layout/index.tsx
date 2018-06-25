@@ -4,7 +4,7 @@ import Header from '@ui/components/header';
 
 const Layout = ({children}) => (
   <div className='wrapper'>
-    <Header/>
+    <Header />
     <div>
       {children}
     </div>
