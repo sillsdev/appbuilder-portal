@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter  } from 'react-router-dom';
 import { Container, Menu, Button, Dropdown, Image, Icon } from 'semantic-ui-react';
 
 const avatarTrigger = (
@@ -13,10 +14,14 @@ const notificationTrigger = (
   </span>
 )
 
-const Header = () => (
+const Header = ({ history }) => (
   <Menu data-test-header-menu className='menu-navbar'>
     <Container>
-      <Menu.Item data-test-header-appname header>SCRIPTORIA</Menu.Item>
+      <Menu.Item data-test-header-appname header onClick={(e) => {
+        history.push('/');
+      }}>
+        SCRIPTORIA
+      </Menu.Item>
       <Menu.Menu position='right'>
         <Menu.Item>
           <Button data-test-header-addproject>Add Project</Button>
@@ -46,4 +51,4 @@ const Header = () => (
   </Menu>
 )
 
-export default Header;
+export default withRouter(Header);

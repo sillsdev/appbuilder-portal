@@ -1,6 +1,5 @@
 import React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
-import { mount } from '@bigtest/react';
 import { expect } from 'chai';
 
 import { mountWithContext } from 'tests/helpers';

@@ -1,7 +1,8 @@
 import React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
-import { mount } from '@bigtest/react';
 import { expect } from 'chai';
+
+import { mountWithContext } from 'tests/helpers';
 
 import Header from '../display';
 
@@ -9,7 +10,7 @@ describe('Integration | Component | Header', () => {
 
   describe('mounting', () => {
     beforeEach(async () => {
-      await mount(() => <Header/>);
+      await mountWithContext(() => <Header/>);
     });
 
     it('suceeds', async () => {

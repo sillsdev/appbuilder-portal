@@ -9,7 +9,7 @@ export default class RootPage extends React.Component {
     return (
       <Switch>
         <Route exact path='/' render={() => (<Redirect to="/tasks" />)} />
-        <Route path='/tasks' component={Tasks}/>
+        <Route path='/tasks' component={Tasks} />
         <Route path='/login' component={Login} />
       </Switch>
     );
