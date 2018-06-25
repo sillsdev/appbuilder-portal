@@ -2,7 +2,6 @@ import * as React from 'react';
 import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 import { get } from '@lib/fetch';
 
-console.log(DWKitForm);
 export const pathName = '/';
 
 export default class IndexRoute extends React.Component {
@@ -10,7 +9,7 @@ export default class IndexRoute extends React.Component {
 
   async componentDidMount() {
     const response = await get('/ui/login');
-    console.log(response);
+    console.log('data back from /ui/login', response);
   }
 
   render() {

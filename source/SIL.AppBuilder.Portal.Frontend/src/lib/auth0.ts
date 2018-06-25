@@ -17,6 +17,10 @@ export function getToken(): string {
   return localStorage.getItem(storageKey);
 }
 
+export function setToken(token: string) {
+  localStorage.setItem(storageKey, token);
+}
+
 export function deleteToken() {
   localStorage.setItem(storageKey, undefined);
 }
@@ -60,6 +64,18 @@ export function isLoggedOut(): boolean {
   return !isLoggedIn();
 }
 
+
+// example playoad fields from successful authentication
+//
+// accessToken: string
+// appState:null
+// expiresIn:seconds
+// idToken:string
+// idTokenPayload:{ general user info }
+// refreshToken:null
+// scope:"openid profile email"
+// state: string
+// tokenType : "Bearer"
 let lockInstance: Auth0LockStatic;
 export function getAuth0LockInstance(): Auth0LockStatic {
   if (lockInstance === undefined) {

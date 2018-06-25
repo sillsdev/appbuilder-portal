@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { getAuth0LockInstance, showLock, hideLock } from '@lib/auth0';
+import { getAuth0LockInstance, setToken, showLock, hideLock } from '@lib/auth0';
 
 export default class Lock extends React.Component {
 
@@ -14,6 +14,8 @@ export default class Lock extends React.Component {
 
     lock.on('authenticated', (authResult) => {
       console.log(authResult);
+
+      setToken(authResult.idToken);
 
       lock.hide();
     });

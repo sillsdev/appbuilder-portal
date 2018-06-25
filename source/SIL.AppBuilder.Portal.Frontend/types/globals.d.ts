@@ -6,6 +6,8 @@ declare global {
   interface Window {
     devToolsExtension: any;
     __store__: Store;
+    $: JQueryStatic;
+    jQuery: JQueryStatic;
   }
 
   interface Global {
