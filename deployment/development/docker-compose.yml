@@ -47,7 +47,7 @@ services:
     environment:
       PORT: 7081
       AUTH0_DOMAIN: https://sil-appbuilder.auth0.com
-      AUTH0_AUDIENCE: localhost
+      AUTH0_AUDIENCE: n8IAE2O17FBrlQ667x5mydhpqelCBUWG
 
       ConnectionStrings:default: "User ID=db-user;Password=1234;Host=db.docker;Port=5432;Database=development;"
 

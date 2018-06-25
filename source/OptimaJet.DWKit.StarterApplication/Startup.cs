@@ -38,6 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication
         {
             // Add framework services.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddReact();
 
             services.AddAuthentication(options =>
@@ -52,7 +53,7 @@ namespace OptimaJet.DWKit.StarterApplication
             });
 
             // Authentication handeled by auth0
-            // no cokkies needed, as auth0 / jwt auth is state-less
+            // no cookies needed, as auth0 / jwt auth is state-less
             // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             //    .AddCookie(options => {
             //         options.ExpireTimeSpan = TimeSpan.FromDays(365);
@@ -61,13 +62,13 @@ namespace OptimaJet.DWKit.StarterApplication
 
             // Don't need cache
             services.AddMvc(options => {
-                // options.Filters.Add(typeof(Security.AuthorizationFilter));
-                // options.Filters.Add(
-                //          new ResponseCacheFilter(
-                //             new CacheProfile()
-                //             {
-                //                 NoStore = true
-                //             }));
+            // options.Filters.Add(typeof(Security.AuthorizationFilter));
+            // options.Filters.Add(
+            //          new ResponseCacheFilter(
+            //             new CacheProfile()
+            //             {
+            //                 NoStore = true
+            //             }));
             });
         }
 
