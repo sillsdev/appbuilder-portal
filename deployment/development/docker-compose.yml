@@ -29,10 +29,15 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ../scripts/DB:/scripts
 
-    # Debugging
+  # Debugging database
+  adminer:
+    image: adminer
+    restart: always
     ports:
       # Host:Container
-      - "15432:5432"
+      - "18080:8080"
+    links:
+      - db:db.docker
 
   api:
     build:
@@ -66,14 +71,12 @@ services:
       - "9091:9091"
       - "9092:9092"
 
-    links:
-      - api:api.docker
     environment:
       PORT: 9091
       HMR_PORT: 9092
-      API_HOST: api.docker:7081
       AUTH0_CLIENT_ID: n8IAE2O17FBrlQ667x5mydhpqelCBUWG
       AUTH0_DOMAIN: sil-appbuilder.auth0.com
+      API_HOST: api:7081
 
     volumes:
       - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/src:/app/src

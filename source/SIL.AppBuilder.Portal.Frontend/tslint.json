@@ -25,7 +25,6 @@
       "semicolon": [true, "always"],
       "member-access": [false],
       "jsx-boolean-value": [false]
-
     },
     "rulesDirectory": []
 }
