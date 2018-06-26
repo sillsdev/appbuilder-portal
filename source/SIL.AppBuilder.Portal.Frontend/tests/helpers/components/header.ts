@@ -9,12 +9,12 @@ export class Header {
 
   constructor(selector?: string) { }
 
-  addProjectButtonClick = clickable('[data-test-header-addproject]');
-  notificationDropdownClick = clickable('[data-test-header-notification]');
-  avatarDropdownClick = clickable('[data-test-header-avatar]');
+  clickAddProject = clickable('[data-test-header-addproject]');
+  clickNotification = clickable('[data-test-header-notification]');
+  clickAvatar = clickable('[data-test-header-avatar]');
 
-  notificationOpen = hasClass('[data-test-header-notification]','active visible');
-  avatarOpen = hasClass('[data-test-header-avatar]','active visible');
+  isNotificationMenuOpen = hasClass('[data-test-header-notification]','active');
+  isAvatarMenuOpen = hasClass('[data-test-header-avatar]','active');
 
 }
 

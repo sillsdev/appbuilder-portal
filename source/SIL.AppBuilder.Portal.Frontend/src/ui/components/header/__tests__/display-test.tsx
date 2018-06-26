@@ -25,20 +25,34 @@ describe('Integration | Component | Header', () => {
 
   describe('Dropdowns', () => {
 
-    it('Only one dropdown open at a time', async () => {
+    beforeEach(async () => {
 
-      await headerHelper.notificationDropdownClick();
-
-      expect(headerHelper.notificationOpen).to.be.true;
-      expect(headerHelper.avatarOpen).to.be.false;
-
-      await headerHelper.avatarDropdownClick();
-
-      expect(headerHelper.avatarOpen).to.be.true;
-      expect(headerHelper.notificationOpen).to.be.false;
+      expect(headerHelper.isNotificationMenuOpen).to.be.false;
+      await headerHelper.clickNotification();
 
     });
-        
-  })
+
+    it('opens the notification dropdown', () => {
+      expect(headerHelper.isNotificationMenuOpen).to.be.true;
+    });
+  });
+
+  describe('only one dropdown is open at a time / dropdowns do not share the same state', () => {
+
+    beforeEach(async () => {
+
+      expect(headerHelper.isAvatarMenuOpen).to.be.false;
+      expect(headerHelper.isNotificationMenuOpen).to.be.true;
+
+      await headerHelper.clickAvatar();
+
+    });
+
+    it('closes the notification dropdown, and opens the avatar dropdown', () => {
+      expect(headerHelper.isAvatarMenuOpen).to.be.true;
+      expect(headerHelper.isNotificationMenuOpen).to.be.false;
+    });
+
+  });  
 
 });
