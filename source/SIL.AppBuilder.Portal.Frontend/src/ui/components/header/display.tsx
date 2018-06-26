@@ -1,6 +1,11 @@
 import React from 'react';
 import { withRouter  } from 'react-router-dom';
-import { Container, Menu, Button, Dropdown, Image, Icon } from 'semantic-ui-react';
+import { 
+  Container, Menu, Button, 
+  Dropdown, Image, Icon 
+} from 'semantic-ui-react';
+
+//import './header.scss';
 
 const avatarTrigger = (
   <span>

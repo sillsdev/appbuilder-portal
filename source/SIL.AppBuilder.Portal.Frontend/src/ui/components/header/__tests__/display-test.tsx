@@ -6,6 +6,8 @@ import { mountWithContext } from 'tests/helpers';
 
 import Header from '../display';
 
+import headerHelper from 'tests/helpers/components/header';
+
 describe('Integration | Component | Header', () => {
 
   describe('mounting', () => {
@@ -13,12 +15,20 @@ describe('Integration | Component | Header', () => {
       await mountWithContext(() => <Header/>);
     });
 
-    it('suceeds', async () => {
+    it('suceeds',() => {
       expect(document.querySelector('[data-test-header-menu]')).to.exist;
       expect(document.querySelector('[data-test-header-appname]')).to.exist;
       expect(document.querySelector('[data-test-header-addproject]')).to.exist;
       expect(document.querySelector('[data-test-header-notification]')).to.exist;
     });
+  });
+
+  describe('Only one dropdown open at a time', async () => {
+
+    await headerHelper.notificationDropdownClick();
+
+    expect(document.querySelector('[]').classList.contains('active visible')).to.be.true;
+
   });
 
 });
