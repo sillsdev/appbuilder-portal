@@ -1,8 +1,7 @@
 import {
-  interactor, text,
+  interactor,
   clickable,
-  fillable, blurrable,
-  isPresent, triggerable, find, is, scoped
+  hasClass
 } from '@bigtest/interactor';
 
 @interactor
@@ -13,6 +12,9 @@ export class Header {
   addProjectButtonClick = clickable('[data-test-header-addproject]');
   notificationDropdownClick = clickable('[data-test-header-notification]');
   avatarDropdownClick = clickable('[data-test-header-avatar]');
+
+  notificationOpen = hasClass('[data-test-header-notification]','active visible');
+  avatarOpen = hasClass('[data-test-header-avatar]','active visible');
 
 }
 

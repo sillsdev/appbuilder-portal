@@ -23,16 +23,22 @@ describe('Integration | Component | Header', () => {
     });
   });
 
-  describe('Only one dropdown open at a time', async () => {
+  describe('Dropdowns', () => {
 
-    await headerHelper.notificationDropdownClick();
-    expect(document.querySelector('[data-test-header-notification]').classList.contains('active visible')).to.be.true;
-    expect(document.querySelector('[data-test-header-avatar]').classList.contains('active visible')).to.be.false;
+    it('Only one dropdown open at a time', async () => {
 
-    await headerHelper.avatarDropdownClick();
-    expect(document.querySelector('[data-test-header-avatar]').classList.contains('active visible')).to.be.true;
-    expect(document.querySelector('[data-test-header-notification]').classList.contains('active visible')).to.be.false;
+      await headerHelper.notificationDropdownClick();
 
-  });
+      expect(headerHelper.notificationOpen).to.be.true;
+      expect(headerHelper.avatarOpen).to.be.false;
+
+      await headerHelper.avatarDropdownClick();
+
+      expect(headerHelper.avatarOpen).to.be.true;
+      expect(headerHelper.notificationOpen).to.be.false;
+
+    });
+        
+  })
 
 });
