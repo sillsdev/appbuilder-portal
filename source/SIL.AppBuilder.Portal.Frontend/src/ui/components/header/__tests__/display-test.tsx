@@ -12,7 +12,7 @@ describe('Integration | Component | Header', () => {
 
   describe('mounting', () => {
     beforeEach(async () => {
-      await mountWithContext(() => <Header/>);
+      await mountWithContext(() => <Header />);
     });
 
     it('suceeds',() => {
@@ -24,35 +24,34 @@ describe('Integration | Component | Header', () => {
   });
 
   describe('Dropdowns', () => {
-
     beforeEach(async () => {
-
-      expect(headerHelper.isNotificationMenuOpen).to.be.false;
-      await headerHelper.clickNotification();
-
+      await mountWithContext(() => <Header />);
     });
 
-    it('opens the notification dropdown', () => {
-      expect(headerHelper.isNotificationMenuOpen).to.be.true;
+    describe('the dropdowns can open', () => {
+      beforeEach(async () => {
+        expect(headerHelper.isNotificationMenuOpen).to.be.false;
+
+        await headerHelper.clickNotification();
+      });
+
+      it('opens the notification dropdown', () => {
+        expect(headerHelper.isNotificationMenuOpen).to.be.true;
+      });
+
+      describe('only one dropdown is open at a time / dropdowns do not share the same state', () => {
+        beforeEach(async () => {
+          expect(headerHelper.isAvatarMenuOpen).to.be.false;
+          expect(headerHelper.isNotificationMenuOpen).to.be.true;
+
+          await headerHelper.clickAvatar();
+        });
+
+        it('closes the notification dropdown, and opens the avatar dropdown', () => {
+          expect(headerHelper.isAvatarMenuOpen).to.be.true;
+          expect(headerHelper.isNotificationMenuOpen).to.be.false;
+        });
+      });
     });
   });
-
-  describe('only one dropdown is open at a time / dropdowns do not share the same state', () => {
-
-    beforeEach(async () => {
-
-      expect(headerHelper.isAvatarMenuOpen).to.be.false;
-      expect(headerHelper.isNotificationMenuOpen).to.be.true;
-
-      await headerHelper.clickAvatar();
-
-    });
-
-    it('closes the notification dropdown, and opens the avatar dropdown', () => {
-      expect(headerHelper.isAvatarMenuOpen).to.be.true;
-      expect(headerHelper.isNotificationMenuOpen).to.be.false;
-    });
-
-  });  
-
 });

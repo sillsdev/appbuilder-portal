@@ -1,7 +1,7 @@
 import {
   interactor,
   clickable,
-  hasClass
+  hasClass, isPresent
 } from '@bigtest/interactor';
 
 @interactor
@@ -13,8 +13,8 @@ export class Header {
   clickNotification = clickable('[data-test-header-notification]');
   clickAvatar = clickable('[data-test-header-avatar]');
 
-  isNotificationMenuOpen = hasClass('[data-test-header-notification]','active');
-  isAvatarMenuOpen = hasClass('[data-test-header-avatar]','active');
+  isNotificationMenuOpen = isPresent('[data-test-header-notification].active');
+  isAvatarMenuOpen = isPresent('[data-test-header-avatar].active');
 
 }
 
