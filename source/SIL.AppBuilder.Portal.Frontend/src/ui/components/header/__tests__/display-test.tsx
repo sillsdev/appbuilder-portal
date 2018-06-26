@@ -16,10 +16,11 @@ describe('Integration | Component | Header', () => {
     });
 
     it('suceeds',() => {
-      expect(document.querySelector('[data-test-header-menu]')).to.exist;
-      expect(document.querySelector('[data-test-header-appname]')).to.exist;
-      expect(document.querySelector('[data-test-header-addproject]')).to.exist;
-      expect(document.querySelector('[data-test-header-notification]')).to.exist;
+      expect(headerHelper.isHeaderPresent).to.be.true;
+      expect(headerHelper.isAppNamePresent).to.be.true;
+      expect(headerHelper.isAddProjectButtonPresent).to.be.true;
+      expect(headerHelper.isNotificationDropdownPresent).to.be.true;
+      expect(headerHelper.isAvatarDropdownPresent).to.be.true;
     });
   });
 
