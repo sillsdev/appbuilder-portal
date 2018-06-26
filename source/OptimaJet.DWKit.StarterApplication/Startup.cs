@@ -69,13 +69,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddMvc(options => {
                 options.Filters.Add(typeof(Security.AuthorizationFilter));
-                // options.Filters.Add(
-                //         new ResponseCacheFilter(
-                //             new CacheProfile()
-                //             {
-                //                 NoStore = true
-                //             }));
-                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
