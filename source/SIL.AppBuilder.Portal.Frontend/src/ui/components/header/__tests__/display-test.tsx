@@ -10,16 +10,6 @@ import headerHelper from 'tests/helpers/components/header';
 
 describe('Integration | Component | Header', () => {
 
-  describe('mounting', () => {
-    beforeEach(async () => {
-      await mountWithContext(() => <Header />);
-    });
-
-    it('suceeds',() => {
-      expect(headerHelper.isHeaderPresent).to.be.true;
-    });
-  });
-
   describe('Dropdowns', () => {
     beforeEach(async () => {
       await mountWithContext(() => <Header />);

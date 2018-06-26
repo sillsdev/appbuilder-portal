@@ -10,8 +10,6 @@ export class Header {
 
   constructor(selector?: string) { }
 
-  isHeaderPresent = isPresent('[data-test-header-menu]');
-
   clickAddProject = clickable('[data-test-header-addproject]');
   clickNotification = clickable('[data-test-header-notification]');
   clickAvatar = clickable('[data-test-header-avatar]');
@@ -21,4 +19,4 @@ export class Header {
 
 }
 
-export default new Header();
+export default new Header('[data-test-header-menu]');
