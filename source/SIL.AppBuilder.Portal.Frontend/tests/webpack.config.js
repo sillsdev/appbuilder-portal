@@ -25,6 +25,8 @@ module.exports = {
     alias: {
       '@store': locate('src/redux-store'),
       '@ui': locate('src/ui'),
+      '@lib': locate('src/lib'),
+      '@env': locate('src/env.ts'),
       'tests': locate('tests'),
       'vendor': locate('src/vendor'),
       'example-app': locate('src'),

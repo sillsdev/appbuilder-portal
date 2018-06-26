@@ -3,3 +3,11 @@ type Troolean =
   | undefined
 
 declare module "public/images/*";
+
+interface Auth0JWT {
+  alg: string;
+  typ: string;
+
+  sub: string;
+  exp: number;
+}

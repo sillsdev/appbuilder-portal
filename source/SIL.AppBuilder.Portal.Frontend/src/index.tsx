@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import 'vendor/legacy-support';
+import './global-config';
 
 import 'semantic-ui-css/semantic.min.css';
 // require('public/images/*');
