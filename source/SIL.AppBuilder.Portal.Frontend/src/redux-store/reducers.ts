@@ -6,7 +6,7 @@ import {
 } from './todos';
 
 export interface State{
-  todos: TodoState
+  todos: TodoState;
 }
 
 export const reducers = combineReducers({

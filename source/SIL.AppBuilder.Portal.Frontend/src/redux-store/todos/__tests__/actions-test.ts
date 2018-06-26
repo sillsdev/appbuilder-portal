@@ -50,7 +50,7 @@ describe('Unit | Redux | Todos | Actions', () => {
   });
 
   it('handles complete', () => {
-    const targetId = 0
+    const targetId = 0;
     const state = { all: [
       { id: targetId, text: '', completed: false },
       { id: 1, text: '', completed: false }
@@ -64,7 +64,7 @@ describe('Unit | Redux | Todos | Actions', () => {
   });
 
   it('handles destroy', () => {
-    const targetId = 0
+    const targetId = 0;
     const state = { all: [
       { id: targetId, text: '', completed: false },
       { id: 1, text: '', completed: false }
@@ -78,7 +78,7 @@ describe('Unit | Redux | Todos | Actions', () => {
   });
 
   it('handles edit', () => {
-    const targetId = 0
+    const targetId = 0;
     const state = { all: [
       { id: targetId, text: '', completed: false },
       { id: 1, text: '', completed: false }
@@ -91,7 +91,7 @@ describe('Unit | Redux | Todos | Actions', () => {
   });
 
   it('handles toggle', () => {
-    const targetId = 0
+    const targetId = 0;
     const state = { all: [
       { id: targetId, text: '', completed: false },
       { id: 1, text: '', completed: false }
@@ -101,7 +101,7 @@ describe('Unit | Redux | Todos | Actions', () => {
     const todos = result.all;
 
     expect(todos.length).to.eq(1);
-    expect(todos.find(t => t.id === targetId)).to.eq(undefined)
+    expect(todos.find(t => t.id === targetId)).to.eq(undefined);
   });
 
 });

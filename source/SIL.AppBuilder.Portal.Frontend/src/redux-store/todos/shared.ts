@@ -1,13 +1,13 @@
-export const namespace = 'todos'
+export const namespace = 'todos';
 
 export interface Todo {
-  text: string,
-  id: number,
-  completed: boolean
+  text: string;
+  id: number;
+  completed: boolean;
 }
 
 export interface State {
-  all: Todo[]
+  all: Todo[];
 }
 
 export const initialState: State = {
@@ -18,6 +18,6 @@ export const initialState: State = {
       completed: false
     }
   ]
-}
+};
 
-export interface OtherAction { type: '' }
+export interface OtherAction { type: ''; }
