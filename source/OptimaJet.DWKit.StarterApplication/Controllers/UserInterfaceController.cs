@@ -84,10 +84,6 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         [Route("ui/login")]
         public async Task<ActionResult> Login()
         {
-            // var currentUser = HttpContext.User;
-            
-            // System.Console.WriteLine(currentUser);
-            
             return await GetForm("login");
         }
 
