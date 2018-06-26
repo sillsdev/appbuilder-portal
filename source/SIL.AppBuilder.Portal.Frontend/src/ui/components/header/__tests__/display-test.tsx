@@ -26,8 +26,12 @@ describe('Integration | Component | Header', () => {
   describe('Only one dropdown open at a time', async () => {
 
     await headerHelper.notificationDropdownClick();
+    expect(document.querySelector('[data-test-header-notification]').classList.contains('active visible')).to.be.true;
+    expect(document.querySelector('[data-test-header-avatar]').classList.contains('active visible')).to.be.false;
 
-    expect(document.querySelector('[]').classList.contains('active visible')).to.be.true;
+    await headerHelper.avatarDropdownClick();
+    expect(document.querySelector('[data-test-header-avatar]').classList.contains('active visible')).to.be.true;
+    expect(document.querySelector('[data-test-header-notification]').classList.contains('active visible')).to.be.false;
 
   });
 
