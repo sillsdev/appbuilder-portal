@@ -17,10 +17,6 @@ describe('Integration | Component | Header', () => {
 
     it('suceeds',() => {
       expect(headerHelper.isHeaderPresent).to.be.true;
-      expect(headerHelper.isAppNamePresent).to.be.true;
-      expect(headerHelper.isAddProjectButtonPresent).to.be.true;
-      expect(headerHelper.isNotificationDropdownPresent).to.be.true;
-      expect(headerHelper.isAvatarDropdownPresent).to.be.true;
     });
   });
 

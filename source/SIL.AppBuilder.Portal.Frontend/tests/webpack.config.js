@@ -17,15 +17,7 @@ module.exports = {
         test: /\.(t|j)sx?$/,
         use: 'ts-loader',
         exclude: [/node_modules/, /dist/, /\.cache/]
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          "style-loader", // creates style nodes from JS strings
-          "css-loader", // translates CSS into CommonJS
-          "sass-loader" // compiles Sass to CSS
-        ]
-      }      
+      }     
     ]
   },
   resolve: {
