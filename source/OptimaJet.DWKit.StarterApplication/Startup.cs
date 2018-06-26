@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using OptimaJet.DWKit.Application;
 using React.AspNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
@@ -41,35 +42,40 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddReact();
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
-                options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");
-                options.RequireHttpsMetadata = false;
-            });
+            // JWT Auth disabled for now, because we need to 
+            // 1. Add an Auth0 Id column to the users table
+            // 2. Set the DWKitRuntime.Security.CurrentUser
+            // 3. Controller actions are not allowed to have multiple authentication schemes
+            // 4. Cookies must be removed.
+            //
+            // services.AddAuthentication(options =>
+            // {
+            //     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            // }).AddJwtBearer(options =>
+            // {
+            //     options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
+            //     options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");
+            //     options.RequireHttpsMetadata = false;
+            // });
 
             // Authentication handeled by auth0
             // no cookies needed, as auth0 / jwt auth is state-less
-            // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCookie(options => {
-            //         options.ExpireTimeSpan = TimeSpan.FromDays(365);
-            //         options.LoginPath = "/Account/Login/";
-            // });
-
-            // Don't need cache
-            services.AddMvc(options => {
-            // options.Filters.Add(typeof(Security.AuthorizationFilter));
-            // options.Filters.Add(
-            //          new ResponseCacheFilter(
-            //             new CacheProfile()
-            //             {
-            //                 NoStore = true
-            //             }));
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+               .AddCookie(options => {
+                    options.ExpireTimeSpan = TimeSpan.FromDays(365);
+                    options.LoginPath = "/Account/Login/";
             });
+
+            services.AddMvc(options => {
+                options.Filters.Add(typeof(Security.AuthorizationFilter));
+                // options.Filters.Add(
+                //         new ResponseCacheFilter(
+                //             new CacheProfile()
+                //             {
+                //                 NoStore = true
+                //             }));
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

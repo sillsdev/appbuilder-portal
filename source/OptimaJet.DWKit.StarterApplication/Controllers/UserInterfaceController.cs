@@ -9,6 +9,9 @@ using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Metadata;
 using OptimaJet.DWKit.Core.View;
 
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
+
+
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
@@ -73,17 +76,17 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         }
 
         
-        // [AllowAnonymous]
+        [AllowAnonymous]
         // Test that a jwt token is valid and authenticated
         //
         // https://auth0.com/blog/developing-web-apps-with-asp-dot-net-core-2-dot-0-and-react-part-1/
-        [Authorize]
+        // [Authorize]
         [Route("ui/login")]
         public async Task<ActionResult> Login()
         {
-            var currentUser = HttpContext.User;
+            // var currentUser = HttpContext.User;
             
-            System.Console.WriteLine(currentUser);
+            // System.Console.WriteLine(currentUser);
             
             return await GetForm("login");
         }
@@ -109,6 +112,10 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             {
                 if (enableSecurity)
                 {
+                    // TODO: match user with auth0Id from the jwt token (received from the header)
+                    // var list = DWKitRuntime.DbProvider.SelectQuery("some query here").Result;
+                    // var firstId = list.First().GetId();
+                    // var userId = (Guid)firstId; 
                     var userId = DWKitRuntime.Security.CurrentUser.GetOperationUserId();
                     await form.FillPermissionsAsync(userId);
                 }
