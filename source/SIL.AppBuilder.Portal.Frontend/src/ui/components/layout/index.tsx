@@ -1,14 +1,19 @@
 
-import React from 'react';
+import React, { Component } from 'react';
 import Header from '@ui/components/header';
 
-const Layout = ({children}) => (
-  <div className='wrapper'>
-    <Header />
-    <div>
-      {children}
-    </div>
-  </div>
-)
+class Layout extends Component {
+
+  render() {
+    return (
+      <div className='wrapper'>
+        <Header />
+        <div>
+          {this.props.children}
+        </div>
+      </div>
+    )
+  }
+}
 
 export default Layout;
