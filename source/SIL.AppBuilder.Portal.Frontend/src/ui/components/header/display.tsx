@@ -7,7 +7,13 @@ import {
 
 import './header.scss';
 
-class Header extends Component<RouteComponentProps<{}>, any> {
+export interface State {
+}
+
+export interface Props {
+}
+
+class Header extends Component<Props & RouteComponentProps<{}>, State> {
 
   render() {
     return (
