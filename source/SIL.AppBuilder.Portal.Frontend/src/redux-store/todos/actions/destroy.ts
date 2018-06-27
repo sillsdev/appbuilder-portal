@@ -1,7 +1,7 @@
 import { namespace, State } from '../shared';
 
 export const DESTROY = `${namespace}/DESTROY`;
-export interface DestroyAction { type: string, id: number }
+export interface DestroyAction { type: string; id: number; }
 
 // Action Creator
 export const destroy = (id: number): DestroyAction => ({ type: DESTROY, id });

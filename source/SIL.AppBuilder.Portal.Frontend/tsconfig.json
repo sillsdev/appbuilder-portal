@@ -8,18 +8,10 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "example-app/*": [
-        "src/*"
-      ],
-      "example-app/src/*": [
-        "src/*"
-      ],
-      "@store/*": [
-        "src/redux-store/*"
-      ],
-      "@ui/*": [
-        "src/ui/*"
-      ],
+      "@store/*": ["src/redux-store/*"],
+      "@ui/*": ["src/ui/*"],
+      "@lib/*": ["src/lib/*"],
+      "@env": ["src/env.ts"],
       "tests/*": [ "tests/*" ],
       "vendor/*": [ "src/vendor/*" ],
       "*": ["types/*"],

@@ -1,7 +1,7 @@
 import { State, Todo } from "example-app/redux-store/todos/shared";
 
 interface SubState {
-  todos: State
+  todos: State;
 }
 
 export const all = (state: SubState): Todo[] => state.todos.all;

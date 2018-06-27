@@ -1,8 +1,11 @@
 version: '3.4'
 
-# Note that --project-directory ./source
+# NOTE: that --project-directory ./source
 # must be passed to every docker-compose command
 # ./source is the docker-compose context
+#
+# NOTE: environment vars are public, and should not contain secrets ^_~
+#       use `env_file: [.env]` for secret things.
 
 volumes:
   ui-tmp:
@@ -48,6 +51,9 @@ services:
       - db:db.docker
     environment:
       PORT: 7081
+      AUTH0_DOMAIN: https://sil-appbuilder.auth0.com
+      AUTH0_AUDIENCE: n8IAE2O17FBrlQ667x5mydhpqelCBUWG
+
       ConnectionStrings:default: "User ID=db-user;Password=1234;Host=db.docker;Port=5432;Database=development;"
 
     volumes:
@@ -68,6 +74,8 @@ services:
     environment:
       PORT: 9091
       HMR_PORT: 9092
+      AUTH0_CLIENT_ID: n8IAE2O17FBrlQ667x5mydhpqelCBUWG
+      AUTH0_DOMAIN: sil-appbuilder.auth0.com
       API_HOST: api:7081
 
     volumes:

@@ -1,21 +1,18 @@
-import React from 'react';
-import { DWKitForm } from 'vendor/dwkit/optimajet-form';
+import * as React from 'react';
 
-export default class IndexRoute extends React.Component {
+import Login from '@ui/components/login';
+
+export const pathName = '/login';
+
+export default class LoginRoute extends React.Component {
   state = { data: {}, errors: {} };
   render() {
     return (
       <div>
         <h2>Login Route </h2>
 
-        <DWKitForm
-          eventFunc={console.log}
-          formName='login'
-          modelurl='/ui/login'
-          data={this.state.data}
-          errors={this.state.errors}
-        />
+        <Login />
       </div>
-    )
+    );
   }
 }

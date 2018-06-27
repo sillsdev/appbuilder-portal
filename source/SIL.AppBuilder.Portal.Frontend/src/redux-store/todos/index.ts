@@ -26,7 +26,7 @@ type ActionTypes =
   | CompleteAction
   | DestroyAction
   | EditAction
-  | OtherAction
+  | OtherAction;
 
 const actionHandlers = {
   [ADD]: addReducer,
@@ -35,7 +35,7 @@ const actionHandlers = {
   [COMPLETE]: completeReducer,
   [DESTROY]: destroyReducer,
   [EDIT]: editReducer
-}
+};
 
 
 export function reducer(state = initialState, action: ActionTypes) {
