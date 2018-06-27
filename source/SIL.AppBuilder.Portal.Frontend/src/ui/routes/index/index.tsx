@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 import { get } from '@lib/fetch';
 
@@ -15,7 +15,7 @@ export default class IndexRoute extends React.Component {
   render() {
     return (
       <div>
-        <h2>Index Route </h2>
+        <h2>Login Route </h2>
 
         <DWKitForm
           eventFunc={console.log}

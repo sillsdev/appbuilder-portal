@@ -6,6 +6,7 @@
     "allowJs": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "@store/*": ["src/redux-store/*"],
       "@ui/*": ["src/ui/*"],
@@ -13,14 +14,17 @@
       "@env": ["src/env.ts"],
       "tests/*": [ "tests/*" ],
       "vendor/*": [ "src/vendor/*" ],
-      "*": [
-        "types/*"
-      ]
+      "*": ["types/*"],
+      "semantic-ui-react": ["node_modules/semantic-ui-react/index.d.ts"]
     }
   },
   "include": [
     "src",
     "types",
     "tests"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
   ]
 }
