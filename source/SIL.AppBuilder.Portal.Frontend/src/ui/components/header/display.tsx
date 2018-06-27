@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { withRouter  } from 'react-router-dom';
 import {
   Container, Menu, Button,
@@ -19,41 +19,46 @@ const notificationTrigger = (
   </span>
 )
 
-const Header = ({ history }) => (
-  <Menu data-test-header-menu className='menu-navbar'>
-    <Container>
-      <Menu.Item data-test-header-appname header onClick={(e) => {
-        history.push('/');
-      }}>
-        SCRIPTORIA
+class Header extends Component<any,any> {
+
+  render() {
+    return (
+      <Menu data-test-header-menu className='menu-navbar'>
+        <Container>
+          <Menu.Item data-test-header-appname header onClick={(e) => {
+            this.props.history.push('/');
+          }}>
+            SCRIPTORIA
       </Menu.Item>
-      <Menu.Menu position='right'>
-        <Menu.Item>
-          <Button data-test-header-addproject>Add Project</Button>
-        </Menu.Item>
-        <Menu.Item className='notification-item'>
-          <Dropdown data-test-header-notification className='notification-dropdown' trigger={notificationTrigger} pointing='top right' icon={null}>
-            <Dropdown.Menu>
-              <Dropdown.Item text='notification 1' />
-              <Dropdown.Item text='notification 2' />
-              <Dropdown.Item text='notification 3' />
-              <Dropdown.Item text='notification 4' />
-            </Dropdown.Menu>
-          </Dropdown>
-        </Menu.Item>
-        <Menu.Item>
-          <Dropdown data-test-header-avatar className='avatar-dropdown' trigger={avatarTrigger} pointing='top right' icon={null}>
-            <Dropdown.Menu>
-              <Dropdown.Item text='My Profile' />
-              <Dropdown.Item text='Notification Settings' />
-              <Dropdown.Item text='Help' />
-              <Dropdown.Item text='Sign Out' />
-            </Dropdown.Menu>
-          </Dropdown>
-        </Menu.Item>
-      </Menu.Menu>
-    </Container>
-  </Menu>
-)
+          <Menu.Menu position='right'>
+            <Menu.Item>
+              <Button data-test-header-addproject>Add Project</Button>
+            </Menu.Item>
+            <Menu.Item className='notification-item'>
+              <Dropdown data-test-header-notification className='notification-dropdown' trigger={notificationTrigger} pointing='top right' icon={null}>
+                <Dropdown.Menu>
+                  <Dropdown.Item text='notification 1' />
+                  <Dropdown.Item text='notification 2' />
+                  <Dropdown.Item text='notification 3' />
+                  <Dropdown.Item text='notification 4' />
+                </Dropdown.Menu>
+              </Dropdown>
+            </Menu.Item>
+            <Menu.Item>
+              <Dropdown data-test-header-avatar className='avatar-dropdown' trigger={avatarTrigger} pointing='top right' icon={null}>
+                <Dropdown.Menu>
+                  <Dropdown.Item text='My Profile' />
+                  <Dropdown.Item text='Notification Settings' />
+                  <Dropdown.Item text='Help' />
+                  <Dropdown.Item text='Sign Out' />
+                </Dropdown.Menu>
+              </Dropdown>
+            </Menu.Item>
+          </Menu.Menu>
+        </Container>
+      </Menu>
+    )
+  }
+}
 
 export default withRouter(Header);
