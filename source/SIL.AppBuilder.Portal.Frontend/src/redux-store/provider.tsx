@@ -43,10 +43,6 @@ export default class ReduxProvider extends React.Component<IProps> {
     // Start sagas, etc
     setupMiddleware(store);
 
-    if (window.Cypress) {
-      window.__store__ = store;
-    }
-
     return store;
   }
 

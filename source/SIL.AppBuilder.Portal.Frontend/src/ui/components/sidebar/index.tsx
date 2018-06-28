@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import HeaderDisplay from './display';
+import SidebarDisplay from './display';
 
 import {
   toggleSidebar
@@ -16,4 +16,4 @@ const mapDispatchToProps = {
 
 export default connect(
   connect(mapStateToProps, mapDispatchToProps)
-)(HeaderDisplay);
+)(SidebarDisplay);
