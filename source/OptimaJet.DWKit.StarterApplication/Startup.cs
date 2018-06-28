@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
+using Optimajet.DWKit.StarterApplication.Data;
+using Microsoft.EntityFrameworkCore;
+using JsonApiDotNetCore.Extensions;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -67,9 +70,26 @@ namespace OptimaJet.DWKit.StarterApplication
                     options.LoginPath = "/Account/Login/";
             });
 
+            // add jsonapi dotnet core
+            services.AddJsonApi<AppDbContext>(
+                //opt => opt.Namespace = "api"
+            );
+
             services.AddMvc(options => {
                 options.Filters.Add(typeof(Security.AuthorizationFilter));
             });
+
+            // add the db context like you normally would
+            services.AddDbContext<AppDbContext>(options =>
+            { // use whatever provider you want, this is just an example
+                options.UseNpgsql(GetDbConnectionString());
+            }, ServiceLifetime.Transient);
+
+        }
+
+        private string GetDbConnectionString()
+        {
+            return Configuration["ConnectionStrings:default"];
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -104,6 +124,8 @@ namespace OptimaJet.DWKit.StarterApplication
                     name: "default",
                     template: "{controller=StarterApplication}/{action=Index}/");
             });
+
+            app.UseJsonApi();
 
             //DWKIT Init
             Configurator.Configure(
