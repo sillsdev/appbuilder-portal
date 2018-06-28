@@ -4,7 +4,7 @@ import './sidebar.scss';
 
 export interface IProps {
   isSidebarVisible: boolean,
-//  toggleSidebar: 
+  toggleSidebar: any
 }
 
 class Sidebar extends Component<IProps> {
@@ -13,7 +13,7 @@ class Sidebar extends Component<IProps> {
     return (
       <div className='sidebar' style={{ display: this.props.isSidebarVisible ? 'block' : 'none' }}>
         <button className='close' onClick={(e) => {
-          //this.props.toggleSidebar()
+          this.props.toggleSidebar()
         }}>X (Close)</button>
         <a href='#'>Link 1</a>
         <a href='#'>Link 2</a>

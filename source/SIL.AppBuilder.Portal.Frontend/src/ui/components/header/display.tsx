@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter, RouteComponentProps  } from 'react-router-dom';
+import { withRouter, RouteComponentProps  } from 'react-router';
 import {
   Container, Menu, Button,
   Dropdown, Image, Icon
@@ -7,13 +7,11 @@ import {
 
 import './header.scss';
 
-export interface State {
-}
-
 export interface Props {
+  toggleSidebar: () => {}
 }
 
-class Header extends Component<Props & RouteComponentProps<{}>, State> {
+class Header extends Component<Props & RouteComponentProps<{}>> {
 
   render() {
     return (
@@ -26,6 +24,9 @@ class Header extends Component<Props & RouteComponentProps<{}>, State> {
       </Menu.Item>
           <Menu.Menu position='right'>
             <Menu.Item>
+              <Button onClick={(e) => {
+                this.props.toggleSidebar();
+              }}>Open Sidebar</Button>
               <Button data-test-header-addproject>Add Project</Button>
             </Menu.Item>
             <Menu.Item className='notification-item'>

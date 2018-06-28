@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import Header from '@ui/components/header';
+import Sidebar from '@ui/components/sidebar';
 
 import './layout.scss';
 
@@ -8,11 +9,9 @@ class Layout extends Component {
   render() {
     return (
       <div className='wrapper'>
+        <Sidebar />
         <Header />
         <div>
-          <button onClick={(e) => {
-           // this.setState({ visible: !this.state.visible });
-          }}>Open (burger)</button>
           {this.props.children}
         </div>
       </div>
