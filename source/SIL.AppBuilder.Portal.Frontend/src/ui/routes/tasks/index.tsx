@@ -9,10 +9,8 @@ class Tasks extends Component {
 
   render() {
     return (
-      <Layout>
-        
-      </Layout>
-    )
+      <Layout />
+    );
   }
 }
 

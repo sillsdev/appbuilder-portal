@@ -71,7 +71,7 @@ class Header extends Component<Props & RouteComponentProps<{}>, State> {
           </Menu.Menu>
         </Container>
       </Menu>
-    )
+    );
   }
 }
 

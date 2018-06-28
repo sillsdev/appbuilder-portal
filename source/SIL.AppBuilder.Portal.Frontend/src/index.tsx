@@ -7,6 +7,7 @@ import 'vendor/legacy-support';
 import './global-config';
 
 import 'semantic-ui-css/semantic.min.css';
+
 // require('public/images/*');
 
 import Application from './ui/application';

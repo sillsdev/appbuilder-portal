@@ -11,7 +11,7 @@ describe('Integration | Component | Layout', () => {
   describe('mounting', () => {
 
     beforeEach(async () => {
-      await mountWithContext(() => <Layout><div></div></Layout>);
+      await mountWithContext(() => <Layout />);
     });
 
     it('suceeds', async () => {

@@ -8,6 +8,9 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
+      "@data/*": ["src/data/*"],
+      "@api/*": ["src/data/api/*"],
+      "@models/*": ["src/data/models/*"],
       "@store/*": ["src/redux-store/*"],
       "@ui/*": ["src/ui/*"],
       "@lib/*": ["src/lib/*"],

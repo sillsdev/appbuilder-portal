@@ -10,7 +10,7 @@ describe('Acceptance | Application | renders', () => {
 
   beforeEach(async () => {
     app = await setupAppForTesting(Application);
-  })
+  });
 
   it('resolves with the app', async () => {
     expect(app).to.be.an.instanceOf(Application);
