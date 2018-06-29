@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { withData, WithDataProps } from 'react-orbitjs';
+import { withRouter } from 'react-router'
+
 
 import * as toast from '@lib/toast';
 import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
@@ -10,6 +12,7 @@ export type IProps =
   & { token: string }
   & WithDataProps;
 
+@withRouter
 @withData({})
 export default class CreateOrganizationForm extends React.Component<IProps> {
   submit = async (payload: OrganizationAttributes) => {
@@ -17,6 +20,8 @@ export default class CreateOrganizationForm extends React.Component<IProps> {
       this.create(payload);
 
       toast.success(`Organization created successfully`);
+
+      this.props.history.push('/');
     } catch (e) {
       toast.error(e.message);
     }

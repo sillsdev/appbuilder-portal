@@ -43,11 +43,6 @@ describe('Integration | Component | InviteOrganizationDisplay', () => {
           token: 'invite-token'
         });
       });
-
-      it('the form is cleared', () => {
-        expect(page.orgName).to.equal('');
-        expect(page.website).to.equal('');
-      });
     });
   });
 });

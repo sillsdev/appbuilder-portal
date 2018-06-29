@@ -24,11 +24,6 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
     const { onSubmit, token } = this.props;
 
     await onSubmit({ ...this.state, token });
-    this.reset();
-  }
-
-  reset = () => {
-    this.setState({ name: '', websiteUrl: '' });
   }
 
   render() {
