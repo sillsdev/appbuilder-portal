@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withData, WithDataProps } from 'react-orbitjs';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
 
 
 import * as toast from '@lib/toast';
