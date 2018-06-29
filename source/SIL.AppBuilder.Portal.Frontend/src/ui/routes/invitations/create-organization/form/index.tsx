@@ -9,7 +9,7 @@ import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
 
 import Display from './display';
 
-export interface IOwnProps { token: string }
+export interface IOwnProps { token: string; }
 export type IProps =
   & IOwnProps
   & WithDataProps
@@ -49,4 +49,4 @@ export class CreateOrganizationForm extends React.Component<IProps> {
 export default compose<{}, IOwnProps>(
   withRouter,
   withData({})
-)(CreateOrganizationForm)
+)(CreateOrganizationForm);
