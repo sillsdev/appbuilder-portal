@@ -8,22 +8,23 @@ export default class IndexRoute extends React.Component {
   state = { data: {}, errors: {} };
 
   async componentDidMount() {
-    const response = await get('/ui/login');
-    console.log('data back from /ui/login', response);
+    // const response = await get('/ui/login');
+    // console.log('data back from /ui/login', response);
   }
 
   render() {
     return (
       <div>
-        <h2>Login Route </h2>
+        <h2>Example Form</h2>
 
-        <DWKitForm
+        (Form Commented out)
+        {/* <DWKitForm
           eventFunc={console.log}
           formName='login'
           modelurl='/ui/login'
           data={this.state.data}
           errors={this.state.errors}
-        />
+        /> */}
       </div>
     );
   }

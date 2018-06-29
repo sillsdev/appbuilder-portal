@@ -21,7 +21,7 @@ const schemaDefinition: SchemaSettings = {
 
         // note, that the Build Engine API access token probably should
         // never be *received* from the Scriptura API
-        buindEngineApiAccessToken: { type: 'string' }
+        buildEngineApiAccessToken: { type: 'string' }
       },
       relationships: {
         owner: { type: 'hasOne', model: 'user', inverse: 'ownedOrganizations' },

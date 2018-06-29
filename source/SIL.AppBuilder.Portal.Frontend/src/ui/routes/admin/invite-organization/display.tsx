@@ -20,7 +20,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
   mut: Mut;
   state = { name: '', ownerEmail: '', expiresAt: tomorrow() };
 
-  submit = async (e: Event) => {
+  submit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     await this.props.onSubmit(this.state);
