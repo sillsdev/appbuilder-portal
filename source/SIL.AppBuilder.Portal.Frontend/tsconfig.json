@@ -5,8 +5,9 @@
     "baseUrl": ".",
     "allowJs": true,
     "moduleResolution": "node",
+    "sourceMap": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
+    "lib": ["ES2017", "DOM"],
     "paths": {
       "@data/*": ["src/data/*"],
       "@api/*": ["src/data/api/*"],
@@ -28,6 +29,7 @@
   ],
   "exclude": [
     "node_modules",
-    "build"
+    "build",
+    "dist"
   ]
 }
