@@ -6,11 +6,11 @@ import CreateOrganizationForm from './form';
 export const pathName = '/invitations/organization/:token';
 
 export interface Params {
-  token: string
+  token: string;
 }
 
 export interface IProps {
-  match: Match<Params>
+  match: Match<Params>;
 }
 
 export default class CreateOrganizationRoute extends React.Component<IProps> {

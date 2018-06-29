@@ -6,11 +6,11 @@ import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
 export const pathName = '/invitations/missing-token';
 
 export interface Params {
-  token: string
+  token: string;
 }
 
 export interface IProps {
-  match: Match<Params>
+  match: Match<Params>;
 }
 
 export default class CreateOrganizationRoute extends React.Component<IProps> {
@@ -19,7 +19,7 @@ export default class CreateOrganizationRoute extends React.Component<IProps> {
     const { params } = match;
 
     if (params.token && params.token !== '') {
-      return <Redirect to={notFoundPath} />
+      return <Redirect to={notFoundPath} />;
     }
 
     return (

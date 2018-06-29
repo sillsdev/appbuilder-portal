@@ -8,7 +8,7 @@ import Display from './display';
 
 export type IProps =
   & {}
-  & WithDataProps
+  & WithDataProps;
 
 export class CreateOrganizationForm extends React.Component<IProps> {
   submit = async (payload: OrganizationAttributes) => {
@@ -33,7 +33,7 @@ export class CreateOrganizationForm extends React.Component<IProps> {
   }
 
   render() {
-    return <Display onSubmit={this.submit} />
+    return <Display onSubmit={this.submit} />;
   }
 }
 
