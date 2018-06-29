@@ -43,20 +43,7 @@ const resolver = {
     new TsconfigPathsPlugin({
       configFile: locate('tsconfig.json')
     })
-  ],
-  alias: {
-    "@data": locate("src/data"),
-    "@api": locate('src/data/api'),
-    "@models": locate('src/data/models'),
-    '@store': locate('src/redux-store'),
-    '@ui': locate('src/ui'),
-    '@lib': locate('src/lib'),
-    '@env': locate('src/env.ts'),
-    'tests': locate('tests'),
-    'vendor': locate('src/vendor'),
-    'example-app': locate('src'),
-    'example-app/src': locate('src'),
-  }
+  ]
 };
 
 
