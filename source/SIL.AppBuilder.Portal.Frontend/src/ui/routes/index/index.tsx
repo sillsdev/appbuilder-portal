@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 import { get } from '@lib/fetch';
 

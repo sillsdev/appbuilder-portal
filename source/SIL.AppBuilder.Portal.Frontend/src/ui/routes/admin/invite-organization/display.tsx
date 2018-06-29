@@ -37,19 +37,28 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
 
     return (
       <div>
-        <form className='ui form'>
+        <form data-test-form className='ui form'>
 
           <div className='field'>
             <label>Organization Owner Email</label>
-            <input type='text' value={ownerEmail} onChange={mut('ownerEmail')} />
+            <input
+              data-test-owner-email
+              type='text'
+              value={ownerEmail}
+              onChange={mut('ownerEmail')} />
           </div>
 
           <div className='field'>
             <label>Organization Name</label>
-            <input type='text' value={name} onChange={mut('name')} />
+            <input
+              data-test-org-name
+              type='text'
+              value={name}
+              onChange={mut('name')} />
           </div>
 
           <button
+            data-test-submit
             className='ui primary button'
             onClick={this.submit}>
             Add Organization

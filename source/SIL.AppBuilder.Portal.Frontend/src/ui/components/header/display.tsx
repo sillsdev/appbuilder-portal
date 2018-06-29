@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { withRouter, RouteComponentProps  } from 'react-router-dom';
 import {
   Container, Menu, Button,
@@ -13,7 +13,7 @@ export interface State {
 export interface Props {
 }
 
-class Header extends Component<Props & RouteComponentProps<{}>, State> {
+class Header extends React.Component<Props & RouteComponentProps<{}>, State> {
 
   render() {
     return (
