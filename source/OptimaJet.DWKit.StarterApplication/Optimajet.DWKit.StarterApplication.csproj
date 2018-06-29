@@ -20,6 +20,7 @@
   <PackageReference Include="Auth0.ManagementApi" Version="5.6.0" />
   <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
   <PackageReference Include="DWKit-Core" Version="2.1.1" />
+  <PackageReference Include="JsonApiDotnetCore" Version="2.3.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.1" />
@@ -28,8 +29,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.0" />
     <PackageReference Include="React.AspNet" Version="3.2.0" />
     <PackageReference Include="WorkflowEngine.NETCore-Core" Version="3.1.0" />
     <PackageReference Include="DWKit-ProviderForMSSQL" Version="2.1.1" />
@@ -44,5 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="wwwroot\js\login.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
 </Project>
