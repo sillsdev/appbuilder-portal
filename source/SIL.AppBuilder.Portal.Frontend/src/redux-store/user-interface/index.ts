@@ -1,12 +1,12 @@
 import { initialState } from './shared';
 
-import { toggleSidebarAction, TOGGLE_SIDEBAR, reducer as toggleReducer } from './actions/toggle-sidebar';
+import { ToggleSidebarAction, TOGGLE_SIDEBAR, reducer as toggleReducer } from './actions/toggle-sidebar';
 
 export { State } from './shared';
 export { toggleSidebar } from './actions/toggle-sidebar';
 
 type ActionTypes =
-  | toggleSidebarAction;
+  | ToggleSidebarAction;
 
 const actionHandlers = {
   [TOGGLE_SIDEBAR]: toggleReducer
