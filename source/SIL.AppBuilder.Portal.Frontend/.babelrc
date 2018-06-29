@@ -5,12 +5,17 @@
                 "AUTH0_CONNECTION",
                 "AUTH0_DOMAIN",
                 "AUTH0_CLIENT_ID",
-                "AUTH0_SCOPE"
+                "AUTH0_SCOPE",
+                "API_HOST",
+                "HAS_API"
             ]
         }],
         ["module-resolver", {
             "root": ["./src"],
             "alias": {
+                "@data": ["src/data"],
+                "@api": ["src/data/api"],
+                "@models": ["src/data/models"],
                 "@store": ["./src/redux-store"],
                 "@ui": ["./src/ui"],
                 "@lib": ["./src/lib"],

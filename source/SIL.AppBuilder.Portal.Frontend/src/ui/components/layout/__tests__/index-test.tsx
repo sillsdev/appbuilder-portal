@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { expect } from 'chai';
 
@@ -11,7 +11,7 @@ describe('Integration | Component | Layout', () => {
   describe('mounting', () => {
 
     beforeEach(async () => {
-      await mountWithContext(() => <Layout><div></div></Layout>);
+      await mountWithContext(() => <Layout />);
     });
 
     it('suceeds', async () => {

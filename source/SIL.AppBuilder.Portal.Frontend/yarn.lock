@@ -35,6 +35,56 @@
   dependencies:
     history "^4.7.2"
 
+"@orbit/coordinator@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/coordinator/-/coordinator-0.15.14.tgz#bdf2a7b9a18fd66382071119aa3e61e1fb994964"
+
+"@orbit/core@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/core/-/core-0.15.14.tgz#a43bfb660e59d682b4d41fb8c70c81e1748a72b6"
+  dependencies:
+    "@orbit/utils" "^0.15.14"
+
+"@orbit/data@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/data/-/data-0.15.14.tgz#5c269de32e9500c5f25f55b1345775110c59c97b"
+  dependencies:
+    "@orbit/core" "^0.15.14"
+    "@orbit/utils" "^0.15.14"
+
+"@orbit/immutable@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/immutable/-/immutable-0.15.14.tgz#8c6958841d45f7f947282d8f39d88094d20bd152"
+
+"@orbit/indexeddb@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/indexeddb/-/indexeddb-0.15.14.tgz#bd41d0aec7919ce9fac788a1f99a1b5f83880444"
+  dependencies:
+    "@orbit/core" "^0.15.14"
+    "@orbit/data" "^0.15.14"
+    "@orbit/utils" "^0.15.14"
+
+"@orbit/jsonapi@^0.15.15":
+  version "0.15.15"
+  resolved "https://registry.yarnpkg.com/@orbit/jsonapi/-/jsonapi-0.15.15.tgz#d1d108a0c7949157e434ac075e830b8d9423c74f"
+  dependencies:
+    "@orbit/core" "^0.15.14"
+    "@orbit/data" "^0.15.14"
+    "@orbit/utils" "^0.15.14"
+
+"@orbit/store@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/store/-/store-0.15.14.tgz#f1ec7c32b7c331e86919649edb70631321125f9e"
+  dependencies:
+    "@orbit/core" "^0.15.14"
+    "@orbit/data" "^0.15.14"
+    "@orbit/immutable" "^0.15.14"
+    "@orbit/utils" "^0.15.14"
+
+"@orbit/utils@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.15.14.tgz#9b9509d4a80244db588ad88df0664c69474cc73b"
+
 "@sinonjs/formatio@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@sinonjs/formatio/-/formatio-2.0.0.tgz#84db7e9eb5531df18a8c5e0bfb6e449e55e654b2"
@@ -139,15 +189,8 @@
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.2.3.tgz#11f3a5629d67cd444fa6c94536576244e6a52ea9"
 
 "@types/node@*":
-  version "10.3.6"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.6.tgz#ea8aab9439b59f40d19ec5f13b44642344872b11"
-
-"@types/puppeteer@^1.3.3":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@types/puppeteer/-/puppeteer-1.5.0.tgz#95b6feff9522d3a054ed09b49798e7232f24d558"
-  dependencies:
-    "@types/events" "*"
-    "@types/node" "*"
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.5.0.tgz#f5b61395c09b47ac46aaa1452750c9a72b3d3673"
 
 "@types/range-parser@*":
   version "1.2.2"
@@ -183,8 +226,8 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^16.0.38":
-  version "16.4.2"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.2.tgz#f1a9cf1ee85221530def2ac26aee20f910a9dac8"
+  version "16.4.4"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.4.tgz#ffaa339e41346a7c65ddc914779ae43fa522a39a"
   dependencies:
     csstype "^2.2.0"
 
@@ -193,12 +236,6 @@
   resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.26.1.tgz#a21c5728dea223551882b763335cb1bc641bf1d0"
   dependencies:
     "@types/react" "*"
-
-"@types/redux-mock-store@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@types/redux-mock-store/-/redux-mock-store-0.0.13.tgz#f7ec160214b854f2d976ca12525997a21512b2ea"
-  dependencies:
-    redux "^3.6.0"
 
 "@types/serve-static@*", "@types/serve-static@^1.13.2":
   version "1.13.2"
@@ -237,8 +274,8 @@
   resolved "https://registry.yarnpkg.com/@types/webpack-env/-/webpack-env-1.13.6.tgz#128d1685a7c34d31ed17010fc87d6a12c1de6976"
 
 "@types/webpack@^4.4.0":
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-4.4.3.tgz#9424101def0d720747b3c059bf0f7eff2ea57b31"
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-4.4.4.tgz#f001a0a43cf5b433d57a1a22366fe1939d648957"
   dependencies:
     "@types/node" "*"
     "@types/tapable" "*"
@@ -1659,12 +1696,12 @@ caniuse-api@^1.5.2:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000859"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000859.tgz#6e813a1757f19a93cb3675f6b5037aca80bea062"
+  version "1.0.30000860"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000860.tgz#5ceab253aae172b5f0acd0d5428ba501c4b08d41"
 
 caniuse-lite@^1.0.30000844:
-  version "1.0.30000859"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000859.tgz#da974adc5348fffe94724877a7ef8cb5d6d3d777"
+  version "1.0.30000860"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000860.tgz#c902e3df3cc4303f631abc7a1579a3ce0a6153a3"
 
 caseless@~0.11.0:
   version "0.11.0"
@@ -1684,6 +1721,10 @@ center-align@^0.1.1:
 chai-dom@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/chai-dom/-/chai-dom-1.8.0.tgz#eac3f1ee2e13692c4e66e8401a32362ebffd44d1"
+
+chai-subset@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/chai-subset/-/chai-subset-1.6.0.tgz#a5d0ca14e329a79596ed70058b6646bd6988cfe9"
 
 chai@^4.1.2:
   version "4.1.2"
@@ -2646,8 +2687,8 @@ engine.io@~3.1.0:
     uws "~9.14.0"
 
 enhanced-resolve@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-4.0.0.tgz#e34a6eaa790f62fccd71d93959f56b2b432db10a"
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-4.1.0.tgz#41c7e0bfdfe74ac1ffe1e57ad6a5c6c9f3742a7f"
   dependencies:
     graceful-fs "^4.1.2"
     memory-fs "^0.4.0"
@@ -4411,7 +4452,7 @@ locate-path@^2.0.0:
     p-locate "^2.0.0"
     path-exists "^3.0.0"
 
-lodash-es@^4.17.5, lodash-es@^4.2.1:
+lodash-es@^4.17.5:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.10.tgz#62cd7104cdf5dd87f235a837f0ede0e8e5117e05"
 
@@ -4439,10 +4480,6 @@ lodash.get@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
 
-lodash.isplainobject@^4.0.6:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
-
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
@@ -4463,7 +4500,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@^4.0.0, lodash@^4.15.0, lodash@^4.17.0, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@~4.17.10:
+lodash@^4.0.0, lodash@^4.15.0, lodash@^4.17.0, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.5.0, lodash@~4.17.10:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -5128,7 +5165,7 @@ oauth-sign@~0.8.1, oauth-sign@~0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
 
-object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
+object-assign@^4.0.0, object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
@@ -5866,7 +5903,7 @@ promisify-call@^2.0.2:
   dependencies:
     with-callback "^1.0.2"
 
-prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.1:
+prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   dependencies:
@@ -6041,6 +6078,10 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-action-decorators@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/react-action-decorators/-/react-action-decorators-0.0.3.tgz#4265970a8a7af64e867db5b2bb423a36dee4e9a1"
+
 react-data-grid-addons@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/react-data-grid-addons/-/react-data-grid-addons-4.0.8.tgz#a2b2b8803942fab78edac5f65f4964f24024d11b"
@@ -6077,9 +6118,23 @@ react-is@^16.4.1:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.1.tgz#d624c4650d2c65dbd52c72622bbf389435d9776e"
 
-react-lifecycles-compat@^3.0.2:
+react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
+
+react-notify-toast@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-notify-toast/-/react-notify-toast-0.5.0.tgz#b00cf50a3cc97a1d222ecd7d7a8e7f14bef5fa67"
+  dependencies:
+    object-assign "^4.0.0"
+    prop-types "^15.5.8"
+
+react-orbitjs@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/react-orbitjs/-/react-orbitjs-0.1.6.tgz#c6f793b7b907bd3780b719b43aa0ee0edc9f0acc"
+  dependencies:
+    hoist-non-react-statics "^2.3.1"
+    prop-types "^15.6.0"
 
 react-redux@^5.0.7:
   version "5.0.7"
@@ -6125,12 +6180,13 @@ react-test-renderer@^16.4.0:
     react-is "^16.4.1"
 
 react-transition-group@^2.2.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.3.1.tgz#31d611b33e143a5e0f2d94c348e026a0f3b474b6"
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.4.0.tgz#1d9391fabfd82e016f26fabd1eec329dbd922b5a"
   dependencies:
     dom-helpers "^3.3.1"
     loose-envify "^1.3.1"
-    prop-types "^15.6.1"
+    prop-types "^15.6.2"
+    react-lifecycles-compat "^3.0.4"
 
 react@^15.6.2:
   version "15.6.2"
@@ -6142,7 +6198,7 @@ react@^15.6.2:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react@^16.4.1:
+react@^16.0.0:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.4.1.tgz#de51ba5764b5dbcd1f9079037b862bd26b82fe32"
   dependencies:
@@ -6255,24 +6311,9 @@ reduce-function-call@^1.0.1:
   dependencies:
     balanced-match "^0.4.2"
 
-redux-mock-store@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/redux-mock-store/-/redux-mock-store-1.5.3.tgz#1f10528949b7ce8056c2532624f7cafa98576c6d"
-  dependencies:
-    lodash.isplainobject "^4.0.6"
-
 redux-saga@^0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.0.tgz#0a231db0a1489301dd980f6f2f88d8ced418f724"
-
-redux@^3.6.0:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/redux/-/redux-3.7.2.tgz#06b73123215901d25d065be342eb026bc1c8537b"
-  dependencies:
-    lodash "^4.2.1"
-    lodash-es "^4.2.1"
-    loose-envify "^1.1.0"
-    symbol-observable "^1.0.3"
 
 redux@^4.0.0:
   version "4.0.0"
@@ -7267,7 +7308,7 @@ svgo@^1.0.5:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-symbol-observable@^1.0.3, symbol-observable@^1.0.4, symbol-observable@^1.2.0:
+symbol-observable@^1.0.4, symbol-observable@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
 
@@ -7421,8 +7462,8 @@ trim@0.0.1:
     glob "^6.0.4"
 
 ts-loader@^4.4.1:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-4.4.1.tgz#c93a46eea430ebce1f790dfe438caefb8670d365"
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-4.4.2.tgz#778d4464b24436873c78f7f9e914d88194c2a248"
   dependencies:
     chalk "^2.3.0"
     enhanced-resolve "^4.0.0"
@@ -7430,9 +7471,9 @@ ts-loader@^4.4.1:
     micromatch "^3.1.4"
     semver "^5.0.1"
 
-ts-node@^6.1.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-6.2.0.tgz#65a0ae2acce319ea4fd7ac8d7c9f1f90c5da6baf"
+ts-node@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-7.0.0.tgz#a94a13c75e5e1aa6b82814b84c68deb339ba7bff"
   dependencies:
     arrify "^1.0.0"
     buffer-from "^1.1.0"

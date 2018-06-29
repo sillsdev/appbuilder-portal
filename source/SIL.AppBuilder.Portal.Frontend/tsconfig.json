@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
     "jsx": "react",
-    "target": "ES2017",
+    "target": "es5",
     "baseUrl": ".",
     "allowJs": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
+      "@data/*": ["src/data/*"],
+      "@api/*": ["src/data/api/*"],
+      "@models/*": ["src/data/models/*"],
       "@store/*": ["src/redux-store/*"],
       "@ui/*": ["src/ui/*"],
       "@lib/*": ["src/lib/*"],

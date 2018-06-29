@@ -31,6 +31,9 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     alias: {
+      "@data": locate("src/data"),
+      "@api": locate('src/data/api'),
+      "@models": locate('src/data/models'),
       '@store': locate('src/redux-store'),
       '@ui': locate('src/ui'),
       '@lib': locate('src/lib'),

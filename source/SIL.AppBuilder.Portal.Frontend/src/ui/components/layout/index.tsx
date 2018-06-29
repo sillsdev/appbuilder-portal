@@ -1,8 +1,8 @@
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import Header from '@ui/components/header';
 
-class Layout extends Component {
+class Layout extends React.Component {
 
   render() {
     return (
@@ -12,7 +12,7 @@ class Layout extends Component {
           {this.props.children}
         </div>
       </div>
-    )
+    );
   }
 }
 
