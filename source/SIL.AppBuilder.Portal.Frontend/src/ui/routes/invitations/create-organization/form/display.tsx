@@ -1,49 +1,63 @@
 import * as React from 'react';
+import { withTemplateHelpers, Mut } from 'react-action-decorators';
 
 import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProps {
+  token: string;
   onSubmit: (data: OrganizationAttributes) => Promise<void>;
 }
 
 export interface IState {
   name: string;
+  websiteUrl: string;
 }
 
+@withTemplateHelpers
 export default class InviteOrganizationDisplay extends React.Component<IProps, IState> {
-  state = { name: '' };
+  mut: Mut;
+  state = { name: '', websiteUrl: '' };
 
   submit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    await this.props.onSubmit(this.state);
+    const { onSubmit, token } = this.props;
+
+    await onSubmit({ ...this.state, token });
     this.reset();
   }
 
   reset = () => {
-    this.setState({ name: '' });
+    this.setState({ name: '', websiteUrl: '' });
   }
-
-  nameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
-
-    this.setState({ name });
-  }
-
 
   render() {
-    const { name } = this.state;
+    const { mut } = this;
+    const { name, websiteUrl } = this.state;
 
     return (
       <div>
-        <form className='ui form'>
-
+        <form data-test-org-create-form className='ui form'>
           <div className='field'>
             <label>Organization Name</label>
-            <input type='text' value={name || ''} onChange={this.nameChanged} />
+            <input
+              data-test-org-name
+              type='text'
+              value={name}
+              onChange={mut('name')} />
+          </div>
+
+          <div className='field'>
+            <label>Organization Website URL</label>
+            <input
+              data-test-website
+              type='text'
+              value={websiteUrl}
+              onChange={mut('websiteUrl')} />
           </div>
 
           <button
+            data-test-submit
             className='ui primary button'
             onClick={this.submit}>
             Add Organization

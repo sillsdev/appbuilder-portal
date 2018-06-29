@@ -24,7 +24,7 @@ export default class CreateOrganizationRoute extends React.Component<IProps> {
       <div>
         <h1>You have been invited to create an organization!</h1>
 
-        <CreateOrganizationForm />
+        <CreateOrganizationForm token={token} />
       </div>
     );
   }

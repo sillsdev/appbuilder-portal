@@ -1,5 +1,6 @@
 /* eslint-disable */
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRootPlugin = require('html-webpack-root-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const webpack = require('webpack');
 
@@ -20,13 +21,13 @@ let config = {
   resolve: resolver,
   output: {
     path: locate('dist'),
+    publicPath: '/',
     filename: '[name]-[hash].js',
     chunkFilename: '[name]-[hash].js'
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: locate('src/index.html'),
-    }),
+    new HtmlWebpackPlugin(),
+    new ReactRootPlugin(),
     // sep-thread type checking
     new ForkTsCheckerWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin({

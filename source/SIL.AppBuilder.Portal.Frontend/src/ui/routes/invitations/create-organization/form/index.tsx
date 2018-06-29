@@ -7,10 +7,11 @@ import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
 import Display from './display';
 
 export type IProps =
-  & {}
+  & { token: string }
   & WithDataProps;
 
-export class CreateOrganizationForm extends React.Component<IProps> {
+@withData({})
+export default class CreateOrganizationForm extends React.Component<IProps> {
   submit = async (payload: OrganizationAttributes) => {
     try {
       this.create(payload);
@@ -22,19 +23,19 @@ export class CreateOrganizationForm extends React.Component<IProps> {
   }
 
   create = async (payload: OrganizationAttributes) => {
-    const { updateStore } = this.props;
+    const { updateStore, token } = this.props;
 
     const { name, websiteUrl } = payload;
 
     return await updateStore(t => t.addRecord({
       type: TYPE_NAME,
-      attributes: { name, websiteUrl }
+      attributes: { name, websiteUrl, token }
     }));
   }
 
   render() {
-    return <Display onSubmit={this.submit} />;
+    const { token } = this.props;
+
+    return <Display token={token} onSubmit={this.submit} />;
   }
 }
-
-export default withData({})(CreateOrganizationForm);
