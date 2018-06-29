@@ -6074,6 +6074,10 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-action-decorators@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/react-action-decorators/-/react-action-decorators-0.0.3.tgz#4265970a8a7af64e867db5b2bb423a36dee4e9a1"
+
 react-data-grid-addons@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/react-data-grid-addons/-/react-data-grid-addons-4.0.8.tgz#a2b2b8803942fab78edac5f65f4964f24024d11b"

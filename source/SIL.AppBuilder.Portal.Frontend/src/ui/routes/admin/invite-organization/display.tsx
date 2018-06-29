@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { withTemplateHelpers, Mut } from 'react-action-decorators';
 
 import { tomorrow } from '@lib/date';
 
@@ -14,7 +15,9 @@ export interface IState {
   expiresAt: Date;
 }
 
+@withTemplateHelpers
 export default class InviteOrganizationDisplay extends React.Component<IProps, IState> {
+  mut: Mut;
   state = { name: '', ownerEmail: '', expiresAt: tomorrow() };
 
   submit = async (e: Event) => {
@@ -28,20 +31,8 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
     this.setState({ name: '', ownerEmail: '', expiresAt: tomorrow() });
   }
 
-  ownerEmailChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const ownerEmail = e.target.value;
-
-    this.setState({ ownerEmail });
-  }
-
-  nameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
-
-    this.setState({ name });
-  }
-
-
   render() {
+    const { mut } = this;
     const { name, ownerEmail } = this.state;
 
     return (
@@ -50,12 +41,12 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
 
           <div className='field'>
             <label>Organization Owner Email</label>
-            <input type='text' value={ownerEmail} onChange={this.ownerEmailChanged} />
+            <input type='text' value={ownerEmail} onChange={mut('ownerEmail')} />
           </div>
 
           <div className='field'>
             <label>Organization Name</label>
-            <input type='text' value={name} onChange={this.nameChanged} />
+            <input type='text' value={name} onChange={mut('name')} />
           </div>
 
           <button
