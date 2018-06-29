@@ -72,7 +72,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             // add jsonapi dotnet core
             services.AddJsonApi<AppDbContext>(
-                //opt => opt.Namespace = "api"
+                opt => opt.Namespace = "api"
             );
 
             services.AddMvc(options => {
