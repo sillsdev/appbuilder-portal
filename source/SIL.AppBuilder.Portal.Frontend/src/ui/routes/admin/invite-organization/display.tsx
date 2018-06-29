@@ -50,12 +50,12 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
 
           <div className='field'>
             <label>Organization Owner Email</label>
-            <input type='text' value={ownerEmail || ''} onChange={this.ownerEmailChanged} />
+            <input type='text' value={ownerEmail} onChange={this.ownerEmailChanged} />
           </div>
 
           <div className='field'>
             <label>Organization Name</label>
-            <input type='text' value={name || ''} onChange={this.nameChanged} />
+            <input type='text' value={name} onChange={this.nameChanged} />
           </div>
 
           <button
