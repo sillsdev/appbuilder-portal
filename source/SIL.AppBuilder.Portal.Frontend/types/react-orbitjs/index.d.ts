@@ -33,6 +33,6 @@ export type MapRecordsToProps =
   | MapRecordsToPropsFn
 
 export function withData(mapRecordsToProps: MapRecordsToProps):
-  <Props, State, ComponentState>(
-    Comp: new() => React.Component<Props | { setState: any }, State, ComponentState>
-  ) => React.Component<Props & WithDataProps, State, ComponentState>;
+  <Props, State>(
+    WrappedComponent: React.Component<any, any, any> & { setState(): void}
+  ) => React.Component<Props, State>;

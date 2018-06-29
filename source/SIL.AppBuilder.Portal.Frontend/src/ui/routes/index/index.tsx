@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DWKitForm } from 'vendor/dwkit/optimajet-form';
+// import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 import { get } from '@lib/fetch';
 
 export const pathName = '/';

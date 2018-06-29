@@ -6,7 +6,7 @@ import { setupApplicationTest } from 'tests/helpers/index';
 
 import page from '../form/__tests__/page';
 
-describe('Acceptance | routing', () => {
+describe('Acceptance | Invitations | Create Organization', () => {
   setupApplicationTest();
 
   describe('navigates to an org invitation', () => {

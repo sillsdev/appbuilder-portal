@@ -18,8 +18,6 @@ export default class CreateOrganizationRoute extends React.Component<IProps> {
     const { match } = this.props;
     const { params: { token } } = match;
 
-
-
     return (
       <div>
         <h1>You have been invited to create an organization!</h1>

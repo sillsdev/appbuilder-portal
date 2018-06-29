@@ -8,11 +8,12 @@ import { mountWithContext } from 'tests/helpers';
 import Display from '../display';
 import page from './page';
 
-describe('Integration | Component | InviteOrganizationDisplay', () => {
+describe('Integration | Component | Create Organization Form', () => {
   let fakeSubmit;
 
   beforeEach(async () => {
     fakeSubmit = sinon.spy();
+
     await mountWithContext(() => (
       <Display
         token='invite-token'

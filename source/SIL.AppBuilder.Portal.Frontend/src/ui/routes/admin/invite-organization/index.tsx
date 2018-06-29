@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { withRouter, RouterProps } from 'react-router';
+import { withRouter, RouteProps } from 'react-router';
 import { withData, WithDataProps } from 'react-orbitjs';
+import { compose } from 'recompose';
 
 import * as toast from '@lib/toast';
 import { OrganizationInviteAttributes, TYPE_NAME } from '@data/models/organization-invite';
 
-import Display from './display';
+import Display, { IProps as DisplayProps } from './display';
 
 export type IProps =
   & {}
-  & RouterProps
+  & RouteProps
   & WithDataProps;
 
 export class InviteOrganization extends React.Component<IProps> {
@@ -38,4 +39,7 @@ export class InviteOrganization extends React.Component<IProps> {
   }
 }
 
-export default withRouter(withData({})(InviteOrganization));
+export default compose(
+  withRouter,
+  withData({})
+)(InviteOrganization);

@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { setupApplicationTest } from 'tests/helpers/index';
 import app from 'tests/helpers/pages/app';
 
-describe('Acceptance | routing', () => {
+describe('Acceptance | Invitations | routing', () => {
   setupApplicationTest();
 
   describe('navigates to /invitations', () => {
