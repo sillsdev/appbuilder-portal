@@ -13,7 +13,7 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("ownerEmail")]
         public string OwnerEmail { get; set; }
 
-        [Attr("token")]
+        [Attr("token",isImmutable:true)]
         public string Token { get; set; }
    }
 }
