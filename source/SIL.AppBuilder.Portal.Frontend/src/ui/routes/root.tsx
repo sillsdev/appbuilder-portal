@@ -9,8 +9,6 @@ export default class RootPage extends React.Component {
   render() {
     return (
       <div>
-        <h1>render test</h1>
-
         <section>
           <Route exact path={rootPath} component={IndexRoute} />
           <Route exact path={loginPath} component={LoginRoute} />

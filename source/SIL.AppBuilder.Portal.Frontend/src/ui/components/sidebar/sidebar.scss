@@ -1,0 +1,56 @@
+.sidebar {
+  height: 100%;
+  width: 300px;
+  background-color: #fff;
+  position: fixed!important;
+  z-index: 1;
+  overflow: auto;
+  border-right: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+
+  .logo {
+    width: 46px;
+    height: 41px;
+  }
+
+  .sidebar-title {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .close {
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .ui.vertical.menu {
+    width: 100%;
+  }
+
+  .ui.secondary.vertical.pointing.menu {
+    border-right-width: 0px;
+  }
+
+  .ui.secondary.pointing.menu .active.item {
+    border-left-style: solid;
+    border-left-color: #1b1c1d;
+    border-radius: 0;
+    margin: 0;
+    border-left-width: 4px;
+    border-right-width: 0px;
+  }
+
+  .ui.secondary.vertical.menu>.item {
+    font-size: 16px;
+  }
+
+  .ui.secondary.pointing.menu .project-directory-item {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+}
