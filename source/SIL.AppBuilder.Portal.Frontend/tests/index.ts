@@ -5,14 +5,16 @@ export {};
 
 // require all modules ending in "-test" from the current directory and
 // all subdirectories
-const requireTest = require.context('./acceptance', true, /-test/);
-const requireIntegrationTests = require.context('./../src', true, /-test/);
+const requireGlobalTest = require.context('./acceptance', true, /-test/);
+const requireContextualTests = require.context('./../src', true, /-test/);
 
-requireTest.keys().forEach(requireTest);
-requireIntegrationTests.keys().forEach(requireIntegrationTests);
+requireGlobalTest.keys().forEach(requireGlobalTest);
+requireContextualTests.keys().forEach(requireContextualTests);
 
 var chai = require('chai');
 var sinon = require('sinon');
+var chaiSubset = require('chai-subset');
 var sinonChai = require('sinon-chai');
 
-chai.use(sinonChai)
+chai.use(sinonChai);
+chai.use(chaiSubset);

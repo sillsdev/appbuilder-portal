@@ -38,15 +38,21 @@ export default class ReduxProvider extends React.Component<IProps> {
         // e.g.: dev tools
         enhancers
       )
-    )
+    );
 
     // Start sagas, etc
     setupMiddleware(store);
+
+    // TODO: is there a situation in development where
+    //       we want the store exposed?
+    // if (window.Cypress) {
+    //   window.__store__ = store;
+    // }
 
     return store;
   }
 
   render() {
-    return <Provider store={this.store}>{this.props.children}</Provider>
+    return <Provider store={this.store}>{this.props.children}</Provider>;
   }
 }

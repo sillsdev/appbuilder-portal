@@ -22,9 +22,14 @@
       "ordered-imports": [false],
       "object-literal-sort-keys": [false],
       "no-var-requires": [false],
+      "no-empty-interface": [false],
+      "no-console": [false],
+      "no-empty": [false],
       "semicolon": [true, "always"],
       "member-access": [false],
-      "jsx-boolean-value": [false]
+      "member-ordering": [false],
+      "jsx-boolean-value": [false],
+      "jsx-no-lambda": [false]
     },
     "rulesDirectory": []
 }

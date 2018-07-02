@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { withRouter, RouteComponentProps  } from 'react-router';
+import * as React from 'react';
+import { withRouter, RouteComponentProps  } from 'react-router-dom';
 import {
   Container, Menu, Button,
   Dropdown, Image, Icon
@@ -11,7 +11,7 @@ export interface Props {
   toggleSidebar: () => void
 }
 
-class Header extends Component<Props & RouteComponentProps<{}>> {
+class Header extends React.Component<Props & RouteComponentProps<{}>> {
 
   render() {
     const { history, toggleSidebar } = this.props;
@@ -86,7 +86,7 @@ class Header extends Component<Props & RouteComponentProps<{}>> {
           </Menu.Menu>
         </Container>
       </Menu>
-    )
+    );
   }
 }
 

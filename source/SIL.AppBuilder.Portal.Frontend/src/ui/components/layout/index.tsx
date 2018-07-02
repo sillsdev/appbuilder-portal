@@ -1,11 +1,12 @@
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import Header from '@ui/components/header';
 import Sidebar from '@ui/components/sidebar';
 
 import './layout.scss';
 
-class Layout extends Component {
+class Layout extends React.Component {
+  
   render() {
     return (
       <div className='wrapper'>
@@ -15,7 +16,7 @@ class Layout extends Component {
           {this.props.children}
         </div>
       </div>
-    )
+    );
   }
 }
 

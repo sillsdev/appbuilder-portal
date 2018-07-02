@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OptimaJet.DWKit.StarterApplication", "OptimaJet.DWKit.StarterApplication\Optimajet.DWKit.StarterApplication.csproj", "{C8E82E7C-3170-4C11-915E-115C9A31AB33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimajet.DWKit.StarterApplication", "OptimaJet.DWKit.StarterApplication\Optimajet.DWKit.StarterApplication.csproj", "{C8E82E7C-3170-4C11-915E-115C9A31AB33}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OptimaJet.DWKit.Application", "OptimaJet.DWKit.Application\OptimaJet.DWKit.Application.csproj", "{F3520DC9-181D-40D4-8D08-34DC1037B7C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaJet.DWKit.Application", "OptimaJet.DWKit.Application\OptimaJet.DWKit.Application.csproj", "{F3520DC9-181D-40D4-8D08-34DC1037B7C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

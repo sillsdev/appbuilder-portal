@@ -11,10 +11,16 @@ namespace OptimaJet.DWKit.StarterApplication
     {
         public static void Main(string[] args)
         {
+            BuildWebHost(args).Run();
+        }
+
+        public static IWebHost BuildWebHost(string[] args)
+        {
             var port = Environment.GetEnvironmentVariable("PORT");
 
-            if (port == null) {
-              port = "48801";
+            if (port == null)
+            {
+                port = "48801";
             }
 
             var host = new WebHostBuilder()
@@ -25,8 +31,7 @@ namespace OptimaJet.DWKit.StarterApplication
                 .UseApplicationInsights()
                 .UseUrls("http://0.0.0.0:" + port)
                 .Build();
-
-            host.Run();
+            return host;
         }
     }
 }

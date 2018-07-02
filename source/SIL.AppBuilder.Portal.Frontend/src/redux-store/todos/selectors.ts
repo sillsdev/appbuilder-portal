@@ -1,4 +1,4 @@
-import { State, Todo } from "example-app/redux-store/todos/shared";
+import { State, Todo } from "@store/todos/shared";
 
 interface SubState {
   todos: State;

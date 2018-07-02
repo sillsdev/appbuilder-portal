@@ -5,6 +5,7 @@ import createHistory from 'history/createMemoryHistory';
 import { setupAppForTesting, mount } from '@bigtest/react';
 
 import { ReduxProvider } from '@store/index';
+import { DataProvider } from '@data/index';
 
 import rootApplication from '@ui/routes/root';
 
@@ -18,17 +19,22 @@ class TestWrapper extends React.Component<any, any> {
     const ComponentToTest = this.props.component || rootApplication;
     const componentProps = this.props.componentProps || {};
 
+    // TODO: find a way to seed the data provider with data
     return (
-      <ReduxProvider initialState={initialState || {}}>
-        <Router history={history}>
-          <ComponentToTest {...componentProps } />
-        </Router>
-      </ReduxProvider>
-    )
+      <div data-test-app-container>
+        <DataProvider>
+          <ReduxProvider initialState={initialState || {}}>
+            <Router history={history}>
+              <ComponentToTest {...componentProps } />
+            </Router>
+          </ReduxProvider>
+        </DataProvider>
+      </div>
+    );
   }
 }
 
-export function setupApplicationTest(initialState = {}, history = undefined) {
+export function setupApplicationTest(initialState = {}, history?: History) {
   beforeEach(async function() {
     const historyForTesting = history || createHistory();
 
@@ -55,4 +61,4 @@ export const mountWithContext = (component, props = {}, state = {}, history = un
   ), {
     mountId: 'integration-testing-root'
   });
-}
+};

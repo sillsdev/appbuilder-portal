@@ -24,6 +24,9 @@ function runstuff {
     bash)     ${COMPOSE} run --rm $arguments bash;;
     restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
 
+    db:update) ${COMPOSE} exec api bash -c "dotnet ef database update";;
+    db:migrate) ${COMPOSE} exec api bash -c "dotnet ef migrations ${arguments}";;
+
     bootstrap)
       # Setup Database
       PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER"
@@ -35,6 +38,7 @@ function runstuff {
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql" \
         && echo "DB setup with DWKit Scripts"
 
+      runstuff db:update && echo "DB setup for json:api"
 
       # other things...?
     ;;

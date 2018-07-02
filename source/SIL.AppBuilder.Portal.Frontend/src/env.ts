@@ -13,3 +13,11 @@ export const auth0 = {
   clientId: process.env.AUTH0_CLIENT_ID,
   scope: process.env.AUTH0_SCOPE,
 };
+
+export const api = {
+  host: process.env.API_HOST
+};
+
+export const app = {
+  hasApi: process.env.HAS_API
+};
