@@ -20,11 +20,11 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("buildEngineApiAccessToken")]
         public string BuildEngineApiAccessToken { get; set; }
 
-        //[HasOne("owner")]
-        //public virtual User Owner { get; set; }
-        //public int OwnerId { get; set; }
+        [HasOne("owner")]
+        public virtual User Owner { get; set; }
+        public int OwnerId { get; set; }
 
-        //[HasMany("users")]
-        //public virtual List<User> Users { get; set; }
+        [HasMany("organizationMemberships")]
+        public virtual List<OrganizationMembership> OrganizationMemberships { get; set; }
     }
 }
