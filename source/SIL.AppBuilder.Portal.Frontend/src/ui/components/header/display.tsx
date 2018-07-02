@@ -19,8 +19,16 @@ class Header extends Component<Props & RouteComponentProps<{}>> {
     return (
       <Menu data-test-header-menu className='menu-navbar'>
         <Container>
+          <Menu.Item>
+            <Button
+              className='sidebar-button' 
+              onClick={toggleSidebar}>
+              <Icon name='bars' size='large' />
+            </Button>
+          </Menu.Item>    
           <Menu.Item
             data-test-header-appname header
+            className='logo'
             onClick={(e) => history.push('/')}>
             SCRIPTORIA
           </Menu.Item>
@@ -28,11 +36,11 @@ class Header extends Component<Props & RouteComponentProps<{}>> {
           <Menu.Menu position='right'>
 
             <Menu.Item>
-              <Button onClick={toggleSidebar}>
-                Open Sidebar
+              <Button 
+                data-test-header-addproject 
+                className='add-project'>
+                Add Project
               </Button>
-
-              <Button data-test-header-addproject>Add Project</Button>
             </Menu.Item>
 
             <Menu.Item className='notification-item'>
