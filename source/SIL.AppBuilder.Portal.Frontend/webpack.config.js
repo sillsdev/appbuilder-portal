@@ -6,7 +6,7 @@ const webpack = require('webpack');
 const dotenv = require('dotenv');
 
 const {
-  locate, moduleRules, resolver,
+  locate, plugins, moduleRules, resolver,
   environment, isProduction, isDevelopment
 } = require('./config/webpack.common.js');
 
@@ -42,14 +42,7 @@ let config = {
     new webpack.HotModuleReplacementPlugin({
       // Options...
     }),
-    new webpack.EnvironmentPlugin([
-      "AUTH0_CONNECTION",
-      "AUTH0_DOMAIN",
-      "AUTH0_CLIENT_ID",
-      "AUTH0_SCOPE",
-      "API_HOST",
-      "HAS_API"
-    ])
+    ...plugins
   ],
   optimization: {
     runtimeChunk: 'single',

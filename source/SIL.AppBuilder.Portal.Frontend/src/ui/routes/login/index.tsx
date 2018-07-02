@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 
+import { requireNoAuth } from '@lib/auth';
 import Login from '@ui/components/login';
 
 export const pathName = '/login';
 
-export default class LoginRoute extends React.Component {
+class LoginRoute extends React.Component {
   state = { data: {}, errors: {} };
   render() {
     return (
@@ -16,3 +18,7 @@ export default class LoginRoute extends React.Component {
     );
   }
 }
+
+export default compose(
+  requireNoAuth('/')
+)(LoginRoute);

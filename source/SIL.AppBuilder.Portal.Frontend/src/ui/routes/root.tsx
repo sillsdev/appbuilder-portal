@@ -3,7 +3,7 @@ import { Route, Link, Switch } from 'react-router-dom';
 import Notifications from 'react-notify-toast';
 
 
-import { withAuthLayout as wAuth } from '@lib/routing';
+import { withAuthLayout as withLayout } from '@lib/routing';
 
 import IndexRoute, { pathName as rootPath } from '@ui/routes/index';
 import LoginRoute, { pathName as loginPath } from '@ui/routes/login';
@@ -21,11 +21,11 @@ export default class RootPage extends React.Component {
 
         <section>
           <Switch>
-            <Route exact path={rootPath} render={wAuth(IndexRoute)} />
+            <Route exact path={rootPath} render={withLayout(IndexRoute)} />
             <Route path={loginPath} component={LoginRoute} />
-            <Route path={tasksPath} component={wAuth(TasksRoute)} />
+            <Route path={tasksPath} component={withLayout(TasksRoute)} />
             <Route path={adminPath} component={AdminRoute} />
-            <Route path={invitationsPath} component={wAuth(InvitationsRoute)} />
+            <Route path={invitationsPath} component={withLayout(InvitationsRoute)} />
 
             <Route component={NotFoundRoute} />
           </Switch>

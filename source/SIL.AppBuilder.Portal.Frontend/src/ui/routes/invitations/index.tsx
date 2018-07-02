@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import { compose } from 'recompose';
 
+import { requireAuth } from '@lib/auth';
 import NotFoundRoute from '@ui/routes/errors/not-found';
 
 import CreateOrganizationRoute, { pathName as createPath } from './create-organization';
@@ -8,7 +10,7 @@ import MissingTokenRoute, { pathName as missingTokenPath } from './missing-token
 
 export const pathName = '/invitations';
 
-export default class InvitationsRoute extends React.Component {
+class InvitationsRoute extends React.Component {
   render() {
     return (
       <Switch>
@@ -20,3 +22,7 @@ export default class InvitationsRoute extends React.Component {
     );
   }
 }
+
+export default compose(
+  requireAuth
+)(InvitationsRoute)
