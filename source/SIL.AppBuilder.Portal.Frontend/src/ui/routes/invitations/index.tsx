@@ -25,4 +25,4 @@ class InvitationsRoute extends React.Component {
 
 export default compose(
   requireAuth
-)(InvitationsRoute)
+)(InvitationsRoute);

@@ -37,7 +37,7 @@ export function requireNoAuth(redirectPath = '/') {
     };
 
     return requireAuthHelper(checkForNoAuth);
-  }
+  };
 }
 
 function requireAuthHelper(authenticationChecker: (props: RouterProps) => any) {
