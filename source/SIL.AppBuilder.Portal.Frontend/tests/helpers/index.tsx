@@ -2,12 +2,42 @@ import * as React from 'react';
 import { Router } from 'react-router-dom';
 import createHistory from 'history/createMemoryHistory';
 
+import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting, mount } from '@bigtest/react';
+import MirageServer, { Factory } from '@bigtest/mirage';
 
 import { ReduxProvider } from '@store/index';
 import { DataProvider } from '@data/index';
 
 import rootApplication from '@ui/routes/root';
+
+export { useFakeAuthentication } from './auth';
+
+// for documentation: http://www.ember-cli-mirage.com
+// even though this isn't ember, @bigtest/mirage has the same apis.
+export function setupRequestInterceptor(config = {}) {
+  // beforeEach( () => {
+  //   // see: https://github.com/bigtestjs/mirage/blob/master/tests/integration/http-verbs-test.js
+  //   // for config examples
+  //   this.server = new MirageServer({
+  //     environment: 'development',
+  //     models: {},
+  //     ...config
+  //   });
+
+  //   /////////////////
+  //   // Default stubs
+  //   this.server.get('https://cdn.auth0.com/client/fakeE2O17FBrlQ667x5mydhpqelCfake.js?:time', () => ({}));
+  //   this.server.pretender.get('https://cdn.auth0.com', () => ({}));
+
+  //   this.server.timing = 0;
+  //   this.server.logging = false;
+  // })
+
+  // afterEach( () => {
+  //   this.server.shutdown();
+  // });
+}
 
 // the same as @ui/application, but allows
 // setting the initial state

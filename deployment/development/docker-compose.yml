@@ -75,7 +75,7 @@ services:
       API_HOST: api:7081
 
     env_file:
-      - .env.dev
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/.env.dev
 
     volumes:
       - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/src:/app/src

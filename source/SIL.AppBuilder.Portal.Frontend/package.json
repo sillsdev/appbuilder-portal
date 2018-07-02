@@ -30,7 +30,7 @@
     "auth0-lock": "^11.7.2",
     "jwt-decode": "^2.2.0",
     "react": "^16.0.0",
-    "react-action-decorators": "^0.0.3",
+    "react-action-decorators": "^0.0.4",
     "react-data-grid": "^4.0.7",
     "react-data-grid-addons": "^4.0.8",
     "react-dom": "^16.0.0",
@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "@bigtest/interactor": "^0.5.0",
+    "@bigtest/mirage": "^0.0.1",
     "@bigtest/mocha": "^0.3.3",
     "@bigtest/react": "^0.1.1",
     "@types/auth0-js": "^8.11.2",

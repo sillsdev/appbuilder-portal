@@ -1,8 +1,8 @@
-import { describe, it } from '@bigtest/mocha';
+import { describe, it, beforeEach, afterEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { setupApplicationTest } from 'tests/helpers/index';
+import { setupApplicationTest, setupRequestInterceptor } from 'tests/helpers/index';
 import { fakeAuth0JWT } from 'tests/helpers/jwt';
 
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
@@ -12,6 +12,7 @@ import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 // usage: https://github.com/bigtestjs/react/blob/master/tests/setup-app-test.js
 describe('Acceptance | Authentication', () => {
   setupApplicationTest();
+  setupRequestInterceptor();
 
   describe('is authenticated', () => {
     beforeEach(async () => {

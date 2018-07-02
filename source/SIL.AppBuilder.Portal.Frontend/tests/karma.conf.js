@@ -33,6 +33,7 @@ module.exports = function(config) {
     client: {
       mocha: {
         reporter: 'html',
+        globals: false,
         opts: root + '/tests/mocha.opts'
       },
     },
