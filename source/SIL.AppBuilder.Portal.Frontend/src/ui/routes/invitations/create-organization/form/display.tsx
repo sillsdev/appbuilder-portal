@@ -1,53 +1,38 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
 
-import { tomorrow } from '@lib/date';
-
-import { OrganizationInviteAttributes } from '@data/models/organization-invite';
+import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProps {
-  onSubmit: (data: OrganizationInviteAttributes) => Promise<void>;
+  token: string;
+  onSubmit: (data: OrganizationAttributes) => Promise<void>;
 }
 
 export interface IState {
   name: string;
-  ownerEmail: string;
-  expiresAt: Date;
+  websiteUrl: string;
 }
 
 @withTemplateHelpers
 export default class InviteOrganizationDisplay extends React.Component<IProps, IState> {
   mut: Mut;
-  state = { name: '', ownerEmail: '', expiresAt: tomorrow() };
+  state = { name: '', websiteUrl: '' };
 
   submit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    await this.props.onSubmit(this.state);
-    this.reset();
-  }
+    const { onSubmit, token } = this.props;
 
-  reset = () => {
-    this.setState({ name: '', ownerEmail: '', expiresAt: tomorrow() });
+    await onSubmit({ ...this.state, token });
   }
 
   render() {
     const { mut } = this;
-    const { name, ownerEmail } = this.state;
+    const { name, websiteUrl } = this.state;
 
     return (
       <div>
-        <form data-test-form className='ui form'>
-
-          <div className='field'>
-            <label>Organization Owner Email</label>
-            <input
-              data-test-owner-email
-              type='text'
-              value={ownerEmail}
-              onChange={mut('ownerEmail')} />
-          </div>
-
+        <form data-test-org-create-form className='ui form'>
           <div className='field'>
             <label>Organization Name</label>
             <input
@@ -55,6 +40,15 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
               type='text'
               value={name}
               onChange={mut('name')} />
+          </div>
+
+          <div className='field'>
+            <label>Organization Website URL</label>
+            <input
+              data-test-website
+              type='text'
+              value={websiteUrl}
+              onChange={mut('websiteUrl')} />
           </div>
 
           <button

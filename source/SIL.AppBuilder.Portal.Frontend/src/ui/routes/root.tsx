@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, Switch } from 'react-router-dom';
 import Notifications from 'react-notify-toast';
 
 
@@ -7,6 +7,9 @@ import IndexRoute, { pathName as rootPath } from '@ui/routes/index';
 import LoginRoute, { pathName as loginPath } from '@ui/routes/login';
 import TasksRoute, { pathName as tasksPath} from '@ui/routes/tasks';
 import AdminRoute, { pathName as adminPath} from '@ui/routes/admin';
+import InvitationsRoute, { pathName as invitationsPath } from '@ui/routes/invitations';
+import ErrorRootRoute from '@ui/routes/errors';
+import NotFoundRoute from '@ui/routes/errors/not-found';
 
 export default class RootPage extends React.Component {
   render() {
@@ -14,13 +17,19 @@ export default class RootPage extends React.Component {
       <div>
         <Notifications />
 
-        <h1>render test</h1>
-
         <section>
-          <Route exact path={rootPath} component={IndexRoute} />
-          <Route exact path={loginPath} component={LoginRoute} />
-          <Route exact path={tasksPath} component={TasksRoute} />
-          <Route exact path={adminPath} component={AdminRoute} />
+          <Switch>
+            <Route exact path={rootPath} component={IndexRoute} />
+            <Route path={loginPath} component={LoginRoute} />
+            <Route path={tasksPath} component={TasksRoute} />
+            <Route path={adminPath} component={AdminRoute} />
+            <Route path={invitationsPath} component={InvitationsRoute} />
+
+            <Route component={NotFoundRoute} />
+          </Switch>
+
+
+          <ErrorRootRoute />
         </section>
 
         <footer>
@@ -31,6 +40,8 @@ export default class RootPage extends React.Component {
           <Link to={tasksPath}>Tasks?</Link>
           &nbsp;|&nbsp;
           <Link to={adminPath}>Admin</Link>
+          &nbsp;|&nbsp;
+          <Link to={invitationsPath}>Invitations?</Link>
         </footer>
       </div>
     );

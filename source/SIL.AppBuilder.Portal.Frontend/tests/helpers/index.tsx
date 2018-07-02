@@ -21,13 +21,15 @@ class TestWrapper extends React.Component<any, any> {
 
     // TODO: find a way to seed the data provider with data
     return (
-      <DataProvider>
-        <ReduxProvider initialState={initialState || {}}>
-          <Router history={history}>
-            <ComponentToTest {...componentProps } />
-          </Router>
-        </ReduxProvider>
-      </DataProvider>
+      <div data-test-app-container>
+        <DataProvider>
+          <ReduxProvider initialState={initialState || {}}>
+            <Router history={history}>
+              <ComponentToTest {...componentProps } />
+            </Router>
+          </ReduxProvider>
+        </DataProvider>
+      </div>
     );
   }
 }
