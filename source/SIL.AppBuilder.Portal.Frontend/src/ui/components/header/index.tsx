@@ -10,10 +10,11 @@ const mapStateToProps = ({ ui }) => ({
   isSidebarVisible: ui.isSidebarVisible
 });
 
-const mapDispatchToProps = {
-  toggleSidebar
-}
+const mapDispatchToProps = (dispatch) => ({
+  toggleSidebar: () => dispatch(toggleSidebar())
+})
 
 export default connect(
-  connect(mapStateToProps, mapDispatchToProps)
+  mapStateToProps,
+  mapDispatchToProps
 )(HeaderDisplay);
