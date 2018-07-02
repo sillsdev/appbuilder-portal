@@ -33,7 +33,7 @@ export default class APIProvider extends React.Component {
     const remote = new JSONAPISource({
       schema,
       name: 'remote',
-      host: `${apiEnv.host}/api`,
+      host: `${apiEnv.protocol}${apiEnv.host}/api`,
       defaultFetchHeaders: {
         Accept: 'application/vnd.api+json',
         Authorization: getToken()

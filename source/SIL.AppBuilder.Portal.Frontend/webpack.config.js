@@ -3,11 +3,20 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRootPlugin = require('html-webpack-root-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const webpack = require('webpack');
+const dotenv = require('dotenv');
 
 const {
   locate, moduleRules, resolver,
   environment, isProduction, isDevelopment
 } = require('./config/webpack.common.js');
+
+if (isDevelopment) {
+  const dotenvPath = locate('.env.dev');
+  const result = dotenv.config({ path: dotenvPath });
+
+  if(result.error) throw result.error;
+}
+
 
 let config = {
   mode: isProduction ? 'production' : 'development',

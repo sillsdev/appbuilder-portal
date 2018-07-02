@@ -72,11 +72,10 @@ services:
       - "9092:9092"
 
     environment:
-      PORT: 9091
-      HMR_PORT: 9092
-      AUTH0_CLIENT_ID: n8IAE2O17FBrlQ667x5mydhpqelCBUWG
-      AUTH0_DOMAIN: sil-appbuilder.auth0.com
       API_HOST: api:7081
+
+    env_file:
+      - .env.dev
 
     volumes:
       - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/src:/app/src

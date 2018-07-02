@@ -8,9 +8,7 @@ class Tasks extends React.Component {
   state = { data: {}, errors: {} };
 
   render() {
-    return (
-      <Layout />
-    );
+    return null;
   }
 }
 
