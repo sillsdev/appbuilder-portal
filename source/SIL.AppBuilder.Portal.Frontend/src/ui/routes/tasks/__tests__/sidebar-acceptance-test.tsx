@@ -44,20 +44,4 @@ describe('Acceptance | Layout | Sidebar', () => {
 
   });
 
-  // it('Sidebar exists',() => {
-  //   expect(sidebarHelper.isSidebarPresent).to.be.true;
-  // });
-
-  // describe('Sidebar close when x button is clicked',() => {
-  //   beforeEach(async () => {
-  //     await sidebarHelper.clickCloseButton();
-  //   });
-
-  //   it('Sidebar is close', () => {
-  //     expect(sidebarHelper.isSidebarVisible).to.be.true;
-  //   });
-  // });
-
-
-
 });
