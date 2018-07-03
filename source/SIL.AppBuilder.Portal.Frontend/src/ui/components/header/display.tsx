@@ -21,6 +21,7 @@ class Header extends React.Component<Props & RouteComponentProps<{}>> {
         <Container>
           <Menu.Item>
             <Button
+              data-test-header-sidebar-button
               className='sidebar-button' 
               onClick={toggleSidebar}>
               <Icon name='bars' size='large' />
