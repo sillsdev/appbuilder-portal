@@ -16,7 +16,7 @@ describe('Integration | Component | Header', () => {
     });
 
     describe('the dropdowns can open', () => {
-      // setupRequestInterceptor();
+      setupRequestInterceptor();
 
       beforeEach(async () => {
         expect(headerHelper.isNotificationMenuOpen).to.be.false;
