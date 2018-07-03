@@ -77,17 +77,6 @@ export function setupApplicationTest(initialState = {}, history?: History) {
 // esp those from react-router-dom (such as NavLink)
 // require that they be rendered within a Route within a Router.
 export const mountWithContext = async (component, props = {}, state = {}, history = undefined) => {
-  // return mount(() => (
-  //   <TestWrapper
-  //     component={component}
-  //     componentProps={props}
-  //     initialState={state}
-  //     history={history || createHistory()}
-  //   />
-  // ), {
-  //   mountId: 'integration-testing-root'
-  // });
-
   this.app = await setupAppForTesting(TestWrapper, {
     props: {
       component,
