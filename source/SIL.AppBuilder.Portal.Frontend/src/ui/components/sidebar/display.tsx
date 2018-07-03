@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import './sidebar.scss';
 import { Menu, Icon, Image } from 'semantic-ui-react';
+import { NavLink } from 'react-router-dom';
 
 export interface IProps {
   isSidebarVisible: boolean;
@@ -36,22 +37,26 @@ class Sidebar extends React.Component<IProps> {
 
         <Menu pointing secondary vertical>
           <Menu.Item 
-            name='My tasks' 
-            active={activeMenu === 'tasks'} 
-            onClick={e => setActiveMenu('tasks')} />
+            name='My tasks'
+            as={NavLink}
+            to='/tasks'
+            activeClassName='active' />
           <Menu.Item
             name='Our Projects'
-            active={activeMenu === 'projects'}
-            onClick={e => setActiveMenu('projects')} />
+            as={NavLink}
+            to='/our-projects'
+            activeClassName='active' />
           <Menu.Item
-            className='project-directory-item'
             name='Project Directory'
-            active={activeMenu === 'directory'}
-            onClick={e => setActiveMenu('directory')} />
+            as={NavLink}
+            to='projects'
+            className='project-directory-item'
+            activeClassName='active' />
           <Menu.Item
             name='Add Project'
-            active={activeMenu === 'addProject'}
-            onClick={e => setActiveMenu('addProject')} />                                    
+            as={NavLink}
+            to='add-projects'
+            activeClassName='active' />                                    
         </Menu>
       </div>
     );
