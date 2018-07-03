@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 
 import './sidebar.scss';
 import { Menu, Icon, Image } from 'semantic-ui-react';
@@ -10,7 +10,7 @@ export interface IProps {
   setActiveMenu: (string) => void;
 }
 
-class Sidebar extends Component<IProps> {
+class Sidebar extends React.Component<IProps> {
 
   render() {
     const { toggleSidebar, isSidebarVisible } = this.props;
