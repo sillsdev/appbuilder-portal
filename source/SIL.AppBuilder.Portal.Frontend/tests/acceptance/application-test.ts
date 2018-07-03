@@ -1,4 +1,4 @@
-import { describe, it } from '@bigtest/mocha';
+import { describe, it, beforeEach } from '@bigtest/mocha';
 import { setupAppForTesting } from '@bigtest/react';
 import { expect } from 'chai';
 

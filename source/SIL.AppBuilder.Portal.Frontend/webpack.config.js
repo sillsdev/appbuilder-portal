@@ -3,11 +3,20 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRootPlugin = require('html-webpack-root-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const webpack = require('webpack');
+const dotenv = require('dotenv');
 
 const {
-  locate, moduleRules, resolver,
+  locate, plugins, moduleRules, resolver,
   environment, isProduction, isDevelopment
 } = require('./config/webpack.common.js');
+
+if (isDevelopment) {
+  const dotenvPath = locate('.env.dev');
+  const result = dotenv.config({ path: dotenvPath });
+
+  if(result.error) throw result.error;
+}
+
 
 let config = {
   mode: isProduction ? 'production' : 'development',
@@ -33,14 +42,7 @@ let config = {
     new webpack.HotModuleReplacementPlugin({
       // Options...
     }),
-    new webpack.EnvironmentPlugin([
-      "AUTH0_CONNECTION",
-      "AUTH0_DOMAIN",
-      "AUTH0_CLIENT_ID",
-      "AUTH0_SCOPE",
-      "API_HOST",
-      "HAS_API"
-    ])
+    ...plugins
   ],
   optimization: {
     runtimeChunk: 'single',

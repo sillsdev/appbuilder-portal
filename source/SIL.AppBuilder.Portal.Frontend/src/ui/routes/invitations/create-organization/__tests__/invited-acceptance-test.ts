@@ -1,13 +1,14 @@
-import { describe } from '@bigtest/mocha';
+import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { setupApplicationTest } from 'tests/helpers/index';
+import { useFakeAuthentication, setupApplicationTest } from 'tests/helpers/index';
 
 import page from '../form/__tests__/page';
 
 describe('Acceptance | Invitations | Create Organization', () => {
   setupApplicationTest();
+  useFakeAuthentication();
 
   describe('navigates to an org invitation', () => {
     beforeEach(async () => {
