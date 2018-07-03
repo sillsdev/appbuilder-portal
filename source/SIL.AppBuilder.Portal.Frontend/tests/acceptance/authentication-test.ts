@@ -7,7 +7,7 @@ import { fakeAuth0JWT } from 'tests/helpers/jwt';
 
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 
-
+import app from 'tests/helpers/pages/app';
 
 // usage: https://github.com/bigtestjs/react/blob/master/tests/setup-app-test.js
 describe('Acceptance | Authentication', () => {
@@ -23,6 +23,21 @@ describe('Acceptance | Authentication', () => {
 
     afterEach(() => {
       deleteToken();
+    });
+
+    describe('logging out', () => {
+      beforeEach(async () => {
+        await app.clickNotificationsBell();
+        await app.clickLogout();
+      });
+
+      it('is logged out', () => {
+        expect(isLoggedIn()).to.be.false;
+      });
+
+      it('is redirected to login', () => {
+        expect(location().pathname).to.equal('/login');
+      });
     });
 
     describe('navigates to a route that requires authentication', () => {

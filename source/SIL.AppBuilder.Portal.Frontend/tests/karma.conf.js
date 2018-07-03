@@ -7,6 +7,7 @@ console.log('root path: ', root);
 module.exports = function(config) {
   config.set({
     singleRun: false,
+    retryLimit: 5, // hack around concurrency issues....
     basePath: '',
     frameworks: [ 'mocha' ],
     reporters: [ 'mocha' ],

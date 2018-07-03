@@ -2,7 +2,11 @@ import * as React from 'react';
 
 import { getAuth0LockInstance, setToken, showLock, hideLock } from '@lib/auth0';
 
-export default class Lock extends React.Component {
+export interface IProps {
+  afterLogin: () => void;
+}
+
+export default class Lock extends React.Component<IProps> {
   state = { loggedIn : false };
 
   componentDidMount() {
@@ -14,6 +18,7 @@ export default class Lock extends React.Component {
       setToken(authResult.idToken);
 
       lock.hide();
+      this.props.afterLogin();
     });
   }
 
