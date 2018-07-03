@@ -18,3 +18,15 @@ $positions: (
     ('b', 'bottom'),
     ('l', 'left')
 );
+
+$blue: #0068a6;
+$white: #fff;
+$gray: #515151;
+
+$background: $white;
+$primary: $blue;
+$text: $gray;
+
+$input-border-color: rgba(0, 0, 0, 0.12);
+$input-border-width: 2px;
+$input-placeholder-color: $gray;

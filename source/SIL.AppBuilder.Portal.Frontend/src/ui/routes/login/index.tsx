@@ -13,9 +13,7 @@ class LoginRoute extends React.Component<RouterProps> {
     const { history } = this.props;
 
     return (
-      <div>
-        <h2>Login Route </h2>
-
+      <div className='bg-blue flex-grow justify-content-center align-items-center'>
         <Login afterLogin={() => history.push('/tasks')}/>
       </div>
     );
