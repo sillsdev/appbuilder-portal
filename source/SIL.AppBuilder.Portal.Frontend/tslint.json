@@ -25,7 +25,7 @@
       "no-empty-interface": [false],
       "no-console": [false],
       "no-empty": [false],
-      "non-arrow-function": [false],
+      "only-arrow-functions": [false],
       "semicolon": [true, "always"],
       "member-access": [false],
       "member-ordering": [false],

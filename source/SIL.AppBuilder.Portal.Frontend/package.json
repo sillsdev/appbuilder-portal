@@ -52,6 +52,7 @@
     "@bigtest/mirage": "^0.0.1",
     "@bigtest/mocha": "^0.3.3",
     "@bigtest/react": "^0.1.1",
+    "@pollyjs/core": "^0.5.0",
     "@types/auth0-js": "^8.11.2",
     "@types/auth0-lock": "^11.4.4",
     "@types/chai": "^4.1.3",

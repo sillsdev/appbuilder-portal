@@ -14,7 +14,7 @@ describe('Integration | Component | Layout', () => {
       await mountWithContext(() => <Layout />);
     });
 
-    it('suceeds', () => {
+    it('suceeds', async () => {
       expect(document.querySelector('.wrapper')).to.exist;
       expect(document.querySelector('[data-test-header-menu]')).to.exist;
     });

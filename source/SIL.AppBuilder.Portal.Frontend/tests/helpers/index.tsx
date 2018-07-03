@@ -5,6 +5,8 @@ import createHistory from 'history/createMemoryHistory';
 import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting, mount } from '@bigtest/react';
 import MirageServer, { Factory } from '@bigtest/mirage';
+import { Polly } from '@pollyjs/core';
+
 
 import { ReduxProvider } from '@store/index';
 import { DataProvider } from '@data/index';
@@ -13,30 +15,24 @@ import rootApplication from '@ui/routes/root';
 
 export { useFakeAuthentication } from './auth';
 
-// for documentation: http://www.ember-cli-mirage.com
-// even though this isn't ember, @bigtest/mirage has the same apis.
-export function setupRequestInterceptor(config = {}) {
-  // beforeEach( () => {
-  //   // see: https://github.com/bigtestjs/mirage/blob/master/tests/integration/http-verbs-test.js
-  //   // for config examples
-  //   this.server = new MirageServer({
-  //     environment: 'development',
-  //     models: {},
-  //     ...config
-  //   });
+export function setupRequestInterceptor(config: any = {}) {
 
-  //   /////////////////
-  //   // Default stubs
-  //   this.server.get('https://cdn.auth0.com/client/fakeE2O17FBrlQ667x5mydhpqelCfake.js?:time', () => ({}));
-  //   this.server.pretender.get('https://cdn.auth0.com', () => ({}));
+  beforeEach(function() {
+    this.polly = new Polly('name of interceptor');
+    // expose server directly to test environment
+    // for easier request stubbing
+    this.server = this.polly.server;
 
-  //   this.server.timing = 0;
-  //   this.server.logging = false;
-  // })
+    this.polly.server.get('https://cdn.auth0.com/*path').intercept((req, res) => {
+      res.status(200);
+      res.json({});
+    });
+  });
 
-  // afterEach( () => {
-  //   this.server.shutdown();
-  // });
+  afterEach(function() {
+    this.server = undefined;
+    this.polly.stop();
+  });
 }
 
 // the same as @ui/application, but allows
@@ -80,15 +76,27 @@ export function setupApplicationTest(initialState = {}, history?: History) {
 // Mounting with context is needed because some components,
 // esp those from react-router-dom (such as NavLink)
 // require that they be rendered within a Route within a Router.
-export const mountWithContext = (component, props = {}, state = {}, history = undefined) => {
-  return mount(() => (
-    <TestWrapper
-      component={component}
-      componentProps={props}
-      initialState={state}
-      history={history || createHistory()}
-    />
-  ), {
+export const mountWithContext = async (component, props = {}, state = {}, history = undefined) => {
+  // return mount(() => (
+  //   <TestWrapper
+  //     component={component}
+  //     componentProps={props}
+  //     initialState={state}
+  //     history={history || createHistory()}
+  //   />
+  // ), {
+  //   mountId: 'integration-testing-root'
+  // });
+
+  this.app = await setupAppForTesting(TestWrapper, {
+    props: {
+      component,
+      componentProps: props,
+      initialState: state,
+      history: history || createHistory()
+    },
     mountId: 'integration-testing-root'
   });
+
+  return this.app;
 };
