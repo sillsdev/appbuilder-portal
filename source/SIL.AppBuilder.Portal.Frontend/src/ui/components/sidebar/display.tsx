@@ -6,9 +6,7 @@ import { NavLink } from 'react-router-dom';
 
 export interface IProps {
   isSidebarVisible: boolean;
-  activeMenu: string;
   toggleSidebar: () => void;
-  setActiveMenu: (string) => void;
 }
 
 class Sidebar extends React.Component<IProps> {
@@ -16,8 +14,6 @@ class Sidebar extends React.Component<IProps> {
   render() {
     const { toggleSidebar, isSidebarVisible } = this.props;
     const sidebarDisplay = isSidebarVisible ? 'block' : 'none';
-
-    const { setActiveMenu, activeMenu } = this.props;
 
     return (
       <div

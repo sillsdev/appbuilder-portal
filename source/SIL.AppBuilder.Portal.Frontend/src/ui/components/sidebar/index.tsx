@@ -3,18 +3,15 @@ import { connect } from 'react-redux';
 import SidebarDisplay from './display';
 
 import {
-  toggleSidebar,
-  setActiveMenu
+  toggleSidebar
 } from '@store/user-interface';
 
 const mapStateToProps = ({ ui }) => ({
-  isSidebarVisible: ui.isSidebarVisible,
-  activeMenu: ui.activeMenu
+  isSidebarVisible: ui.isSidebarVisible
 });
 
 const mapDispatchToProps = dispatch => ({
-  toggleSidebar: () => dispatch(toggleSidebar()),
-  setActiveMenu: (menu: string) => dispatch(setActiveMenu(menu))
+  toggleSidebar: () => dispatch(toggleSidebar())
 });
 
 export default connect(
