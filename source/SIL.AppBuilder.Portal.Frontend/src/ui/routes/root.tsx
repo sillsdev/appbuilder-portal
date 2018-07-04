@@ -12,6 +12,7 @@ import AdminRoute, { pathName as adminPath} from '@ui/routes/admin';
 import InvitationsRoute, { pathName as invitationsPath } from '@ui/routes/invitations';
 import ErrorRootRoute from '@ui/routes/errors';
 import NotFoundRoute from '@ui/routes/errors/not-found';
+import { Container } from 'semantic-ui-react';
 
 export default class RootPage extends React.Component {
   render() {
@@ -35,15 +36,17 @@ export default class RootPage extends React.Component {
         </section>
 
         <footer>
-          <Link to={loginPath}>Login?</Link>
-          &nbsp;|&nbsp;
-          <Link to={rootPath}>Home?</Link>
-          &nbsp;|&nbsp;
-          <Link to={tasksPath}>Tasks?</Link>
-          &nbsp;|&nbsp;
-          <Link to={adminPath}>Admin</Link>
-          &nbsp;|&nbsp;
-          <Link to={invitationsPath}>Invitations?</Link>
+          <Container>
+            <Link to={loginPath}>Login?</Link>
+            &nbsp;|&nbsp;
+            <Link to={rootPath}>Home?</Link>
+            &nbsp;|&nbsp;
+            <Link to={tasksPath}>Tasks?</Link>
+            &nbsp;|&nbsp;
+            <Link to={adminPath}>Admin</Link>
+            &nbsp;|&nbsp;
+            <Link to={invitationsPath}>Invitations?</Link>
+          </Container>
         </footer>
       </div>
     );

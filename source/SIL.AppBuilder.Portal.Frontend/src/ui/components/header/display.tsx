@@ -29,7 +29,22 @@ class Header extends React.Component<Props & RouteComponentProps<{}>, State> {
     return (
       <Menu data-test-header-menu className='menu-navbar'>
         <Container>
+<<<<<<< Updated upstream
           <Menu.Item data-test-header-appname header onClick={(e) => history.push('/')}>
+=======
+          <Menu.Item className='sidebar-item'>
+            <Button
+              data-test-header-sidebar-button
+              className='sidebar-button' 
+              onClick={toggleSidebar}>
+              <Icon name='bars' size='large' />
+            </Button>
+          </Menu.Item>    
+          <Menu.Item
+            data-test-header-appname header
+            className='logo'
+            onClick={(e) => history.push('/')}>
+>>>>>>> Stashed changes
             SCRIPTORIA
           </Menu.Item>
 
