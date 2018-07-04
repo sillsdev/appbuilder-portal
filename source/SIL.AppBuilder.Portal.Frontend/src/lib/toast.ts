@@ -13,11 +13,11 @@ export interface NotifyOptions {
   };
 }
 export function show(msg: string, options: NotifyOptions) {
-  notify.show(msg, options.type, options.timeout);
+  // notify.show(msg, options.type, options.timeout);
 }
 
 export function custom(msg: string, options: NotifyOptions) {
-  notify.show(msg, 'custom', options.timeout, options.color);
+  // notify.show(msg, 'custom', options.timeout, options.color);
 }
 
 export function success(msg: string, options: NotifyOptions = {}) {

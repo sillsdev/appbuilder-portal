@@ -2,7 +2,7 @@ import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { expect } from 'chai';
 
-import { mountWithContext } from 'tests/helpers';
+import { mountWithContext, setupRequestInterceptor } from 'tests/helpers';
 
 import Header from '../display';
 
@@ -21,6 +21,8 @@ describe('Integration | Component | Header', () => {
     });
 
     describe('the dropdowns can open', () => {
+      setupRequestInterceptor();
+
       beforeEach(async () => {
         expect(headerHelper.isNotificationMenuOpen).to.be.false;
 

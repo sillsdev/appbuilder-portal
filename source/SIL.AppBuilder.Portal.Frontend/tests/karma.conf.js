@@ -7,14 +7,16 @@ console.log('root path: ', root);
 module.exports = function(config) {
   config.set({
     singleRun: false,
+    retryLimit: 5, // hack around concurrency issues....
     basePath: '',
-    frameworks: [ 'mocha' ],
+    frameworks: [ 'parallel', 'mocha' ],
     reporters: [ 'mocha' ],
     browsers: ['Chrome'],
     mime: { 'text/x-typescript': ['ts','tsx'] },
 
     port: 9876,
     colors: true,
+    concurrency: 1,
     logLevel: 'DEBUG',
 
     files: [
@@ -33,6 +35,7 @@ module.exports = function(config) {
     client: {
       mocha: {
         reporter: 'html',
+        globals: false,
         opts: root + '/tests/mocha.opts'
       },
     },
@@ -40,11 +43,16 @@ module.exports = function(config) {
     webpack: require(__dirname + '/webpack.config.js'),
     webpackMiddleware: { stats: 'minimal' },
     plugins: [
+      'karma-parallel',
       'karma-mocha',
       'karma-webpack',
       'karma-mocha-reporter',
       'karma-chrome-launcher'
-    ]
+    ],
+    parallelOptions: {
+      // default to # CPUs - 1
+      // executors: 4,
+    }
   });
 
   if (process.env.CI) {

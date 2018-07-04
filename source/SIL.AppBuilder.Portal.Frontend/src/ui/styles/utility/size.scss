@@ -1,0 +1,8 @@
+@each $size in $sizes {
+  $name: nth($size, 1);
+  $amount: nth($size, 2);
+
+  .font-#{$name} {
+    font-size: sizeValue($name, $amount);
+  }
+}

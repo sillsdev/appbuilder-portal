@@ -42,10 +42,20 @@ const resolver = {
   plugins: [
     new TsconfigPathsPlugin({
       configFile: locate('tsconfig.json')
-    })
+    }),
   ]
 };
 
+const plugins = [
+  new webpack.EnvironmentPlugin([
+    "AUTH0_CONNECTION",
+    "AUTH0_DOMAIN",
+    "AUTH0_CLIENT_ID",
+    "AUTH0_SCOPE",
+    "API_HOST",
+    "HAS_API"
+  ])
+];
 
 module.exports = {
   locate,
@@ -53,5 +63,6 @@ module.exports = {
   resolver,
   environment,
   isProduction,
-  isDevelopment
+  isDevelopment,
+  plugins,
 }
