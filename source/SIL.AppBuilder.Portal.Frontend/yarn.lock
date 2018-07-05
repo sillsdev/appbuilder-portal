@@ -5913,6 +5913,12 @@ react-test-renderer@^16.4.0:
     prop-types "^15.6.0"
     react-is "^16.4.1"
 
+react-timezone@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-timezone/-/react-timezone-2.1.0.tgz#4e730ad5da4f74d832031effdc4cb75f88a5badd"
+  dependencies:
+    prop-types "^15.6.1"
+
 react-transition-group@^2.2.1:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.4.0.tgz#1d9391fabfd82e016f26fabd1eec329dbd922b5a"
