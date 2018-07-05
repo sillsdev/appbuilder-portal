@@ -5,6 +5,7 @@ import { requireAuth } from '@lib/auth';
 import { Container, Header, Grid } from 'semantic-ui-react';
 
 import EditProfileForm from './form';
+import PictureProfile from './picture';
 
 import './profile.scss';
 
@@ -18,8 +19,9 @@ class Profile extends React.Component {
         <h1>Profile</h1>
         <Grid>
           <Grid.Row>
-            <Grid.Column width={4}>
+            <Grid.Column width={4} className='text-center'>
               <h2>Profile Picture</h2>
+              <PictureProfile/>
             </Grid.Column>
             <Grid.Column width={12}>
               <h2>General</h2>

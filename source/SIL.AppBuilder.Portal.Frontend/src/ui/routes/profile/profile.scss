@@ -3,5 +3,28 @@
   .timezone ul {
     z-index: 1000;
   }
+
+  .text-center {
+    text-align: center;
+  } 
+
+  .default-profile-image {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    background-color: #bcbcbc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px auto 20px auto;
+  
+    span {
+      font-weight: bold;
+      font-size: 60px;
+      color: white;
+    }
+  }
+
+
   
 }
