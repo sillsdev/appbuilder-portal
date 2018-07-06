@@ -16,7 +16,7 @@ class Profile extends React.Component {
   render() {
     return (
       <Container className='profile'>
-        <h1>Profile</h1>
+        <h1 className='title'>Profile</h1>
         <Grid>
           <Grid.Row>
             <Grid.Column width={4} className='text-center'>

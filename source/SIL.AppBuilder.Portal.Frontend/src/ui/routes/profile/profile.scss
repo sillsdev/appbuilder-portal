@@ -1,5 +1,15 @@
 .profile {
 
+  .title {
+    font-family: Montserrat;
+    font-size: 36px;
+    font-weight: bold;
+    line-height: 1.53;
+    color: #515151;
+    padding-bottom: 15px;
+    padding-top: 15px;
+  }
+
   .timezone ul {
     z-index: 1000;
   }
@@ -23,6 +33,13 @@
       font-size: 60px;
       color: white;
     }
+  }
+
+  .profile-image {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    margin-bottom: 20px;
   }
 
 

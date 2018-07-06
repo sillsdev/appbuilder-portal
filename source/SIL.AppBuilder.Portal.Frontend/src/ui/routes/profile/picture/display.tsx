@@ -2,13 +2,13 @@ import * as React from 'react';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
 
 import AvatarEditor from 'react-avatar-editor'
-import { Button } from 'semantic-ui-react';
 
 export interface IProps {
 }
 
 export interface IState {
-  image: string;
+  file: File;
+  url: string;
 }
 
 
@@ -16,33 +16,52 @@ export interface IState {
 export default class EditProfileDisplay extends React.Component<IProps, IState> {
 
   mut: Mut;
-  state = { image: '' };
+  editor: any;
+  state = { 
+    file: null,
+    url: '',
+
+  };
 
   handleNewImage = e => {
-    this.setState({ image: e.target.files[0] })
+    this.setState({ 
+      file: e.target.files[0],
+      url: URL.createObjectURL(e.target.files[0]) 
+    })
   }  
+
+  setEditorRef = editor => {
+    if (editor) this.editor = editor
+  }  
+  
+  logCallback(e) {
+    // eslint-disable-next-line
+    console.log('callback', e)
+  }
 
   render() {
     const { mut } = this;
-    const { image } = this.state;
+    const { url } = this.state;
 
     return (
       <div>
-        {!image ? 
-        <div className='default-profile-image'>
-          <span>JL</span>
-        </div> :
-        <AvatarEditor
-          image={image}
-          border={0}
-          color={[255, 255, 255, 0.6]} // RGBA
-          scale={1}
-          rotate={0}
-        />}
-        <Button
-          as={input}
-          onChange={this.handleNewImage}
-        >UPLOAD NEW PICTURE</Button>
+        {!url ? 
+          <div className='default-profile-image'>
+            <span>JL</span>
+          </div> :
+          <img className='profile-image' src={url} />
+        }
+        <div>
+          <label htmlFor="hidden-profile-picture" className="ui icon button">
+            UPLOAD NEW PICTURE
+          </label>
+          <input 
+            type="file" 
+            id="hidden-profile-picture" 
+            style={{display: 'none'}}
+            onChange={this.handleNewImage}
+          />
+        </div>
       </div>
     );
 
