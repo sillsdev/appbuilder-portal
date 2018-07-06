@@ -18,6 +18,10 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
   mut: Mut;
   state = { image: '' };
 
+  handleNewImage = e => {
+    this.setState({ image: e.target.files[0] })
+  }  
+
   render() {
     const { mut } = this;
     const { image } = this.state;
@@ -35,7 +39,10 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
           scale={1}
           rotate={0}
         />}
-        <Button>UPLOAD NEW PICTURE</Button>
+        <Button
+          as={input}
+          onChange={this.handleNewImage}
+        >UPLOAD NEW PICTURE</Button>
       </div>
     );
 

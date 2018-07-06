@@ -1,17 +1,20 @@
 import * as React from 'react';
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
+import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
 import { Form, Divider, Checkbox, Button } from 'semantic-ui-react';
 
 import TimezonePicker from 'react-timezone';
 
+import { UserAttributes } from '@data/models/user';
+
 
 export interface IProps {
+  onSubmit: (data: UserAttributes) => Promise<void>;
 }
 
 export interface IState {
   name: string;
   email: string;
-  location: string;
+  localization: string;
   timezone: string;
   emailNotification: boolean;
   sshKey: string;
@@ -22,11 +25,32 @@ export interface IState {
 export default class EditProfileDisplay extends React.Component<IProps, IState> {
   
   mut: Mut;
-  state = { name: '', email: '', location: '', timezone: '', emailNotification: false, sshKey: '' };
+  toggle: ToggleHelper;
+  
+  state = { 
+    name: '', 
+    email: '', 
+    localization: '', 
+    timezone: '', 
+    emailNotification: false, 
+    sshKey: '' 
+  };
+
+  submit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+
+    const { onSubmit } = this.props;
+    await onSubmit({ ...this.state });
+  }  
 
   render() {
-    const { mut } = this;
-    const { name, email, location, timezone, emailNotification, sshKey } = this.state;
+    const { mut, toggle } = this;
+    const { 
+      name, email, localization, 
+      timezone, emailNotification, 
+      sshKey 
+    } = this.state;
     
     return (  
       <Form data-test-edit-profile>
@@ -48,7 +72,7 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
           <label>Location</label>
           <input
             data-test-profile-location
-            value={location}
+            value={localization}
             onChange={mut('location')} />
         </Form.Field>
         <Form.Field>
@@ -66,12 +90,17 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
         <Divider horizontal/>
         <h2>Notification Settings</h2>
         <Form.Field>
-          <Checkbox toggle label='I do not wish to recieve email notifications'/>
+          <Checkbox 
+            toggle 
+            label='I do not wish to recieve email notifications'
+            onChange={toggle('emailNotification')}
+            />
         </Form.Field>
         <Divider horizontal/>
         <h2>Manage Personal SSH KEY</h2>
         <Button
           data-test-profile-submit
+          onClick={this.submit}>
         >
           Update Profile  
         </Button>
