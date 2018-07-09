@@ -6,6 +6,18 @@
   color: white;
 }
 
+.gray-text {
+  color: $gray;
+}
+
+a.white-text {
+  &:hover {
+    color: darken(white, 30%);
+  }
+}
+
+
+
 .bg-blue {
   background: $blue;
 }

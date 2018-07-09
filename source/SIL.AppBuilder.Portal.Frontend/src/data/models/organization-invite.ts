@@ -5,3 +5,9 @@ export interface OrganizationInviteAttributes {
   ownerEmail?: string;
   expiresAt?: Date;
 }
+
+export interface RequestAccessForOrganizationAttributes {
+  name: string;
+  orgAdminEmail: string;
+  websiteUrl: string;
+}

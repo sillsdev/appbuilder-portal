@@ -10,6 +10,7 @@ import LoginRoute, { pathName as loginPath } from '@ui/routes/login';
 import TasksRoute, { pathName as tasksPath} from '@ui/routes/tasks';
 import AdminRoute, { pathName as adminPath} from '@ui/routes/admin';
 import InvitationsRoute, { pathName as invitationsPath } from '@ui/routes/invitations';
+import RequestOrgAccessRoute, { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-organization';
 import ErrorRootRoute from '@ui/routes/errors';
 import NotFoundRoute from '@ui/routes/errors/not-found';
 
@@ -23,6 +24,7 @@ export default class RootPage extends React.Component {
           <Switch>
             <Route exact path={rootPath} render={withLayout(IndexRoute)} />
             <Route path={loginPath} component={LoginRoute} />
+            <Route path={requestOrgAccessPath} component={RequestOrgAccessRoute} />
             <Route path={tasksPath} component={withLayout(TasksRoute)} />
             <Route path={adminPath} component={AdminRoute} />
             <Route path={invitationsPath} component={withLayout(InvitationsRoute)} />
@@ -30,21 +32,8 @@ export default class RootPage extends React.Component {
             <Route component={NotFoundRoute} />
           </Switch>
 
-
           <ErrorRootRoute />
         </section>
-
-        <footer>
-          <Link to={loginPath}>Login?</Link>
-          &nbsp;|&nbsp;
-          <Link to={rootPath}>Home?</Link>
-          &nbsp;|&nbsp;
-          <Link to={tasksPath}>Tasks?</Link>
-          &nbsp;|&nbsp;
-          <Link to={adminPath}>Admin</Link>
-          &nbsp;|&nbsp;
-          <Link to={invitationsPath}>Invitations?</Link>
-        </footer>
       </div>
     );
   }
