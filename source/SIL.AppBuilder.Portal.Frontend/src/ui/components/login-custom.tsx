@@ -15,6 +15,10 @@ export interface IState {
 
 const EMAIL_REGEX = /(.+)@(.+)\.(.+)/;
 
+// This is an alternative login implementation that may be used later on down the road.
+// However: it is recommended to use auth0's built-in lock UI, as it provides
+//          social logins 'for free'.
+//          See 'src/ui/styles/auth0-overrides.scss' for auth0-lock styles.
 @withTemplateHelpers
 export default class Lock extends React.Component<IProps, IState> {
   mut: Mut;

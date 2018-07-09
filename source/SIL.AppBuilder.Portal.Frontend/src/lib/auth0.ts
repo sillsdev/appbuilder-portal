@@ -126,7 +126,6 @@ export function login(username: string, password: string): Promise<string> {
     scope: auth0Env.scope
   };
 
-  console.log(auth0Env);
   const auth0 = new Auth0.WebAuth({
     domain: auth0Env.domain,
     clientID: auth0Env.clientId,
