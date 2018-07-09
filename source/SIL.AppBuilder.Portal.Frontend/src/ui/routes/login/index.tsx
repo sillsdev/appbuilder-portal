@@ -13,8 +13,15 @@ class LoginRoute extends React.Component<RouterProps> {
     const { history } = this.props;
 
     return (
-      <div className='bg-blue flex-grow justify-content-center align-items-center'>
-        <Login afterLogin={() => history.push('/tasks')}/>
+      <div className='bg-blue flex-grow flex-column justify-content-space-between align-items-center'>
+        <div className='flex flex-grow justify-content-center align-items-center'>
+          <Login afterLogin={() => history.push('/tasks')}/>
+        </div>
+
+        <span className='white-text m-b-md'>
+          Would you like to sign up your organization?&nbsp;
+          <a className='white-text bold'>Contact Us</a>
+        </span>
       </div>
     );
   }

@@ -2,10 +2,16 @@
 
 @import './_base/variables';
 @import './_base/functions';
+@import './semantic-ui-overrides';
+@import './auth0-overrides';
+
 @import './utility/colors';
 @import './utility/size';
 @import './utility/spacing';
 @import './utility/flex';
+@import './utility/borders';
+@import './utility/display';
+@import './utility/text';
 
 html,
 body {

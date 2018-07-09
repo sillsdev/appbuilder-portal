@@ -20,6 +20,8 @@ export default class Lock extends React.Component<IProps> {
       lock.hide();
       this.props.afterLogin();
     });
+
+    showLock();
   }
 
   componentWillUnmount() {
@@ -30,10 +32,6 @@ export default class Lock extends React.Component<IProps> {
   render() {
     return(
       <div>
-        <h2>Login Page</h2>
-        <button
-          className='ui button'
-          onClick={showLock}>Open Login</button>
       </div>
     );
   }
