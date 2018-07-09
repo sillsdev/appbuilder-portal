@@ -2,9 +2,16 @@
 
 @import './_base/variables';
 @import './_base/functions';
+@import './semantic-ui-overrides';
+@import './auth0-overrides';
+
 @import './utility/colors';
 @import './utility/size';
 @import './utility/spacing';
+@import './utility/flex';
+@import './utility/borders';
+@import './utility/display';
+@import './utility/text';
 
 html,
 body {
@@ -18,6 +25,12 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-weight: 300;
+}
+
+#root, .app-container {
+	height: 100%;
+	height: 100vh;
+	width: 100%;
 }
 
 :focus {

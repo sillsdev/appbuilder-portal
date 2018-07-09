@@ -44,7 +44,7 @@
     "redux-saga": "^0.16.0",
     "reflux": "^6.4.1",
     "sass-loader": "^7.0.3",
-    "semantic-ui-css": "^2.3.2",
+    "semantic-ui-css": "^2.3.3",
     "semantic-ui-react": "^0.80.2"
   },
   "devDependencies": {

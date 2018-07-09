@@ -77,13 +77,25 @@ export function isLoggedOut(): boolean {
 // state: string
 // tokenType : "Bearer"
 let lockInstance: Auth0LockStatic;
-export function getAuth0LockInstance(): Auth0LockStatic {
+export function getAuth0LockInstance(options = {}): Auth0LockStatic {
   if (lockInstance === undefined) {
     lockInstance = new Auth0Lock(auth0Env.clientId, auth0Env.domain, {
       auth: {
         responseType: 'token id_token',
         sso: false,
-      }
+      },
+      autoclose: false,
+      autofocus: true,
+      closable: false,
+      allowShowPassword: false,
+      // socialButtonStyle: 'small',
+      languageDictionary: {
+        title: 'Welcome to Scriptoria',
+      },
+      theme: {
+        logo: 'https://software.sil.org/wp/wp-content/uploads/2017/01/2014_sil_logo_80w_96h.png',
+      },
+      ...options
     });
   }
 

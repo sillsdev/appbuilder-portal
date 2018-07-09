@@ -9,7 +9,7 @@ class Layout extends React.Component {
   
   render() {
     return (
-      <div className='wrapper'>
+      <div className='wrapper flex-grow'>
         <Sidebar />
         <Header />
         <div>

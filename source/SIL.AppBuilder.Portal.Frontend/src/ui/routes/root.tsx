@@ -16,10 +16,10 @@ import NotFoundRoute from '@ui/routes/errors/not-found';
 export default class RootPage extends React.Component {
   render() {
     return (
-      <div>
+      <div className='app-container flex-column align-items-stretch'>
         <Notifications />
 
-        <section>
+        <section className='flex flex-grow'>
           <Switch>
             <Route exact path={rootPath} render={withLayout(IndexRoute)} />
             <Route path={loginPath} component={LoginRoute} />
