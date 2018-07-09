@@ -5816,12 +5816,6 @@ react-action-decorators@^0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/react-action-decorators/-/react-action-decorators-0.0.4.tgz#3e9e8516c016c00c7fccb0848740bddebecbd1ab"
 
-react-avatar-editor@^11.0.4:
-  version "11.0.4"
-  resolved "https://registry.yarnpkg.com/react-avatar-editor/-/react-avatar-editor-11.0.4.tgz#a32e2e10f1edc8480b1b852f3ab287c7b56c7ced"
-  dependencies:
-    prop-types "^15.5.8"
-
 react-data-grid-addons@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/react-data-grid-addons/-/react-data-grid-addons-4.0.8.tgz#a2b2b8803942fab78edac5f65f4964f24024d11b"
