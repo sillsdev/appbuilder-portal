@@ -99,7 +99,6 @@
     "karma-parallel": "^0.2.9",
     "karma-typescript": "^3.0.12",
     "karma-webpack": "^3.0.0",
-    "less-loader": "^4.1.0",
     "mocha": "^5.2.0",
     "node-sass": "^4.9.0",
     "proxyquire": "^2.0.1",
