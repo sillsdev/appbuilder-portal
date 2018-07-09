@@ -8,9 +8,11 @@ class RequestSuccess extends React.Component {
   render() {
     return (
       <FocusPanel title={'Request Sent!'}>
-        An email has been sent to the Scriporia team,
-        and you'll receive an invitation after your rquest
-        has been reviewed.
+        <p>
+          An email has been sent to the Scriporia team, <br />
+          and you'll receive an invitation after your rquest <br />
+          has been reviewed.
+        </p>
       </FocusPanel>
     );
   }

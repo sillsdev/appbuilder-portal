@@ -36,18 +36,18 @@ class RequestAccessForOrganizationDisplay extends React.Component<IProps, IState
 
     const hasError = error && error.length > 0;
 
-    console.log(error);
     return (
       <FocusPanel title={'Request Organization Invite'}>
-        <Form onSubmit={this.onSubmit}>
+        <Form data-test-form onSubmit={this.onSubmit}>
           { hasError && (
-            <Message negative>
+            <Message negative data-test-error-message>
               <Message.Header>{error}</Message.Header>
             </Message>
           )}
           <Form.Field>
             <label>Organization Name</label>
-            <input required type='text'
+            <input required data-test-name
+              type='text'
               value={name}
               onChange={mut('name')}
             />
@@ -55,7 +55,8 @@ class RequestAccessForOrganizationDisplay extends React.Component<IProps, IState
 
           <Form.Field>
             <label>Organization Admin Email</label>
-            <input required type='email'
+            <input required data-test-email
+              type='email'
               value={orgAdminEmail}
               onChange={mut('orgAdminEmail')}
             />
@@ -63,13 +64,15 @@ class RequestAccessForOrganizationDisplay extends React.Component<IProps, IState
 
           <Form.Field>
             <label>Website URL</label>
-            <input required type='text'
+            <input required data-test-site
+              type='text'
               value={websiteUrl}
               onChange={mut('websiteUrl')}
             />
           </Form.Field>
 
           <Button
+            data-test-submit
             className='w-100'
             type='submit'>
             Submit
