@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
-import { Form, Divider, Checkbox, Button } from 'semantic-ui-react';
+import { Form, Divider, Checkbox, Button, Icon } from 'semantic-ui-react';
 
 import TimezonePicker from 'react-timezone';
 
@@ -71,36 +71,52 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
         <Form.Field>
           <label>Location</label>
           <input
-            data-test-profile-location
+            data-test-profile-localization
             value={localization}
-            onChange={mut('location')} />
+            onChange={mut('localization')} />
         </Form.Field>
         <Form.Field>
           <label>Timezone</label>
-          <TimezonePicker
-            className='timezone'
-            value={timezone}
-            onChange={mut('timezone')}
-            inputProps={{
-              placeholder: 'Select your Timezone...',
-              name: 'timezone',
-            }}
-          />
-        </Form.Field>
-        <Divider horizontal/>
-        <h2>Notification Settings</h2>
-        <Form.Field>
-          <Checkbox 
-            toggle 
-            label='I do not wish to recieve email notifications'
-            onChange={toggle('emailNotification')}
+          <div className='timezone-group'>
+            <Icon name='caret down' />
+            <TimezonePicker
+              data-test-profile-timezone
+              className='timezone'
+              value={timezone}
+              onChange={mut('timezone')}
+              inputProps={{
+                placeholder: 'Select your Timezone...',
+                name: 'timezone',
+              }}
             />
+          </div>
         </Form.Field>
         <Divider horizontal/>
-        <h2>Manage Personal SSH KEY</h2>
+        <h2 className='form-title'>Notification Settings</h2>
+        <Form.Field>
+          <div className='notifications'>
+            <span>I do not wish to recieve email notifications</span>
+            <Checkbox
+              data-test-profile-email-notification
+              toggle
+              defaultChecked={emailNotification}
+              onChange={toggle('emailNotification')}
+              />
+          </div>
+        </Form.Field>
+        <Divider horizontal/>
+        <h2 className='form-title'>Manage Personal SSH KEY</h2>
+        <Form.Field>
+          <label>SSH KEY</label>
+          <input
+            data-test-profile-ssh-key
+            value={sshKey}
+            onChange={mut('sshKey')} />
+        </Form.Field>    
         <Button
           data-test-profile-submit
-          onClick={this.submit}>
+          onClick={this.submit}
+          className='form-button'
         >
           Update Profile  
         </Button>

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
 
-import AvatarEditor from 'react-avatar-editor'
-
 export interface IProps {
 }
 
@@ -30,15 +28,6 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
     })
   }  
 
-  setEditorRef = editor => {
-    if (editor) this.editor = editor
-  }  
-  
-  logCallback(e) {
-    // eslint-disable-next-line
-    console.log('callback', e)
-  }
-
   render() {
     const { mut } = this;
     const { url } = this.state;
@@ -52,7 +41,7 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
           <img className='profile-image' src={url} />
         }
         <div>
-          <label htmlFor="hidden-profile-picture" className="ui icon button">
+          <label htmlFor="hidden-profile-picture" className="ui icon button upload-button">
             UPLOAD NEW PICTURE
           </label>
           <input 
