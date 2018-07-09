@@ -90,7 +90,7 @@ export function getAuth0LockInstance(options = {}): Auth0LockStatic {
       allowShowPassword: false,
       // socialButtonStyle: 'small',
       languageDictionary: {
-        title: 'Welcome to Scriptura',
+        title: 'Welcome to Scriptoria',
       },
       theme: {
         logo: 'https://software.sil.org/wp/wp-content/uploads/2017/01/2014_sil_logo_80w_96h.png',
