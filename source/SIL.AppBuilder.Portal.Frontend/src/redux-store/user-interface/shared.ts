@@ -1,13 +1,11 @@
 export const namespace = 'sil';
 
 export interface State {
-  isSidebarVisible: boolean,
-  activeMenu: string
+  isSidebarVisible: boolean
 }
 
 export const initialState: State = {
-  isSidebarVisible: false,
-  activeMenu: 'tasks'
+  isSidebarVisible: false
 };
 
 
