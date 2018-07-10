@@ -9,13 +9,12 @@ import {
 import { deleteToken } from '@lib/auth0';
 import './header.scss';
 
-export interface State {
-}
-
 export interface Props {
+  toggleSidebar: () => void
 }
 
-class Header extends React.Component<Props & RouteComponentProps<{}>, State> {
+class Header extends React.Component<Props & RouteComponentProps<{}>> {
+
   handleSignOut = () => {
     const { history } = this.props;
 
@@ -24,19 +23,36 @@ class Header extends React.Component<Props & RouteComponentProps<{}>, State> {
   }
 
   render() {
-    const { history } = this.props;
+    const { history, toggleSidebar } = this.props;
 
     return (
       <Menu data-test-header-menu className='menu-navbar'>
         <Container>
-          <Menu.Item data-test-header-appname header onClick={(e) => history.push('/')}>
+          <Menu.Item>
+            <Button
+              data-test-header-sidebar-button
+              className='sidebar-button' 
+              onClick={toggleSidebar}>
+              <Icon name='bars' size='large' />
+            </Button>
+          </Menu.Item>    
+          <Menu.Item
+            data-test-header-appname header
+            className='logo'
+            onClick={(e) => history.push('/')}>
             SCRIPTORIA
           </Menu.Item>
 
           <Menu.Menu position='right'>
+
             <Menu.Item>
-              <Button data-test-header-addproject>Add Project</Button>
+              <Button 
+                data-test-header-addproject 
+                className='add-project'>
+                Add Project
+              </Button>
             </Menu.Item>
+
             <Menu.Item className='notification-item'>
               <Dropdown
                 data-test-header-notification
@@ -46,8 +62,9 @@ class Header extends React.Component<Props & RouteComponentProps<{}>, State> {
                 trigger={
                   <span>
                     <Icon circular name='alarm' size='large' />
-                  </span>}>
-
+                  </span>
+                }
+              >
                 <Dropdown.Menu>
                   <Dropdown.Item text='notification 1' />
                   <Dropdown.Item text='notification 2' />

@@ -8,12 +8,17 @@ import { mountWithContext, setupRequestInterceptor } from 'tests/helpers';
 import Header from '../display';
 
 import headerHelper from 'tests/helpers/components/header';
+import { TOGGLE_SIDEBAR } from '@store/user-interface/actions/toggle-sidebar';
 
 describe('Integration | Component | Header', () => {
 
   describe('Dropdowns', () => {
     beforeEach(async () => {
-      await mountWithContext(Header);
+      const props = {
+        isSidebarVisible: false,
+        toggleSidebar: () => ({ type: TOGGLE_SIDEBAR })
+      }
+      await mountWithContext(() => <Header {...props} />);
     });
 
     describe('the dropdowns can open', () => {

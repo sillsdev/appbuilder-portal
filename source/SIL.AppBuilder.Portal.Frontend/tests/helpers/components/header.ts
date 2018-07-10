@@ -14,6 +14,7 @@ export class Header {
   clickNotification = clickable('[data-test-header-notification]');
   clickAvatar = clickable('[data-test-header-avatar]');
   clickProfileLink = clickable('[data-test-profile]');
+  clickSidebarButton = clickable('[data-test-header-sidebar-button]');
 
   isNotificationMenuOpen = isPresent('[data-test-header-notification].active');
   isAvatarMenuOpen = isPresent('[data-test-header-avatar].active');
