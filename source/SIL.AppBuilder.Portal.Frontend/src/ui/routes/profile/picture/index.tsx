@@ -36,15 +36,23 @@ class ImageProfile extends React.Component<IProps, IState> {
     const { imageData } = this.state;
 
     return (
-      <div>
+      <div data-test-picture-profile>
         {!imageData ? 
           <div className='default-profile-image'>
             <span>JL</span>
           </div> :
-          <img className='profile-image' src={imageData} />
+          <img 
+            className='profile-image'
+            src={imageData}
+            data-test-picture-uploaded
+          />
         }
         <div>
-          <label htmlFor="hidden-profile-picture" className="ui icon button upload-button">
+          <label 
+            htmlFor="hidden-profile-picture"
+            className="ui icon button upload-button"
+            data-test-upload-picture
+          >
             UPLOAD NEW PICTURE
           </label>
           <input 

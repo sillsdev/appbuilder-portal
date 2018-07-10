@@ -38,7 +38,6 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
 
   submit = async (e) => {
     e.preventDefault();
-    console.log({...this.state});
     await this.props.onSubmit({ ...this.state });
   }  
 

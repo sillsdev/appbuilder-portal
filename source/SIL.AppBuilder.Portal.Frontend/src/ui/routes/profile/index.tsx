@@ -36,6 +36,8 @@ class Profile extends React.Component<IProps> {
     
       const { imageData } = this.state;
 
+      //TODO: we need an ID for the user so we can load it's data in 
+      //componentWillMount
       await this.props.updateStore(t => t.replaceRecord({
         type: TYPE_NAME,
         attributes: { ...formData, imageData }
