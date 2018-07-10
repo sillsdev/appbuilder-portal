@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
+import { location } from '@bigtest/react';
 import { expect } from 'chai';
 
 import { mountWithContext, setupRequestInterceptor } from 'tests/helpers';
@@ -47,5 +48,15 @@ describe('Integration | Component | Header', () => {
         });
       });
     });
+  });
+
+  describe('Go to profile', () => {
+    beforeEach(async () => {
+      await headerHelper.clickProfileLink();
+    });
+
+    it('redirect to profile',() => {
+      expect(location().pathname).to.eq('/profile');
+    })
   });
 });
