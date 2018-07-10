@@ -5,7 +5,7 @@ import { expect } from 'chai';
 
 import { mountWithContext } from 'tests/helpers';
 
-import Display from '../display';
+import Form from '../index';
 import page from './page';
 
 describe('Integration | Component | Edit Profile Form', () => {
@@ -13,10 +13,11 @@ describe('Integration | Component | Edit Profile Form', () => {
   let fakeSubmit;
 
   beforeEach(async () => {
+
     fakeSubmit = sinon.spy();
 
     await mountWithContext(() => (
-      <Display onSubmit={fakeSubmit} />
+      <Form onSubmit={fakeSubmit} />
     ));
   });
 
@@ -35,6 +36,7 @@ describe('Integration | Component | Edit Profile Form', () => {
       expect(page.localization).to.equal('Lima');
       expect(page.emailNotification).to.be.true;
       expect(page.sshKey).to.equal('abcd');
+
     });
 
     describe('the form is submitted', () => {

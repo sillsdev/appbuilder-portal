@@ -1,50 +1,130 @@
 import * as React from 'react';
-import { withData, WithDataProps } from 'react-orbitjs';
-import { withRouter, RouterProps } from 'react-router';
-import { compose } from 'recompose';
+import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
+import { Form, Divider, Checkbox, Button, Icon } from 'semantic-ui-react';
 
-import * as toast from '@lib/toast';
-import { UserAttributes, TYPE_NAME } from '@data/models/user';
+import TimezonePicker from 'react-timezone';
 
-import Display from './display';
+import { UserAttributes } from '@data/models/user';
 
-export interface IOwnProps { }
-export type IProps =
-  & IOwnProps
-  & WithDataProps
-  & RouterProps;
 
-class EditProfileForm extends React.Component<IProps> {
+export interface IProps {
+  onSubmit: (data: UserAttributes) => Promise<void>;
+}
 
-  submit = async (payload: UserAttributes) => {
-    try {
-      this.update(payload);
+export interface IState {
+  name: string;
+  email: string;
+  localization: string;
+  timezone: string;
+  emailNotification: boolean;
+  sshKey: string;
+}
 
-      toast.success(`User update successfully`);
 
-    } catch (e) {
-      toast.error(e.message);
-    }
-  }
+@withTemplateHelpers
+export default class EditProfileDisplay extends React.Component<IProps, IState> {
+  
+  mut: Mut;
+  toggle: ToggleHelper;
+  
+  state = { 
+    name: '', 
+    email: '', 
+    localization: '', 
+    timezone: '', 
+    emailNotification: false, 
+    sshKey: '' 
+  };
 
-  update = async (payload: UserAttributes) => {
-    const { updateStore } = this.props;
-
-    const { name, email, localization, timezone, emailNotification, sshKey } = payload;
-
-    return await updateStore(t => t.replaceRecord({
-      type: TYPE_NAME,
-      attributes: { name, email, localization, timezone, emailNotification, sshKey }
-    }));
+  submit = async (e) => {
+    e.preventDefault();
+    console.log({...this.state});
+    await this.props.onSubmit({ ...this.state });
   }  
 
   render() {
-    return <Display onSubmit={this.submit}/>;
+    const { mut, toggle } = this;
+    const { 
+      name, email, localization, 
+      timezone, emailNotification, 
+      sshKey 
+    } = this.state;
+    
+    return (  
+      <Form data-test-edit-profile>
+        <Form.Field>
+          <label>Name</label>
+          <input 
+            data-test-profile-name
+            value={name}
+            onChange={mut('name')} />
+        </Form.Field>
+        <Form.Field>
+          <label>Email</label>
+          <input
+            data-test-profile-email
+            value={email}
+            onChange={mut('email')} />
+        </Form.Field> 
+        <Form.Field>
+          <label>Location</label>
+          <input
+            data-test-profile-localization
+            value={localization}
+            onChange={mut('localization')} />
+        </Form.Field>
+        <Form.Field>
+          <label>Timezone</label>
+          <div 
+            data-test-profile-timezone
+            className='timezone-group'
+          >
+            <Icon name='caret down' />
+            <TimezonePicker
+              className='timezone'
+              value={timezone}
+              onChange={tz => {
+                this.setState({timezone: tz})
+              }}
+              inputProps={{
+                placeholder: 'Select your Timezone...',
+                name: 'timezone'
+              }}
+            />
+          </div>
+        </Form.Field>
+        <Divider horizontal/>
+        <h2 className='form-title'>Notification Settings</h2>
+        <Form.Field>
+          <div className='notifications'>
+            <span>I do not wish to recieve email notifications</span>
+            <Checkbox
+              data-test-profile-email-notification
+              toggle
+              defaultChecked={emailNotification}
+              onChange={toggle('emailNotification')}
+              />
+          </div>
+        </Form.Field>
+        <Divider horizontal/>
+        <h2 className='form-title'>Manage Personal SSH KEY</h2>
+        <Form.Field>
+          <label>SSH KEY</label>
+          <input
+            data-test-profile-ssh-key
+            value={sshKey}
+            onChange={mut('sshKey')} />
+        </Form.Field>    
+        <Button
+          data-test-profile-submit
+          onClick={this.submit}
+          className='form-button'
+        >
+          Update Profile  
+        </Button>
+      </Form>
+    )
+
   }
 
 }
-
-export default compose<{}, IOwnProps>(
-  withRouter,
-  withData({})
-)(EditProfileForm);
