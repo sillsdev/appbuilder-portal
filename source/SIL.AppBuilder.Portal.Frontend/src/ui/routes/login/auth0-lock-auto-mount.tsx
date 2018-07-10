@@ -13,28 +13,20 @@ export default class Lock extends React.Component<IProps> {
     const lock = getAuth0LockInstance();
 
     lock.on('authenticated', (authResult) => {
-      console.log(authResult);
-
       setToken(authResult.idToken);
 
       lock.hide();
       this.props.afterLogin();
     });
+
+    showLock();
   }
 
   componentWillUnmount() {
     hideLock();
   }
 
-
   render() {
-    return(
-      <div>
-        <h2>Login Page</h2>
-        <button
-          className='ui button'
-          onClick={showLock}>Open Login</button>
-      </div>
-    );
+    return null;
   }
 }

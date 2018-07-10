@@ -1,0 +1,67 @@
+body {
+  .auth0-lock-overlay,
+  .auth0-lock-header-bg-blur,
+  .auth0-lock-header-bg-solid,
+  .auth0-lock-header-logo {
+    display: none !important;
+  }
+
+  .auth0-lock.auth0-lock .auth0-lock-header {
+    height: auto;
+  }
+
+  .auth0-lock-name {
+    color: $gray !important;
+    font-weight: bold;
+    font-size: 2rem !important;
+  }
+
+  .auth0-lock-cred-pane,
+  .auth0-lock.auth-lock .auth0-lock-header-bg .auth0-lock-header-bg-blur {
+    border-radius: 0 !important;
+
+  }
+
+
+  .auth0-lock.auth0-lock .auth0-lock-submit {
+    background-color: $button-background-color !important;
+    height: 64px !important;
+    border-radius: 3px !important;
+
+
+    &:disabled {
+      opacity: 0.3;
+    }
+  }
+
+  .auth0-lock-widget {
+    box-shadow: none !important;
+  }
+
+  .auth0-lock-cred-pane {
+    padding: 2rem;
+  }
+  @media screen and (max-width: 480px) {
+    .auth0-lock-widget, .auth0-lock-widget-container {
+      width: 100% !important;
+    }
+    .auth0-lock-cred-pane {
+      padding: 0 1rem;
+      margin: 0 auto !important;
+      width: 350px;
+    }
+  }
+
+  @media screen and (min-width: 481px) {
+    .auth0-lock.auth0-lock .auth0-lock-widget {
+      width: auto !important;
+      max-width: 400px !important;
+    }
+  }
+
+  .auth0-lock-header {
+    .auth0-lock-header-bg {
+      background: white !important;
+    }
+  }
+}

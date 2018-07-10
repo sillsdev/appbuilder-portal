@@ -1,14 +1,14 @@
 import { combineReducers } from 'redux';
 
 import {
-  reducer as todosReducer,
-  State as TodoState
-} from './todos';
+  reducer as uiReducer,
+  State as UIState
+} from './user-interface';
 
-export interface State{
-  todos: TodoState;
+export interface State {
+  ui: UIState;
 }
 
 export const reducers = combineReducers({
-  todos: todosReducer
+  ui: uiReducer
 });

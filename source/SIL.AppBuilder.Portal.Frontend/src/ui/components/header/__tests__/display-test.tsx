@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
+import { location } from '@bigtest/react';
 import { expect } from 'chai';
 
 import { mountWithContext, setupRequestInterceptor } from 'tests/helpers';
@@ -7,12 +8,17 @@ import { mountWithContext, setupRequestInterceptor } from 'tests/helpers';
 import Header from '../display';
 
 import headerHelper from 'tests/helpers/components/header';
+import { TOGGLE_SIDEBAR } from '@store/user-interface/actions/toggle-sidebar';
 
 describe('Integration | Component | Header', () => {
 
   describe('Dropdowns', () => {
     beforeEach(async () => {
-      await mountWithContext(Header);
+      const props = {
+        isSidebarVisible: false,
+        toggleSidebar: () => ({ type: TOGGLE_SIDEBAR })
+      }
+      await mountWithContext(() => <Header {...props} />);
     });
 
     describe('the dropdowns can open', () => {
@@ -42,5 +48,15 @@ describe('Integration | Component | Header', () => {
         });
       });
     });
+  });
+
+  describe('Go to profile', () => {
+    beforeEach(async () => {
+      await headerHelper.clickProfileLink();
+    });
+
+    it('redirect to profile',() => {
+      expect(location().pathname).to.eq('/profile');
+    })
   });
 });

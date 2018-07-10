@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 import { withRouter, RouterProps } from 'react-router';
 
 import { requireNoAuth } from '@lib/auth';
-import Login from '@ui/components/login';
+import AutoMountingLock from './auth0-lock-auto-mount';
 
 export const pathName = '/login';
 
@@ -13,10 +13,15 @@ class LoginRoute extends React.Component<RouterProps> {
     const { history } = this.props;
 
     return (
-      <div>
-        <h2>Login Route </h2>
+      <div className='bg-blue flex-grow flex-column justify-content-space-between align-items-center'>
+        <div className='flex flex-grow justify-content-center align-items-center'>
+          <AutoMountingLock afterLogin={() => history.push('/tasks')}/>
+        </div>
 
-        <Login afterLogin={() => history.push('/tasks')}/>
+        <span className='white-text m-b-md'>
+          Would you like to sign up your organization?&nbsp;
+          <a className='white-text bold'>Contact Us</a>
+        </span>
       </div>
     );
   }

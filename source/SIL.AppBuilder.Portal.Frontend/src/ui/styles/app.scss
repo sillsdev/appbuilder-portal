@@ -1,16 +1,24 @@
 @charset "utf-8";
 
-@import url('https://fonts.googleapis.com/css?family=Montserrat');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
 @import './_base/variables';
 @import './_base/functions';
+@import './semantic-ui-overrides';
+@import './auth0-overrides';
+
 @import './utility/colors';
 @import './utility/size';
 @import './utility/spacing';
+@import './utility/flex';
+@import './utility/borders';
+@import './utility/display';
+@import './utility/text';
 
 html,
 body {
 	margin: 0;
-	padding: 0;
+  padding: 0;
+  height: inherit;
 }
 
 body {
@@ -21,6 +29,12 @@ body {
 footer {
   margin-top: 20px;
   text-align: center;
+}
+
+#root, .app-container {
+	height: 100%;
+	height: 100vh;
+	width: 100%;
 }
 
 :focus {

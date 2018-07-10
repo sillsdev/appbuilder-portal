@@ -1,6 +1,7 @@
 .ui.menu-navbar {
   background-color: #1C3258;
   border: none;
+  margin: 0px;
 
   .item {
     color: #FFF;
@@ -10,10 +11,25 @@
     color: #FFF;
   }
 
-  .button {
+  .logo {
+    padding-left: 0px;
+  }
+
+  .add-project {
     color: #FFF;
     background-color: transparent;
     border: 1px solid #FFF;
+  }
+
+  .button.sidebar-button {
+    background-color: transparent;
+    color:#FFF;
+    padding: 0px;
+
+    .icon.bars {
+      margin:0px;
+      opacity: 1;
+    }
   }
 
   .avatar-dropdown {
