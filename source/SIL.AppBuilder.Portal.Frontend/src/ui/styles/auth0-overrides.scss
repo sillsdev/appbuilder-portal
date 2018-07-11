@@ -6,6 +6,12 @@ body {
     display: none !important;
   }
 
+  .auth0-lock.auth0-lock,
+  .auth0-lock.auth0-lock .auth0-lock-center {
+    display: block;
+    position: static;
+  }
+
   .auth0-lock.auth0-lock .auth0-lock-header {
     height: auto;
   }

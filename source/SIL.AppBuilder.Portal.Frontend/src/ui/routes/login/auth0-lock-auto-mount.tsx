@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as uuid from 'uuid';
 
 import { getAuth0LockInstance, setToken, showLock, hideLock } from '@lib/auth0';
 
@@ -8,9 +9,14 @@ export interface IProps {
 
 export default class Lock extends React.Component<IProps> {
   state = { loggedIn : false };
+  lockContainerId: string;
+
+  componentWillMount() {
+    this.lockContainerId = uuid();
+  }
 
   componentDidMount() {
-    const lock = getAuth0LockInstance();
+    const lock = getAuth0LockInstance({ container: this.lockContainerId});
 
     lock.on('authenticated', (authResult) => {
       setToken(authResult.idToken);
@@ -27,6 +33,6 @@ export default class Lock extends React.Component<IProps> {
   }
 
   render() {
-    return null;
+    return <div id={this.lockContainerId} />;
   }
 }

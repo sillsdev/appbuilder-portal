@@ -10,6 +10,12 @@
   color: $gray;
 }
 
+a.white-text {
+  &:hover {
+    color: darken(white, 30%);
+  }
+}
+
 .bg-lightest-gray {
   background: $lightest-gray;
 }
