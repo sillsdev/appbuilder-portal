@@ -1,4 +1,5 @@
 import { getToken } from './auth0';
+import { getCurrentOrganizationId } from './current-organization';
 
 export function get(url: string, options: any = {}) {
   return authenticatedFetch(url, { method: 'GET', ...options });
@@ -26,11 +27,13 @@ export function destroy(url: string, options: any = {}) {
 
 export function authenticatedFetch(url: string, options: any) {
   const token = getToken();
+  const orgId = getCurrentOrganizationId();
 
   return fetch(url, {
     ...options,
     headers: {
       ['Authorization']: `Bearer ${token}`,
+      ['Organization']: `${orgId}`,
       ...options.headers
     }
   });

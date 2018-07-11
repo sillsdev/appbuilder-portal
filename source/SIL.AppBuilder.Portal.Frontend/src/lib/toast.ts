@@ -14,10 +14,12 @@ export interface NotifyOptions {
 }
 export function show(msg: string, options: NotifyOptions) {
   // notify.show(msg, options.type, options.timeout);
+  console.log(msg, options);
 }
 
 export function custom(msg: string, options: NotifyOptions) {
   // notify.show(msg, 'custom', options.timeout, options.color);
+  console.log(msg, options);
 }
 
 export function success(msg: string, options: NotifyOptions = {}) {

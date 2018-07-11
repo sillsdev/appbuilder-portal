@@ -18,6 +18,7 @@ export interface WithData {
   dataStore: Store;
 }
 
+// https://github.com/exivity/react-orbitjs/blob/master/src/components/withData.js
 export type WithDataProps =
   & {
     queryStore: () => any;
