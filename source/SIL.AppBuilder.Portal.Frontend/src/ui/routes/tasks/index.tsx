@@ -109,7 +109,7 @@ class Tasks extends React.Component<IProps> {
                         <span>{prettyMS(waitTime, { secDecimalDigits: 0 })}</span>
                       </Table.Cell>
                       <Table.Cell>
-                        <Button>reasign</Button>
+                        <Button>REASSIGN</Button>
                       </Table.Cell>
                     </Table.Row>
                   );
