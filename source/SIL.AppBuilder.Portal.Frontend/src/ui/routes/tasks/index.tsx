@@ -41,8 +41,8 @@ class Tasks extends React.Component<IProps> {
       type: TYPE_NAME,
       id: uuid(),
       attributes: {
-        project: 'Example Bible',
-        product: products[Math.floor(Math.random() * (2))],
+        project: { name: 'Example Bible' },
+        product: { name: products[Math.floor(Math.random() * (2))] },
         status: status[Math.floor(Math.random() * (3))],
         waitTime: Math.floor(Math.random() * (1296001))
       }
@@ -97,11 +97,11 @@ class Tasks extends React.Component<IProps> {
                   return (
                     <Table.Row key={index}>
                       <Table.Cell>
-                        <Link to={`projects/${task.id}`}>{project}</Link>
+                        <Link to={'/projects'}>{project.name}</Link>
                       </Table.Cell>
                       <Table.Cell>
-                        { this.productIcon(product) }
-                        <span>{product}</span>
+                        { this.productIcon(product.name) }
+                        <span>{product.name}</span>
                       </Table.Cell>
                       <Table.Cell>{user ? `${user.name}` : '[unclaimed]'}</Table.Cell>
                       <Table.Cell className='red'>{status}</Table.Cell>

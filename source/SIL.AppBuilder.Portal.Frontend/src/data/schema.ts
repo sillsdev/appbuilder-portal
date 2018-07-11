@@ -28,6 +28,22 @@ const schemaDefinition: SchemaSettings = {
         users: { type: 'hasMany', model: 'user', inverse: 'organizations' }
       }
     },
+    project: {
+      attributes: {
+        name: { type: 'string' }
+      },
+      relationships: {
+        tasks: { type: 'hasMany', model: 'task', inverse: 'project'}
+      }
+    },
+    product: {
+      attributes: {
+        name: { type: 'string' }
+      },
+      relationships: {
+        tasks: { type: 'hasMany', model: 'task', inverse: 'project' }
+      }
+    },
     task: {
       attributes: {
         project: { type: 'string' },
@@ -36,6 +52,8 @@ const schemaDefinition: SchemaSettings = {
         waitTime: { type: 'string' }
       },
       relationships: {
+        project: { type: 'hasOne', model: 'project', inverse: 'tasks'},
+        product: { type: 'hasOne', model: 'product', inverse: 'tasks'},
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
       }
     },
