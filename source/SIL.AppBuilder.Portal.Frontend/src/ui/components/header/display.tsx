@@ -87,7 +87,11 @@ class Header extends React.Component<Props & RouteComponentProps<{}>> {
                 }
               >
                 <Dropdown.Menu>
-                  <Dropdown.Item text='My Profile' />
+                  <Dropdown.Item
+                    data-test-profile
+                    text='My Profile'
+                    onClick={e => history.push('/profile')}
+                  />
                   <Dropdown.Item text='Notification Settings' />
                   <Dropdown.Item text='Help' />
                   <Dropdown.Item

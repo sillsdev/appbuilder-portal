@@ -10,8 +10,11 @@ import LoginRoute, { pathName as loginPath } from '@ui/routes/login';
 import TasksRoute, { pathName as tasksPath} from '@ui/routes/tasks';
 import AdminRoute, { pathName as adminPath} from '@ui/routes/admin';
 import InvitationsRoute, { pathName as invitationsPath } from '@ui/routes/invitations';
+
 import RequestOrgAccessRoute, { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-organization';
 import RequestOrgAccessSuccessRoute, { pathName as requestOrgAccessSuccessPath } from '@ui/routes/request-access-for-organization/success';
+
+import ProfileRoute, { pathName as profilePath } from '@ui/routes/profile';
 
 import ErrorRootRoute from '@ui/routes/errors';
 import NotFoundRoute from '@ui/routes/errors/not-found';
@@ -32,6 +35,8 @@ export default class RootPage extends React.Component {
 
             <Route exact path={requestOrgAccessPath} component={RequestOrgAccessRoute} />
             <Route path={requestOrgAccessSuccessPath} component={RequestOrgAccessSuccessRoute} />
+
+            <Route path={profilePath} component={withLayout(ProfileRoute)} /> 
 
             <Route component={NotFoundRoute} />
           </Switch>
