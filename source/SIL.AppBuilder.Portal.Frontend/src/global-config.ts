@@ -1,4 +1,5 @@
 import { getToken } from '@lib/auth0';
+import { getCurrentOrganizationId } from '@lib/current-organization';
 
 // DWKit does not allow customization of their network requests.
 // so we need to configure globally.
@@ -8,7 +9,9 @@ import { getToken } from '@lib/auth0';
 $.ajaxSetup({
   beforeSend(xhr) {
     const token = getToken();
+    const orgId = getCurrentOrganizationId();
 
     xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.setRequestHeader('Organization', `${orgId}`);
   }
 });

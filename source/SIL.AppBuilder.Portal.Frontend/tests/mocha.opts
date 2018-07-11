@@ -1,1 +1,2 @@
 {src,tests}/**/*-test.{ts,tsx}
+--timeout 2000

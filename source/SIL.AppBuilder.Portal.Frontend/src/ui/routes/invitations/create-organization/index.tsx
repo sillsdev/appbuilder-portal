@@ -22,7 +22,7 @@ export default class CreateOrganizationRoute extends React.Component<IProps> {
       <div className='ui container'>
         <div className='ui centered column grid'>
           <div className='eight wide column '>
-            <h1>You have been invited to create an organization!</h1>
+            <h2 className='page-heading'>You have been invited to create an organization!</h2>
 
             <CreateOrganizationForm token={token} />
           </div>

@@ -7,7 +7,9 @@ import {
 
 
 import { deleteToken } from '@lib/auth0';
+import OrganizationSwitcher from './organization-switcher';
 import './header.scss';
+import UserDropdown from './user-dropdown';
 
 export interface Props {
   toggleSidebar: () => void
@@ -31,11 +33,11 @@ class Header extends React.Component<Props & RouteComponentProps<{}>> {
           <Menu.Item>
             <Button
               data-test-header-sidebar-button
-              className='sidebar-button' 
+              className='sidebar-button'
               onClick={toggleSidebar}>
               <Icon name='bars' size='large' />
             </Button>
-          </Menu.Item>    
+          </Menu.Item>
           <Menu.Item
             data-test-header-appname header
             className='logo'
@@ -46,11 +48,15 @@ class Header extends React.Component<Props & RouteComponentProps<{}>> {
           <Menu.Menu position='right'>
 
             <Menu.Item>
-              <Button 
-                data-test-header-addproject 
+              <Button
+                data-test-header-addproject
                 className='add-project'>
                 Add Project
               </Button>
+            </Menu.Item>
+
+            <Menu.Item>
+              <OrganizationSwitcher />
             </Menu.Item>
 
             <Menu.Item className='notification-item'>
@@ -75,31 +81,7 @@ class Header extends React.Component<Props & RouteComponentProps<{}>> {
             </Menu.Item>
 
             <Menu.Item>
-              <Dropdown
-                data-test-header-avatar
-                className='avatar-dropdown'
-                pointing='top right'
-                icon={null}
-                trigger={
-                  <span className='black-text font-lg'>
-                    FL
-                  </span>
-                }
-              >
-                <Dropdown.Menu>
-                  <Dropdown.Item
-                    data-test-profile
-                    text='My Profile'
-                    onClick={e => history.push('/profile')}
-                  />
-                  <Dropdown.Item text='Notification Settings' />
-                  <Dropdown.Item text='Help' />
-                  <Dropdown.Item
-                    data-test-logout
-                    text='Sign Out'
-                    onClick={this.handleSignOut}/>
-                </Dropdown.Menu>
-              </Dropdown>
+              <UserDropdown toggleSidebar={toggleSidebar}/>
             </Menu.Item>
           </Menu.Menu>
         </Container>

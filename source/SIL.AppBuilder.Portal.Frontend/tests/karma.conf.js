@@ -9,7 +9,10 @@ module.exports = function(config) {
     singleRun: false,
     retryLimit: 5, // hack around concurrency issues....
     basePath: '',
-    frameworks: [ 'parallel', 'mocha' ],
+    frameworks: [
+      /* 'parallel', */
+      'mocha'
+     ],
     reporters: [ 'mocha' ],
     browsers: ['Chrome'],
     mime: { 'text/x-typescript': ['ts','tsx'] },
@@ -43,7 +46,7 @@ module.exports = function(config) {
     webpack: require(__dirname + '/webpack.config.js'),
     webpackMiddleware: { stats: 'minimal' },
     plugins: [
-      'karma-parallel',
+      /* 'karma-parallel', */
       'karma-mocha',
       'karma-webpack',
       'karma-mocha-reporter',
