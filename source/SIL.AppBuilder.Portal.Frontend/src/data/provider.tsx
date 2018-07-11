@@ -25,10 +25,10 @@ export default class APIProvider extends React.Component {
   initDataStore() {
     const inMemory = new Store({ schema, name: 'inMemory' });
 
-    if (!appEnv.hasApi) {
-      // disable remote api use until we have an API to interface with
-      return inMemory;
-    }
+    // if (!appEnv.hasApi) {
+    //   // disable remote api use until we have an API to interface with
+    //   return inMemory;
+    // }
 
     const remote = new JSONAPISource({
       schema,

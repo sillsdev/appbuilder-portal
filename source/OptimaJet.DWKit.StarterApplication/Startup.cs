@@ -18,6 +18,13 @@ using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Optimajet.DWKit.StarterApplication.Data;
 using Microsoft.EntityFrameworkCore;
 using JsonApiDotNetCore.Extensions;
+using JsonApiDotNetCore.Data;
+using JsonApiDotNetCore.Services;
+using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Repositories;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -50,17 +57,17 @@ namespace OptimaJet.DWKit.StarterApplication
             // 2. Set the DWKitRuntime.Security.CurrentUser
             // 3. Controller actions are not allowed to have multiple authentication schemes
             // 4. Cookies must be removed.
-            //
-            // services.AddAuthentication(options =>
-            // {
-            //     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            // }).AddJwtBearer(options =>
-            // {
-            //     options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
-            //     options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");
-            //     options.RequireHttpsMetadata = false;
-            // });
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
+                options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+            });
 
             // Authentication handeled by auth0
             // no cookies needed, as auth0 / jwt auth is state-less
@@ -74,6 +81,11 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddJsonApi<AppDbContext>(
                 opt => opt.Namespace = "api"
             );
+
+            // Add service / repository overrides
+            services.AddScoped<IEntityRepository<User>, UserRepository>();
+            services.AddScoped<IResourceService<User>, UserService>();
+
 
             services.AddMvc(options => {
                 options.Filters.Add(typeof(Security.AuthorizationFilter));
