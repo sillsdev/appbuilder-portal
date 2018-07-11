@@ -3,7 +3,7 @@ import { describe, beforeEach, it } from '@bigtest/mocha';
 import { location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { mountWithContext, setupRequestInterceptor } from 'tests/helpers';
+import { mountWithContext, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
 import Header from '../display';
 
@@ -51,6 +51,9 @@ describe('Integration | Component | Header', () => {
   });
 
   describe('Go to profile', () => {
+    useFakeAuthentication();
+    setupRequestInterceptor();
+
     beforeEach(async () => {
       await headerHelper.clickProfileLink();
     });

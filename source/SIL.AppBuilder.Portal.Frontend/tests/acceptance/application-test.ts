@@ -12,7 +12,7 @@ describe('Acceptance | Application | renders', () => {
     app = await setupAppForTesting(Application);
   });
 
-  it('resolves with the app', async () => {
+  it('resolves with the app', () => {
     expect(app).to.be.an.instanceOf(Application);
   });
 });

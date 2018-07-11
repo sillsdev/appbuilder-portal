@@ -16,6 +16,9 @@ import RequestOrgAccessSuccessRoute, { pathName as requestOrgAccessSuccessPath }
 
 import ProfileRoute, { pathName as profilePath } from '@ui/routes/profile';
 
+import OrganizationsRoute, { pathName as organizationsPath } from '@ui/routes/organizations';
+
+
 import ErrorRootRoute from '@ui/routes/errors';
 import NotFoundRoute from '@ui/routes/errors/not-found';
 
@@ -27,16 +30,18 @@ export default class RootPage extends React.Component {
 
         <section className='flex flex-grow'>
           <Switch>
-            <Route exact path={rootPath} render={withLayout(IndexRoute)} />
             <Route path={loginPath} component={LoginRoute} />
-            <Route path={tasksPath} component={withLayout(TasksRoute)} />
             <Route path={adminPath} component={AdminRoute} />
+
+            <Route exact path={rootPath} render={withLayout(IndexRoute)} />
+            <Route path={tasksPath} component={withLayout(TasksRoute)} />
             <Route path={invitationsPath} component={withLayout(InvitationsRoute)} />
 
             <Route exact path={requestOrgAccessPath} component={RequestOrgAccessRoute} />
             <Route path={requestOrgAccessSuccessPath} component={RequestOrgAccessSuccessRoute} />
 
-            <Route path={profilePath} component={withLayout(ProfileRoute)} /> 
+            <Route path={profilePath} component={withLayout(ProfileRoute)} />
+            <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
 
             <Route component={NotFoundRoute} />
           </Switch>

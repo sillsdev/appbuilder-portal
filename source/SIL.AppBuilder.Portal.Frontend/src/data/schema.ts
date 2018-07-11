@@ -18,10 +18,18 @@ const schemaDefinition: SchemaSettings = {
         name: { type: 'string' },
         websiteUrl: { type: 'string' },
         buildEngineUrl: { type: 'string' },
+        logoUrl: { type: 'string' },
+
+        makePrivateByDefault: { type: 'boolean' },
+        useSilBuildInfrastructure: { type: 'boolean' },
 
         // note, that the Build Engine API access token probably should
         // never be *received* from the Scriptura API
-        buildEngineApiAccessToken: { type: 'string' }
+        buildEngineApiAccessToken: { type: 'string' },
+
+        // unpresisted, send-only attribute for when a user accepts an
+        // invite to create an organization
+        token: { type: 'string' },
       },
       relationships: {
         owner: { type: 'hasOne', model: 'user', inverse: 'ownedOrganizations' },

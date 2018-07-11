@@ -1,3 +1,25 @@
 .bold {
   font-weight: bold;
 }
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.page-heading {
+  font-weight: bold;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid $border-color;
+}
+
+.sub-page-heading {
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.input-info {
+  font-weight: 300;
+  line-height: 1.54;
+  color: $gray;
+}
