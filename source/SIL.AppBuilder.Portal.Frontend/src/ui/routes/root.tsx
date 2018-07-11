@@ -28,27 +28,11 @@ export default class RootPage extends React.Component {
             <Route path={tasksPath} component={withLayout(TasksRoute)} />
             <Route path={adminPath} component={AdminRoute} />
             <Route path={invitationsPath} component={withLayout(InvitationsRoute)} />
-            <Route path={profilePath} component={withLayout(ProfileRoute)} /> 
+            <Route path={profilePath} component={withLayout(ProfileRoute)} />
             <Route component={NotFoundRoute} />
           </Switch>
-
-
           <ErrorRootRoute />
         </section>
-
-        <footer>
-          <Container>
-            <Link to={loginPath}>Login?</Link>
-            &nbsp;|&nbsp;
-            <Link to={rootPath}>Home?</Link>
-            &nbsp;|&nbsp;
-            <Link to={tasksPath}>Tasks?</Link>
-            &nbsp;|&nbsp;
-            <Link to={adminPath}>Admin</Link>
-            &nbsp;|&nbsp;
-            <Link to={invitationsPath}>Invitations?</Link>
-          </Container>
-        </footer>
       </div>
     );
   }

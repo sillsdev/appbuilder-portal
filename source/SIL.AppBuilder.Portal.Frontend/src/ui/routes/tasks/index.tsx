@@ -70,8 +70,6 @@ class Tasks extends React.Component<IProps> {
 
     const { tasks } = this.props;
 
-    console.log(tasks);
-
     return (
       <Container className='tasks'>
         <h1 className='page-heading'>My Tasks</h1>
