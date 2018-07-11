@@ -43,7 +43,7 @@ class Tasks extends React.Component<IProps> {
       attributes: {
         project: 'Example Bible',
         product: products[Math.floor(Math.random() * (2))],
-        status: status[Math.floor(Math.random() * (4))],
+        status: status[Math.floor(Math.random() * (3))],
         waitTime: Math.floor(Math.random() * (1296001))
       }
     }));
@@ -51,6 +51,19 @@ class Tasks extends React.Component<IProps> {
 
   componentWillMount() {
     this.generateRandomTaks();
+  }
+
+  productIcon = (productName) => {
+
+    const icons = [{id: 'android', icon:'android'},{id:'html', icon: 'file code'}];
+
+    for (let i=0; i < icons.length; i++) {
+      if (productName.toLowerCase().includes(icons[0].id)) {
+        return <Icon className={icons[0].icon}/>
+      }
+    }
+
+    return null;
   }
 
   render() {
@@ -87,13 +100,13 @@ class Tasks extends React.Component<IProps> {
                         <Link to={`projects/${task.id}`}>{project}</Link>
                       </Table.Cell>
                       <Table.Cell>
-                        <Icon name='android' />
+                        { this.productIcon(product) }
                         <span>{product}</span>
                       </Table.Cell>
                       <Table.Cell>{user ? `${user.name}` : '[unclaimed]'}</Table.Cell>
                       <Table.Cell className='red'>{status}</Table.Cell>
                       <Table.Cell>
-                        <span>{prettyMS(waitTime)}</span>
+                        <span>{prettyMS(waitTime, { secDecimalDigits: 0 })}</span>
                       </Table.Cell>
                       <Table.Cell>
                         <Button>reasign</Button>
