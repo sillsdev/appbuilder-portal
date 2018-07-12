@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
 
 import HeaderDisplay from './display';
 
@@ -12,9 +13,8 @@ const mapStateToProps = ({ ui }) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   toggleSidebar: () => dispatch(toggleSidebar())
-})
+});
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+export default compose(
+  connect(mapStateToProps,mapDispatchToProps)
 )(HeaderDisplay);

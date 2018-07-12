@@ -2,20 +2,26 @@ import * as React from 'react';
 import { withRouter, RouteComponentProps  } from 'react-router-dom';
 import {
   Container, Menu, Button,
-  Dropdown, Image, Icon
+  Icon
 } from 'semantic-ui-react';
-
 
 import { deleteToken } from '@lib/auth0';
 import OrganizationSwitcher from './organization-switcher';
-import './header.scss';
+
 import UserDropdown from './user-dropdown';
+import Notifications from './notifications';
+
+import './header.scss';
 
 export interface Props {
   toggleSidebar: () => void
 }
 
-class Header extends React.Component<Props & RouteComponentProps<{}>> {
+export type IProps =
+  & Props
+  & RouteComponentProps<{}>
+
+class Header extends React.Component<IProps> {
 
   handleSignOut = () => {
     const { history } = this.props;
@@ -41,12 +47,11 @@ class Header extends React.Component<Props & RouteComponentProps<{}>> {
           <Menu.Item
             data-test-header-appname header
             className='logo'
-            onClick={(e) => history.push('/')}>
+            onClick={() => history.push('/')}>
             SCRIPTORIA
           </Menu.Item>
 
           <Menu.Menu position='right'>
-
             <Menu.Item>
               <Button
                 data-test-header-addproject
@@ -54,32 +59,12 @@ class Header extends React.Component<Props & RouteComponentProps<{}>> {
                 Add Project
               </Button>
             </Menu.Item>
-
             <Menu.Item>
               <OrganizationSwitcher />
             </Menu.Item>
-
             <Menu.Item className='notification-item'>
-              <Dropdown
-                data-test-header-notification
-                className='notification-dropdown'
-                pointing='top right'
-                icon={null}
-                trigger={
-                  <span>
-                    <Icon circular name='alarm' size='large' />
-                  </span>
-                }
-              >
-                <Dropdown.Menu>
-                  <Dropdown.Item text='notification 1' />
-                  <Dropdown.Item text='notification 2' />
-                  <Dropdown.Item text='notification 3' />
-                  <Dropdown.Item text='notification 4' />
-                </Dropdown.Menu>
-              </Dropdown>
+              <Notifications/>
             </Menu.Item>
-
             <Menu.Item>
               <UserDropdown toggleSidebar={toggleSidebar}/>
             </Menu.Item>
