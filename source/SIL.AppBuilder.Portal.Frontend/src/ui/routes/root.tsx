@@ -27,8 +27,8 @@ export default class RootPage extends React.Component {
             <Route path={loginPath} component={LoginRoute} />
             <Route path={adminPath} component={AdminRoute} />
 
-            {/* <Route exact path={rootPath} render={withLayout(IndexRoute)} /> */}
-            <Route path={tasksPath} component={withLayout(TasksRoute)} />
+            <Route exact path={rootPath} component={IndexRoute} />
+            <Route path={tasksPath} component={TasksRoute} />
             <Route path={invitationsPath} component={withLayout(InvitationsRoute)} />
             <Route path={profilePath} component={withLayout(ProfileRoute)} />
             <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />

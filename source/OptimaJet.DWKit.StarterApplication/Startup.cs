@@ -25,6 +25,7 @@ using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -47,6 +48,19 @@ namespace OptimaJet.DWKit.StarterApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin();
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyHeader();
+                    }
+                );
+            });
+
+
             // Add framework services.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -89,6 +103,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddMvc(options => {
                 options.Filters.Add(typeof(Security.AuthorizationFilter));
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllArigins"));
             });
 
             // add the db context like you normally would
@@ -109,6 +124,8 @@ namespace OptimaJet.DWKit.StarterApplication
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseCors("AllowAllOrigins");
 
             if (env.IsDevelopment())
             {

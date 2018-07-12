@@ -6,7 +6,7 @@ import Sidebar from '@ui/components/sidebar';
 import './layout.scss';
 
 class Layout extends React.Component {
-  
+
   render() {
     return (
       <div className='wrapper flex-grow'>
@@ -19,5 +19,9 @@ class Layout extends React.Component {
     );
   }
 }
+
+export const withLayout = (Component) => (props) => (
+  <Layout><Component { ...props } /></Layout>
+);
 
 export default Layout;

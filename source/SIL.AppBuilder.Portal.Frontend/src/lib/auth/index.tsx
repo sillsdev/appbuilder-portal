@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { withRouter, RouterProps, Redirect } from 'react-router';
 
+import { withCurrentUser } from '@data/with-current-user';
 import { isLoggedIn } from '@lib/auth0';
 import * as toast from '@lib/toast';
 
@@ -11,7 +12,9 @@ export function requireAuth(Component) {
     const authenticated = isLoggedIn();
 
     if (authenticated) {
-      return <Component { ...propsWithRouting } />;
+      const WithUser = withCurrentUser()(Component);
+
+      return <WithUser { ...propsWithRouting } />;
     }
 
     // toast.error('You must be logged in to do that');

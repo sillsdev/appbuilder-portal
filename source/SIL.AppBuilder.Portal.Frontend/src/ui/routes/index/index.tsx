@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 // import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 import { get } from '@lib/fetch';
+import { withLayout } from '@ui/components/layout';
 
 export const pathName = '/';
 
-export default class IndexRoute extends React.Component {
+class IndexRoute extends React.Component<any, any> {
   state = { data: {}, errors: {} };
 
   async componentDidMount() {
@@ -29,3 +31,7 @@ export default class IndexRoute extends React.Component {
     );
   }
 }
+
+export default compose (
+  withLayout
+)(IndexRoute);
