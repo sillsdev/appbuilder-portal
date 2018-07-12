@@ -20,15 +20,25 @@ $positions: (
 );
 
 $blue: #0068a6;
+$blue-dark: #0c3855;
+$blue-highlight: #4a90e2;
+
 $white: #fff;
 $gray: #515151;
-$panel-border-color: #d8d8d8;
+$light-gray: #9b9b9b;
+$lighter-gray: #e9e9e9;
+$lightest-gray: #f7f7f7;
+
+$border-color: #d8d8d8;
+$border-light-color: $lighter-gray;
+$panel-border-color: $border-color;
 
 $background: $white;
 $primary: $blue;
 $text: $gray;
+$navigation-text: $light-gray;
 
-$button-background-color: #0c3855;
+$button-background-color: $blue-dark;
 $input-border-color: rgba(0, 0, 0, 0.12);
 $checkbox-background-color: rgba(0,0,0,0.26);
 $input-border-width: 2px;

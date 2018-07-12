@@ -1,18 +1,46 @@
+/***********************************
+Top-Level Globals
+************************************/
+h1, h2, h3, h4 {
+  color: $gray;
+}
+
 hr {
   background-color: $panel-border-color;
   border: none;
   height: 1px;
 }
 
+/***********************************
+Buttons
+************************************/
+
 .ui.button {
   background-color: $button-background-color;
   color: $white;
   text-align: center;
+
+  &.secondary {
+    background-color: $white;
+    color: $blue-highlight;
+    border: solid 1px $blue-highlight;
+    border-radius: 4px;
+  }
+
+  &.tertiary {
+    background-color: $white;
+    color: $blue-dark;
+    border: solid 1px $blue-dark;
+    border-radius: 4px;
+  }
 }
 
+/***********************************
+Inputs
+************************************/
 
 .ui.form .field {
-  
+
   label {
     font-family: Montserrat;
     font-size: 11px;
@@ -33,4 +61,46 @@ hr {
 
 .ui.toggle.checkbox label:before {
   background-color: $checkbox-background-color;
+}
+
+
+/***********************************
+Vertical Menu
+************************************/
+
+.ui.vertical.menu .active.item {
+  background: $blue-highlight;
+  color: white;
+}
+
+.ui.menu .active.item:hover,
+.ui.vertical.menu .active.item:hover {
+  background: lighten($blue-highlight, 5%);
+  color: white;
+}
+
+.ui.menu.vertical {
+  border: 1px solid $border-light-color;
+  box-shadow: none;
+  border-radius: 0;
+
+  .item {
+    padding-top: 17px;
+    padding-bottom: 17px;
+    color: $navigation-text;
+    font-weight: bold;
+
+    &:first-child, &:last-child,
+    &.active:first-child, &.active:last-child {
+      border-radius: 0;
+    }
+  }
+
+
+  &.secondary {
+    .item {
+      // semantic UI uses !important....
+      border-radius: 0 !important;
+    }
+  }
 }

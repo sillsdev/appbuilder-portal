@@ -9,19 +9,15 @@
     core-js "^2.5.7"
     regenerator-runtime "^0.12.0"
 
-"@bigtest/convergence@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@bigtest/convergence/-/convergence-0.5.0.tgz#1d84f05e8e88869358050dabc28cf883872c41ca"
+"@bigtest/convergence@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@bigtest/convergence/-/convergence-0.10.0.tgz#ed2212b7034c84917ccfbaa8cf875730ee535702"
 
-"@bigtest/convergence@^0.9.1":
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/@bigtest/convergence/-/convergence-0.9.1.tgz#ddbe3e85e757b8fb82b80df95ed2e574c9d24429"
-
-"@bigtest/interactor@^0.5.0":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@bigtest/interactor/-/interactor-0.5.1.tgz#4813a723582c21107363e16f4fb9fb517e1001cd"
+"@bigtest/interactor@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@bigtest/interactor/-/interactor-0.7.0.tgz#873fde13bc9b188a08369a222cdd2ba6878800d3"
   dependencies:
-    "@bigtest/convergence" "^0.9.1"
+    "@bigtest/convergence" "^0.10.0"
 
 "@bigtest/mirage@^0.0.1":
   version "0.0.1"
@@ -32,11 +28,11 @@
     lodash "^4.17.4"
     pretender "^2.0.0"
 
-"@bigtest/mocha@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/@bigtest/mocha/-/mocha-0.3.3.tgz#1a2e4545424f6e200af1c1720d8631fc1f36fda1"
+"@bigtest/mocha@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@bigtest/mocha/-/mocha-0.5.0.tgz#1c714288299fe70052c935d7c24a8434ed2e3d33"
   dependencies:
-    "@bigtest/convergence" "^0.5.0"
+    "@bigtest/convergence" "^0.10.0"
 
 "@bigtest/react@^0.1.1":
   version "0.1.2"

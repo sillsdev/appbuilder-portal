@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withRouter, RouterProps } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import { requireNoAuth } from '@lib/auth';
+import { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-organization';
 import AutoMountingLock from './auth0-lock-auto-mount';
 
 export const pathName = '/login';
@@ -20,7 +22,7 @@ class LoginRoute extends React.Component<RouterProps> {
 
         <span className='white-text m-b-md'>
           Would you like to sign up your organization?&nbsp;
-          <a className='white-text bold'>Contact Us</a>
+          <Link to={requestOrgAccessPath} className='white-text bold'>Contact Us</Link>
         </span>
       </div>
     );
