@@ -21,6 +21,7 @@ import OrganizationsRoute, { pathName as organizationsPath } from '@ui/routes/or
 
 import ErrorRootRoute from '@ui/routes/errors';
 import NotFoundRoute from '@ui/routes/errors/not-found';
+import { Container } from 'semantic-ui-react';
 
 export default class RootPage extends React.Component {
   render() {
