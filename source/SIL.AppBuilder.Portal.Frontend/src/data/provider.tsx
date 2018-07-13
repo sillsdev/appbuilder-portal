@@ -26,7 +26,6 @@ export default class APIProvider extends React.Component<{}, IState> {
   render() {
     const { store } = this.state;
 
-    console.log("DataStore", this.state);
     if (!store) return 'Loading...';
 
     return (

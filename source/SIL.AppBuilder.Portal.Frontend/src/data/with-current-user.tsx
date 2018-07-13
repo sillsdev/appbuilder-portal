@@ -20,6 +20,8 @@ interface IState {
   notFound: boolean;
 }
 
+// TODO: store the attempted URL so that after login,
+//     we can navigate back.
 export function withCurrentUser() {
   return InnerComponent => {
     class WrapperClass extends React.Component<IProps & WithDataProps, IState> {
@@ -28,7 +30,11 @@ export function withCurrentUser() {
       async componentDidMount() {
         const { queryStore } = this.props;
 
-	const currentUser = await queryStore(q => q.findRecord({ id: 'current-user', type: TYPE_NAME }));
+        const currentUser = await queryStore(q => q.findRecord({ 
+          id: 'current-user', 
+          type: TYPE_NAME 
+        }));
+        
         if (currentUser) {
           this.setState({ currentUser });
           return;
@@ -40,20 +46,15 @@ export function withCurrentUser() {
         //     but it could if the network request fails or
         //     if there is a server error.
         //
-        // TODO: store the attempted URL so that after login,
-        //     we can navigate back.
         this.setState({ notFound: true });
       }
 
       render() {
         const { currentUser, notFound } = this.state;
 
-	console.debug('current user: ', this.state);
-
         if (currentUser) {
           return <InnerComponent {...this.props} />;
         } else if (notFound) {
-          return 'User could not be found and/or created....';
           return <Redirect to={'/login'} />;
         }
 

@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Serilog;
+using Serilog.Events;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -23,6 +25,14 @@ namespace OptimaJet.DWKit.StarterApplication
                 port = "48801";
             }
 
+             Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
+
+
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
@@ -30,7 +40,9 @@ namespace OptimaJet.DWKit.StarterApplication
                 .UseStartup<Startup>()
                 .UseApplicationInsights()
                 .UseUrls("http://0.0.0.0:" + port)
+                .UseSerilog()
                 .Build();
+
             return host;
         }
     }

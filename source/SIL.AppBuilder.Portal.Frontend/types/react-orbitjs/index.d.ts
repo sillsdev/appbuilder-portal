@@ -21,7 +21,7 @@ export interface WithData {
 // https://github.com/exivity/react-orbitjs/blob/master/src/components/withData.js
 export type WithDataProps =
   & {
-    queryStore: () => any;
+    queryStore: (transformOrOperations: TransformOrOperations, options?: object, id?: string) => any;
     updateStore: (transformOrOperations: TransformOrOperations, options?: object, id?: string) => any;
   }
   & WithData

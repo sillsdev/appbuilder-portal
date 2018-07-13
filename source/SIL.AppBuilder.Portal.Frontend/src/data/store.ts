@@ -10,10 +10,9 @@ import IndexedDBSource from '@orbit/indexeddb';
 
 
 import { api as apiEnv, app as appEnv } from '@env';
-import { getToken } from '@lib/auth0';
-import { getCurrentOrganizationId } from '@lib/current-organization';
 
 import { schema } from './schema';
+import { defaultHeaders } from '@lib/fetch';
 
 const BucketClass = (supportsIndexedDB ? IndexedDBBucket : LocalStorageBucket);
 
@@ -35,8 +34,7 @@ export async function createStore() {
     host: baseUrl,
     defaultFetchHeaders: {
       Accept: 'application/vnd.api+json',
-      Authorization: getToken(),
-      Organization: getCurrentOrganizationId()
+      ...defaultHeaders()
     }
   });
 

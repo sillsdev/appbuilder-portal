@@ -15,10 +15,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public UserService(
             IJsonApiContext jsonApiContext, 
-            UserRepository entityRepository, 
+            IEntityRepository<User> entityRepository, 
             ILoggerFactory loggerFactory) : base(jsonApiContext, entityRepository, loggerFactory)
         {
-            this.EntityRepository = entityRepository;
+            this.EntityRepository = (UserRepository)entityRepository;
         }
 
         public async Task<User> FindOrCreateUser(string auth0Id) 

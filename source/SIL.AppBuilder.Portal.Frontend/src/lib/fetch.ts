@@ -26,15 +26,21 @@ export function destroy(url: string, options: any = {}) {
 }
 
 export function authenticatedFetch(url: string, options: any) {
-  const token = getToken();
-  const orgId = getCurrentOrganizationId();
-
   return fetch(url, {
     ...options,
     headers: {
-      ['Authorization']: `Bearer ${token}`,
-      ['Organization']: `${orgId}`,
+      ...defaultHeaders(),
       ...options.headers
     }
   });
+}
+
+export function defaultHeaders() {
+  const token = getToken();
+  const orgId = getCurrentOrganizationId();
+  
+  return {
+    ['Authorization']: `Bearer ${token}`,
+    ['Organization']: `${orgId}`,
+  }
 }

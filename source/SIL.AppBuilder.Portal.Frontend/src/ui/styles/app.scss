@@ -3,6 +3,9 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
 @import './_base/variables';
 @import './_base/functions';
+@import './vendor/bootstrap4/breakpoints';
+@import './vendor/bootstrap4/display';
+
 @import './semantic-ui-overrides';
 @import './auth0-overrides';
 
