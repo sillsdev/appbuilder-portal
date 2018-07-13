@@ -11,7 +11,7 @@ import IndexedDBSource from '@orbit/indexeddb';
 
 import { api as apiEnv, app as appEnv } from '@env';
 
-import { schema } from './schema';
+import { schema, keyMap } from './schema';
 import { defaultHeaders } from '@lib/fetch';
 
 const BucketClass = (supportsIndexedDB ? IndexedDBBucket : LocalStorageBucket);
@@ -23,12 +23,14 @@ export async function createStore() {
   const bucket = new BucketClass({ namespace: 'scriptoria-bucket' });
   const inMemory = new Store({
     bucket,
+    keyMap,
     schema,
     name: 'inMemory'
   });
 
   const baseUrl = `${apiEnv.protocol || 'http://'}${apiEnv.host || 'localhost'}/api`;
   const remote = new JSONAPISource({
+    keyMap,
     schema,
     name: 'remote',
     host: baseUrl,
@@ -41,6 +43,7 @@ export async function createStore() {
   // For later when we want to persist between refreshes
   // or queue offline things
   const backup = new IndexedDBSource({
+    keyMap,
     bucket,
     schema,
     name: 'backup',
@@ -79,6 +82,7 @@ export async function createStore() {
     action: 'push',
     blocking: true
   }));
+
 
   // sync all remote changes with the inMemory store
   this.coordinator.addStrategy(new SyncStrategy({

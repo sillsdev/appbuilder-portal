@@ -1,4 +1,6 @@
-import { Schema, SchemaSettings } from '@orbit/data';
+import { KeyMap, Schema, SchemaSettings } from '@orbit/data';
+
+export const keyMap = new KeyMap();
 
 const schemaDefinition: SchemaSettings = {
   models: {
@@ -38,7 +40,7 @@ const schemaDefinition: SchemaSettings = {
     },
     user: {
       keys: {
-        auth0Id: 'current-user'
+        auth0Id: {}
       },
       attributes: {
         firstName: { type: 'string' },

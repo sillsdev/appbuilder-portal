@@ -96,7 +96,7 @@ namespace OptimaJet.DWKit.StarterApplication
                         if (accessToken != null)
                         {
                             ClaimsIdentity identity = context.Principal.Identity as ClaimsIdentity;
-                            
+
                             if (identity != null)
                             {
                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));
@@ -110,8 +110,8 @@ namespace OptimaJet.DWKit.StarterApplication
             .AddCookie(options => {
                 options.ExpireTimeSpan = TimeSpan.FromDays(365);
                 options.LoginPath = "/Account/Login/";
-                
-                options.ForwardDefaultSelector = ctx => 
+
+                options.ForwardDefaultSelector = ctx =>
                 {
                     if (ctx.Request.Path.StartsWithSegments("/api"))
                     {
@@ -122,7 +122,7 @@ namespace OptimaJet.DWKit.StarterApplication
                 };
             });
 
-            services.AddAuthorization(options => 
+            services.AddAuthorization(options =>
             {
                 options.AddPolicy("Authenticated",
                     policy => policy
@@ -147,7 +147,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddMvc(options => {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));
 
-                // NOTE: Authentication is handled at the controller-level 
+                // NOTE: Authentication is handled at the controller-level
                 //       via the [Authorize] annotation
                 // options.Filters.Add(typeof(Security.AuthorizationFilter));
 
