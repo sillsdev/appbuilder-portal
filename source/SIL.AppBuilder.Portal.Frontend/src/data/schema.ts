@@ -70,7 +70,8 @@ const schemaDefinition: SchemaSettings = {
         title: { type: 'string' },
         description: { type: 'string' },
         time: { type: 'date' },
-        link: { type: 'string' }
+        link: { type: 'string' },
+        isViewed: { type: 'boolean' }
       }
     },
     user: {

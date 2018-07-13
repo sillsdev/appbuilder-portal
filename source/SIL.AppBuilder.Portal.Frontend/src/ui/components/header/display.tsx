@@ -62,7 +62,7 @@ class Header extends React.Component<IProps> {
             <Menu.Item>
               <OrganizationSwitcher />
             </Menu.Item>
-            <Menu.Item className='notification-item'>
+            <Menu.Item>
               <Notifications/>
             </Menu.Item>
             <Menu.Item>
