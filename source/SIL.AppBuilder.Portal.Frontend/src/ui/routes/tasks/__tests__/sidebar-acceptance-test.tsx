@@ -8,7 +8,7 @@ import { setupApplicationTest } from 'tests/helpers/index';
 import page from './page';
 
 describe('Acceptance | Layout | Sidebar', () => {
-  
+
   setupApplicationTest();
 
   describe('navigate to tasks page',() => {
