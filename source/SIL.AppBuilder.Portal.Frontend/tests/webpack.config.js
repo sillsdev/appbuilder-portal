@@ -25,5 +25,7 @@ module.exports = {
     filename: 'test-bundle.js',
     path: process.cwd() + '/dist'
   },
-  plugins
+  plugins: [
+    ...plugins,
+  ]
 };

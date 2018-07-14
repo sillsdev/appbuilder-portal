@@ -13,7 +13,7 @@ import { DataProvider } from '@data/index';
 
 import rootApplication from '@ui/routes/root';
 
-export { useFakeAuthentication } from './auth';
+  export { useFakeAuthentication } from './auth';
 
 export function setupRequestInterceptor(config: any = {}) {
 

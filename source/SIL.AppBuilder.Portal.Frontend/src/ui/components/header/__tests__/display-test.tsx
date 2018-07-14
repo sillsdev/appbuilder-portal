@@ -3,7 +3,10 @@ import { describe, beforeEach, it } from '@bigtest/mocha';
 import { location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { mountWithContext, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
+import {
+  mountWithContext,
+  setupRequestInterceptor, useFakeAuthentication, setupApplicationTest
+} from 'tests/helpers';
 
 import Header from '../display';
 
@@ -22,9 +25,9 @@ describe('Integration | Component | Header', () => {
     });
 
     describe('the dropdowns can open', () => {
-      setupRequestInterceptor();
 
       beforeEach(async () => {
+        setupRequestInterceptor();
         expect(headerHelper.isNotificationMenuOpen).to.be.false;
 
         await headerHelper.clickNotification();
@@ -51,6 +54,7 @@ describe('Integration | Component | Header', () => {
   });
 
   describe('Go to profile', () => {
+    setupApplicationTest();
     useFakeAuthentication();
     setupRequestInterceptor();
 

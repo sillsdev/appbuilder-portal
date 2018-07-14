@@ -4013,6 +4013,13 @@ karma-coverage@^1.1.1:
     minimatch "^3.0.0"
     source-map "^0.5.1"
 
+karma-iframes@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/karma-iframes/-/karma-iframes-1.2.0.tgz#d8becd92cd8bb7f966d46f3b97791b19fd6f0e10"
+  dependencies:
+    minimatch "^3.0.4"
+    tmp "0.0.33"
+
 karma-mocha-reporter@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/karma-mocha-reporter/-/karma-mocha-reporter-2.2.5.tgz#15120095e8ed819186e47a0b012f3cd741895560"
@@ -4078,6 +4085,10 @@ karma-typescript@^3.0.12:
     url "^0.11.0"
     util "^0.10.3"
     vm-browserify "0.0.4"
+
+karma-webpack-grep@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/karma-webpack-grep/-/karma-webpack-grep-1.0.1.tgz#c8e6eb321b058e10cb600b4bf68be369a2458c86"
 
 karma-webpack@^3.0.0:
   version "3.0.0"

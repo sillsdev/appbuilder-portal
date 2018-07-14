@@ -7,11 +7,13 @@ console.log('root path: ', root);
 module.exports = function(config) {
   config.set({
     singleRun: false,
-    retryLimit: 5, // hack around concurrency issues....
+    retryLimit: 20, // hack around concurrency issues....
+    concurrency: 1,
     basePath: '',
     frameworks: [
       /* 'parallel', */
-      'mocha'
+      'mocha',
+      'iframes'
      ],
     reporters: [ 'mocha' ],
     browsers: ['Chrome'],
@@ -19,7 +21,6 @@ module.exports = function(config) {
 
     port: 9876,
     colors: true,
-    concurrency: 1,
     logLevel: 'DEBUG',
 
     files: [
@@ -32,7 +33,10 @@ module.exports = function(config) {
     ],
 
     preprocessors: {
-      [`${root}/tests/index.ts`]: ['webpack']
+      [`${root}/tests/index.ts`]: [
+        'webpack',
+        'iframes'
+      ],
     },
 
     client: {
@@ -50,12 +54,13 @@ module.exports = function(config) {
       'karma-mocha',
       'karma-webpack',
       'karma-mocha-reporter',
-      'karma-chrome-launcher'
+      'karma-chrome-launcher',
+      'karma-iframes',
     ],
-    parallelOptions: {
+    // parallelOptions: {
       // default to # CPUs - 1
       // executors: 4,
-    }
+    // }
   });
 
   if (process.env.CI) {
@@ -63,9 +68,10 @@ module.exports = function(config) {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
         flags: [
-          '--no-sandbox', // required to run without privileges in Docker
+          // '--no-sandbox', // required to run without privileges in Docker
           '--disable-web-security',
-          '--enable-gpu'
+          '--disable-gpu',
+          '--disable-extensions'
         ]
       }
     };
