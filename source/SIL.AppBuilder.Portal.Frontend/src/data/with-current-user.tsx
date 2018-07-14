@@ -42,11 +42,11 @@ export function withCurrentUser() {
           keys: { auth0Id: auth0IdFromJWT }
         });
 
-        const currentUser = await queryStore(q => q.findRecord({ 
-          id: 'current-user', 
+        const currentUser = await queryStore(q => q.findRecord({
+          id: 'current-user',
           type: TYPE_NAME
         }));
-        
+
         if (currentUser) {
           this.setState({ currentUser });
           return;

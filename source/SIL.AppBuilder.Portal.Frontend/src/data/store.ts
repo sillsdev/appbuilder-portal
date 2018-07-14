@@ -5,7 +5,7 @@ import Store from '@orbit/store';
 import LocalStorageBucket from '@orbit/local-storage-bucket';
 import IndexedDBBucket, { supportsIndexedDB } from '@orbit/indexeddb-bucket';
 import Coordinator, { SyncStrategy, RequestStrategy } from '@orbit/coordinator';
-import JSONAPISource from '@orbit/jsonapi';
+import JSONAPISource, { JSONAPISerializer } from '@orbit/jsonapi';
 import IndexedDBSource from '@orbit/indexeddb';
 
 
@@ -16,6 +16,16 @@ import { defaultHeaders } from '@lib/fetch';
 
 const BucketClass = (supportsIndexedDB ? IndexedDBBucket : LocalStorageBucket);
 
+class CustomJSONAPISerializer extends JSONAPISerializer {
+  deserializeAttribute(record: any, attr: string, value: any) {
+    console.log(record, attr, value);
+    if (attr === 'auth0Id') {
+      record.keys = { auth0Id: value };
+    }
+
+    return record;
+  }
+}
 
 export async function createStore() {
   console.debug('Setting up datastore');
@@ -28,12 +38,14 @@ export async function createStore() {
     name: 'inMemory'
   });
 
+
   const baseUrl = `${apiEnv.protocol || 'http://'}${apiEnv.host || 'localhost'}/api`;
   const remote = new JSONAPISource({
     keyMap,
     schema,
     name: 'remote',
     host: baseUrl,
+    SerializerClass: CustomJSONAPISerializer,
     defaultFetchHeaders: {
       Accept: 'application/vnd.api+json',
       ...defaultHeaders()
