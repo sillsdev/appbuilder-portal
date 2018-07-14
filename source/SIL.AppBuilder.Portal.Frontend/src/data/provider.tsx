@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { DataProvider } from 'react-orbitjs';
+import Store from '@orbit/store';
+import Coordinator from '@orbit/coordinator';
 
 import { createStore } from './store';
 

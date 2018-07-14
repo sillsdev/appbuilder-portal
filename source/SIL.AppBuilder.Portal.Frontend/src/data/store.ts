@@ -12,7 +12,7 @@ import IndexedDBSource from '@orbit/indexeddb';
 import { api as apiEnv, app as appEnv } from '@env';
 
 import { schema, keyMap } from './schema';
-import { defaultHeaders } from '@lib/fetch';
+import authedFetch, { defaultHeaders } from '@lib/fetch';
 
 const BucketClass = (supportsIndexedDB ? IndexedDBBucket : LocalStorageBucket);
 

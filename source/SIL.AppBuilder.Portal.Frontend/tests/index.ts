@@ -1,3 +1,5 @@
+// import 'whatwg-fetch';
+
 // require all modules ending in "-test" from the current directory and
 // all subdirectories
 const requireGlobalTest = require.context('./acceptance', true, /-test/);

@@ -11,7 +11,9 @@ class Tasks extends React.Component {
   state = { data: {}, errors: {} };
 
   render() {
-    return 'hi';
+    const { currentUser } = this.props;
+
+    return `hi: ${JSON.stringify(currentUser)}`;
   }
 }
 

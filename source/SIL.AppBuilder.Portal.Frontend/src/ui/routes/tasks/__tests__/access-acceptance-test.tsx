@@ -17,7 +17,13 @@ describe('Acceptance | Accessing Tasks', () => {
     useFakeAuthentication();
 
     beforeEach(async () => {
-      this.sever.get('/api/users/current-user').intercept((req, res) => {
+      const { server } = this.polly;
+
+      // server.options('http://localhost/api/users/current-user').intercept((req, res) => {
+      //   req.headers['Allow'] = 'OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE';
+      // });
+
+      server.get('/api/users/*current-user').intercept((req, res) => {
         res.status(200);
         res.json({
           data: {

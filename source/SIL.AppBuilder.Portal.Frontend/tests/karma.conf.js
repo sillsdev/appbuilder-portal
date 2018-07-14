@@ -4,6 +4,10 @@ var root = path.resolve(__dirname, '..');
 
 console.log('root path: ', root);
 
+const TEST_PORT = 9876;
+
+// process.env.API_HOST = `localhost:${TEST_PORT}`;
+
 module.exports = function(config) {
   config.set({
     singleRun: false,
@@ -13,13 +17,13 @@ module.exports = function(config) {
     frameworks: [
       /* 'parallel', */
       'mocha',
-      'iframes'
+      // 'iframes'
      ],
     reporters: [ 'mocha' ],
     browsers: ['Chrome'],
     mime: { 'text/x-typescript': ['ts','tsx'] },
 
-    port: 9876,
+    port: TEST_PORT,
     colors: true,
     logLevel: 'DEBUG',
 
@@ -35,13 +39,14 @@ module.exports = function(config) {
     preprocessors: {
       [`${root}/tests/index.ts`]: [
         'webpack',
-        'iframes'
+        // 'iframes'
       ],
     },
 
     client: {
       mocha: {
         reporter: 'html',
+        ui: 'bdd',
         globals: false,
         opts: root + '/tests/mocha.opts'
       },
@@ -55,7 +60,7 @@ module.exports = function(config) {
       'karma-webpack',
       'karma-mocha-reporter',
       'karma-chrome-launcher',
-      'karma-iframes',
+      // 'karma-iframes',
     ],
     // parallelOptions: {
       // default to # CPUs - 1

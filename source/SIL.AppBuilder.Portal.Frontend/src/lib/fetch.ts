@@ -1,23 +1,32 @@
 import { getToken } from './auth0';
 import { getCurrentOrganizationId } from './current-organization';
 
+// These methods mimic the fetch API.
+
+
+export default authenticatedFetch;
+
 export function get(url: string, options: any = {}) {
   return authenticatedFetch(url, { method: 'GET', ...options });
 }
 
-export function put(url: string, data: any, options: any = {}) {
+export function put(url: string, options: any = {}) {
+  const { data, ...restOptions } = options;
+
   return authenticatedFetch(url, {
     method: 'PUT',
     body: JSON.stringify(data),
-    ...options
+    ...restOptions
   });
 }
 
-export function post(url: string, data: any, options: any = {}) {
+export function post(url: string, options: any = {}) {
+  const { data, ...restOptions } = options;
+
   return authenticatedFetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
-    ...options
+    ...restOptions
   });
 }
 
@@ -26,6 +35,8 @@ export function destroy(url: string, options: any = {}) {
 }
 
 export function authenticatedFetch(url: string, options: any) {
+  console.log('fetch: ', url, options);
+  debugger;
   return fetch(url, {
     ...options,
     headers: {
@@ -38,7 +49,7 @@ export function authenticatedFetch(url: string, options: any) {
 export function defaultHeaders() {
   const token = getToken();
   const orgId = getCurrentOrganizationId();
-  
+
   return {
     ['Authorization']: `Bearer ${token}`,
     ['Organization']: `${orgId}`,
