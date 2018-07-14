@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 export interface IProps {
-  onChange: (imageData: String) => void
+  onChange: (imageData: String) => void;
 }
 
 export interface IState {
@@ -18,7 +18,7 @@ class ImageProfile extends React.Component<IProps, IState> {
  
     if (e.target.files && e.target.files[0]) {
       
-      let reader = new FileReader();
+      const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
 
       reader.onload = () => {

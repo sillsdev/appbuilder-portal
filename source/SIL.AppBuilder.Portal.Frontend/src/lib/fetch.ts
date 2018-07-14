@@ -35,8 +35,6 @@ export function destroy(url: string, options: any = {}) {
 }
 
 export function authenticatedFetch(url: string, options: any) {
-  console.log('fetch: ', url, options);
-  debugger;
   return fetch(url, {
     ...options,
     headers: {
@@ -53,5 +51,5 @@ export function defaultHeaders() {
   return {
     ['Authorization']: `Bearer ${token}`,
     ['Organization']: `${orgId}`,
-  }
+  };
 }

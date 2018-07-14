@@ -13,7 +13,7 @@ export interface Params {
 
 export type IProps =
   & { match: Match<Params> }
-  & RouteComponentProps<{}>
+  & RouteComponentProps<{}>;
 
 
 class Navigation extends React.Component<IProps> {

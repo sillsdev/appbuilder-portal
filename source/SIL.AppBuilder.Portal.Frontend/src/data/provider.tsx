@@ -7,7 +7,7 @@ import { createStore } from './store';
 
 interface IState {
   store: Store;
-};
+}
 
 export default class APIProvider extends React.Component<{}, IState> {
   state = { store: undefined };
@@ -28,7 +28,7 @@ export default class APIProvider extends React.Component<{}, IState> {
   render() {
     const { store } = this.state;
 
-    if (!store) return 'Loading...';
+    if (!store) { return 'Loading...'; }
 
     return (
       <DataProvider dataStore={store}>

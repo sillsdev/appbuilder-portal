@@ -27,7 +27,7 @@ describe('Acceptance | Layout | Sidebar', () => {
 
       it('Sidebar opened',() => {
         expect(page.isSidebarVisible).to.be.true;
-      })
+      });
 
       describe('Close open sidebar', () => {
 
@@ -37,8 +37,8 @@ describe('Acceptance | Layout | Sidebar', () => {
 
         it('Sidebar closed',() => {
           expect(page.isSidebarVisible).to.be.false;
-        })
-      })
+        });
+      });
 
     });
 

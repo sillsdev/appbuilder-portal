@@ -12,7 +12,7 @@ type UserPayload = JSONAPI<UserAttributes>;
 
 const mapRecordsToProps = {
   // currentUser: q => q.findRecord({ id: 'current-user', type: TYPE_NAME })
-}
+};
 
 interface IProps {
   currentUser: UserPayload;
@@ -83,5 +83,5 @@ export function withCurrentUser() {
     return compose(
       withData(mapRecordsToProps)
     )(WrapperClass);
-  }
+  };
 }

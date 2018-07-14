@@ -48,5 +48,5 @@ export function withStubbedDevData(type: string, forcedId: string, attributes: a
     return compose(
       withData(mapRecordsToProps)
     )(WrapperClass);
-  }
+  };
 }

@@ -83,7 +83,7 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
               className='timezone'
               value={timezone}
               onChange={tz => {
-                this.setState({timezone: tz})
+                this.setState({timezone: tz});
               }}
               inputProps={{
                 placeholder: 'Select your Timezone...',
@@ -122,7 +122,7 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
           Update Profile  
         </Button>
       </Form>
-    )
+    );
 
   }
 

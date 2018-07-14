@@ -23,7 +23,7 @@ class SelectLogo extends React.Component<IProps, IState> {
   handleNewImage = e => {
     if (e.target.files && e.target.files[0]) {
 
-      let reader = new FileReader();
+      const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
 
       reader.onload = () => {
