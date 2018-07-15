@@ -9,6 +9,9 @@ export function setupRequestInterceptor(config: any = {}) {
       mode: 'replay',
       logging: true,
       recordIfMissing: false,
+      // persisterOptions: {
+      //   host: 'http://localhost:3000',
+      // },
       matchRequestBy: {
         order: false,
         url: {
