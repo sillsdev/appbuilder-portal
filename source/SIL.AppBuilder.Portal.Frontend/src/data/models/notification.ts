@@ -6,4 +6,5 @@ export interface NotificationAttributes {
   time: Date;
   link: String;
   isViewed: boolean;
+  shown: boolean;
 }
