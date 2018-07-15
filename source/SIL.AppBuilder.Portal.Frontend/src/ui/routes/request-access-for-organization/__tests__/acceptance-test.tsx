@@ -7,15 +7,16 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 import { pathName as formPath } from '../index';
 import { pathName as successPath } from '../success';
 
+import app from 'tests/helpers/pages/app';
 import page from './page';
 
 describe('Acceptance | Request Access For Organization', () => {
   setupApplicationTest();
-  useFakeAuthentication();
   setupRequestInterceptor();
+  useFakeAuthentication();
 
   describe('navigates to form', () => {
-    beforeEach(async () => {
+    beforeEach(async function() {
       await visit(formPath);
     });
 
@@ -24,15 +25,18 @@ describe('Acceptance | Request Access For Organization', () => {
     });
 
     describe('the form is filled', () => {
-      beforeEach(async () => {
+      beforeEach(async function() {
         await page.fillName('Acme Inc.');
         await page.fillEmail('orgAdmin@acmeinc.org');
         await page.fillSite('acmeinc.org');
+        await page.clickSubmit();
       });
 
       describe('an error occurs', () => {
-        beforeEach(async () => {
-          this.server.get('/url-tbd').intercept((req, res) => {
+        beforeEach(async function() {
+          const { server } = this.polly;
+
+          server.post('/url-tbd').intercept((req, res) => {
             res.status(422);
           });
         });
@@ -43,8 +47,10 @@ describe('Acceptance | Request Access For Organization', () => {
       });
 
       describe('an error does not occur', () => {
-        beforeEach(async () => {
-          this.server.get('/url-tbd').intercept((req, res) => {
+        beforeEach(async function() {
+          const { server } = this.polly;
+
+          server.post('/url-tbd').intercept((req, res) => {
             res.status(200);
           });
         });
@@ -57,8 +63,7 @@ describe('Acceptance | Request Access For Organization', () => {
   });
 
   describe('navigates to /invitations/organization', () => {
-    beforeEach(async () => {
-      // should be different route than what is being tested
+    beforeEach(async function() {
       await visit('/invitations/organization');
     });
 
@@ -72,7 +77,7 @@ describe('Acceptance | Request Access For Organization', () => {
   });
 
   describe('navigates to an invitation', () => {
-    beforeEach(async () => {
+    beforeEach(async function() {
       await visit('/invitations/organization/something');
     });
 

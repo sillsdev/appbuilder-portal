@@ -20,7 +20,7 @@ interface IProps {
 
 interface IState {
   currentUser: UserPayload;
-  notFound: boolean;
+  isLoading: boolean;
 }
 
 // TODO: store the attempted URL so that after login,
@@ -28,7 +28,7 @@ interface IState {
 export function withCurrentUser() {
   return InnerComponent => {
     class WrapperClass extends React.Component<IProps & WithDataProps, IState> {
-      state = { currentUser: undefined, notFound: false };
+      state = { currentUser: undefined, isLoading: true };
 
       async componentDidMount() {
         const { updateStore, queryStore, currentUser: fromCache } = this.props;
@@ -53,7 +53,7 @@ export function withCurrentUser() {
 
           // await updateStore(s => s.addRecord(json));
 
-          this.setState({ currentUser: json });
+          this.setState({ currentUser: json, isLoading: false });
         } catch (e) {
           console.debug(e);
 
@@ -62,21 +62,19 @@ export function withCurrentUser() {
           //     auth0Id, this should never happen.
           //     but it could if the network request fails or
           //     if there is a server error.
-          //
-          this.setState({ notFound: true });
         }
       }
 
       render() {
-        const { currentUser, notFound } = this.state;
+        const { currentUser, isLoading } = this.state;
 
-        if (currentUser) {
+        if (isLoading) {
+          return 'Loading? what should we do here before we get the current user?';
+        } else if (currentUser) {
           return <InnerComponent {...this.props} currentUser={currentUser} />;
-        } else if (notFound) {
-          return <Redirect to={'/login'} />;
         }
 
-        return 'Loading? what should we do here before we get the current user?';
+        return <Redirect to={'/login'} />;
       }
     }
 

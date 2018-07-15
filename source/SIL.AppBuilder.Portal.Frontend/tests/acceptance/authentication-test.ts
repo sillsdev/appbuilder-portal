@@ -15,7 +15,7 @@ describe('Acceptance | Authentication', () => {
   setupRequestInterceptor();
 
   describe('is authenticated', () => {
-    beforeEach(async () => {
+    beforeEach(async function() {
       setToken(fakeAuth0JWT());
 
       expect(isLoggedIn()).to.be.true;
@@ -26,7 +26,8 @@ describe('Acceptance | Authentication', () => {
     });
 
     describe('logging out', () => {
-      beforeEach(async () => {
+      beforeEach(async function() {
+        await visit('/tasks');
         await app.clickNotificationsBell();
         await app.clickLogout();
       });
@@ -41,7 +42,7 @@ describe('Acceptance | Authentication', () => {
     });
 
     describe('navigates to a route that requires authentication', () => {
-      beforeEach(async () => {
+      beforeEach(async function() {
         await visit('/invitations');
       });
 
@@ -58,7 +59,7 @@ describe('Acceptance | Authentication', () => {
     });
 
     describe('navigates to a route that requires no authentication', () => {
-      beforeEach(async () => {
+      beforeEach(async function() {
         await visit('/login');
       });
 
@@ -69,12 +70,12 @@ describe('Acceptance | Authentication', () => {
   });
 
   describe('is not authenticated', () => {
-    beforeEach(() => {
+    beforeEach(function() {
       deleteToken();
 
     });
     describe('navigates to a route that requires authentication', () => {
-      beforeEach(async () => {
+      beforeEach(async function() {
         await visit('/invitations');
       });
 

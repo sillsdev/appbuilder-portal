@@ -31,7 +31,7 @@ class RequestAccessForOrganizationRoute extends React.Component<IProps, IState> 
 
       this.onSuccess();
     } catch (e) {
-      console.log(e);
+      console.debug('Error: ', e);
       this.setState({ error: e.message || 'An error occurred' });
     }
   }
