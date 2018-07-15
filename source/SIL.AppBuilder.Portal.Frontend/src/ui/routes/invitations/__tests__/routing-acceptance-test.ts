@@ -2,17 +2,19 @@ import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers/index';
+import {
+  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication
+} from 'tests/helpers/index';
+
 import app from 'tests/helpers/pages/app';
 
 describe('Acceptance | Invitations | routing', () => {
   setupApplicationTest();
-  useFakeAuthentication();
   setupRequestInterceptor();
+  useFakeAuthentication();
 
   describe('navigates to /invitations', () => {
     beforeEach(async () => {
-      // should be different route than what is being tested
       await visit('/invitations');
     });
 
@@ -27,7 +29,6 @@ describe('Acceptance | Invitations | routing', () => {
 
   describe('navigates to /invitations/organization', () => {
     beforeEach(async () => {
-      // should be different route than what is being tested
       await visit('/invitations/organization');
     });
 

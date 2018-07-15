@@ -12,26 +12,11 @@ import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 describe('Acceptance | Accessing Tasks', () => {
   setupApplicationTest();
   setupRequestInterceptor();
+  useFakeAuthentication();
 
   describe('is authenticated', () => {
-    useFakeAuthentication();
 
-    beforeEach(async () => {
-      const { server } = this.polly;
-
-      // server.options('http://localhost/api/users/current-user').intercept((req, res) => {
-      //   req.headers['Allow'] = 'OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE';
-      // });
-
-      server.get('/api/users/*current-user').intercept((req, res) => {
-        res.status(200);
-        res.json({
-          data: {
-            attributes: { id: 1, auth0Id: 'my-fake-auth0Id' }
-          }
-        });
-      });
-
+    beforeEach(async function() {
       await visit('/tasks');
 
       expect(location().pathname).to.equal('/tasks');

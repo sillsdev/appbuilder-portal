@@ -14,11 +14,11 @@ import headerHelper from 'tests/helpers/components/header';
 import { TOGGLE_SIDEBAR } from '@store/user-interface/actions/toggle-sidebar';
 
 describe('Integration | Component | Header', () => {
+  setupApplicationTest();
+  setupRequestInterceptor();
+  useFakeAuthentication();
 
   describe('Dropdowns', () => {
-    setupApplicationTest();
-    useFakeAuthentication();
-    setupRequestInterceptor();
 
     beforeEach(async () => {
       await visit('/');
@@ -52,10 +52,6 @@ describe('Integration | Component | Header', () => {
   });
 
   describe('Go to profile', () => {
-    setupApplicationTest();
-    useFakeAuthentication();
-    setupRequestInterceptor();
-
     beforeEach(async () => {
       await visit('/');
       await headerHelper.clickProfileLink();

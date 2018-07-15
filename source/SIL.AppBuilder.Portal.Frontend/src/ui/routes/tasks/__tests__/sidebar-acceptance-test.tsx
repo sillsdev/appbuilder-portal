@@ -3,16 +3,19 @@ import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { setupApplicationTest } from 'tests/helpers/index';
+import {
+  setupApplicationTest, useFakeAuthentication,
+  setupRequestInterceptor
+} from 'tests/helpers/index';
 
 import page from './page';
 
-describe('Acceptance | Layout | Sidebar', () => {
-
+describe('Acceptance | Sidebar', () => {
   setupApplicationTest();
+  setupRequestInterceptor();
+  useFakeAuthentication();
 
   describe('navigate to tasks page',() => {
-
     beforeEach(async () => {
       await visit('/tasks');
 
@@ -20,7 +23,6 @@ describe('Acceptance | Layout | Sidebar', () => {
     });
 
     describe('Open sidebar',() => {
-
       beforeEach(async () => {
         await page.clickOpenSidebarButton();
       });
@@ -30,7 +32,6 @@ describe('Acceptance | Layout | Sidebar', () => {
       });
 
       describe('Close open sidebar', () => {
-
         beforeEach(async () => {
           await page.clickCloseSidebarButton();
         });

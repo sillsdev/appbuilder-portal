@@ -39,6 +39,10 @@ const schemaDefinition: SchemaSettings = {
       }
     },
     user: {
+      keys: {
+        auth0Id: {},
+        remoteId: {}
+      },
       attributes: {
         firstName: { type: 'string' },
         lastName: { type: 'string' },

@@ -1,12 +1,12 @@
 import * as React from 'react';
 
 export interface IProps {
-  onChange: (imageData: String) => void;
+  onChange: (imageData: string) => void;
   value?: string;
 }
 
 export interface IState {
-  imageData: String;
+  imageData: string;
 }
 
 class SelectLogo extends React.Component<IProps, IState> {

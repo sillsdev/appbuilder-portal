@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Router } from 'react-router-dom';
+import { Router, withRouter } from 'react-router-dom';
 import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting, mount } from '@bigtest/react';
 import MirageServer, { Factory } from '@bigtest/mirage';
@@ -21,12 +21,21 @@ class TestWrapper extends React.Component<any, any> {
     const componentProps = this.props.componentProps || {};
 
     // TODO: find a way to seed the data provider with data
+
+    const RouteListener = (InnerComponent) => withRouter((props) => {
+      props.history.listen(l => console.debug('Current History Entry: ', l));
+
+      return <InnerComponent { ...componentProps } />;
+    });
+
+    const WithRouteDebugging = RouteListener(ComponentToTest);
+
     return (
       <div data-test-app-container>
         <DataProvider>
           <ReduxProvider initialState={initialState || {}}>
             <Router history={history}>
-              <ComponentToTest {...componentProps } />
+              <WithRouteDebugging />
             </Router>
           </ReduxProvider>
         </DataProvider>
