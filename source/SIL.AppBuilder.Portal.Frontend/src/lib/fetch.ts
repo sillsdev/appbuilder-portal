@@ -3,9 +3,6 @@ import { getCurrentOrganizationId } from './current-organization';
 
 // These methods mimic the fetch API.
 
-
-export default authenticatedFetch;
-
 export function get(url: string, options: any = {}) {
   return authenticatedFetch(url, { method: 'GET', ...options });
 }
@@ -43,6 +40,9 @@ export function authenticatedFetch(url: string, options: any) {
     }
   });
 }
+
+export default authenticatedFetch;
+
 
 export function defaultHeaders() {
   const token = getToken();

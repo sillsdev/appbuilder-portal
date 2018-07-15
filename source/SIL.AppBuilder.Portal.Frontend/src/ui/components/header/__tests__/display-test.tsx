@@ -4,7 +4,6 @@ import { location, visit } from '@bigtest/react';
 import { expect } from 'chai';
 
 import {
-  mountWithContext,
   setupRequestInterceptor, useFakeAuthentication, setupApplicationTest
 } from 'tests/helpers';
 

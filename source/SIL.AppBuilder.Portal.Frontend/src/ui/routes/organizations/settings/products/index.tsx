@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import { Checkbox } from 'semantic-ui-react';
+
 import { TYPE_NAME, OrganizationAttributes } from '@data/models/organization';
 
 export const pathName = '/organizations/:orgId/settings/products';

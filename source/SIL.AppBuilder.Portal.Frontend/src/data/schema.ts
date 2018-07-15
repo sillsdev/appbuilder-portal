@@ -38,6 +38,35 @@ const schemaDefinition: SchemaSettings = {
         users: { type: 'hasMany', model: 'user', inverse: 'organizations' }
       }
     },
+    project: {
+      attributes: {
+        name: { type: 'string' }
+      },
+      relationships: {
+        tasks: { type: 'hasMany', model: 'task', inverse: 'project'}
+      }
+    },
+    product: {
+      attributes: {
+        name: { type: 'string' }
+      },
+      relationships: {
+        tasks: { type: 'hasMany', model: 'task', inverse: 'project' }
+      }
+    },
+    task: {
+      attributes: {
+        project: { type: 'string' },
+        product: { type: 'string' },
+        status: { type: 'string' },
+        waitTime: { type: 'string' }
+      },
+      relationships: {
+        project: { type: 'hasOne', model: 'project', inverse: 'tasks'},
+        product: { type: 'hasOne', model: 'product', inverse: 'tasks'},
+        assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
+      }
+    },
     user: {
       keys: {
         auth0Id: {},
@@ -56,7 +85,8 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         ownedOrganizations: { type: 'hasMany', model: 'organization', inverse: 'owner' },
-        organizations: { type: 'hasMany', model: 'organization', inverse: 'users' }
+        organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
+        assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' }
       }
     }
   }
