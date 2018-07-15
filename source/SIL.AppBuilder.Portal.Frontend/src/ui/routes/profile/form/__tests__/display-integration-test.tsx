@@ -9,7 +9,7 @@ import Form from '../index';
 import page from './page';
 
 describe('Integration | Component | Edit Profile Form', () => {
-    
+
   let fakeSubmit;
 
   beforeEach(async () => {
@@ -23,16 +23,20 @@ describe('Integration | Component | Edit Profile Form', () => {
 
   describe('The form has values', () => {
     beforeEach(async () => {
-      await page.fillName('Fake name');
+      await page.fillFirstName('Fake');
+      await page.fillLastName('Name');
       await page.fillEmail('fake@domain.com');
+      await page.fillPhone('997528963');
       await page.fillLocalization('Lima');
       await page.clickEmailNotification();
       await page.fillSSHKey('abcd');
     });
 
     it('has values', () => {
-      expect(page.name).to.equal('Fake name');
+      expect(page.firstname).to.equal('Fake');
+      expect(page.lastname).to.equal('Name');
       expect(page.email).to.equal('fake@domain.com');
+      expect(page.phone).to.equal('997528963');
       expect(page.localization).to.equal('Lima');
       expect(page.emailNotification).to.be.true;
       expect(page.sshKey).to.equal('abcd');
@@ -46,8 +50,10 @@ describe('Integration | Component | Edit Profile Form', () => {
 
       it('submits the data', () => {
         expect(fakeSubmit).to.have.been.calledWithMatch({
-          name: 'Fake name',
+          firstName: 'Fake',
+          lastName: 'Name',
           email: 'fake@domain.com',
+          phone: '997528963',
           localization: 'Lima',
           emailNotification: true,
           sshKey: 'abcd'

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
-import { Form, Divider, Checkbox, Button, Icon } from 'semantic-ui-react';
+import { Form, Divider, Checkbox, Button, Icon, Grid } from 'semantic-ui-react';
 
 import TimezonePicker from 'react-timezone';
 
@@ -12,8 +12,10 @@ export interface IProps {
 }
 
 export interface IState {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  phone: string;
   localization: string;
   timezone: string;
   emailNotification: boolean;
@@ -23,48 +25,72 @@ export interface IState {
 
 @withTemplateHelpers
 export default class EditProfileDisplay extends React.Component<IProps, IState> {
-  
+
   mut: Mut;
   toggle: ToggleHelper;
-  
-  state = { 
-    name: '', 
-    email: '', 
-    localization: '', 
-    timezone: '', 
-    emailNotification: false, 
-    sshKey: '' 
+
+  state = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    localization: '',
+    timezone: '',
+    emailNotification: false,
+    sshKey: ''
   };
 
   submit = async (e) => {
     e.preventDefault();
     await this.props.onSubmit({ ...this.state });
-  }  
+  }
 
   render() {
     const { mut, toggle } = this;
-    const { 
-      name, email, localization, 
-      timezone, emailNotification, 
-      sshKey 
+    const {
+      firstName,lastName, email, phone, localization,
+      timezone, emailNotification,
+      sshKey
     } = this.state;
-    
-    return (  
+
+    return (
       <Form data-test-edit-profile>
-        <Form.Field>
-          <label>Name</label>
-          <input 
-            data-test-profile-name
-            value={name}
-            onChange={mut('name')} />
-        </Form.Field>
+        <Grid>
+          <Grid.Row columns={2}>
+            <Grid.Column>
+              <Form.Field>
+                <label>First name</label>
+                <input
+                  data-test-profile-firstname
+                  value={firstName}
+                  onChange={mut('firstName')} />
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column>
+              <Form.Field>
+                <label>Last name</label>
+                <input
+                  data-test-profile-lastname
+                  value={lastName}
+                  onChange={mut('lastName')} />
+              </Form.Field>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
         <Form.Field>
           <label>Email</label>
           <input
             data-test-profile-email
             value={email}
             onChange={mut('email')} />
-        </Form.Field> 
+        </Form.Field>
+        <Form.Field>
+          <label>Phone</label>
+          <input
+            data-test-profile-phone
+            value={phone}
+            onChange={mut('phone')} />
+        </Form.Field>
         <Form.Field>
           <label>Location</label>
           <input
@@ -74,7 +100,7 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
         </Form.Field>
         <Form.Field>
           <label>Timezone</label>
-          <div 
+          <div
             data-test-profile-timezone
             className='timezone-group'
           >
@@ -113,13 +139,13 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
             data-test-profile-ssh-key
             value={sshKey}
             onChange={mut('sshKey')} />
-        </Form.Field>    
+        </Form.Field>
         <Button
           data-test-profile-submit
           onClick={this.submit}
           className='form-button'
         >
-          Update Profile  
+          Update Profile
         </Button>
       </Form>
     )

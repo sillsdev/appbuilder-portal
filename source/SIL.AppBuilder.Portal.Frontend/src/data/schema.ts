@@ -71,6 +71,7 @@ const schemaDefinition: SchemaSettings = {
         lastName: { type: 'string' },
         auth0Id: { type: 'string' },
         email: { type: 'string' },
+        phone: { type: 'string'},
         isLocked: { type: 'boolean' },
 
         timezone: { type: 'string' },
