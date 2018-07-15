@@ -20,12 +20,6 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 ./run dotnet test
 ```
 
-#### Running a specific tests
-
-```bash
-cd $FRONTEND_FOLDER && yarn test:watch --grep path/to/test.tsx
-```
-
 ### Backend Notes
 
 - All endpoints should be behind an `api/` path
