@@ -12,7 +12,7 @@ import './header.scss';
 import UserDropdown from './user-dropdown';
 
 export interface Props {
-  toggleSidebar: () => void
+  toggleSidebar: () => void;
 }
 
 class Header extends React.Component<Props & RouteComponentProps<{}>> {

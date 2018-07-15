@@ -114,6 +114,7 @@ export function hideLock(): Auth0LockStatic {
   const lock = getAuth0LockInstance();
 
   lock.hide();
+  lockInstance = undefined;
 
   return lock;
 }

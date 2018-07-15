@@ -61,6 +61,13 @@
   version "0.15.14"
   resolved "https://registry.yarnpkg.com/@orbit/immutable/-/immutable-0.15.14.tgz#8c6958841d45f7f947282d8f39d88094d20bd152"
 
+"@orbit/indexeddb-bucket@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/indexeddb-bucket/-/indexeddb-bucket-0.15.14.tgz#38456a826c994ca29db15fec124cfd1cb3c0c177"
+  dependencies:
+    "@orbit/core" "^0.15.14"
+    "@orbit/utils" "^0.15.14"
+
 "@orbit/indexeddb@^0.15.14":
   version "0.15.14"
   resolved "https://registry.yarnpkg.com/@orbit/indexeddb/-/indexeddb-0.15.14.tgz#bd41d0aec7919ce9fac788a1f99a1b5f83880444"
@@ -75,6 +82,13 @@
   dependencies:
     "@orbit/core" "^0.15.14"
     "@orbit/data" "^0.15.14"
+    "@orbit/utils" "^0.15.14"
+
+"@orbit/local-storage-bucket@^0.15.14":
+  version "0.15.14"
+  resolved "https://registry.yarnpkg.com/@orbit/local-storage-bucket/-/local-storage-bucket-0.15.14.tgz#0cd8efb076bffa72d1a8faf58a3d6250c4e23894"
+  dependencies:
+    "@orbit/core" "^0.15.14"
     "@orbit/utils" "^0.15.14"
 
 "@orbit/store@^0.15.14":
@@ -96,6 +110,13 @@
   dependencies:
     "@pollyjs/utils" "^0.1.1"
 
+"@pollyjs/cli@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@pollyjs/cli/-/cli-0.2.1.tgz#dc6c60a5bdbc9aebefce52277a81d87050324751"
+  dependencies:
+    "@pollyjs/node-server" "^0.4.0"
+    commander "^2.15.1"
+
 "@pollyjs/core@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-0.5.0.tgz#ab6555a0c7799deb3c67d45c43b9a89c19040180"
@@ -113,6 +134,18 @@
     route-recognizer "^0.3.3"
     slugify "^1.3.0"
     url-parse "^1.4.1"
+
+"@pollyjs/node-server@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/node-server/-/node-server-0.4.0.tgz#581bf10bc22b9a4f5f7527b16ea275fe710688ea"
+  dependencies:
+    body-parser "^1.18.3"
+    cors "^2.8.4"
+    express "^4.16.3"
+    fs-extra "^5.0.0"
+    http-graceful-shutdown "^2.1.1"
+    morgan "^1.9.0"
+    nocache "^2.0.0"
 
 "@pollyjs/persister@^0.2.1":
   version "0.2.1"
@@ -900,6 +933,12 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
+basic-auth@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/basic-auth/-/basic-auth-2.0.0.tgz#015db3f353e02e56377755f962742e8981e7bbba"
+  dependencies:
+    safe-buffer "5.1.1"
+
 batch@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
@@ -977,7 +1016,7 @@ body-parser@1.18.2:
     raw-body "2.3.2"
     type-is "~1.6.15"
 
-body-parser@^1.16.1:
+body-parser@^1.16.1, body-parser@^1.18.3:
   version "1.18.3"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.18.3.tgz#5b292198ffdd553b3a0f20ded0592b956955c8b4"
   dependencies:
@@ -1559,7 +1598,7 @@ commander@2.15.1:
   version "2.15.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
-commander@2.16.x, commander@^2.12.1, commander@^2.9.0, commander@~2.16.0:
+commander@2.16.x, commander@^2.12.1, commander@^2.15.1, commander@^2.9.0, commander@~2.16.0:
   version "2.16.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.16.0.tgz#f16390593996ceb4f3eeb020b31d78528f7f8a50"
 
@@ -1695,6 +1734,13 @@ core-js@^2.2.0, core-js@^2.4.0, core-js@^2.5.7:
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
+
+cors@^2.8.4:
+  version "2.8.4"
+  resolved "https://registry.yarnpkg.com/cors/-/cors-2.8.4.tgz#2bd381f2eb201020105cd50ea59da63090694686"
+  dependencies:
+    object-assign "^4"
+    vary "^1"
 
 create-ecdh@^4.0.0:
   version "4.0.3"
@@ -2888,6 +2934,14 @@ fs-access@^1.0.0:
   dependencies:
     null-check "^1.0.0"
 
+fs-extra@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-5.0.0.tgz#414d0110cdd06705734d055652c5411260c31abd"
+  dependencies:
+    graceful-fs "^4.1.2"
+    jsonfile "^4.0.0"
+    universalify "^0.1.0"
+
 fs-minipass@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/fs-minipass/-/fs-minipass-1.2.5.tgz#06c277218454ec288df77ada54a03b8702aacb9d"
@@ -3073,7 +3127,7 @@ globule@^1.0.0:
     lodash "~4.17.10"
     minimatch "~3.0.2"
 
-graceful-fs@^4.1.11, graceful-fs@^4.1.2:
+graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
@@ -3330,6 +3384,12 @@ http-errors@1.6.3, http-errors@~1.6.2, http-errors@~1.6.3:
     inherits "2.0.3"
     setprototypeof "1.1.0"
     statuses ">= 1.4.0 < 2"
+
+http-graceful-shutdown@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/http-graceful-shutdown/-/http-graceful-shutdown-2.1.1.tgz#915a3b3f89e6d68f438390f66eeb055aab2bf6a0"
+  dependencies:
+    debug "^3.1.0"
 
 http-parser-js@>=0.4.0:
   version "0.4.13"
@@ -3947,6 +4007,12 @@ json5@^0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
 
+jsonfile@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-4.0.0.tgz#8771aae0799b64076b76640fca058f9c10e33ecb"
+  optionalDependencies:
+    graceful-fs "^4.1.6"
+
 jsonify@~0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
@@ -3998,6 +4064,13 @@ karma-coverage@^1.1.1:
     lodash "^4.17.0"
     minimatch "^3.0.0"
     source-map "^0.5.1"
+
+karma-iframes@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/karma-iframes/-/karma-iframes-1.2.0.tgz#d8becd92cd8bb7f966d46f3b97791b19fd6f0e10"
+  dependencies:
+    minimatch "^3.0.4"
+    tmp "0.0.33"
 
 karma-mocha-reporter@^2.2.5:
   version "2.2.5"
@@ -4064,6 +4137,10 @@ karma-typescript@^3.0.12:
     url "^0.11.0"
     util "^0.10.3"
     vm-browserify "0.0.4"
+
+karma-webpack-grep@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/karma-webpack-grep/-/karma-webpack-grep-1.0.1.tgz#c8e6eb321b058e10cb600b4bf68be369a2458c86"
 
 karma-webpack@^3.0.0:
   version "3.0.0"
@@ -4664,6 +4741,16 @@ module-not-found-error@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/module-not-found-error/-/module-not-found-error-1.0.1.tgz#cf8b4ff4f29640674d6cdd02b0e3bc523c2bbdc0"
 
+morgan@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/morgan/-/morgan-1.9.0.tgz#d01fa6c65859b76fcf31b3cb53a3821a311d8051"
+  dependencies:
+    basic-auth "~2.0.0"
+    debug "2.6.9"
+    depd "~1.1.1"
+    on-finished "~2.3.0"
+    on-headers "~1.0.1"
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -4761,6 +4848,10 @@ no-case@^2.2.0:
   resolved "https://registry.yarnpkg.com/no-case/-/no-case-2.3.2.tgz#60b813396be39b3f1288a4c1ed5d1e7d28b464ac"
   dependencies:
     lower-case "^1.1.1"
+
+nocache@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/nocache/-/nocache-2.0.0.tgz#202b48021a0c4cbde2df80de15a17443c8b43980"
 
 node-fetch@^1.0.1:
   version "1.7.3"
@@ -4999,7 +5090,7 @@ oauth-sign@~0.8.1, oauth-sign@~0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
 
-object-assign@^4.0.0, object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
+object-assign@^4, object-assign@^4.0.0, object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
@@ -7485,6 +7576,10 @@ unique-slug@^2.0.0:
   dependencies:
     imurmurhash "^0.1.4"
 
+universalify@^0.1.0:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
+
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"
@@ -7619,7 +7714,7 @@ value-equal@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/value-equal/-/value-equal-0.4.0.tgz#c5bdd2f54ee093c04839d71ce2e4758a6890abc7"
 
-vary@~1.1.2:
+vary@^1, vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
 
@@ -7817,7 +7912,7 @@ websocket-extensions@>=0.1.1:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.3.tgz#5d2ff22977003ec687a4b87073dfbbac146ccf29"
 
-whatwg-fetch@>=0.10.0:
+whatwg-fetch@>=0.10.0, whatwg-fetch@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
 

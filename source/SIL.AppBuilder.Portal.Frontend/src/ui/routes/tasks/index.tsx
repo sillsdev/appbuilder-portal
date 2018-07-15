@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+
 import { requireAuth } from '@lib/auth';
+import { withLayout } from '@ui/components/layout';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { Container, Table, Icon, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
@@ -131,6 +133,7 @@ const mapRecordsToProps = (ownProps) => {
 }
 
 export default compose(
+  withLayout,
   requireAuth,
   withData(mapRecordsToProps)
 )(Tasks);

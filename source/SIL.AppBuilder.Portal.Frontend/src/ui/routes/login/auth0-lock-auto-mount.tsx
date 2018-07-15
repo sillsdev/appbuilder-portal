@@ -9,14 +9,17 @@ export interface IProps {
 
 export default class Lock extends React.Component<IProps> {
   state = { loggedIn : false };
-  lockContainerId: string;
+  lockRef: any;
 
-  componentWillMount() {
-    this.lockContainerId = uuid();
+  constructor(props) {
+    super(props);
+
+    this.lockRef = React.createRef();
   }
 
   componentDidMount() {
-    const lock = getAuth0LockInstance({ container: this.lockContainerId});
+    console.log(this.lockRef);
+    const lock = getAuth0LockInstance({ container: this.lockRef.current.id });
 
     lock.on('authenticated', (authResult) => {
       setToken(authResult.idToken);
@@ -33,6 +36,6 @@ export default class Lock extends React.Component<IProps> {
   }
 
   render() {
-    return <div id={this.lockContainerId} />;
+    return <div ref={this.lockRef} id={uuid()} />;
   }
 }

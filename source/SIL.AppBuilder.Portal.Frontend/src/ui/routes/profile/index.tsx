@@ -19,16 +19,16 @@ export const pathName = '/profile';
 export interface IOwnProps { }
 export type IProps =
   & IOwnProps
-  & WithDataProps
+  & WithDataProps;
 
 class Profile extends React.Component<IProps> {
 
   state = {
     imageData: null
-  }
+  };
 
   onChangePicture = (imageData) => {
-    this.setState({imageData: imageData})
+    this.setState({imageData});
   }
 
   updateProfile = async (formData: UserAttributes) => {
@@ -36,8 +36,8 @@ class Profile extends React.Component<IProps> {
     
       const { imageData } = this.state;
 
-      //TODO: we need an ID for the user so we can load it's data in 
-      //componentWillMount
+      // TODO: we need an ID for the user so we can load it's data in 
+      // componentWillMount
       await this.props.updateStore(t => t.replaceRecord({
         type: TYPE_NAME,
         attributes: { ...formData, imageData }

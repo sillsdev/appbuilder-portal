@@ -1,12 +1,12 @@
 import * as React from 'react';
 
 export interface IProps {
-  onChange: (imageData: String) => void;
+  onChange: (imageData: string) => void;
   value?: string;
 }
 
 export interface IState {
-  imageData: String;
+  imageData: string;
 }
 
 class SelectLogo extends React.Component<IProps, IState> {
@@ -22,8 +22,8 @@ class SelectLogo extends React.Component<IProps, IState> {
 
   handleNewImage = e => {
     if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
 
-      let reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
 
       reader.onload = () => {

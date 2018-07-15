@@ -12,7 +12,7 @@ const mapStateToProps = ({ ui }) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   toggleSidebar: () => dispatch(toggleSidebar())
-})
+});
 
 export default connect(
   mapStateToProps,

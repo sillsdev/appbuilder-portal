@@ -28,6 +28,10 @@ function runstuff {
     db:migrate) ${COMPOSE} exec api bash -c "dotnet ef migrations ${arguments}";;
 
     bootstrap)
+      echo "api must not be running in order to run the initial db scripts ..."
+      runstuff dc stop api
+
+
       # Setup Database
       PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER"
 
@@ -37,6 +41,9 @@ function runstuff {
       ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitScript.sql" \
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql" \
         && echo "DB setup with DWKit Scripts"
+
+      echo "api must be running in order to run the db migration scripts ..."
+      runstuff dc start api
 
       runstuff db:update && echo "DB setup for json:api"
 

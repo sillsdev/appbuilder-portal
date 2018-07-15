@@ -1,71 +1,37 @@
 import * as React from 'react';
 import { DataProvider } from 'react-orbitjs';
-
-import { Source } from '@orbit/data';
 import Store from '@orbit/store';
+import Coordinator from '@orbit/coordinator';
 
-import Coordinator, { SyncStrategy } from '@orbit/coordinator';
-import JSONAPISource from '@orbit/jsonapi';
+import { createStore } from './store';
 
-import { api as apiEnv, app as appEnv } from '@env';
-import { getToken } from '@lib/auth0';
+interface IState {
+  store: Store;
+}
 
-import { schema } from './schema';
-
-export default class APIProvider extends React.Component {
-  dataStore: Store;
+export default class APIProvider extends React.Component<{}, IState> {
+  state = { store: undefined };
   coordinator: Coordinator;
 
   constructor(props) {
     super(props);
 
-    this.dataStore = this.initDataStore();
+    this.initDataStore();
   }
 
-  initDataStore() {
-    const inMemory = new Store({ schema, name: 'inMemory' });
+  async initDataStore() {
+    const store = await createStore();
 
-    if (!appEnv.hasApi) {
-      // disable remote api use until we have an API to interface with
-      return inMemory;
-    }
-
-    const remote = new JSONAPISource({
-      schema,
-      name: 'remote',
-      host: `${apiEnv.protocol}${apiEnv.host}/api`,
-      defaultFetchHeaders: {
-        Accept: 'application/vnd.api+json',
-        Authorization: getToken()
-      }
-    });
-
-    // We don't want to have to query the API everytime we want data
-    this.coordinator = new Coordinator({
-      sources: [inMemory, remote]
-    });
-
-    const backupRemoteSync = new SyncStrategy({
-      source: 'remote',
-      target: 'inMemory',
-      blocking: true
-    });
-
-    this.coordinator.addStrategy(backupRemoteSync);
-    this.coordinator.activate();
-
-
-    // returning from the transform functions causes
-    // the update call to wait on the request.
-    // this will propagate errors up to the update invocation.
-    inMemory.on('beforeUpdate', transform => remote.push(transform));
-
-    return inMemory;
+    this.setState({ store });
   }
 
   render() {
+    const { store } = this.state;
+
+    if (!store) { return 'Loading...'; }
+
     return (
-      <DataProvider dataStore={this.dataStore}>
+      <DataProvider dataStore={store}>
         {this.props.children}
       </DataProvider>
     );

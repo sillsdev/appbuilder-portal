@@ -1,7 +1,7 @@
 export const namespace = 'sil';
 
 export interface State {
-  isSidebarVisible: boolean
+  isSidebarVisible: boolean;
 }
 
 export const initialState: State = {

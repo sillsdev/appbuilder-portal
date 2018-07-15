@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using OptimaJet.DWKit.Core.View;
 using OptimaJet.DWKit.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class ConfigAPIController : Controller
     {
         private IHostingEnvironment _env;

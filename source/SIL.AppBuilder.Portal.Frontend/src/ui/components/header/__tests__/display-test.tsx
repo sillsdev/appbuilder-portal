@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
-import { location } from '@bigtest/react';
+import { location, visit } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { mountWithContext, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
+import {
+  setupRequestInterceptor, useFakeAuthentication, setupApplicationTest
+} from 'tests/helpers';
 
 import Header from '../display';
 
@@ -11,19 +13,17 @@ import headerHelper from 'tests/helpers/components/header';
 import { TOGGLE_SIDEBAR } from '@store/user-interface/actions/toggle-sidebar';
 
 describe('Integration | Component | Header', () => {
+  setupApplicationTest();
+  setupRequestInterceptor();
+  useFakeAuthentication();
 
   describe('Dropdowns', () => {
+
     beforeEach(async () => {
-      const props = {
-        isSidebarVisible: false,
-        toggleSidebar: () => ({ type: TOGGLE_SIDEBAR })
-      }
-      await mountWithContext(() => <Header {...props} />);
+      await visit('/');
     });
 
     describe('the dropdowns can open', () => {
-      setupRequestInterceptor();
-
       beforeEach(async () => {
         expect(headerHelper.isNotificationMenuOpen).to.be.false;
 
@@ -51,15 +51,14 @@ describe('Integration | Component | Header', () => {
   });
 
   describe('Go to profile', () => {
-    useFakeAuthentication();
-    setupRequestInterceptor();
-
     beforeEach(async () => {
+      await visit('/');
       await headerHelper.clickProfileLink();
     });
 
     it('redirect to profile',() => {
       expect(location().pathname).to.eq('/profile');
-    })
+    });
   });
 });
+

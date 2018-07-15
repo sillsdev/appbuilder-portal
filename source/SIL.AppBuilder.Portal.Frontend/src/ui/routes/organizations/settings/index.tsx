@@ -28,7 +28,7 @@ export interface Params {
 }
 
 interface PassedProps {
-  match: Match<Params>
+  match: Match<Params>;
 }
 
 interface QueriedProps {
@@ -46,8 +46,8 @@ const mapRecordsToProps = (ownProps: PassedProps) => {
 
   return {
     organization: q => q.findRecord({ id: orgId, type: TYPE_NAME }),
-  }
-}
+  };
+};
 
 class SettingsRoute extends React.Component<IProps> {
   updateOrganizaion = async (payload: OrganizationAttributes) => {
