@@ -74,8 +74,8 @@ class Notifications extends React.Component<IProps> {
     await this.props.updateStore(t =>
       notifications.map(not => t.replaceAttribute({
         type: TYPE_NAME, id: not.id
-      }, 'isViewed', true ))
-    );
+      }, 'isViewed', true)),
+      { devOnly: true });
   }
 
   clearAll = async (e) => {
@@ -87,8 +87,8 @@ class Notifications extends React.Component<IProps> {
     await this.props.updateStore(t =>
       notifications.map(not => t.replaceAttribute({
         type: TYPE_NAME, id: not.id
-      }, 'shown', false))
-    );
+      }, 'shown', false)),
+    { devOnly: true });
   }
 
   render() {

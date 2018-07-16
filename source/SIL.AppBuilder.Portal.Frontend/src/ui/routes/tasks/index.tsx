@@ -103,7 +103,7 @@ class Tasks extends React.Component<IProps> {
                         { this.productIcon(product.name) }
                         <span>{product.name}</span>
                       </Table.Cell>
-                      <Table.Cell>{user ? `${user.name}` : '[unclaimed]'}</Table.Cell>
+                      <Table.Cell>{user ? `${user.firstName} ${user.lastName}` : '[unclaimed]'}</Table.Cell>
                       <Table.Cell className='red'>{status}</Table.Cell>
                       <Table.Cell>
                         <span>{prettyMS(waitTime, { secDecimalDigits: 0 })}</span>
