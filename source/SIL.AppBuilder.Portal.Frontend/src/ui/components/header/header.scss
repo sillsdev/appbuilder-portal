@@ -21,6 +21,10 @@
     border: 1px solid #FFF;
   }
 
+  .sidebar-button-item {
+    padding-left:0px;
+  }
+
   .button.sidebar-button {
     background-color: transparent;
     color:#FFF;
@@ -41,15 +45,6 @@
     .image {
       margin: 0;
     }
-  }
-
-  .notification-item {
-    padding-left: 5px;
-    padding-right: 5px;
-  }
-
-  .notification-dropdown {
-    color: #ACB8C5;
   }
 
   .sidebar-item {

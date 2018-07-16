@@ -67,6 +67,15 @@ const schemaDefinition: SchemaSettings = {
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
       }
     },
+    notification: {
+      attributes: {
+        title: { type: 'string' },
+        description: { type: 'string' },
+        time: { type: 'date' },
+        link: { type: 'string' },
+        isViewed: { type: 'boolean' }
+      }
+    },
     user: {
       keys: {
         auth0Id: {},
