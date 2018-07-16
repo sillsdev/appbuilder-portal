@@ -83,11 +83,27 @@
     }
   }
 
-  .profile-image {
+  .thumbnail {
+    position: relative;
     width: 128px;
     height: 128px;
+    overflow: hidden;
+    margin: 0px auto 20px;
     border-radius: 50%;
-    margin-bottom: 20px;
+  }
+  .thumbnail img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    -webkit-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
+  }
+  .thumbnail img.portrait {
+    width: 100%;
+    height: auto;
   }
 
   .upload-button {
