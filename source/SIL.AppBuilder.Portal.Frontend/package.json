@@ -38,6 +38,7 @@
     "react-data-grid": "^4.0.7",
     "react-data-grid-addons": "^4.0.8",
     "react-dom": "^16.0.0",
+    "react-intl": "^2.4.0",
     "react-notify-toast": "^0.5.0",
     "react-orbitjs": "^0.1.6",
     "react-redux": "^5.0.7",
