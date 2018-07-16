@@ -27,29 +27,32 @@ class Notifications extends React.Component<IProps> {
 
   //TODO: Remove this method we are connected to the Backend
   generateRandomTaks = async () => {
-    await this.props.updateStore(t => [t.addRecord({
-      type: TYPE_NAME,
-      id: uuid(),
-      attributes: {
-        title: 'New Task',
-        description: 'Chris Hubbard has requested approval for Sogdian Bible Public Domain.',
-        time: new Date(Date.now() - 15000 * 60),
-        link: '/tasks/1',
-        isViewed: false,
-        shown: true
-      }
-    }),t.addRecord({
-      type: TYPE_NAME,
-      id: uuid(),
-      attributes: {
-        title: 'Another Task',
-        description: 'Chris Hubbard approved your request.',
-        time: new Date(Date.now() - 80000 * 60)     ,
-        link: '/tasks/2',
-        isViewed: true,
-        shown: true
-      }
-    })]);
+    await this.props.updateStore(t => [
+      t.addRecord({
+        type: TYPE_NAME,
+        id: uuid(),
+        attributes: {
+          title: 'New Task',
+          description: 'Chris Hubbard has requested approval for Sogdian Bible Public Domain.',
+          time: new Date(Date.now() - 15000 * 60),
+          link: '/tasks/1',
+          isViewed: false,
+          shown: true
+        }
+      }),
+      t.addRecord({
+        type: TYPE_NAME,
+        id: uuid(),
+        attributes: {
+          title: 'Another Task',
+          description: 'Chris Hubbard approved your request.',
+          time: new Date(Date.now() - 80000 * 60)     ,
+          link: '/tasks/2',
+          isViewed: true,
+          shown: true
+        }
+      })
+    ], { devOnly: true });
   }
 
   componentWillMount() {

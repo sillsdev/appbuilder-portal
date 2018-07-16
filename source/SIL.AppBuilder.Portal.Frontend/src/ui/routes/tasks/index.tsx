@@ -48,7 +48,7 @@ class Tasks extends React.Component<IProps> {
         status: status[Math.floor(Math.random() * (3))],
         waitTime: Math.floor(Math.random() * (1296001))
       }
-    }));
+    }), { devOnly: true });
   }
 
   componentWillMount() {
