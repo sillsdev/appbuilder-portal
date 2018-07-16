@@ -59,10 +59,10 @@ class Tasks extends React.Component<IProps> {
 
     const icons = [{id: 'android', icon:'android'},{id:'html', icon: 'file code'}];
 
-    for (let i=0; i < icons.length; i++) {
-      if (productName.toLowerCase().includes(icons[0].id)) {
-        return <Icon className={icons[0].icon}/>;
-      }
+    if (icons.length > 0) {
+      const productIcon = icons.find(icon => productName.toLowerCase().includes(icon.id));
+
+      return <Icon className={productIcon.icon} />;
     }
 
     return null;
@@ -85,7 +85,7 @@ class Tasks extends React.Component<IProps> {
                   <Table.HeaderCell>Assigned To</Table.HeaderCell>
                   <Table.HeaderCell>Status</Table.HeaderCell>
                   <Table.HeaderCell>Wait Time</Table.HeaderCell>
-                  <Table.HeaderCell></Table.HeaderCell>
+                  <Table.HeaderCell />
                 </Table.Row>
               </Table.Header>
 

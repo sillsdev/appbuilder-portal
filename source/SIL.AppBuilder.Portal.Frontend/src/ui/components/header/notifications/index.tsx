@@ -105,7 +105,7 @@ class Notifications extends React.Component<IProps> {
         onClose={this.markNotificationToSeen}
         trigger={
           <div>
-            { !seenNotifications && <div className='red-dot'></div>}
+            { !seenNotifications && <div className='red-dot' />}
             <Icon circular name='alarm' size='large' />
           </div>
         }
