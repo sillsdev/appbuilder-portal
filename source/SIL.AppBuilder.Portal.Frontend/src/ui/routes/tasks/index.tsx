@@ -17,23 +17,23 @@ import { uuid } from '@orbit/utils';
 const prettyMS = require('pretty-ms');
 
 interface Task {
-  type: string,
-  id: string,
-  attributes: TaskAttributes
+  type: string;
+  id: string;
+  attributes: TaskAttributes;
 }
 
 export interface IOwnProps {
-  tasks: Task[]
+  tasks: Task[];
 }
 export type IProps =
   & IOwnProps
-  & WithDataProps
+  & WithDataProps;
 
 class Tasks extends React.Component<IProps> {
 
   state = { data: {}, errors: {} };
 
-  //TODO: Remove this method when we collect tasks from the backend
+  // TODO: Remove this method when we collect tasks from the backend
   generateRandomTaks = async () => {
 
     const products = ['Android APK w/Embedded Audio','HTML website'];
@@ -61,7 +61,7 @@ class Tasks extends React.Component<IProps> {
 
     for (let i=0; i < icons.length; i++) {
       if (productName.toLowerCase().includes(icons[0].id)) {
-        return <Icon className={icons[0].icon}/>
+        return <Icon className={icons[0].icon}/>;
       }
     }
 
@@ -129,8 +129,8 @@ class Tasks extends React.Component<IProps> {
 const mapRecordsToProps = (ownProps) => {
   return {
     tasks: q => q.findRecords(TYPE_NAME)
-  }
-}
+  };
+};
 
 export default compose(
   withLayout,

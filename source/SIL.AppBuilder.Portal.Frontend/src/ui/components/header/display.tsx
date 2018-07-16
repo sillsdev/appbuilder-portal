@@ -19,7 +19,7 @@ export interface Props {
 
 export type IProps =
   & Props
-  & RouteComponentProps<{}>
+  & RouteComponentProps<{}>;
 
 class Header extends React.Component<IProps> {
 

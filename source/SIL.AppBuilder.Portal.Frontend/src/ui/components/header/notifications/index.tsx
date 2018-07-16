@@ -10,22 +10,22 @@ import { Dropdown, Icon } from 'semantic-ui-react';
 import './notification.scss';
 
 interface Notification {
-  type: string,
-  id: string,
-  attributes: NotificationAttributes
+  type: string;
+  id: string;
+  attributes: NotificationAttributes;
 }
 
 export interface Props {
-  notifications: Notification[]
+  notifications: Notification[];
 }
 
 export type IProps =
   & Props
-  & WithDataProps
+  & WithDataProps;
 
 class Notifications extends React.Component<IProps> {
 
-  //TODO: Remove this method we are connected to the Backend
+  // TODO: Remove this method we are connected to the Backend
   generateRandomTaks = async () => {
     await this.props.updateStore(t => [
       t.addRecord({
@@ -75,7 +75,7 @@ class Notifications extends React.Component<IProps> {
       notifications.map(not => t.replaceAttribute({
         type: TYPE_NAME, id: not.id
       }, 'isViewed', true ))
-    )
+    );
   }
 
   clearAll = async (e) => {
@@ -149,9 +149,9 @@ class Notifications extends React.Component<IProps> {
 const mapRecordsToProps = (ownProps) => {
   return {
     notifications: q => q.findRecords(TYPE_NAME)
-  }
-}
+  };
+};
 
 export default compose(
   withData(mapRecordsToProps)
-)(Notifications)
+)(Notifications);

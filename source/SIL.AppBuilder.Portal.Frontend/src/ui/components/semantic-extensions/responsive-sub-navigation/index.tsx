@@ -5,7 +5,7 @@ import { NavLink, withRouter } from 'react-router-dom';
 
 
 export interface IProps {
-  items: { to: string, text: string }[]
+  items: Array<{ to: string, text: string }>;
 }
 
 class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>> {
@@ -53,7 +53,7 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
 
         {/* The non-mobile menu */}
         <Menu vertical className='d-xs-none d-sm-block'>
-          <>{menuItems}</>
+          {menuItems}
         </Menu>
       </>
     );
