@@ -1,8 +1,10 @@
 export const TYPE_NAME = 'user';
 
 export interface UserAttributes {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
+  phone?: string;
   timezone?: string;
   localization?: string;
   emailNotification: boolean;
