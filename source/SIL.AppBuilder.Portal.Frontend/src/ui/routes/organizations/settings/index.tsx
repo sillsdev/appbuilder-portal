@@ -92,7 +92,7 @@ class SettingsRoute extends React.Component<IProps> {
 
     return (
       <div className='ui container'>
-        <h2 className='page-heading'>Organization Settings</h2>
+        <h2 className='page-heading page-heading-border-sm'>Organization Settings</h2>
         <div className='flex-column-xs flex-row-sm'>
           <Navigation />
 

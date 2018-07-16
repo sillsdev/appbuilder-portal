@@ -9,27 +9,25 @@ export interface IProps {
 }
 
 class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>> {
-  state = { selected: 'Basic Info' };
 
-  onSelect = (entry) => (e) =>{
-    e.preventDefault();
+  activeText = () => {
+    const { items, location } = this.props;
 
-    const { to, text } = entry;
+    const matchingItem = items.find(i => {
+      return (i.to === location.pathname);
+    });
 
-    this.setState({ selected: text });
-    this.props.history.push(to);
+    return matchingItem.text || 'Setting Navigation...';
   }
 
   render() {
     const { items } = this.props;
-    const { selected } = this.state;
 
     const menuItems = items.map((i, index) => (
 
       <Menu.Item exact
         key={index}
         as={NavLink}
-        onClick={this.onSelect(i)}
         to={i.to}
         activeClassName='active'>
 
@@ -43,7 +41,7 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
       <>
         {/* The mobile menu */}
         <Dropdown
-          text={selected}
+          text={this.activeText()}
           className='
             mobile
             d-xs-flex d-sm-none w-100

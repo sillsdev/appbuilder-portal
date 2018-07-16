@@ -1,3 +1,24 @@
-.gray-border {
-  border: solid 2px $panel-border-color;
+@mixin borderUtils($modifier) {
+
+  .gray-border#{$modifier} {
+    border: solid 2px $panel-border-color;
+  }
+
+  .page-heading-border#{$modifier} {
+    border-bottom: 1px solid $border-color;
+  }
 }
+
+
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    @include borderUtils('-#{$breakpoint}');
+  }
+
+  @include media-breakpoint-only($breakpoint) {
+    @include borderUtils('-#{$breakpoint}-only');
+  }
+}
+
+@include borderUtils('');
