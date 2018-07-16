@@ -5,6 +5,6 @@ import enUs from './locales/en-us.json';
 
 // shorthand, because FormattedMessage is way too
 // long with how often we'll be using it..
-export function t(id: string, defaultMsg: string) {
+export function t(id: string, defaultMsg: string | undefined) {
   return <FormattedMessage id={id} defaultMessage={defaultMsg} />;
 }

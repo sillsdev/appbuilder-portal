@@ -1,4 +1,9 @@
-https://www.ogi-it.com/presentation/react_i18n.pdf
+# react-i18next
+https://github.com/i18next/react-i18next
+
+use react-i18next -- it's the most high-level
+https://react.i18next.com/misc/using-with-typescript
+https://phraseapp.com/blog/posts/react-i18n-best-libraries/
 
 ## TODO
 
