@@ -52,10 +52,11 @@ class BasicInfoRoute extends React.Component<IProps, IState> {
 
     return (
       <Form className='sub-page-content' onChange={this.onSubmit}>
-        <div className='flex-row justify-content-space-between m-b-md'>
+        <div className='flex-column-reverse-xs flex-row-sm justify-content-space-between m-b-md'>
+
           <div className='flex-grow'>
-            <h2 className='bold m-b-xl'>Basic Info</h2>
-            <Form.Field>
+            <h2 className='d-xs-none bold m-b-xl'>Basic Info</h2>
+            <Form.Field className='m-b-md'>
               <label>Organization Name</label>
               <input
                 value={name}
@@ -64,12 +65,18 @@ class BasicInfoRoute extends React.Component<IProps, IState> {
               />
             </Form.Field>
           </div>
-          <div className='m-l-md'>
+
+          <div className='m-l-md-sm m-b-md'>
             <SelectLogo value={logo} onChange={mut('logo')}/>
           </div>
         </div>
 
-        <Button type='submit' onClick={this.onSubmit}>
+        <Button
+          className='
+            m-t-md-xs-only w-100-xs-only
+            p-md-xs-only m-b-md-xs-only
+          '
+          type='submit' onClick={this.onSubmit}>
           Save
         </Button>
       </Form>

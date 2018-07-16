@@ -1,20 +1,34 @@
-@each $size in $sizes {
-  $name: nth($size, 1);
-  $amount: nth($size, 2);
+@mixin sizeUtils($modifier) {
+  @each $size in $sizes {
+    $name: nth($size, 1);
+    $amount: nth($size, 2);
 
-  .font-#{$name} {
-    font-size: sizeValue($name, $amount);
+    .font-#{$name}#{$modifier} {
+      font-size: sizeValue($name, $amount);
+    }
+  }
+
+  .h-100#{$modifier} {
+    height: 100%;
+  }
+
+  .h-100vh#{$modifier} {
+    height: 100vh;
+  }
+
+  .w-100#{$modifier} {
+    width: 100%;
   }
 }
 
-.h-100 {
-  height: 100%;
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    @include sizeUtils('-#{$breakpoint}');
+  }
+
+  @include media-breakpoint-only($breakpoint) {
+    @include sizeUtils('-#{$breakpoint}-only');
+  }
 }
 
-.h-100vh {
-  height: 100vh;
-}
-
-.w-100 {
-  width: 100%;
-}
+@include sizeUtils('');
