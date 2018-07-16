@@ -52,8 +52,10 @@ class ProductsRoute extends React.Component<IProps> {
           Select all the products you would like to make available to your organization
         </h3>
 
-        TODO: render available products from DWKit as demonstrated
-        https://app.zeplin.io/project/5b3b85b95b0fc79a4b3c40c9/screen/5b3b8d851853ea0a2edf9ce0
+        <p style={{ width: '200px', overflow: 'auto'}}>
+          TODO: render available products from DWKit as demonstrated
+          https://app.zeplin.io/project/5b3b85b95b0fc79a4b3c40c9/screen/5b3b8d851853ea0a2edf9ce0
+        </p>
       </div>
     );
   }

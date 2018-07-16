@@ -19,7 +19,7 @@ export interface Props {
 
 export type IProps =
   & Props
-  & RouteComponentProps<{}>
+  & RouteComponentProps<{}>;
 
 class Header extends React.Component<IProps> {
 
@@ -55,7 +55,7 @@ class Header extends React.Component<IProps> {
             <Menu.Item>
               <Button
                 data-test-header-addproject
-                className='add-project'>
+                className='add-project d-xs-none'>
                 Add Project
               </Button>
             </Menu.Item>

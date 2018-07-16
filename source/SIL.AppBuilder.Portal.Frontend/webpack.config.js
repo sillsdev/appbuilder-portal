@@ -35,7 +35,12 @@ let config = {
     chunkFilename: '[name]-[hash].js'
   },
   plugins: [
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      title: 'Scriptoria',
+      meta: {
+        viewport: 'width=device-width,initial-scale=1,shrink-to-fit=no',
+      },
+    }),
     new ReactRootPlugin(),
     // sep-thread type checking
     new ForkTsCheckerWebpackPlugin(),

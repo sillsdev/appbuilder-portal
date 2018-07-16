@@ -17,23 +17,23 @@ import { uuid } from '@orbit/utils';
 const prettyMS = require('pretty-ms');
 
 interface Task {
-  type: string,
-  id: string,
-  attributes: TaskAttributes
+  type: string;
+  id: string;
+  attributes: TaskAttributes;
 }
 
 export interface IOwnProps {
-  tasks: Task[]
+  tasks: Task[];
 }
 export type IProps =
   & IOwnProps
-  & WithDataProps
+  & WithDataProps;
 
 class Tasks extends React.Component<IProps> {
 
   state = { data: {}, errors: {} };
 
-  //TODO: Remove this method when we collect tasks from the backend
+  // TODO: Remove this method when we collect tasks from the backend
   generateRandomTaks = async () => {
 
     const products = ['Android APK w/Embedded Audio','HTML website'];
@@ -48,7 +48,7 @@ class Tasks extends React.Component<IProps> {
         status: status[Math.floor(Math.random() * (3))],
         waitTime: Math.floor(Math.random() * (1296001))
       }
-    }));
+    }), { devOnly: true });
   }
 
   componentWillMount() {
@@ -59,10 +59,10 @@ class Tasks extends React.Component<IProps> {
 
     const icons = [{id: 'android', icon:'android'},{id:'html', icon: 'file code'}];
 
-    for (let i=0; i < icons.length; i++) {
-      if (productName.toLowerCase().includes(icons[0].id)) {
-        return <Icon className={icons[0].icon}/>
-      }
+    if (icons.length > 0) {
+      const productIcon = icons.find(icon => productName.toLowerCase().includes(icon.id));
+
+      return <Icon className={productIcon.icon} />;
     }
 
     return null;
@@ -85,7 +85,7 @@ class Tasks extends React.Component<IProps> {
                   <Table.HeaderCell>Assigned To</Table.HeaderCell>
                   <Table.HeaderCell>Status</Table.HeaderCell>
                   <Table.HeaderCell>Wait Time</Table.HeaderCell>
-                  <Table.HeaderCell></Table.HeaderCell>
+                  <Table.HeaderCell />
                 </Table.Row>
               </Table.Header>
 
@@ -129,8 +129,8 @@ class Tasks extends React.Component<IProps> {
 const mapRecordsToProps = (ownProps) => {
   return {
     tasks: q => q.findRecords(TYPE_NAME)
-  }
-}
+  };
+};
 
 export default compose(
   withLayout,

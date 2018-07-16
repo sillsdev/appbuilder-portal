@@ -5,6 +5,7 @@ export const keyMap = new KeyMap();
 const schemaDefinition: SchemaSettings = {
   models: {
     organizationInvite: {
+      keys: { remoteId: {} },
       attributes: {
         name: { type: 'string' },
         ownerEmail: { type: 'string' },
@@ -16,6 +17,7 @@ const schemaDefinition: SchemaSettings = {
       }
     },
     organization: {
+      keys: { remoteId: {} },
       attributes: {
         name: { type: 'string' },
         websiteUrl: { type: 'string' },
@@ -39,6 +41,7 @@ const schemaDefinition: SchemaSettings = {
       }
     },
     project: {
+      keys: { remoteId: {} },
       attributes: {
         name: { type: 'string' }
       },
@@ -47,6 +50,7 @@ const schemaDefinition: SchemaSettings = {
       }
     },
     product: {
+      keys: { remoteId: {} },
       attributes: {
         name: { type: 'string' }
       },
@@ -55,6 +59,7 @@ const schemaDefinition: SchemaSettings = {
       }
     },
     task: {
+      keys: { remoteId: {} },
       attributes: {
         project: { type: 'string' },
         product: { type: 'string' },
@@ -68,6 +73,7 @@ const schemaDefinition: SchemaSettings = {
       }
     },
     notification: {
+      keys: { remoteId: {} },
       attributes: {
         title: { type: 'string' },
         description: { type: 'string' },
@@ -77,10 +83,7 @@ const schemaDefinition: SchemaSettings = {
       }
     },
     user: {
-      keys: {
-        auth0Id: {},
-        remoteId: {}
-      },
+      keys: { remoteId: {} },
       attributes: {
         firstName: { type: 'string' },
         lastName: { type: 'string' },

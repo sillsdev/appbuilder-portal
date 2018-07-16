@@ -9,6 +9,11 @@
     flex-direction: column;
   }
 
+  .flex-column-reverse#{$modifier} {
+    display: flex !important;
+    flex-direction: column-reverse;
+  }
+
   .flex-grow#{$modifier} { flex-grow: 1; }
   .flex#{$modifier} { display: flex; }
 
@@ -26,17 +31,22 @@
 
 }
 
-// TODO: define some breakpoint mixins...
-// @include mobile {
-//   @include flexUtils('-mobile');
-// }
-//
-// @include tablet {
-//   @include flexUtils('-tablet');
-// }
-//
-// @include desktop {
-//   @include flexUtils('-desktop');
-// }
+// generates the above with the following modifications / breakpoints:
+//  - xs
+//  - sm
+//  - md
+//  - lg
+//  - xl
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $modifier: '-#{$breakpoint}';
+
+    @include flexUtils($modifier);
+  }
+
+  @include media-breakpoint-only($breakpoint) {
+    @include flexUtils('-#{$breakpoint}-only');
+  }
+}
 
 @include flexUtils('');

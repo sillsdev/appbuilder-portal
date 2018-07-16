@@ -3,6 +3,8 @@ import { match as Match, withRouter, RouteComponentProps } from 'react-router';
 import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 
+import ResponsiveNav from '@ui/components/semantic-extensions/responsive-sub-navigation';
+
 import {
   infoPath, userPath, productsPath, groupsPath, infrastructurePath
 } from '../routes';
@@ -22,7 +24,18 @@ class Navigation extends React.Component<IProps> {
     const { params: { orgId } } = match;
 
     return (
-      <Menu vertical>
+      <ResponsiveNav
+        items={[
+          { to: infoPath.replace(/:orgId/, orgId), text: 'Basic Info' },
+          { to: productsPath.replace(/:orgId/, orgId), text: 'Products' },
+          { to: groupsPath.replace(/:orgId/, orgId), text: 'Groups' },
+          { to: infrastructurePath.replace(/:orgId/, orgId), text: 'Infrastructure' },
+        ]}
+      />
+    );
+
+    return (
+      <div className='ui menu flex-flex-column-sm menu'>
 
         <Menu.Item exact as={NavLink}
           to={infoPath.replace(/:orgId/, orgId)}
@@ -55,7 +68,7 @@ class Navigation extends React.Component<IProps> {
           Infrastructure
         </Menu.Item>
 
-      </Menu>
+      </div>
     );
   }
 }

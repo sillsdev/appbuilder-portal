@@ -39,7 +39,7 @@ class SelectLogo extends React.Component<IProps, IState> {
 
     return (
       <div className='flex-column'>
-        <div className='m-b-md image-fill-container' style={{width: '200px', height: '136px' }}>
+        <div className='m-b-md image-fill-container w-100-xs' style={{minWidth: '200px', height: '136px' }}>
           { !imageData && <div className='w-100 h-100 bg-lightest-gray' />}
           { imageData && (
             <img src={imageData} />

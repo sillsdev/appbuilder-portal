@@ -1,10 +1,10 @@
 export const TYPE_NAME = 'notification';
 
 export interface NotificationAttributes {
-  title: String;
-  description: String;
+  title: string;
+  description: string;
   time: Date;
-  link: String;
+  link: string;
   isViewed: boolean;
   shown: boolean;
 }

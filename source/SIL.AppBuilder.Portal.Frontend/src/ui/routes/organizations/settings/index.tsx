@@ -91,12 +91,12 @@ class SettingsRoute extends React.Component<IProps> {
     };
 
     return (
-      <Container>
-        <h2 className='page-heading'>Organization Settings</h2>
-        <div className='flex-row'>
+      <div className='ui container'>
+        <h2 className='page-heading page-heading-border-sm'>Organization Settings</h2>
+        <div className='flex-column-xs flex-row-sm'>
           <Navigation />
 
-          <div className='m-l-md flex-grow'>
+          <div className='m-l-md-sm flex-grow'>
             <Switch>
               <Route exact path={infoPath} render={(routeProps) => (
                 <InfoRoute {...routeProps } {...settingsProps } />
@@ -121,7 +121,7 @@ class SettingsRoute extends React.Component<IProps> {
             </Switch>
           </div>
         </div>
-      </Container>
+      </div>
     );
   }
 }

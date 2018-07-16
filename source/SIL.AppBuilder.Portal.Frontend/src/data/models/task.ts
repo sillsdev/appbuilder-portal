@@ -7,7 +7,7 @@ export const TYPE_NAME = 'task';
 export interface TaskAttributes {
   project: ProjectAttributes;
   product: ProductAttributes;
-  status: String;
+  status: string;
   waitTime: number;
   user: UserAttributes;
 }

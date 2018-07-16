@@ -53,7 +53,7 @@ class RequestAccessForOrganizationRoute extends React.Component<IProps, IState> 
   render() {
     const { error } = this.state;
 
-    return <Display onSubmit={this.onSubmit} error={error} />
+    return <Display onSubmit={this.onSubmit} error={error} />;
   }
 }
 

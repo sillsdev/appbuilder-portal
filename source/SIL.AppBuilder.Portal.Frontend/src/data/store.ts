@@ -4,7 +4,7 @@ import Store from '@orbit/store';
 
 import LocalStorageBucket from '@orbit/local-storage-bucket';
 import IndexedDBBucket, { supportsIndexedDB } from '@orbit/indexeddb-bucket';
-import Coordinator, { SyncStrategy, RequestStrategy } from '@orbit/coordinator';
+import Coordinator, { SyncStrategy, RequestStrategy, EventLoggingStrategy } from '@orbit/coordinator';
 import JSONAPISource, { JSONAPISerializer } from '@orbit/jsonapi';
 import IndexedDBSource from '@orbit/indexeddb';
 
@@ -17,22 +17,24 @@ import authedFetch, { defaultHeaders } from '@lib/fetch';
 const BucketClass = (supportsIndexedDB ? IndexedDBBucket : LocalStorageBucket);
 
 class CustomJSONAPISerializer extends JSONAPISerializer {
-  deserializeAttribute(record: any, attr: string, value: any) {
-    console.log(record, attr, value);
-    if (attr === 'auth0Id') {
-      record.keys = { auth0Id: value };
-    }
-
-    return record;
-  }
+  // remoteId is used to track the difference between local ids and the
+  // real id of the server.  This is done so that orbit can maintain
+  // relationships before persisting them to the remote host.
+  // (before persisting, there are no known ids)
+  //
+  // resourceKey just defines what local key is used for the id
+  // received from the server
+  //
+  // remoteIds will be set when the JSONAPISource receives records
+  resourceKey(type: string) { return 'remoteId'; }
 }
 
 export async function createStore() {
   console.debug('Setting up datastore');
 
-  const bucket = new BucketClass({ namespace: 'scriptoria-bucket' });
+  // const bucket = new BucketClass({ namespace: 'scriptoria-bucket' });
   const inMemory = new Store({
-    bucket,
+    // bucket,
     keyMap,
     schema,
     name: 'inMemory'
@@ -54,18 +56,18 @@ export async function createStore() {
 
   // For later when we want to persist between refreshes
   // or queue offline things
-  const backup = new IndexedDBSource({
-    keyMap,
-    bucket,
-    schema,
-    name: 'backup',
-    namespace: 'scriptoria'
-  });
+  // const backup = new IndexedDBSource({
+  //   keyMap,
+  //   bucket,
+  //   schema,
+  //   name: 'backup',
+  //   namespace: 'scriptoria'
+  // });
 
   // We don't want to have to query the API everytime we want data
   this.coordinator = new Coordinator({
     sources: [
-      backup,
+      // backup,
       inMemory,
       remote
     ]
@@ -92,7 +94,11 @@ export async function createStore() {
     on: 'beforeUpdate',
     target: 'remote',
     action: 'push',
-    blocking: true
+    blocking: true,
+
+    filter(query) {
+      return !query.options.devOnly;
+    }
   }));
 
 
@@ -103,10 +109,14 @@ export async function createStore() {
     blocking: true
   }));
 
-  this.coordinator.addStrategy(new SyncStrategy({
-    source: 'inMemory',
-    target: 'backup',
-    blocking: true
+  // this.coordinator.addStrategy(new SyncStrategy({
+  //   source: 'inMemory',
+  //   target: 'backup',
+  //   blocking: true
+  // }));
+
+  this.coordinator.addStrategy(new EventLoggingStrategy({
+    sources: ['remote', 'inMemory']
   }));
 
 

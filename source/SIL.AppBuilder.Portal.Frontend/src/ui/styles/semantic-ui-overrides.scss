@@ -104,3 +104,22 @@ Vertical Menu
     }
   }
 }
+
+
+/***********************************
+Dropdown Menu
+************************************/
+.ui.dropdown.mobile {
+  background-color: $blue-highlight;
+  color: $white;
+  padding: 15px 10px;
+
+  .text {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+
+  i.dropdown.icon {
+    font-size: 1.5rem;
+  }
+}
