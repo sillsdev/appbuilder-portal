@@ -97,7 +97,7 @@ export async function createStore() {
     blocking: true,
 
     filter(query) {
-      return !query.options.devOnly;
+      return !((query || {}).options || {}).devOnly;
     }
   }));
 
