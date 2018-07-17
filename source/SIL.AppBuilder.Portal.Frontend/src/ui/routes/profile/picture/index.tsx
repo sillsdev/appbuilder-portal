@@ -6,26 +6,41 @@ export interface IProps {
 
 export interface IState {
   imageData: string;
+  width: number;
+  height: number;
 }
 
 class ImageProfile extends React.Component<IProps, IState> {
 
   state = {
-    imageData: null
+    imageData: null,
+    width: null,
+    height: null
   };
 
   handleNewImage = e => {
 
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
 
-      reader.readAsDataURL(e.target.files[0]);
+      const i = new Image();
+      const file = e.target.files[0];
 
-      reader.onload = () => {
-        this.setState({ imageData: reader.result },() => {
-          this.props.onChange(reader.result);
-        });
+      i.onload = () => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          this.setState({
+            imageData: reader.result,
+            width: i.width,
+            height: i.height
+          }, () => {
+            this.props.onChange(reader.result);
+          });
+        };
       };
+
+      i.src = URL.createObjectURL(file);
+
     }
 
 
@@ -41,11 +56,12 @@ class ImageProfile extends React.Component<IProps, IState> {
           <div className='default-profile-image'>
             <span>JL</span>
           </div> :
-          <img
-            className='profile-image'
-            src={imageData}
-            data-test-picture-uploaded
-          />
+          <div className='thumbnail'>
+            <img
+              src={imageData}
+              data-test-picture-uploaded
+            />
+          </div>
         }
         <div>
           <label
