@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { compose } from 'recompose';
 
 import { OrganizationAttributes } from '@data/models/organization';
 
@@ -14,7 +16,7 @@ export interface IState {
 }
 
 @withTemplateHelpers
-export default class InviteOrganizationDisplay extends React.Component<IProps, IState> {
+export default class InviteOrganizationDisplay extends React.Component<IProps & i18nProps, IState> {
   mut: Mut;
   state = { name: '', websiteUrl: '' };
 
@@ -29,12 +31,13 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
   render() {
     const { mut } = this;
     const { name, websiteUrl } = this.state;
+    const { t } = this.props;
 
     return (
       <div>
         <form data-test-org-create-form className='ui form'>
           <div className='field'>
-            <label>Organization Name</label>
+            <label>{t('invitations.orgName')}</label>
             <input
               data-test-org-name
               type='text'
@@ -43,7 +46,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
           </div>
 
           <div className='field'>
-            <label>Organization Website URL</label>
+            <label>{t('invitations.orgUrl')}</label>
             <input
               data-test-website
               type='text'
@@ -55,7 +58,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
             data-test-submit
             className='ui primary button'
             onClick={this.submit}>
-            Add Organization
+            {t('invitations.orgSubmit')}
           </button>
 
         </form>

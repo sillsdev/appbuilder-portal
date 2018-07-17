@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { match as Match, Redirect } from 'react-router';
+import { compose } from 'recompose';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
 
@@ -13,9 +15,9 @@ export interface IProps {
   match: Match<Params>;
 }
 
-export default class CreateOrganizationRoute extends React.Component<IProps> {
+class CreateOrganizationRoute extends React.Component<IProps & i18nProps> {
   render() {
-    const { match } = this.props;
+    const { match, t } = this.props;
     const { params } = match;
 
     if (params.token && params.token !== '') {
@@ -24,11 +26,13 @@ export default class CreateOrganizationRoute extends React.Component<IProps> {
 
     return (
       <div>
-        <h1>Your invitation token is missing</h1>
-        <p>
-          Please check the link and try again.
-        </p>
+        <h1>{t('invitations.missingTokenTitle')}</h1>
+        <p>{t('invitations.missingTokenPrompt')}</p>
       </div>
     );
   }
 }
+
+export default compose(
+  translate('translations')
+)(CreateOrganizationRoute);

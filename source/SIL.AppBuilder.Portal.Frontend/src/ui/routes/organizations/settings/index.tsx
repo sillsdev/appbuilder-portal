@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import { Container } from 'semantic-ui-react';
 import { compose } from 'recompose';
 import { withData, WithDataProps } from 'react-orbitjs';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import * as toast from '@lib/toast';
 import NotFound from '@ui/routes/errors/not-found';
@@ -38,7 +39,8 @@ interface QueriedProps {
 export type IProps =
   & PassedProps
   & QueriedProps
-  & WithDataProps;
+  & WithDataProps
+  & i18nProps;
 
 const mapRecordsToProps = (ownProps: PassedProps) => {
   const { match } = ownProps;
@@ -51,10 +53,11 @@ const mapRecordsToProps = (ownProps: PassedProps) => {
 
 class SettingsRoute extends React.Component<IProps> {
   updateOrganizaion = async (payload: OrganizationAttributes) => {
+    const { t } = this.props;
     try {
       await this.update(payload);
 
-      toast.success(`Updated!`);
+      toast.success(t('updated'));
     } catch (e) {
       toast.error(e.message);
     }
@@ -75,7 +78,7 @@ class SettingsRoute extends React.Component<IProps> {
   }
 
   render() {
-    const { organization } = this.props;
+    const { organization, t } = this.props;
 
     if (!organization) {
       return (
@@ -92,8 +95,8 @@ class SettingsRoute extends React.Component<IProps> {
 
     return (
       <div className='ui container'>
-        <h2 className='page-heading page-heading-border-sm'>Organization Settings</h2>
-        <div className='flex-column-xs flex-row-sm'>
+        <h2 className='page-heading page-heading-border-sm'>{t('org.settingsTitle')}</h2>
+        <div className='flex-column-xs flex-row-sm align-items-start-sm'>
           <Navigation />
 
           <div className='m-l-md-sm flex-grow'>
@@ -129,5 +132,6 @@ class SettingsRoute extends React.Component<IProps> {
 export default compose(
   // TODO: remove stubbed data after hooking up API
   withStubbedDevData(TYPE_NAME, 'some-org-id', { name: 'Some Org'}),
-  withData(mapRecordsToProps)
+  withData(mapRecordsToProps),
+  translate('translations')
 )(SettingsRoute);

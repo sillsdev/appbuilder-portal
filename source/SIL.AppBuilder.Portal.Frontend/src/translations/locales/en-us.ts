@@ -3,6 +3,9 @@ export default {
   welcome: 'Welcome to Scriptoria',
 
   contactUs: 'Contact Us',
+  exampleForm: 'Example Form',
+
+  updated: 'Updated!',
 
   auth: {
     title: 'Welcome to Scriptoria',
@@ -11,9 +14,59 @@ export default {
   },
 
   invitations: {
-    orgPrompt: 'Would you like to sign up your organization?'
+    orgPrompt: 'Would you like to sign up your organization?',
+    missingTokenTitle: 'Your invitation token is missing',
+    missingTokenPrompt: 'Please check the link and try again',
+    orgInviteTitle: 'You have been invited to create an organization!',
+    orgName: 'Organization Name',
+    orgUrl: 'Organization Website URL',
+    orgSubmit: 'Add Organization',
   },
 
+  org: {
+    createSuccess: 'Organization created successfully!',
+    settingsTitle: 'Organization Settings',
+    selectLogo: 'Select Logo',
+    productsTitle: 'Products and Publishing',
+    makePrivateTitle: 'Make Projects Private by Default',
+    makePrivateDescription: `
+      When a new project is created, it will be defaulted to Private.
+      (Private projects cannot be viewed by anyone outside of your organization)`,
+    productSelectTitle: 'Select all the products you would like to make available to your organization',
+    navBasic: 'Basic Info',
+    navProducts: 'Products',
+    navGroups: 'Groups',
+    navInfrastructure: 'Infrastructure',
+    infrastructureTitle: 'Infrastructure',
+    useSilInfrastructureTitle: `Use SIL International's AWS Build Infrastructure`,
+    groupsTitle: 'Groups',
+    noGroups: 'Your organization has no groups',
+    addGroupButton: 'Add Group',
+    basicTitle: 'Basic Info',
+    orgName: 'Organization Name',
+    save: 'Save',
+  },
 
-  exampleForm: 'Example Form'
+  products: {
+  },
+
+  errors: {
+    notFoundTitle: 'Not Found!',
+    notFoundDescription: 'Something went wrong and the page or resource could not be found!'
+  },
+
+  tasks: {
+    title: 'My Tasks',
+    project: 'Project',
+    product: 'Product',
+    assignedTo: 'Assigned To',
+    status: 'Status',
+    waitTime: 'Wait Time',
+    unclaimed: '[unclaimed]',
+    noTasksTitle: 'No tasks are assigned to you.',
+    noTasksDescription: 'Tasks that require your attention will appear here.',
+    reassign: 'Reassign',
+  }
+
+
 };

@@ -16,7 +16,6 @@ class Lock extends React.Component<IProps & InjectedTranslateProps> {
   constructor(props) {
     super(props);
 
-    console.log('ctr', props);
     this.lockRef = React.createRef();
   }
 

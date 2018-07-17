@@ -20,9 +20,9 @@ class IndexRoute extends React.Component<any, any> {
 
     return (
       <div>
-        <h2>Example Form</h2>
+        <h2>{t('exampleForm')}</h2>
 
-        (t('exampleForm'))
+        {t('exampleForm')}
         {/* <DWKitForm
           eventFunc={console.log}
           formName='login'
