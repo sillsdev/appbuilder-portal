@@ -3,12 +3,16 @@ import { Router, withRouter } from 'react-router-dom';
 import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting, mount } from '@bigtest/react';
 import MirageServer, { Factory } from '@bigtest/mirage';
+import { I18nextProvider } from 'react-i18next';
 
 import createHistory from 'history/createMemoryHistory';
 
 import rootApplication from '@ui/routes/root';
 import { ReduxProvider } from '@store/index';
 import { DataProvider } from '@data/index';
+
+
+import i18n from '../../src/translations';
 
 // the same as @ui/application, but allows
 // setting the initial state
@@ -32,13 +36,15 @@ class TestWrapper extends React.Component<any, any> {
 
     return (
       <div data-test-app-container>
-        <DataProvider>
-          <ReduxProvider initialState={initialState || {}}>
-            <Router history={history}>
-              <WithRouteDebugging />
-            </Router>
-          </ReduxProvider>
-        </DataProvider>
+        <I18nextProvider i18n={i18n}>
+          <DataProvider>
+            <ReduxProvider initialState={initialState || {}}>
+              <Router history={history}>
+                <WithRouteDebugging />
+              </Router>
+            </ReduxProvider>
+          </DataProvider>
+        </I18nextProvider>
       </div>
     );
   }

@@ -16,7 +16,7 @@ export interface IState {
 }
 
 @withTemplateHelpers
-export default class InviteOrganizationDisplay extends React.Component<IProps & i18nProps, IState> {
+class InviteOrganizationDisplay extends React.Component<IProps & i18nProps, IState> {
   mut: Mut;
   state = { name: '', websiteUrl: '' };
 
@@ -66,3 +66,5 @@ export default class InviteOrganizationDisplay extends React.Component<IProps & 
     );
   }
 }
+
+export  default translate('translations')(InviteOrganizationDisplay);
