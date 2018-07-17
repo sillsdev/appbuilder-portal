@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { IntlProvider } from 'react-intl';
+import { I18nextProvider } from 'react-i18next';
 
 import { DataProvider } from '../data';
 import { ReduxProvider } from '../redux-store';
 import RootRoute from './routes/root';
+
+import i18n from '../translations';
 
 export default class Application extends React.Component {
   // TODO: add app loader for all the async parts of initializing this
@@ -16,7 +18,7 @@ export default class Application extends React.Component {
   //         the current user is fetched
   render() {
     return (
-      <IntlProvider locale={navigator.language}>
+      <I18nextProvider i18n={i18n}>
         <DataProvider>
           <ReduxProvider>
             <BrowserRouter>
@@ -24,7 +26,7 @@ export default class Application extends React.Component {
             </BrowserRouter>
           </ReduxProvider>
         </DataProvider>
-      </IntlProvider>
+      </I18nextProvider>
     );
   }
 }

@@ -9,4 +9,5 @@ export interface UserAttributes {
   localization?: string;
   emailNotification: boolean;
   sshKey: string;
+  auth0Id?: string;
 }

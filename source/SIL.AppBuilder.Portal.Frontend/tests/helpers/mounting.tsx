@@ -7,7 +7,6 @@ import MirageServer, { Factory } from '@bigtest/mirage';
 import createHistory from 'history/createMemoryHistory';
 
 import rootApplication from '@ui/routes/root';
-import { IntlProvider } from 'react-intl';
 import { ReduxProvider } from '@store/index';
 import { DataProvider } from '@data/index';
 
@@ -33,15 +32,13 @@ class TestWrapper extends React.Component<any, any> {
 
     return (
       <div data-test-app-container>
-        <IntlProvider locale={navigator.language}>
-          <DataProvider>
-            <ReduxProvider initialState={initialState || {}}>
-              <Router history={history}>
-                <WithRouteDebugging />
-              </Router>
-            </ReduxProvider>
-          </DataProvider>
-        </IntlProvider>
+        <DataProvider>
+          <ReduxProvider initialState={initialState || {}}>
+            <Router history={history}>
+              <WithRouteDebugging />
+            </Router>
+          </ReduxProvider>
+        </DataProvider>
       </div>
     );
   }

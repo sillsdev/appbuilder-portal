@@ -1,14 +1,19 @@
 # react-i18next
 https://github.com/i18next/react-i18next
 
-use react-i18next -- it's the most high-level
 https://react.i18next.com/misc/using-with-typescript
 https://phraseapp.com/blog/posts/react-i18n-best-libraries/
+
+Small demo: https://codesandbox.io/s/8n252n822
+
+NOTE: that for now, we're using local translations, but i18next supports remotely hosted ones
+
+## i18next
+https://www.i18next.com/overview/supported-frameworks
 
 ## TODO
 
 - Load non-default locale's asyncronously, and don't bundle all the locales with the app.
-  https://github.com/yahoo/react-intl/blob/master/examples/async/index.js
 
 - additional translations
 
@@ -16,8 +21,6 @@ https://phraseapp.com/blog/posts/react-i18n-best-libraries/
 
 http://userguide.icu-project.org/formatparse/messages
 https://formatjs.io/guides/message-syntax/
-
-Examples: https://github.com/yahoo/react-intl/issues/461
 
 
 ## Setting the Locale
