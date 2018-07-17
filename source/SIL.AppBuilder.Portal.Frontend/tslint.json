@@ -30,7 +30,8 @@
       "member-access": [false],
       "member-ordering": [false],
       "jsx-boolean-value": [false],
-      "jsx-no-lambda": [false]
+      "jsx-no-lambda": [false],
+      "no-trailing-whitespace": [true]
     },
     "rulesDirectory": []
 }

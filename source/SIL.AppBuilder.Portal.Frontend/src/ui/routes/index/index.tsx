@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { translate } from 'react-i18next';
 // import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 import { get } from '@lib/fetch';
 import { withLayout } from '@ui/components/layout';
@@ -15,11 +16,13 @@ class IndexRoute extends React.Component<any, any> {
   }
 
   render() {
+    const { t } = this.props;
+
     return (
       <div>
-        <h2>Example Form</h2>
+        <h2>{t('exampleForm')}</h2>
 
-        (Form Commented out)
+        {t('exampleForm')}
         {/* <DWKitForm
           eventFunc={console.log}
           formName='login'
@@ -33,5 +36,6 @@ class IndexRoute extends React.Component<any, any> {
 }
 
 export default compose (
+  translate('translations'),
   withLayout
 )(IndexRoute);

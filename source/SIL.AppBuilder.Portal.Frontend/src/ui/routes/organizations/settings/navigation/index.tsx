@@ -2,6 +2,8 @@ import * as React from 'react';
 import { match as Match, withRouter, RouteComponentProps } from 'react-router';
 import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
+import { compose } from 'recompose';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import ResponsiveNav from '@ui/components/semantic-extensions/responsive-sub-navigation';
 
@@ -15,62 +17,29 @@ export interface Params {
 
 export type IProps =
   & { match: Match<Params> }
-  & RouteComponentProps<{}>;
+  & RouteComponentProps<{}>
+  & i18nProps;
 
 
 class Navigation extends React.Component<IProps> {
   render() {
-    const { match } = this.props;
+    const { match, t } = this.props;
     const { params: { orgId } } = match;
 
     return (
       <ResponsiveNav
         items={[
-          { to: infoPath.replace(/:orgId/, orgId), text: 'Basic Info' },
-          { to: productsPath.replace(/:orgId/, orgId), text: 'Products' },
-          { to: groupsPath.replace(/:orgId/, orgId), text: 'Groups' },
-          { to: infrastructurePath.replace(/:orgId/, orgId), text: 'Infrastructure' },
+          { to: infoPath.replace(/:orgId/, orgId), text: t('org.navBasic') },
+          { to: productsPath.replace(/:orgId/, orgId), text: t('org.navProducts') },
+          { to: groupsPath.replace(/:orgId/, orgId), text: t('org.navGroups') },
+          { to: infrastructurePath.replace(/:orgId/, orgId), text: t('org.navInfrastructure') },
         ]}
       />
-    );
-
-    return (
-      <div className='ui menu flex-flex-column-sm menu'>
-
-        <Menu.Item exact as={NavLink}
-          to={infoPath.replace(/:orgId/, orgId)}
-          activeClassName='active'>
-          Basic Info
-        </Menu.Item>
-
-        {/* to={userPath.replace(/:orgId/, orgId)} */}
-        {/* as={NavLink} */}
-        {/* activeClassName='active' */}
-        <Menu.Item disabled>
-          User Setup
-        </Menu.Item>
-
-        <Menu.Item as={NavLink}
-          to={productsPath.replace(/:orgId/, orgId)}
-          activeClassName='active'>
-          Products
-        </Menu.Item>
-
-        <Menu.Item as={NavLink}
-          to={groupsPath.replace(/:orgId/, orgId)}
-          activeClassName='active'>
-          Groups
-        </Menu.Item>
-
-        <Menu.Item as={NavLink}
-          to={infrastructurePath.replace(/:orgId/, orgId)}
-          activeClassName='active'>
-          Infrastructure
-        </Menu.Item>
-
-      </div>
     );
   }
 }
 
-export default withRouter(Navigation);
+export default compose(
+  withRouter,
+  translate('translations')
+)(Navigation);

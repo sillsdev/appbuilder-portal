@@ -2,6 +2,8 @@ import * as React from 'react';
 import { match as Match } from 'react-router';
 import { Form, Button } from 'semantic-ui-react';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { compose } from 'recompose';
 
 import { OrganizationAttributes } from '@data/models/organization';
 
@@ -25,7 +27,7 @@ export interface IProps {
 }
 
 @withTemplateHelpers
-class BasicInfoRoute extends React.Component<IProps, IState> {
+class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
   mut: Mut;
   state = { name: '', logo: '' };
 
@@ -48,6 +50,7 @@ class BasicInfoRoute extends React.Component<IProps, IState> {
     const {
       mut,
       state: { name, logo },
+      props: { t }
     } = this;
 
     return (
@@ -55,9 +58,9 @@ class BasicInfoRoute extends React.Component<IProps, IState> {
         <div className='flex-column-reverse-xs flex-row-sm justify-content-space-between m-b-md'>
 
           <div className='flex-grow'>
-            <h2 className='d-xs-none bold m-b-xl'>Basic Info</h2>
+            <h2 className='d-xs-none bold m-b-xl'>{t('org.basicTitle')}</h2>
             <Form.Field className='m-b-md'>
-              <label>Organization Name</label>
+              <label>{t('org.orgName')}</label>
               <input
                 value={name}
                 onChange={mut('name')}
@@ -77,11 +80,13 @@ class BasicInfoRoute extends React.Component<IProps, IState> {
             p-md-xs-only m-b-md-xs-only
           '
           type='submit' onClick={this.onSubmit}>
-          Save
+          {t('org.save')}
         </Button>
       </Form>
     );
   }
 }
 
-export default BasicInfoRoute;
+export default compose(
+  translate('translations')
+)( BasicInfoRoute );

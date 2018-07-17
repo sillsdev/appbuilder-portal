@@ -6,7 +6,7 @@ import {
 
 @interactor
 export class PictureProfileInteractor {
-  
+
   constructor(selector?: string) { }
 
   clickUploadPicture = clickable('[data-test-upload-picture]');

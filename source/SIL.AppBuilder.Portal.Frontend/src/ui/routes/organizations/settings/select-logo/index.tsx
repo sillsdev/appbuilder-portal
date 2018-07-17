@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { compose } from 'recompose';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 export interface IProps {
   onChange: (imageData: string) => void;
@@ -9,7 +11,7 @@ export interface IState {
   imageData: string;
 }
 
-class SelectLogo extends React.Component<IProps, IState> {
+class SelectLogo extends React.Component<IProps & i18nProps, IState> {
   state = { imageData: null };
 
   componentWillReceiveProps(nextProps) {
@@ -36,6 +38,7 @@ class SelectLogo extends React.Component<IProps, IState> {
 
   render() {
     const { imageData } = this.state;
+    const { t } = this.props;
 
     return (
       <div className='flex-column'>
@@ -48,9 +51,7 @@ class SelectLogo extends React.Component<IProps, IState> {
 
         <label
           htmlFor='hidden-logo-input'
-          className="ui icon button secondary flex-grow uppercase">
-          Select Logo
-        </label>
+          className="ui icon button secondary flex-grow uppercase">{t('org.selectLogo')}</label>
 
         <input
           id='hidden-logo-input'
@@ -64,4 +65,6 @@ class SelectLogo extends React.Component<IProps, IState> {
 
 }
 
-export default SelectLogo;
+export default compose(
+  translate('translations')
+)(SelectLogo);
