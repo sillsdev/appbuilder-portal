@@ -37,7 +37,7 @@ class ImageProfile extends React.Component<IProps, IState> {
             this.props.onChange(reader.result);
           });
         };
-      }
+      };
 
       i.src = URL.createObjectURL(file);
 
