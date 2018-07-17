@@ -50,6 +50,26 @@ export default {
   products: {
   },
 
+  profile: {
+    title: 'Profile',
+    pictureTitle: 'Profile Picture',
+    general: 'General',
+    updated: 'User updated successfully!',
+    uploadPicture: 'Upload new picture',
+    firstName: 'First name',
+    lastName: 'Last name',
+    email: 'Email',
+    phone: 'Phone',
+    location: 'Location',
+    timezone: 'Timezone',
+    timezonePlaceholder: 'Select your timezone...',
+    notificationSettingsTitle: 'Notification Settings',
+    optOutOfEmailOption: 'I do not wish to receive email notifications',
+    sshSettingsTitle: 'Manage Personal SSH Keys',
+    sshKeyLabel: 'SSH Key',
+    update: 'Update Profile',
+  },
+
   errors: {
     notFoundTitle: 'Not Found!',
     notFoundDescription: 'Something went wrong and the page or resource could not be found!'

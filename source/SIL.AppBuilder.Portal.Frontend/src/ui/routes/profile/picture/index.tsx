@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 export interface IProps {
   onChange: (imageData: string) => void;
@@ -8,7 +9,7 @@ export interface IState {
   imageData: string;
 }
 
-class ImageProfile extends React.Component<IProps, IState> {
+class ImageProfile extends React.Component<IProps & i18nProps, IState> {
 
   state = {
     imageData: null
@@ -32,7 +33,7 @@ class ImageProfile extends React.Component<IProps, IState> {
   }
 
   render() {
-
+    const { t } = this.props;
     const { imageData } = this.state;
 
     return (
@@ -52,9 +53,8 @@ class ImageProfile extends React.Component<IProps, IState> {
             htmlFor="hidden-profile-picture"
             className="ui icon button upload-button"
             data-test-upload-picture
-          >
-            UPLOAD NEW PICTURE
-          </label>
+          >{t('profile.uploadPicture')}</label>
+
           <input
             type="file"
             id="hidden-profile-picture"
@@ -69,4 +69,4 @@ class ImageProfile extends React.Component<IProps, IState> {
 
 }
 
-export default ImageProfile;
+export default translate('translations')(ImageProfile);
