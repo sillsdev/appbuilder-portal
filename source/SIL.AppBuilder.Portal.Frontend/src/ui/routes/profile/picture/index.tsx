@@ -48,9 +48,7 @@ class ImageProfile extends React.Component<IProps, IState> {
 
   render() {
 
-    const { imageData, width, height } = this.state;
-
-    console.log(width, height);
+    const { imageData } = this.state;
 
     return (
       <div data-test-picture-profile>
@@ -61,7 +59,6 @@ class ImageProfile extends React.Component<IProps, IState> {
           <div className='thumbnail'>
             <img
               src={imageData}
-              className={width < height ? 'portrait' : ''}
               data-test-picture-uploaded
             />
           </div>
