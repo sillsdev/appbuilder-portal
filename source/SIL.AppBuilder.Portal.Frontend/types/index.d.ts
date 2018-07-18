@@ -10,6 +10,15 @@ interface Auth0JWT {
 
   sub: string;
   exp: number;
+
+  picture: string;
+  locale: string;
+  nickname: string;
+  given_name: string;
+  family_name: string;
+  name: string;
+  gender: string;
+  email: string;
 }
 
 declare type JSONAPI<Attributes, Relationships = {}> = {

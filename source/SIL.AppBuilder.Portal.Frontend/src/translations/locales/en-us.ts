@@ -55,6 +55,7 @@ export default {
     pictureTitle: 'Profile Picture',
     general: 'General',
     updated: 'User updated successfully!',
+    updatePicture: 'Update your picture at Gravatar.com',
     uploadPicture: 'Upload new picture',
     firstName: 'First name',
     lastName: 'Last name',
