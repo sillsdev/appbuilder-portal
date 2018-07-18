@@ -20,7 +20,7 @@ export function getToken(): string {
 export function getPictureUrl(): string {
   const jwt = getDecodedJWT();
 
-  return jwt.picture;
+  return (jwt && jwt.picture) || '';
 }
 
 export function setToken(token: string) {
