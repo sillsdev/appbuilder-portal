@@ -37,17 +37,20 @@ class Sidebar extends React.Component<IProps> {
             as={NavLink}
             to='/tasks'
             activeClassName='active' />
+
           <Menu.Item
             name='Our Projects'
             as={NavLink}
             to='/our-projects'
             activeClassName='active' />
+
           <Menu.Item
             name='Project Directory'
             as={NavLink}
-            to='projects'
+            to='/directory'
             className='project-directory-item'
             activeClassName='active' />
+
           <Menu.Item
             name='Add Project'
             as={NavLink}

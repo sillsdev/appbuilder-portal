@@ -13,6 +13,10 @@ export default {
     login: 'Log In',
   },
 
+  directory: {
+    title: `Project Directory ({numProjects})`,
+  },
+
   invitations: {
     orgPrompt: 'Would you like to sign up your organization?',
     missingTokenTitle: 'Your invitation token is missing',

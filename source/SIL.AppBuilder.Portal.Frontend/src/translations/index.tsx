@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as i18n from 'i18next';
+import * as ICU from 'i18next-icu';
 import * as Backend from 'i18next-xhr-backend';
 import * as LanguageDetector from 'i18next-browser-languagedetector';
 import { reactI18nextModule } from 'react-i18next';
@@ -12,6 +13,8 @@ const localTranslations = {
 };
 
 i18n
+  // https://github.com/i18next/i18next-icu
+  .use(ICU)
   // https://github.com/i18next/i18next-xhr-backend
   // .use(Backend)
   // https://github.com/i18next/i18next-browser-languageDetector

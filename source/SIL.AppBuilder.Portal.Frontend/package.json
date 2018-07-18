@@ -33,6 +33,7 @@
     "auth0-lock": "^11.7.2",
     "i18next": "^11.3.6",
     "i18next-browser-languagedetector": "^2.2.2",
+    "i18next-icu": "^0.4.0",
     "i18next-xhr-backend": "^1.5.1",
     "jwt-decode": "^2.2.0",
     "pretty-ms": "^3.2.0",
