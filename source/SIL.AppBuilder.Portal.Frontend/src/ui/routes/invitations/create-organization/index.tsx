@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { match as Match, Redirect } from 'react-router';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { compose } from 'recompose';
 
 import CreateOrganizationForm from './form';
 
@@ -13,16 +15,16 @@ export interface IProps {
   match: Match<Params>;
 }
 
-export default class CreateOrganizationRoute extends React.Component<IProps> {
+class CreateOrganizationRoute extends React.Component<IProps & i18nProps> {
   render() {
-    const { match } = this.props;
+    const { match, t } = this.props;
     const { params: { token } } = match;
 
     return (
       <div className='ui container'>
         <div className='ui centered column grid'>
           <div className='eight wide column '>
-            <h2 className='page-heading'>You have been invited to create an organization!</h2>
+            <h2 className='page-heading'>{t('invitations.orgInviteTitle')}</h2>
 
             <CreateOrganizationForm token={token} />
           </div>
@@ -31,3 +33,7 @@ export default class CreateOrganizationRoute extends React.Component<IProps> {
     );
   }
 }
+
+export default compose(
+  translate('translations')
+)(CreateOrganizationRoute);

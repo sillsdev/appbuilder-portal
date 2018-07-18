@@ -6,7 +6,7 @@ import {
 } from 'semantic-ui-react';
 
 
-import { deleteToken } from '@lib/auth0';
+import { deleteToken, getPictureUrl } from '@lib/auth0';
 import './header.scss';
 
 export type IProps =
@@ -28,13 +28,11 @@ class UserDropdown extends React.Component<IProps> {
     return (
       <Dropdown
         data-test-header-avatar
-        className='avatar-dropdown'
+        className='image-fill-container'
         pointing='top right'
         icon={null}
         trigger={
-          <span className='black-text font-lg'>
-            FL
-          </span>
+          <img className='round header-icon' src={getPictureUrl()} />
         }
       >
         <Dropdown.Menu>

@@ -48,7 +48,7 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
             justify-content-space-between
           '>
           <Dropdown.Menu className='w-100'>{menuItems}</Dropdown.Menu>
-        </Dropdown>,
+        </Dropdown>
 
 
         {/* The non-mobile menu */}

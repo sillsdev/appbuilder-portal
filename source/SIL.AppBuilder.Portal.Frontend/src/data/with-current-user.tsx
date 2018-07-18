@@ -41,7 +41,7 @@ export function withCurrentUser() {
         // NOTE: this whole lifecycle hook is kind of a hack for lack
         //       of a better 'get the current user' pattern.
         if (fromCache && fromCache.attributes.auth0Id === auth0IdFromJWT) {
-          this.setState({ currentUser: currentUserFromCache });
+          this.setState({ currentUser: fromCache });
           return;
         }
 

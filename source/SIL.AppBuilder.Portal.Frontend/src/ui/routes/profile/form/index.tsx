@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
 import { Form, Divider, Checkbox, Button, Icon, Grid } from 'semantic-ui-react';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import TimezonePicker from 'react-timezone';
 
@@ -24,7 +25,7 @@ export interface IState {
 
 
 @withTemplateHelpers
-export default class EditProfileDisplay extends React.Component<IProps, IState> {
+class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
   mut: Mut;
   toggle: ToggleHelper;
@@ -52,6 +53,7 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
       timezone, emailNotification,
       sshKey
     } = this.state;
+    const { t } = this.props;
 
     return (
       <Form data-test-edit-profile>
@@ -59,7 +61,7 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
           <Grid.Row columns={2}>
             <Grid.Column>
               <Form.Field>
-                <label>First name</label>
+                <label>{t('profile.firstName')}</label>
                 <input
                   data-test-profile-firstname
                   value={firstName}
@@ -68,7 +70,7 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
             </Grid.Column>
             <Grid.Column>
               <Form.Field>
-                <label>Last name</label>
+                <label>{t('profile.lastName')}</label>
                 <input
                   data-test-profile-lastname
                   value={lastName}
@@ -78,28 +80,28 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
           </Grid.Row>
         </Grid>
         <Form.Field>
-          <label>Email</label>
+          <label>{t('profile.email')}</label>
           <input
             data-test-profile-email
             value={email}
             onChange={mut('email')} />
         </Form.Field>
         <Form.Field>
-          <label>Phone</label>
+          <label>{t('profile.phone')}</label>
           <input
             data-test-profile-phone
             value={phone}
             onChange={mut('phone')} />
         </Form.Field>
         <Form.Field>
-          <label>Location</label>
+          <label>{t('profile.location')}</label>
           <input
             data-test-profile-localization
             value={localization}
             onChange={mut('localization')} />
         </Form.Field>
         <Form.Field>
-          <label>Timezone</label>
+          <label>{t('profile.timezone')}</label>
           <div
             data-test-profile-timezone
             className='timezone-group'
@@ -112,17 +114,19 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
                 this.setState({timezone: tz});
               }}
               inputProps={{
-                placeholder: 'Select your Timezone...',
+                placeholder: t('profile.timezonePlaceholder'),
                 name: 'timezone'
               }}
             />
           </div>
         </Form.Field>
+
         <Divider horizontal/>
-        <h2 className='form-title'>Notification Settings</h2>
+
+        <h2 className='form-title'>{t('profile.notificationSettingsTitle')}</h2>
         <Form.Field>
           <div className='notifications'>
-            <span>I do not wish to recieve email notifications</span>
+            <span>{t('profile.optOutOfEmailOption')}</span>
             <Checkbox
               data-test-profile-email-notification
               toggle
@@ -131,21 +135,24 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
               />
           </div>
         </Form.Field>
+
         <Divider horizontal/>
-        <h2 className='form-title'>Manage Personal SSH KEY</h2>
+
+        <h2 className='form-title'>{t('profile.sshSettingsTitle')}</h2>
         <Form.Field>
-          <label>SSH KEY</label>
+          <label>{t('profile.sshKeyLabel')}</label>
           <input
             data-test-profile-ssh-key
             value={sshKey}
             onChange={mut('sshKey')} />
         </Form.Field>
+
         <Button
           data-test-profile-submit
           onClick={this.submit}
           className='form-button'
         >
-          Update Profile
+          {t('profile.update')}
         </Button>
       </Form>
     );
@@ -153,3 +160,5 @@ export default class EditProfileDisplay extends React.Component<IProps, IState> 
   }
 
 }
+
+export  default translate('translations')(EditProfileDisplay);

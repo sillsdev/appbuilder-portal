@@ -6,6 +6,7 @@ import { withLayout } from '@ui/components/layout';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { Container, Table, Icon, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { TaskAttributes, TYPE_NAME } from '@data/models/task';
 
@@ -27,7 +28,8 @@ export interface IOwnProps {
 }
 export type IProps =
   & IOwnProps
-  & WithDataProps;
+  & WithDataProps
+  & i18nProps;
 
 class Tasks extends React.Component<IProps> {
 
@@ -70,21 +72,21 @@ class Tasks extends React.Component<IProps> {
 
   render() {
 
-    const { tasks } = this.props;
+    const { tasks, t } = this.props;
 
     return (
       <Container className='tasks'>
-        <h1 className='page-heading'>My Tasks</h1>
+        <h1 className='page-heading'>{t('tasks.title')}</h1>
         {
           tasks ?
             <Table>
               <Table.Header>
                 <Table.Row>
-                  <Table.HeaderCell>Project</Table.HeaderCell>
-                  <Table.HeaderCell>Product</Table.HeaderCell>
-                  <Table.HeaderCell>Assigned To</Table.HeaderCell>
-                  <Table.HeaderCell>Status</Table.HeaderCell>
-                  <Table.HeaderCell>Wait Time</Table.HeaderCell>
+                  <Table.HeaderCell>{t('tasks.project')}</Table.HeaderCell>
+                  <Table.HeaderCell>{t('tasks.product')}</Table.HeaderCell>
+                  <Table.HeaderCell>{t('tasks.assignedTo')}</Table.HeaderCell>
+                  <Table.HeaderCell>{t('tasks.status')}</Table.HeaderCell>
+                  <Table.HeaderCell>{t('tasks.waitTime')}</Table.HeaderCell>
                   <Table.HeaderCell />
                 </Table.Row>
               </Table.Header>
@@ -93,6 +95,12 @@ class Tasks extends React.Component<IProps> {
                 {tasks.map((task,index) => {
 
                   const { project, product, status, waitTime, user } = task.attributes;
+                  // TODO: I don't think the user will be in the attributes.
+                  //       maybe will need to pull out of relationships and query orbit
+                  //       to get the related user
+                  //       OR, the backend gives us the person's name directly, and
+                  //       we don't worry about a relationship.
+                  const claimedBy = user ? `${user.firstName} ${user.lastName}` : t('tasks.unclaimed');
 
                   return (
                     <Table.Row key={index}>
@@ -103,22 +111,23 @@ class Tasks extends React.Component<IProps> {
                         { this.productIcon(product.name) }
                         <span>{product.name}</span>
                       </Table.Cell>
-                      <Table.Cell>{user ? `${user.firstName} ${user.lastName}` : '[unclaimed]'}</Table.Cell>
+                      <Table.Cell>{claimedBy}</Table.Cell>
                       <Table.Cell className='red'>{status}</Table.Cell>
                       <Table.Cell>
                         <span>{prettyMS(waitTime, { secDecimalDigits: 0 })}</span>
                       </Table.Cell>
                       <Table.Cell>
-                        <Button>REASSIGN</Button>
+                        <Button>{t('tasks.reassign')}</Button>
                       </Table.Cell>
                     </Table.Row>
                   );
                 })}
               </Table.Body>
             </Table> :
+
             <div className='empty-table'>
-              <h3>No tasks are assigned to you.</h3>
-              <p>Tasks that require your attention will appear here.</p>
+              <h3>{t('tasks.noTasksTitle')}</h3>
+              <p>{t('tasks.noTasksDescription')}</p>
             </div>
         }
       </Container>
@@ -135,5 +144,6 @@ const mapRecordsToProps = (ownProps) => {
 export default compose(
   withLayout,
   requireAuth,
-  withData(mapRecordsToProps)
+  withData(mapRecordsToProps),
+  translate('translations')
 )(Tasks);

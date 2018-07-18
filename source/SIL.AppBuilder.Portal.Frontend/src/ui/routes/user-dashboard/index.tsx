@@ -134,7 +134,8 @@ class UserDashboard extends React.Component<IProps & WithDataProps> {
             <Table.Body>
             {
               users.map((user, index) => {
-                const { firstName, lastName, role } = user.attributes;
+                const { firstName, lastName } = user.attributes;
+                const role = user.relationships['role'].data || {};
 
                 return (
                   <Table.Row key={index}>

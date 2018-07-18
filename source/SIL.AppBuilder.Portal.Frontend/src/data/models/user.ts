@@ -14,4 +14,5 @@ export interface UserAttributes {
   sshKey: string;
   role?: RoleAttributes;
   groups?: GroupAttributes;
+  auth0Id?: string;
 }

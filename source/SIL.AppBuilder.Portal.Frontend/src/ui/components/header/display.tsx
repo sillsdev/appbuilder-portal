@@ -44,6 +44,7 @@ class Header extends React.Component<IProps> {
               <Icon name='bars' size='large' />
             </Button>
           </Menu.Item>
+
           <Menu.Item
             data-test-header-appname header
             className='logo'
@@ -59,12 +60,15 @@ class Header extends React.Component<IProps> {
                 Add Project
               </Button>
             </Menu.Item>
+
             <Menu.Item>
               <OrganizationSwitcher />
             </Menu.Item>
+
             <Menu.Item>
               <Notifications/>
             </Menu.Item>
+
             <Menu.Item>
               <UserDropdown toggleSidebar={toggleSidebar}/>
             </Menu.Item>
