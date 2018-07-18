@@ -8,7 +8,6 @@ import { Container, Grid } from 'semantic-ui-react';
 import { withData, WithDataProps } from 'react-orbitjs';
 
 import EditProfileForm from './form';
-import PictureProfile from './picture';
 
 import * as toast from '@lib/toast';
 import { getPictureUrl } from '@lib/auth0';
