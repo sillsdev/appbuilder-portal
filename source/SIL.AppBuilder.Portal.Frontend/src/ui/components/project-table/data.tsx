@@ -5,14 +5,12 @@ import { TYPE_NAME } from '@data/models/project';
 
 const mapRecordsToProps = (props: IProps) => {
   const {
-    sortProperty,
-    defaultSort,
-    filterOptions,
-    pageOptions,
+    sortProperty, defaultSort,
+    filterOptions, pageOptions
   } = props;
 
   return {
-    q => q
+    projects: q => q
       .findRecords(TYPE_NAME)
       .sort(sortProperty || defaultSort)
       .filter(filterOptions || [])
