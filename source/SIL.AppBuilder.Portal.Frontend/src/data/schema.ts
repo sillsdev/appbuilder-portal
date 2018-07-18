@@ -82,6 +82,24 @@ const schemaDefinition: SchemaSettings = {
         isViewed: { type: 'boolean' }
       }
     },
+    role: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string'}
+      },
+      relationships: {
+        users: { type: 'hasMany', model: 'user', inverse: 'role'}
+      }
+    },
+    group: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' }
+      },
+      relationships: {
+        users: { type: 'hasMany', model: 'user', inverse: 'groups'}
+      }
+    },
     user: {
       keys: { remoteId: {} },
       attributes: {
@@ -99,7 +117,9 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         ownedOrganizations: { type: 'hasMany', model: 'organization', inverse: 'owner' },
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
-        assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' }
+        assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' },
+        role: { type: 'hasOne', model: 'role', inverse: 'users'},
+        groups: { type: 'hasMany', model: 'group', inverse: 'users'}
       }
     }
   }
