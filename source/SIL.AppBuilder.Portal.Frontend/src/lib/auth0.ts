@@ -80,6 +80,15 @@ let lockInstance: Auth0LockStatic;
 export function getAuth0LockInstance(options = {}): Auth0LockStatic {
   if (lockInstance === undefined) {
     lockInstance = new Auth0Lock(auth0Env.clientId, auth0Env.domain, {
+      // TODO: pull language form i18next
+      language: 'en',
+      additionalSignUpFields: [{
+        name: 'given_name',
+        placeholder: 'Given Name'
+      }, {
+        name: 'family_name',
+        placeholder: 'Family Name'
+      }],
       auth: {
         responseType: 'token id_token',
         sso: false,
