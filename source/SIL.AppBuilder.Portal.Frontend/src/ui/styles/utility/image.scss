@@ -6,5 +6,9 @@
     height: 100%;
     object-fit: cover;
     object-position: 50% 50%;
+
+    &.round {
+      border-radius:50%;
+    }
   }
 }

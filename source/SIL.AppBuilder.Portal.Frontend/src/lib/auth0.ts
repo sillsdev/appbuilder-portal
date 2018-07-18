@@ -17,6 +17,12 @@ export function getToken(): string {
   return localStorage.getItem(storageKey);
 }
 
+export function getPictureUrl(): string {
+  const jwt = getDecodedJWT();
+
+  return jwt.picture;
+}
+
 export function setToken(token: string) {
   localStorage.setItem(storageKey, token);
 }
