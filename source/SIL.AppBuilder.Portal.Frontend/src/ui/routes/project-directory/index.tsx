@@ -2,6 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
+import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
 import ProjectTable from '@ui/components/project-table';
 
@@ -34,5 +35,6 @@ class ProjectDirectoryRoute extends React.Component<i18nProps> {
 
 export default compose (
   translate('translations'),
-  withLayout
+  requireAuth,
+  withLayout,
 )(ProjectDirectoryRoute);
