@@ -2,9 +2,11 @@ import * as React from 'react';
 import { compose } from 'recompose';
 
 import { requireAuth } from '@lib/auth';
+
 import { withData, WithDataProps } from 'react-orbitjs';
 import { Container, Table, Icon, Button } from 'semantic-ui-react';
-import { withStubbedDevData } from '@data/with-stubbed-dev-data';
+import GroupDropdown from './groupDropdown';
+
 import { TYPE_NAME as TYPE_USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as TYPE_GROUP, GroupAttributes } from '@data/models/group';
 import { TYPE_NAME as TYPE_ROLE, RoleAttributes } from '@data/models/role';
@@ -126,16 +128,16 @@ class UserDashboard extends React.Component<IProps & WithDataProps> {
               <Table.Row>
                 <Table.HeaderCell>Name</Table.HeaderCell>
                 <Table.HeaderCell>Role</Table.HeaderCell>
-                <Table.HeaderCell>Groups</Table.HeaderCell>
+                <Table.HeaderCell style={{width: '25%'}}>Groups</Table.HeaderCell>
                 <Table.HeaderCell>Disabled</Table.HeaderCell>
-                <Table.HeaderCell />
               </Table.Row>
             </Table.Header>
             <Table.Body>
             {
               users.map((user, index) => {
                 const { firstName, lastName } = user.attributes;
-                const role = user.relationships['role'].data || {};
+
+                //const role = user.relationships['role'].data || {};
 
                 return (
                   <Table.Row key={index}>
@@ -143,16 +145,15 @@ class UserDashboard extends React.Component<IProps & WithDataProps> {
                       <Link to={'/projects'}>{`${firstName} ${lastName}`}</Link>
                     </Table.Cell>
                     <Table.Cell>
-                      {`${role.name}`}
+                      {`Builder`}
                     </Table.Cell>
                     <Table.Cell>
-                      {`${role.name}`}
+                      <GroupDropdown
+                        items={[{id: 'g1', value: 'North America'},{id: 'g2', value: 'South America'}, {id:'g3', value: 'East Asia'}]}
+                        selected={[]}/>
                     </Table.Cell>
                     <Table.Cell>
-                      Dropdown
-                    </Table.Cell>
-                    <Table.Cell>
-                      Disabled
+                      <span></span>
                     </Table.Cell>
                   </Table.Row>
                 )
