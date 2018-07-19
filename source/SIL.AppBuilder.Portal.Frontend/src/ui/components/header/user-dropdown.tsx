@@ -28,11 +28,12 @@ class UserDropdown extends React.Component<IProps> {
     return (
       <Dropdown
         data-test-header-avatar
-        className='image-fill-container'
         pointing='top right'
         icon={null}
         trigger={
-          <img className='round header-icon' src={getPictureUrl()} />
+          <span className='image-fill-container'>
+            <img className='round header-icon' src={getPictureUrl()} />
+          </span>
         }
       >
         <Dropdown.Menu>
