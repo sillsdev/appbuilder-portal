@@ -16,11 +16,17 @@ type IProps =
 
 export default class Table extends React.Component<IProps> {
   render() {
+    const { projects } = this.props;
+
+    console.log('Table', this.props);
+
     return (
       <table className='ui table'>
         <Header />
 
-        {projects.map(project => <Row project={project} />)}
+        {projects && projects.map(project => (
+          <Row project={project} />
+        ))}
 
       </table>
     );
