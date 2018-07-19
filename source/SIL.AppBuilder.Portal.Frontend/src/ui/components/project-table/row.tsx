@@ -1,13 +1,20 @@
 import * as React from 'react';
 
-export default class Row extends React.Component {
+import { ProjectAttributes } from '@data/models/project';
+
+export interface IProps {
+  project: JSONAPI<ProjectAttributes>
+}
+
+export default class Row extends React.Component<IProps> {
   render() {
-    const { project } = this.props;
+    const { project: data } = this.props;
+    const { attributes: project } = data;
 
     return (
       <tr>
         <td>{project.name}</td>
-        <td>{project.organization.name}</td>
+        <td className='bold'>{project.organization.name}</td>
         <td>{project.language}</td>
         <td>{project.status}</td>
         <td>{project.lastUpdatedAt}</td>
