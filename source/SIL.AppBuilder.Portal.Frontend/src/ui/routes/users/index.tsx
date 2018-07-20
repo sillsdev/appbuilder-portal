@@ -8,6 +8,8 @@ import UserTable from '@ui/components/user-table';
 
 export const pathName = '/users';
 
+import './users.scss';
+
 class Users extends React.Component<i18nProps> {
 
   render() {
@@ -15,11 +17,11 @@ class Users extends React.Component<i18nProps> {
     const { t } = this.props;
 
     return (
-      <div className='ui container'>
+      <div className='ui container users'>
         <div className='flex justify-content-space-between'>
           <h1 className='page-heading'>{t('users.title')}</h1>
           <div className='flex align-items-center'>
-            <div className='ui left icon input'>
+            <div className='ui left icon input search-component'>
               <input type="text" placeholder={`${t('common.search')}...`}/>
               <i className='search icon'/>
             </div>

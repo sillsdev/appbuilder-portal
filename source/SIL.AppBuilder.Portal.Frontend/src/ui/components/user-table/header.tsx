@@ -11,10 +11,10 @@ class Header extends React.Component<i18nProps> {
     return (
       <thead>
         <tr>
-          <td>{t('users.table.columns.name')}</td>
-          <td>{t('users.table.columns.role')}</td>
-          <td>{t('users.table.columns.groups')}</td>
-          <td>{t('users.table.columns.disabled')}</td>
+          <th>{t('users.table.columns.name')}</th>
+          <th>{t('users.table.columns.role')}</th>
+          <th>{t('users.table.columns.groups')}</th>
+          <th>{t('users.table.columns.disabled')}</th>
         </tr>
       </thead>
     )

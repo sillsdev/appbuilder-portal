@@ -21,9 +21,7 @@ class GroupDropdown extends React.Component<IProps, IState> {
       items: props.items,
       selected: props.selected
     }
-
   }
-
 
   selectedItems = () => {
     const { selected, items } = this.state;
@@ -42,7 +40,7 @@ class GroupDropdown extends React.Component<IProps, IState> {
   toggleSelection = (id) => {
     const itemSelected = this.state.items.filter(item => item.id === id)[0];
 
-    if (!this.state.selected.includes(itemSelected)) {
+    if (this.state.selected.filter(item => item.id === itemSelected.id).length == 0) {
       this.setState({
         selected: [...this.state.selected, itemSelected]
       });
@@ -53,6 +51,11 @@ class GroupDropdown extends React.Component<IProps, IState> {
     }
   }
 
+  isItemSelected = (id) => {
+    const items = this.state.selected.filter(item => item.id === id);
+    return items.length > 0;
+  }
+
   render() {
 
     return (
@@ -60,17 +63,19 @@ class GroupDropdown extends React.Component<IProps, IState> {
         <Dropdown
           multiple
           text={this.selectedItems()}
-          className='w-100'
+          className='w-100 groupDropdown'
         >
           <Dropdown.Menu className='groups'>
           {
             this.state.items.map((item, index) => (
-              <div key={index} className="item">
+                <div key={index} className="item" onClick={e => {
+                  e.stopPropagation();
+                  this.toggleSelection(item.id)
+                }}>
                 <Checkbox
                   value={item.id}
                   label={item.value}
-                  defaultChecked={this.state.selected.includes(item)}
-                  onClick={e => this.toggleSelection(item.id)}
+                  checked={this.isItemSelected(item.id)}
                 />
               </div>
             ))
