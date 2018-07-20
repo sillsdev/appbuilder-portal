@@ -17,7 +17,7 @@ import RequestOrgAccessSuccessRoute, { pathName as requestOrgAccessSuccessPath }
 import ProfileRoute, { pathName as profilePath } from '@ui/routes/profile';
 import OrganizationsRoute, { pathName as organizationsPath } from '@ui/routes/organizations';
 
-import UserDashoard, { pathName as UserDashboardPath } from '@ui/routes/user-dashboard';
+import UsersRoute, { pathName as UsersPath } from '@ui/routes/users';
 
 import ErrorRootRoute from '@ui/routes/errors';
 import NotFoundRoute from '@ui/routes/errors/not-found';
@@ -43,7 +43,7 @@ export default class RootPage extends React.Component {
             <Route path={profilePath} component={withLayout(ProfileRoute)} />
             <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
 
-            <Route path={UserDashboardPath} component={withLayout(UserDashoard)} />
+            <Route path={UsersPath} component={UsersRoute} />
 
             <Route component={NotFoundRoute} />
           </Switch>

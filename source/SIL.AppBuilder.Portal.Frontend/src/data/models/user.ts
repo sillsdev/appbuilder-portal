@@ -12,7 +12,7 @@ export interface UserAttributes {
   localization?: string;
   emailNotification: boolean;
   sshKey: string;
-  role?: RoleAttributes;
-  groups?: GroupAttributes;
+  role?: {id: string, name: string}; //need api
+  groups?: Array<{id:string, name: string}>; //need an api
   auth0Id?: string;
 }

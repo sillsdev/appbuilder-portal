@@ -7,6 +7,10 @@ export default {
 
   updated: 'Actualizado!',
 
+  common: {
+    search: 'Buscar'
+  },
+
   auth: {
     title: 'Bienvenido a Scriptoria',
     signup: 'Registrarse',
@@ -87,6 +91,18 @@ export default {
     noTasksTitle: 'No hay tareas asignadas para ti.',
     noTasksDescription: 'Las tareas que requieren tu atención aparecerán aqui.',
     reassign: 'Asignar',
+  },
+
+  users: {
+    title: 'Manage Users',
+    table: {
+      columns: {
+        name: 'Nombre',
+        role: 'Rol',
+        groups: 'Grupo',
+        disabled: 'Deshabilitado'
+      }
+    }
   }
 
 };

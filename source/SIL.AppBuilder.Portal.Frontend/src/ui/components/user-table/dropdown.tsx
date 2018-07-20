@@ -58,8 +58,7 @@ class GroupDropdown extends React.Component<IProps, IState> {
     return (
       <>
         <Dropdown
-          fluid
-          multiple selection
+          multiple
           text={this.selectedItems()}
           className='w-100'
         >
@@ -67,7 +66,12 @@ class GroupDropdown extends React.Component<IProps, IState> {
           {
             this.state.items.map((item, index) => (
               <div key={index} className="item">
-                <Checkbox value={item.id} label={item.value} onClick={e => this.toggleSelection(item.id)}/>
+                <Checkbox
+                  value={item.id}
+                  label={item.value}
+                  defaultChecked={this.state.selected.includes(item)}
+                  onClick={e => this.toggleSelection(item.id)}
+                />
               </div>
             ))
           }
