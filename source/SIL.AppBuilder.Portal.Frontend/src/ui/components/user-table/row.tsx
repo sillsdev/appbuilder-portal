@@ -6,8 +6,8 @@ import GroupDropdown from './dropdown';
 import { Link } from 'react-router-dom';
 
 export interface IProps {
-  user: JSONAPI<UserAttributes>,
-  groups: JSONAPI<GroupAttributes>[]
+  user: JSONAPI<UserAttributes>;
+  groups: Array<JSONAPI<GroupAttributes>>;
 }
 
 export default class Row extends React.Component<IProps> {
@@ -25,7 +25,7 @@ export default class Row extends React.Component<IProps> {
             selected={user.groups.map(g => ({ id: g.id, value: g.name }))}
           />
         </td >
-        <td></td >
+        <td/>
       </tr >
     );
   }

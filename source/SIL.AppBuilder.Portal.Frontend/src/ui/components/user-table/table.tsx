@@ -6,8 +6,8 @@ import Row from './row';
 import './user-table.scss';
 
 interface IOwnProps {
-  users: any[],
-  groups: any[]
+  users: any[];
+  groups: any[];
 }
 
 export default class Table extends React.Component<IOwnProps> {

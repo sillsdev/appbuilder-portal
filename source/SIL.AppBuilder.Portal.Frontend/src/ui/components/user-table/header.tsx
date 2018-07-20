@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { compose } from 'recompose';1
+import { compose } from 'recompose';
 
 class Header extends React.Component<i18nProps> {
 
@@ -17,7 +17,7 @@ class Header extends React.Component<i18nProps> {
           <th>{t('users.table.columns.disabled')}</th>
         </tr>
       </thead>
-    )
+    );
   }
 }
 

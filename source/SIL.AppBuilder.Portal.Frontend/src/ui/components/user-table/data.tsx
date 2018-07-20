@@ -109,5 +109,5 @@ export function withData(WrappedComponent) {
 
   return compose(
     withOrbit(mapRecordsToProps)
-  )(DataWrapper)
+  )(DataWrapper);
 }

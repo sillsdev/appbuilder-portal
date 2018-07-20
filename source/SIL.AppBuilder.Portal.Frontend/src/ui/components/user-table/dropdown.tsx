@@ -20,17 +20,17 @@ class GroupDropdown extends React.Component<IProps, IState> {
     this.state = {
       items: props.items,
       selected: props.selected
-    }
+    };
   }
 
   selectedItems = () => {
     const { selected, items } = this.state;
 
-    if (selected && selected.length == 0) {
+    if (selected && selected.length === 0) {
       return '-';
     }
 
-    if (selected.length == items.length ) {
+    if (selected.length === items.length ) {
       return 'ALL';
     }
 
@@ -40,13 +40,13 @@ class GroupDropdown extends React.Component<IProps, IState> {
   toggleSelection = (id) => {
     const itemSelected = this.state.items.filter(item => item.id === id)[0];
 
-    if (this.state.selected.filter(item => item.id === itemSelected.id).length == 0) {
+    if (this.state.selected.filter(item => item.id === itemSelected.id).length === 0) {
       this.setState({
         selected: [...this.state.selected, itemSelected]
       });
     } else {
       this.setState({
-        selected: this.state.selected.filter(item => item.id != itemSelected.id)
+        selected: this.state.selected.filter(item => item.id !== itemSelected.id)
       });
     }
   }
@@ -70,7 +70,7 @@ class GroupDropdown extends React.Component<IProps, IState> {
             this.state.items.map((item, index) => (
                 <div key={index} className="item" onClick={e => {
                   e.stopPropagation();
-                  this.toggleSelection(item.id)
+                  this.toggleSelection(item.id);
                 }}>
                 <Checkbox
                   value={item.id}
