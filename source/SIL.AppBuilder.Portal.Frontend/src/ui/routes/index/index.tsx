@@ -4,6 +4,7 @@ import { translate } from 'react-i18next';
 // import { DWKitForm } from 'vendor/dwkit/optimajet-form';
 import { get } from '@lib/fetch';
 import { withLayout } from '@ui/components/layout';
+import { requireAuth } from '@lib/auth';
 
 export const pathName = '/';
 
@@ -37,5 +38,6 @@ class IndexRoute extends React.Component<any, any> {
 
 export default compose (
   translate('translations'),
+  requireAuth,
   withLayout
 )(IndexRoute);

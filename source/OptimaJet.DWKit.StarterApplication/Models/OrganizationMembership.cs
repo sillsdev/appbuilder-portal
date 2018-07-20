@@ -5,7 +5,7 @@ using JsonApiDotNetCore.Models;
 namespace Optimajet.DWKit.StarterApplication.Models
 {
     [Table("OrganizationMembership")]
-    public class OrganizationMembership :Identifiable<Guid>
+    public class OrganizationMembership : Identifiable<Guid>
     {
         [HasOne("user")]
         public virtual User User { get; set; }
