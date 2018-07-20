@@ -17,21 +17,20 @@ using System.Linq;
 namespace Optimajet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class UsersController : JsonApiController<User>
+    public class UsersController : BaseController<User>
     {
-        private UserService _service { get; }
 
         public UsersController(
             IJsonApiContext jsonApiContext,
-            IResourceService<User> resourceService)
-        : base(jsonApiContext, resourceService)
+            IResourceService<User> resourceService,
+            UserService userService)
+        : base(jsonApiContext, resourceService, userService)
         {
-            this._service = (UserService)resourceService;
         }
 
         [HttpGet("current-user")]
-        public async Task<IActionResult> GetCurrentUserAsync() {
-            var currentUser = await HttpContext.CurrentUser();
+        public IActionResult GetCurrentUser() {
+            var currentUser = CurrentUser;
 
             return Ok(currentUser);
         }

@@ -16,11 +16,12 @@
     <Copyright>OptimaJet DWKit 2018</Copyright>
   </PropertyGroup>
   <ItemGroup>
-  <PackageReference Include="Auth0" Version="3.6.0" />
-  <PackageReference Include="Auth0.ManagementApi" Version="5.6.0" />
-  <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
-  <PackageReference Include="DWKit-Core" Version="2.1.1" />
-  <PackageReference Include="JsonApiDotnetCore" Version="2.3.2" />
+    <PackageReference Include="Auth0" Version="3.6.0" />
+    <PackageReference Include="Auth0.ManagementApi" Version="5.6.0" />
+    <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
+    <PackageReference Include="dotenv.net" Version="1.0.3" />
+    <PackageReference Include="DWKit-Core" Version="2.1.1" />
+    <PackageReference Include="JsonApiDotnetCore" Version="2.3.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.1" />

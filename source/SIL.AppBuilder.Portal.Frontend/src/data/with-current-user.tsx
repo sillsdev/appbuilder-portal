@@ -8,6 +8,8 @@ import  { keyMap } from '@data/schema';
 import { getAuth0Id } from '@lib/auth0';
 import { get as authenticatedGet } from '@lib/fetch';
 
+import PageLoader from '@ui/components/loaders/page';
+
 type UserPayload = JSONAPI<UserAttributes>;
 
 const mapRecordsToProps = {
@@ -69,7 +71,7 @@ export function withCurrentUser() {
         const { currentUser, isLoading } = this.state;
 
         if (isLoading) {
-          return 'Loading? what should we do here before we get the current user?';
+          return <PageLoader />;
         } else if (currentUser) {
           return <InnerComponent {...this.props} currentUser={currentUser} />;
         }

@@ -11,7 +11,6 @@
     "webpack-dev": "./node_modules/.bin/webpack-dev-server",
     "tslint": "./node_modules/.bin/tslint -c ./tslint.json --project ./tsconfig.json",
     "start:dev": "yarn webpack-dev",
-    "start:dev:on-host": "API_HOST=localhost:7081 yarn start:dev",
     "webpack:build": "./node_modules/.bin/webpack-cli --config tests/webpack.config.js",
     "karma:start": "yarn karma start ./tests/karma.conf.js --fail-on-empty-test-suite",
     "test:watch": "yarn karma:start",
