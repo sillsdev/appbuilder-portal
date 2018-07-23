@@ -24,5 +24,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             this.OrganizationMembershipRepository = organizationMembershipRepository;
         }
 
+        public override async Task<Organization> CreateAsync(Organization entity)
+        {
+            var newEntity = await base.CreateAsync(entity);
+
+            // an org can only be created by the owner of the org. (for now anyway)            
+            var membership = new OrganizationMembership {
+                User = newEntity.Owner,
+                Organization = newEntity
+            };
+
+            await OrganizationMembershipRepository.CreateAsync(membership);
+
+            return newEntity;
+        }
+
     }
 }

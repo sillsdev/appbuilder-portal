@@ -48,7 +48,7 @@ export function withCurrentUser() {
         }
 
         try {
-          const response = await authenticatedGet('/api/users/current-user');
+          const response = await authenticatedGet('/api/users/current-user?include=organization-memberships');
           const json = await response.json();
 
           // json.id = 'current-user';
