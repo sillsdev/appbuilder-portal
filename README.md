@@ -20,6 +20,14 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 ./run dotnet test
 ```
 
+Test Debugging:
+```bash
+./run yarn test:watch:headless
+```
+
+[Now Visit http://localhost:9876/debug.html](http://localhost:9876/debug.html) to debug
+the tests, and run them individually.
+
 ### Backend Notes
 
 - All endpoints should be behind an `api/` path

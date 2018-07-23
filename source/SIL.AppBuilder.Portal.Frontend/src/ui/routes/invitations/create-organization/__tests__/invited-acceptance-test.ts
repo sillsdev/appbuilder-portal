@@ -28,8 +28,8 @@ describe('Acceptance | Invitations | Create Organization', () => {
 
         const { server } = this.polly;
 
-        server.post('/api/').intercept((req, res) => {
-
+        server.post('/api/organizations').intercept((req, res) => {
+          console.log('intercepted');
         });
       });
 

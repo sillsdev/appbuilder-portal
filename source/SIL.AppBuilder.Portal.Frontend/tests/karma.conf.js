@@ -39,6 +39,7 @@ module.exports = function(config) {
     preprocessors: {
       [`${root}/tests/index.ts`]: [
         'webpack',
+        // 'sourcemap',
         // 'iframes'
       ],
     },
@@ -57,6 +58,7 @@ module.exports = function(config) {
     plugins: [
       /* 'karma-parallel', */
       'karma-mocha',
+      // 'karma-sourcemap-loader',
       'karma-webpack',
       'karma-mocha-reporter',
       'karma-chrome-launcher',

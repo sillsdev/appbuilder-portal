@@ -21,7 +21,7 @@ if (isDevelopment) {
 let config = {
   mode: isProduction ? 'production' : 'development',
   // devtool: isProduction ? 'none' : 'inline-source-map',
-  devtool: 'cheap-eval-source-map',
+  devtool: 'inline-source-map',
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),
