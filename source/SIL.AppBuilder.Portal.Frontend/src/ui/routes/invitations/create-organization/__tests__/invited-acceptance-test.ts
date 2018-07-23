@@ -25,6 +25,12 @@ describe('Acceptance | Invitations | Create Organization', () => {
       beforeEach(async function() {
         await page.fillWebsite('fake.fake');
         await page.fillOrgName('Acme Org');
+
+        const { server } = this.polly;
+
+        server.post('/api/').intercept((req, res) => {
+
+        });
       });
 
       describe('the form is submitted', () => {

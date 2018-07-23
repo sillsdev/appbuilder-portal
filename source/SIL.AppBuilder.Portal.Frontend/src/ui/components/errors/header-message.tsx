@@ -14,7 +14,7 @@ export default class ErrorHeaderMessage extends React.Component<IProps> {
   render() {
     const { error } = this.props;
 
-    if (!error || error.length === 0) return null;
+    if (!error || error.length === 0) { return null; }
 
     // title is required, but body is not.
     const { title, body } = parseError(error);

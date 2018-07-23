@@ -6,12 +6,9 @@ export function setupRequestInterceptor(config: any = {}) {
   beforeEach(function() {
     const name = generateRecordingName(this);
     const pollyConfig = {
-      mode: 'replay',
+      mode: 'passthrough',
       logging: true,
       recordIfMissing: false,
-      // persisterOptions: {
-      //   host: 'http://localhost:3000',
-      // },
       matchRequestBy: {
         order: false,
         url: {

@@ -13,7 +13,7 @@ export function useFakeAuthentication() {
 
     const { server } = this.polly;
 
-    server.get('/api/users/*current-user').intercept((req, res) => {
+    server.get('/api/users/current-user').intercept((req, res) => {
       res.status(200);
       res.json({
         data: {
