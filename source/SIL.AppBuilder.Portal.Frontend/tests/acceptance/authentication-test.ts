@@ -52,9 +52,12 @@ describe('Acceptance | Authentication', () => {
     });
 
     describe('navigates to a route that does not require authentication', () => {
-      xit('it is allowed', () => {
-        // TODO: need a route that can be viewed by both
-        //       authenticated and unauthenticated
+      beforeEach(async () => {
+        await visit('/not-found');
+      });
+
+      it('it is allowed', () => {
+        expect(location().pathname).to.equal('/not-found');
       });
     });
 
@@ -85,9 +88,12 @@ describe('Acceptance | Authentication', () => {
     });
 
     describe('navigates to a route that does not require authentication', () => {
-      xit('it is allowed', () => {
-        // TODO: need a route that can be viewed by both
-        //       authenticated and unauthenticated
+      beforeEach(async () => {
+        await visit('/not-found');
+      });
+
+      it('it is allowed', () => {
+        expect(location().pathname).to.equal('/not-found');
       });
     });
 

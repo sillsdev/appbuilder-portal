@@ -25,16 +25,24 @@ describe('Acceptance | Invitations | Create Organization', () => {
       beforeEach(async function() {
         await page.fillWebsite('fake.fake');
         await page.fillOrgName('Acme Org');
-
-        const { server } = this.polly;
-
-        server.post('/api/organizations').intercept((req, res) => {
-          console.log('intercepted');
-        });
       });
 
       describe('the form is submitted', () => {
         beforeEach(async function() {
+          const { server } = this.polly;
+
+          server.post('/api/*path').intercept((req, res) => {
+            res.status(200);
+            res.json({
+              data: {
+                attributes: {
+                  id: 1,
+                  name: 'Acme Org'
+                }
+              }
+            });
+          });
+
           await page.clickSubmit();
         });
 

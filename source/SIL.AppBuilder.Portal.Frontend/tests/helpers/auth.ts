@@ -13,12 +13,14 @@ export function useFakeAuthentication() {
 
     const { server } = this.polly;
 
-    server.get('/api/users/current-user').intercept((req, res) => {
-      res.status(200);
-      res.json({
-        data: {
-          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' }
-        }
+    server.namespace('/api', () => {
+      server.get('/users/current-user').intercept((req, res) => {
+        res.status(200);
+        res.json({
+          data: {
+            attributes: { id: 1, auth0Id: 'my-fake-auth0Id' }
+          }
+        });
       });
     });
   });
