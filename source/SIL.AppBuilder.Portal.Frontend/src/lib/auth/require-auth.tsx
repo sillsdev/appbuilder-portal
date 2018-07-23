@@ -5,6 +5,7 @@ import { withCurrentUser } from '@data/with-current-user';
 import { isLoggedIn } from '@lib/auth0';
 
 import { requireAuthHelper } from './require-auth-helper';
+import { storePath } from './return-to';
 
 export function requireAuth(Component) {
   const checkForAuth = (propsWithRouting: RouterProps) => {
@@ -15,6 +16,10 @@ export function requireAuth(Component) {
 
       return <WithUser { ...propsWithRouting } />;
     }
+
+    const attemptedLocation = propsWithRouting.history.location.pathname;
+
+    storePath(attemptedLocation);
 
     // toast.error('You must be logged in to do that');
 
