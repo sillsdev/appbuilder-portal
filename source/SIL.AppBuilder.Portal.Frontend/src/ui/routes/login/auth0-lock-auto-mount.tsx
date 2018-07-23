@@ -25,7 +25,6 @@ class Lock extends React.Component<IProps & InjectedTranslateProps> {
   }
 
   componentWillUnmount() {
-    /* this.lock.hide(); */
     hideLock();
   }
 
@@ -53,7 +52,6 @@ class Lock extends React.Component<IProps & InjectedTranslateProps> {
       this.props.afterLogin();
     });
 
-    /* this.lock.show(); */
     showLock();
 
   }

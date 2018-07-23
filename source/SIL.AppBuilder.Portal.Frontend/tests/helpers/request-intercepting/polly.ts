@@ -2,6 +2,7 @@ import { Polly } from '@pollyjs/core';
 import * as XHRAdapter from '@pollyjs/adapter-xhr';
 import * as FetchAdapter from '@pollyjs/adapter-fetch';
 
+import Orbit from '@orbit/data';
 /*
   Register the adapters and persisters we want to use. This way all future
   polly instances can access them by name.
@@ -28,16 +29,13 @@ export function setupRequestInterceptor(config: any = {}) {
       recordIfMissing: false,
       matchRequestsBy: {
         order: false,
-        // url: {
-        //   port: false,
-        //   hostname: false,
-        //   protocol: false,
-        // }
       },
       ...config
     };
 
     this.polly = new Polly(name, pollyConfig);
+
+    Orbit.fetch = window.fetch.bind(window);
 
     const { server } = this.polly;
 
@@ -48,7 +46,7 @@ export function setupRequestInterceptor(config: any = {}) {
     });
 
     server.host('https://cdn.auth0.com', () => {
-      server.any().on('request', (req, res) => {
+      server.get('*').on('request', (req, res) => {
         res.status(200);
         res.json({});
       });

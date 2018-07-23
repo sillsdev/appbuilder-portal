@@ -1,5 +1,6 @@
 export { useFakeAuthentication } from './auth';
 export { setupRequestInterceptor } from './request-intercepting/polly';
+export { respondWithJsonApi } from './request-intercepting/jsonapi';
 export { setupApplicationTest, mountWithContext } from './mounting';
 
 export function wait(ms: number): Promise<void> {
