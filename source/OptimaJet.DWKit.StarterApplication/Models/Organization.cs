@@ -24,7 +24,7 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public virtual User Owner { get; set; }
         public int OwnerId { get; set; }
 
-        [HasMany("organizationMemberships")]
+        [HasMany("organization-memberships")]
         public virtual List<OrganizationMembership> OrganizationMemberships { get; set; }
     }
 }

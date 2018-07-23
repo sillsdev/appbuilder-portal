@@ -23,7 +23,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public async Task<User> FindOrCreateUser(string auth0Id)
         {
-            var existing = this.EntityRepository.GetByAuth0Id(auth0Id);
+            var existing = await this.EntityRepository.GetByAuth0Id(auth0Id);
 
             if (existing != null) return existing;
 

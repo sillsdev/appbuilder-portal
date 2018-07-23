@@ -20,7 +20,7 @@ namespace Optimajet.DWKit.StarterApplication.Models
         //[HasMany("ownedOrganizations")]
         //public virtual List<Organization> OwnedOrganizations { get; set; }
 
-        [HasMany("organization-memberships")]
+        [HasMany("organization-memberships", Link.None, canInclude: true)]
         public virtual List<OrganizationMembership> OrganizationMemberships { get; set; }
 
     }

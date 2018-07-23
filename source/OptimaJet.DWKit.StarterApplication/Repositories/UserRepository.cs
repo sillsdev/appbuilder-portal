@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
 
@@ -18,9 +19,11 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         {
         }
 
-        public User GetByAuth0Id(string auth0Id)
-            => base.Get()
+        public async Task<User> GetByAuth0Id(string auth0Id)
+            => await base.Get()
                 .Where(e => e.ExternalId == auth0Id)
-                .FirstOrDefault();
+                .Include(u => u.OrganizationMemberships)
+                    .ThenInclude(om => om.Organization)
+                .FirstOrDefaultAsync();
     }
 }
