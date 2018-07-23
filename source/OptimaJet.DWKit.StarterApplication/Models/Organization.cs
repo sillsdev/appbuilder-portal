@@ -11,13 +11,13 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("name")]
         public string Name { get; set; }
 
-        [Attr("websiteUrl")]
+        [Attr("website-url")]
         public string WebsiteUrl { get; set; }
 
-        [Attr("buildEngineUrl")]
+        [Attr("build-engine-url")]
         public string BuildEngineUrl { get; set; }
 
-        [Attr("buildEngineApiAccessToken")]
+        [Attr("build-engine-api-access-token")]
         public string BuildEngineApiAccessToken { get; set; }
 
         [HasOne("owner")]

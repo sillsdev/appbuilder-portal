@@ -17,13 +17,21 @@ class Lock extends React.Component<IProps & InjectedTranslateProps> {
     super(props);
 
     this.lockRef = React.createRef();
+    this.lockId = uuid();
   }
 
   componentDidMount() {
-    const { t, i18n } = this.props;
-    console.log(t, i18n);
+    this.configureAuth0();
+  }
 
-    const lock = getAuth0LockInstance({
+  componentWillUnmount() {
+    hideLock();
+  }
+
+  configureAuth0() {
+    const { t, i18n } = this.props;
+
+    const auth0Options = {
       container: this.lockRef.current.id,
       languageDictionary: {
         // auth0 has a ton of entries here...
@@ -33,7 +41,9 @@ class Lock extends React.Component<IProps & InjectedTranslateProps> {
         loginLabel: t('auth.login'),
         loginSubmitLabel: t('auth.login'),
       }
-    });
+    };
+
+    const lock = getAuth0LockInstance(auth0Options);
 
     lock.on('authenticated', (authResult) => {
       setToken(authResult.idToken);
@@ -43,14 +53,11 @@ class Lock extends React.Component<IProps & InjectedTranslateProps> {
     });
 
     showLock();
-  }
 
-  componentWillUnmount() {
-    hideLock();
   }
 
   render() {
-    return <div ref={this.lockRef} id={uuid()} />;
+    return <div ref={this.lockRef} id={this.lockId} />;
   }
 }
 

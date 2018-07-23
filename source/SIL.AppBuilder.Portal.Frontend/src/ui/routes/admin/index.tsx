@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { compose } from 'recompose';
+
+import { requireAuth } from '@lib/auth';
 
 import InviteOrganization from './invite-organization';
 
@@ -13,3 +16,8 @@ export default class AdminRoute extends React.Component {
     );
   }
 }
+
+
+export default compose(
+  requireAuth
+)(AdminRoute);

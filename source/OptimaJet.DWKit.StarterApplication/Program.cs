@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using Serilog.Events;
+using dotenv;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -13,12 +14,15 @@ namespace OptimaJet.DWKit.StarterApplication
     {
         public static void Main(string[] args)
         {
+            dotenv.net.DotEnv.Config(false, ".env.dev");
             BuildWebHost(args).Run();
         }
 
         public static IWebHost BuildWebHost(string[] args)
         {
             var port = Environment.GetEnvironmentVariable("PORT");
+
+            System.Console.WriteLine(Environment.GetEnvironmentVariable("ConnectionStrings__default"));
 
             if (port == null)
             {

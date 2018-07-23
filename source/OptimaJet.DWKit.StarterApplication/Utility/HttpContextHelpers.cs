@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using Serilog;
+using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Repositories;
+using Optimajet.DWKit.StarterApplication.Data;
+using JsonApiDotNetCore.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace OptimaJet.DWKit.StarterApplication.Utility
 {
@@ -29,11 +35,8 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
         public static string GetAuth0Id(this HttpContext context) {
             var idClaim = context.User.Claims.First(c => c.Type == TYPE_NAME_IDENTIFIER);
             var id = idClaim.Value;
-            
-            Log.Information("id: {0}", id);
 
             return id;
         }
-        
     }
 }

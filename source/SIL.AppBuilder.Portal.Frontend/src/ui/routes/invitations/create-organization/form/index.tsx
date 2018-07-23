@@ -17,17 +17,23 @@ export type IProps =
   & RouterProps
   & i18nProps;
 
-export class CreateOrganizationForm extends React.Component<IProps> {
+export interface IState {
+  error: any;
+}
+
+export class CreateOrganizationForm extends React.Component<IProps, IState> {
+  state = { error: undefined };
+
   submit = async (payload: OrganizationAttributes) => {
     try {
       const { t } = this.props;
-      this.create(payload);
+      await this.create(payload);
 
       toast.success(t('org.createSuccess'));
 
       this.props.history.push('/');
     } catch (e) {
-      toast.error(e.message);
+      this.setState({ error: e });
     }
   }
 
@@ -44,8 +50,12 @@ export class CreateOrganizationForm extends React.Component<IProps> {
 
   render() {
     const { token } = this.props;
+    const { error } = this.state;
 
-    return <Display token={token} onSubmit={this.submit} />;
+    return <Display
+      token={token}
+      error={error}
+      onSubmit={this.submit} />;
   }
 }
 

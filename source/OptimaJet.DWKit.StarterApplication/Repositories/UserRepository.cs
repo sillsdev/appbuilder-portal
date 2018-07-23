@@ -6,13 +6,13 @@ using JsonApiDotNetCore.Services;
 using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
 
-namespace OptimaJet.DWKit.StarterApplication.Repositories 
+namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
     public class UserRepository : DefaultEntityRepository<User>
     {
         public UserRepository(
-            ILoggerFactory loggerFactory, 
-            IJsonApiContext jsonApiContext, 
+            ILoggerFactory loggerFactory,
+            IJsonApiContext jsonApiContext,
             IDbContextResolver contextResolver
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
