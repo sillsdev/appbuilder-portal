@@ -47,9 +47,6 @@ describe('Acceptance | Invitations | Create Organization', () => {
         });
 
         it('is redirected', () => {
-          // waiting on some help from https://github.com/Netflix/pollyjs/issues/72
-          // NOTE: it doesn't appear we can stub multiple things in a single
-          //       polly instance.... BUT, their tests demonstrate it's possible...
           expect(location().pathname).to.eq('/');
         });
       });

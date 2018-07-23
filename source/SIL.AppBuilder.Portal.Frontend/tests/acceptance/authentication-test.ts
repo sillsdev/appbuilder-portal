@@ -2,7 +2,7 @@ import { describe, it, beforeEach, afterEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { setupApplicationTest, setupRequestInterceptor } from 'tests/helpers/index';
+import { setupApplicationTest, setupRequestInterceptor, respondWithJsonApi } from 'tests/helpers/index';
 import { fakeAuth0JWT } from 'tests/helpers/jwt';
 
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
@@ -15,8 +15,18 @@ describe('Acceptance | Authentication', () => {
   setupRequestInterceptor();
 
   describe('is authenticated', () => {
-    beforeEach(async function() {
+    beforeEach(function() {
+      const { server } = this.polly;
+
       setToken(fakeAuth0JWT());
+
+      server.get('/api/users/current-user').intercept(respondWithJsonApi(200, {
+        data: {
+          id: 1,
+          type: 'users',
+          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' }
+        }
+      }));
 
       expect(isLoggedIn()).to.be.true;
     });
@@ -75,8 +85,8 @@ describe('Acceptance | Authentication', () => {
   describe('is not authenticated', () => {
     beforeEach(function() {
       deleteToken();
-
     });
+
     describe('navigates to a route that requires authentication', () => {
       beforeEach(async function() {
         await visit('/invitations');
