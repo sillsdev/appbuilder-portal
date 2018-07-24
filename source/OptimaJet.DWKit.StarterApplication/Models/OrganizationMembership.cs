@@ -11,7 +11,7 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public virtual User User { get; set; }
         public int UserId { get; set; }
 
-        [HasOne("Organization")]
+        [HasOne("organization")]
         public virtual Organization Organization { get; set; }
         public int OrganizationId { get; set; }
     }
