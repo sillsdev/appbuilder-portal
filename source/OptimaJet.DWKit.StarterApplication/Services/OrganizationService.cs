@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
@@ -39,5 +41,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             return newEntity;
         }
 
+        public async Task<Organization> FindByNameOrDefaultAsync(string name)
+        {
+            return await OrganizationRepository.Get()
+                                               .Where(e => e.Name == name)
+                                               .FirstOrDefaultAsync();
+        }
     }
 }
