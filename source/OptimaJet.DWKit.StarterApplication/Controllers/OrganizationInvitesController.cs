@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace Optimajet.DWKit.StarterApplication.Controllers
 {
@@ -15,8 +16,9 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         public OrganizationInvitesController(
             IJsonApiContext jsonApiContext,
             IResourceService<OrganizationInvite> resourceService,
-            ILoggerFactory loggerFactory)
-        : base(jsonApiContext, resourceService, loggerFactory)
+            OrganizationService organizationService,
+            UserService userService)
+            : base(jsonApiContext, resourceService, organizationService, userService)
         { }
 
         [AllowAnonymous]
