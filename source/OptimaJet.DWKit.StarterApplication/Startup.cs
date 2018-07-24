@@ -31,6 +31,7 @@ using Serilog;
 using Serilog.Events;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AspNetCore.RouteAnalyzer; 
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -159,6 +160,8 @@ namespace OptimaJet.DWKit.StarterApplication
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
 
+            services.AddRouteAnalyzer();
+
             // add the db context like you normally would
             services.AddDbContext<AppDbContext>(options =>
             { // use whatever provider you want, this is just an example
@@ -197,6 +200,9 @@ namespace OptimaJet.DWKit.StarterApplication
 
             app.UseMvc(routes =>
             {
+                // View all detected routes
+                routes.MapRouteAnalyzer("/routes"); // Add
+
                 // DWKit Routes
                 routes.MapRoute("form", "form/{formName}/{*other}",
                     defaults: new { controller = "StarterApplication", action = "Index" });

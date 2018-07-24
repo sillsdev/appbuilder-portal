@@ -16,6 +16,7 @@
     <Copyright>OptimaJet DWKit 2018</Copyright>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AspNetCore.RouteAnalyzer" Version="0.5.1" />
     <PackageReference Include="Auth0" Version="3.6.0" />
     <PackageReference Include="Auth0.ManagementApi" Version="5.6.0" />
     <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
