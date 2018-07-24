@@ -51,6 +51,8 @@ services:
     command: bash -c " dotnet watch run"
     ports:
       - "7081:7081"
+    links:
+      - db:db.docker
     env_file:
       - ${PWD}/source/OptimaJet.DWKit.StarterApplication/.env.dev
     volumes:
