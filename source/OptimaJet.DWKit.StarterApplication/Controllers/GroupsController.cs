@@ -14,10 +14,9 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         public GroupsController(
             IJsonApiContext jsonApiContext,
             IResourceService<Group> resourceService,
-            ILoggerFactory loggerFactory,
             OrganizationService organizationService,
             UserService userService)
-            : base(jsonApiContext, resourceService, loggerFactory, organizationService, userService)
+            : base(jsonApiContext, resourceService, organizationService, userService)
         { }
 
         [HttpPost]

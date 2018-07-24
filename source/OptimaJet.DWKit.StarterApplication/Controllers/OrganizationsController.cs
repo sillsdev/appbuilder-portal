@@ -19,16 +19,17 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         public OrganizationsController(
             IJsonApiContext jsonApiContext,
             IResourceService<Organization> resourceService,
+            OrganizationService organizationService,
             UserService userService)
-        : base(jsonApiContext, resourceService, userService)
+            : base(jsonApiContext, resourceService, organizationService, userService)
         { }
 
         [HttpPost]
-        public override async Task<IActionResult> PostAsync([FromBody] Organization organization)
+        public override async Task<IActionResult> PostAsync([FromBody] Organization entity)
         {
-            organization.Owner = CurrentUser;
+            entity.Owner = CurrentUser;
 
-            return await base.PostAsync(organization);
+            return await base.PostAsync(entity);
         }
     }
 }

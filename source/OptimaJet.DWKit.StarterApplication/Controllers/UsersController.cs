@@ -23,8 +23,9 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         public UsersController(
             IJsonApiContext jsonApiContext,
             IResourceService<User> resourceService,
+            OrganizationService organizationService,
             UserService userService)
-        : base(jsonApiContext, resourceService, userService)
+            : base(jsonApiContext, resourceService, organizationService, userService)
         {
         }
 

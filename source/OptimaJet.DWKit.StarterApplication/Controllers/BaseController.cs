@@ -14,52 +14,18 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
     {
         protected IResourceService<T, int> service;
         protected IJsonApiContext jsonApiContext;
-        protected ILoggerFactory loggerFactory;
         protected UserService userService;
         protected OrganizationService organizationService;
 
-        public BaseController(
-            IJsonApiContext jsonApiContext, 
-            IResourceService<T, int> resourceService, 
-            ILoggerFactory loggerFactory) : base(jsonApiContext, resourceService, loggerFactory)
-        {
-            this.service = resourceService;
-            this.jsonApiContext = jsonApiContext;
-            this.loggerFactory = loggerFactory;
-        }
 
         public BaseController(
             IJsonApiContext jsonApiContext,
             IResourceService<T, int> resourceService,
-            UserService userService): base(jsonApiContext, resourceService) 
-        {
-            this.service = resourceService;
-            this.jsonApiContext = jsonApiContext;
-            this.userService = userService;
-        }
-
-        public BaseController(
-            IJsonApiContext jsonApiContext,
-            IResourceService<T, int> resourceService,
-            ILoggerFactory loggerFactory,
-            UserService userService): base(jsonApiContext, resourceService, loggerFactory) 
-        {
-            this.service = resourceService;
-            this.jsonApiContext = jsonApiContext;
-            this.loggerFactory = loggerFactory;
-            this.userService = userService;
-        }
-
-        public BaseController(
-            IJsonApiContext jsonApiContext,
-            IResourceService<T, int> resourceService,
-            ILoggerFactory loggerFactory,
             OrganizationService organizationService,
-            UserService userService) : base(jsonApiContext, resourceService, loggerFactory)
+            UserService userService) : base(jsonApiContext, resourceService)
         {
             this.service = resourceService;
             this.jsonApiContext = jsonApiContext;
-            this.loggerFactory = loggerFactory;
             this.userService = userService;
             this.organizationService = organizationService;
         }
