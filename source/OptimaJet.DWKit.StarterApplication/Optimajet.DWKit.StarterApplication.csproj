@@ -56,5 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Services\Contracts\" />
   </ItemGroup>
 </Project>
