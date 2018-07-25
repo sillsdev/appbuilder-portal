@@ -1,9 +1,6 @@
-using System.ComponentModel.Design;
-using System.Threading.Tasks;
 using JsonApiDotNetCore.Controllers;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
-using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Utility;
