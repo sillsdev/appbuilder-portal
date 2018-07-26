@@ -31,7 +31,13 @@ the tests, and run them individually.
 ### Backend Notes
 
 - All endpoints should be behind an `api/` path
-
+- Access to Auth0 Management API requires configuation in `.env` (which is in `.gitignore`)
+  - Login to http://manage.auth0.com
+  - Navigate to `APIs` -> `Auth0 Management API` -> `Auth0 Management API (Test Application)`
+  - Get `Client ID` and `Client Secret` values
+  - assign to following variables in `.env`
+    - `AAUTH0_TOKEN_ACCESS_CLIENT_ID`
+    - `AUTH0_TOKEN_ACCESS_CLIENT_SECRET`
 
 ### Frontend Notes
 
