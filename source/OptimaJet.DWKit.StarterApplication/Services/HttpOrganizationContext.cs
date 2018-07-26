@@ -11,41 +11,67 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public HttpContext HttpContext { get; set; }
         public OrganizationService OrganizationService { get; set; }
 
+        private bool parsed;
+        private bool hasOrganization;
+        private bool invalidOrganization;
+        private int organizationId;
+
         public HttpOrganizationContext 
         (
             IHttpContextAccessor httpContextAccessor,
+            ICurrentUserContext currentUserContext,
             OrganizationService organizationService
         )
         {
             this.HttpContext = httpContextAccessor.HttpContext;
             this.OrganizationService = organizationService;
-            Update();
+            parsed = false;
         }
 
-        private void Update()
+        private void Parse()
         {
-            HasOrganization = false;
-            InvalidOrganization = false;
-            var orgId = HttpContext.Request.Headers[ORGANIZATION_HEADER].ToString();
-
-            int orgIdValue = 0;
-            if (int.TryParse(orgId, out orgIdValue))
+            if (!parsed)
             {
-                var org = OrganizationService.FindByIdOrDefaultAsync(orgIdValue).Result;
-                if (org != null)
+                parsed = true;
+                hasOrganization = false;
+                invalidOrganization = false;
+                var orgId = HttpContext.Request.Headers[ORGANIZATION_HEADER].ToString();
+
+                int orgIdValue = 0;
+                if (int.TryParse(orgId, out orgIdValue))
                 {
-                    HasOrganization = true;
-                    OrganizationId = orgIdValue;
-                }
-                else
-                {
-                    InvalidOrganization = true;
+                    var org = OrganizationService.FindByIdOrDefaultAsync(orgIdValue).Result;
+                    if (org != null)
+                    {
+                        hasOrganization = true;
+                        organizationId = orgIdValue;
+                    }
+                    else
+                    {
+                        invalidOrganization = true;
+                    }
                 }
             }
+
         }
 
-        public bool HasOrganization { get; set; }
-        public bool InvalidOrganization { get; set; }
-        public int OrganizationId { get; set; }
+        public bool HasOrganization {
+            get {
+                Parse();
+                return hasOrganization;
+            }
+        }
+        public bool InvalidOrganization {
+            get {
+                Parse();
+                return invalidOrganization;
+            }
+        }
+        public int OrganizationId {
+            get {
+                Parse();
+                return organizationId;
+            }
+        }
     }
 }
