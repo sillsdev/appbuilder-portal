@@ -148,6 +148,9 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<UserService>();
             services.AddScoped<OrganizationService>();
 
+            services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
+            services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
+
 
             services.AddMvc(options => {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));

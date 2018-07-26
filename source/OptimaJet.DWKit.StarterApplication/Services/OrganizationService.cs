@@ -6,7 +6,6 @@ using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Repositories;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
@@ -41,10 +40,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             return newEntity;
         }
 
-        public async Task<Organization> FindByNameOrDefaultAsync(string name)
+        public async Task<Organization> FindByIdOrDefaultAsync(int id)
         {
             return await OrganizationRepository.Get()
-                                               .Where(e => e.Name == name)
+                                               .Where(e => e.Id == id)
                                                .FirstOrDefaultAsync();
         }
     }

@@ -1,9 +1,6 @@
-using System.ComponentModel.Design;
-using System.Threading.Tasks;
 using JsonApiDotNetCore.Controllers;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
-using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Utility;
@@ -31,9 +28,6 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         }
 
         private static string CURRENT_USER_KEY = "CurrentUser";
-        private static string ORGANIZATION_KEY = "Organization";
-
-        private static string ORGANIZATION_HEADER = "Organization";
 
         public User CurrentUser
         {
@@ -53,31 +47,6 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
                 return user;      
             }
             
-        }
-
-        public Organization CurrentOrganization
-        {
-            get {
-                var keyExists = HttpContext.Items.ContainsKey(ORGANIZATION_KEY);
-
-                if (keyExists) return (Organization)HttpContext.Items[ORGANIZATION_KEY];
-
-                // current organization has not been found for this request.
-                // find organziation if exists and set it.
-                Organization org = null;
-                var headerExists = HttpContext.Request.Headers.ContainsKey(ORGANIZATION_HEADER);
-                if (headerExists) 
-                {
-                    var orgName = HttpContext.Request.Headers[ORGANIZATION_HEADER];
-                    org = organizationService.FindByNameOrDefaultAsync(orgName).Result;
-                    if (org != null) 
-                    {
-                        HttpContext.Items[ORGANIZATION_KEY] = org;
-                    }
-                }
-
-                return org;
-            }
         }
     }
 }

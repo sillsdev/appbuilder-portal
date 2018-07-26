@@ -1,11 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using JsonApiDotNetCore.Data;
-using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
