@@ -3,6 +3,8 @@ import * as XHRAdapter from '@pollyjs/adapter-xhr';
 import * as FetchAdapter from '@pollyjs/adapter-fetch';
 
 import Orbit from '@orbit/data';
+
+import { mockGet } from './requests';
 /*
   Register the adapters and persisters we want to use. This way all future
   polly instances can access them by name.
@@ -24,11 +26,17 @@ export function setupRequestInterceptor(config: any = {}) {
           context: window
         }
       },
-      logging: true,
+      // logging: true,
       recordFailedRequests: false,
       recordIfMissing: false,
       matchRequestsBy: {
         order: false,
+        headers: false,
+        // url: {
+        //   protocol: false,
+        //   port: false,
+        //   hostname: false,
+        // }
       },
       ...config
     };
@@ -38,6 +46,19 @@ export function setupRequestInterceptor(config: any = {}) {
     Orbit.fetch = window.fetch.bind(window);
 
     const { server } = this.polly;
+
+    this.mockGet = mockGet(server);
+    this.stubOrbit = () => Orbit.fetch = window.fetch;
+    this.debugFetch = () => {
+      const originalFetch = window.fetch;
+      const fakeFetch = (...args) => {
+        // debugger;
+        originalFetch(...args);
+      };
+
+      window.fetch = fakeFetch.bind(window);
+      Orbit.fetch = fakeFetch.bind(window);
+    };
 
     // by default? stub out auth0 so that auth0/lock.js doesn't
     // try to contact auth0 during testing.

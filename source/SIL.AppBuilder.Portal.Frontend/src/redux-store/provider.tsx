@@ -2,6 +2,9 @@ import * as React from 'react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, Store, compose } from 'redux';
 
+import { setCurrentOrganizationId } from '@lib/current-organization';
+
+
 import { reducers } from './reducers';
 import { middleware, setup as setupMiddleware } from './middleware';
 import { default as enhancers } from './enhancers';
@@ -25,8 +28,12 @@ export default class ReduxProvider extends React.Component<IProps> {
   }
 
   initRedux(initialState: any): Store {
+    const fromLS = localStorage.getItem('reduxState');
+    const persistedState = fromLS ? JSON.parse(fromLS) : {};
+
     const state = {
-      ...(initialState || {})
+      ...(initialState || {}),
+      ...persistedState
     };
 
     const store = createStore(
@@ -48,6 +55,20 @@ export default class ReduxProvider extends React.Component<IProps> {
     // if (window.Cypress) {
     //   window.__store__ = store;
     // }
+
+    // persist certain things between reloads
+    store.subscribe(() => {
+      const currentState = store.getState();
+      const toPersist = {
+        data: currentState.data
+      };
+
+      // NOTE: that for non-react/redux things (jquery, fetch, etc),
+      //       we need to manually set this specific key
+      setCurrentOrganizationId(currentState.data.currentOrganizationId);
+
+      localStorage.setItem('reduxState', JSON.stringify(toPersist));
+    });
 
     return store;
   }

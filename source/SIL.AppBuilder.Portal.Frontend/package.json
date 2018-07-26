@@ -15,6 +15,7 @@
     "karma:start": "yarn karma start ./tests/karma.conf.js --fail-on-empty-test-suite",
     "test:watch": "yarn karma:start",
     "test:watch:headless": "CI=true yarn karma:start",
+    "test:watch:detached": "DETACHED=true yarn karma:start",
     "test:ci": "CI=true yarn karma:start --single-run",
     "lint": "yarn tslint 'src/**/*.{ts,tsx}' 'tests/**/*.{ts,tsx}'",
     "lint:fix": "yarn lint --fix",

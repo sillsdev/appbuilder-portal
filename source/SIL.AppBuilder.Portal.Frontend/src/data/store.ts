@@ -29,9 +29,22 @@ class CustomJSONAPISerializer extends JSONAPISerializer {
   resourceKey(type: string) { return 'remoteId'; }
 }
 
-export async function createStore() {
-  console.debug('Setting up datastore');
 
+// DEBUG!
+// Orbit.fetch = (...args) => {
+//   debugger;
+//   fetch(...args);
+// };
+
+export function defaultSourceOptions() {
+  return {
+    headers: {
+      ...defaultHeaders()
+    }
+  };
+}
+
+export async function createStore() {
   // const bucket = new BucketClass({ namespace: 'scriptoria-bucket' });
   const inMemory = new Store({
     // bucket,
@@ -48,10 +61,14 @@ export async function createStore() {
     schema,
     name: 'remote',
     host: baseUrl,
-    SerializerClass: CustomJSONAPISerializer,
-    defaultFetchHeaders: {
-      Accept: 'application/vnd.api+json',
-      ...defaultHeaders()
+    // SerializerClass: CustomJSONAPISerializer,
+    defaultFetchSettings: {
+      headers: {
+        Accept: 'application/vnd.api+json',
+        // these should be overwritten at runtime
+        Authorization: 'Bearer not set',
+        Organization: 'Org Id not set'
+      }
     }
   });
 
@@ -98,7 +115,9 @@ export async function createStore() {
     blocking: true,
 
     filter(query) {
-      return !((query || {}).options || {}).devOnly;
+      const skip = !((query || {}).options || {}).devOnly;
+
+      return skip;
     }
   }));
 
@@ -116,9 +135,9 @@ export async function createStore() {
   //   blocking: true
   // }));
 
-  this.coordinator.addStrategy(new EventLoggingStrategy({
-    sources: ['remote', 'inMemory']
-  }));
+  // this.coordinator.addStrategy(new EventLoggingStrategy({
+  //   sources: ['remote', 'inMemory']
+  // }));
 
 
   // // If there is data already stored locally, throw it in memory

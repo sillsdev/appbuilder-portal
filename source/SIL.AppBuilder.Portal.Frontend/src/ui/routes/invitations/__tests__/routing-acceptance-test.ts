@@ -13,6 +13,14 @@ describe('Acceptance | Invitations | routing', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
+  beforeEach(function () {
+    this.mockGet(200, '/organizations', { data: [{
+      type: 'organizations',
+      id: 1,
+      attributes: {}
+    }] });
+  });
+
   describe('navigates to /invitations', () => {
     beforeEach(async () => {
       await visit('/invitations');

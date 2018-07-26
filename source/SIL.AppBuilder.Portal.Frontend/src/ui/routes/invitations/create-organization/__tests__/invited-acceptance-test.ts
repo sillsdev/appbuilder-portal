@@ -11,10 +11,18 @@ import page from '../form/__tests__/page';
 
 describe('Acceptance | Invitations | Create Organization', () => {
   setupApplicationTest();
+setupRequestInterceptor();
+  useFakeAuthentication();
+
+  beforeEach(function () {
+    this.mockGet(200, '/organizations', { data: [{
+      type: 'organizations',
+      id: 1,
+      attributes: {}
+    }] });
+  });
 
   describe('navigates to an org invitation', () => {
-    setupRequestInterceptor();
-    useFakeAuthentication();
 
     beforeEach(async function() {
       const { server } = this.polly;

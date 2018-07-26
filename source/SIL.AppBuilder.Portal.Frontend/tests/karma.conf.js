@@ -70,6 +70,11 @@ module.exports = function(config) {
     // }
   });
 
+  if (process.env.DETACHED) {
+    config.customLaunchers = {};
+    config.browsers = [];
+  }
+
   if (process.env.CI) {
     config.customLaunchers = {
       ChromeHeadlessNoSandbox: {
