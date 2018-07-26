@@ -11,6 +11,12 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("name")]
         public string Name { get; set; }
 
+        [Attr("given-name")]
+        public string GivenName { get; set; }
+
+        [Attr("family-name")]
+        public string FamilyName { get; set; }
+
         [Attr("email")]
         public string Email { get; set; }
 

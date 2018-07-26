@@ -17,10 +17,11 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         public GroupsController(
             IJsonApiContext jsonApiContext,
             IResourceService<Group> resourceService,
+            ICurrentUserContext currentUserContext,
             IOrganizationContext organizationContext,
             OrganizationService organizationService,
             UserService userService)
-            : base(jsonApiContext, resourceService, organizationService, userService)
+            : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         {
             this.OrganizationContext = organizationContext;
         }

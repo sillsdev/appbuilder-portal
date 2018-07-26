@@ -15,9 +15,10 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         public OrganizationsController(
             IJsonApiContext jsonApiContext,
             IResourceService<Organization> resourceService,
+            ICurrentUserContext currentUserContext,
             OrganizationService organizationService,
             UserService userService)
-            : base(jsonApiContext, resourceService, organizationService, userService)
+            : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         { }
 
         [HttpPost]
