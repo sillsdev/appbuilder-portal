@@ -9,9 +9,6 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import * as toast from '@lib/toast';
 import NotFound from '@ui/routes/errors/not-found';
 
-// TODO: remove when API data is hooked up
-import { withStubbedDevData } from '@data/with-stubbed-dev-data';
-
 
 import InfoRoute, { pathName as infoPath } from './basic-info';
 import UserSetupRoute, { pathName as userPath } from './user-setup';
@@ -130,8 +127,6 @@ class SettingsRoute extends React.Component<IProps> {
 }
 
 export default compose(
-  // TODO: remove stubbed data after hooking up API
-  withStubbedDevData(TYPE_NAME, 'some-org-id', { name: 'Some Org'}),
   withData(mapRecordsToProps),
   translate('translations')
 )(SettingsRoute);

@@ -96,6 +96,14 @@ Vertical Menu
     }
   }
 
+  &.no-borders {
+    border: none !important;
+
+    .item {
+      border: none !important;
+    }
+  }
+
 
   &.secondary {
     .item {
@@ -132,4 +140,11 @@ Table
   tr td {
     border-top: 1px solid #d8d8d8;
   }
+}
+
+/***********************************
+Navbar Menu
+************************************/
+.ui.menu-navbar {
+  border-radius: 0;
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,11 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using OptimaJet.DWKit.Application;
 using React.AspNet;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc.Internal;
-using Microsoft.AspNetCore.Mvc;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Optimajet.DWKit.StarterApplication.Data;
 using Microsoft.EntityFrameworkCore;
@@ -27,11 +22,7 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
-using Serilog;
-using Serilog.Events;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using AspNetCore.RouteAnalyzer; 
+using AspNetCore.RouteAnalyzer;
 
 namespace OptimaJet.DWKit.StarterApplication
 {

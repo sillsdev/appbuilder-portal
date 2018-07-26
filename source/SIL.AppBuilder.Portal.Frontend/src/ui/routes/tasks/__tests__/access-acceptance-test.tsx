@@ -14,6 +14,14 @@ describe('Acceptance | Accessing Tasks', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
+  beforeEach(function () {
+    this.mockGet(200, '/organizations', { data: [{
+      type: 'organizations',
+      id: 1,
+      attributes: {}
+    }] });
+  });
+
   describe('is authenticated', () => {
 
     beforeEach(async function() {

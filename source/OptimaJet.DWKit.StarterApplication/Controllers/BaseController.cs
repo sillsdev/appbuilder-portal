@@ -44,9 +44,9 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
 
                 HttpContext.Items[CURRENT_USER_KEY] = user;
 
-                return user;      
+                return user;
             }
-            
+
         }
     }
 }

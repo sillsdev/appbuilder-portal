@@ -1,6 +1,7 @@
 export default {
   appName: 'Scriptoria',
   welcome: 'Welcome to Scriptoria',
+  search: 'Search',
 
   contactUs: 'Contact Us',
   exampleForm: 'Example Form',
@@ -28,6 +29,7 @@ export default {
   },
 
   org: {
+    allOrganizations: 'All Organizations',
     createSuccess: 'Organization created successfully!',
     settingsTitle: 'Organization Settings',
     selectLogo: 'Select Logo',

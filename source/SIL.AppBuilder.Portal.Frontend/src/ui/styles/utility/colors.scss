@@ -6,6 +6,14 @@
   color: white;
 }
 
+.dark-blue-text {
+  color: $blue-dark;
+}
+
+.blue-highlight {
+  color: $blue-highlight;
+}
+
 .gray-text {
   color: $gray;
 }
@@ -24,7 +32,7 @@ a.white-text {
   background: $blue;
 }
 .bg-white {
-  background: $white;
+  background: $white !important;
 }
 
 .bg-default {

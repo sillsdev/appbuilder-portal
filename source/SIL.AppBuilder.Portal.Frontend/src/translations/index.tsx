@@ -24,7 +24,7 @@ i18n
     ns: ['translations'],
     defaultNS: 'translations',
 
-    debug: true,
+    /* debug: true, */
 
     interpolation: {
       // react already does escaping

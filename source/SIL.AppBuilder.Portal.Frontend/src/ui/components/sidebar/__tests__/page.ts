@@ -1,7 +1,7 @@
 
 import {
   interactor,
-  clickable, isVisible
+  clickable, isPresent
 } from '@bigtest/interactor';
 
 @interactor
@@ -11,7 +11,7 @@ export class SidebarInteractor {
   clickOpenSidebarButton = clickable('[data-test-header-sidebar-button]');
   clickCloseSidebarButton = clickable('[data-test-sidebar-close-button]');
 
-  isSidebarVisible = isVisible('[data-test-sidebar]');
+  isSidebarVisible = isPresent('.is-sidebar-visible [data-test-sidebar]');
 }
 
 export default new SidebarInteractor();
