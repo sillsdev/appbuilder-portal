@@ -9,7 +9,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     {
         public HttpContext HttpContext { get; set; }
 
-        private string _Auth0Id;
+        private string auth0Id;
 
         public HttpCurrentUserContext(
             IHttpContextAccessor httpContextAccessor)
@@ -19,10 +19,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public string Auth0Id {
             get {
-                if (_Auth0Id == null) {
-                    _Auth0Id = this.HttpContext.GetAuth0Id();
+                if (auth0Id == null) {
+                    auth0Id = this.HttpContext.GetAuth0Id();
                 }
-                return _Auth0Id;
+                return auth0Id;
             }
         }
 
