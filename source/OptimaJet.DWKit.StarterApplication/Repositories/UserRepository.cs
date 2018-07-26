@@ -13,25 +13,38 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
     public class UserRepository : DefaultEntityRepository<User>
     {
         public IOrganizationContext OrganizationContext { get; }
-
+        public ICurrentUserContext CurrentUserContext { get; }
         public UserRepository(
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
+            ICurrentUserContext currentUserContext,
             IDbContextResolver contextResolver
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
             this.OrganizationContext = organizationContext;
+            this.CurrentUserContext = currentUserContext;
         }
 
         public override IQueryable<User> Get()
         {
             if (OrganizationContext.InvalidOrganization) return base.Get().Take(0);
-            var users = base.Get().Include(u => u.OrganizationMemberships);
-            if (!OrganizationContext.HasOrganization) return users;
-
-            var filteredUsers = users.Where(u => u.OrganizationMemberships.Any(o => o.OrganizationId == OrganizationContext.OrganizationId));
-            return filteredUsers;
+            if (!OrganizationContext.HasOrganization)
+            {
+                // No organization specified, so include all users in the all the organizations that the current user is a member
+                var currentUser = GetByAuth0Id(CurrentUserContext.Auth0Id).Result;
+                var currentUserOrgIds = currentUser.OrganizationMemberships.Select(o => o.OrganizationId);
+                return base.Get()
+                           .Include(u => u.OrganizationMemberships)
+                           .Where(u => u.OrganizationMemberships.Select(o => o.OrganizationId).Intersect(currentUserOrgIds).Count() > 0);
+            }
+            else
+            {
+                // Get users in the current organization
+                return base.Get()
+                           .Include(u => u.OrganizationMemberships)
+                           .Where(u => u.OrganizationMemberships.Any(o => o.OrganizationId == OrganizationContext.OrganizationId));
+            }
         }
 
         public async Task<User> GetByAuth0Id(string auth0Id)

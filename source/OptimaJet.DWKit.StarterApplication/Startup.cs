@@ -149,6 +149,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<OrganizationService>();
 
             services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
+            services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
 
 
             services.AddMvc(options => {
