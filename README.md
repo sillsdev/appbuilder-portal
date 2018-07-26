@@ -22,7 +22,7 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 
 Test Debugging:
 ```bash
-./run yarn test:watch:headless
+./run yarn test:watch:detached
 ```
 
 [Now Visit http://localhost:9876/debug.html](http://localhost:9876/debug.html) to debug
