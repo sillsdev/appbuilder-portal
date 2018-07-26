@@ -20,20 +20,5 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         {
             this.EntityRepository = (UserRepository)entityRepository;
         }
-
-        public async Task<User> FindOrCreateUser(string auth0Id)
-        {
-            var existing = await this.EntityRepository.GetByAuth0Id(auth0Id);
-
-            if (existing != null) return existing;
-
-            var newUser = new User {
-                ExternalId = auth0Id
-            };
-
-            var newEntity = await base.CreateAsync(newUser);
-
-            return newEntity;
-        }
     }
 }

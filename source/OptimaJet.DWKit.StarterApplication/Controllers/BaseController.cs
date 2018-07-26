@@ -41,19 +41,33 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
                 // current user has not yet been found for this request.
                 // find or create because users are managed by auth0 and
                 // creation isn't proxied through the api.
-                var auth0Id = currentUserContext.Auth0Id;
-                var user = userService.FindOrCreateUser(auth0Id).Result;
-                user.Email = currentUserContext.Email;
-                user.Name = currentUserContext.Name;
-                user.GivenName = currentUserContext.GivenName;
-                user.FamilyName = currentUserContext.FamilyName;
-                var returnedUser = userService.UpdateAsync(user.Id, user).Result;
+                var user = FindOrCreateCurrentUser();
 
                 HttpContext.Items[CURRENT_USER_KEY] = user;
 
                 return user;      
             }
             
+        }
+
+        private User FindOrCreateCurrentUser()
+        {
+            var existing = userService.EntityRepository.GetByAuth0Id(currentUserContext.Auth0Id).Result;
+
+            if (existing != null) return existing;
+
+            var newUser = new User
+            {
+                ExternalId = currentUserContext.Auth0Id,
+                Email = currentUserContext.Email,
+                Name = currentUserContext.Name,
+                GivenName = currentUserContext.GivenName,
+                FamilyName = currentUserContext.FamilyName
+            };
+
+            var newEntity = userService.CreateAsync(newUser).Result;
+
+            return newEntity;
         }
     }
 }

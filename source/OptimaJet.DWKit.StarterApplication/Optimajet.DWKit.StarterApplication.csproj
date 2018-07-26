@@ -23,7 +23,6 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.RouteAnalyzer" Version="0.5.1" />
     <PackageReference Include="Auth0" Version="3.6.0" />
-    <PackageReference Include="Auth0.ManagementApi" Version="5.6.0" />
     <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
     <PackageReference Include="dotenv.net" Version="1.0.3" />
     <PackageReference Include="DWKit-Core" Version="2.1.1" />
@@ -49,6 +48,8 @@
     <PackageReference Include="DWKit-ProviderForMSSQL" Version="2.1.1" />
     <PackageReference Include="DWKit-ProviderForPostgreSQL" Version="2.1.1" />
     <PackageReference Include="DWKit-Security" Version="2.1.1" />
+    <PackageReference Include="Auth0.ManagementApi" Version="5.8.0" />
+    <PackageReference Include="RestSharp" Version="106.3.1" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
