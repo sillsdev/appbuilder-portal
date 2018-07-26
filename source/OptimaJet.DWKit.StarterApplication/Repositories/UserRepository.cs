@@ -36,7 +36,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                 var currentUserOrgIds = currentUser.OrganizationMemberships.Select(o => o.OrganizationId);
                 return base.Get()
                            .Include(u => u.OrganizationMemberships)
-                           .Where(u => u.OrganizationMemberships.Select(o => o.OrganizationId).Intersect(currentUserOrgIds).Count() > 0);
+                           .Where(u => u.OrganizationMemberships.Select(o => o.OrganizationId).Intersect(currentUserOrgIds).Any());
             }
             else
             {
