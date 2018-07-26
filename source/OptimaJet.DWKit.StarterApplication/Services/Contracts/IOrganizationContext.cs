@@ -4,7 +4,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     public interface IOrganizationContext
     {
         bool HasOrganization { get; }
-        bool InvalidOrganization { get; }
+        bool SpecifiedOrganizationDoesNotExist { get; }
         int OrganizationId { get; }
     }
 }
