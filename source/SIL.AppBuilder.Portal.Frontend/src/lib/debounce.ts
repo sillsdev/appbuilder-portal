@@ -1,22 +1,22 @@
 
 // http://davidwalsh.name/javascript-debounce-function
 export function debounce(func, wait, immediate) {
-	let timeout;
-	return function() {
-		const context = this;
+  let timeout;
+  return function() {
+    const context = this;
     const args = arguments;
 
-		const later = function() {
-			timeout = null;
+    const later = function() {
+      timeout = null;
 
-			if (!immediate) { func.apply(context, args); }
-		};
+      if (!immediate) { func.apply(context, args); }
+    };
 
-		const callNow = immediate && !timeout;
+    const callNow = immediate && !timeout;
 
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
 
-		if (callNow) { func.apply(context, args); }
-	};
+    if (callNow) { func.apply(context, args); }
+  };
 }
