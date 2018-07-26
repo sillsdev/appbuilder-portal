@@ -13,7 +13,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         private bool parsed;
         private bool hasOrganization;
-        private bool invalidOrganization;
+        private bool specifiedOrganizationDoesNotExist;
         private int organizationId;
 
         public HttpOrganizationContext 
@@ -34,7 +34,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 parsed = true;
                 hasOrganization = false;
-                invalidOrganization = false;
+                specifiedOrganizationDoesNotExist = false;
                 var orgId = HttpContext.Request.Headers[ORGANIZATION_HEADER].ToString();
 
                 int orgIdValue = 0;
@@ -48,7 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     }
                     else
                     {
-                        invalidOrganization = true;
+                        specifiedOrganizationDoesNotExist = true;
                     }
                 }
             }
@@ -61,10 +61,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 return hasOrganization;
             }
         }
-        public bool InvalidOrganization {
+        public bool SpecifiedOrganizationDoesNotExist {
             get {
                 Parse();
-                return invalidOrganization;
+                return specifiedOrganizationDoesNotExist;
             }
         }
         public int OrganizationId {

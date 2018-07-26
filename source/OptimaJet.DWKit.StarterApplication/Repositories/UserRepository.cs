@@ -28,7 +28,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 
         public override IQueryable<User> Get()
         {
-            if (OrganizationContext.InvalidOrganization) return base.Get().Take(0);
+            if (OrganizationContext.SpecifiedOrganizationDoesNotExist) return Enumerable.Empty<User>().AsQueryable();
             if (!OrganizationContext.HasOrganization)
             {
                 // No organization specified, so include all users in the all the organizations that the current user is a member
@@ -38,13 +38,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                            .Include(u => u.OrganizationMemberships)
                            .Where(u => u.OrganizationMemberships.Select(o => o.OrganizationId).Intersect(currentUserOrgIds).Any());
             }
-            else
-            {
-                // Get users in the current organization
-                return base.Get()
-                           .Include(u => u.OrganizationMemberships)
-                           .Where(u => u.OrganizationMemberships.Any(o => o.OrganizationId == OrganizationContext.OrganizationId));
-            }
+            // Get users in the current organization
+            return base.Get()
+                       .Include(u => u.OrganizationMemberships)
+                       .Where(u => u.OrganizationMemberships.Any(o => o.OrganizationId == OrganizationContext.OrganizationId));
         }
 
         public async Task<User> GetByAuth0Id(string auth0Id)
