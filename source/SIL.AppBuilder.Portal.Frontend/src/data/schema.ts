@@ -37,16 +37,28 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         owner: { type: 'hasOne', model: 'user', inverse: 'ownedOrganizations' },
-        users: { type: 'hasMany', model: 'user', inverse: 'organizations' }
+        users: { type: 'hasMany', model: 'user', inverse: 'organizations' },
+        projects: { type: 'hasMany', model: 'user', inverse: 'projects'}
       }
     },
     project: {
       keys: { remoteId: {} },
       attributes: {
-        name: { type: 'string' }
+        name: { type: 'string' },
+        status: { type: 'string' },
+        createdOn: { type: 'date'},
+        language: { type: 'string' },
+        type: { type: 'string'},
+        description: { type: 'string' },
+        automaticRebuild: { type: 'boolean' },
+        allowOtherToDownload: { type: 'boolean' },
+        location: { type: 'string' }
       },
       relationships: {
-        tasks: { type: 'hasMany', model: 'task', inverse: 'project'}
+        tasks: { type: 'hasMany', model: 'task', inverse: 'project'},
+        products: { type: 'hasMany', model: 'product', inverse: 'projects' },
+        organization: { type: 'hasOne', model: 'organization', inverse: 'projects'},
+        owner: { type: 'hasOne', model: 'user', inverse: 'projects' }
       }
     },
     product: {
@@ -55,7 +67,8 @@ const schemaDefinition: SchemaSettings = {
         name: { type: 'string' }
       },
       relationships: {
-        tasks: { type: 'hasMany', model: 'task', inverse: 'project' }
+        tasks: { type: 'hasMany', model: 'task', inverse: 'project' },
+        projects: { type: 'hasMany', model: 'product', inverse: 'products' }
       }
     },
     task: {
@@ -99,7 +112,8 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         ownedOrganizations: { type: 'hasMany', model: 'organization', inverse: 'owner' },
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
-        assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' }
+        assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' },
+        projects: { type: 'hasMany', model: 'project', inverse: 'owner' }
       }
     }
   }
