@@ -36,7 +36,7 @@ class TestWrapper extends React.Component<any, any> {
 
     return (
       <div data-test-app-container>
-        <I18nextProvider i18n={i18n}>
+        <I18nextProvider i18n={i18n} initialLanguage='en-US'>
           <DataProvider>
             <ReduxProvider initialState={initialState || {}}>
               <Router history={history}>

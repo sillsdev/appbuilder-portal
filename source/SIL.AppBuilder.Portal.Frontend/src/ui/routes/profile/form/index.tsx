@@ -125,7 +125,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
           </Form.Field>
 
           <div className='field'>
-            <label>{t('profile.locale')}</label>
+            <label data-test-locale-label>{t('profile.locale')}</label>
             <LocaleSelect
               className=''
               value={locale} onChange={mut('locale')} />
