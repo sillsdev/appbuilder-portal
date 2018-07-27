@@ -6,6 +6,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import TimezonePicker from 'react-timezone';
 
 import { UserAttributes } from '@data/models/user';
+import LocaleSelect from '@ui/components/inputs/locale-select';
 
 
 export interface IProps {
@@ -50,7 +51,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const { mut, toggle } = this;
     const {
       firstName,lastName, email, phone, localization,
-      timezone, emailNotification,
+      timezone, emailNotification, locale,
       sshKey
     } = this.state;
     const { t } = this.props;
@@ -100,26 +101,31 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
             value={localization}
             onChange={mut('localization')} />
         </Form.Field>
-        <Form.Field>
-          <label>{t('profile.timezone')}</label>
-          <div
-            data-test-profile-timezone
-            className='timezone-group'
-          >
-            <Icon name='caret down' />
-            <TimezonePicker
-              className='timezone'
-              value={timezone}
-              onChange={tz => {
-                this.setState({timezone: tz});
-              }}
-              inputProps={{
-                placeholder: t('profile.timezonePlaceholder'),
-                name: 'timezone'
-              }}
-            />
-          </div>
-        </Form.Field>
+
+        <div className='flex-row'>
+          <Form.Field>
+            <label>{t('profile.timezone')}</label>
+            <div
+              data-test-profile-timezone
+              className='timezone-group'
+            >
+              <Icon name='caret down' />
+              <TimezonePicker
+                className='timezone'
+                value={timezone}
+                onChange={tz => {
+                  this.setState({timezone: tz});
+                }}
+                inputProps={{
+                  placeholder: t('profile.timezonePlaceholder'),
+                  name: 'timezone'
+                }}
+              />
+            </div>
+          </Form.Field>
+
+          <LocaleSelect value={locale} onChange={mut('locale')} />
+        </div>
 
         <Divider horizontal/>
 

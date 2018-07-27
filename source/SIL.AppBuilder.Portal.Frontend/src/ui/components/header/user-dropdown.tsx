@@ -42,7 +42,6 @@ class UserDropdown extends React.Component<IProps> {
             text='My Profile'
             onClick={e => history.push('/profile')}
           />
-          <Dropdown.Item text='Notification Settings' />
           <Dropdown.Item text='Help' />
 
           <Dropdown.Item
