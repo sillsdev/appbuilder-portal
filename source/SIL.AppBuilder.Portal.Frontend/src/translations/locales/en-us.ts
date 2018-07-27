@@ -70,6 +70,7 @@ export default {
     phone: 'Phone',
     location: 'Location',
     timezone: 'Timezone',
+    locale: 'Locale',
     timezonePlaceholder: 'Select your timezone...',
     notificationSettingsTitle: 'Notification Settings',
     optOutOfEmailOption: 'I do not wish to receive email notifications',

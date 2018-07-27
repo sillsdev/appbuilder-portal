@@ -21,19 +21,19 @@ export default class LocaleSelect extends React.Component {
 
   onSelect = (e) => {
     const selection = e.target.value;
-  console.log(selection);
-    i18n.changeLanguage(selection);
 
+    i18n.changeLanguage(selection);
     this.props.onChange(selection);
   }
 
   render() {
     const { value, onChange } = this.props;
-    const { default: { languages } } = i18n;
+    const { default: { options, language } } = i18n;
+    const languages = Object.keys(options.resources);
+    const selected = value || language;
 
     return (
-      <select selected={value} onChange={this.onSelect}>
-        <option value='whatever'>aoeu</option>
+      <select value={selected} onChange={this.onSelect}>
         { languages.map(locale => (
           <option value={locale}>{locale}</option>
         )) }

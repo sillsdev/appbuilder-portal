@@ -66,6 +66,7 @@ export default {
     email: 'Correo Electrónico',
     phone: 'Teléfono',
     location: 'Localidad',
+    locale: 'Idioma',
     timezone: 'Zona horaria',
     timezonePlaceholder: 'Seleccione tu zona horaria...',
     notificationSettingsTitle: 'Configuración de Notificaciones',

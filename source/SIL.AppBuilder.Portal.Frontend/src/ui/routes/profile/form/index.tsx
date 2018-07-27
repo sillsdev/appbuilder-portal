@@ -102,7 +102,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
             onChange={mut('localization')} />
         </Form.Field>
 
-        <div className='flex-row'>
+        <div className='flex-row justify-content-space-between'>
           <Form.Field>
             <label>{t('profile.timezone')}</label>
             <div
@@ -124,7 +124,12 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
             </div>
           </Form.Field>
 
-          <LocaleSelect value={locale} onChange={mut('locale')} />
+          <div className='field'>
+            <label>{t('profile.locale')}</label>
+            <LocaleSelect
+              className=''
+              value={locale} onChange={mut('locale')} />
+          </div>
         </div>
 
         <Divider horizontal/>
