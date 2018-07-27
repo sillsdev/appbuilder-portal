@@ -27,7 +27,7 @@ export default class extends React.Component {
         <Menu.Item
           name='Users'
           as={NavLink}
-          to='/our-projects'
+          to='/users'
           activeClassName='active' />
 
         { hasSelectedOrg && (
