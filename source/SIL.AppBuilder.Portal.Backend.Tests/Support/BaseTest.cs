@@ -3,22 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AutoMapper.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Optimajet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support
 {
-    public abstract class BaseTest : Program
+    public abstract class BaseTest : BaseApp
     {
         private static int _initCounter = 0;
-
-        /* public override ILoggerFactory GetAppLoggerFactory(IServiceCollection services) */
-        /* { */
-        /*     return new TestLoggerFactory(Configuration); */
-        /* } */
 
         public override IConfiguration CreateConfiguration()
         {
