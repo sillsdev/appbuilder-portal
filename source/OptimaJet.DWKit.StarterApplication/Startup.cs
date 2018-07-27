@@ -133,6 +133,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             // Add service / repository overrides
             services.AddScoped<IEntityRepository<User>, UserRepository>();
+            services.AddScoped<IEntityRepository<Group>, GroupRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
 
