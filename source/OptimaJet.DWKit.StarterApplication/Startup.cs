@@ -138,6 +138,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddScoped<UserService>();
             services.AddScoped<OrganizationService>();
+            services.AddScoped<Auth0ManagementApiTokenService>();
 
             services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
             services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
