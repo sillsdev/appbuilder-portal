@@ -9,7 +9,8 @@ export default {
   updated: 'Updated!',
 
   common: {
-    search: 'Search'
+    search: 'Search',
+    change: 'Change'
   },
 
   auth: {
@@ -93,6 +94,46 @@ export default {
     noTasksTitle: 'No tasks are assigned to you.',
     noTasksDescription: 'Tasks that require your attention will appear here.',
     reassign: 'Reassign',
+  },
+
+  project: {
+    createdOn: 'Created',
+    overview: 'Overview',
+    dropdown: {
+      transfer: 'Transfer Ownership',
+      archive: 'Archive'
+    },
+    details: {
+      title: 'Details',
+      language: 'Language',
+      type: 'Project Type'
+    },
+    products: {
+      title: 'Products',
+      empty: 'You have no products for this project.',
+      add: 'add product'
+    },
+    settings: {
+      title: 'Settings',
+      automaticRebuild: {
+        title: 'Automatic Rebuilds',
+        description: 'When automatic rebuilds are on, Scriptoria will automatically rebuild your products when the input source is updated'
+      },
+      organizationDownloads: {
+        title: 'Allow Other Organizations to download',
+        description: 'When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products and their Artifacts'
+      }
+    },
+    side: {
+      repositoryLocation: 'Repository Location',
+      organization: 'Organization',
+      projectOwner: 'Project Owner',
+      projectGroup: 'Project Group',
+      reviewers: {
+        title: 'Reviewers',
+        add: 'add reviewer'
+      }
+    }
   },
 
   users: {
