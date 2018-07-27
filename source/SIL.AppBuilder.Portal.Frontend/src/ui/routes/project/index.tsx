@@ -64,7 +64,7 @@ class Project extends React.Component<IProps> {
               <Products project={project} />
               <Settings project={project} />
             </div>
-            <div className='flex-shrink project-aside'>
+            <div className='project-aside'>
               <Location project={project} />
               <Owners project={project} />
               <Reviewers project={project} />

@@ -21,20 +21,20 @@ class Owners extends React.Component<IProps> {
     const { language, type } = project.attributes;
 
     return (
-      <div>
+      <div className='owner'>
         <div>
           <h4>{t('project.side.organization')}</h4>
-          <div>
+          <div className='content'>
             <span>SIL International</span>
           </div>
         </div>
         <div>
           <h4>{t('project.side.projectOwner')}</h4>
-          <div className='flex justify-content-space-around'>
-            <div>
+          <div className='flex justify-content-space-around content'>
+            <div className='flex-grow'>
               <a href='#'>Andrew Nichols</a>
             </div>
-            <div>
+            <div className=''>
               <a href='#'>{t('common.change')}</a>
             </div>
           </div>

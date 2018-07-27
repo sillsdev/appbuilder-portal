@@ -21,9 +21,11 @@ class Location extends React.Component<IProps> {
     const { location } = project.attributes;
 
     return (
-      <div>
+      <div className='location'>
         <h3>{t('project.side.repositoryLocation')}</h3>
-        <input className='ui input w-100' type='text' readOnly value={location} />
+        <div className='ui input w-100'>
+          <input type='text' readOnly value={location} />
+        </div>
       </div>
     );
 

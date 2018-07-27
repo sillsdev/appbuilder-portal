@@ -21,10 +21,13 @@ class Reviewers extends React.Component<IProps> {
     const { language, type } = project.attributes;
 
     return (
-      <div>
-        <div className='flex justify-content-space-around'>
-          <h4>{t('project.side.reviewers.title')}</h4>
+      <div className='reviewers'>
+        <div className='flex justify-content-space-around header align-items-center'>
+          <h4 className='flex-grow'>{t('project.side.reviewers.title')}</h4>
           <a href='#'>{t('project.side.reviewers.add')}</a>
+        </div>
+        <div>
+
         </div>
       </div>
     );
