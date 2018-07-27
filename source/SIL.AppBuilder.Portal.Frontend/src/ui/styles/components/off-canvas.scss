@@ -1,0 +1,102 @@
+// This lives outside of the component folder so we can
+// make use of scss variables
+
+$offcanvas-width: 300px;
+
+.sidebar-container {
+  background: white;
+  z-index: 29;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.2);
+  width: $offcanvas-width;
+
+
+  &.is-sidebar-visible {
+    left: 0px;
+  }
+
+  &.is-sidebar-hidden {
+    left: -#{$offcanvas-width};
+  }
+
+  .sidebar-wrapper {
+    width: $offcanvas-width;
+    z-index: 30;
+  }
+
+  .sidebar-underlay {
+    visibility: hidden;
+    opacity: 0;
+    background: #4a4a4a;
+    z-index: 29;
+  }
+
+  .sidebar-title {
+    background: $dropdown-header-background;
+  }
+
+  .ui.secondary.pointing.menu {
+    .item {
+      color: $gray-dark;
+      font-weight: normal;
+
+      &.active {
+        color: $blue-dark;
+        font-weight: bold;
+
+        border-left: 5px solid $blue-dark !important;
+        margin: 9px 0;
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up('xs') {
+  .sidebar-container {
+    position: fixed;
+    min-width: $offcanvas-width;
+    z-index: 31;
+
+    &.is-sidebar-visible {
+      .sidebar-underlay {
+        visibility: visible;
+        opacity: 0.33;
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up('lg') {
+  .sidebar-container {
+    position: static;
+    @include default-transition;
+
+    .sidebar-wrapper {
+      @include default-transition;
+    }
+
+    &.is-sidebar-hidden {
+      min-width: 0;
+      width: 0;
+      .sidebar-wrapper {
+        width: $offcanvas-width;
+        margin-left: -#{$offcanvas-width};
+      }
+
+      .sidebar-underlay {
+        display: none;
+      }
+    }
+
+    &.is-sidebar-visible {
+      min-width: inherit;
+
+      .sidebar-wrapper {
+        margin-left: 0;
+      }
+
+      .sidebar-underlay {
+        display: none;
+      }
+    }
+  }
+}

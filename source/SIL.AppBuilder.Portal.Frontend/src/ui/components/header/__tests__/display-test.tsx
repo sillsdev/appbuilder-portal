@@ -7,6 +7,8 @@ import {
   setupRequestInterceptor, useFakeAuthentication, setupApplicationTest
 } from 'tests/helpers';
 
+
+import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import Header from '../display';
 
 import headerHelper from 'tests/helpers/components/header';
@@ -17,8 +19,15 @@ describe('Integration | Component | Header', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  describe('Dropdowns', () => {
+  beforeEach(function () {
+    this.mockGet(200, '/organizations', { data: [{
+      type: 'organizations',
+      id: 1,
+      attributes: {}
+    }] });
+  });
 
+  describe('Dropdowns', () => {
     beforeEach(async () => {
       await visit('/');
     });

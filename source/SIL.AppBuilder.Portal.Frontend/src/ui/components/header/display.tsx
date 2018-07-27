@@ -6,7 +6,6 @@ import {
 } from 'semantic-ui-react';
 
 import { deleteToken } from '@lib/auth0';
-import OrganizationSwitcher from './organization-switcher';
 
 import UserDropdown from './user-dropdown';
 import Notifications from './notifications';
@@ -59,10 +58,6 @@ class Header extends React.Component<IProps> {
                 className='add-project d-xs-none'>
                 Add Project
               </Button>
-            </Menu.Item>
-
-            <Menu.Item>
-              <OrganizationSwitcher />
             </Menu.Item>
 
             <Menu.Item>

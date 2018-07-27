@@ -1,11 +1,16 @@
 export default {
   appName: 'Scriptoria',
   welcome: 'Welcome to Scriptoria',
+  search: 'Search',
 
   contactUs: 'Contact Us',
   exampleForm: 'Example Form',
 
   updated: 'Updated!',
+
+  common: {
+    search: 'Search'
+  },
 
   auth: {
     title: 'Welcome to Scriptoria',
@@ -24,6 +29,7 @@ export default {
   },
 
   org: {
+    allOrganizations: 'All Organizations',
     createSuccess: 'Organization created successfully!',
     settingsTitle: 'Organization Settings',
     selectLogo: 'Select Logo',
@@ -87,6 +93,18 @@ export default {
     noTasksTitle: 'No tasks are assigned to you.',
     noTasksDescription: 'Tasks that require your attention will appear here.',
     reassign: 'Reassign',
+  },
+
+  users: {
+    title: 'Manage Users',
+    table: {
+      columns: {
+        name: 'Name',
+        role: 'Role',
+        groups: 'Groups',
+        disabled: 'Disabled'
+      }
+    }
   }
 
 

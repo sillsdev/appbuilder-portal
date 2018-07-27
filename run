@@ -20,6 +20,31 @@ function runstuff {
     dc)       ${COMPOSE} $arguments;;
     up:build) ${COMPOSE} up --build $arguments;;
     up)       ${COMPOSE} up $arguments;;
+    up:local:start)
+      runstuff dc start db
+      runstuff dc start adminer
+
+      echo "db and adminer have been started. please make sure you have /etc/hosts entries"
+      echo ""
+      echo "  127.0.0.1 db.docker"
+      echo "  127.0.0.1 api"
+      echo "  127.0.0.1 adminer"
+      echo ""
+      echo "if you need to connect to these services from locally run api and ui"
+      echo ""
+      echo "also make sure any environment variables present in docker-compose.yml"
+      echo "for the non-running services are present when booting up the services"
+      echo "on the host environment (use .env.dev files to make this simpler)"
+      echo ""
+      echo "why?"
+      echo "because currently, docker-compose doesn't have a way to omit files / folders"
+      echo "from volume mounts, so whenever dotnet watch would do a rebuild inside the"
+      echo "docker environment, it would blow away all the host-dependencies that the"
+      echo "editor was using for intellisense..."
+
+      runstuff dc ps
+      runstuff dc logs --follow --tail="2"
+    ;;
 
     bash)     ${COMPOSE} run --rm $arguments bash;;
     restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
@@ -98,6 +123,7 @@ function print_help {
   echo "dc             : short for docker-compose"
   echo "up:build"
   echo "up"
+  echo "up:local:start : starts non-essential services in docker, and the api and ui services natively on the host machine"
   echo ""
   echo "bash           : drop into a bash shell in a temporary docker-compose service"
   echo "restart        : restart a specific docker-compose service"

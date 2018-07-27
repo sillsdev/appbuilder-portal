@@ -96,6 +96,14 @@ Vertical Menu
     }
   }
 
+  &.no-borders {
+    border: none !important;
+
+    .item {
+      border: none !important;
+    }
+  }
+
 
   &.secondary {
     .item {
@@ -122,4 +130,21 @@ Dropdown Menu
   i.dropdown.icon {
     font-size: 1.5rem;
   }
+}
+
+/************************************
+Table
+*************************************/
+
+.ui.table {
+  tr td {
+    border-top: 1px solid #d8d8d8;
+  }
+}
+
+/***********************************
+Navbar Menu
+************************************/
+.ui.menu-navbar {
+  border-radius: 0;
 }
