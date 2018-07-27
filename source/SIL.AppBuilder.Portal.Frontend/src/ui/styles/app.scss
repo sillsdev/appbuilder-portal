@@ -9,6 +9,7 @@
 @import './semantic-ui-overrides';
 @import './auth0-overrides';
 
+@import './utility/transitions';
 @import './utility/colors';
 @import './utility/size';
 @import './utility/spacing';
@@ -18,6 +19,8 @@
 @import './utility/text';
 @import './utility/image';
 @import './utility/content';
+
+@import './components/off-canvas';
 
 html,
 body {
@@ -49,6 +52,26 @@ footer {
 .hidden {
 	display: none;
 }
+
+.overflows {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.no-overflow {
+  overflow: hidden;
+}
+
+.no-select {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 
 //TODO: Move it to the component when we create one
 .ui.table {
@@ -83,7 +106,7 @@ footer {
     font-weight: bold;
     color: #9b9b9b;
     text-transform: uppercase;
-    background: transparent;  
+    background: transparent;
   }
 
   .red {

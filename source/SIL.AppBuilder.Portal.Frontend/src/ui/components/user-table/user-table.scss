@@ -1,0 +1,22 @@
+.user-table {
+
+  thead tr th {
+    width: 25%;
+  }
+
+  .groupDropdown .icon {
+    display: none;
+  }
+
+  .groupDropdown:hover i {
+    display: inline-block;
+    position: absolute !important;
+    right: 5px;
+    top: 15px;
+
+  }
+
+  .groupDropdown:hover {
+    border-bottom: 1px solid #50b4e5;
+  }
+}

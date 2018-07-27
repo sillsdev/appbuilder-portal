@@ -4,6 +4,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
 import { OrganizationAttributes } from '@data/models/organization';
+import ErrorHeader from '@ui/components/errors/header-message';
 
 export interface IProps {
   token: string;
@@ -31,11 +32,14 @@ class InviteOrganizationDisplay extends React.Component<IProps & i18nProps, ISta
   render() {
     const { mut } = this;
     const { name, websiteUrl } = this.state;
-    const { t } = this.props;
+    const { t, error } = this.props;
 
     return (
       <div>
         <form data-test-org-create-form className='ui form'>
+
+          { error ? <ErrorHeader error={error} /> : null }
+
           <div className='field'>
             <label>{t('invitations.orgName')}</label>
             <input

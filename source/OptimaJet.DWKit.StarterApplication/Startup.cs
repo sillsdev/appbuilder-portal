@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,11 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using OptimaJet.DWKit.Application;
 using React.AspNet;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc.Internal;
-using Microsoft.AspNetCore.Mvc;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Optimajet.DWKit.StarterApplication.Data;
 using Microsoft.EntityFrameworkCore;
@@ -27,10 +22,7 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
-using Serilog;
-using Serilog.Events;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using AspNetCore.RouteAnalyzer;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -141,7 +133,16 @@ namespace OptimaJet.DWKit.StarterApplication
 
             // Add service / repository overrides
             services.AddScoped<IEntityRepository<User>, UserRepository>();
+            services.AddScoped<IEntityRepository<Group>, GroupRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
+            services.AddScoped<IResourceService<Organization>, OrganizationService>();
+
+            services.AddScoped<UserService>();
+            services.AddScoped<OrganizationService>();
+            services.AddScoped<Auth0ManagementApiTokenService>();
+
+            services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
+            services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
 
 
             services.AddMvc(options => {
@@ -155,6 +156,8 @@ namespace OptimaJet.DWKit.StarterApplication
                 // or the jwt token scheme
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
+
+            services.AddRouteAnalyzer();
 
             // add the db context like you normally would
             services.AddDbContext<AppDbContext>(options =>
@@ -194,6 +197,9 @@ namespace OptimaJet.DWKit.StarterApplication
 
             app.UseMvc(routes =>
             {
+                // View all detected routes
+                routes.MapRouteAnalyzer("/routes"); // Add
+
                 // DWKit Routes
                 routes.MapRoute("form", "form/{formName}/{*other}",
                     defaults: new { controller = "StarterApplication", action = "Index" });

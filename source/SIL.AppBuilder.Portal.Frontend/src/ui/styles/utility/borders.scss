@@ -7,6 +7,27 @@
   .page-heading-border#{$modifier} {
     border-bottom: 1px solid $border-color;
   }
+
+  .thin-bottom-border#{$modifier} {
+    border-bottom: 1px solid $border-color;
+  }
+
+  @each $position in $positions {
+    $posKey: nth($position, 1);
+    $posValue: nth($position, 2);
+
+    .border-#{$posValue}-dark#{$modifier} {
+      border-#{$posValue}: 1px solid $border-color-dark;
+    }
+
+    .border-#{$posValue}#{$modifier} {
+      border-#{$posValue}: 1px solid $border-color;
+    }
+  }
+
+  .no-borders#{$modifier} {
+    border: none !important;
+  }
 }
 
 

@@ -60,22 +60,10 @@ class Profile extends React.Component<IProps> {
     return (
       <Container className='profile'>
         <h1 className='title'>{t('profile.title')}</h1>
-        <Grid>
-          <Grid.Row>
-            <Grid.Column width={3} className='text-center'>
-              <h2>{t('profile.pictureTitle')}</h2>
-              <div className='image-fill-container p-r-md p-l-md'>
-                <img className='round' src={getPictureUrl()} />
-              </div>
-              <a href='http://en.gravatar.com/' target='_blank'>{t('profile.updatePicture')}</a>
-            </Grid.Column>
-
-            <Grid.Column width={12}>
-              <h2>{t('profile.general')}</h2>
-              <EditProfileForm onSubmit={this.updateProfile} />
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+        <div>
+          <h2>{t('profile.general')}</h2>
+          <EditProfileForm onSubmit={this.updateProfile} />
+        </div>
       </Container>
     );
   }

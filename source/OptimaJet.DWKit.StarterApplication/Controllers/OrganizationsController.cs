@@ -1,21 +1,32 @@
 ﻿using System;
-using JsonApiDotNetCore.Controllers;
+using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
+using Microsoft.AspNetCore.Mvc;
+using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace Optimajet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class OrganizationsController : JsonApiController<Organization>
+    public class OrganizationsController : BaseController<Organization>
     {
         public OrganizationsController(
             IJsonApiContext jsonApiContext,
             IResourceService<Organization> resourceService,
-            ILoggerFactory loggerFactory)
-        : base(jsonApiContext, resourceService, loggerFactory)
+            ICurrentUserContext currentUserContext,
+            OrganizationService organizationService,
+            UserService userService)
+            : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         { }
+
+        [HttpPost]
+        public override async Task<IActionResult> PostAsync([FromBody] Organization entity)
+        {
+            entity.Owner = CurrentUser;
+
+            return await base.PostAsync(entity);
+        }
     }
 }

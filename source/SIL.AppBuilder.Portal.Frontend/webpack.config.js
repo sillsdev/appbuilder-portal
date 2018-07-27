@@ -20,6 +20,8 @@ if (isDevelopment) {
 
 let config = {
   mode: isProduction ? 'production' : 'development',
+  // devtool: isProduction ? 'none' : 'inline-source-map',
+  devtool: 'inline-source-map',
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),
@@ -34,6 +36,7 @@ let config = {
     filename: '[name]-[hash].js',
     chunkFilename: '[name]-[hash].js'
   },
+
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Scriptoria',
@@ -44,6 +47,11 @@ let config = {
     new ReactRootPlugin(),
     // sep-thread type checking
     new ForkTsCheckerWebpackPlugin(),
+    // source maps!
+    new webpack.SourceMapDevToolPlugin({
+
+    }),
+
     new webpack.HotModuleReplacementPlugin({
       // Options...
     }),

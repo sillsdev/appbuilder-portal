@@ -18,9 +18,11 @@ import ProfileRoute, { pathName as profilePath } from '@ui/routes/profile';
 import OrganizationsRoute, { pathName as organizationsPath } from '@ui/routes/organizations';
 import DirectoryRoute, { pathName as directoryPath } from '@ui/routes/project-directory';
 
+import ProjectDetailRoute, { pathName as projectDetailPath } from '@ui/routes/project';
+import UsersRoute, { pathName as UsersPath } from '@ui/routes/users';
+
 import ErrorRootRoute from '@ui/routes/errors';
 import NotFoundRoute from '@ui/routes/errors/not-found';
-import { Container } from 'semantic-ui-react';
 
 export default class RootPage extends React.Component {
   render() {
@@ -43,7 +45,12 @@ export default class RootPage extends React.Component {
             <Route path={profilePath} component={withLayout(ProfileRoute)} />
             <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
 
+<<<<<<< HEAD
             <Route path={directoryPath} component={DirectoryRoute} />
+=======
+            <Route path={projectDetailPath} component={ProjectDetailRoute} />
+            <Route path={UsersPath} component={UsersRoute} />
+>>>>>>> origin
 
             <Route component={NotFoundRoute} />
           </Switch>

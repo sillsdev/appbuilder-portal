@@ -2,7 +2,7 @@ import { describe, it, beforeEach, afterEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { setupApplicationTest, setupRequestInterceptor } from 'tests/helpers/index';
+import { setupApplicationTest, setupRequestInterceptor, respondWithJsonApi } from 'tests/helpers/index';
 import { fakeAuth0JWT } from 'tests/helpers/jwt';
 
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
@@ -14,9 +14,27 @@ describe('Acceptance | Authentication', () => {
   setupApplicationTest();
   setupRequestInterceptor();
 
+  beforeEach(function () {
+    this.mockGet(200, '/organizations', { data: [{
+      type: 'organizations',
+      id: 1,
+      attributes: {}
+    }] });
+  });
+
   describe('is authenticated', () => {
-    beforeEach(async function() {
+    beforeEach(function() {
+      const { server } = this.polly;
+
       setToken(fakeAuth0JWT());
+
+      server.get('/api/users/current-user').intercept(respondWithJsonApi(200, {
+        data: {
+          id: 1,
+          type: 'users',
+          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' }
+        }
+      }));
 
       expect(isLoggedIn()).to.be.true;
     });
@@ -52,9 +70,12 @@ describe('Acceptance | Authentication', () => {
     });
 
     describe('navigates to a route that does not require authentication', () => {
-      xit('it is allowed', () => {
-        // TODO: need a route that can be viewed by both
-        //       authenticated and unauthenticated
+      beforeEach(async () => {
+        await visit('/not-found');
+      });
+
+      it('it is allowed', () => {
+        expect(location().pathname).to.equal('/not-found');
       });
     });
 
@@ -72,8 +93,8 @@ describe('Acceptance | Authentication', () => {
   describe('is not authenticated', () => {
     beforeEach(function() {
       deleteToken();
-
     });
+
     describe('navigates to a route that requires authentication', () => {
       beforeEach(async function() {
         await visit('/invitations');
@@ -85,9 +106,12 @@ describe('Acceptance | Authentication', () => {
     });
 
     describe('navigates to a route that does not require authentication', () => {
-      xit('it is allowed', () => {
-        // TODO: need a route that can be viewed by both
-        //       authenticated and unauthenticated
+      beforeEach(async () => {
+        await visit('/not-found');
+      });
+
+      it('it is allowed', () => {
+        expect(location().pathname).to.equal('/not-found');
       });
     });
 
