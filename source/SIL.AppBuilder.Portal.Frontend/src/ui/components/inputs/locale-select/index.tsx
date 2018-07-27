@@ -1,6 +1,4 @@
 import * as React from "react";
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
-
 import i18n from '@ui/../translations';
 
 export interface IProps {
@@ -9,10 +7,7 @@ export interface IProps {
   className?: string;
 }
 
-@withTemplateHelpers
 export default class LocaleSelect extends React.Component {
-  mut: Mut;
-
   constructor(props = {}) {
     super(props);
 
