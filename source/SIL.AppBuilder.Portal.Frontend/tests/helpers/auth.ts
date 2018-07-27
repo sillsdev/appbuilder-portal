@@ -3,6 +3,7 @@ import { expect } from 'chai';
 
 import { fakeAuth0JWT } from './jwt';
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
+import { respondWithJsonApi } from './request-intercepting/jsonapi';
 
 // this requires the request interceptor
 export function useFakeAuthentication() {
@@ -13,13 +14,33 @@ export function useFakeAuthentication() {
 
     const { server } = this.polly;
 
-    server.get('/api/users/*current-user').intercept((req, res) => {
-      res.status(200);
-      res.json({
+    server.namespace('/api', () => {
+      server.get('/users/current-user').intercept(respondWithJsonApi(200, {
         data: {
-          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' }
-        }
-      });
+          id: 1,
+          type: 'users',
+          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' },
+          relationships: {
+            ['organization-memberships']: {
+              data: [
+                { id: 1, type: 'organization-memberships' },
+              ]
+            }
+          }
+        },
+        included: [
+          {
+            id: 1,
+            type: 'organization-memberships',
+            attributes: {},
+            relationships: {
+              user: {
+                data: { id: 1, type: 'users' }
+              }
+            }
+          }
+        ]
+      }));
     });
   });
 

@@ -25,6 +25,10 @@ services:
       POSTGRES_PASSWORD: 1234
       PGDATA: /var/lib/postgresql/data
 
+    ports:
+      - "5432:5432"
+      - "15432:5432"
+
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ../scripts/DB:/scripts
@@ -49,13 +53,8 @@ services:
       - "7081:7081"
     links:
       - db:db.docker
-    environment:
-      PORT: 7081
-      AUTH0_DOMAIN: https://sil-appbuilder.auth0.com
-      AUTH0_AUDIENCE: n8IAE2O17FBrlQ667x5mydhpqelCBUWG
-
-      ConnectionStrings:default: "User ID=db-user;Password=1234;Host=db.docker;Port=5432;Database=development;"
-
+    env_file:
+      - ${PWD}/source/OptimaJet.DWKit.StarterApplication/.env.dev
     volumes:
       - ./:/app
       # - api-obj:/app/obj

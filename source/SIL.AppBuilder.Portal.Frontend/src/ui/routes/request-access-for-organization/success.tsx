@@ -10,7 +10,7 @@ class RequestSuccess extends React.Component {
       <FocusPanel title={'Request Sent!'}>
         <p>
           An email has been sent to the Scriporia team, <br />
-          and you'll receive an invitation after your rquest <br />
+          and you'll receive an invitation after your request <br />
           has been reviewed.
         </p>
       </FocusPanel>

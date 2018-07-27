@@ -33,11 +33,14 @@ $blue-dark: #0c3855;
 $blue-highlight: #4a90e2;
 
 $white: #fff;
+$gray-dark: #4a4a4a;
 $gray: #515151;
 $light-gray: #9b9b9b;
 $lighter-gray: #e9e9e9;
+$lighterer-gray: #f3f3f3;
 $lightest-gray: #f7f7f7;
 
+$border-color-dark: #979797;
 $border-color: #d8d8d8;
 $border-light-color: $lighter-gray;
 $panel-border-color: $border-color;
@@ -52,3 +55,5 @@ $input-border-color: rgba(0, 0, 0, 0.12);
 $checkbox-background-color: rgba(0,0,0,0.26);
 $input-border-width: 2px;
 $input-placeholder-color: $gray;
+
+$dropdown-header-background: $lighterer-gray;

@@ -1,20 +1,22 @@
 export default {
   appName: 'Scriptoria',
   welcome: 'Welcome to Scriptoria',
+  search: 'Search',
 
   contactUs: 'Contact Us',
   exampleForm: 'Example Form',
 
   updated: 'Updated!',
 
+  common: {
+    search: 'Search',
+    change: 'Change'
+  },
+
   auth: {
     title: 'Welcome to Scriptoria',
     signup: 'Sign Up',
     login: 'Log In',
-  },
-
-  common: {
-    change: 'Change'
   },
 
   invitations: {
@@ -28,6 +30,7 @@ export default {
   },
 
   org: {
+    allOrganizations: 'All Organizations',
     createSuccess: 'Organization created successfully!',
     settingsTitle: 'Organization Settings',
     selectLogo: 'Select Logo',
@@ -129,6 +132,18 @@ export default {
       reviewers: {
         title: 'Reviewers',
         add: 'add reviewer'
+      }
+    }
+  },
+
+  users: {
+    title: 'Manage Users',
+    table: {
+      columns: {
+        name: 'Name',
+        role: 'Role',
+        groups: 'Groups',
+        disabled: 'Disabled'
       }
     }
   }

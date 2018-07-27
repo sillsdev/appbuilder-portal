@@ -1,20 +1,47 @@
-import { connect } from 'react-redux';
+import * as React from 'react';
+import { withTemplateHelpers, Toggle } from 'react-action-decorators';
+import './sidebar.scss';
 
-import SidebarDisplay from './display';
+import Header from './header';
+import Navigation from './navigation';
+import OrgSwitcher from './org-switcher';
 
-import {
-  toggleSidebar
-} from '@store/user-interface';
+export interface IProps {
+  closeSidebar: () => void;
+  className?: string;
+}
 
-const mapStateToProps = ({ ui }) => ({
-  isSidebarVisible: ui.isSidebarVisible
-});
+@withTemplateHelpers
+class Sidebar extends React.Component<IProps> {
+  toggle: Toggle;
 
-const mapDispatchToProps = dispatch => ({
-  toggleSidebar: () => dispatch(toggleSidebar())
-});
+  state = { isOrgSwitcherActive: false };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SidebarDisplay);
+  render() {
+    const { isOrgSwitcherActive } = this.state;
+    const { closeSidebar, className } = this.props;
+
+    const orgSwitchToggler = this.toggle('isOrgSwitcherActive');
+
+    return (
+      <div
+        data-test-sidebar
+        className={`sidebar bg-white border-right-dark border-top-dark ${className}`}>
+
+        <Header
+          className='thin-bottom-border'
+          closeSidebar={closeSidebar}
+          isOrgSwitcherActive={isOrgSwitcherActive}
+          toggleOrgSwitcher={orgSwitchToggler}
+        />
+
+        { !isOrgSwitcherActive && <Navigation /> }
+
+        { isOrgSwitcherActive && <OrgSwitcher /> }
+
+      </div>
+    );
+  }
+}
+
+export default Sidebar;

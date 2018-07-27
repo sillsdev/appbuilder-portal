@@ -1,18 +1,31 @@
-﻿using System;
-using JsonApiDotNetCore.Controllers;
 using JsonApiDotNetCore.Services;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace Optimajet.DWKit.StarterApplication.Controllers
 {
-    public class OrganizationInvitesController : JsonApiController<OrganizationInvite>
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public class OrganizationInvitesController : BaseController<OrganizationInvite>
     {
         public OrganizationInvitesController(
             IJsonApiContext jsonApiContext,
             IResourceService<OrganizationInvite> resourceService,
-            ILoggerFactory loggerFactory)
-        : base(jsonApiContext, resourceService, loggerFactory)
+            ICurrentUserContext currentUserContext,
+            OrganizationService organizationService,
+            UserService userService)
+            : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         { }
+
+        [AllowAnonymous]
+        [HttpPost("/api/organization-invites/request")]
+        public IActionResult RequestOrgInvite() {
+            // TODO: notify system super admin that someone is interested in
+            //       using Scriptoria
+
+            return Ok(null);
+        }
     }
 }
