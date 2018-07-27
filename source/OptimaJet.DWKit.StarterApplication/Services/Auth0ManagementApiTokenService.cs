@@ -6,6 +6,21 @@ using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
+    /// <summary>
+    /// Auth0 Managment API requires that a token is used to access the API.
+    /// By default, the tokens expire after 24 hours.
+    ///
+    /// The documented method for automating the generation of these tokens
+    /// in C# is to use the Rest API.
+    /// https://auth0.com/docs/api/management/v2/tokens#automate-the-process
+    ///
+    /// This class depends on the following environment variables:
+    /// * AUTH0_DOMAIN - Url (e.g. https://YOUR_APPLICATION.auth0.com
+    /// * AUTH0_TOKEN_ACCESS_CLIENT_ID - 'Client ID' value from the Machine to
+    ///   Machine Applications settings
+    /// * AUTH0_TOKEN_ACCESS_CLIENT_SECRET - 'Client Secret' from the Machine to
+    ///   Machine Applications settings
+    /// </summary>
     public class Auth0ManagementApiTokenService
     {
         private string token;
