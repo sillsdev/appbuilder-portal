@@ -35,5 +35,6 @@ namespace Optimajet.DWKit.StarterApplication.Data
         public DbSet<OrganizationInvite> OrganizationInvites { get; set; }
         public DbSet<OrganizationMembership> OrganizationMemberships { get; set; }
         public DbSet<Group> Groups { get; set; }
+        public DbSet<Project> Projects { get; set; }
     }
 }
