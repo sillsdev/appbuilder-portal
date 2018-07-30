@@ -31,8 +31,8 @@ export default class LocaleSelect extends React.Component {
       <select
         data-test-locale-switcher
         value={selected} onChange={this.onSelect}>
-        { languages.map(locale => (
-          <option value={locale}>{locale}</option>
+        { languages.map((locale,index) => (
+          <option key={index} value={locale}>{locale}</option>
         )) }
       </select>
     );

@@ -10,7 +10,8 @@ export default {
 
   common: {
     search: 'Search',
-    change: 'Change'
+    change: 'Change',
+    save: 'Save'
   },
 
   auth: {
@@ -75,8 +76,7 @@ export default {
     notificationSettingsTitle: 'Notification Settings',
     optOutOfEmailOption: 'I want to receive email notifications',
     sshSettingsTitle: 'Manage Personal SSH Keys',
-    sshKeyLabel: 'SSH Key',
-    update: 'Update Profile',
+    sshKeyLabel: 'SSH Key'
   },
 
   errors: {

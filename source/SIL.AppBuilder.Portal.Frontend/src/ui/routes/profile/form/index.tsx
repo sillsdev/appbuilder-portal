@@ -163,7 +163,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
           onClick={this.submit}
           className='form-button'
         >
-          {t('profile.update')}
+          {t('common.save')}
         </Button>
       </Form>
     );

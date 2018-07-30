@@ -8,7 +8,9 @@ export default {
   updated: 'Actualizado!',
 
   common: {
-    search: 'Buscar'
+    search: 'Buscar',
+    change: 'Cambiar',
+    save: 'Guardar'
   },
 
   auth: {
@@ -72,8 +74,7 @@ export default {
     notificationSettingsTitle: 'Configuración de Notificaciones',
     optOutOfEmailOption: 'Deseo recibir notificaciones por correo electrónico',
     sshSettingsTitle: 'Administra tus llaves personales SSH',
-    sshKeyLabel: 'Llave SSH Key',
-    update: 'Actualiza tu perfil',
+    sshKeyLabel: 'Llave SSH Key'
   },
 
   errors: {
