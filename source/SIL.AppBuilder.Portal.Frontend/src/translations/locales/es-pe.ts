@@ -121,7 +121,7 @@ export default {
         description: 'Cuando esté activo, Scriptoria reconstruirá automáticamente tus productos cuando el código fuente se actualice.'
       },
       organizationDownloads: {
-        title: 'Permitir que otras organizaciones descargar',
+        title: 'Permitir decargas',
         description: 'Cuando está activo, cualquier usuario de Scriptoria que encuentre el proyecto podrá descargarlo junto con sus artefactos'
       }
     },
