@@ -35,6 +35,7 @@ $blue-highlight: #4a90e2;
 $white: #fff;
 $gray-dark: #4a4a4a;
 $gray: #515151;
+$alert: #ff4949;
 $light-gray: #9b9b9b;
 $lighter-gray: #e9e9e9;
 $lighterer-gray: #f3f3f3;
@@ -50,6 +51,8 @@ $primary: $blue;
 $text: $gray;
 $navigation-text: $light-gray;
 
+$error-color: $alert;
+$error-text: $white;
 $button-background-color: $blue-dark;
 $input-border-color: rgba(0, 0, 0, 0.12);
 $checkbox-background-color: rgba(0,0,0,0.26);

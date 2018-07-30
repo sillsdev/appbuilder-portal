@@ -188,10 +188,6 @@ namespace OptimaJet.DWKit.StarterApplication
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
 
 
             app.UseStaticFiles();

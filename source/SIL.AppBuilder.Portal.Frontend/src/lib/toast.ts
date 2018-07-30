@@ -1,5 +1,7 @@
 import { notify } from 'react-notify-toast';
 
+import { parseError } from '@ui/components/errors/parse-error';
+
 // TODO: do we want queued notifications
 // for displaying multiple?
 // not sure if at same time
@@ -13,13 +15,13 @@ export interface NotifyOptions {
   };
 }
 export function show(msg: string, options: NotifyOptions) {
-  // notify.show(msg, options.type, options.timeout);
-  console.log(msg, options);
+  console.debug(msg, options);
+  notify.show(msg, options.type, options.timeout, options.color);
 }
 
 export function custom(msg: string, options: NotifyOptions) {
-  // notify.show(msg, 'custom', options.timeout, options.color);
-  console.log(msg, options);
+  console.debug(msg, options);
+  notify.show(msg, 'custom', options.timeout, options.color);
 }
 
 export function success(msg: string, options: NotifyOptions = {}) {
@@ -31,7 +33,12 @@ export function warning(msg: string, options: NotifyOptions = {}) {
 }
 
 export function error(msg: string, options: NotifyOptions = {}) {
-  show(msg, { type: 'error', ...options });
+  options.color = {
+    background: '#FF4949',
+    text: '#FFFFFF'
+  };
+
+  show(msg, { type: 'custom', ...options });
 }
 
 export function neutral(msg: string, options: NotifyOptions = {}) {

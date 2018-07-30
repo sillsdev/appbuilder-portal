@@ -27,7 +27,9 @@ export default class RootPage extends React.Component {
   render() {
     return (
       <div className='app-container flex-column align-items-stretch'>
-        <Notifications />
+        <div className='ui container'>
+          <Notifications />
+        </div>
 
         <section className='flex flex-grow'>
           <Switch>

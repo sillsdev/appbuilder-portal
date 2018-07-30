@@ -11,7 +11,9 @@ import EditProfileForm from './form';
 
 import * as toast from '@lib/toast';
 import { getPictureUrl } from '@lib/auth0';
+import { idFor, defaultOptions } from '@data';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
+import { withCurrentUser } from '@data/with-current-user';
 
 import './profile.scss';
 
@@ -34,7 +36,8 @@ class Profile extends React.Component<IProps> {
   }
 
   updateProfile = async (formData: UserAttributes) => {
-    const { t } = this.props;
+    const { t, currentUser } = this.props;
+    const id = idFor(currentUser);
 
     try {
 
@@ -43,9 +46,10 @@ class Profile extends React.Component<IProps> {
       // TODO: we need an ID for the user so we can load it's data in
       // componentWillMount
       await this.props.updateStore(tr => tr.replaceRecord({
+        id,
         type: TYPE_NAME,
         attributes: { ...formData, imageData }
-      }));
+      }), defaultOptions());
 
       toast.success(t('profile.updated'));
 
@@ -55,14 +59,14 @@ class Profile extends React.Component<IProps> {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, currentUser } = this.props;
 
     return (
       <Container className='profile'>
         <h1 className='title'>{t('profile.title')}</h1>
         <div>
           <h2>{t('profile.general')}</h2>
-          <EditProfileForm onSubmit={this.updateProfile} />
+          <EditProfileForm user={currentUser} onSubmit={this.updateProfile} />
         </div>
       </Container>
     );
@@ -72,5 +76,6 @@ class Profile extends React.Component<IProps> {
 export default compose(
   requireAuth,
   withData({}),
+  withCurrentUser(),
   translate('translations')
 )(Profile);

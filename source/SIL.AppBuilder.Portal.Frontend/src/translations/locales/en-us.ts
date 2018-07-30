@@ -53,6 +53,8 @@ export default {
     basicTitle: 'Basic Info',
     orgName: 'Organization Name',
     save: 'Save',
+    buildEngineUrl: 'Build Engine URL',
+    buildEngineApiAccessToken: 'Build Engine API Access Token'
   },
 
   products: {

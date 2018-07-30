@@ -67,7 +67,7 @@ export function withCurrentUser() {
         // TODO: there is probably a native orbit way to do this.
         // NOTE: this whole lifecycle hook is kind of a hack for lack
         //       of a better 'get the current user' pattern.
-        if (fromCache && fromCache.attributes.auth0Id === auth0IdFromJWT) {
+        if (fromCache && fromCache.attributes && fromCache.attributes.auth0Id === auth0IdFromJWT) {
           this.setState({ currentUser: fromCache });
           return;
         }
