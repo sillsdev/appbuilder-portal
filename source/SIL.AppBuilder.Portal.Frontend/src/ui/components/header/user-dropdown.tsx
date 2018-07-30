@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps  } from 'react-router-dom';
 import {
-  Container, Menu, Button,
-  Dropdown, Image, Icon
+  Dropdown
 } from 'semantic-ui-react';
+import { compose } from 'recompose';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 
 import { deleteToken, getPictureUrl } from '@lib/auth0';
@@ -11,7 +12,8 @@ import './header.scss';
 
 export type IProps =
   & { toggleSidebar: () => void }
-  & RouteComponentProps<{}>;
+  & RouteComponentProps<{}>
+  & i18nProps;
 
 class UserDropdown extends React.Component<IProps> {
 
@@ -23,7 +25,7 @@ class UserDropdown extends React.Component<IProps> {
   }
 
   render() {
-    const { history, toggleSidebar } = this.props;
+    const { history, t } = this.props;
 
     return (
       <Dropdown
@@ -39,14 +41,14 @@ class UserDropdown extends React.Component<IProps> {
         <Dropdown.Menu>
           <Dropdown.Item
             data-test-profile
-            text='My Profile'
+            text={t('header.myProfile')}
             onClick={e => history.push('/profile')}
           />
-          <Dropdown.Item text='Help' />
+          <Dropdown.Item text={t('header.help')} />
 
           <Dropdown.Item
             data-test-logout
-            text='Sign Out'
+            text={t('header.signOut')}
             onClick={this.handleSignOut}/>
 
         </Dropdown.Menu>
@@ -55,4 +57,7 @@ class UserDropdown extends React.Component<IProps> {
   }
 }
 
-export default withRouter(UserDropdown);
+export default compose(
+  withRouter,
+  translate('translations')
+)(UserDropdown);

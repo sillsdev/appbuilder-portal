@@ -20,6 +20,21 @@ export default {
     login: 'Log In',
   },
 
+  header: {
+    myProfile: 'My Profile',
+    help: 'Help',
+    signOut: 'Sign out'
+  },
+
+  sidebar: {
+    myTasks: 'My Tasks',
+    ourProjects: 'Our Projects',
+    users: 'Users',
+    organizationSettings: 'Organization Settings',
+    projectDirectory: 'Project Directory',
+    addProject: 'Add Project'
+  },
+
   invitations: {
     orgPrompt: 'Would you like to sign up your organization?',
     missingTokenTitle: 'Your invitation token is missing',

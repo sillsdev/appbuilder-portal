@@ -20,6 +20,21 @@ export default {
     login: 'Ingresar',
   },
 
+  header: {
+    myProfile: 'Mi perfil',
+    help: 'Ayuda',
+    signOut: 'Salir'
+  },
+
+  sidebar: {
+    myTasks: 'Mis tareas',
+    ourProjects: 'Nuestros projectos',
+    users: 'Usuarios',
+    organizationSettings: 'Configuración de organización',
+    projectDirectory: 'Directorio de proyectos',
+    addProject: 'Agregar proyectos'
+  },
+
   invitations: {
     orgPrompt: '¿Te gustaría registrar a tu organización?',
     missingTokenTitle: 'El token de invitación no existe',
@@ -89,7 +104,7 @@ export default {
     project: 'Proyecto',
     product: 'Producto',
     assignedTo: 'Asignado a',
-    status: 'Status',
+    status: 'Estado',
     waitTime: 'Tiempo de espera',
     unclaimed: '[sin asignar]',
     noTasksTitle: 'No hay tareas asignadas para ti.',
