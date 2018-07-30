@@ -9,7 +9,7 @@ export function withTimeAgo(WrappedComponent) {
 
     state = {
       timeAgoFormatter: null
-    }
+    };
 
     constructor(props) {
       super(props);
@@ -18,7 +18,7 @@ export function withTimeAgo(WrappedComponent) {
 
       this.state = {
         timeAgoFormatter: new TimeAgo()
-      }
+      };
     }
 
     render() {
@@ -27,4 +27,4 @@ export function withTimeAgo(WrappedComponent) {
   }
 
   return HOC;
-};
+}

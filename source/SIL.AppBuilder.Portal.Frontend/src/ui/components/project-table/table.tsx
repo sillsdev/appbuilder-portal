@@ -4,7 +4,7 @@ import Header from './header';
 import Row from './row';
 
 interface IOwnProps {
-  projects: any[]
+  projects: any[];
 }
 
 type IProps =

@@ -51,5 +51,5 @@ export function withSorting(options) {
     }
 
     return SortWrapper;
-  }
+  };
 }

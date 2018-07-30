@@ -7,7 +7,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
 export interface IProps {
-  project: JSONAPI<ProjectAttributes>
+  project: JSONAPI<ProjectAttributes>;
 }
 
 class Row extends React.Component<IProps & i18nProps> {

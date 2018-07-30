@@ -38,7 +38,7 @@ const mapRecordsToProps = (ownProps: PassedProps) => {
   const { params: { id } } = match;
 
   return {
-    project: q => q.findRecord({ id: id, type: TYPE_NAME }),
+    project: q => q.findRecord({ id, type: TYPE_NAME }),
   };
 };
 
@@ -72,7 +72,7 @@ class Project extends React.Component<IProps> {
           </div>
         </Tab.Pane>
 
-    }]
+    }];
 
     return tabPanes;
   }

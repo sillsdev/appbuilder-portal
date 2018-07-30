@@ -96,7 +96,7 @@ export function withData(WrappedComponent) {
       const { fromNetwork } = this.state;
       const { fromCache } = this.props;
 
-      if (isEmpty(fromCache) && isEmpty(fromNetwork)) this.fetchData();
+      if (isEmpty(fromCache) && isEmpty(fromNetwork)) { this.fetchData(); }
     }
 
 
@@ -121,5 +121,5 @@ export function withData(WrappedComponent) {
     }
   }
 
-  return withOrbit(mapRecordsToProps)(DataWrapper)
+  return withOrbit(mapRecordsToProps)(DataWrapper);
 }

@@ -26,9 +26,7 @@ class Reviewers extends React.Component<IProps> {
           <h4 className='flex-grow'>{t('project.side.reviewers.title')}</h4>
           <a href='#'>{t('project.side.reviewers.add')}</a>
         </div>
-        <div>
-
-        </div>
+        <div />
       </div>
     );
 

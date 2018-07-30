@@ -13,12 +13,12 @@ import 'react-day-picker/lib/style.css';
 import './filters.scss';
 
 interface IState {
-  products: any[],
+  products: any[];
   selectedProduct : string;
-  organizations: any[],
+  organizations: any[];
   selectedOrganization: string;
-  from: any,
-  to: any
+  from: any;
+  to: any;
 }
 
 class Filter extends React.Component<i18nProps, IState> {

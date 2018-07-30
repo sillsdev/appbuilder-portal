@@ -1,5 +1,5 @@
 import * as React from 'react';
 
 export function withFiltering(WrappedComponent) {
-  return props => <WrappedComponent { ...props } />
+  return props => <WrappedComponent { ...props } />;
 }
