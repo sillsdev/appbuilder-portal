@@ -28,5 +28,10 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
 
             return Ok(currentUser);
         }
+
+        [HttpGet("error")]
+        public IActionResult GetError() {
+            throw new PolicyCheckFailedException("Test Error");
+        }
     }
 }
