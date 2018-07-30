@@ -73,7 +73,7 @@ export default {
     locale: 'Locale',
     timezonePlaceholder: 'Select your timezone...',
     notificationSettingsTitle: 'Notification Settings',
-    optOutOfEmailOption: 'I do not wish to receive email notifications',
+    optOutOfEmailOption: 'I want to receive email notifications',
     sshSettingsTitle: 'Manage Personal SSH Keys',
     sshKeyLabel: 'SSH Key',
     update: 'Update Profile',

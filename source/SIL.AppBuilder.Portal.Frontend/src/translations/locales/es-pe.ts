@@ -70,7 +70,7 @@ export default {
     timezone: 'Zona horaria',
     timezonePlaceholder: 'Seleccione tu zona horaria...',
     notificationSettingsTitle: 'Configuración de Notificaciones',
-    optOutOfEmailOption: 'No deseo recibir notificaciones por correo electrónico',
+    optOutOfEmailOption: 'Deseo recibir notificaciones por correo electrónico',
     sshSettingsTitle: 'Administra tus llaves personales SSH',
     sshKeyLabel: 'Llave SSH Key',
     update: 'Actualiza tu perfil',

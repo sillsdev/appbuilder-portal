@@ -38,7 +38,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     phone: '',
     localization: '',
     timezone: '',
-    emailNotification: false,
+    emailNotification: true,
     sshKey: ''
   };
 
