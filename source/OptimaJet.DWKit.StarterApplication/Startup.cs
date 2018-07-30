@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,19 +6,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using OptimaJet.DWKit.Application;
 using React.AspNet;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Optimajet.DWKit.StarterApplication.Data;
 using Microsoft.EntityFrameworkCore;
 using JsonApiDotNetCore.Extensions;
-using JsonApiDotNetCore.Data;
-using JsonApiDotNetCore.Services;
-using Optimajet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Services;
-using OptimaJet.DWKit.StarterApplication.Repositories;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using AspNetCore.RouteAnalyzer;
 
@@ -43,7 +31,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddCors(options =>
             {

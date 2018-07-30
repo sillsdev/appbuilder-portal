@@ -31,7 +31,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
 
         protected override void ConfigureDbContext(IServiceCollection services)
         {
-            base.ServicesAddDbContext<AppDbContext>(services);
+            ServicesAddDbContext<AppDbContext>(services);
         }
 
     }

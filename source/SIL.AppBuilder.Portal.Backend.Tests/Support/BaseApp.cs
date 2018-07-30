@@ -37,10 +37,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
             Configuration = configuration;
 
             // Configure
-            ConfigureServices(services);
             ConfigureDbContext(services);
+            ConfigureServices(services);
 
             // Retain
+            //   Services cannot be added after the provider is built.
             ServiceProvider = services.BuildServiceProvider();
         }
 

@@ -35,7 +35,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
             name = name ?? ("$" + GetType().Name + "-" + _initCounter++);
 
             services.AddDbContext<TDbContext>(opts =>
-                opts.UseInMemoryDatabase(name));
+                opts.UseInMemoryDatabase(name), ServiceLifetime.Transient);
         }
 
         public void NeedsTestData<TDbContext, TEntity>(IEnumerable<TEntity> objs)

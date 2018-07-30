@@ -24,11 +24,12 @@ namespace OptimaJet.DWKit.StarterApplication
         public static IServiceCollection AddBackendServices(this IServiceCollection services)
         {
             // add jsonapi dotnet core
+            // - includes IHttpContextAccessor as a singleton
             services.AddJsonApi<AppDbContext>(
                 opt => opt.Namespace = "api"
             );
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            /* services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); */
 
             // Add service / repository overrides
             services.AddScoped<IEntityRepository<User>, UserRepository>();
