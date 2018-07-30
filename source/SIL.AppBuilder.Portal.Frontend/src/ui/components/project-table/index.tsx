@@ -8,6 +8,8 @@ import Table from './table';
 import { withData } from './data';
 import { withFiltering } from './with-filtering';
 
+import './project-table.scss';
+
 export default compose(
   withSorting({ defaultSort: 'name' }),
   withPagination,

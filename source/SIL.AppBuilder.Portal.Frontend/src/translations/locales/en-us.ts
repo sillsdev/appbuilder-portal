@@ -21,6 +21,9 @@ export default {
 
   directory: {
     title: `Project Directory ({numProjects})`,
+    filters: {
+      dateRange: 'Date Range Between'
+    }
   },
 
   invitations: {

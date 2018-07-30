@@ -43,7 +43,7 @@ export default class extends React.Component {
         <Menu.Item
           name='Project Directory'
           as={NavLink}
-          to='projects'
+          to='directory'
           className='project-directory-item'
           activeClassName='active' />
 

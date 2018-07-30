@@ -5,6 +5,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
 import ProjectTable from '@ui/components/project-table';
+import Filters from './filters';
 
 export const pathName = '/directory';
 
@@ -19,14 +20,13 @@ class ProjectDirectoryRoute extends React.Component<i18nProps> {
           <h2 className='page-heading'>{t('directory.title', { numProjects: 0 })}</h2>
 
           <div className="ui search">
-            <div className="ui icon input">
-              <input className="prompt" type="text" placeholder="Common passwords..." />
-
+            <div className="ui left icon input search-component ">
+              <input type="text" placeholder={`${t('common.search')}...`} />
               <i className="search icon" />
             </div>
           </div>
         </div>
-
+        <Filters />
         <ProjectTable />
       </div>
     );

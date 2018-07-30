@@ -45,12 +45,9 @@ export default class RootPage extends React.Component {
             <Route path={profilePath} component={withLayout(ProfileRoute)} />
             <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
 
-<<<<<<< HEAD
             <Route path={directoryPath} component={DirectoryRoute} />
-=======
             <Route path={projectDetailPath} component={ProjectDetailRoute} />
             <Route path={UsersPath} component={UsersRoute} />
->>>>>>> origin
 
             <Route component={NotFoundRoute} />
           </Switch>

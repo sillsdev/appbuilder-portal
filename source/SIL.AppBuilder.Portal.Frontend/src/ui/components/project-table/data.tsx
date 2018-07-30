@@ -35,7 +35,9 @@ type IProps =
 // http://orbitjs.com/v0.15/guide/querying-data.html
 export function withData(WrappedComponent) {
   class DataWrapper extends React.Component<IProps> {
-    state = {};
+    state = {
+      fromNetwork: null
+    };
 
     fetchData = async () => {
       const {
@@ -89,12 +91,19 @@ export function withData(WrappedComponent) {
       this.setState({ fromNetwork: records });
     }
 
+    componentWillMount() {
 
-    render() {
       const { fromNetwork } = this.state;
       const { fromCache } = this.props;
 
       if (isEmpty(fromCache) && isEmpty(fromNetwork)) this.fetchData();
+    }
+
+
+    render() {
+
+      const { fromNetwork } = this.state;
+      const { fromCache } = this.props;
 
       const dataProps = {
         // TODO: update once we have an API endpoint

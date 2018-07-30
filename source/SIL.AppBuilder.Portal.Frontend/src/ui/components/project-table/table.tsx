@@ -8,10 +8,7 @@ interface IOwnProps {
 }
 
 type IProps =
-  & IOwnProps
-  & WithDataProps
-  & ISortProps
-  & i18nProps;
+  & IOwnProps;
 
 
 export default class Table extends React.Component<IProps> {
@@ -21,13 +18,14 @@ export default class Table extends React.Component<IProps> {
     console.log('Table', this.props);
 
     return (
-      <table className='ui table'>
+      <table className='ui table product-table'>
         <Header />
-
-        {projects && projects.map(project => (
-          <Row project={project} />
+        <tbody>
+        {
+          projects && projects.map((project, index) => (
+          <Row key={index} project={project} />
         ))}
-
+        </tbody>
       </table>
     );
   }
