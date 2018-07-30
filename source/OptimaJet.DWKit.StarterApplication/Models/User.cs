@@ -1,6 +1,7 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
@@ -41,5 +42,7 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [HasMany("organization-memberships", Link.None, canInclude: true)]
         public virtual List<OrganizationMembership> OrganizationMemberships { get; set; }
 
+        [NotMapped]
+        public IEnumerable<int> OrganizationIds => OrganizationMemberships.Select(o => o.OrganizationId);
     }
 }

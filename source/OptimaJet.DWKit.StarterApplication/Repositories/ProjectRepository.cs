@@ -38,9 +38,8 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             {
                 // No organization specified, so include all projects in the all the organizations that the current user is a member
                 var currentUser = UserRepository.GetByAuth0Id(CurrentUserContext.Auth0Id).Result;
-                var currentUserOrgIds = currentUser.OrganizationMemberships.Select(o => o.OrganizationId);
                 return base.Get()
-                           .Where(p => currentUserOrgIds.Contains(p.OrganizationId));
+                           .Where(p => currentUser.OrganizationIds.Contains(p.OrganizationId));
             }
             // Get users in the current organization
             return base.Get()
@@ -64,7 +63,6 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             //
             // TODO: Needs testing
             //
-            var userOrgIds = project.Owner.OrganizationMemberships.Select(o => o.OrganizationId);
             if (project.Organization != project.Group.Owner)
             {
                 var message = $"Project '{project.Name}': Group '{project.Group.Name}' not owned by project organization '{project.Organization.Name}'";
@@ -72,7 +70,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                 throw new Exception(message);
             }
 
-            if (!userOrgIds.Contains(project.OrganizationId))
+            if (!project.Owner.OrganizationIds.Contains(project.OrganizationId))
             {
                 var message = $"Project '{project.Name}': Owner '{project.Owner.Name}' not a member of project organization '{project.Organization.Name}'";
                 Log.Error(message);
