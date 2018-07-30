@@ -27,10 +27,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
         }
 
 
-        protected void ServicesAddDbRepository(IServiceCollection services, Type serviceType, Type implementationType)
-        {
-            services.AddScoped(serviceType, implementationType);
-        }
 
         protected void ServicesAddDbContext<TDbContext>(IServiceCollection services, string name = null)
             where TDbContext: AppDbContext

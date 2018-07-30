@@ -35,7 +35,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
             var services = new ServiceCollection();
             var configuration = CreateConfiguration();
             Configuration = configuration;
-            _mapper = CreateMapper(services);
 
             // Configure
             ConfigureServices(services);
@@ -55,25 +54,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
             return builder.Build();
         }
 
-        /// <summary>
-        /// Create AutoMapper instance
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public virtual IMapper CreateMapper(IServiceCollection services)
-        {
-            return new Mapper(new MapperConfiguration(ConfigureMapper));
-        }
-
-        /// <summary>
-        /// Configure the AutoMapper instance
-        /// </summary>
-        /// <param name="cfg"></param>
-        public virtual void ConfigureMapper(IMapperConfigurationExpression cfg)
-        {
-        }
-
 
         /// <summary>
         /// Configure the services.
@@ -84,9 +64,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
         {
             // Access to generic IConfiguration
             services.AddSingleton<IConfiguration>(Configuration);
-
-            // Mapper instance
-            services.AddSingleton<IMapper>(_mapper);
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using OptimaJet.DWKit.StarterApplication;
 using Optimajet.DWKit.StarterApplication.Data;
+using JsonApiDotNetCore.Extensions;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support
 {
@@ -12,7 +13,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
     {
         protected TController Controller { get; }
 
-        protected BaseApiControllerTest()
+        protected BaseApiControllerTest() : base()
         {
             Controller = (TController)ServiceProvider.GetService(typeof(TController));
         }
@@ -21,14 +22,17 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support
         {
             base.ConfigureServices(services);
 
-            // DbContexts
-            ServicesAddDbContext<AppDbContext>(services);
+            services.AddAuthenticationServices(Configuration);
+            services.AddBackendServices();
 
             // Controller
             services.AddTransient<TController, TController>();
-
-            // WebApi services
-            /* services.AddApplicationServices();  // The live mappings */
         }
+
+        protected override void ConfigureDbContext(IServiceCollection services)
+        {
+            base.ServicesAddDbContext<AppDbContext>(services);
+        }
+
     }
 }
