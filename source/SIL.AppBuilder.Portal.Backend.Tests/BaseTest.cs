@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
 using Optimajet.DWKit.StarterApplication.Data;
+using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests
 {
+    [Collection("WebHostCollection")]
     public class BaseTest {
 
         protected TestFixture<TestStartup> _fixture;

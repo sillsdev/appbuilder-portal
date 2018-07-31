@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Optimajet.DWKit.StarterApplication.Data;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
@@ -29,7 +30,7 @@ namespace OptimaJet.DWKit.StarterApplication
                 opt => opt.Namespace = "api"
             );
 
-            /* services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); */
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // Add service / repository overrides
             services.AddScoped<IEntityRepository<User>, UserRepository>();

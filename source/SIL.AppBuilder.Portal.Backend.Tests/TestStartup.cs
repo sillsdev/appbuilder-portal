@@ -33,7 +33,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             name = name ?? ("$" + GetType().Name + "-" + _initCounter++);
 
             services.AddDbContext<AppDbContext>(opts =>
-                opts.UseInMemoryDatabase(name), ServiceLifetime.Transient);
+                opts.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
         }
 
         public override void ConfigureServices(IServiceCollection services)

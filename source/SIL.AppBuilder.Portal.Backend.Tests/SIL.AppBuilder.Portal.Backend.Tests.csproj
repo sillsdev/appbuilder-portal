@@ -26,4 +26,9 @@
     <ProjectReference Include="../OptimaJet.DWKit.StarterApplication/Optimajet.DWKit.StarterApplication.csproj" />
     <ProjectReference Include="../OptimaJet.DWKit.Application/OptimaJet.DWKit.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+   <Content Include="appsettings.json">
+     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+   </Content>
+ </ItemGroup>
 </Project>

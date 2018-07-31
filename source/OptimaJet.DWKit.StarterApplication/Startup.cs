@@ -76,7 +76,7 @@ namespace OptimaJet.DWKit.StarterApplication
             ConfigureDatabase(services);
         }
 
-        public virtual void ConfigureDatabase(IServiceCollection services, string name = "")
+        public virtual void ConfigureDatabase(IServiceCollection services, string name = null)
         {
             // add the db context like you normally would
             services.AddDbContext<AppDbContext>(options =>
