@@ -30,7 +30,10 @@ namespace OptimaJet.DWKit.StarterApplication
                 opt => opt.Namespace = "api"
             );
 
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            System.Console.WriteLine("aaaaaaaaaaaaaaaaaa");
+
+            services.AddHttpContextAccessor();
+            /* services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>(); */
 
             // Add service / repository overrides
             services.AddScoped<IEntityRepository<User>, UserRepository>();
