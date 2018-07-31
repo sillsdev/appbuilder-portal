@@ -133,6 +133,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddMvc(options => {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));
                 options.Filters.Add(typeof(ErrorHandlingFilter));
+                options.Filters.Add(typeof(DisabledUserFilter));
 
                 // NOTE: Authentication is handled at the controller-level
                 //       via the [Authorize] annotation
@@ -154,6 +155,8 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
+
+            services.AddScoped<UserRepository>();
 
             services.AddScoped<UserService>();
             services.AddScoped<OrganizationService>();
