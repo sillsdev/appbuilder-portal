@@ -37,7 +37,10 @@ namespace OptimaJet.DWKit.StarterApplication.Middleware
             bool retval = false;
             if (context.Controller.GetType().IsDefined(typeof(AuthorizeAttribute), true))
             {
-                var attr = (AuthorizeAttribute)context.Controller.GetType().GetCustomAttributes(true).Where(a => a.GetType().IsAssignableFrom(typeof(AuthorizeAttribute))).FirstOrDefault();
+                var attr = (AuthorizeAttribute)context.Controller.GetType()
+        		.GetCustomAttributes(true)
+        		.Where(a => a.GetType().IsAssignableFrom(typeof(AuthorizeAttribute)))
+        		.FirstOrDefault();
                 retval = (attr.AuthenticationSchemes.Contains(JwtBearerDefaults.AuthenticationScheme));
 
             }
