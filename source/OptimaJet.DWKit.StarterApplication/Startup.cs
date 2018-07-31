@@ -1,28 +1,30 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AspNetCore.RouteAnalyzer;
+using Bugsnag.AspNet.Core;
+using JsonApiDotNetCore.Data;
+using JsonApiDotNetCore.Extensions;
+using JsonApiDotNetCore.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using OptimaJet.DWKit.Application;
-using React.AspNet;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Optimajet.DWKit.StarterApplication.Data;
-using Microsoft.EntityFrameworkCore;
-using JsonApiDotNetCore.Extensions;
-using JsonApiDotNetCore.Data;
-using JsonApiDotNetCore.Services;
 using Optimajet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.Application;
+using OptimaJet.DWKit.StarterApplication.Middleware;
 using OptimaJet.DWKit.StarterApplication.Repositories;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.Cors.Internal;
-using AspNetCore.RouteAnalyzer;
+using OptimaJet.DWKit.StarterApplication.Services;
+using React.AspNet;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -125,6 +127,21 @@ namespace OptimaJet.DWKit.StarterApplication
                 );
             });
 
+            services.AddBugsnag(configuration =>
+                                configuration.ApiKey = GetVarOrDefault("BUGSNAG_API_KEY", ""));
+
+            services.AddMvc(options => {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));
+                options.Filters.Add(typeof(ErrorHandlingFilter));
+
+                // NOTE: Authentication is handled at the controller-level
+                //       via the [Authorize] annotation
+                // options.Filters.Add(typeof(Security.AuthorizationFilter));
+
+                // This allows global checking of *either* the cookie scheme
+                // or the jwt token scheme
+                // options.Filters.Add(new AuthorizeFilter("Authenticated"));
+            });
 
             // add jsonapi dotnet core
             services.AddJsonApi<AppDbContext>(
@@ -146,17 +163,6 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
 
 
-            services.AddMvc(options => {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));
-
-                // NOTE: Authentication is handled at the controller-level
-                //       via the [Authorize] annotation
-                // options.Filters.Add(typeof(Security.AuthorizationFilter));
-
-                // This allows global checking of *either* the cookie scheme
-                // or the jwt token scheme
-                // options.Filters.Add(new AuthorizeFilter("Authenticated"));
-            });
 
             services.AddRouteAnalyzer();
 

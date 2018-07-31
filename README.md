@@ -42,6 +42,8 @@ the tests, and run them individually.
 - When configuring the `Machine to Machine Applications`, the scopes required are:
   - `read:users`
   - `read:users_app_metadata`
+- Bugsnag is used to log exceptions
+  - Add BUGSNAG_API_KEY to `.env`
 
 ### Frontend Notes
 
