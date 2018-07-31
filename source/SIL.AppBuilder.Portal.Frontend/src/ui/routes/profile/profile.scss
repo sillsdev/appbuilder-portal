@@ -49,14 +49,17 @@
   }
 
   .timezone-group {
-    max-width: 498px;
+    width: 498px;
     position: relative;
 
     i {
       position: absolute;
       right: 5px;
       top: 10px;
-      z-index: 2000;
+    }
+
+    input {
+      background: transparent !important;
     }
   }
 
