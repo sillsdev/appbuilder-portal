@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { withData, WithDataProps } from 'react-orbitjs';
 import { NotificationAttributes, TYPE_NAME } from '@data/models/notification';
@@ -21,7 +22,8 @@ export interface Props {
 
 export type IProps =
   & Props
-  & WithDataProps;
+  & WithDataProps
+  & i18nProps;
 
 class Notifications extends React.Component<IProps> {
 
@@ -93,6 +95,7 @@ class Notifications extends React.Component<IProps> {
 
   render() {
 
+    const { t } = this.props;
     const { notifications } = this.props;
     const seenNotifications = this.seenNotifications();
 
@@ -114,7 +117,7 @@ class Notifications extends React.Component<IProps> {
           notifications && notifications.length > 0 && this.showNotifications() ?
             <Dropdown.Menu className='notifications'>
               <div className='notification-buttons'>
-                <a href='#' onClick={this.clearAll}>CLEAR ALL</a>
+                <a href='#' onClick={this.clearAll}>{t('header.clearAll')}</a>
               </div>
             {
               notifications.map((notification, index) => {
@@ -136,7 +139,7 @@ class Notifications extends React.Component<IProps> {
             </Dropdown.Menu> :
             <Dropdown.Menu>
               <div className='notification-no-data'>
-                You have no notifications.
+                {t('header.emptyNotifications')}
               </div>
             </Dropdown.Menu>
         }
@@ -153,5 +156,6 @@ const mapRecordsToProps = (ownProps) => {
 };
 
 export default compose(
-  withData(mapRecordsToProps)
+  withData(mapRecordsToProps),
+  translate('translations')
 )(Notifications);

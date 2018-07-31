@@ -23,7 +23,9 @@ export default {
   header: {
     myProfile: 'Mi perfil',
     help: 'Ayuda',
-    signOut: 'Salir'
+    signOut: 'Salir',
+    clearAll: 'Eliminar todas',
+    emptyNotifications: 'No tienes nuevas notificaciones.'
   },
 
   sidebar: {

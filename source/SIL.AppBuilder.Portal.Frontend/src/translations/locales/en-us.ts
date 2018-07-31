@@ -23,7 +23,9 @@ export default {
   header: {
     myProfile: 'My Profile',
     help: 'Help',
-    signOut: 'Sign out'
+    signOut: 'Sign out',
+    clearAll: 'Clear All',
+    emptyNotifications: 'You have no notifications.'
   },
 
   sidebar: {
