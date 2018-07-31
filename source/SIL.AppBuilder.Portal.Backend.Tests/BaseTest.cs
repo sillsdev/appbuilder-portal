@@ -3,11 +3,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
-using JsonApiDotNetCoreExampleTests;
-using JsonApiDotNetCoreExampleTests.Acceptance;
 using Optimajet.DWKit.StarterApplication.Data;
 
-namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance
+namespace SIL.AppBuilder.Portal.Backend.Tests
 {
     public class BaseTest {
 

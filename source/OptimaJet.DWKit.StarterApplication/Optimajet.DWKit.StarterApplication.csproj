@@ -15,11 +15,13 @@
     <RepositoryUrl>https://github.com/optimajet/DWKit</RepositoryUrl>
     <Copyright>OptimaJet DWKit 2018</Copyright>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Project</StartAction>
     <LaunchBrowser>false</LaunchBrowser>
     <ApplicationURL>http://localhost:5000</ApplicationURL>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AspNetCore.RouteAnalyzer" Version="0.5.1" />
     <PackageReference Include="Auth0" Version="3.6.0" />

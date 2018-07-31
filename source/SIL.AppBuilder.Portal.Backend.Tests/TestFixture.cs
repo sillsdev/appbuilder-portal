@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.TestHost;
 using JsonApiDotNetCore.Services;
 using JsonApiDotNetCore.Data;
 using Optimajet.DWKit.StarterApplication.Data;
+using Xunit;
 
-namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance
+namespace SIL.AppBuilder.Portal.Backend.Tests
 {
     public class TestFixture<TStartup> : IDisposable where TStartup : class
     {

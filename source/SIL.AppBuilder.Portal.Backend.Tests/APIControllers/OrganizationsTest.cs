@@ -1,38 +1,24 @@
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
-using Optimajet.DWKit.StarterApplication.Controllers;
-using Optimajet.DWKit.StarterApplication.Data;
 using Optimajet.DWKit.StarterApplication.Models;
-using SIL.AppBuilder.Portal.Backend.Tests.Support;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests
 {
-  public class OrganizationTests : BaseApiControllerTest<OrganizationsController>
-  {
-    private void BuildTestData()
+    [Collection("WebHostCollection")]
+    public class OrganizationControllerTests : BaseTest
     {
-      NeedsTestData<AppDbContext, Organization>(
-          new List<Organization>
-          {
-            new Organization { Id = 1, Name = "DeveloperTown" },
-            new Organization { Id = 2, Name = "SIL" }
-          }
-      );
+        public OrganizationControllerTests(TestFixture<TestStartup> fixture) : base(fixture)
+        {}
+
+        [Fact]
+        public async Task GetOrganizations_None() {
+          var response = await Get("/api/organizations");
+          var orgs = await DeserializeList<Organization>(response);
+
+          var actual = orgs.Count;
+
+          actual.Should().Equals(0);
+        }
     }
-
-    /* [Fact] */
-    public void Create_Assigns_CurrentUser() {
-      BuildTestData();
-
-      var newOrg = new Organization { Name = "New Org" };
-
-      var actual = Controller.PostAsync(newOrg).Result;
-
-      actual.Should().NotBeNull();
-      actual.Should().BeOfType<Organization>();
-      /* actual.Id.Should().Be(3); */
-    }
-
-  }
 }

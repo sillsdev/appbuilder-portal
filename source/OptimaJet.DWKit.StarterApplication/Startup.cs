@@ -18,13 +18,21 @@ namespace OptimaJet.DWKit.StarterApplication
     {
         public Startup(IHostingEnvironment env)
         {
+            var configurationBuilder = BuildConfiguration(env);
+
+            Configuration = configurationBuilder.Build();
+        }
+
+        public virtual IConfigurationBuilder BuildConfiguration(IHostingEnvironment env)
+        {
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
 
+            return builder;
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -65,13 +73,18 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddRouteAnalyzer();
 
+            ConfigureDatabase(services);
+        }
+
+        public virtual void ConfigureDatabase(IServiceCollection services, string name = "")
+        {
             // add the db context like you normally would
             services.AddDbContext<AppDbContext>(options =>
             { // use whatever provider you want, this is just an example
                 options.UseNpgsql(GetDbConnectionString());
-            }, ServiceLifetime.Transient);
-
+            });
         }
+
 
         private string GetDbConnectionString()
         {

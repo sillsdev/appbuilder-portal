@@ -1,7 +1,6 @@
-using JsonApiDotNetCoreExampleTests.Acceptance;
 using Xunit;
 
-namespace JsonApiDotNetCoreExampleTests
+namespace SIL.AppBuilder.Portal.Backend.Tests
 {
     [CollectionDefinition("WebHostCollection")]
     public class WebHostCollection
