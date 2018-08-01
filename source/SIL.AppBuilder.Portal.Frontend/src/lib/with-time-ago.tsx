@@ -22,13 +22,8 @@ export function withTimeAgo(WrappedComponent) {
       TimeAgo.locale(es);
 
       this.state = {
-<<<<<<< HEAD
-        timeAgoFormatter: new TimeAgo()
-      };
-=======
         timeAgoFormatter: new TimeAgo(i18n.default.language)
       }
->>>>>>> master
     }
 
     render() {
