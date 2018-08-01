@@ -20,6 +20,13 @@ export default {
     login: 'Ingresar',
   },
 
+  directory: {
+    title: `Directorio de proyectos ({numProjects})`,
+    filters: {
+      dateRange: 'Rango de Fechas'
+    }
+  },
+
   header: {
     myProfile: 'Mi perfil',
     help: 'Ayuda',

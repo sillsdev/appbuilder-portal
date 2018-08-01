@@ -47,7 +47,7 @@ class Navigation extends React.Component<i18nProps> {
         <Menu.Item
           name={t('sidebar.projectDirectory')}
           as={NavLink}
-          to='projects'
+          to='directory'
           className='project-directory-item'
           activeClassName='active' />
 

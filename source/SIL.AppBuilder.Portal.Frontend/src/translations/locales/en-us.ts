@@ -20,6 +20,13 @@ export default {
     login: 'Log In',
   },
 
+  directory: {
+    title: `Project Directory ({numProjects})`,
+    filters: {
+      dateRange: 'Date Range Between'
+    }
+  },
+
   header: {
     myProfile: 'My Profile',
     help: 'Help',

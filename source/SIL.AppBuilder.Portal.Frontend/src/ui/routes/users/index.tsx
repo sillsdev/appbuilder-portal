@@ -8,8 +8,6 @@ import UserTable from '@ui/components/user-table';
 
 export const pathName = '/users';
 
-import './users.scss';
-
 class Users extends React.Component<i18nProps> {
 
   render() {
