@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { InjectedTranslateProps as i18nProps } from 'react-i18next';
+import * as React from 'react'; import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
 
 interface IOwnProps {

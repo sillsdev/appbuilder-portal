@@ -36,7 +36,7 @@ interface IState {
 export function queryApi<T>(mapRecordsToProps) {
   return InnerComponent => {
     class DataWrapper extends React.Component<T, IState> {
-      statu = { result: {} };
+      state = { result: {} };
 
       componentDidMount() {
         this.fetchData();

@@ -6,6 +6,7 @@ import { compose } from 'recompose';
 import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 
 import AddGroupForm from './add-group';
+import List from './list';
 
 export const pathName = '/organizations/:orgId/settings/groups';
 
@@ -37,7 +38,8 @@ class GroupsRoute extends React.Component<IProps & i18nProps, IState> {
       <div className='sub-page-content'>
         <h2 className='sub-page-heading'>{t('org.groupsTitle')}</h2>
 
-        <p className='gray-text p-b-lg'>{t('org.noGroups')}</p>
+
+        <List />
 
         { !showAddGroupForm && (
           <Button
