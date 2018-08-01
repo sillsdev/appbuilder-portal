@@ -7,6 +7,7 @@ using JsonApiDotNetCore.Services;
 using JsonApiDotNetCore.Data;
 using Optimajet.DWKit.StarterApplication.Data;
 using Xunit;
+using OptimaJet.DWKit.StarterApplication;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests
 {

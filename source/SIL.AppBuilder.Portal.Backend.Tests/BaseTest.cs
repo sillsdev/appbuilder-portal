@@ -4,18 +4,20 @@ using System.Threading.Tasks;
 using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
 using Optimajet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests
 {
-    [Collection("WebHostCollection")]
-    public class BaseTest {
 
-        protected TestFixture<TestStartup> _fixture;
+    public class BaseTest<TStartup> where TStartup : class
+    {
+
+        protected TestFixture<TStartup> _fixture;
         protected AppDbContext _context;
         protected IJsonApiContext _jsonApiContext;
 
-        public BaseTest(TestFixture<TestStartup> fixture)
+        public BaseTest(TestFixture<TStartup> fixture)
         {
             _fixture = fixture;
             _context = fixture.GetService<AppDbContext>();
@@ -27,7 +29,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
           var httpMethod = new HttpMethod("GET");
           var request = new HttpRequestMessage(httpMethod, url);
 
+          /* request.Headers.Add("X-Hello", "world"); */
+
           var body = await _fixture.Client.SendAsync(request);
+
+          /* System.Console.WriteLine(body); */
 
           return body;
         }
@@ -35,6 +41,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         public async Task<ICollection<T>> DeserializeList<T>(HttpResponseMessage response)
         {
             var body = await response.Content.ReadAsStringAsync();
+
             var deserializedBody = _fixture
               .GetService<IJsonApiDeSerializer>()
               .DeserializeList<T>(body);
