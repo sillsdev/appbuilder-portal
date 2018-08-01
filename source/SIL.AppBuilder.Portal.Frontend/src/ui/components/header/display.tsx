@@ -65,7 +65,7 @@ class Header extends React.Component<IProps> {
             </Menu.Item>
 
             <Menu.Item>
-              <UserDropdown />
+              <UserDropdown/>
             </Menu.Item>
           </Menu.Menu>
         </Container>
