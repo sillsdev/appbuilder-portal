@@ -32,11 +32,14 @@ export function warning(msg: string, options: NotifyOptions = {}) {
   show(msg, { type: 'warning', ...options });
 }
 
-export function error(msg: string, options: NotifyOptions = {}) {
+export function error(err: string, options: NotifyOptions = {}) {
   options.color = {
     background: '#FF4949',
     text: '#FFFFFF'
   };
+
+  const parsed = parseError(err);
+  const msg = `${parsed.title} ${parsed.body}`;
 
   show(msg, { type: 'custom', ...options });
 }
