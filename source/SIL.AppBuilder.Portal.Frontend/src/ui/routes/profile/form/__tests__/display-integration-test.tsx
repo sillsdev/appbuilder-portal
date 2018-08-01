@@ -28,7 +28,6 @@ describe('Integration | Component | Edit Profile Form', () => {
       await page.fillLastName('Name');
       await page.fillEmail('fake@domain.com');
       await page.fillPhone('997528963');
-      await page.fillLocalization('Lima');
       await page.clickEmailNotification();
       await page.fillSSHKey('abcd');
     });
@@ -38,8 +37,7 @@ describe('Integration | Component | Edit Profile Form', () => {
       expect(page.lastname).to.equal('Name');
       expect(page.email).to.equal('fake@domain.com');
       expect(page.phone).to.equal('997528963');
-      expect(page.localization).to.equal('Lima');
-      expect(page.emailNotification).to.be.true;
+      expect(page.emailNotification).to.be.false;
       expect(page.sshKey).to.equal('abcd');
 
     });
@@ -55,8 +53,7 @@ describe('Integration | Component | Edit Profile Form', () => {
           lastName: 'Name',
           email: 'fake@domain.com',
           phone: '997528963',
-          localization: 'Lima',
-          emailNotification: true,
+          emailNotification: false,
           sshKey: 'abcd'
         });
       });
