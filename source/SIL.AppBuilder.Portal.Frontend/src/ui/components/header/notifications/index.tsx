@@ -29,6 +29,10 @@ export type IProps =
 
 class Notifications extends React.Component<IProps> {
 
+  state = {
+    visible: false
+  };
+
   // TODO: Remove this method we are connected to the Backend
   generateRandomTaks = async () => {
     await this.props.updateStore(t => [
@@ -84,14 +88,12 @@ class Notifications extends React.Component<IProps> {
 
   clearAll = async (e) => {
 
-    e.preventDefault();
-
     const { notifications } = this.props;
 
     await this.props.updateStore(t =>
-      notifications.map(not => t.replaceAttribute({
+      notifications.map(not => t.removeRecord({
         type: TYPE_NAME, id: not.id
-      }, 'show', false)),
+      })),
     { devOnly: true });
   }
 
@@ -101,6 +103,12 @@ class Notifications extends React.Component<IProps> {
     ), { devOnly: true });
   }
 
+  toggle = (e) => {
+    this.setState({
+      visible: !this.state.visible
+    });
+  }
+
   render() {
 
     const { t, timeAgo } = this.props;
@@ -108,30 +116,25 @@ class Notifications extends React.Component<IProps> {
     const seenNotifications = this.seenNotifications();
 
     return (
-      <Dropdown
-        data-test-header-notification
-        className='notifications-dropdown'
-        pointing='top right'
-        icon={null}
-        onClose={this.markNotificationToSeen}
-        trigger={
-          <div>
-            { !seenNotifications && <div className='red-dot' />}
-            <Icon circular name='alarm' size='large' />
-          </div>
-        }
-      >
-        {
-          notifications && notifications.length > 0 && this.showNotifications() ?
-            <Dropdown.Menu className='notifications'>
-              <div className='notification-buttons'>
-                <a href='#' onClick={this.clearAll}>
-                  {t('header.clearAll')}
-                </a>
+      <div className='ui top right pointing dropdown ' data-test-header-notification>
+        <div className={`full-overlay transition ${this.state.visible ? 'visible' : ''}`} onClick={this.toggle}/>
+        <div onClick={this.toggle}>
+          {!seenNotifications && <div className='red-dot' />}
+          <Icon circular name='alarm' size='large' />
+        </div>
+        <div className={`ui menu transition notifications ${this.state.visible ? 'visible' : ''}`}>
+          {
+            notifications && notifications.length > 0 && this.showNotifications() ?
+            <>
+              <div className="notification-buttons">
+                <a href="#" onClick={e => {
+                  e.preventDefault();
+                  this.clearAll(e);
+                }}>Eliminar todas</a>
               </div>
               <div className={notifications.length > 3 ? 'scrollable-menu' : ''}>
                 {
-                  notifications.sort((a,b) => {
+                  notifications.sort((a, b) => {
 
                     return (a.attributes.time === b.attributes.time) ? 0 :
                       a.attributes.time > b.attributes.time ? -1 : 1;
@@ -139,7 +142,7 @@ class Notifications extends React.Component<IProps> {
                   }).sort((a, b) => {
 
                     return (a.attributes.isViewed === b.attributes.isViewed) ? 0 :
-                              a.attributes.isViewed ? 1 : -1;
+                      a.attributes.isViewed ? 1 : -1;
 
                   }).map((notification, index) => {
 
@@ -153,15 +156,12 @@ class Notifications extends React.Component<IProps> {
                       <div
                         className={`notification-item ${isViewed ? 'seen' : 'not-seen'}`}
                         key={index}
-                        onClick={e => {
-                          e.stopPropagation();
-                        }}
                       >
                         <a className='close' href='#' onClick={e => {
                           e.preventDefault();
                           this.clearOne(notification.id);
                         }}>
-                          <Icon name='close'/>
+                          <Icon name='close' />
                         </a>
                         <h4 className='title'>{title}</h4>
                         <p className={!isViewed ? 'bold' : ''}>{description}</p>
@@ -171,15 +171,13 @@ class Notifications extends React.Component<IProps> {
                   })
                 }
               </div>
-            </Dropdown.Menu> :
-            <Dropdown.Menu>
-              <div className='notification-no-data'>
-                {t('header.emptyNotifications')}
-              </div>
-            </Dropdown.Menu>
-        }
-      </Dropdown>
-
+            </> :
+            <div className='notification-no-data'>
+              {t('header.emptyNotifications')}
+            </div>
+          }
+        </div>
+      </div>
     );
   }
 }

@@ -54,6 +54,10 @@
   line-height: 1.64;
   position: relative;
 
+  p {
+    white-space: normal !important;
+  }
+
   .time {
     text-align: right;
     font-family: Montserrat;
@@ -99,4 +103,8 @@
     height: 300px;
     overflow-y: scroll;
   }
+}
+
+.full-overlay:hover {
+  cursor: auto;
 }
