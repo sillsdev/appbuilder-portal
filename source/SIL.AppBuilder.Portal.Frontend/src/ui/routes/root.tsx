@@ -51,10 +51,8 @@ export default class RootPage extends React.Component {
             <Route path={projectDetailPath} component={ProjectDetailRoute} />
             <Route path={UsersPath} component={UsersRoute} />
 
-            <Route component={NotFoundRoute} />
+            <Route component={ErrorRootRoute} />
           </Switch>
-
-          <ErrorRootRoute />
         </section>
       </div>
     );

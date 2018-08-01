@@ -14,3 +14,19 @@ export function idFor(payload: any): string {
 
   return payload.id;
 }
+
+export function relationshipsFor(payload: IJsonApiPayload<T>): T | object[] {
+  if (!payload) { return {}; }
+  if (payload.data) { return relationshipsFor(payload.data); }
+
+  return payload.relationships || [];
+}
+
+export function hasRelationship(payload, name: string): boolean {
+  const relationships = relationshipsFor(payload);
+  const filtered = relationships[name] || {};
+  const data = filtered.data || [];
+
+  return data.length > 0;
+
+}

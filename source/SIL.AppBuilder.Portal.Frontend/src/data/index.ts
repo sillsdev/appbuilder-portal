@@ -1,4 +1,4 @@
 export { default as DataProvider } from './provider';
 export { defaultSourceOptions, defaultOptions } from './store';
 
-export { attributesFor, idFor } from './helpers';
+export { attributesFor, idFor, relationshipsFor, hasRelationship } from './helpers';
