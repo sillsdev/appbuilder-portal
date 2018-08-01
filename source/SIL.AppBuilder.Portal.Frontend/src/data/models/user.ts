@@ -19,6 +19,7 @@ export interface UserAttributes {
   role?: {id: string, name: string}; // need api
   groups?: Array<{id:string, name: string}>; // need an api
   auth0Id?: string;
+  locale: string;
 }
 
 export function fromPayload(payload: any): UserAttributes {

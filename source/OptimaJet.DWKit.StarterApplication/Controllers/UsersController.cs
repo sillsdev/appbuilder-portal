@@ -3,6 +3,7 @@ using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Optimajet.DWKit.StarterApplication.Exceptions;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 using Serilog;

@@ -114,3 +114,12 @@ footer {
     color: #ff4949;
   }
 }
+
+.input.search-component > input {
+  border: 0px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  font-family: Montserrat;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #515151;
+}

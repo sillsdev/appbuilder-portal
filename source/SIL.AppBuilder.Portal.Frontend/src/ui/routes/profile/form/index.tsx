@@ -7,6 +7,7 @@ import TimezonePicker from 'react-timezone';
 
 import { UserAttributes, fromPayload } from '@data/models/user';
 import LocaleSelect from '@ui/components/inputs/locale-select';
+import { timingSafeEqual } from 'crypto';
 
 
 export interface IProps {
@@ -22,6 +23,7 @@ export interface IState {
   timezone: string;
   emailNotification: boolean;
   sshKey: string;
+  locale: string;
 }
 
 
@@ -30,6 +32,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
   mut: Mut;
   toggle: ToggleHelper;
+  timezoneInput: any;
 
   constructor(props) {
     super(props);
@@ -111,8 +114,9 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
               data-test-profile-timezone
               className='timezone-group'
             >
-              <Icon name='caret down' />
+              <Icon name='caret down'/>
               <TimezonePicker
+                ref={input => this.timezoneInput = input}
                 className='timezone'
                 value={timezone}
                 onChange={tz => {
@@ -128,9 +132,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
           <div className='field'>
             <label data-test-locale-label>{t('profile.locale')}</label>
-            <LocaleSelect
-              className=''
-              value={locale} onChange={mut('locale')} />
+            <LocaleSelect value={locale} onChange={mut('locale')} />
           </div>
         </div>
 

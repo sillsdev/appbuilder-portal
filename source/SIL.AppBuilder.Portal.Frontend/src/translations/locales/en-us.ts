@@ -20,6 +20,30 @@ export default {
     login: 'Log In',
   },
 
+  directory: {
+    title: `Project Directory ({numProjects})`,
+    filters: {
+      dateRange: 'Date Range Between'
+    }
+  },
+
+  header: {
+    myProfile: 'My Profile',
+    help: 'Help',
+    signOut: 'Sign out',
+    clearAll: 'Clear All',
+    emptyNotifications: 'You have no notifications.'
+  },
+
+  sidebar: {
+    myTasks: 'My Tasks',
+    ourProjects: 'Our Projects',
+    users: 'Users',
+    organizationSettings: 'Organization Settings',
+    projectDirectory: 'Project Directory',
+    addProject: 'Add Project'
+  },
+
   invitations: {
     orgPrompt: 'Would you like to sign up your organization?',
     missingTokenTitle: 'Your invitation token is missing',

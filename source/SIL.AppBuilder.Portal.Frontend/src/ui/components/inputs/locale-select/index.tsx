@@ -3,18 +3,20 @@ import i18n from '@ui/../translations';
 
 export interface IProps {
   value: string;
-  onChange: () => void;
+  onChange: (string) => void;
   className?: string;
 }
 
-export default class LocaleSelect extends React.Component {
-  constructor(props = {}) {
+export default class LocaleSelect extends React.Component<IProps> {
+
+  constructor(props) {
     super(props);
 
     this.state = { value: props.value };
   }
 
   onSelect = (e) => {
+
     const selection = e.target.value;
 
     i18n.changeLanguage(selection);

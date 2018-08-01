@@ -1,6 +1,7 @@
 export default {
   appName: 'Scriptoria',
   welcome: 'Bienvenidos a Scriptoria',
+  search: 'Buscar',
 
   contactUs: 'Contáctanos',
   exampleForm: 'Formulario de ejemplo',
@@ -19,6 +20,30 @@ export default {
     login: 'Ingresar',
   },
 
+  directory: {
+    title: `Directorio de proyectos ({numProjects})`,
+    filters: {
+      dateRange: 'Rango de Fechas'
+    }
+  },
+
+  header: {
+    myProfile: 'Mi perfil',
+    help: 'Ayuda',
+    signOut: 'Salir',
+    clearAll: 'Eliminar todas',
+    emptyNotifications: 'No tienes nuevas notificaciones.'
+  },
+
+  sidebar: {
+    myTasks: 'Mis tareas',
+    ourProjects: 'Nuestros projectos',
+    users: 'Usuarios',
+    organizationSettings: 'Configuración de organización',
+    projectDirectory: 'Directorio de proyectos',
+    addProject: 'Agregar proyectos'
+  },
+
   invitations: {
     orgPrompt: '¿Te gustaría registrar a tu organización?',
     missingTokenTitle: 'El token de invitación no existe',
@@ -30,6 +55,7 @@ export default {
   },
 
   org: {
+    allOrganizations: 'Todas las organizaciones',
     createSuccess: 'Organización creada exitosamente!',
     settingsTitle: 'Configuración de Organización',
     selectLogo: 'Selecciona un logo',
@@ -70,7 +96,7 @@ export default {
     location: 'Localidad',
     locale: 'Idioma',
     timezone: 'Zona horaria',
-    timezonePlaceholder: 'Seleccione tu zona horaria...',
+    timezonePlaceholder: 'Selecciona tu zona horaria...',
     notificationSettingsTitle: 'Configuración de Notificaciones',
     optOutOfEmailOption: 'Deseo recibir notificaciones por correo electrónico',
     sshSettingsTitle: 'Administra tus llaves personales SSH',
@@ -87,12 +113,52 @@ export default {
     project: 'Proyecto',
     product: 'Producto',
     assignedTo: 'Asignado a',
-    status: 'Status',
+    status: 'Estado',
     waitTime: 'Tiempo de espera',
     unclaimed: '[sin asignar]',
     noTasksTitle: 'No hay tareas asignadas para ti.',
     noTasksDescription: 'Las tareas que requieren tu atención aparecerán aqui.',
     reassign: 'Asignar',
+  },
+
+  project: {
+    createdOn: 'Creado',
+    overview: 'Información',
+    dropdown: {
+      transfer: 'Transferir propiedad',
+      archive: 'Archivar'
+    },
+    details: {
+      title: 'Detalles',
+      language: 'Lenguajes',
+      type: 'Tipo de Projecto'
+    },
+    products: {
+      title: 'Productos',
+      empty: 'No tiene productos para este projecto.',
+      add: 'agregar producto'
+    },
+    settings: {
+      title: 'Configuración',
+      automaticRebuild: {
+        title: 'Construcción automática',
+        description: 'Cuando esté activo, Scriptoria reconstruirá automáticamente tus productos cuando el código fuente se actualice.'
+      },
+      organizationDownloads: {
+        title: 'Permitir decargas',
+        description: 'Cuando está activo, cualquier usuario de Scriptoria que encuentre el proyecto podrá descargarlo junto con sus artefactos'
+      }
+    },
+    side: {
+      repositoryLocation: 'Link al Repositorio',
+      organization: 'Organización',
+      projectOwner: 'Dueño del projecto',
+      projectGroup: 'Grupo del projecto',
+      reviewers: {
+        title: 'Revisores',
+        add: 'Agregar revisor'
+      }
+    }
   },
 
   users: {
