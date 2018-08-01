@@ -57,7 +57,7 @@ export function withData(WrappedComponent) {
       const { fromNetwork } = this.state;
       const { fromCache } = this.props;
 
-      if (isEmpty(fromCache) && isEmpty(fromNetwork)) { this.fetchData(); }
+      if (isEmpty(fromCache) && !fromNetwork) { this.fetchData(); }
 
       const organizations = fromCache || fromNetwork;
 

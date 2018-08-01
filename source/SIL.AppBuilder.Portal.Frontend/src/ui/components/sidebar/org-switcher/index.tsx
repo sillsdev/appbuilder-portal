@@ -67,7 +67,7 @@ class OrgSwitcher extends React.Component<IProps> {
     const showSearch = orgs.length > 4;
 
     return (
-      <Menu className='m-t-none no-borders' pointing secondary vertical>
+      <Menu className='m-t-none no-borders h-100 overflows' pointing secondary vertical>
         { showSearch && (
           <Menu.Item className='flex-row align-items-center border-bottom'>
             <Icon name='search' />

@@ -77,6 +77,8 @@ export default {
     basicTitle: 'Basic Info',
     orgName: 'Organization Name',
     save: 'Save',
+    buildEngineUrl: 'Build Engine URL',
+    buildEngineApiAccessToken: 'Build Engine API Access Token'
   },
 
   products: {
@@ -105,7 +107,14 @@ export default {
 
   errors: {
     notFoundTitle: 'Not Found!',
-    notFoundDescription: 'Something went wrong and the page or resource could not be found!'
+    notFoundDescription: 'Something went wrong and the page or resource could not be found!',
+    orgMembershipRequired: 'Organization Membership is Required',
+    orgMembershipRequiredText: `
+      In order to use Scriptoria, you must be a member of at least one organization.
+      <br /><br />
+      Please contact your organization administrator to discuss receiving an invite to
+      an organization on Scriptoria.
+    `,
   },
 
   tasks: {

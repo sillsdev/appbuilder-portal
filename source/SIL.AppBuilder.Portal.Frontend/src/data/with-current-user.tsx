@@ -9,6 +9,7 @@ import Orbit from '@orbit/data';
 
 import { getAuth0Id } from '@lib/auth0';
 import { get as authenticatedGet } from '@lib/fetch';
+import { hasRelationship } from '@data';
 
 import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
@@ -67,7 +68,7 @@ export function withCurrentUser() {
         // TODO: there is probably a native orbit way to do this.
         // NOTE: this whole lifecycle hook is kind of a hack for lack
         //       of a better 'get the current user' pattern.
-        if (fromCache && fromCache.attributes.auth0Id === auth0IdFromJWT) {
+        if (fromCache && fromCache.attributes && fromCache.attributes.auth0Id === auth0IdFromJWT) {
           this.setState({ currentUser: fromCache });
           return;
         }
@@ -107,7 +108,11 @@ export function withCurrentUser() {
         if (isLoading) {
           return <PageLoader />;
         } else if (currentUser) {
-          return <InnerComponent {...this.props} currentUser={currentUser} />;
+          if (hasRelationship(currentUser, 'organization-memberships')) {
+            return <InnerComponent {...this.props} currentUser={currentUser} />;
+          }
+
+          return <Redirect to={'/errors/org-membership-required'} />;
         }
 
         return <Redirect to={'/login'} />;
