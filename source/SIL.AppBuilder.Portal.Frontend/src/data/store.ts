@@ -31,10 +31,10 @@ class CustomJSONAPISerializer extends JSONAPISerializer {
 
 
 // DEBUG!
-Orbit.fetch = (...args) => {
-  console.log(args);
-  return fetch(...args);
-};
+// Orbit.fetch = (...args) => {
+//   console.log(args);
+//   return fetch(...args);
+// };
 
 export function defaultOptions() {
   return {
@@ -146,9 +146,9 @@ export async function createStore() {
   //   blocking: true
   // }));
 
-  this.coordinator.addStrategy(new EventLoggingStrategy({
-    sources: ['remote', 'inMemory']
-  }));
+  // this.coordinator.addStrategy(new EventLoggingStrategy({
+  //   sources: ['remote', 'inMemory']
+  // }));
 
 
   // // If there is data already stored locally, throw it in memory
