@@ -9,6 +9,7 @@ import { uuid } from '@orbit/utils';
 import { Dropdown, Icon } from 'semantic-ui-react';
 
 import './notification.scss';
+import { withTimeAgo } from '@lib/with-time-ago';
 
 interface Notification {
   type: string;
@@ -18,6 +19,7 @@ interface Notification {
 
 export interface Props {
   notifications: Notification[];
+  timeAgo: any;
 }
 
 export type IProps =
@@ -39,25 +41,25 @@ class Notifications extends React.Component<IProps> {
           time: new Date(Date.now() - 15000 * 60),
           link: '/tasks/1',
           isViewed: false,
-          shown: true
+          show: true
         }
       }),
       t.addRecord({
         type: TYPE_NAME,
         id: uuid(),
         attributes: {
-          title: 'Another Task',
+          title: 'Viewed Task',
           description: 'Chris Hubbard approved your request.',
           time: new Date(Date.now() - 80000 * 60)     ,
           link: '/tasks/2',
           isViewed: true,
-          shown: true
+          show: true
         }
       })
     ], { devOnly: true });
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.generateRandomTaks();
   }
 
@@ -66,7 +68,7 @@ class Notifications extends React.Component<IProps> {
   }
 
   showNotifications = () => {
-    return this.props.notifications.reduce((memo, not) => memo || not.attributes.shown, false);
+    return this.props.notifications.reduce((memo, not) => memo || not.attributes.show, false);
   }
 
   markNotificationToSeen = async () => {
@@ -89,13 +91,19 @@ class Notifications extends React.Component<IProps> {
     await this.props.updateStore(t =>
       notifications.map(not => t.replaceAttribute({
         type: TYPE_NAME, id: not.id
-      }, 'shown', false)),
+      }, 'show', false)),
     { devOnly: true });
+  }
+
+  clearOne = async (id) => {
+    await this.props.updateStore(t => t.removeRecord(
+      { type: TYPE_NAME, id }
+    ), { devOnly: true });
   }
 
   render() {
 
-    const { t } = this.props;
+    const { t, timeAgo } = this.props;
     const { notifications } = this.props;
     const seenNotifications = this.seenNotifications();
 
@@ -117,25 +125,52 @@ class Notifications extends React.Component<IProps> {
           notifications && notifications.length > 0 && this.showNotifications() ?
             <Dropdown.Menu className='notifications'>
               <div className='notification-buttons'>
-                <a href='#' onClick={this.clearAll}>{t('header.clearAll')}</a>
+                <a href='#' onClick={this.clearAll}>
+                  {t('header.clearAll')}
+                </a>
               </div>
-            {
-              notifications.map((notification, index) => {
+              <div className={notifications.length > 3 ? 'scrollable-menu' : ''}>
+                {
+                  notifications.sort((a,b) => {
 
-                const { title, description, time, isViewed } = notification.attributes;
+                    return (a.attributes.time === b.attributes.time) ? 0 :
+                      a.attributes.time > b.attributes.time ? -1 : 1;
 
-                if (!notification.attributes.shown) {
-                  return null;
+                  }).sort((a, b) => {
+
+                    return (a.attributes.isViewed === b.attributes.isViewed) ? 0 :
+                              a.attributes.isViewed ? 1 : -1;
+
+                  }).map((notification, index) => {
+
+                    const { title, description, time, isViewed } = notification.attributes;
+
+                    if (!notification.attributes.show) {
+                      return null;
+                    }
+
+                    return (
+                      <div
+                        className={`notification-item ${isViewed ? 'seen' : 'not-seen'}`}
+                        key={index}
+                        onClick={e => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        <a className='close' href='#' onClick={e => {
+                          e.preventDefault();
+                          this.clearOne(notification.id);
+                        }}>
+                          <Icon name='close'/>
+                        </a>
+                        <h4 className='title'>{title}</h4>
+                        <p className={!isViewed ? 'bold' : ''}>{description}</p>
+                        <p className='time'>{timeAgo && timeAgo.format(time)}</p>
+                      </div>
+                    );
+                  })
                 }
-
-                return (
-                  <div className={`notification-item ${isViewed ? 'seen': 'not-seen'}`} key={index}>
-                    <h4>{title}</h4>
-                    <p>{description}</p>
-                  </div>
-                );
-              })
-            }
+              </div>
             </Dropdown.Menu> :
             <Dropdown.Menu>
               <div className='notification-no-data'>
@@ -156,6 +191,7 @@ const mapRecordsToProps = (ownProps) => {
 };
 
 export default compose(
+  withTimeAgo,
   withData(mapRecordsToProps),
   translate('translations')
 )(Notifications);
