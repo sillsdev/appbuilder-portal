@@ -15,7 +15,7 @@ export default {
   },
 
   auth: {
-    title: 'Welcome to Scriptoria',
+    title: 'Scriptoria',
     signup: 'Sign Up',
     login: 'Log In',
   },
@@ -45,7 +45,7 @@ export default {
   },
 
   invitations: {
-    orgPrompt: 'Would you like to sign up your organization?',
+    orgPrompt: 'Like to sign up your organization?',
     missingTokenTitle: 'Your invitation token is missing',
     missingTokenPrompt: 'Please check the link and try again',
     orgInviteTitle: 'You have been invited to create an organization!',

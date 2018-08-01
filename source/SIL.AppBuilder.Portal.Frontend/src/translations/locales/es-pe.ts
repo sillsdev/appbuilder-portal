@@ -15,7 +15,7 @@ export default {
   },
 
   auth: {
-    title: 'Bienvenido a Scriptoria',
+    title: 'Scriptoria',
     signup: 'Registrarse',
     login: 'Ingresar',
   },
