@@ -2,6 +2,10 @@ import * as React from 'react';
 import TimeAgo from 'javascript-time-ago';
 
 const en = require('javascript-time-ago/locale/en');
+const es = require('javascript-time-ago/locale/es');
+
+import i18n from '../translations';
+
 
 export function withTimeAgo(WrappedComponent) {
 
@@ -15,10 +19,16 @@ export function withTimeAgo(WrappedComponent) {
       super(props);
 
       TimeAgo.locale(en);
+      TimeAgo.locale(es);
 
       this.state = {
+<<<<<<< HEAD
         timeAgoFormatter: new TimeAgo()
       };
+=======
+        timeAgoFormatter: new TimeAgo(i18n.default.language)
+      }
+>>>>>>> master
     }
 
     render() {

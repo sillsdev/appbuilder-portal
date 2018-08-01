@@ -1,28 +1,30 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AspNetCore.RouteAnalyzer;
+using Bugsnag.AspNet.Core;
+using JsonApiDotNetCore.Data;
+using JsonApiDotNetCore.Extensions;
+using JsonApiDotNetCore.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using OptimaJet.DWKit.Application;
-using React.AspNet;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Optimajet.DWKit.StarterApplication.Data;
-using Microsoft.EntityFrameworkCore;
-using JsonApiDotNetCore.Extensions;
-using JsonApiDotNetCore.Data;
-using JsonApiDotNetCore.Services;
 using Optimajet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.Application;
+using OptimaJet.DWKit.StarterApplication.Middleware;
 using OptimaJet.DWKit.StarterApplication.Repositories;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.Cors.Internal;
-using AspNetCore.RouteAnalyzer;
+using OptimaJet.DWKit.StarterApplication.Services;
+using React.AspNet;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -125,28 +127,13 @@ namespace OptimaJet.DWKit.StarterApplication
                 );
             });
 
-
-            // add jsonapi dotnet core
-            services.AddJsonApi<AppDbContext>(
-                opt => opt.Namespace = "api"
-            );
-
-            // Add service / repository overrides
-            services.AddScoped<IEntityRepository<User>, UserRepository>();
-            services.AddScoped<IEntityRepository<Group>, GroupRepository>();
-            services.AddScoped<IResourceService<User>, UserService>();
-            services.AddScoped<IResourceService<Organization>, OrganizationService>();
-
-            services.AddScoped<UserService>();
-            services.AddScoped<OrganizationService>();
-            services.AddScoped<Auth0ManagementApiTokenService>();
-
-            services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
-            services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
-
+            services.AddBugsnag(configuration =>
+                                configuration.ApiKey = GetVarOrDefault("BUGSNAG_API_KEY", ""));
 
             services.AddMvc(options => {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));
+                options.Filters.Add(typeof(ErrorHandlingFilter));
+                options.Filters.Add(typeof(DisabledUserFilter));
 
                 // NOTE: Authentication is handled at the controller-level
                 //       via the [Authorize] annotation
@@ -156,6 +143,29 @@ namespace OptimaJet.DWKit.StarterApplication
                 // or the jwt token scheme
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
+
+            // add jsonapi dotnet core
+            services.AddJsonApi<AppDbContext>(
+                opt => opt.Namespace = "api"
+            );
+
+            // Add service / repository overrides
+            services.AddScoped<IEntityRepository<User>, UserRepository>();
+            services.AddScoped<IEntityRepository<Group>, GroupRepository>();
+            services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
+            services.AddScoped<IResourceService<User>, UserService>();
+            services.AddScoped<IResourceService<Organization>, OrganizationService>();
+
+            services.AddScoped<UserRepository>();
+
+            services.AddScoped<UserService>();
+            services.AddScoped<OrganizationService>();
+            services.AddScoped<Auth0ManagementApiTokenService>();
+
+            services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
+            services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
+
+
 
             services.AddRouteAnalyzer();
 

@@ -1,12 +1,15 @@
 
 import {
   interactor, isPresent,
-  clickable, fillable, value
+  clickable, fillable, value, selectable, text
 } from '@bigtest/interactor';
 
 @interactor
 export class FormInteractor {
   constructor(selector?: string) { }
+
+  selectLocale = selectable('[data-test-locale-switcher]');
+  localeLabel = text('[data-test-locale-label]');
 
   fillFirstName = fillable('[data-test-profile-firstname]');
   fillLastName = fillable('[data-test-profile-lastname]');

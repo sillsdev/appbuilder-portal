@@ -10,7 +10,8 @@ export default {
 
   common: {
     search: 'Search',
-    change: 'Change'
+    change: 'Change',
+    save: 'Save'
   },
 
   auth: {
@@ -24,6 +25,23 @@ export default {
     filters: {
       dateRange: 'Date Range Between'
     }
+  },
+
+  header: {
+    myProfile: 'My Profile',
+    help: 'Help',
+    signOut: 'Sign out',
+    clearAll: 'Clear All',
+    emptyNotifications: 'You have no notifications.'
+  },
+
+  sidebar: {
+    myTasks: 'My Tasks',
+    ourProjects: 'Our Projects',
+    users: 'Users',
+    organizationSettings: 'Organization Settings',
+    projectDirectory: 'Project Directory',
+    addProject: 'Add Project'
   },
 
   invitations: {
@@ -77,12 +95,12 @@ export default {
     phone: 'Phone',
     location: 'Location',
     timezone: 'Timezone',
+    locale: 'Locale',
     timezonePlaceholder: 'Select your timezone...',
     notificationSettingsTitle: 'Notification Settings',
-    optOutOfEmailOption: 'I do not wish to receive email notifications',
+    optOutOfEmailOption: 'I want to receive email notifications',
     sshSettingsTitle: 'Manage Personal SSH Keys',
-    sshKeyLabel: 'SSH Key',
-    update: 'Update Profile',
+    sshKeyLabel: 'SSH Key'
   },
 
   errors: {

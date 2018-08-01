@@ -33,10 +33,9 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             {
                 // No organization specified, so include all users in the all the organizations that the current user is a member
                 var currentUser = GetByAuth0Id(CurrentUserContext.Auth0Id).Result;
-                var currentUserOrgIds = currentUser.OrganizationMemberships.Select(o => o.OrganizationId);
                 return base.Get()
                            .Include(u => u.OrganizationMemberships)
-                           .Where(u => u.OrganizationMemberships.Select(o => o.OrganizationId).Intersect(currentUserOrgIds).Any());
+                           .Where(u => u.OrganizationMemberships.Select(o => o.OrganizationId).Intersect(currentUser.OrganizationIds).Any());
             }
             // Get users in the current organization
             return base.Get()
