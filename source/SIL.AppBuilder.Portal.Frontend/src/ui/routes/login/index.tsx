@@ -16,11 +16,11 @@ class LoginRoute extends React.Component<RouterProps & i18nProps> {
     const { history, t } = this.props;
 
     return (
-      <div className='bg-blue flex-grow flex-column justify-content-center align-items-center'>
+      <div className='bg-blue flex-grow flex-column justify-content-center'>
 
         <AutoMountingLock afterLogin={() => history.push(retrievePath(true) || '/tasks')}/>
 
-        <div className='white-text m-b-md m-t-md'>
+        <div className='white-text m-b-md m-t-md text-center'>
           {t('invitations.orgPrompt')}
           &nbsp;
           <Link to={requestOrgAccessPath} className='white-text bold'>
