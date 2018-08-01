@@ -1,3 +1,4 @@
+using System;
 using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Builder;
@@ -30,7 +31,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
                 .CreateLogger();
         }
 
-        public override void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public override void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
             app.UseMvc();
             app.UseJsonApi();

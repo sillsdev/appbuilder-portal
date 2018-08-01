@@ -38,9 +38,9 @@ class RequestAccessForOrganizationRoute extends React.Component<IProps, IState> 
 
   // does not need authentication
   sendRequestForAccess = (data: Attributes) => {
-    return fetch('/api/organization-invites/request', {
+    return fetch('/api/organization-invite-requests', {
       method: 'POST',
-      body: JSON.stringify({ type: 'organization-invites', attributes: data }),
+      body: JSON.stringify({ data:{type: 'organization-invite-requests', attributes: data }}),
       headers: {
         'Content-Type': 'application/vnd.api+json'
       }

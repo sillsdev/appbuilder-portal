@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
@@ -26,10 +27,27 @@ namespace OptimaJet.DWKit.StarterApplication.Middleware
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            if (ActionAllowAnonymous(context)) return;
+
             if (HasJwtAuthentication(context) && IsUserLocked(context))
             {
                 context.Result = UserLockedResult();
             }
+        }
+
+        protected bool ActionAllowAnonymous(ActionExecutingContext context)
+        {
+            var controllerActionDescriptor = context.ActionDescriptor as ControllerActionDescriptor;
+            if (controllerActionDescriptor != null)
+            {
+                var actionAttributes = controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true);
+                var attr = actionAttributes
+                    .Where(a => a.GetType().IsAssignableFrom(typeof(AllowAnonymousAttribute)))
+                    .FirstOrDefault();
+                return (attr != null);
+            }
+
+            return false;
         }
 
         protected bool HasJwtAuthentication(ActionExecutingContext context)

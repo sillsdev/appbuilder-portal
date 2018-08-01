@@ -1,8 +1,11 @@
+using System.Threading.Tasks;
+using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace Optimajet.DWKit.StarterApplication.Controllers
@@ -17,15 +20,7 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
             OrganizationService organizationService,
             UserService userService)
             : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
-        { }
-
-        [AllowAnonymous]
-        [HttpPost("/api/organization-invites/request")]
-        public IActionResult RequestOrgInvite() {
-            // TODO: notify system super admin that someone is interested in
-            //       using Scriptoria
-
-            return Ok(null);
+        {
         }
     }
 }

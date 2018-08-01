@@ -22,8 +22,7 @@ function runstuff {
     up:build) ${COMPOSE} up --build $arguments;;
     up)       ${COMPOSE} up $arguments;;
     up:local:start)
-      runstuff dc start db
-      runstuff dc start adminer
+      runstuff dc up -d db adminer
 
       echo "db and adminer have been started. please make sure you have /etc/hosts entries"
       echo ""
@@ -50,8 +49,8 @@ function runstuff {
     bash)     ${COMPOSE} run --rm $arguments bash;;
     restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
 
-    db:update) ${COMPOSE} exec api bash -c "dotnet ef database update";;
-    db:migrate) ${COMPOSE} exec api bash -c "dotnet ef migrations ${arguments}";;
+    db:update) ${COMPOSE} exec api bash -c "dotnet ef database update ${arguments}";;
+    db:migrations) ${COMPOSE} exec api bash -c "dotnet ef migrations ${arguments}";;
 
     bootstrap)
       runstuff bootstrap:dwkit
@@ -140,6 +139,8 @@ function print_help {
   echo "restart        : restart a specific docker-compose service"
   echo ""
   echo "bootstrap      : runs initial scripts for project setup"
+  echo "db:migrations  : run Entity Framework migrations command"
+  echo "db:update      : run Entity Framework database command"
   echo ""
   echo "yarn"
   echo ""

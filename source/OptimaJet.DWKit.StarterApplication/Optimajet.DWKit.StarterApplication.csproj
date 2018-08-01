@@ -57,6 +57,11 @@
     <PackageReference Include="DWKit-Security" Version="2.1.1" />
     <PackageReference Include="Auth0.ManagementApi" Version="5.8.0" />
     <PackageReference Include="RestSharp" Version="106.3.1" />
+    <PackageReference Include="FluentEmail.Core" Version="2.5.1" />
+    <PackageReference Include="FluentEmail.Razor" Version="2.5.0" />
+    <PackageReference Include="SparkPostDotNet" Version="0.3.0" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.6.20" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.4.8.2" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
@@ -73,5 +78,7 @@
     <Folder Include="Exceptions\" />
     <Folder Include="Middleware\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Repositories\Contracts\" />
+    <Folder Include="Templates\" />
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 .env
 .idea
 *.log
+*.swp
 .vscode
 
 ## Ignore Visual Studio temporary files, build results, and

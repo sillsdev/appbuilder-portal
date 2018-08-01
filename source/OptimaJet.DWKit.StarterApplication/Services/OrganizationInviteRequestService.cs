@@ -1,0 +1,63 @@
+﻿using System;
+using Bugsnag;
+using Hangfire;
+using Microsoft.Extensions.Options;
+using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Repositories;
+using Serilog;
+
+namespace OptimaJet.DWKit.StarterApplication.Services
+{
+    public class OrganizationInviteRequestService : IOrganizationInviteRequestService
+    {
+        protected readonly IBackgroundRepository<OrganizationInviteRequest> requestRepository;
+        protected readonly IBackgroundRepository<Email> emailRepository;
+        protected readonly OrganizationInviteRequestSettings settings;
+        protected readonly IClient bugsnagClient;
+        public OrganizationInviteRequestService(
+            IOptions<OrganizationInviteRequestSettings> options,
+            IBackgroundRepository<OrganizationInviteRequest> requestRepository,
+            IBackgroundRepository<Email> emailRepository,
+            IClient bugsnagClient)
+        {
+            this.requestRepository = requestRepository;
+            this.emailRepository = emailRepository;
+            this.bugsnagClient = bugsnagClient;
+            this.settings = options.Value;
+        }
+
+        public void Process(OrganizationInviteRequestServiceData data)
+        {
+            OrganizationInviteRequest request = null;
+            try
+            {
+                request = requestRepository.GetAsync(data.Id).Result;
+                var email = new Email
+                {
+                    // TODO: Query Users for Super Admins
+                    To = settings.SuperAdminEmail,
+                    // TODO: Get localized Subject and Template
+                    Subject = "[Scriptoria] Organization Invite Request",
+                    ContentTemplate = "OrganizationInviteRequest",
+                    ContentModel = new
+                    {
+                        request.Name,
+                        request.OrgAdminEmail,
+                        request.WebsiteUrl,
+                        Domain = settings.UIHost
+                    }
+                };
+                emailRepository.CreateAsync(email);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error submitting Email");
+                bugsnagClient.Notify(ex);
+            }
+            finally
+            {
+                this.requestRepository.DeleteAsync(request.Id);
+            }
+        }
+    }
+}

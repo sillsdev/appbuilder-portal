@@ -45,5 +45,7 @@ namespace Optimajet.DWKit.StarterApplication.Data
         public DbSet<Group> Groups { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<GroupMembership> GroupMemberships { get; set; }
+        public DbSet<OrganizationInviteRequest> OrganizationInviteRequests { get; set; }
+        public DbSet<Email> Emails { get; set; }
     }
 }
