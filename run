@@ -8,6 +8,7 @@
 UI_PATH="source/SIL.AppBuilder.Portal.Frontend"
 API_PATH="source/OptimaJet.DWKit.StarterApplication"
 COMPOSE="docker-compose -f deployment/development/docker-compose.yml --project-directory ./source -p appbuilder-portal"
+PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER"
 
 function runstuff {
   # First arg
@@ -53,27 +54,37 @@ function runstuff {
     db:migrate) ${COMPOSE} exec api bash -c "dotnet ef migrations ${arguments}";;
 
     bootstrap)
+      runstuff bootstrap:dwkit
+      runstuff bootstrap:api
+      runstuff bootstrap:sample
+    ;;
+
+    bootstrap:dwkit)
       echo "api must not be running in order to run the initial db scripts ..."
       runstuff dc stop api
 
 
       # Setup Database
-      PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER"
-
       ${COMPOSE} exec db bash -c "${PSQL} -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname = '\$POSTGRES_DB'\" | grep -q 1 && ${PSQL} -d postgres -c \"DROP DATABASE \$POSTGRES_DB\""
       ${COMPOSE} exec db bash -c "${PSQL} -d postgres -c \"CREATE DATABASE \$POSTGRES_DB WITH ENCODING 'UTF8'\""
 
       ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitScript.sql" \
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql" \
         && echo "DB setup with DWKit Scripts"
+    ;;
 
+    bootstrap:api)
       echo "api must be running in order to run the db migration scripts ..."
       runstuff dc start api
 
       runstuff db:update && echo "DB setup for json:api"
-
-      # other things...?
     ;;
+
+    bootstrap:sample)
+      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/sample_data.sql" \
+        && echo "DB setup with sample data"
+    ;;
+
 
     ##################
     # Testing

@@ -4,7 +4,7 @@ using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    [Table("Group")]
+    [Table("Groups")]
     public class Group : Identifiable
     {
         [Attr("name")]

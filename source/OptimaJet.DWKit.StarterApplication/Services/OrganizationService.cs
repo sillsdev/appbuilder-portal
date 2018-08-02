@@ -12,13 +12,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     public class OrganizationService : EntityResourceService<Organization>
     {
         public IEntityRepository<Organization> OrganizationRepository { get; }
-        public IEntityRepository<OrganizationMembership, Guid> OrganizationMembershipRepository { get; }
+        public IEntityRepository<OrganizationMembership> OrganizationMembershipRepository { get; }
 
 
         public OrganizationService(
             IJsonApiContext jsonApiContext,
             IEntityRepository<Organization> organizationRepository,
-            IEntityRepository<OrganizationMembership, Guid> organizationMembershipRepository,
+            IEntityRepository<OrganizationMembership> organizationMembershipRepository,
             ILoggerFactory loggerFactory) : base(jsonApiContext, organizationRepository, loggerFactory)
         {
             this.OrganizationRepository = organizationRepository;

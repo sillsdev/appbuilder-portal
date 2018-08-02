@@ -6,7 +6,7 @@ using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    [Table("User")]
+    [Table("Users")]
     public class User : Identifiable
     {
         [Attr("name")]
