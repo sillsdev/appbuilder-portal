@@ -12,7 +12,7 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public int UserId { get; set; }
 
         [HasOne("group")]
-        public virtual Organization Group { get; set; }
+        public virtual Group Group { get; set; }
         public int GroupId { get; set; }
     }
 }

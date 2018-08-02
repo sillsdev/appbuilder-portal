@@ -10,7 +10,7 @@ using Optimajet.DWKit.StarterApplication.Data;
 namespace Optimajet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20180802152545_AddBase")]
+    [Migration("20180802183431_AddBase")]
     partial class AddBase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -187,7 +187,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.GroupMembership", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Group")
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);

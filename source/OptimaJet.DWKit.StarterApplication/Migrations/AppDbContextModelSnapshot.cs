@@ -185,7 +185,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.GroupMembership", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Group")
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
