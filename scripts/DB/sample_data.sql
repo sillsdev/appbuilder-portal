@@ -36,4 +36,12 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	4,	2),
 (	5,	2),
 (	1,	3),
-(	6,	3);
+(	6,	3),
+(   2,  3);
+
+INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
+(	1,	1),
+(	2,	1),
+(	2,	2),
+(	2,	15),
+(	4,	14);

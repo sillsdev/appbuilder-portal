@@ -18,16 +18,24 @@ namespace Optimajet.DWKit.StarterApplication.Data
             var orgEntity = modelBuilder.Entity<Organization>();
             var orgMemberEntity = modelBuilder.Entity<OrganizationMembership>();
             var orgInviteEntity = modelBuilder.Entity<OrganizationInvite>();
+            var groupMemberEntity = modelBuilder.Entity<GroupMembership>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
                 .WithOne(om => om.User)
                 .HasForeignKey(om => om.UserId);
 
+            userEntity
+                .HasMany(u => u.GroupMemberships)
+                .WithOne(gm => gm.User)
+                .HasForeignKey(gm => gm.UserId);
+
             orgEntity
                 .HasMany(o => o.OrganizationMemberships)
                 .WithOne(om => om.Organization)
                 .HasForeignKey(om => om.OrganizationId);
+
+
         }
 
         public DbSet<User> Users { get; set; }
