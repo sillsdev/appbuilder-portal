@@ -54,7 +54,7 @@ export function queryApi<T>(mapRecordsToProps) {
         const result = map(this.props);
         const { queryStore } = this.props;
 
-        let responses = {};
+        const responses = {};
         const requestPromises = Object.keys(result).map(async (key: string) => {
           const query = result[key];
           const args = typeof query === 'function' ? [query] : query;
@@ -75,11 +75,11 @@ export function queryApi<T>(mapRecordsToProps) {
         };
 
 
-        return <InnerComponent { ...dataProps } { ...this.props } />
+        return <InnerComponent { ...dataProps } { ...this.props } />;
       }
     }
 
     return withOrbit({})(DataWrapper);
 
-  }
+  };
 }

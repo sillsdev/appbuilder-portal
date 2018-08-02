@@ -2,7 +2,7 @@ import * as React from 'react';
 import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 interface IOwnProps {
-  groups: object[]
+  groups: object[];
 }
 
 interface IState {

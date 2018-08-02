@@ -23,7 +23,7 @@ export function withTimeAgo(WrappedComponent) {
 
       this.state = {
         timeAgoFormatter: new TimeAgo(i18n.default.language)
-      }
+      };
     }
 
     render() {

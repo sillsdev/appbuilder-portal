@@ -30,7 +30,7 @@ export function withData(InnerComponent) {
         onSubmit: this.onSubmit
       };
 
-      return <InnerComponent { ...this.props } { ...dataProps } />
+      return <InnerComponent { ...this.props } { ...dataProps } />;
     }
   }
 

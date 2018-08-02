@@ -48,7 +48,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
       locale: userAttributes.locale || '',
       emailNotification: userAttributes.emailNotification || true,
       sshKey: ''
-    }
+    };
   }
 
   submit = async (e) => {
