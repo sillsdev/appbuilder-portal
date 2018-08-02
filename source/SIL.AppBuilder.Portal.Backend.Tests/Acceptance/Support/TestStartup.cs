@@ -1,4 +1,3 @@
-using Castle.Core.Logging;
 using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Builder;
@@ -6,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication;
 using Serilog;

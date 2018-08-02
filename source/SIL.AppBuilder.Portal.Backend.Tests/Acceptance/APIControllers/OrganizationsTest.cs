@@ -9,7 +9,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
     public class OrganizationControllerTests : BaseTest<NoAuthStartup>
     {
         public OrganizationControllerTests(TestFixture<NoAuthStartup> fixture) : base(fixture)
-        {}
+        {
+        }
 
         [Fact]
         public async Task GetOrganizations_None() {
