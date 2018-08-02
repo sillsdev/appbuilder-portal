@@ -30,18 +30,24 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             this.TokenService = tokenService;
         }
 
-        private string AuthType {
-            get {
-                if (authType == null) {
+        private string AuthType
+        {
+            get
+            {
+                if (authType == null)
+                {
                     authType = this.HttpContext.GetAuth0Type();
                 }
                 return authType;
             }
         }
 
-        private ManagementApiClient ManagementApiClient {
-            get {
-                if (managementApiClient == null) {
+        private ManagementApiClient ManagementApiClient
+        {
+            get
+            {
+                if (managementApiClient == null)
+                {
                     var token = TokenService.Token;
                     var domainUri = new Uri(GetVarOrThrow("AUTH0_DOMAIN"));
                     managementApiClient = new ManagementApiClient(token, domainUri.Host);
@@ -50,9 +56,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             }
         }
 
-        private User Auth0User {
-            get {
-                if (auth0User == null) {
+        private User Auth0User
+        {
+            get
+            {
+                if (auth0User == null)
+                {
                     auth0User = ManagementApiClient.Users.GetAsync(Auth0Id, "user_metadata", true).Result;
                 }
                 return auth0User;
@@ -71,20 +80,27 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             }
         }
 
-        public string Email {
-            get {
-                if (email == null) {
+        public string Email
+        {
+            get
+            {
+                if (email == null)
+                {
                     email = this.HttpContext.GetAuth0Email();
                 }
                 return email;
             }
         }
 
-        public string GivenName {
-            get {
-                if (givenName == null) {
+        public string GivenName
+        {
+            get
+            {
+                if (givenName == null)
+                {
                     var auth = AuthType;
-                    if (string.Compare(auth, "auth0", StringComparison.Ordinal) == 0) {
+                    if (string.Compare(auth, "auth0", StringComparison.Ordinal) == 0)
+                    {
                         try
                         {
                             // Use Auth0 Management API to get value
@@ -94,7 +110,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                         {
                             Log.Error(ex, $"Failed to request given_name from Auth0: auth0id={Auth0Id}");
                         }
-                    } else {
+                    }
+                    else
+                    {
                         givenName = this.HttpContext.GetAuth0GivenName();
                     }
                 }
@@ -102,9 +120,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             }
         }
 
-        public string FamilyName {
-            get {
-                if (familyName == null) {
+        public string FamilyName
+        {
+            get
+            {
+                if (familyName == null)
+                {
                     var auth = AuthType;
                     if (string.Compare(auth, "auth0", StringComparison.Ordinal) == 0)
                     {
@@ -127,9 +148,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             }
         }
 
-        public string Name {
-            get {
-                if (name == null) {
+        public string Name
+        {
+            get
+            {
+                if (name == null)
+                {
                     name = this.HttpContext.GetAuth0Name();
                 }
                 return name;
