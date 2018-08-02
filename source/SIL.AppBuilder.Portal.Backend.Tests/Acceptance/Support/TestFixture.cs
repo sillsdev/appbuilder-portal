@@ -44,7 +44,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
 
                 if (disposing)
                 {
-                    // Context.Database.EnsureDeleted();
                     Client.Dispose();
                     _server.Dispose();
                }
