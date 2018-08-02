@@ -65,7 +65,7 @@ class Header extends React.Component<IProps> {
             </Menu.Item>
 
             <Menu.Item>
-              <UserDropdown toggleSidebar={toggleSidebar}/>
+              <UserDropdown/>
             </Menu.Item>
           </Menu.Menu>
         </Container>

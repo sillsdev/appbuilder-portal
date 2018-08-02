@@ -4,6 +4,7 @@ import { describe, beforeEach, it } from '@bigtest/mocha';
 import { expect } from 'chai';
 
 import { mountWithContext } from 'tests/helpers';
+import i18n from '@ui/../translations';
 
 import Form from '../index';
 import page from './page';
@@ -58,6 +59,32 @@ describe('Integration | Component | Edit Profile Form', () => {
           emailNotification: true,
           sshKey: 'abcd'
         });
+      });
+    });
+  });
+
+  describe ('the locale is changed', () => {
+    afterEach(() => {
+      i18n.default.changeLanguage('en-US');
+    });
+
+    describe('to english', () => {
+      beforeEach(async () => {
+        await page.selectLocale('en-US');
+      });
+
+      it('loads the english translations', () => {
+        expect(page.localeLabel).to.equal('Locale');
+      });
+    });
+
+    describe('to spanish', () => {
+      beforeEach(async () => {
+        await page.selectLocale('es-PE');
+      });
+
+      it('loads the spanish translations', () => {
+        expect(page.localeLabel).to.equal('Idioma');
       });
     });
   });

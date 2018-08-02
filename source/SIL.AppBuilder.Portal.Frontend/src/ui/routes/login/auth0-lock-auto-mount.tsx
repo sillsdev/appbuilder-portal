@@ -12,6 +12,7 @@ export interface IProps {
 class Lock extends React.Component<IProps & InjectedTranslateProps> {
   state = { loggedIn : false };
   lockRef: any;
+  lockId: any;
 
   constructor(props) {
     super(props);
@@ -29,7 +30,7 @@ class Lock extends React.Component<IProps & InjectedTranslateProps> {
   }
 
   configureAuth0() {
-    const { t, i18n } = this.props;
+    const { t } = this.props;
 
     const auth0Options = {
       container: this.lockRef.current.id,

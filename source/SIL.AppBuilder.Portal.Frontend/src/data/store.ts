@@ -32,9 +32,19 @@ class CustomJSONAPISerializer extends JSONAPISerializer {
 
 // DEBUG!
 // Orbit.fetch = (...args) => {
-//   debugger;
-//   fetch(...args);
+//   console.log(args);
+//   return fetch(...args);
 // };
+
+export function defaultOptions() {
+  return {
+    sources: {
+      settings: {
+        ...defaultSourceOptions()
+      }
+    }
+  };
+}
 
 export function defaultSourceOptions() {
   return {
@@ -65,6 +75,7 @@ export async function createStore() {
     defaultFetchSettings: {
       headers: {
         Accept: 'application/vnd.api+json',
+        ['content-type']: 'application/vnd.api+json',
         // these should be overwritten at runtime
         Authorization: 'Bearer not set',
         Organization: 'Org Id not set'

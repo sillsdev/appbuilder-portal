@@ -105,23 +105,23 @@
   resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.15.18.tgz#43632a1eb602839382f549adcd61a3305031e5fb"
 
 "@pollyjs/adapter-fetch@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-fetch/-/adapter-fetch-1.0.0.tgz#ef9396ce364897ed7831501680ceb56e9a5bad8d"
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-fetch/-/adapter-fetch-1.0.1.tgz#9143ca1c3272cbb3fca5e22576bcfed28cb59896"
   dependencies:
-    "@pollyjs/adapter" "^1.0.0"
+    "@pollyjs/adapter" "^1.1.0"
     "@pollyjs/utils" "^1.0.0"
 
 "@pollyjs/adapter-xhr@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-xhr/-/adapter-xhr-1.0.0.tgz#3c2e3c2b17fa8ffc39358e7a29662bdfc9ff18be"
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-xhr/-/adapter-xhr-1.0.1.tgz#fcae01d5120c2e505f673ba7b3a121572c1feb68"
   dependencies:
-    "@pollyjs/adapter" "^1.0.0"
+    "@pollyjs/adapter" "^1.1.0"
     "@pollyjs/utils" "^1.0.0"
     nise "^1.4.1"
 
-"@pollyjs/adapter@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter/-/adapter-1.0.0.tgz#4a66c8050daf1e7ce11104f48a39818dc1dd774e"
+"@pollyjs/adapter@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter/-/adapter-1.1.0.tgz#6d2f42d240cda2a5660e70a1eedb72c4b3b2bd4e"
   dependencies:
     "@pollyjs/utils" "^1.0.0"
 
@@ -133,8 +133,8 @@
     commander "^2.15.1"
 
 "@pollyjs/core@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-1.0.0.tgz#948444728beb1cbc7ee453163b3ae1b33966c714"
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-1.1.0.tgz#52be8ccf973d2840c53ccb0f1efd69f5ac019a0e"
   dependencies:
     "@pollyjs/utils" "^1.0.0"
     "@sindresorhus/fnv1a" "^1.0.0"
@@ -161,8 +161,8 @@
     nocache "^2.0.0"
 
 "@pollyjs/persister-rest@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/persister-rest/-/persister-rest-1.0.0.tgz#1f534859898e589997d3ac2ef2d715b01293cd82"
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@pollyjs/persister-rest/-/persister-rest-1.0.1.tgz#3f50dfb622df59fe63753c780d76b277e9422be8"
   dependencies:
     "@pollyjs/persister" "^1.0.0"
     "@pollyjs/utils" "^1.0.0"
@@ -802,7 +802,7 @@ arrify@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
 
-asap@~2.0.3:
+asap@^2.0.6, asap@~2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
@@ -1241,8 +1241,8 @@ buffer@^4.3.0:
     isarray "^1.0.0"
 
 buffer@^5.0.6:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.1.0.tgz#c913e43678c7cb7c8bd16afbcddb6c5505e8f9fe"
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.2.0.tgz#53cf98241100099e9eeae20ee6d51d21b16e541e"
   dependencies:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
@@ -1836,6 +1836,13 @@ create-react-class@^15.6.0:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
+create-react-context@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/create-react-context/-/create-react-context-0.2.2.tgz#9836542f9aaa22868cd7d4a6f82667df38019dca"
+  dependencies:
+    fbjs "^0.8.0"
+    gud "^1.0.0"
+
 cross-spawn@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-3.0.1.tgz#1256037ecb9f0c5f79e3d6ef135e30770184b982"
@@ -2197,6 +2204,19 @@ diffie-hellman@^5.0.0:
     bn.js "^4.1.0"
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
+
+disposables@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/disposables/-/disposables-1.0.2.tgz#36c6a674475f55a2d6913567a601444e487b4b6e"
+
+dnd-core@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-2.6.0.tgz#12bad66d58742c6e5f7cf2943fb6859440f809c4"
+  dependencies:
+    asap "^2.0.6"
+    invariant "^2.0.0"
+    lodash "^4.2.0"
+    redux "^3.7.1"
 
 dns-equal@^1.0.0:
   version "1.0.0"
@@ -2582,6 +2602,10 @@ execa@^0.7.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
+exenv@^1.2.0:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
+
 expand-braces@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/expand-braces/-/expand-braces-0.1.2.tgz#488b1d1d2451cb3d3a6b192cfc030f44c5855fea"
@@ -2768,7 +2792,7 @@ fbjs@^0.3.1:
     ua-parser-js "^0.7.9"
     whatwg-fetch "^0.9.0"
 
-fbjs@^0.8.1, fbjs@^0.8.16, fbjs@^0.8.9:
+fbjs@^0.8.0, fbjs@^0.8.1, fbjs@^0.8.16, fbjs@^0.8.9:
   version "0.8.17"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
   dependencies:
@@ -3205,6 +3229,10 @@ growl@1.10.5:
   version "1.10.5"
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.5.tgz#f2735dc2283674fa67478b10181059355c369e5e"
 
+gud@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/gud/-/gud-1.0.0.tgz#a489581b17e6a70beca9abe3ae57de7a499852c0"
+
 handle-thing@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/handle-thing/-/handle-thing-1.2.5.tgz#fd7aad726bf1a5fd16dfc29b2f7a6601d27139c4"
@@ -3371,7 +3399,7 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
-hoist-non-react-statics@^2.3.1, hoist-non-react-statics@^2.5.0:
+hoist-non-react-statics@^2.1.0, hoist-non-react-statics@^2.3.1, hoist-non-react-statics@^2.5.0:
   version "2.5.5"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
 
@@ -3541,13 +3569,19 @@ i18next-browser-languagedetector@^2.2.2:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/i18next-browser-languagedetector/-/i18next-browser-languagedetector-2.2.2.tgz#b2599e3e8bc8b66038010e9758c28222688df6aa"
 
+i18next-icu@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/i18next-icu/-/i18next-icu-0.4.0.tgz#df39694f1522cebe1f94d33c9198b037069a9b32"
+  dependencies:
+    intl-messageformat "2.2.0"
+
 i18next-xhr-backend@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/i18next-xhr-backend/-/i18next-xhr-backend-1.5.1.tgz#50282610780c6a696d880dfa7f4ac1d01e8c3ad5"
 
 i18next@^11.3.6:
-  version "11.4.0"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.4.0.tgz#9179bc27b74158d773893356f19b039bedbc355a"
+  version "11.5.0"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.5.0.tgz#1e8df15d5d7e96b27da964abde6e7367169fb4c1"
 
 iconv-lite@0.4.15:
   version "0.4.15"
@@ -3695,7 +3729,17 @@ interpret@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.1.0.tgz#7ed1b1410c6a0e0f78cf95d3b8440c63f78b8614"
 
-invariant@^2.0.0, invariant@^2.2.1, invariant@^2.2.4:
+intl-messageformat-parser@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-1.4.0.tgz#b43d45a97468cadbe44331d74bb1e8dea44fc075"
+
+intl-messageformat@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/intl-messageformat/-/intl-messageformat-2.2.0.tgz#345bcd46de630b7683330c2e52177ff5eab484fc"
+  dependencies:
+    intl-messageformat-parser "1.4.0"
+
+invariant@^2.0.0, invariant@^2.1.0, invariant@^2.2.1, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   dependencies:
@@ -3709,9 +3753,9 @@ ip@^1.1.0, ip@^1.1.2, ip@^1.1.4, ip@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/ip/-/ip-1.1.5.tgz#bdded70114290828c0a039e72ef25f5aaec4354a"
 
-ipaddr.js@1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.6.0.tgz#e3fa357b773da619f26e95f049d055c72796f86b"
+ipaddr.js@1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.8.0.tgz#eaa33d6ddd7ace8f7f6fe0c9ca0440e706738b1e"
 
 is-absolute-url@^2.0.0, is-absolute-url@^2.1.0:
   version "2.1.0"
@@ -4026,6 +4070,10 @@ istanbul@0.4.5, istanbul@^0.4.0, istanbul@^0.4.5:
     supports-color "^3.1.0"
     which "^1.1.1"
     wordwrap "^1.0.0"
+
+javascript-time-ago@^1.0.20:
+  version "1.0.31"
+  resolved "https://registry.yarnpkg.com/javascript-time-ago/-/javascript-time-ago-1.0.31.tgz#19ba47a2f1eb0297a9ef7125019a646415b65ece"
 
 jquery@^3.3.1, jquery@x.*:
   version "3.3.1"
@@ -4403,7 +4451,7 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-lodash-es@^4.17.10, lodash-es@^4.17.5:
+lodash-es@^4.17.10, lodash-es@^4.17.5, lodash-es@^4.2.1:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.10.tgz#62cd7104cdf5dd87f235a837f0ede0e8e5117e05"
 
@@ -4463,7 +4511,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@^4.0.0, lodash@^4.15.0, lodash@^4.17.0, lodash@^4.17.10, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.5.0, lodash@~4.17.10:
+lodash@^4.0.0, lodash@^4.15.0, lodash@^4.17.0, lodash@^4.17.10, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@~4.17.10:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -4845,6 +4893,10 @@ mocha@^5.2.0:
 module-not-found-error@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/module-not-found-error/-/module-not-found-error-1.0.1.tgz#cf8b4ff4f29640674d6cdd02b0e3bc523c2bbdc0"
+
+moment@^2.22.2:
+  version "2.22.2"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
 
 morgan@^1.9.0:
   version "1.9.0"
@@ -5925,7 +5977,7 @@ promisify-call@^2.0.2:
   dependencies:
     with-callback "^1.0.2"
 
-prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   dependencies:
@@ -5933,11 +5985,11 @@ prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1,
     object-assign "^4.1.1"
 
 proxy-addr@~2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/proxy-addr/-/proxy-addr-2.0.3.tgz#355f262505a621646b3130a728eb647e22055341"
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/proxy-addr/-/proxy-addr-2.0.4.tgz#ecfc733bf22ff8c6f407fa275327b9ab67e48b93"
   dependencies:
     forwarded "~0.1.2"
-    ipaddr.js "1.6.0"
+    ipaddr.js "1.8.0"
 
 proxy-agent@~3.0.0:
   version "3.0.1"
@@ -6122,6 +6174,29 @@ react-data-grid@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/react-data-grid/-/react-data-grid-4.0.8.tgz#e67f73dde0d3c61bb38e41425603698ede442d18"
 
+react-day-picker@^7.1.10, react-day-picker@^7.1.6:
+  version "7.1.10"
+  resolved "https://registry.yarnpkg.com/react-day-picker/-/react-day-picker-7.1.10.tgz#c763b1acb141ce960e25654b7033c2207f0fc1c3"
+  dependencies:
+    prop-types "^15.6.1"
+
+react-dnd-html5-backend@^2.1.2:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-2.6.0.tgz#590cd1cca78441bb274edd571fef4c0b16ddcf8e"
+  dependencies:
+    lodash "^4.2.0"
+
+react-dnd@^2.1.4:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-2.6.0.tgz#7fa25676cf827d58a891293e3c1ab59da002545a"
+  dependencies:
+    disposables "^1.0.1"
+    dnd-core "^2.6.0"
+    hoist-non-react-statics "^2.1.0"
+    invariant "^2.1.0"
+    lodash "^4.2.0"
+    prop-types "^15.5.10"
+
 react-dom@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.6.2.tgz#41cfadf693b757faf2708443a1d1fd5a02bef730"
@@ -6140,9 +6215,9 @@ react-dom@^16.0.0:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
-react-i18next@^7.8.1:
-  version "7.9.0"
-  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-7.9.0.tgz#9e4bdfbfbc0d084eddf13d1cd337cbd4beea6232"
+react-i18next@7.7.0:
+  version "7.7.0"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-7.7.0.tgz#0cf044b9222179a6ddc5af248a2291ac580652fd"
   dependencies:
     hoist-non-react-statics "^2.3.1"
     html-parse-stringify2 "2.0.1"
@@ -6152,9 +6227,18 @@ react-is@^16.4.1:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.1.tgz#d624c4650d2c65dbd52c72622bbf389435d9776e"
 
-react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
+react-lifecycles-compat@^3.0.0, react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
+
+react-modal@^3.4.4:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.5.1.tgz#33d38527def90ea324848f7d63e53acc4468a451"
+  dependencies:
+    exenv "^1.2.0"
+    prop-types "^15.5.10"
+    react-lifecycles-compat "^3.0.0"
+    warning "^3.0.0"
 
 react-notify-toast@^0.5.0:
   version "0.5.0"
@@ -6180,6 +6264,21 @@ react-redux@^5.0.7:
     lodash-es "^4.17.5"
     loose-envify "^1.1.0"
     prop-types "^15.6.0"
+
+react-responsive-ui@^0.12.21:
+  version "0.12.21"
+  resolved "https://registry.yarnpkg.com/react-responsive-ui/-/react-responsive-ui-0.12.21.tgz#bc9f2f264745399f7ebf9ca82b9d1ef317da296d"
+  dependencies:
+    classnames "^2.2.5"
+    create-react-context "^0.2.2"
+    lodash "^4.17.4"
+    prop-types "^15.5.6"
+    react-day-picker "^7.1.6"
+    react-dnd "^2.1.4"
+    react-dnd-html5-backend "^2.1.2"
+    react-lifecycles-compat "^3.0.2"
+    react-modal "^3.4.4"
+    scroll-into-view-if-needed "^1.1.0"
 
 react-router-dom@^4.3.1:
   version "4.3.1"
@@ -6212,6 +6311,14 @@ react-test-renderer@^16.4.0:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
     react-is "^16.4.1"
+
+react-time-ago@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/react-time-ago/-/react-time-ago-2.0.3.tgz#d2ca1a7205a098f49de70921218a10bde6713ba6"
+  dependencies:
+    javascript-time-ago "^1.0.20"
+    prop-types "^15.6.0"
+    react-responsive-ui "^0.12.21"
 
 react-timezone@^2.1.0:
   version "2.1.0"
@@ -6363,6 +6470,15 @@ reduce-function-call@^1.0.1:
 redux-saga@^0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.0.tgz#0a231db0a1489301dd980f6f2f88d8ced418f724"
+
+redux@^3.7.1:
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-3.7.2.tgz#06b73123215901d25d065be342eb026bc1c8537b"
+  dependencies:
+    lodash "^4.2.1"
+    lodash-es "^4.2.1"
+    loose-envify "^1.1.0"
+    symbol-observable "^1.0.3"
 
 redux@^4.0.0:
   version "4.0.0"
@@ -6710,6 +6826,10 @@ schema-utils@^0.4.3, schema-utils@^0.4.4, schema-utils@^0.4.5:
   dependencies:
     ajv "^6.1.0"
     ajv-keywords "^3.1.0"
+
+scroll-into-view-if-needed@^1.1.0:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/scroll-into-view-if-needed/-/scroll-into-view-if-needed-1.5.1.tgz#79e6bad6cd93d723e5b2fef3bddbcff55475e781"
 
 scss-tokenizer@^0.2.3:
   version "0.2.3"
@@ -7363,7 +7483,7 @@ svgo@^0.7.0:
     sax "~1.2.1"
     whet.extend "~0.9.9"
 
-symbol-observable@^1.0.4, symbol-observable@^1.2.0:
+symbol-observable@^1.0.3, symbol-observable@^1.0.4, symbol-observable@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
 
@@ -8032,8 +8152,8 @@ webpack-sources@^1.0.1, webpack-sources@^1.1.0:
     source-map "~0.6.1"
 
 webpack@^4.2.0:
-  version "4.16.2"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.16.2.tgz#c3e0e771adc94582e0543dd18d7436066051e885"
+  version "4.16.3"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.16.3.tgz#861be3176d81e7e3d71c66c8acc9bba35588b525"
   dependencies:
     "@webassemblyjs/ast" "1.5.13"
     "@webassemblyjs/helper-module-context" "1.5.13"

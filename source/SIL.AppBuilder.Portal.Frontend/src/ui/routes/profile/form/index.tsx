@@ -5,7 +5,9 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import TimezonePicker from 'react-timezone';
 
-import { UserAttributes } from '@data/models/user';
+import { UserAttributes, fromPayload } from '@data/models/user';
+import LocaleSelect from '@ui/components/inputs/locale-select';
+import { timingSafeEqual } from 'crypto';
 
 
 export interface IProps {
@@ -13,14 +15,15 @@ export interface IProps {
 }
 
 export interface IState {
-  firstName: string;
-  lastName: string;
+  givenName: string;
+  familyName: string;
   email: string;
   phone: string;
-  localization: string;
+  locale: string;
   timezone: string;
   emailNotification: boolean;
   sshKey: string;
+  locale: string;
 }
 
 
@@ -29,30 +32,39 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
   mut: Mut;
   toggle: ToggleHelper;
+  timezoneInput: any;
 
-  state = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    localization: '',
-    timezone: '',
-    emailNotification: false,
-    sshKey: ''
-  };
+  constructor(props) {
+    super(props);
+
+    const userAttributes = fromPayload(props.user);
+
+    this.state = {
+      firstName: userAttributes.givenName || '',
+      lastName: userAttributes.familyName || '',
+      email: userAttributes.email || '',
+      phone: userAttributes.phone || '',
+      timezone: userAttributes.timeZone || '',
+      locale: userAttributes.locale || '',
+      emailNotification: userAttributes.emailNotification || true,
+      sshKey: ''
+    }
+  }
 
   submit = async (e) => {
     e.preventDefault();
+
     await this.props.onSubmit({ ...this.state });
   }
 
   render() {
     const { mut, toggle } = this;
     const {
-      firstName,lastName, email, phone, localization,
-      timezone, emailNotification,
+      firstName,lastName, email, phone,
+      timezone, emailNotification, locale,
       sshKey
     } = this.state;
+
     const { t } = this.props;
 
     return (
@@ -68,6 +80,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
                   onChange={mut('firstName')} />
               </Form.Field>
             </Grid.Column>
+
             <Grid.Column>
               <Form.Field>
                 <label>{t('profile.lastName')}</label>
@@ -93,33 +106,35 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
             value={phone}
             onChange={mut('phone')} />
         </Form.Field>
-        <Form.Field>
-          <label>{t('profile.location')}</label>
-          <input
-            data-test-profile-localization
-            value={localization}
-            onChange={mut('localization')} />
-        </Form.Field>
-        <Form.Field>
-          <label>{t('profile.timezone')}</label>
-          <div
-            data-test-profile-timezone
-            className='timezone-group'
-          >
-            <Icon name='caret down' />
-            <TimezonePicker
-              className='timezone'
-              value={timezone}
-              onChange={tz => {
-                this.setState({timezone: tz});
-              }}
-              inputProps={{
-                placeholder: t('profile.timezonePlaceholder'),
-                name: 'timezone'
-              }}
-            />
+
+        <div className='flex-row justify-content-space-between'>
+          <Form.Field>
+            <label>{t('profile.timezone')}</label>
+            <div
+              data-test-profile-timezone
+              className='timezone-group'
+            >
+              <Icon name='caret down'/>
+              <TimezonePicker
+                ref={input => this.timezoneInput = input}
+                className='timezone'
+                value={timezone}
+                onChange={tz => {
+                  this.setState({timezone: tz});
+                }}
+                inputProps={{
+                  placeholder: t('profile.timezonePlaceholder'),
+                  name: 'timezone'
+                }}
+              />
+            </div>
+          </Form.Field>
+
+          <div className='field'>
+            <label data-test-locale-label>{t('profile.locale')}</label>
+            <LocaleSelect value={locale} onChange={mut('locale')} />
           </div>
-        </Form.Field>
+        </div>
 
         <Divider horizontal/>
 
@@ -152,7 +167,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
           onClick={this.submit}
           className='form-button'
         >
-          {t('profile.update')}
+          {t('common.save')}
         </Button>
       </Form>
     );

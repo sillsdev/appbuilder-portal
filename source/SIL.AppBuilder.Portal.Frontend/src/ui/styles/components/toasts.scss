@@ -1,0 +1,11 @@
+.toast-notification {
+  // position: sticky !important;
+  width: 75% !important;
+  top: 75px !important;
+
+  > span {
+    width: 100% !important;
+    font-weight: bold;
+    border-radius:4px !important;
+  }
+}

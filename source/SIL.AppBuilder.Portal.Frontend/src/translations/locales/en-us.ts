@@ -9,17 +9,43 @@ export default {
   updated: 'Updated!',
 
   common: {
-    search: 'Search'
+    search: 'Search',
+    change: 'Change',
+    save: 'Save'
   },
 
   auth: {
-    title: 'Welcome to Scriptoria',
+    title: 'Scriptoria',
     signup: 'Sign Up',
     login: 'Log In',
   },
 
+  directory: {
+    title: `Project Directory ({numProjects})`,
+    filters: {
+      dateRange: 'Date Range Between'
+    }
+  },
+
+  header: {
+    myProfile: 'My Profile',
+    help: 'Help',
+    signOut: 'Sign out',
+    clearAll: 'Clear All',
+    emptyNotifications: 'You have no notifications.'
+  },
+
+  sidebar: {
+    myTasks: 'My Tasks',
+    ourProjects: 'Our Projects',
+    users: 'Users',
+    organizationSettings: 'Organization Settings',
+    projectDirectory: 'Project Directory',
+    addProject: 'Add Project'
+  },
+
   invitations: {
-    orgPrompt: 'Would you like to sign up your organization?',
+    orgPrompt: 'Like to sign up your organization?',
     missingTokenTitle: 'Your invitation token is missing',
     missingTokenPrompt: 'Please check the link and try again',
     orgInviteTitle: 'You have been invited to create an organization!',
@@ -51,6 +77,8 @@ export default {
     basicTitle: 'Basic Info',
     orgName: 'Organization Name',
     save: 'Save',
+    buildEngineUrl: 'Build Engine URL',
+    buildEngineApiAccessToken: 'Build Engine API Access Token'
   },
 
   products: {
@@ -69,17 +97,24 @@ export default {
     phone: 'Phone',
     location: 'Location',
     timezone: 'Timezone',
+    locale: 'Locale',
     timezonePlaceholder: 'Select your timezone...',
     notificationSettingsTitle: 'Notification Settings',
-    optOutOfEmailOption: 'I do not wish to receive email notifications',
+    optOutOfEmailOption: 'I want to receive email notifications',
     sshSettingsTitle: 'Manage Personal SSH Keys',
-    sshKeyLabel: 'SSH Key',
-    update: 'Update Profile',
+    sshKeyLabel: 'SSH Key'
   },
 
   errors: {
     notFoundTitle: 'Not Found!',
-    notFoundDescription: 'Something went wrong and the page or resource could not be found!'
+    notFoundDescription: 'Something went wrong and the page or resource could not be found!',
+    orgMembershipRequired: 'Organization Membership is Required',
+    orgMembershipRequiredText: `
+      In order to use Scriptoria, you must be a member of at least one organization.
+      <br /><br />
+      Please contact your organization administrator to discuss receiving an invite to
+      an organization on Scriptoria.
+    `,
   },
 
   tasks: {
@@ -93,6 +128,46 @@ export default {
     noTasksTitle: 'No tasks are assigned to you.',
     noTasksDescription: 'Tasks that require your attention will appear here.',
     reassign: 'Reassign',
+  },
+
+  project: {
+    createdOn: 'Created',
+    overview: 'Overview',
+    dropdown: {
+      transfer: 'Transfer Ownership',
+      archive: 'Archive'
+    },
+    details: {
+      title: 'Details',
+      language: 'Language',
+      type: 'Project Type'
+    },
+    products: {
+      title: 'Products',
+      empty: 'You have no products for this project.',
+      add: 'add product'
+    },
+    settings: {
+      title: 'Settings',
+      automaticRebuild: {
+        title: 'Automatic Rebuilds',
+        description: 'When automatic rebuilds are on, Scriptoria will automatically rebuild your products when the input source is updated'
+      },
+      organizationDownloads: {
+        title: 'Allow Other Organizations to download',
+        description: 'When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products and their Artifacts'
+      }
+    },
+    side: {
+      repositoryLocation: 'Repository Location',
+      organization: 'Organization',
+      projectOwner: 'Project Owner',
+      projectGroup: 'Project Group',
+      reviewers: {
+        title: 'Reviewers',
+        add: 'add reviewer'
+      }
+    }
   },
 
   users: {

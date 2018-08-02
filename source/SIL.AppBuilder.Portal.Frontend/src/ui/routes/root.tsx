@@ -16,7 +16,9 @@ import RequestOrgAccessSuccessRoute, { pathName as requestOrgAccessSuccessPath }
 
 import ProfileRoute, { pathName as profilePath } from '@ui/routes/profile';
 import OrganizationsRoute, { pathName as organizationsPath } from '@ui/routes/organizations';
+import DirectoryRoute, { pathName as directoryPath } from '@ui/routes/project-directory';
 
+import ProjectDetailRoute, { pathName as projectDetailPath } from '@ui/routes/project';
 import UsersRoute, { pathName as UsersPath } from '@ui/routes/users';
 
 import ErrorRootRoute from '@ui/routes/errors';
@@ -26,7 +28,9 @@ export default class RootPage extends React.Component {
   render() {
     return (
       <div className='app-container flex-column align-items-stretch'>
-        <Notifications />
+        <div className='ui container'>
+          <Notifications />
+        </div>
 
         <section className='flex flex-grow'>
           <Switch>
@@ -43,12 +47,12 @@ export default class RootPage extends React.Component {
             <Route path={profilePath} component={withLayout(ProfileRoute)} />
             <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
 
+            <Route path={directoryPath} component={DirectoryRoute} />
+            <Route path={projectDetailPath} component={ProjectDetailRoute} />
             <Route path={UsersPath} component={UsersRoute} />
 
-            <Route component={NotFoundRoute} />
+            <Route component={ErrorRootRoute} />
           </Switch>
-
-          <ErrorRootRoute />
         </section>
       </div>
     );

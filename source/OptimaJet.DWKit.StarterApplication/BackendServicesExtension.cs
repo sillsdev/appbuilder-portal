@@ -28,15 +28,20 @@ namespace OptimaJet.DWKit.StarterApplication
             );
 
             services.AddHttpContextAccessor();
-            /* services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>(); */
 
             // Add service / repository overrides
             services.AddScoped<IEntityRepository<User>, UserRepository>();
+            services.AddScoped<IEntityRepository<Group>, GroupRepository>();
+            services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
 
+            services.AddScoped<UserRepository>();
+
             services.AddScoped<UserService>();
             services.AddScoped<OrganizationService>();
+            services.AddScoped<Auth0ManagementApiTokenService>();
+
 
             services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
             services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();

@@ -1,16 +1,20 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
+using AspNetCore.RouteAnalyzer;
+using JsonApiDotNetCore.Extensions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
 using OptimaJet.DWKit.Application;
 using React.AspNet;
 using Optimajet.DWKit.StarterApplication.Data;
-using Microsoft.EntityFrameworkCore;
-using JsonApiDotNetCore.Extensions;
-using Microsoft.AspNetCore.Mvc.Cors.Internal;
-using AspNetCore.RouteAnalyzer;
+using Bugsnag.AspNet.Core;
+using OptimaJet.DWKit.StarterApplication.Middleware;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
+
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -55,12 +59,16 @@ namespace OptimaJet.DWKit.StarterApplication
 
             // Add framework services.
             services.AddAuthenticationServices(Configuration);
-            services.AddBackendServices();
 
             services.AddReact();
 
+            services.AddBugsnag(configuration =>
+                                configuration.ApiKey = GetVarOrDefault("BUGSNAG_API_KEY", ""));
+
             services.AddMvc(options => {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));
+                options.Filters.Add(typeof(ErrorHandlingFilter));
+                options.Filters.Add(typeof(DisabledUserFilter));
 
                 // NOTE: Authentication is handled at the controller-level
                 //       via the [Authorize] annotation
@@ -70,6 +78,9 @@ namespace OptimaJet.DWKit.StarterApplication
                 // or the jwt token scheme
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
+
+            services.AddBackendServices();
+
 
             services.AddRouteAnalyzer();
 
@@ -105,10 +116,6 @@ namespace OptimaJet.DWKit.StarterApplication
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
             }
 
 

@@ -19,6 +19,24 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                 .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Group", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Abbreviation");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("OwnerId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Group");
+                });
+
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Organization", b =>
                 {
                     b.Property<int>("Id")
@@ -75,6 +93,42 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("OrganizationMembership");
                 });
 
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateUpdated");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("GroupId");
+
+                    b.Property<string>("Language");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<int>("OwnerId");
+
+                    b.Property<bool>("Private");
+
+                    b.Property<string>("Type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Project");
+                });
+
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -84,11 +138,31 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("ExternalId");
 
+                    b.Property<string>("FamilyName");
+
+                    b.Property<string>("GivenName");
+
+                    b.Property<bool>("IsLocked");
+
+                    b.Property<string>("Locale");
+
                     b.Property<string>("Name");
+
+                    b.Property<string>("Phone");
+
+                    b.Property<string>("Timezone");
 
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Group", b =>
+                {
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Organization", b =>
@@ -107,8 +181,26 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "User")
-                        .WithMany()
+                        .WithMany("OrganizationMemberships")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Project", b =>
+                {
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

@@ -1,24 +1,27 @@
 import * as React from 'react';
 import * as i18n from 'i18next';
+import * as ICU from 'i18next-icu';
 import * as Backend from 'i18next-xhr-backend';
 import * as LanguageDetector from 'i18next-browser-languagedetector';
 import { reactI18nextModule } from 'react-i18next';
 
 import enUs from './locales/en-us';
+import esPe from './locales/es-pe';
 
 const localTranslations = {
-  en: { translations: enUs },
-  'en-US': { translations: enUs }
+  'en-US': { translations: enUs },
 };
 
 i18n
+  // https://github.com/i18next/i18next-icu
+  .use(ICU)
   // https://github.com/i18next/i18next-xhr-backend
   // .use(Backend)
   // https://github.com/i18next/i18next-browser-languageDetector
   .use(LanguageDetector)
   .init({
     resources: localTranslations,
-    fallbackLng: 'en',
+    fallbackLng: 'en-US',
 
     // common namespace for the app
     ns: ['translations'],
@@ -38,4 +41,7 @@ i18n
     }
   });
 
+i18n.default.addResourceBundle('es-PE', 'translations', esPe);
+
 export default i18n;
+

@@ -23,6 +23,7 @@ namespace OptimaJet.DWKit.StarterApplication
         public static void Main(string[] args)
         {
             dotenv.net.DotEnv.Config(false, ".env.dev");
+            dotenv.net.DotEnv.Config(false, ".env");
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()

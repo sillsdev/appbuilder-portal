@@ -22,7 +22,7 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 
 Test Debugging:
 ```bash
-./run yarn test:watch:headless
+./run yarn test:watch:detached
 ```
 
 [Now Visit http://localhost:9876/debug.html](http://localhost:9876/debug.html) to debug
@@ -31,7 +31,19 @@ the tests, and run them individually.
 ### Backend Notes
 
 - All endpoints should be behind an `api/` path
-
+- Access to Auth0 Management API requires configuation which should not be checked into source control
+  - Values should be stored in `.env` (which is in `.gitignore`)
+  - Login to http://manage.auth0.com
+  - Navigate to `APIs` -> `Auth0 Management API` -> `Auth0 Management API (Test Application)`
+  - Get `Client ID` and `Client Secret` values
+  - assign to following variables in `.env`
+    - `AUTH0_TOKEN_ACCESS_CLIENT_ID`
+    - `AUTH0_TOKEN_ACCESS_CLIENT_SECRET`
+- When configuring the `Machine to Machine Applications`, the scopes required are:
+  - `read:users`
+  - `read:users_app_metadata`
+- Bugsnag is used to log exceptions
+  - Add BUGSNAG_API_KEY to `.env`
 
 ### Frontend Notes
 
