@@ -43,14 +43,15 @@ export function queryApi<T>(mapRecordsToProps) {
       }
 
       fetchData = async () => {
-        let map = mapRecordsToProps
+        let map;
 
-        if (typeof map !== 'function') {
-          map = () => map;
+        if (typeof mapRecordsToProps !== 'function') {
+          map = (props) => mapRecordsToProps;
+        } else {
+          map = mapRecordsToProps;
         }
 
         const result = map(this.props);
-
         const { queryStore } = this.props;
 
         let responses = {};
@@ -74,7 +75,7 @@ export function queryApi<T>(mapRecordsToProps) {
         };
 
 
-        return <InnerComponent { ...this.props } />
+        return <InnerComponent { ...dataProps } { ...this.props } />
       }
     }
 
