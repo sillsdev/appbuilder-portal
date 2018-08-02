@@ -1,15 +1,6 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using AspNetCore.RouteAnalyzer;
-using Bugsnag.AspNet.Core;
-using JsonApiDotNetCore.Data;
-using JsonApiDotNetCore.Extensions;
-using JsonApiDotNetCore.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using AspNetCore.RouteAnalyzer;
+using JsonApiDotNetCore.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
@@ -17,14 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Optimajet.DWKit.StarterApplication.Data;
-using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.Application;
-using OptimaJet.DWKit.StarterApplication.Middleware;
-using OptimaJet.DWKit.StarterApplication.Repositories;
-using OptimaJet.DWKit.StarterApplication.Services;
 using React.AspNet;
+using Optimajet.DWKit.StarterApplication.Data;
+using Bugsnag.AspNet.Core;
+using OptimaJet.DWKit.StarterApplication.Middleware;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
+
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -32,20 +22,28 @@ namespace OptimaJet.DWKit.StarterApplication
     {
         public Startup(IHostingEnvironment env)
         {
+            var configurationBuilder = BuildConfiguration(env);
+
+            Configuration = configurationBuilder.Build();
+        }
+
+        public virtual IConfigurationBuilder BuildConfiguration(IHostingEnvironment env)
+        {
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
 
+            return builder;
         }
 
         public IConfigurationRoot Configuration { get; }
 
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddCors(options =>
             {
@@ -60,72 +58,9 @@ namespace OptimaJet.DWKit.StarterApplication
             });
 
             // Add framework services.
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddAuthenticationServices(Configuration);
 
             services.AddReact();
-
-            // JWT Auth disabled for now, because we need to
-            // 1. Add an Auth0 Id column to the users table
-            // 2. Set the DWKitRuntime.Security.CurrentUser
-            // 3. Controller actions are not allowed to have multiple authentication schemes
-            // 4. Cookies must be removed.
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
-                options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-                options.Events = new JwtBearerEvents
-                {
-                    OnTokenValidated = context =>
-                    {
-                        // Add the access_token as a claim, as we may actually need it
-                        var accessToken = context.SecurityToken as JwtSecurityToken;
-
-                        if (accessToken != null)
-                        {
-                            ClaimsIdentity identity = context.Principal.Identity as ClaimsIdentity;
-
-                            if (identity != null)
-                            {
-                                identity.AddClaim(new Claim("access_token", accessToken.RawData));
-                            }
-                        }
-
-                        return Task.CompletedTask;
-                    }
-                };
-            })
-            .AddCookie(options => {
-                options.ExpireTimeSpan = TimeSpan.FromDays(365);
-                options.LoginPath = "/Account/Login/";
-
-                options.ForwardDefaultSelector = ctx =>
-                {
-                    if (ctx.Request.Path.StartsWithSegments("/api"))
-                    {
-                        return "Bearer";
-                    } else {
-                        return "Cookies";
-                    }
-                };
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Authenticated",
-                    policy => policy
-                        .AddAuthenticationSchemes(
-                            JwtBearerDefaults.AuthenticationScheme,
-                            CookieAuthenticationDefaults.AuthenticationScheme
-                        ).RequireAuthenticatedUser()
-                );
-            });
 
             services.AddBugsnag(configuration =>
                                 configuration.ApiKey = GetVarOrDefault("BUGSNAG_API_KEY", ""));
@@ -144,38 +79,23 @@ namespace OptimaJet.DWKit.StarterApplication
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
 
-            // add jsonapi dotnet core
-            services.AddJsonApi<AppDbContext>(
-                opt => opt.Namespace = "api"
-            );
-
-            // Add service / repository overrides
-            services.AddScoped<IEntityRepository<User>, UserRepository>();
-            services.AddScoped<IEntityRepository<Group>, GroupRepository>();
-            services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
-            services.AddScoped<IResourceService<User>, UserService>();
-            services.AddScoped<IResourceService<Organization>, OrganizationService>();
-
-            services.AddScoped<UserRepository>();
-
-            services.AddScoped<UserService>();
-            services.AddScoped<OrganizationService>();
-            services.AddScoped<Auth0ManagementApiTokenService>();
-
-            services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
-            services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
-
+            services.AddBackendServices();
 
 
             services.AddRouteAnalyzer();
 
+            ConfigureDatabase(services);
+        }
+
+        public virtual void ConfigureDatabase(IServiceCollection services, string name = null)
+        {
             // add the db context like you normally would
             services.AddDbContext<AppDbContext>(options =>
             { // use whatever provider you want, this is just an example
                 options.UseNpgsql(GetDbConnectionString());
-            }, ServiceLifetime.Transient);
-
+            });
         }
+
 
         private string GetDbConnectionString()
         {
@@ -183,7 +103,7 @@ namespace OptimaJet.DWKit.StarterApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseAuthentication();
 
