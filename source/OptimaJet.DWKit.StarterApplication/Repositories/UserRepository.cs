@@ -26,6 +26,14 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             this.CurrentUserContext = currentUserContext;
         }
 
+        protected IQueryable<User> DefaultGet()
+        {
+            return base.Get()
+                .Include(u => u.GroupMemberships)
+                    .ThenInclude(gm => gm.Group)
+                .Include(u => u.OrganizationMemberships)
+                    .ThenInclude(om => om.Organization);
+        }
         public override IQueryable<User> Get()
         {
             if (OrganizationContext.SpecifiedOrganizationDoesNotExist) return Enumerable.Empty<User>().AsQueryable();
@@ -33,13 +41,11 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             {
                 // No organization specified, so include all users in the all the organizations that the current user is a member
                 var currentUser = GetByAuth0Id(CurrentUserContext.Auth0Id).Result;
-                return base.Get()
-                           .Include(u => u.OrganizationMemberships)
+                return DefaultGet()
                            .Where(u => u.OrganizationMemberships.Select(o => o.OrganizationId).Intersect(currentUser.OrganizationIds).Any());
             }
             // Get users in the current organization
-            return base.Get()
-                       .Include(u => u.OrganizationMemberships)
+            return DefaultGet()
                        .Where(u => u.OrganizationMemberships.Any(o => o.OrganizationId == OrganizationContext.OrganizationId));
         }
 

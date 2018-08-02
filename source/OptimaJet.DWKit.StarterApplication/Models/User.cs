@@ -39,8 +39,11 @@ namespace Optimajet.DWKit.StarterApplication.Models
         //[HasMany("ownedOrganizations")]
         //public virtual List<Organization> OwnedOrganizations { get; set; }
 
-        [HasMany("organization-memberships", Link.None, canInclude: true)]
+        [HasMany("organization-memberships", Link.None)]
         public virtual List<OrganizationMembership> OrganizationMemberships { get; set; }
+
+        [HasMany("group-memberships", Link.None)]
+        public virtual List<GroupMembership> GroupMemberships { get; set; }
 
         [NotMapped]
         public IEnumerable<int> OrganizationIds => OrganizationMemberships.Select(o => o.OrganizationId);
