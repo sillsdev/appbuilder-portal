@@ -17,9 +17,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             this.HttpContext = httpContextAccessor.HttpContext;
         }
 
-        public string Auth0Id {
-            get {
-                if (auth0Id == null) {
+        public string Auth0Id
+        {
+            get
+            {
+                if (auth0Id == null)
+                {
                     auth0Id = this.HttpContext.GetAuth0Id();
                 }
                 return auth0Id;
