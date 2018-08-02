@@ -10,8 +10,8 @@ using Optimajet.DWKit.StarterApplication.Data;
 namespace Optimajet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20180726203726_UserAddAdditionalFields")]
-    partial class UserAddAdditionalFields
+    [Migration("20180802152545_AddBase")]
+    partial class AddBase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,7 +36,25 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Group");
+                    b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.GroupMembership", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("GroupId");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GroupMemberships");
                 });
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Organization", b =>
@@ -58,7 +76,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Organization");
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationInvite", b =>
@@ -74,12 +92,12 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrganizationInvite");
+                    b.ToTable("OrganizationInvites");
                 });
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationMembership", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("OrganizationId");
@@ -92,7 +110,43 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("OrganizationMembership");
+                    b.ToTable("OrganizationMemberships");
+                });
+
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateUpdated");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("GroupId");
+
+                    b.Property<string>("Language");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<int>("OwnerId");
+
+                    b.Property<bool>("Private");
+
+                    b.Property<string>("Type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.User", b =>
@@ -120,7 +174,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Group", b =>
@@ -128,6 +182,19 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.GroupMembership", b =>
+                {
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -149,6 +216,24 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "User")
                         .WithMany("OrganizationMemberships")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Project", b =>
+                {
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

@@ -9,11 +9,11 @@ using Optimajet.DWKit.StarterApplication.Models;
 namespace Optimajet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class OrganizationMembershipsController : JsonApiController<OrganizationMembership, Guid>
+    public class OrganizationMembershipsController : JsonApiController<OrganizationMembership>
     {
         public OrganizationMembershipsController(
             IJsonApiContext jsonApiContext,
-            IResourceService<OrganizationMembership, Guid> resourceService,
+            IResourceService<OrganizationMembership> resourceService,
             ILoggerFactory loggerFactory)
         : base(jsonApiContext, resourceService, loggerFactory)
         { }
