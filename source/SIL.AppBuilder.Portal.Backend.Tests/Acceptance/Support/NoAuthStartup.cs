@@ -16,6 +16,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             services.AddBackendServices();
 
             services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
+
+            base.ConfigureDatabase(services);
         }
     }
 }
