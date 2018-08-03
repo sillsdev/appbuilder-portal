@@ -6,58 +6,76 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { getCurrentOrganizationId } from '@lib/current-organization';
 
+const MenuItem = ({name, to, onClick}) => {
+
+  return (
+    <>
+    <Menu.Item
+      name={name}
+      as={NavLink}
+      to={to}
+      activeClassName='active'
+      className='item-link' />
+    <Menu.Item
+      name={name}
+      as={NavLink}
+      to={to}
+      activeClassName='active'
+      onClick={onClick}
+      className='item-link-mobile' />
+    </>
+  )
+}
+
 class Navigation extends React.Component<i18nProps> {
+
   render() {
     const currentOrganizationId = getCurrentOrganizationId();
     const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
 
-    const { t } = this.props;
+    const { t, closeSidebar } = this.props;
 
     return (
       <Menu className='m-t-none no-borders' pointing secondary vertical>
-        <Menu.Item
+
+        <MenuItem
           name={t('sidebar.myTasks')}
-          as={NavLink}
           to='/tasks'
-          activeClassName='active' />
+          onClick={closeSidebar}
+        />
 
-        <Menu.Item
+        <MenuItem
           name={t('sidebar.ourProjects')}
-          as={NavLink}
           to='/our-projects'
-          activeClassName='active' />
+          onClick={closeSidebar}
+        />
 
-
-        <Menu.Item
+        <MenuItem
           name={t('sidebar.users')}
-          as={NavLink}
           to='/users'
-          activeClassName='active' />
+          onClick={closeSidebar}
+        />
 
         { hasSelectedOrg && (
-          <Menu.Item
+          <MenuItem
             name={t('sidebar.organizationSettings')}
-            as={NavLink}
             to={`/organizations/${currentOrganizationId}/settings`}
-            activeClassName='active' />
+            onClick={closeSidebar} />
         ) }
 
         <hr />
 
-        <Menu.Item
+        <MenuItem
           name={t('sidebar.projectDirectory')}
-          as={NavLink}
-          to='directory'
-          className='project-directory-item'
-          activeClassName='active' />
+          to='/directory'
+          onClick={closeSidebar} />
 
         <hr />
 
-        <Menu.Item
+        <MenuItem
           name={t('sidebar.addProject')}
-          as={NavLink}
           to='add-projects'
-          activeClassName='active' />
+          onClick={closeSidebar} />
       </Menu>
     );
   }

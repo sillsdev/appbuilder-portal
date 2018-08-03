@@ -24,4 +24,25 @@
   .ui.secondary.vertical.menu>.item {
     font-size: 16px;
   }
+
+   @media screen and (max-width: 480px) {
+    .item-link {
+      display: none !important;
+    }
+
+    .item-link-mobile {
+      display: block !important;
+    }
+   }
+
+   @media screen and (min-width: 480px) {
+
+    .item-link {
+      display: block !important;
+    }
+
+    .item-link-mobile {
+      display: none !important;
+    }
+   }
 }
