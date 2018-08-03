@@ -3,7 +3,7 @@ export const TYPE_NAME = 'project';
 export interface ProjectAttributes {
   name: string;
   status: string;
-  createdOn: Date;
+  dateCreated: Date;
   language: string;
   type: string;
   description: string;
