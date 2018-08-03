@@ -1,12 +1,10 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 using JsonApiDotNetCore.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    [Table("Users")]
     public class User : Identifiable
     {
         [Attr("name")]

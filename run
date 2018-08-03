@@ -76,7 +76,9 @@ function runstuff {
       echo "api must be running in order to run the db migration scripts ..."
       runstuff dc start api
 
-      runstuff db:update && echo "DB setup for json:api"
+      runstuff db:update \
+        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/application_types.sql" \
+	&& echo "DB setup for json:api"
     ;;
 
     bootstrap:sample)

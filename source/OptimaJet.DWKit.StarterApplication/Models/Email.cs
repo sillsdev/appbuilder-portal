@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    [Table("Emails")]
     public class Email : Identifiable
     {
         [Attr("to")]
