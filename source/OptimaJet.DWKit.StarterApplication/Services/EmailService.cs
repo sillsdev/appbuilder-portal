@@ -13,12 +13,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     {
         protected readonly EmailSettings settings;
         protected readonly FluentEmail.Core.Interfaces.ISender sender;
-        protected readonly IBackgroundRepository<Email> emailRepository;
+        protected readonly IJobRepository<Email> emailRepository;
         protected readonly FluentEmail.Core.IFluentEmailFactory emailFactory;
         protected readonly IClient bugsnagClient;
 
         public EmailService( 
-            IBackgroundRepository<Email> emailRepository,
+            IJobRepository<Email> emailRepository,
             IOptions<EmailSettings> options,
             FluentEmail.Core.IFluentEmailFactory emailFactory,
             IClient bugsnagClient,

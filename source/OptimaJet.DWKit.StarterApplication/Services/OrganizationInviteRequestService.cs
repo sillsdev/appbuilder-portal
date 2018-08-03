@@ -10,14 +10,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 {
     public class OrganizationInviteRequestService : IOrganizationInviteRequestService
     {
-        protected readonly IBackgroundRepository<OrganizationInviteRequest> requestRepository;
-        protected readonly IBackgroundRepository<Email> emailRepository;
+        protected readonly IJobRepository<OrganizationInviteRequest> requestRepository;
+        protected readonly IJobRepository<Email> emailRepository;
         protected readonly OrganizationInviteRequestSettings settings;
         protected readonly IClient bugsnagClient;
         public OrganizationInviteRequestService(
             IOptions<OrganizationInviteRequestSettings> options,
-            IBackgroundRepository<OrganizationInviteRequest> requestRepository,
-            IBackgroundRepository<Email> emailRepository,
+            IJobRepository<OrganizationInviteRequest> requestRepository,
+            IJobRepository<Email> emailRepository,
             IClient bugsnagClient)
         {
             this.requestRepository = requestRepository;

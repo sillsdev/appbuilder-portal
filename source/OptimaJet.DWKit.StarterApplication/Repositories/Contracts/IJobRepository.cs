@@ -6,7 +6,7 @@ using JsonApiDotNetCore.Models;
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
     // TODO: Refactor template so that it works with TId not int
-    public interface IBackgroundRepository<TEntity>
+    public interface IJobRepository<TEntity>
         where TEntity : class, IIdentifiable<int>
     {
         Task<TEntity> CreateAsync(TEntity entity);

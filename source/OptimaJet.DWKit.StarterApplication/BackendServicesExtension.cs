@@ -69,8 +69,8 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddFluentEmail(GetVarOrDefault("ADMIN_EMAIL", "noreply@scriptoria.io"), GetVarOrDefault("ADMIN_NAME", "Scriptoria Mailer"))
                     .AddRazorRenderer();
 
-            services.AddScoped(typeof(IBackgroundRepository<>), typeof(BackgroundRepository<>));
-            services.AddScoped<IBackgroundRepository<Email>, BackgroundEmailRepository>();
+            services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
+            services.AddScoped<IJobRepository<Email>, JobEmailRepository>();
 
             services.AddHangfire(config =>
                                  config.UsePostgreSqlStorage(configuration["ConnectionStrings:default"]));

@@ -7,9 +7,9 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class BackgroundEmailRepository : BackgroundRepository<Email>
+    public class JobEmailRepository : JobRepository<Email>
     {
-        public BackgroundEmailRepository(IDbContextResolver contextResolver) : base(contextResolver)
+        public JobEmailRepository(IDbContextResolver contextResolver) : base(contextResolver)
         {
         }
 

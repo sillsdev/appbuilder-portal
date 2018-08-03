@@ -10,7 +10,7 @@ using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-	public class OrganizationInviteRequestRepository : DefaultEntityRepository<OrganizationInviteRequest>
+    public class OrganizationInviteRequestRepository : ControllerRepository<OrganizationInviteRequest>
     {
         public OrganizationInviteRequestRepository(
             ILoggerFactory loggerFactory,

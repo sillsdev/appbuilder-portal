@@ -11,7 +11,7 @@ using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class ProjectRepository : DefaultEntityRepository<Project>
+    public class ProjectRepository : ControllerRepository<Project>
     {
         public IOrganizationContext OrganizationContext { get; }
         public ICurrentUserContext CurrentUserContext { get; }

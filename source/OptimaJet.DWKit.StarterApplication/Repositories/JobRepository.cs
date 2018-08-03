@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class BackgroundRepository<TEntity> 
-        : IBackgroundRepository<TEntity>
+    public class JobRepository<TEntity> 
+        : IJobRepository<TEntity>
         where TEntity : class, IIdentifiable<int>
     {
         protected readonly DbSet<TEntity> dbSet;
         protected readonly DbContext dbContext;
 
-        public BackgroundRepository(IDbContextResolver contextResolver)
+        public JobRepository(IDbContextResolver contextResolver)
         {
             this.dbContext = contextResolver.GetContext();
             this.dbSet = contextResolver.GetDbSet<TEntity>();
