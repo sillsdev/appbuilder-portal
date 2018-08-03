@@ -130,7 +130,10 @@ class Notifications extends React.Component<IProps> {
                 <a href="#" onClick={e => {
                   e.preventDefault();
                   this.clearAll(e);
-                }}>Eliminar todas</a>
+                  }}
+                >
+                  {t('header.clearAll') }
+                </a>
               </div>
               <div className={notifications.length > 3 ? 'scrollable-menu' : ''}>
                 {
