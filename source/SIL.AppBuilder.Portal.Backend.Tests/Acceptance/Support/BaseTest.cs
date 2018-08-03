@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Optimajet.DWKit.StarterApplication.Data;
+using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication;
 using Xunit;
 
@@ -29,6 +31,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             _jsonApiContext = fixture.GetService<IJsonApiContext>();
         }
 
+        #region HTTP Request Helpers
+
         public async Task<HttpResponseMessage> Get(string url, string organizationId = "")
         {
             var httpMethod = new HttpMethod("GET");
@@ -39,11 +43,18 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
         public async Task<HttpResponseMessage> Patch(string url, object content, string organizationId = "")
         {
-            var httpMethod = new HttpMethod("GET");
+            var httpMethod = new HttpMethod("PATCH");
             var request = new HttpRequestMessage(httpMethod, url)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(content))
+                Content = new StringContent(
+                    JsonConvert.SerializeObject(content),
+                    Encoding.UTF8,
+                    "application/vnd.api+json"
+                )
             };
+
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.api+json");
+
 
 
             return await MakeRequest(request, organizationId);
@@ -59,6 +70,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             {
                 data = new
                 {
+                    id,
+                    type,
                     attributes,
                     relationships = relationships ?? new Dictionary<string, object>()
                 }
@@ -68,12 +81,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
         public async Task<HttpResponseMessage> MakeRequest(HttpRequestMessage request, string organizationId = "")
         {
             request.Headers.Add("Organization", organizationId);
-            //request.Headers.Add("Content-Type", "application/vnd.api+json");
 
             var body = await _fixture.Client.SendAsync(request);
 
             return body;
         }
+
+        #endregion
+
+        #region Deserialization Helpers
 
         public async Task<ICollection<T>> DeserializeList<T>(HttpResponseMessage response)
         {
@@ -94,8 +110,73 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
               .GetService<IJsonApiDeSerializer>()
               .Deserialize<T>(body);
 
+
             return deserializedBody;
         }
+
+        #endregion
+
+        #region Data Helpers
+
+        public User NeedsConfiguredCurrentUser()
+        {
+            var currentUser = NeedsCurrentUser();
+            var membership = NeedsDefaultOrganization(currentUser);
+
+            return currentUser;
+        }
+
+        public User NeedsCurrentUser()
+        {
+            var testUserData = new TestCurrentUserContext();
+
+            var user = new User
+            {
+                ExternalId = testUserData.Auth0Id,
+                Email = testUserData.Email,
+                GivenName = testUserData.GivenName,
+                FamilyName = testUserData.FamilyName,
+                Name = testUserData.Name
+            };
+
+            NeedsTestData<AppDbContext, User>(new List<User> {
+                user
+            });
+
+            return user;
+        }
+
+        public OrganizationMembership NeedsDefaultOrganization(User forUser)
+        {
+
+            var organization = AddEntity<AppDbContext, Organization>(new Organization
+            {
+                Name = "SIL International"
+            });
+
+            var membership = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = forUser.Id,
+                OrganizationId = organization.Id
+            });
+
+            return membership;
+        }
+
+        protected TEntity AddEntity<TDbContext, TEntity>(TEntity obj)
+            where TDbContext : DbContext
+            where TEntity : class
+        {
+            var context = _fixture.GetService<TDbContext>();
+            var dbSet = context.Set<TEntity>();
+
+            dbSet.Add(obj);
+
+            context.SaveChanges();
+
+            return obj;
+        }
+
 
         public void NeedsTestData<TDbContext, TEntity>(IEnumerable<TEntity> objs)
             where TDbContext : DbContext
@@ -120,6 +201,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             context.SaveChanges();
         }
 
+
         public List<TEntity> ReadTestData<TDbContext, TEntity>()
             where TDbContext : DbContext
             where TEntity : class
@@ -129,6 +211,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             var dbSet = context.Set<TEntity>();
             return dbSet.ToList();
         }
+
+        #endregion
 
         public void Dispose()
         {

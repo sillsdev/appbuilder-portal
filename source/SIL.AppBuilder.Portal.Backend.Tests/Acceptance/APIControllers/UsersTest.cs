@@ -27,16 +27,29 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         }
 
         [Fact]
-        public async Task Get_CurrentUser()
+        public async Task Get_CurrentUser_Creates_User()
         {
             var user = await GetCurrentUser();
 
             Assert.Equal("test-auth0-id", user.ExternalId);
+            Assert.Equal(1, user.Id);
+        }
+
+        [Fact]
+        public async Task Get_CurrentUser_Fetches_User()
+        {
+            var existing = NeedsCurrentUser();
+
+            var user = await GetCurrentUser();
+
+            Assert.Equal(existing.Id, user.Id);
         }
 
         [Fact]
         public async Task Patch_CurrentUser()
         {
+            NeedsConfiguredCurrentUser();
+
             var user = await GetCurrentUser();
             var id = user.Id;
             var oldName = user.GivenName;
