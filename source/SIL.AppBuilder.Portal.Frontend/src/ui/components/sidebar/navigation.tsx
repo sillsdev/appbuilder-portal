@@ -15,14 +15,14 @@ const MenuItem = ({name, to, onClick}) => {
       as={NavLink}
       to={to}
       activeClassName='active'
-      className='item-link' />
+        className='d-xs-none d-sm-none d-md-none d-lg-block d-xl-block' />
     <Menu.Item
       name={name}
       as={NavLink}
       to={to}
       activeClassName='active'
       onClick={onClick}
-      className='item-link-mobile' />
+      className='d-xs-block d-sm-block d-md-block d-lg-none d-xl-none' />
     </>
   )
 }
