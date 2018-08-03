@@ -46,6 +46,6 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public virtual List<GroupMembership> GroupMemberships { get; set; }
 
         [NotMapped]
-        public IEnumerable<int> OrganizationIds => OrganizationMemberships.Select(o => o.OrganizationId);
+        public IEnumerable<int> OrganizationIds => OrganizationMemberships?.Select(o => o.OrganizationId);
     }
 }
