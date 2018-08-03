@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Dropdown, Icon } from 'semantic-ui-react';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
+import { withRelationship } from './withRelationship';
 
 export interface IProps {
   project: JSONAPI<ProjectAttributes>;
@@ -13,13 +14,14 @@ export interface IProps {
 class Row extends React.Component<IProps & i18nProps> {
 
   render() {
-    const { project: data, t } = this.props;
+    const { project: data, organization, t } = this.props;
     const { attributes: project } = data;
+    const { name: orgName } = organization.attributes;
 
     return (
       <tr>
-        <td><Link to='project/some-project-id'>{project.name}</Link></td>
-        <td className='bold'>{project.organization.name}</td>
+        <td><Link to={`project/${data.id}`}>{project.name}</Link></td>
+        <td className='bold'>{orgName}</td>
         <td>{project.language}</td>
         <td>{project.status}</td>
         <td>{project.lastUpdatedAt}</td>
@@ -45,4 +47,5 @@ class Row extends React.Component<IProps & i18nProps> {
 
 export default compose(
   translate('translations'),
+  withRelationship('organization')
 )(Row);

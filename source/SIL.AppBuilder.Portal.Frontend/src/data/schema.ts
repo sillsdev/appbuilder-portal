@@ -46,7 +46,7 @@ const schemaDefinition: SchemaSettings = {
       attributes: {
         name: { type: 'string' },
         status: { type: 'string' },
-        createdOn: { type: 'date'},
+        dateCreated: { type: 'date'},
         language: { type: 'string' },
         type: { type: 'string'},
         description: { type: 'string' },
