@@ -50,11 +50,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
 
         public override void ConfigureDatabase(IServiceCollection services, string name = null)
         {
-            // Default to a temporary one-use namespace (anything unique)
-            name = name ?? ("$" + GetType().Name + "-" + _initCounter++);
+            name = "TestDb" + _initCounter++;
 
             services.AddDbContext<AppDbContext>(opts =>
-                opts.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
+                opts.UseInMemoryDatabase(name));
         }
 
         public override void ConfigureServices(IServiceCollection services)

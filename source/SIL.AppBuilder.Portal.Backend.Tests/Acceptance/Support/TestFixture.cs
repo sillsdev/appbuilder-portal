@@ -41,11 +41,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         {
             if (!disposedValue)
             {
+
                 if (disposing)
                 {
                     Client.Dispose();
                     _server.Dispose();
-                }
+               }
 
                 disposedValue = true;
             }

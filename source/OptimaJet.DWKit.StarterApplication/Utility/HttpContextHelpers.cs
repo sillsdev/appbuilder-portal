@@ -17,7 +17,8 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 {
     public static class HttpContextHelpers
     {
-        public static async Task<string> GetJWT(this HttpContext context) {
+        public static async Task<string> GetJWT(this HttpContext context)
+        {
             var scheme = JwtBearerDefaults.AuthenticationScheme;
             var token = await context.GetTokenAsync(scheme, "access_token");
 
@@ -32,7 +33,8 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
         //   - type of exp => expiration date in seconds since the epoch
         //   - type of access_token => the full JWT
         public static string TYPE_NAME_IDENTIFIER = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
-        public static string GetAuth0Id(this HttpContext context) {
+        public static string GetAuth0Id(this HttpContext context)
+        {
             var idClaim = context.User.Claims.First(c => c.Type == TYPE_NAME_IDENTIFIER);
             var id = idClaim.Value;
 
