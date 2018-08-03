@@ -11,7 +11,9 @@ export default {
   common: {
     search: 'Search',
     change: 'Change',
-    save: 'Save'
+    save: 'Save',
+    name: 'Name',
+    abbreviation: 'Abbreviation',
   },
 
   auth: {

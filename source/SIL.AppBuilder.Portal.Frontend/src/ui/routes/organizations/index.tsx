@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { compose } from 'recompose';
+import { requireAuth } from '@lib/auth';
 import { Switch, Route } from 'react-router-dom';
 
 import SettingsRoute, { pathName as settingsPath } from './settings';
@@ -15,4 +17,6 @@ class OrganizationsRoute extends React.Component {
   }
 }
 
-export default OrganizationsRoute;
+export default compose(
+  requireAuth,
+)(OrganizationsRoute);

@@ -39,7 +39,7 @@ class InfrastructureRoute extends React.Component<IProps & i18nProps> {
       onChange: this.update
     };
 
-    return <Display { ...displayProps } />
+    return <Display { ...displayProps } />;
   }
 }
 

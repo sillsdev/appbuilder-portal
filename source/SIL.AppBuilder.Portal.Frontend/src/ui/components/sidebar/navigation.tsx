@@ -65,4 +65,4 @@ class Navigation extends React.Component<i18nProps> {
 
 export default compose(
   translate('translations')
-)(Navigation)
+)(Navigation);

@@ -39,16 +39,17 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
     const userAttributes = fromPayload(props.user);
 
+    console.log(userAttributes);
     this.state = {
-      firstName: userAttributes.givenName || '',
-      lastName: userAttributes.familyName || '',
+      givenName: userAttributes.givenName || '',
+      familyName: userAttributes.familyName || '',
       email: userAttributes.email || '',
       phone: userAttributes.phone || '',
       timezone: userAttributes.timeZone || '',
       locale: userAttributes.locale || '',
       emailNotification: userAttributes.emailNotification || true,
       sshKey: ''
-    }
+    };
   }
 
   submit = async (e) => {
@@ -60,7 +61,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
   render() {
     const { mut, toggle } = this;
     const {
-      firstName,lastName, email, phone,
+      givenName, familyName, email, phone,
       timezone, emailNotification, locale,
       sshKey
     } = this.state;
@@ -76,8 +77,8 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
                 <label>{t('profile.firstName')}</label>
                 <input
                   data-test-profile-firstname
-                  value={firstName}
-                  onChange={mut('firstName')} />
+                  value={givenName}
+                  onChange={mut('givenName')} />
               </Form.Field>
             </Grid.Column>
 
@@ -86,8 +87,8 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
                 <label>{t('profile.lastName')}</label>
                 <input
                   data-test-profile-lastname
-                  value={lastName}
-                  onChange={mut('lastName')} />
+                  value={familyName}
+                  onChange={mut('familyName')} />
               </Form.Field>
             </Grid.Column>
           </Grid.Row>
