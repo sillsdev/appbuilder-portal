@@ -18,16 +18,13 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             IDbContextResolver contextResolver
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
-            Log.Information("Constructed OrganizationInviteRequestRepository");
         }
 
         public override async Task<OrganizationInviteRequest> CreateAsync(OrganizationInviteRequest entity)
         {
-            Log.Information("OrganizationInviteRequestRepository::CreateAsync");
             var result = await base.CreateAsync(entity);
             var data = new OrganizationInviteRequestServiceData { Id = result.Id };
             BackgroundJob.Enqueue<IOrganizationInviteRequestService>(service => service.Process(data));
-
             return result;
         }
     }

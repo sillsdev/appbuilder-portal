@@ -28,36 +28,24 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public void Process(OrganizationInviteRequestServiceData data)
         {
-            OrganizationInviteRequest request = null;
-            try
+            var request = requestRepository.GetAsync(data.Id).Result;
+            var email = new Email
             {
-                request = requestRepository.GetAsync(data.Id).Result;
-                var email = new Email
+                // TODO: Query Users for Super Admins
+                To = settings.SuperAdminEmail,
+                // TODO: Get localized Subject and Template
+                Subject = "[Scriptoria] Organization Invite Request",
+                ContentTemplate = "OrganizationInviteRequest",
+                ContentModel = new
                 {
-                    // TODO: Query Users for Super Admins
-                    To = settings.SuperAdminEmail,
-                    // TODO: Get localized Subject and Template
-                    Subject = "[Scriptoria] Organization Invite Request",
-                    ContentTemplate = "OrganizationInviteRequest",
-                    ContentModel = new
-                    {
-                        request.Name,
-                        request.OrgAdminEmail,
-                        request.WebsiteUrl,
-                        Domain = settings.UIHost
-                    }
-                };
-                emailRepository.CreateAsync(email);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error submitting Email");
-                bugsnagClient.Notify(ex);
-            }
-            finally
-            {
-                this.requestRepository.DeleteAsync(request.Id);
-            }
+                    request.Name,
+                    request.OrgAdminEmail,
+                    request.WebsiteUrl,
+                    Domain = settings.UIHost
+                }
+            };
+            var result = emailRepository.CreateAsync(email).Result;
+            requestRepository.DeleteAsync(request.Id);
         }
     }
 }

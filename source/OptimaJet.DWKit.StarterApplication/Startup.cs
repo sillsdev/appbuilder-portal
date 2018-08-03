@@ -16,7 +16,7 @@ using OptimaJet.DWKit.StarterApplication.Middleware;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Hangfire;
 using System;
-using Optimajet.DWKit.StarterApplication.Services;
+using Bugsnag;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -105,7 +105,11 @@ namespace OptimaJet.DWKit.StarterApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+        public virtual void Configure(IApplicationBuilder app, 
+                                      IHostingEnvironment env, 
+                                      ILoggerFactory loggerFactory,
+                                      IServiceScopeFactory serviceScopeFactory,
+                                      IServiceProvider serviceProvider)
         {
             app.UseAuthentication();
 
@@ -114,11 +118,10 @@ namespace OptimaJet.DWKit.StarterApplication
 
             app.UseCors("AllowAllOrigins");
 
-            // Configure hangfire to use the new JobActivator we defined.
-            GlobalConfiguration.Configuration
-                .UseActivator(new HangfireActivator(serviceProvider));
-
-            // The rest of the hangfire config as usual.
+            GlobalConfiguration.Configuration.UseActivator(
+                new Hangfire.AspNetCore.AspNetCoreJobActivator(serviceScopeFactory));
+            GlobalJobFilters.Filters.Add(
+                new ErrorReportingJobFilter(serviceProvider.GetService<IClient>()));
             app.UseHangfireServer();
             app.UseHangfireDashboard();
 

@@ -31,7 +31,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
                 .CreateLogger();
         }
 
-        public override void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, 
+                                       IHostingEnvironment env, 
+                                       ILoggerFactory loggerFactory,
+                                       IServiceScopeFactory serviceScopeFactory,
+                                       IServiceProvider serviceProvider)
         {
             app.UseMvc();
             app.UseJsonApi();
