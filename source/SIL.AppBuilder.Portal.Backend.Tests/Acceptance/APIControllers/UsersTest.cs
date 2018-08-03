@@ -15,8 +15,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         {
         }
 
-        [Fact]
-        public async Task GetCurrentUser()
+        private async Task<User> GetCurrentUser()
         {
             var response = await Get("/api/users/current-user");
 
@@ -24,7 +23,41 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
 
             var user = await Deserialize<User>(response);
 
+            return user;
+        }
+
+        [Fact]
+        public async Task Get_CurrentUser()
+        {
+            var user = await GetCurrentUser();
+
             Assert.Equal("test-auth0-id", user.ExternalId);
+        }
+
+        [Fact]
+        public async Task Patch_CurrentUser()
+        {
+            var user = await GetCurrentUser();
+            var id = user.Id;
+            var oldName = user.GivenName;
+
+            var expectedGivenName = oldName + "-new!";
+            var payload = ResourcePatchPayload(
+                "users", id, new Dictionary<string, object>()
+                {
+                    { "given-name", expectedGivenName }
+                }
+            );
+
+
+            var response = await Patch("/api/users/" + id, payload);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var updatedUser = await Deserialize<User>(response);
+
+
+            Assert.Equal(expectedGivenName, updatedUser.GivenName);
         }
     }
 }

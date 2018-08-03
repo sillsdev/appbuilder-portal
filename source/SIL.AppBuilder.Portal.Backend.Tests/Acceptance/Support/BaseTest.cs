@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Optimajet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication;
 using Xunit;
@@ -32,7 +34,41 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             var httpMethod = new HttpMethod("GET");
             var request = new HttpRequestMessage(httpMethod, url);
 
+            return await MakeRequest(request, organizationId);
+        }
+
+        public async Task<HttpResponseMessage> Patch(string url, object content, string organizationId = "")
+        {
+            var httpMethod = new HttpMethod("GET");
+            var request = new HttpRequestMessage(httpMethod, url)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(content))
+            };
+
+
+            return await MakeRequest(request, organizationId);
+        }
+
+        public object ResourcePatchPayload(
+            string type,
+            object id,
+            Dictionary<string, object> attributes,
+            Dictionary<string, object> relationships = null)
+        {
+            return new
+            {
+                data = new
+                {
+                    attributes,
+                    relationships = relationships ?? new Dictionary<string, object>()
+                }
+            };
+        }
+
+        public async Task<HttpResponseMessage> MakeRequest(HttpRequestMessage request, string organizationId = "")
+        {
             request.Headers.Add("Organization", organizationId);
+            //request.Headers.Add("Content-Type", "application/vnd.api+json");
 
             var body = await _fixture.Client.SendAsync(request);
 
