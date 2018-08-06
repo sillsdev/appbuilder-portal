@@ -4,6 +4,8 @@ import { Switch, Route } from 'react-router-dom';
 import NotFoundRoute, { pathName as notFoundPath } from './not-found';
 import OrgMembershipRequiredRoute, { pathName as orgMembershipRequiredPath } from './org-membership-required';
 
+export const NotFound = NotFoundRoute;
+
 export default class ErrorsRootRoute extends React.Component {
   render() {
     return (

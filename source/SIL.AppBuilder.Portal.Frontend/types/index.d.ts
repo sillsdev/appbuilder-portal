@@ -1,6 +1,6 @@
 type Troolean =
   | boolean
-  | undefined
+  | undefined;
 
 declare module "public/images/*";
 
@@ -21,9 +21,17 @@ interface Auth0JWT {
   email: string;
 }
 
-declare type JSONAPI<Attributes, Relationships = {}> = {
+
+// Resource
+declare interface JSONAPI<Attributes, Relationships = {}> {
   id: string;
   type: string;
   attributes: Attributes;
-  relationships: Relationships
-}
+  relationships?: Relationships;
+};
+
+// Document
+declare interface JSONAPIDocument<Attributes, Relationships = {}> {
+  data: JSONAPI<Attributes, Relationships>;
+  included?: Array<JSONAPI<any, any>>;
+};

@@ -15,11 +15,11 @@ export function idFor(payload: any): string {
   return payload.id;
 }
 
-export function relationshipsFor(payload: IJsonApiPayload<T>): T | object[] {
+export function relationshipsFor(payload: IJsonApiPayload<T>): T | object {
   if (!payload) { return {}; }
   if (payload.data) { return relationshipsFor(payload.data); }
 
-  return payload.relationships || [];
+  return payload.relationships || {};
 }
 
 export function hasRelationship(payload, name: string): boolean {
@@ -28,5 +28,18 @@ export function hasRelationship(payload, name: string): boolean {
   const data = filtered.data || [];
 
   return data.length > 0;
+}
+
+export function isRelatedTo(payload: any, relationshipName: string, id: string) {
+  const relationships = relationshipsFor(payload);
+  const relation = relationships[relationshipName] || {};
+  const relationData = relation.data as object | object[];
+
+  if (Array.isArray(relationData)) {
+    return relationData.find(r => r.id === id);
+  }
+
+  return relationData.id === id;
+
 
 }

@@ -14,12 +14,11 @@ import InvitationsRoute, { pathName as invitationsPath } from '@ui/routes/invita
 import RequestOrgAccessRoute, { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-organization';
 import RequestOrgAccessSuccessRoute, { pathName as requestOrgAccessSuccessPath } from '@ui/routes/request-access-for-organization/success';
 
-import ProfileRoute, { pathName as profilePath } from '@ui/routes/profile';
 import OrganizationsRoute, { pathName as organizationsPath } from '@ui/routes/organizations';
 import DirectoryRoute, { pathName as directoryPath } from '@ui/routes/project-directory';
 
 import ProjectDetailRoute, { pathName as projectDetailPath } from '@ui/routes/project';
-import UsersRoute, { pathName as UsersPath } from '@ui/routes/users';
+import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 
 import ErrorRootRoute from '@ui/routes/errors';
 import NotFoundRoute from '@ui/routes/errors/not-found';
@@ -44,12 +43,11 @@ export default class RootPage extends React.Component {
             <Route exact path={requestOrgAccessPath} component={RequestOrgAccessRoute} />
             <Route path={requestOrgAccessSuccessPath} component={RequestOrgAccessSuccessRoute} />
 
-            <Route path={profilePath} component={withLayout(ProfileRoute)} />
             <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
 
             <Route path={directoryPath} component={DirectoryRoute} />
             <Route path={projectDetailPath} component={ProjectDetailRoute} />
-            <Route path={UsersPath} component={UsersRoute} />
+            <Route path={usersPath} component={UsersRoute} />
 
             <Route component={ErrorRootRoute} />
           </Switch>

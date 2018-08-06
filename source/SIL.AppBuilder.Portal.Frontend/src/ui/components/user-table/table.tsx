@@ -1,4 +1,9 @@
 import * as React from 'react';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+
+import { UserAttributes } from '@data/models/user';
+import { GroupAttributes } from '@data/models/group';
+import { isEmpty } from '@lib/collection';
 
 import Header from './header';
 import Row from './row';
@@ -6,27 +11,37 @@ import Row from './row';
 import './user-table.scss';
 
 interface IOwnProps {
-  users: any[];
-  groups: any[];
+  users: Array<JSONAPI<UserAttributes>>;
+  groups: Array<JSONAPI<GroupAttributes>>;
 }
 
-export default class Table extends React.Component<IOwnProps> {
+type IProps =
+  & IOwnProps
+  & i18nProps;
 
+class Table extends React.Component<IProps> {
   render() {
-
-    const { users, groups } = this.props;
+    const { users, groups, t } = this.props;
 
     return (
       <table className= 'ui table user-table' >
         <Header />
         <tbody>
-        {
-          users && users.map((user,index) => (
+
+          { users && users.map((user,index) => (
             <Row key={index} user={user} groups={groups} />
-          ))
-        }
+          ))}
+
+          { isEmpty(users) && (
+            <tr><td colSpan={5}>
+              {t('users.noneFound')}
+            </td></tr>
+          ) }
+
         </tbody>
       </table>
     );
   }
 }
+
+export default translate('translations')(Table);

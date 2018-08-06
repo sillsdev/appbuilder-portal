@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
+import { ErrorMessage } from '@ui/components/errors';
 
 interface IState {
   result: object;
@@ -36,7 +37,7 @@ interface IState {
 export function queryApi<T>(mapRecordsToProps) {
   return InnerComponent => {
     class DataWrapper extends React.Component<T, IState> {
-      state = { result: {} };
+      state = { result: {}, error: undefined };
 
       componentDidMount() {
         this.fetchData();
@@ -62,17 +63,28 @@ export function queryApi<T>(mapRecordsToProps) {
           const queryResult = await queryStore(...args);
 
           responses[key] = queryResult;
+
+          return queryResult;
         });
 
-        await Promise.all(requestPromises);
+        try {
+          await Promise.all(requestPromises);
+        } catch (e) {
+          this.setState({ error: e });
+        }
 
         this.setState({ result: responses });
       }
 
       render() {
+        const { result, error } = this.state;
         const dataProps = {
-          ...this.state.result
+          ...result
         };
+
+        if (error) {
+          return <ErrorMessage error={error} />;
+        }
 
 
         return <InnerComponent { ...dataProps } { ...this.props } />;
@@ -80,6 +92,5 @@ export function queryApi<T>(mapRecordsToProps) {
     }
 
     return withOrbit({})(DataWrapper);
-
   };
 }

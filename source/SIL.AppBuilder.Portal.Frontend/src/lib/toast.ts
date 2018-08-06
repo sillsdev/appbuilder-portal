@@ -39,7 +39,7 @@ export function error(err: string, options: NotifyOptions = {}) {
   };
 
   const parsed = parseError(err);
-  const msg = `${parsed.title} ${parsed.body}`;
+  const msg = `${parsed.title} ${parsed.body || ''}`;
 
   show(msg, { type: 'custom', ...options });
 }

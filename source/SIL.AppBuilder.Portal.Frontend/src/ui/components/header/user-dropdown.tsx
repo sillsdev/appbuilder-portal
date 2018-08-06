@@ -6,12 +6,19 @@ import {
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
+import { UserAttributes } from '@data/models/user';
+import { withCurrentUser } from '@data/with-current-user';
 
 import { deleteToken, getPictureUrl } from '@lib/auth0';
 import './header.scss';
 
+interface IOwnProps {
+  toggleSidebar: () => void;
+  currentUser: JSONAPIDocument<UserAttributes>
+};
+
 export type IProps =
-  & { toggleSidebar: () => void }
+  & IOwnProps
   & RouteComponentProps<{}>
   & i18nProps;
 
@@ -25,7 +32,7 @@ class UserDropdown extends React.Component<IProps> {
   }
 
   render() {
-    const { history, t } = this.props;
+    const { history, t, currentUser: { data: currentUser } } = this.props;
 
     return (
       <Dropdown
@@ -42,7 +49,7 @@ class UserDropdown extends React.Component<IProps> {
           <Dropdown.Item
             data-test-profile
             text={t('header.myProfile')}
-            onClick={e => history.push('/profile')}
+            onClick={e => history.push(`/users/${currentUser.id}/edit`)}
           />
           <Dropdown.Item text={t('header.help')} />
 
@@ -59,5 +66,6 @@ class UserDropdown extends React.Component<IProps> {
 
 export default compose(
   withRouter,
-  translate('translations')
+  withCurrentUser(),
+  translate('translations'),
 )(UserDropdown);
