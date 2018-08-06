@@ -43,8 +43,6 @@ class Profile extends React.Component<IProps> {
     try {
       const { imageData } = this.state;
 
-      // TODO: we need an ID for the user so we can load it's data in
-      // componentWillMount
       await this.props.updateStore(tr => tr.replaceRecord({
         id,
         type: TYPE_NAME,
@@ -60,7 +58,6 @@ class Profile extends React.Component<IProps> {
 
   render() {
     const { t, user } = this.props;
-    console.log(user, this.props);
 
     return (
       <Container className='profile'>

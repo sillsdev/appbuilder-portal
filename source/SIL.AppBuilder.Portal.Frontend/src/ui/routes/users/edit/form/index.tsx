@@ -16,7 +16,7 @@ export interface IState {
   familyName: string;
   email: string;
   phone: string;
-  timezone: string;
+  timeZone: string;
   emailNotification: boolean;
   sshKey: string;
 }
@@ -32,17 +32,15 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
   constructor(props) {
     super(props);
 
-    const userAttributes = props.user;
+    const userAttributes = props.user.attributes;
 
     this.state = {
       ...userAttributes,
-      timezone: userAttributes.timeZone || '',
       sshKey: ''
     };
   }
 
   submit = async (e) => {
-
     e.preventDefault();
     await this.props.onSubmit({ ...this.state });
   }
@@ -51,7 +49,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const { mut, toggle } = this;
     const {
       givenName, familyName, email, phone,
-      timezone, emailNotification,
+      timeZone, emailNotification,
       sshKey
     } = this.state;
 
@@ -66,7 +64,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
                 <label>{t('profile.firstName')}</label>
                 <input
                   data-test-profile-firstname
-                  value={givenName}
+                  value={givenName || ''}
                   onChange={mut('givenName')} />
               </Form.Field>
             </Grid.Column>
@@ -76,7 +74,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
                 <label>{t('profile.lastName')}</label>
                 <input
                   data-test-profile-lastname
-                  value={familyName}
+                  value={familyName || ''}
                   onChange={mut('familyName')} />
               </Form.Field>
             </Grid.Column>
@@ -86,14 +84,14 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
           <label>{t('profile.email')}</label>
           <input
             data-test-profile-email
-            value={email}
+            value={email || ''}
             onChange={mut('email')} />
         </Form.Field>
         <Form.Field>
           <label>{t('profile.phone')}</label>
           <input
             data-test-profile-phone
-            value={phone}
+            value={phone || ''}
             onChange={mut('phone')} />
         </Form.Field>
 
@@ -108,9 +106,9 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
               <TimezonePicker
                 ref={input => this.timezoneInput = input}
                 className='timezone'
-                value={timezone}
+                value={timeZone || ''}
                 onChange={tz => {
-                  this.setState({timezone: tz});
+                  this.setState({timeZone: tz});
                 }}
                 inputProps={{
                   placeholder: t('profile.timezonePlaceholder'),

@@ -33,6 +33,4 @@ class Users extends React.Component<i18nProps> {
 
 export default compose(
   translate('translations'),
-  withLayout,
-  requireAuth
 )(Users);
