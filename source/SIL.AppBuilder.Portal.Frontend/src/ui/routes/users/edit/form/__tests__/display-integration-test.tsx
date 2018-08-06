@@ -1,25 +1,24 @@
 import * as React from 'react';
 import * as sinon from 'sinon';
 import { describe, beforeEach, it } from '@bigtest/mocha';
+import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
-import { mountWithContext } from 'tests/helpers';
+import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 import i18n from '@ui/../translations';
 
 import Form from '../index';
 import page from './page';
 
-describe('Integration | Component | Edit Profile Form', () => {
-
-  let fakeSubmit;
+describe('Acceptance | Edit Profile Form', () => {
+  setupApplicationTest();
+  setupRequestInterceptor();
+  useFakeAuthentication();
 
   beforeEach(async () => {
+    await visit('/users/1/edit');
 
-    fakeSubmit = sinon.spy();
-
-    await mountWithContext(() => (
-      <Form onSubmit={fakeSubmit} />
-    ));
+    expect(location().pathName).to.equal('/users/1/edit');
   });
 
   describe('The form has values', () => {
@@ -40,23 +39,6 @@ describe('Integration | Component | Edit Profile Form', () => {
       expect(page.emailNotification).to.be.false;
       expect(page.sshKey).to.equal('abcd');
 
-    });
-
-    describe('the form is submitted', () => {
-      beforeEach(async () => {
-        await page.clickSubmit();
-      });
-
-      it('submits the data', () => {
-        expect(fakeSubmit).to.have.been.calledWithMatch({
-          firstName: 'Fake',
-          lastName: 'Name',
-          email: 'fake@domain.com',
-          phone: '997528963',
-          emailNotification: false,
-          sshKey: 'abcd'
-        });
-      });
     });
   });
 
