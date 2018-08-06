@@ -118,12 +118,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
         #region Data Helpers
 
-        public User NeedsConfiguredCurrentUser()
+        public Tuple<User, OrganizationMembership> NeedsConfiguredCurrentUser()
         {
             var currentUser = NeedsCurrentUser();
             var membership = NeedsDefaultOrganization(currentUser);
 
-            return currentUser;
+            return Tuple.Create(currentUser, membership);
         }
 
         public User NeedsCurrentUser()
