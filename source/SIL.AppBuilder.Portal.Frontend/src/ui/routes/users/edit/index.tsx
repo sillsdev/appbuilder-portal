@@ -2,12 +2,9 @@ import * as React from 'react';
 
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { requireAuth } from '@lib/auth';
-import { Container, Grid } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
+import { withData as withOrbit } from 'react-orbitjs';
 
-import { withData, WithDataProps } from 'react-orbitjs';
-
-import EditProfileForm from './form';
 
 import * as toast from '@lib/toast';
 import { getPictureUrl } from '@lib/auth0';
@@ -15,14 +12,18 @@ import { idFor, defaultOptions } from '@data';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
 import { withCurrentUser } from '@data/with-current-user';
 
+import EditProfileForm from './form';
+import { withData } from './with-data';
 import './profile.scss';
 
-export const pathName = '/profile';
+export const pathName = '/users/:id/edit';
 
-export interface IOwnProps { }
+export interface IOwnProps {
+  user: JSONAPI<UserAttributes>
+}
+
 export type IProps =
   & IOwnProps
-  & WithDataProps
   & i18nProps;
 
 class Profile extends React.Component<IProps> {
@@ -35,12 +36,11 @@ class Profile extends React.Component<IProps> {
     this.setState({imageData});
   }
 
-  updateProfile = async (formData: UserAttributes) => {
-    const { t, currentUser } = this.props;
-    const id = idFor(currentUser);
+  updateProfile = async (formData: UserAttributes): Promise<void> => {
+    const { t, user } = this.props;
+    const id = idFor(user);
 
     try {
-
       const { imageData } = this.state;
 
       // TODO: we need an ID for the user so we can load it's data in
@@ -54,28 +54,31 @@ class Profile extends React.Component<IProps> {
       toast.success(t('profile.updated'));
 
     } catch (e) {
-      toast.error(e.message);
+      toast.error(e);
     }
   }
 
   render() {
-    const { t, currentUser } = this.props;
+    const { t, user } = this.props;
+    console.log(user, this.props);
 
     return (
       <Container className='profile'>
-        <h1 className='title'>{t('profile.title')}</h1>
+        <h1 className='title'>{t('profile.title')}: { user && user.attributes.givenName }</h1>
         <div>
           <h2>{t('profile.general')}</h2>
-          <EditProfileForm user={currentUser} onSubmit={this.updateProfile} />
+
+          <EditProfileForm user={user} onSubmit={this.updateProfile} />
         </div>
       </Container>
     );
   }
 }
 
+// TODO: if no permission to edit, redirect to view
 export default compose(
-  requireAuth,
-  withData({}),
   withCurrentUser(),
+  withOrbit({}),
+  withData,
   translate('translations')
 )(Profile);

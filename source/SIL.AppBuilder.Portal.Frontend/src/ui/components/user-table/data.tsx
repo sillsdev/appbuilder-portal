@@ -1,113 +1,62 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { TYPE_NAME as USER } from '@data/models/project';
-import { TYPE_NAME as GROUP } from '@data/models/group';
+import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
+import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 
-import { compose } from 'recompose';
+import { query } from '@data';
+import { isEmpty } from '@lib/collection';
 
-function isEmpty(data) {
-  return (!data || (Array.isArray(data) && data.length === 0));
-}
+import { PageLoader as Loader } from '@ui/components/loaders';
 
-function mapRecordsToProps() {
+function mapNetworkToProps(passedProps) {
+
   return {
-    fromCache: q => q.findRecords(USER)
+    // TODO: combine into one query when
+    //       https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
+    //       is resolved
+    users: q => q.findRecords(USER),
+    groups: q => q.findRecords(GROUP)
   };
 }
 
+interface IOwnProps {
+  users: Array<JSONAPI<UserAttributes>>;
+  groups: Array<JSONAPI<GroupAttributes>>;
+}
+
+type IProps =
+  & IOwnProps
+  & WithDataProps;
+
 export function withData(WrappedComponent) {
 
-  class DataWrapper extends React.Component<WithDataProps> {
+  class DataWrapper extends React.Component<IProps> {
 
-    state = {
-      usersFromNetwork: null,
-      groupsFromNetwork: null
-    };
+    isLoading = () => {
+      const { users, groups } = this.props;
 
-    fetchUserData = async () => {
-
-      // TODO: remove this when we get real data....
-      const fakes = [{
-        id: 1,
-        type: USER,
-        attributes: {
-          firstName: 'Fake',
-          lastName: 'Name',
-          email: 'fake@dt.com',
-          role: { id: 'role-1', name: 'Builder' }, // this isn't how JSONAPI works, but we need a working API :)
-          groups: [{ id: 'group-1', name: 'North America' }, { id: 'group-2', name: 'Central Asia' }, { id: 'group-3', name: 'East Asia'}] // need a working API
-        }
-      }, {
-        id: 2,
-        type: USER,
-        attributes: {
-          firstName: 'Fake 2',
-          lastName: 'Name 2',
-          email: 'fake2@dt.com',
-          role: { id:'role-2', name: 'Organization Administrator' }, // need a working API
-          groups: [{ id: 'group-1', name: 'North America' }], // need a working API
-        }
-      }];
-
-      return this.setState({ usersFromNetwork: fakes });
-
-    }
-
-    fetchGroupData = async () => {
-
-      const fakes = [{
-        type: GROUP,
-        id: 'group-1',
-        attributes: { name: 'North America' }
-      },{
-        type: GROUP,
-        id: 'group-2',
-        attributes: { name: 'Central Asia' }
-      },{
-        type: GROUP,
-        id: 'group-3',
-        attributes: { name: 'East Asia' }
-      }];
-
-      return this.setState({ groupsFromNetwork: fakes });
-
-    }
-
-    componentWillMount() {
-
-      const { usersFromNetwork, groupsFromNetwork } = this.state;
-
-      if (isEmpty(usersFromNetwork)) {
-        this.fetchUserData();
-      }
-
-      if (isEmpty(groupsFromNetwork)) {
-        this.fetchGroupData();
-      }
+      return !users || !groups;
     }
 
     render() {
+      const { users, groups, ...otherProps } = this.props;
 
-      const { usersFromNetwork, groupsFromNetwork } = this.state;
+      const dataProps = { users, groups };
 
-      const dataProps = {
-        users: usersFromNetwork,
-        groups: groupsFromNetwork,
-        isUsersLoading: isEmpty(usersFromNetwork),
-        isGroupsLoading: isEmpty(groupsFromNetwork)
-      };
+      if (this.isLoading()) {
+        return <Loader />;
+      }
 
       return (
         <WrappedComponent
-          {...dataProps}
-          {...this.props}
+          { ...dataProps }
+          { ...otherProps }
         />
       );
     }
   }
 
-  return compose(
-    withOrbit(mapRecordsToProps)
-  )(DataWrapper);
+  return query(mapNetworkToProps)(DataWrapper);
 }

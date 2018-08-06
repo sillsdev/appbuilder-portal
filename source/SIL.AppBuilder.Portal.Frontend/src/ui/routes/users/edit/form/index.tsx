@@ -5,10 +5,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import TimezonePicker from 'react-timezone';
 
-import { UserAttributes, fromPayload } from '@data/models/user';
-
-import { timingSafeEqual } from 'crypto';
-
+import { UserAttributes } from '@data/models/user';
 
 export interface IProps {
   onSubmit: (data: UserAttributes) => Promise<void>;
@@ -35,15 +32,11 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
   constructor(props) {
     super(props);
 
-    const userAttributes = fromPayload(props.user);
+    const userAttributes = props.user;
 
     this.state = {
-      givenName: userAttributes.givenName || '',
-      familyName: userAttributes.familyName || '',
-      email: userAttributes.email || '',
-      phone: userAttributes.phone || '',
-      timezone: userAttributes.timezone || '',
-      emailNotification: userAttributes.emailNotification || true,
+      ...userAttributes,
+      timezone: userAttributes.timeZone || '',
       sshKey: ''
     };
   }

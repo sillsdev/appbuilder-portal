@@ -14,7 +14,7 @@ import { hasRelationship } from '@data';
 import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
 
-type UserPayload = JSONAPI<UserAttributes>;
+type UserPayload = JSONAPIDocument<UserAttributes>;
 
 const mapRecordsToProps = {
   // currentUser: q => q.findRecord({ id: 'current-user', type: TYPE_NAME })
@@ -69,7 +69,7 @@ export function withCurrentUser() {
         // NOTE: this whole lifecycle hook is kind of a hack for lack
         //       of a better 'get the current user' pattern.
         if (fromCache && fromCache.attributes && fromCache.attributes.auth0Id === auth0IdFromJWT) {
-          this.setState({ currentUser: fromCache });
+          this.setState({ currentUser: fromCache, isLoading: false });
           return;
         }
 
@@ -89,12 +89,6 @@ export function withCurrentUser() {
           console.debug('error', e);
 
           this.setState({ error: e });
-
-          // There is no current user. Redirect to login.
-          // NOTE: because the backend does findOrCreate with the
-          //     auth0Id, this should never happen.
-          //     but it could if the network request fails or
-          //     if there is a server error.
         }
       }
 

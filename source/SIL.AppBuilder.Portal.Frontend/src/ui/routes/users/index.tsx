@@ -1,40 +1,32 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { withRouter } from 'react-router';
+import { Switch, Route } from 'react-router-dom';
 
 import { requireAuth } from '@lib/auth';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { NotFound } from '@ui/routes/errors';
 import { withLayout } from '@ui/components/layout';
-import UserTable from '@ui/components/user-table';
+
+import ListRoute, { pathName as listPath } from './list';
+import EditRoute, { pathName as editPath } from './edit';
 
 export const pathName = '/users';
 
-class Users extends React.Component<i18nProps> {
-
+class UsersRoot extends React.Component {
   render() {
-
-    const { t } = this.props;
-
     return (
-      <div className='ui container users'>
-        <div className='flex justify-content-space-between'>
-          <h1 className='page-heading'>{t('users.title')}</h1>
-          <div className='flex align-items-center'>
-            <div className='ui left icon input search-component'>
-              <input type="text" placeholder={`${t('common.search')}...`}/>
-              <i className='search icon'/>
-            </div>
-          </div>
-        </div>
-        <UserTable/>
-      </div>
+      <Switch>
+        <Route exact path={listPath} component={ListRoute} />
+        <Route path={editPath} component={EditRoute} />
+
+        <Route component={NotFound} />
+      </Switch>
     );
-
   }
-
 }
 
 export default compose(
-  translate('translations'),
+  requireAuth,
   withLayout,
-  requireAuth
-)(Users);
+  withRouter
+)(UsersRoot);

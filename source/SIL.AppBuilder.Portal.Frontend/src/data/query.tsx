@@ -62,6 +62,8 @@ export function queryApi<T>(mapRecordsToProps) {
           const queryResult = await queryStore(...args);
 
           responses[key] = queryResult;
+
+          return queryResult;
         });
 
         await Promise.all(requestPromises);
@@ -80,6 +82,5 @@ export function queryApi<T>(mapRecordsToProps) {
     }
 
     return withOrbit({})(DataWrapper);
-
   };
 }

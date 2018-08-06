@@ -116,8 +116,8 @@ const schemaDefinition: SchemaSettings = {
     user: {
       keys: { remoteId: {} },
       attributes: {
-        firstName: { type: 'string' },
-        lastName: { type: 'string' },
+        givenName: { type: 'string' },
+        familyName: { type: 'string' },
         auth0Id: { type: 'string' },
         email: { type: 'string' },
         phone: { type: 'string'},
