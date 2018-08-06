@@ -1,10 +1,8 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    [Table("Projects")]
     public class Project : Identifiable
     {
         [Attr("name")]

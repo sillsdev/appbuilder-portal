@@ -14,7 +14,9 @@ using Optimajet.DWKit.StarterApplication.Data;
 using Bugsnag.AspNet.Core;
 using OptimaJet.DWKit.StarterApplication.Middleware;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
-
+using Hangfire;
+using System;
+using Bugsnag;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -79,8 +81,8 @@ namespace OptimaJet.DWKit.StarterApplication
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
 
-            services.AddBackendServices();
-
+            services.AddApiServices();
+            services.AddBackgroundServices(Configuration);
 
             services.AddRouteAnalyzer();
 
@@ -103,7 +105,11 @@ namespace OptimaJet.DWKit.StarterApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public virtual void Configure(IApplicationBuilder app, 
+                                      IHostingEnvironment env, 
+                                      ILoggerFactory loggerFactory,
+                                      IServiceScopeFactory serviceScopeFactory,
+                                      IServiceProvider serviceProvider)
         {
             app.UseAuthentication();
 
@@ -111,6 +117,13 @@ namespace OptimaJet.DWKit.StarterApplication
             loggerFactory.AddDebug();
 
             app.UseCors("AllowAllOrigins");
+
+            GlobalConfiguration.Configuration.UseActivator(
+                new Hangfire.AspNetCore.AspNetCoreJobActivator(serviceScopeFactory));
+            GlobalJobFilters.Filters.Add(
+                new ErrorReportingJobFilter(serviceProvider.GetService<IClient>()));
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
 
             if (env.IsDevelopment())
             {

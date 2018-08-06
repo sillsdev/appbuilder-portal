@@ -2,6 +2,9 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FluentEmail.Core.Interfaces;
+using Hangfire;
+using Hangfire.PostgreSql;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
@@ -13,13 +16,15 @@ using Optimajet.DWKit.StarterApplication.Data;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
+using SparkPostDotNet;
+using SparkPostDotNet.Core;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
     public static class BackendServiceExtensions
     {
-        public static IServiceCollection AddBackendServices(this IServiceCollection services)
+        public static IServiceCollection AddApiServices(this IServiceCollection services)
         {
             // add jsonapi dotnet core
             // - includes IHttpContextAccessor as a singleton
@@ -33,6 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<User>, UserRepository>();
             services.AddScoped<IEntityRepository<Group>, GroupRepository>();
             services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
+            services.AddScoped<IEntityRepository<OrganizationInviteRequest>, OrganizationInviteRequestRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
 
@@ -45,6 +51,39 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
             services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddBackgroundServices(this IServiceCollection services, IConfigurationRoot configuration)
+        {
+            var mailSender = GetVarOrDefault("MAIL_SENDER", "LogEmail");
+            switch (mailSender) {
+                case "SparkPost": 
+                    services.AddScoped(typeof(ISender), typeof(SparkPostSender));
+                    services.Configure<SparkPostOptions>(options => options.ApiKey = GetVarOrThrow("MAIL_SPARKPOST_APIKEY"));
+                    services.AddSparkPost();
+                    break;
+                default: services.AddScoped(typeof(ISender), typeof(LogEmailSender)); break;
+            }
+            services.AddFluentEmail(GetVarOrDefault("ADMIN_EMAIL", "noreply@scriptoria.io"), GetVarOrDefault("ADMIN_NAME", "Scriptoria Mailer"))
+                    .AddRazorRenderer();
+
+            services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
+            services.AddScoped<IJobRepository<Email>, JobEmailRepository>();
+
+            services.AddHangfire(config =>
+                                 config.UsePostgreSqlStorage(configuration["ConnectionStrings:default"]));
+
+            services.AddScoped(typeof(IOrganizationInviteRequestService), typeof(OrganizationInviteRequestService));
+            services.Configure<OrganizationInviteRequestSettings>(options =>
+            {
+                options.SuperAdminEmail = GetVarOrDefault("SUPERADMIN_EMAIL", "chris_hubbard@sil.org");
+                options.UIHost = GetVarOrDefault("UI_HOST", "http://localhost:9091");
+            });
+
+            services.AddScoped(typeof(IEmailService), typeof(EmailService));
+            services.Configure<EmailSettings>(configuration.GetSection("Email"));
 
             return services;
         }

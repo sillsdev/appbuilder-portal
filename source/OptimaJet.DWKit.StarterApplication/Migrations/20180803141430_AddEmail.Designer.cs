@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Optimajet.DWKit.StarterApplication.Data;
@@ -9,27 +10,16 @@ using Optimajet.DWKit.StarterApplication.Data;
 namespace Optimajet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180803141430_AddEmail")]
+    partial class AddEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.ApplicationType", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ApplicationTypes");
-                });
 
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Email", b =>
                 {
@@ -167,28 +157,6 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("OrganizationMemberships");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.ProductDefinition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("TypeId");
-
-                    b.Property<int>("WorkflowId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TypeId");
-
-                    b.HasIndex("WorkflowId");
-
-                    b.ToTable("ProductDefinitions");
-                });
-
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -253,24 +221,6 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.WorkflowDefinition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("Enabled");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("WorkflowScheme");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("WorkflowDefinitions");
-                });
-
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Group", b =>
                 {
                     b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Owner")
@@ -310,18 +260,6 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "User")
                         .WithMany("OrganizationMemberships")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.ProductDefinition", b =>
-                {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.ApplicationType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId");
-
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.WorkflowDefinition", "Workflow")
-                        .WithMany()
-                        .HasForeignKey("WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

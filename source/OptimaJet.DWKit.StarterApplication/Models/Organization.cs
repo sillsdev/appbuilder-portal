@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    [Table("Organizations")]
     public class Organization : Identifiable
     {
         [Attr("name")]

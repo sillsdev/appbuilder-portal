@@ -14,7 +14,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddBackendServices();
+            services.AddApiServices();
 
             services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
             services.AddScoped<ICurrentUserContext, TestCurrentUserContext>();

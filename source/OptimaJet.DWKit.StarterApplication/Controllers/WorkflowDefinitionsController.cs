@@ -1,21 +1,18 @@
-using System.Threading.Tasks;
-using JsonApiDotNetCore.Models;
+﻿using System;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Optimajet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace Optimajet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class OrganizationInvitesController : BaseController<OrganizationInvite>
+    public class WorkflowDefinitionsController : BaseController<WorkflowDefinition>
     {
-        public OrganizationInvitesController(
+        public WorkflowDefinitionsController(
             IJsonApiContext jsonApiContext,
-            IResourceService<OrganizationInvite> resourceService,
+            IResourceService<WorkflowDefinition> resourceService,
             ICurrentUserContext currentUserContext,
             OrganizationService organizationService,
             UserService userService)

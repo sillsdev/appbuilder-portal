@@ -7,7 +7,7 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class GroupRepository : DefaultEntityRepository<Group>
+    public class GroupRepository : ControllerRepository<Group>
     {
         public IOrganizationContext OrganizationContext { get; }
         public GroupRepository(

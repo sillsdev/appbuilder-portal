@@ -10,7 +10,7 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class UserRepository : DefaultEntityRepository<User>
+    public class UserRepository : ControllerRepository<User>
     {
         public IOrganizationContext OrganizationContext { get; }
         public ICurrentUserContext CurrentUserContext { get; }

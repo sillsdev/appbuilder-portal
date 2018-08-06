@@ -1,10 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using JsonApiDotNetCore.Models;
+﻿using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    [Table("OrganizationInvites")]
     public class OrganizationInvite : Identifiable
     {
         [Attr("name")]
