@@ -8,6 +8,7 @@ using JsonApiDotNetCore.Data;
 using Optimajet.DWKit.StarterApplication.Data;
 using Xunit;
 using OptimaJet.DWKit.StarterApplication;
+using System.Net.Http.Headers;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests
 {
@@ -28,6 +29,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             Context = GetService<IDbContextResolver>().GetContext() as AppDbContext;
             DeSerializer = GetService<IJsonApiDeSerializer>();
             JsonApiContext = GetService<IJsonApiContext>();
+
+            Client.DefaultRequestHeaders
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
         }
 
         public HttpClient Client { get; set; }
