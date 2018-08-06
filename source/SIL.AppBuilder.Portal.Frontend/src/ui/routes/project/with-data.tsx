@@ -4,61 +4,39 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { TYPE_NAME as PROJECT } from '@data/models/project';
 import { PLURAL_NAME as PRODUCTS } from '@data/models/product';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
-import { ISortProps } from '@data/containers/sorting';
-import { IPaginateProps } from '@data/containers/pagination';
 import { defaultSourceOptions } from '@data';
 
 function isEmpty(data) {
   return (!data || (Array.isArray(data) && data.length === 0));
 }
 
-function mapRecordsToProps(passedProps) {
-  const {
-    sortProperty, defaultSort,
-    filterOptions, pageOptions
-  } = passedProps;
+const mapRecordsToProps = (ownProps) => {
+  const { match } = ownProps;
+  const { params: { id } } = match;
 
   return {
-    fromCache: q => {
-      return q.findRecords(PROJECT)
-
-    }
-       //.sort(sortProperty || defaultSort)
-       /* .filter(filterOptions || []) */
-       //.page({ offset: 0, limit: 20, ...( pageOptions || {} ) })
+    fromCache: q => q.findRecord({ id, type: PROJECT }),
   };
-}
-
-type IProps =
-  & ISortProps
-  & IPaginateProps
-//  & IFilteringProps
-  & WithDataProps;
+};
 
 
 export function withData(WrappedComponent) {
 
-  class DataWrapper extends React.Component<IProps> {
+  class DataWrapper extends React.Component<WithDataProps> {
+
     state = {
       fromNetwork: null
     };
 
     fetchData = async () => {
-      const {
-        queryStore,
-        sortProperty, defaultSort,
-        pageOptions
-      } = this.props;
+      const { queryStore, match } = this.props;
+      const { params: { id } } = match;
 
-      const records = await queryStore(
+      const record = await queryStore(
         q => (
-          q.findRecords(PROJECT)
-           //.sort(sortProperty || defaultSort)
-           // TODO: tweak in JSONAPI pull strategy
-           /* .filter(filterOptions || []) */
-           //.page({ offset: 0, limit: 20, ...( pageOptions || {} ) })
+          q.findRecord({ type: PROJECT, id })
         ), {
-          label: `Query Projects`,
+          label: `Query Project`,
           sources: {
             remote: {
               settings: {
@@ -70,7 +48,7 @@ export function withData(WrappedComponent) {
         }
       );
 
-      this.setState({ fromNetwork: records });
+      this.setState({ fromNetwork: record });
     }
 
     componentDidMount() {
@@ -88,14 +66,16 @@ export function withData(WrappedComponent) {
       const { fromCache } = this.props;
 
       const dataProps = {
-        projects: !isEmpty(fromCache) ? fromCache : fromNetwork,
-        isLoading: isEmpty(fromCache) && isEmpty(fromNetwork)
+        project: !isEmpty(fromCache) ? fromCache : fromNetwork,
+        isLoading: isEmpty(fromNetwork)
       };
+
+      console.log(dataProps);
 
       return (
         <WrappedComponent
-          { ...dataProps }
-          { ...this.props }
+          {...this.props}
+          {...dataProps}
         />
       );
     }

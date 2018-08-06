@@ -14,5 +14,5 @@ export default compose(
   withSorting({ defaultSort: 'name' }),
   withPagination,
   withFiltering,
-  withData
+  withData,
 )(Table);
