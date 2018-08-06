@@ -35,7 +35,6 @@ export function isRelatedTo(payload: any, relationshipName: string, id: string) 
   const relation = relationships[relationshipName] || {};
   const relationData = relation.data as object | object[];
 
-  console.log(id, relationshipName, relationData, payload);
   if (Array.isArray(relationData)) {
     return relationData.find(r => r.id === id);
   }
