@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { UserAttributes } from '@data/models/user';
 import { GroupAttributes } from '@data/models/group';
@@ -15,11 +16,12 @@ interface IOwnProps {
 }
 
 type IProps =
-  & IOwnProps;
+  & IOwnProps
+  & i18nProps;
 
 class Table extends React.Component<IProps> {
   render() {
-    const { users, groups } = this.props;
+    const { users, groups, t } = this.props;
 
     return (
       <table className= 'ui table user-table' >
@@ -30,10 +32,16 @@ class Table extends React.Component<IProps> {
             <Row key={index} user={user} groups={groups} />
           ))}
 
+          { isEmpty(users) && (
+            <tr><td colSpan={5}>
+              {t('users.noneFound')}
+            </td></tr>
+          ) }
+
         </tbody>
       </table>
     );
   }
 }
 
-export default Table;
+export default translate('translations')(Table);

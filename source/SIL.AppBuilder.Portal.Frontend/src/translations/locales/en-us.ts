@@ -173,6 +173,7 @@ export default {
   },
 
   users: {
+    noneFound: 'No users matching the selected criteria were found.',
     title: 'Manage Users',
     table: {
       columns: {
