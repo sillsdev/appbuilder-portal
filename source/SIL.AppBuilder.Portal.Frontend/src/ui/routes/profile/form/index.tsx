@@ -6,7 +6,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import TimezonePicker from 'react-timezone';
 
 import { UserAttributes, fromPayload } from '@data/models/user';
-import LocaleSelect from '@ui/components/inputs/locale-select';
+
 import { timingSafeEqual } from 'crypto';
 
 
@@ -19,11 +19,9 @@ export interface IState {
   familyName: string;
   email: string;
   phone: string;
-  locale: string;
   timezone: string;
   emailNotification: boolean;
   sshKey: string;
-  locale: string;
 }
 
 
@@ -39,22 +37,20 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
     const userAttributes = fromPayload(props.user);
 
-    console.log(userAttributes);
     this.state = {
       givenName: userAttributes.givenName || '',
       familyName: userAttributes.familyName || '',
       email: userAttributes.email || '',
       phone: userAttributes.phone || '',
-      timezone: userAttributes.timeZone || '',
-      locale: userAttributes.locale || '',
+      timezone: userAttributes.timezone || '',
       emailNotification: userAttributes.emailNotification || true,
       sshKey: ''
     };
   }
 
   submit = async (e) => {
-    e.preventDefault();
 
+    e.preventDefault();
     await this.props.onSubmit({ ...this.state });
   }
 
@@ -62,7 +58,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const { mut, toggle } = this;
     const {
       givenName, familyName, email, phone,
-      timezone, emailNotification, locale,
+      timezone, emailNotification,
       sshKey
     } = this.state;
 
@@ -130,11 +126,6 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
               />
             </div>
           </Form.Field>
-
-          <div className='field'>
-            <label data-test-locale-label>{t('profile.locale')}</label>
-            <LocaleSelect value={locale} onChange={mut('locale')} />
-          </div>
         </div>
 
         <Divider horizontal/>
