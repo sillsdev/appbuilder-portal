@@ -10,6 +10,8 @@ import { deleteToken } from '@lib/auth0';
 import UserDropdown from './user-dropdown';
 import Notifications from './notifications';
 
+import LocaleSelect from '@ui/components/inputs/locale-select';
+
 import './header.scss';
 
 export interface Props {
@@ -58,6 +60,10 @@ class Header extends React.Component<IProps> {
                 className='add-project d-xs-none'>
                 Add Project
               </Button>
+            </Menu.Item>
+
+            <Menu.Item>
+              <LocaleSelect/>
             </Menu.Item>
 
             <Menu.Item>
