@@ -47,7 +47,7 @@ services:
   ui:
     build:
       context: ./SIL.AppBuilder.Portal.Frontend/
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.ci
     command: bash -c "yarn && yarn start:dev"
 
     environment:
