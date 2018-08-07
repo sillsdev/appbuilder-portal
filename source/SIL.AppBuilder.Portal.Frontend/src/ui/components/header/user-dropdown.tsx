@@ -14,8 +14,8 @@ import './header.scss';
 
 interface IOwnProps {
   toggleSidebar: () => void;
-  currentUser: JSONAPIDocument<UserAttributes>
-};
+  currentUser: JSONAPIDocument<UserAttributes>;
+}
 
 export type IProps =
   & IOwnProps

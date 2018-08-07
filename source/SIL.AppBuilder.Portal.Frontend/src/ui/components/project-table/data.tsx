@@ -20,12 +20,12 @@ function mapRecordsToProps(passedProps) {
 
   return {
     fromCache: q => {
-      return q.findRecords(PROJECT)
+      return q.findRecords(PROJECT);
 
     }
-       //.sort(sortProperty || defaultSort)
+       // .sort(sortProperty || defaultSort)
        /* .filter(filterOptions || []) */
-       //.page({ offset: 0, limit: 20, ...( pageOptions || {} ) })
+       // .page({ offset: 0, limit: 20, ...( pageOptions || {} ) })
   };
 }
 
@@ -53,10 +53,10 @@ export function withData(WrappedComponent) {
       const records = await queryStore(
         q => (
           q.findRecords(PROJECT)
-           //.sort(sortProperty || defaultSort)
+           // .sort(sortProperty || defaultSort)
            // TODO: tweak in JSONAPI pull strategy
            /* .filter(filterOptions || []) */
-           //.page({ offset: 0, limit: 20, ...( pageOptions || {} ) })
+           // .page({ offset: 0, limit: 20, ...( pageOptions || {} ) })
         ), {
           label: `Query Projects`,
           sources: {

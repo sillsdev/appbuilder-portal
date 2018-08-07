@@ -49,8 +49,12 @@ if [ "$changesExist" = "success" ] || [ "$FORCE" = 'true' ]; then
         backendResult=$?
     fi
 
+    echo ""
+    echo "-------------------------------------------"
     echo "Frontend CI finished with status: $frontendResult"
     echo "Backend CI finished with status: $backendResult"
+    echo "-------------------------------------------"
+    echo ""
 
     if [ $frontendResult -ne 0 ] || [ $backendResult -ne 0 ]; then
       exit 1
