@@ -1,6 +1,6 @@
 type IJsonApiPayload<T> =
-  | JSONAPI<T>
-  | { data: JSONAPI<T> };
+  | JSONAPIDocument<T>
+  | JSONAPI<T>;
 
 export function attributesFor<T>(payload: IJsonApiPayload<T>): T | object {
   if (!payload) { return {}; }

@@ -62,6 +62,7 @@ module.exports = function(config) {
       'karma-webpack',
       'karma-mocha-reporter',
       'karma-chrome-launcher',
+      'karma-firefox-launcher',
       // 'karma-iframes',
     ],
     // parallelOptions: {
@@ -85,10 +86,15 @@ module.exports = function(config) {
           '--disable-gpu',
           '--disable-extensions'
         ]
-      }
+      },
+      FirefoxHeadless: {
+        base: 'Firefox',
+        flags: [ '-headless' ],
+      },
     };
 
-    config.browsers = ['ChromeHeadlessNoSandbox']
+    // config.browsers = ['ChromeHeadlessNoSandbox'];
+    config.browsers = ['FirefoxHeadless'];
     config.colors = true;
   }
 };

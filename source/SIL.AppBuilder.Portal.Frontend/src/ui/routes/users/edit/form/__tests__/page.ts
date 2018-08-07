@@ -8,16 +8,14 @@ import {
 export class FormInteractor {
   constructor(selector?: string) { }
 
-  selectLocale = selectable('[data-test-locale-switcher]');
-  localeLabel = text('[data-test-locale-label]');
-
   fillFirstName = fillable('[data-test-profile-firstname]');
   fillLastName = fillable('[data-test-profile-lastname]');
   fillEmail = fillable('[data-test-profile-email]');
   fillPhone = fillable('[data-test-profile-phone]');
   fillLocalization = fillable('[data-test-profile-localization]');
-  clickEmailNotification = clickable('[data-test-profile-email-notification]');
   fillSSHKey = fillable('[data-test-profile-ssh-key]');
+
+  clickEmailNotification = clickable('[data-test-profile-email-notification]');
   clickSubmit = clickable('[data-test-profile-submit]');
 
   firstname = value('[data-test-profile-firstname]');

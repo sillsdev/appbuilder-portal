@@ -28,8 +28,8 @@ const MenuItem = ({name, to, onClick}) => {
       onClick={onClick}
       className='d-xs-block d-sm-block d-md-block d-lg-none d-xl-none' />
     </>
-  )
-}
+  );
+};
 
 class Navigation extends React.Component<IProps & i18nProps> {
 

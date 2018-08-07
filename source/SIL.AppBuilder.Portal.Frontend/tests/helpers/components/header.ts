@@ -11,8 +11,10 @@ export class Header {
   constructor(selector?: string) { }
 
   clickAddProject = clickable('[data-test-header-addproject]');
-  clickNotification = clickable('[data-test-header-notification]');
-  clickAvatar = clickable('[data-test-header-avatar]');
+
+  clickNotification = clickable('[data-test-notification-trigger]');
+  clickAvatar = clickable('[data-test-user-dropdown-trigger]');
+
   clickProfileLink = clickable('[data-test-profile]');
   clickSidebarButton = clickable('[data-test-header-sidebar-button]');
 

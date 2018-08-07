@@ -8,6 +8,9 @@
 UI_PATH="source/SIL.AppBuilder.Portal.Frontend"
 API_PATH="source/OptimaJet.DWKit.StarterApplication"
 COMPOSE="docker-compose -f deployment/development/docker-compose.yml --project-directory ./source -p appbuilder-portal"
+
+CI_COMPOSE="docker-compose -f deployment/ci/docker-compose.yml --project-directory ./source -p appbuilder-portal-ci"
+
 PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER"
 
 function runstuff {
@@ -89,9 +92,19 @@ function runstuff {
 
     ##################
     # Testing
-    ci:test:ui) bash -c "./run dc run --rm ui yarn test:ci";;
-    ci:lint:ui) bash -c "./run dc run --rm ui yarn lint";;
+    ci:build)
+      ${CI_COMPOSE} build
+    ;;
 
+    ci:ui)
+      ${CI_COMPOSE} run --rm ui \
+        bash -c "yarn && yarn lint && yarn test:ci"
+    ;;
+
+    ci:api)
+      ${CI_COMPOSE} run --rm api \
+        bash -c "dotnet test ../SIL.AppBuilder.Portal.Backend.Tests/SIL.AppBuilder.Portal.Backend.Tests.csproj"
+    ;;
 
     ################
     # Host-Machine Utils

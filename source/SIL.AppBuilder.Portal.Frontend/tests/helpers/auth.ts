@@ -15,7 +15,8 @@ export function useFakeAuthentication() {
     const { server } = this.polly;
 
     server.namespace('/api', () => {
-      server.get('/users/current-user').intercept(respondWithJsonApi(200, {
+      server.get('/users/current-user')
+        .intercept(respondWithJsonApi(200, {
         data: {
           id: 1,
           type: 'users',
