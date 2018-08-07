@@ -19,7 +19,7 @@ import './profile.scss';
 export const pathName = '/users/:id/edit';
 
 export interface IOwnProps {
-  user: JSONAPI<UserAttributes>
+  user: JSONAPI<UserAttributes>;
 }
 
 export type IProps =

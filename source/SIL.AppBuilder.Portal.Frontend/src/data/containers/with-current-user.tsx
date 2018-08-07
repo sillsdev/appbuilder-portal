@@ -102,7 +102,9 @@ export function withCurrentUser() {
         if (isLoading) {
           return <PageLoader />;
         } else if (currentUser) {
-          if (hasRelationship(currentUser, 'organization-memberships')) {
+          const hasMembership = hasRelationship(currentUser, 'organization-memberships');
+
+          if (hasMembership) {
             return <InnerComponent {...this.props} currentUser={currentUser} />;
           }
 

@@ -31,6 +31,9 @@
   "exclude": [
     "node_modules",
     "build",
-    "dist"
+    "dist",
+    "src/vendor",
+    "tests/webpack.config.js",
+    "tests/karma.conf.js"
   ]
 }

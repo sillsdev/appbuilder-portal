@@ -16,8 +16,8 @@ export function withRelationship(relationshipName: string) {
 
   return InnerComponent => {
 
-    return withOrbit(mapRecordsToProps)(InnerComponent)
+    return withOrbit(mapRecordsToProps)(InnerComponent);
 
-  }
+  };
 
 }

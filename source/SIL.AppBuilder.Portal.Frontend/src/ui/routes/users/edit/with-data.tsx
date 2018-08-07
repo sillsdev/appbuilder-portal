@@ -16,7 +16,7 @@ interface PassedProps {
 }
 
 interface IOwnProps {
-  user: JSONAPIDocument<UserAttributes>
+  user: JSONAPIDocument<UserAttributes>;
 }
 
 type IProps =
@@ -31,7 +31,7 @@ export function withData(WrappedComponent) {
     return {
       user: q => q.findRecord({ id, type: USER })
     };
-  }
+  };
 
   class DataWrapper extends React.Component<IProps> {
     render() {
@@ -41,7 +41,7 @@ export function withData(WrappedComponent) {
         return <Loader />;
       }
 
-      return <WrappedComponent { ...this.props } />
+      return <WrappedComponent { ...this.props } />;
     }
   }
 

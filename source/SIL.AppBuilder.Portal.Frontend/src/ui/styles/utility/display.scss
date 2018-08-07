@@ -18,3 +18,8 @@
 
   @include default-transition;
 }
+
+.invisible {
+  background: transparent;
+  opacity: 1;
+}
