@@ -2,9 +2,10 @@ import * as React from 'react';
 import { compose } from 'recompose';
 
 import { requireAuth } from '@lib/auth';
+import { isEmpty } from '@lib/collection';
 import { withLayout } from '@ui/components/layout';
 import { withData, WithDataProps } from 'react-orbitjs';
-import { Container, Table, Icon, Button } from 'semantic-ui-react';
+import { Container, Icon, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
@@ -77,19 +78,37 @@ class Tasks extends React.Component<IProps> {
     return (
       <Container className='tasks'>
         <h1 className='page-heading'>{t('tasks.title')}</h1>
+
+        <table>
+          <thead>
+            <tr>
+              <th>{t('tasks.project')}</th>
+              <th>{t('tasks.product')}</th>
+              <th>{t('tasks.assignedTo')}</th>
+              <th>{t('tasks.status')}</th>
+              <th>{t('tasks.waitTime')}</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            { tasks && tasks.map(task => (
+              <Row task={task} />
+            )) }
+
+            { isEmpty(tasks) && (
+              <tr>
+                <td colspan='6'>
+                  <p>{t('tasks.noTasksDescription')}</p>
+                </td>
+              </tr>
+            ) }
+
+          </tbody>
+        </table>
+
         {
           tasks ?
             <Table>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell>{t('tasks.project')}</Table.HeaderCell>
-                  <Table.HeaderCell>{t('tasks.product')}</Table.HeaderCell>
-                  <Table.HeaderCell>{t('tasks.assignedTo')}</Table.HeaderCell>
-                  <Table.HeaderCell>{t('tasks.status')}</Table.HeaderCell>
-                  <Table.HeaderCell>{t('tasks.waitTime')}</Table.HeaderCell>
-                  <Table.HeaderCell />
-                </Table.Row>
-              </Table.Header>
 
               <Table.Body>
                 {tasks.map((task,index) => {
@@ -127,7 +146,6 @@ class Tasks extends React.Component<IProps> {
 
             <div className='empty-table'>
               <h3>{t('tasks.noTasksTitle')}</h3>
-              <p>{t('tasks.noTasksDescription')}</p>
             </div>
         }
       </Container>
