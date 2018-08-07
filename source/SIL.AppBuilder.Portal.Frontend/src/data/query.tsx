@@ -35,6 +35,14 @@ interface IState {
 // TODO: investigate why we would use react-orbitjs' cache over orbit's
 // TODO: what if we just use orbit directly? do we need react-orbitjs?
 export function queryApi<T>(mapRecordsToProps) {
+  let map;
+
+  if (typeof mapRecordsToProps !== 'function') {
+    map = (props) => mapRecordsToProps;
+  } else {
+    map = mapRecordsToProps;
+  }
+
   return InnerComponent => {
     class DataWrapper extends React.Component<T, IState> {
       state = { result: {}, error: undefined };
@@ -44,13 +52,6 @@ export function queryApi<T>(mapRecordsToProps) {
       }
 
       fetchData = async () => {
-        let map;
-
-        if (typeof mapRecordsToProps !== 'function') {
-          map = (props) => mapRecordsToProps;
-        } else {
-          map = mapRecordsToProps;
-        }
 
         const result = map(this.props);
         const { queryStore } = this.props;

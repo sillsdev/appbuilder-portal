@@ -35,6 +35,12 @@ function mapNetworkToProps(passedProps) {
   };
 }
 
+function mapRecordsToProps(passedProps) {
+  return {
+    usersFromCache: q => q.findRecords(USER)
+  };
+}
+
 function mapStateToProps({ data }) {
   return {
     currentOrganizationId: data.currentOrganizationId
@@ -43,6 +49,7 @@ function mapStateToProps({ data }) {
 
 interface IOwnProps {
   users: Array<JSONAPI<UserAttributes>>;
+  usersFromCache: Array<JSONAPI<UserAttributes>>;
   groups: Array<JSONAPI<GroupAttributes>>;
   currentOrganizationId: string;
 }
@@ -68,18 +75,24 @@ export function withData(WrappedComponent) {
       await updateStore(t => t.replaceAttribute(
         { type: USER, id: user.id }, 'isLocked', !user.attributes.isLocked
       ));
-
     }
 
     render() {
       const {
-        users, groups,
+        users, usersFromCache,
+        groups,
         currentOrganizationId: orgId,
         ...otherProps
       } = this.props;
 
+      // TODO: extract cache handling into query
+      const usersToDisplay = (
+        (usersFromCache && usersFromCache.length > 0 && usersFromCache) ||
+          users || []
+      );
+
       const dataProps = {
-        users: users && users.filter(user => {
+        users: usersToDisplay.filter(user => {
           return (
             // TODO: need a way to test against the joined organization
             !!user.attributes // && isRelatedTo(user, 'organizationMemberships', orgId)
@@ -90,7 +103,7 @@ export function withData(WrappedComponent) {
 
       const actionProps = {
         toggleLock: this.toggleLock
-      }
+      };
 
       if (this.isLoading()) {
         return <Loader />;
@@ -109,5 +122,6 @@ export function withData(WrappedComponent) {
   return compose(
     connect(mapStateToProps),
     query(mapNetworkToProps),
+    withOrbit(mapRecordsToProps),
   )(DataWrapper);
 }
