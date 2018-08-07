@@ -5,7 +5,6 @@ import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
-import i18n from '@ui/../translations';
 
 import Form from '../index';
 import page from './page';
@@ -15,10 +14,26 @@ describe('Acceptance | Edit Profile Form', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  beforeEach(async () => {
+  beforeEach(async function () {
+    this.mockGet(200, '/organizations', { data: [{
+      type: 'organizations',
+      id: 1,
+      attributes: {}
+    }] });
+
+
+    this.mockGet(200, '/users/1', { data: {
+      type: 'users',
+      id: '1',
+      attributes: {
+        givenName: 'hi'
+      }
+    } });
+
+
     await visit('/users/1/edit');
 
-    expect(location().pathName).to.equal('/users/1/edit');
+    expect(location().pathname).to.equal('/users/1/edit');
   });
 
   describe('The form has values', () => {
@@ -36,35 +51,9 @@ describe('Acceptance | Edit Profile Form', () => {
       expect(page.lastname).to.equal('Name');
       expect(page.email).to.equal('fake@domain.com');
       expect(page.phone).to.equal('997528963');
-      expect(page.emailNotification).to.be.false;
+      expect(page.emailNotification).to.be.true;
       expect(page.sshKey).to.equal('abcd');
 
-    });
-  });
-
-  describe ('the locale is changed', () => {
-    afterEach(() => {
-      i18n.default.changeLanguage('en-US');
-    });
-
-    describe('to english', () => {
-      beforeEach(async () => {
-        await page.selectLocale('en-US');
-      });
-
-      it('loads the english translations', () => {
-        expect(page.localeLabel).to.equal('Locale');
-      });
-    });
-
-    describe('to spanish', () => {
-      beforeEach(async () => {
-        await page.selectLocale('es-PE');
-      });
-
-      it('loads the spanish translations', () => {
-        expect(page.localeLabel).to.equal('Idioma');
-      });
     });
   });
 });

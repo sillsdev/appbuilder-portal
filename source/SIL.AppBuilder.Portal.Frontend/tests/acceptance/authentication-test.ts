@@ -32,7 +32,14 @@ describe('Acceptance | Authentication', () => {
         data: {
           id: 1,
           type: 'users',
-          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' }
+          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' },
+          relationships: {
+            ['organization-memberships']: {
+              data: [
+                { id: 1, type: 'organization-memberships' },
+              ]
+            }
+          }
         }
       }));
 

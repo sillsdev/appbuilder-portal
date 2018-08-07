@@ -6,7 +6,7 @@ export interface IProps {
   error?: any;
 }
 
-export default class PageError extends React.Component {
+export default class PageError extends React.Component<IProps> {
   render() {
     const { error } = this.props;
 

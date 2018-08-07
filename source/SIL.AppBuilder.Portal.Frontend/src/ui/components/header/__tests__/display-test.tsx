@@ -14,7 +14,7 @@ import Header from '../display';
 import headerHelper from 'tests/helpers/components/header';
 import { TOGGLE_SIDEBAR } from '@store/user-interface/actions/toggle-sidebar';
 
-describe('Integration | Component | Header', () => {
+describe('Acceptance | Component | Header', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
@@ -32,29 +32,28 @@ describe('Integration | Component | Header', () => {
       await visit('/');
     });
 
-    describe('the dropdowns can open', () => {
+    describe('the notifications dropdown', () => {
       beforeEach(async () => {
         expect(headerHelper.isNotificationMenuOpen).to.be.false;
 
         await headerHelper.clickNotification();
       });
 
-      it('opens the notification dropdown', () => {
+      it('is open', () => {
         expect(headerHelper.isNotificationMenuOpen).to.be.true;
       });
 
-      describe('only one dropdown is open at a time / dropdowns do not share the same state', () => {
-        beforeEach(async () => {
-          expect(headerHelper.isAvatarMenuOpen).to.be.false;
-          expect(headerHelper.isNotificationMenuOpen).to.be.true;
+    });
 
-          await headerHelper.clickAvatar();
-        });
+    describe('the user/avarar dropdown', () => {
+      beforeEach(async () => {
+        expect(headerHelper.isAvatarMenuOpen).to.be.false;
 
-        it('closes the notification dropdown, and opens the avatar dropdown', () => {
-          expect(headerHelper.isAvatarMenuOpen).to.be.true;
-          expect(headerHelper.isNotificationMenuOpen).to.be.false;
-        });
+        await headerHelper.clickAvatar();
+      });
+
+      it('is open', () => {
+        expect(headerHelper.isAvatarMenuOpen).to.be.true;
       });
     });
   });
@@ -66,7 +65,7 @@ describe('Integration | Component | Header', () => {
     });
 
     it('redirect to profile',() => {
-      expect(location().pathname).to.eq('/profile');
+      expect(location().pathname).to.eq('/users/1/edit');
     });
   });
 });

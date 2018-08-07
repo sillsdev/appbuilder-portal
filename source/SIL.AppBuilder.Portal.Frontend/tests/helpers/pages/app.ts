@@ -2,6 +2,7 @@ import {
   interactor,
   clickable,
   text,
+  selectable,
   isPresent
 } from '@bigtest/interactor';
 
@@ -14,6 +15,8 @@ export class AppInteractor {
   clickNotificationsBell = clickable('[data-test-header-notification]');
   clickLogout = clickable('[data-test-header-menu] [data-test-logout]');
 
+  selectLocale = selectable('[data-test-locale-switcher]');
+  myProfileText = text('[data-test-header-avatar] [data-test-profile]');
 }
 
 export default new AppInteractor('[data-test-app-container]');

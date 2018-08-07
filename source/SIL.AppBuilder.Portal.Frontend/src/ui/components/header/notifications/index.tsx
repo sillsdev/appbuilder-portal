@@ -117,11 +117,19 @@ class Notifications extends React.Component<IProps> {
 
     return (
       <div className='ui top right pointing dropdown ' data-test-header-notification>
-        <div className={`full-overlay transition ${this.state.visible ? 'visible' : ''}`} onClick={this.toggle}/>
-        <div onClick={this.toggle}>
+        <div
+          style={{ zIndex: 1 }}
+          className={`full-overlay transition ${this.state.visible ? 'visible invisible' : ''}`}
+          onClick={this.toggle}/>
+
+        <div
+          data-test-notification-trigger
+          style={{ position: 'relative' }}
+          onClick={this.toggle}>
           {!seenNotifications && <div className='red-dot' />}
           <Icon circular name='alarm' size='large' />
         </div>
+
         <div className={`ui menu transition notifications ${this.state.visible ? 'visible' : ''}`}>
           {
             notifications && notifications.length > 0 && this.showNotifications() ?
