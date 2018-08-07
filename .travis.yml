@@ -55,8 +55,8 @@ before_install:
 matrix:
   include:
     - env: PROJECT=source/SIL.AppBuilder.Portal.Frontend
+    - env: PROJECT=source/OptimaJet.DWKit.StarterApplication
 
     # - env: PROJECT=source/SIL.AppBuilder.Portal.Backend.Tests
-    # - env: PROJECT=source/OptimaJet.DWKit.StarterApplication
 
 script: time ./scripts/ci-travis.sh
