@@ -13,6 +13,7 @@ import './user-table.scss';
 interface IOwnProps {
   users: Array<JSONAPI<UserAttributes>>;
   groups: Array<JSONAPI<GroupAttributes>>;
+  toggleLock: (user: JSONAPI<UserAttributes>) => void;
 }
 
 type IProps =
@@ -21,7 +22,7 @@ type IProps =
 
 class Table extends React.Component<IProps> {
   render() {
-    const { users, groups, t } = this.props;
+    const { users, groups, t, toggleLock } = this.props;
 
     return (
       <table className= 'ui table user-table' >
@@ -29,7 +30,7 @@ class Table extends React.Component<IProps> {
         <tbody>
 
           { users && users.map((user,index) => (
-            <Row key={index} user={user} groups={groups} />
+            <Row key={index} user={user} groups={groups} toggleLock={toggleLock} />
           ))}
 
           { isEmpty(users) && (

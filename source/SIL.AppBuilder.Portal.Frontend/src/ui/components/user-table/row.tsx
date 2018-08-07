@@ -5,10 +5,12 @@ import { UserAttributes } from '@data/models/user';
 import { GroupAttributes } from '@data/models/group';
 import GroupDropdown from './dropdown';
 import { Link } from 'react-router-dom';
+import { Radio } from 'semantic-ui-react';
 
 export interface IOwnProps {
   user: JSONAPI<UserAttributes>;
   groups: Array<JSONAPI<GroupAttributes>>;
+  toggleLock: (user: JSONAPI<UserAttributes>) => void;
 }
 
 export type IProps =
@@ -16,8 +18,9 @@ export type IProps =
   & IOwnProps;
 
 class Row extends React.Component<IProps> {
+
   render() {
-    const { user: userData, groups, t } = this.props;
+    const { user: userData, groups, t, toggleLock } = this.props;
     const user = userData.attributes || {} as UserAttributes;
 
     const firstName = user.givenName || `(${t('profile.firstName')})`;
@@ -41,7 +44,10 @@ class Row extends React.Component<IProps> {
           */}
         </td >
         <td>
-          {isLocked ? 'Locked': ''}
+          <Radio
+            toggle
+            onChange={ _ => toggleLock(userData)}
+            checked={isLocked} />
         </td>
       </tr >
     );

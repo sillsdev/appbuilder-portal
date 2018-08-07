@@ -61,6 +61,16 @@ export function withData(WrappedComponent) {
       return !users || !groups;
     }
 
+    toggleLock = async (user) => {
+
+      const { updateStore } = this.props;
+
+      await updateStore(t => t.replaceAttribute(
+        { type: USER, id: user.id }, 'isLocked', !user.attributes.isLocked
+      ));
+
+    }
+
     render() {
       const {
         users, groups,
@@ -78,6 +88,10 @@ export function withData(WrappedComponent) {
         groups
       };
 
+      const actionProps = {
+        toggleLock: this.toggleLock
+      }
+
       if (this.isLoading()) {
         return <Loader />;
       }
@@ -86,6 +100,7 @@ export function withData(WrappedComponent) {
         <WrappedComponent
           { ...dataProps }
           { ...otherProps }
+          { ...actionProps }
         />
       );
     }
