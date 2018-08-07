@@ -1,4 +1,4 @@
-FROM axway/docker-node-chrome
+FROM kekel87/node-chrome-firefox
 
 WORKDIR /app
 

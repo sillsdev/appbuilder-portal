@@ -98,9 +98,7 @@ function runstuff {
 
     ci:ui)
       ${CI_COMPOSE} run --rm ui \
-        bash -c "yarn && yarn lint"
-      # for some reason tests to succeed in docker.................
-      #&& yarn test:ci"
+        bash -c "yarn && yarn lint && yarn test:ci"
     ;;
 
     ci:api)

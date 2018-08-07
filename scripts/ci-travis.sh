@@ -36,7 +36,8 @@ if [ "$changesExist" = "success" ] || [ "$FORCE" = 'true' ]; then
     if [[ $PROJECT = *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
         echo "Running the frontend commands..."
 
-        ( time ./run ci:ui )
+        # ( time ./run ci:ui )
+        ./run yarn && ./run yarn lint && ./run yarn test:ci
 
         frontendResult=$?
     fi

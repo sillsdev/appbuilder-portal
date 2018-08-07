@@ -5,32 +5,14 @@ services:
   - docker
 
 addons:
+  firefox: latest
   apt:
     packages:
       - docker-ce
 
 
-# Cache shennanigans
-# Based off of:
-# https://github.com/travis-ci/travis-ci/issues/5358#issuecomment-248915326
-# NOTE: on average, it is faster to re-build everything...
-# before_cache:
-#   # Save tagged docker images
-#   - >
-#     mkdir -p $HOME/docker
-#
-#     KNOWN_IMAGES=$(docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}')
-#
-#     time (
-#       echo $KNOWN_IMAGES | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
-#     )
-#
-# cache:
-#   directories:
-#     - $HOME/docker
-
 env:
-  - DOCKER_COMPOSE_VERSION=1.17.0
+  - DOCKER_COMPOSE_VERSION=1.17.0 MOZ_HEADLESS=1
 
 # https://docs.travis-ci.com/user/docker/#Using-Docker-Compose
 before_install:
@@ -42,19 +24,17 @@ before_install:
       sudo chmod +x /usr/local/bin/docker-compose
     )
 
-  # NOTE: on average, it is faster to re-build everything...
-  # # Load cached docker images
-  # - >
-  #   time (
-  #     if [[ -d $HOME/docker ]]; then
-  #       ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load";
-  #     fi
-  #   )
-
 
 matrix:
   include:
     - env: PROJECT=source/SIL.AppBuilder.Portal.Frontend
+      language: node_js
+      node_js: "8"
+      cache:
+        yarn: true
+        directories:
+          - source/SIL.AppBuilder.Portal.Frontend/node_modules
+
     - env: PROJECT=source/OptimaJet.DWKit.StarterApplication
 
     # - env: PROJECT=source/SIL.AppBuilder.Portal.Backend.Tests
