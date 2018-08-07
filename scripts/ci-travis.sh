@@ -12,17 +12,22 @@
 
 echo "============================================"
 if [.travis/build-condition.sh $TRAVIS_COMMIT_RANGE $PROJECT] || [ "$FORCE" = 'true' ]; then
-    echo "$PROJECT is being built";
+    echo "Project: '$PROJECT' is being built";
     echo ""
 
-    if [[ $PROJECT = *"Frontend" ]]; then
-        # TODO: eventually, linting should be required to pass
+    if [[ $PROJECT = *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
         time ./run dc build
+
         ( time ./run ci:lint:ui ) && ( time ./run yarn ) && ( ./run yarn test:ci )
-    else
-        echo "Only the frontend project is configured for contiuous testing"
+    fi
+
+    if [[ $PROJECT != *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
+        time ./run dc build
+
+        ( time ./run ci:test:api )
     fi
 else
     echo "$PROJECT is NOT being built because no changes were detected.";
+
     echo ""
 fi
