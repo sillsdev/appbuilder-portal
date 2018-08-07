@@ -91,7 +91,10 @@ function runstuff {
     # Testing
     ci:test:ui) bash -c "./run dc run --rm ui yarn test:ci";;
     ci:lint:ui) bash -c "./run dc run --rm ui yarn lint";;
-    ci:test:api) bash -c "./run dc run --rm api dotnet test SIL.AppBuilder.Portal.Backend.Tests/SIL.AppBuilder.Portal.Backend.Tests.csproj";;
+    ci:test:api) bash -c "\
+      ./run dc run --rm api \
+          dotnet test ../SIL.AppBuilder.Portal.Backend.Tests/SIL.AppBuilder.Portal.Backend.Tests.csproj\
+    ";;
 
 
     ################

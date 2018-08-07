@@ -11,20 +11,49 @@
 
 
 echo "============================================"
-if [.travis/build-condition.sh $TRAVIS_COMMIT_RANGE $PROJECT] || [ "$FORCE" = 'true' ]; then
+echo "pwd: $(pwd)"
+source ./scripts/build-condition.sh
+
+detected="$(detectChanges $TRAVIS_COMMIT_RANGE $PROJECT)"
+
+if [ "$detected" = "1" ] || [ "$detected" = "2" ]; then
+  changesExist="failed"
+else
+  changesExist="success"
+fi
+
+echo "changes result: $changesExist"
+
+if [ "$changesExist" = "success" ] || [ "$FORCE" = 'true' ]; then
+
     echo "Project: '$PROJECT' is being built";
     echo ""
 
+    echo "building docker containers..."
+    time ( ./run dc build > /dev/null 2>&1 )
+    echo "docker containers built!"
+
     if [[ $PROJECT = *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
-        time ./run dc build
+        echo "Running the frontend commands..."
 
         ( time ./run ci:lint:ui ) && ( time ./run yarn ) && ( ./run yarn test:ci )
+
+        frontendResult=$?
     fi
 
     if [[ $PROJECT != *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
-        time ./run dc build
+        echo "Running the backend commands..."
 
         ( time ./run ci:test:api )
+
+        backendResult=$?
+    fi
+
+    echo "Frontend CI finished with status: $frontendResult"
+    echo "Backend CI finished with status: $backendResult"
+
+    if [ $frontendResult -ne 0 ] || [ $backendResult -ne 0 ]; then
+      exit 1
     fi
 else
     echo "$PROJECT is NOT being built because no changes were detected.";
