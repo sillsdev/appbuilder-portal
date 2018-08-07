@@ -29,10 +29,6 @@ if [ "$changesExist" = "success" ] || [ "$FORCE" = 'true' ]; then
     echo "Project: '$PROJECT' is being built";
     echo ""
 
-    echo "building docker containers..."
-    time ( ./run ci:build > /dev/null 2>&1 )
-    echo "docker containers built!"
-
     if [[ $PROJECT = *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
         echo "Running the frontend commands..."
 
@@ -43,6 +39,11 @@ if [ "$changesExist" = "success" ] || [ "$FORCE" = 'true' ]; then
     fi
 
     if [[ $PROJECT != *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
+
+        echo "building docker containers..."
+        time ( ./run ci:build > /dev/null 2>&1 )
+        echo "docker containers built!"
+
         echo "Running the backend commands..."
 
         ( time ./run ci:api )
