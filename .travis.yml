@@ -1,33 +1,13 @@
-language: generic
-sudo: required
-
-services:
-  - docker
-
-addons:
-  firefox: latest
-  apt:
-    packages:
-      - docker-ce
-
-
 env:
   - DOCKER_COMPOSE_VERSION=1.17.0 MOZ_HEADLESS=1
-
-# https://docs.travis-ci.com/user/docker/#Using-Docker-Compose
-before_install:
-  # pip 10 is broken, I guess
-  - >
-    time (
-      sudo pip install --upgrade --force-reinstall pip==9.0.3
-      sudo pip install -U docker-compose
-      sudo chmod +x /usr/local/bin/docker-compose
-    )
 
 
 matrix:
   include:
     - env: PROJECT=source/SIL.AppBuilder.Portal.Frontend
+      addons:
+        firefox: latest
+
       language: node_js
       node_js: "8"
       cache:
@@ -36,6 +16,22 @@ matrix:
           - source/SIL.AppBuilder.Portal.Frontend/node_modules
 
     - env: PROJECT=source/OptimaJet.DWKit.StarterApplication
+      language: generic
+      sudo: required
+      services:
+        - docker
+      addons:
+        apt:
+          packages:
+            - docker-ce
+      before_install:
+        # pip 10 is broken, I guess
+        - >
+          time (
+            sudo pip install --upgrade --force-reinstall pip==9.0.3
+            sudo pip install -U docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+          )
 
     # - env: PROJECT=source/SIL.AppBuilder.Portal.Backend.Tests
 
