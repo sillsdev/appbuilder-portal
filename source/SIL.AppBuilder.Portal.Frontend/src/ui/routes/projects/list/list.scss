@@ -1,0 +1,28 @@
+.projects {
+
+  padding: 32px 0px;
+
+  .switcher {
+
+    display: flex;
+
+    div.text {
+      font-family: Montserrat;
+      font-size: 21px;
+      font-weight: bold;
+      line-height: 1.19;
+      color: #4a90e2;
+      align-self: center;
+    }
+
+    .icon {
+      font-weight: bold;
+      line-height: 1.19;
+      color: #4a90e2;
+      align-self: center;
+      margin-left: 10px;
+    }
+
+  }
+
+}

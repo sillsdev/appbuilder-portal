@@ -6,6 +6,10 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { getCurrentOrganizationId } from '@lib/current-organization';
 
+export interface IProps {
+  closeSidebar: () => void;
+}
+
 const MenuItem = ({name, to, onClick}) => {
 
   return (
@@ -27,7 +31,7 @@ const MenuItem = ({name, to, onClick}) => {
   )
 }
 
-class Navigation extends React.Component<i18nProps> {
+class Navigation extends React.Component<IProps & i18nProps> {
 
   render() {
     const currentOrganizationId = getCurrentOrganizationId();
@@ -45,8 +49,14 @@ class Navigation extends React.Component<i18nProps> {
         />
 
         <MenuItem
-          name={t('sidebar.ourProjects')}
-          to='/our-projects'
+          name={t('sidebar.myProjects')}
+          to='/projects/own'
+          onClick={closeSidebar}
+        />
+
+        <MenuItem
+          name={t('sidebar.archivedProjects')}
+          to='/projects/archived'
           onClick={closeSidebar}
         />
 

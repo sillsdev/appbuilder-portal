@@ -1,0 +1,29 @@
+import * as React from 'react';
+import { compose } from 'recompose';
+import { withRouter } from 'react-router';
+import { Switch, Route } from 'react-router-dom';
+
+import { requireAuth } from '@lib/auth';
+import { NotFound } from '@ui/routes/errors';
+import { withLayout } from '@ui/components/layout';
+
+import ListRoute, { pathName as listPath } from './list';
+
+export const pathName = '/projects';
+
+class ProjectsRoot extends React.Component {
+  render() {
+    return (
+      <Switch>
+        <Route exact path={listPath} component={ListRoute} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+}
+
+export default compose(
+  requireAuth,
+  withLayout,
+  withRouter
+)(ProjectsRoot);

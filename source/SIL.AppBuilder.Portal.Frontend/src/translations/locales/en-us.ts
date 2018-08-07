@@ -39,7 +39,8 @@ export default {
 
   sidebar: {
     myTasks: 'My Tasks',
-    ourProjects: 'Our Projects',
+    myProjects: 'My Projects',
+    archivedProjects: 'Archived Projects',
     users: 'Users',
     organizationSettings: 'Organization Settings',
     projectDirectory: 'Project Directory',
@@ -130,6 +131,17 @@ export default {
     noTasksTitle: 'No tasks are assigned to you.',
     noTasksDescription: 'Tasks that require your attention will appear here.',
     reassign: 'Reassign',
+  },
+
+  projects: {
+    switcher: {
+      myProjects: `My Projects ({numProjects})`,
+      archived: `Archived ({numProjects})`,
+      dropdown: {
+        myProjects: 'My Projects',
+        archived: 'Archived'
+      }
+    }
   },
 
   project: {
