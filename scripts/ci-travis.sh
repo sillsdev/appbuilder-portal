@@ -30,23 +30,21 @@ if [ "$changesExist" = "success" ] || [ "$FORCE" = 'true' ]; then
     echo ""
 
     echo "building docker containers..."
-    time ( ./run dc build > /dev/null 2>&1 )
+    time ( ./run ci:build > /dev/null 2>&1 )
     echo "docker containers built!"
 
     if [[ $PROJECT = *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
-        ./run dc stop
         echo "Running the frontend commands..."
 
-        ( time ./run ci:lint:ui ) && ( time ./run yarn ) && ( ./run yarn test:ci )
+        ( time ./run ci:ui )
 
         frontendResult=$?
     fi
 
     if [[ $PROJECT != *"Frontend" ]] || [ "$BOTH" = 'true' ]; then
-        ./run dc stop
         echo "Running the backend commands..."
 
-        ( time ./run ci:test:api )
+        ( time ./run ci:api )
 
         backendResult=$?
     fi
