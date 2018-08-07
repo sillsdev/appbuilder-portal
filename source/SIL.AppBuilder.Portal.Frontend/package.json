@@ -17,7 +17,7 @@
     "test:watch:headless": "CI=true yarn karma:start",
     "test:watch:detached": "DETACHED=true yarn karma:start",
     "test:ci": "CI=true yarn karma:start --single-run",
-    "lint": "yarn tslint 'src/**/*.{ts,tsx}' 'tests/**/*.{ts,tsx}'",
+    "lint": "yarn tslint 'src/**/*.ts?(x)' 'tests/**/*.ts?(x)'",
     "lint:fix": "yarn lint --fix",
     "tslint-check": "./node_modules/.bin/tslint-config-prettier-check ./tslint.json"
   },
