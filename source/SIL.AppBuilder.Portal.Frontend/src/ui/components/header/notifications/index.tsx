@@ -127,7 +127,7 @@ class Notifications extends React.Component<IProps> {
           style={{ position: 'relative' }}
           onClick={this.toggle}>
           {!seenNotifications && <div className='red-dot' />}
-          <Icon circular name='alarm' size='large' />
+          <i className='alarm large circular icon no-shadows' />
         </div>
 
         <div className={`ui menu transition notifications ${this.state.visible ? 'visible' : ''}`}>
