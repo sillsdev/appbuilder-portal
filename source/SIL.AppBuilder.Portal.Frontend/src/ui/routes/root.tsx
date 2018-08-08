@@ -17,11 +17,11 @@ import RequestOrgAccessSuccessRoute, { pathName as requestOrgAccessSuccessPath }
 import OrganizationsRoute, { pathName as organizationsPath } from '@ui/routes/organizations';
 import DirectoryRoute, { pathName as directoryPath } from '@ui/routes/project-directory';
 
+import ProjectsRoute, { pathName as projectsPath } from '@ui/routes/projects';
 import ProjectDetailRoute, { pathName as projectDetailPath } from '@ui/routes/project';
 import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 
 import ErrorRootRoute from '@ui/routes/errors';
-import NotFoundRoute from '@ui/routes/errors/not-found';
 
 export default class RootPage extends React.Component {
   render() {
@@ -46,6 +46,7 @@ export default class RootPage extends React.Component {
             <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
 
             <Route path={directoryPath} component={DirectoryRoute} />
+            <Route path={projectsPath} component={ProjectsRoute} />
             <Route path={projectDetailPath} component={ProjectDetailRoute} />
             <Route path={usersPath} component={UsersRoute} />
 

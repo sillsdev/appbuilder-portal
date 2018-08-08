@@ -38,7 +38,7 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         owner: { type: 'hasOne', model: 'user', inverse: 'ownedOrganizations' },
         users: { type: 'hasMany', model: 'user', inverse: 'organizations' },
-        projects: { type: 'hasMany', model: 'user', inverse: 'projects'},
+        projects: { type: 'hasMany', model: 'user', inverse: 'organization'},
         userMemberships: { type: 'hasMany', model: 'organization-membership', inverse: 'organization' },
       }
     },

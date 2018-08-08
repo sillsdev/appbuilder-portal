@@ -1,0 +1,27 @@
+.project-switcher {
+  font-family: Montserrat;
+  font-size: 21px;
+  font-weight: bold;
+  line-height: 1.19;
+  color: #4a90e2 !important;
+  display: flex !important;
+
+  > .text {
+    align-self: center;
+  }
+
+  > .icon {
+    align-self: center;
+    margin-left: 10px;
+  }
+
+  .menu {
+    min-width: 200px !important;
+    margin-top: 0 !important;
+
+    .item {
+      font-family: Montserrat;
+      font-size: 16px !important;
+    }
+  }
+}

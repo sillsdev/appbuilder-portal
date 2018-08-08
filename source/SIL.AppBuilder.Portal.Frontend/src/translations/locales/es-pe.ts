@@ -37,7 +37,8 @@ export default {
 
   sidebar: {
     myTasks: 'Mis tareas',
-    ourProjects: 'Nuestros projectos',
+    myProjects: 'Mis Proyectos',
+    organizationProjects: 'Proyectos de Organización',
     users: 'Usuarios',
     organizationSettings: 'Configuración de organización',
     projectDirectory: 'Directorio de proyectos',
@@ -119,6 +120,24 @@ export default {
     noTasksTitle: 'No hay tareas asignadas para ti.',
     noTasksDescription: 'Las tareas que requieren tu atención aparecerán aqui.',
     reassign: 'Asignar',
+  },
+
+  projects: {
+    switcher: {
+      myProjects: `Mis Proyectos ({numProjects})`,
+      archived: `Archivados ({numProjects})`,
+      dropdown: {
+        orgProjects: 'Projectos de organización',
+        myProjects: 'Mis Projectos',
+        archived: 'Proyectos archivados'
+      }
+    },
+    noneFound: 'No projects matching the selected criteria were found.',
+    table: {
+      columns: {
+
+      }
+    }
   },
 
   project: {

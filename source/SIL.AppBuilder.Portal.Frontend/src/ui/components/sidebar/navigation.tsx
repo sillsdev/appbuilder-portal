@@ -6,7 +6,18 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { getCurrentOrganizationId } from '@lib/current-organization';
 
-const MenuItem = ({name, to, onClick}) => {
+export interface IProps {
+  closeSidebar: () => void;
+}
+
+interface MenuItem {
+  name: string;
+  to: string;
+  onClick: (e) => void;
+  exact?: boolean;
+}
+
+const MenuItem = ({ name, to, onClick, exact }: MenuItem) => {
 
   return (
     <>
@@ -14,22 +25,26 @@ const MenuItem = ({name, to, onClick}) => {
       name={name}
       as={NavLink}
       to={to}
+      exact
       activeClassName='active'
-        className='d-xs-none d-sm-none d-md-none d-lg-block d-xl-block' />
+      className='d-xs-none d-sm-none d-md-none d-lg-block d-xl-block'
+    />
     <Menu.Item
       name={name}
       as={NavLink}
       to={to}
       activeClassName='active'
       onClick={onClick}
+      exact
       className='d-xs-block d-sm-block d-md-block d-lg-none d-xl-none' />
     </>
   );
 };
 
-class Navigation extends React.Component<i18nProps> {
+class Navigation extends React.Component<IProps & i18nProps> {
 
   render() {
+
     const currentOrganizationId = getCurrentOrganizationId();
     const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
 
@@ -45,8 +60,16 @@ class Navigation extends React.Component<i18nProps> {
         />
 
         <MenuItem
-          name={t('sidebar.ourProjects')}
-          to='/our-projects'
+          name={t('sidebar.myProjects')}
+          to='/projects/own'
+          exact
+          onClick={closeSidebar}
+        />
+
+        <MenuItem
+          name={t('sidebar.organizationProjects')}
+          to='/projects/organization'
+          exact
           onClick={closeSidebar}
         />
 
