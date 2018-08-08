@@ -83,10 +83,8 @@ const schemaDefinition: SchemaSettings = {
     task: {
       keys: { remoteId: {} },
       attributes: {
-        project: { type: 'string' },
-        product: { type: 'string' },
         status: { type: 'string' },
-        waitTime: { type: 'string' }
+        waitTime: { type: 'number' }
       },
       relationships: {
         project: { type: 'hasOne', model: 'project', inverse: 'tasks'},

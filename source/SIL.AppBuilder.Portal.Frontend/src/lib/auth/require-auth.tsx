@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RouterProps, Redirect } from 'react-router';
 
-import { withCurrentUser } from '@data/with-current-user';
+import { withCurrentUser } from '@data/containers/with-current-user';
 import { isLoggedIn } from '@lib/auth0';
 
 import { requireAuthHelper } from './require-auth-helper';

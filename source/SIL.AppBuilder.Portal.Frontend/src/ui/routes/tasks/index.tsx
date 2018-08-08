@@ -1,85 +1,54 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { compose } from 'recompose';
+import { Container, Icon, Button } from 'semantic-ui-react';
 
+import { uuid } from '@orbit/utils';
+import { withData, WithDataProps } from 'react-orbitjs';
+
+import { query } from '@data';
+import { withStubbedDevData } from '@data/with-stubbed-dev-data';
+import { TaskAttributes, TYPE_NAME as TASKS } from '@data/models/task';
+import { withTranslations, i18nProps } from '@lib/i18n';
 import { requireAuth } from '@lib/auth';
 import { isEmpty } from '@lib/collection';
 import { withLayout } from '@ui/components/layout';
-import { withData, WithDataProps } from 'react-orbitjs';
-import { Container, Icon, Button } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
-import { TaskAttributes, TYPE_NAME } from '@data/models/task';
+import './tasks.scss';
+import Row from './row';
 
 export const pathName = '/tasks';
 
-import './tasks.scss';
-import { uuid } from '@orbit/utils';
-
-const prettyMS = require('pretty-ms');
-
-interface Task {
-  type: string;
-  id: string;
-  attributes: TaskAttributes;
-}
-
 export interface IOwnProps {
-  tasks: Task[];
+  tasks: Array<JSONAPI<TaskAttributes>>;
 }
+
 export type IProps =
   & IOwnProps
   & WithDataProps
   & i18nProps;
 
+// TODO: backend endpoint not implement
+//       use query / mapNetwork when backend endpoint is implemented
+const mapNetworkToProps = {
+  tasks: q => q.findRecords(TASKS)
+};
+
+const mapRecordsToProps = (ownProps) => {
+  return {
+    tasks: q => q.findRecords(TASKS)
+  };
+};
+
 class Tasks extends React.Component<IProps> {
-
-  state = { data: {}, errors: {} };
-
-  // TODO: Remove this method when we collect tasks from the backend
-  generateRandomTaks = async () => {
-
-    const products = ['Android APK w/Embedded Audio','HTML website'];
-    const status = ['Awaiting Approval','Send / Recieve', 'App Store Preview'];
-
-    await this.props.updateStore(t => t.addRecord({
-      type: TYPE_NAME,
-      id: uuid(),
-      attributes: {
-        project: { name: 'Example Bible' },
-        product: { name: products[Math.floor(Math.random() * (2))] },
-        status: status[Math.floor(Math.random() * (3))],
-        waitTime: Math.floor(Math.random() * (1296001))
-      }
-    }), { devOnly: true });
-  }
-
-  componentWillMount() {
-    this.generateRandomTaks();
-  }
-
-  productIcon = (productName) => {
-
-    const icons = [{id: 'android', icon:'android'},{id:'html', icon: 'file code'}];
-
-    if (icons.length > 0) {
-      const productIcon = icons.find(icon => productName.toLowerCase().includes(icon.id));
-
-      return <Icon className={productIcon.icon} />;
-    }
-
-    return null;
-  }
-
   render() {
-
     const { tasks, t } = this.props;
 
     return (
       <Container className='tasks'>
         <h1 className='page-heading'>{t('tasks.title')}</h1>
 
-        <table>
+        <table className='ui table'>
           <thead>
             <tr>
               <th>{t('tasks.project')}</th>
@@ -91,77 +60,57 @@ class Tasks extends React.Component<IProps> {
             </tr>
           </thead>
           <tbody>
-            { tasks && tasks.map(task => (
-              <Row task={task} />
+            { tasks && tasks.map(( task, i ) => (
+              <Row key={i} task={task} />
             )) }
 
             { isEmpty(tasks) && (
               <tr>
-                <td colspan='6'>
+                <td colSpan={6}>
                   <p>{t('tasks.noTasksDescription')}</p>
                 </td>
               </tr>
             ) }
-
           </tbody>
         </table>
-
-        {
-          tasks ?
-            <Table>
-
-              <Table.Body>
-                {tasks.map((task,index) => {
-
-                  const { project, product, status, waitTime, user } = task.attributes;
-                  // TODO: I don't think the user will be in the attributes.
-                  //       maybe will need to pull out of relationships and query orbit
-                  //       to get the related user
-                  //       OR, the backend gives us the person's name directly, and
-                  //       we don't worry about a relationship.
-                  const claimedBy = user ? `${user.firstName} ${user.lastName}` : t('tasks.unclaimed');
-
-                  return (
-                    <Table.Row key={index}>
-                      <Table.Cell>
-                        <Link to={'/projects'}>{project.name}</Link>
-                      </Table.Cell>
-                      <Table.Cell>
-                        { this.productIcon(product.name) }
-                        <span>{product.name}</span>
-                      </Table.Cell>
-                      <Table.Cell>{claimedBy}</Table.Cell>
-                      <Table.Cell className='red'>{status}</Table.Cell>
-                      <Table.Cell>
-                        <span>{prettyMS(waitTime, { secDecimalDigits: 0 })}</span>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Button>{t('tasks.reassign')}</Button>
-                      </Table.Cell>
-                    </Table.Row>
-                  );
-                })}
-              </Table.Body>
-            </Table> :
-
-            <div className='empty-table'>
-              <h3>{t('tasks.noTasksTitle')}</h3>
-            </div>
-        }
       </Container>
     );
   }
 }
 
-const mapRecordsToProps = (ownProps) => {
-  return {
-    tasks: q => q.findRecords(TYPE_NAME)
-  };
-};
 
 export default compose(
   withLayout,
   requireAuth,
+  withStubbedDevData('user', '10', {
+    givenName: 'Devin',
+    familyName: 'Devmily',
+  }),
+  withStubbedDevData('task', '1', {
+    status: 'pending',
+    waitTime: 80000
+  }, {
+    project: {
+      data: { id: 1, type: 'project' }
+    },
+    product: {
+      data: { id: 1, type: 'product' }
+    },
+    assigned: {
+      data: { id: 10, type: 'user' }
+    }
+  }),
+  withStubbedDevData('project', '1', {
+    name: 'dev project name'
+  }, {
+    tasks: {
+      data: [{ id: 1, type: 'task' }]
+    },
+    products: {
+      data: [{ id: 1, type: 'product' }]
+    },
+  }),
+  // query(mapNetworkToProps),
   withData(mapRecordsToProps),
-  translate('translations')
+  withTranslations
 )(Tasks);

@@ -7,7 +7,7 @@ import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { UserAttributes } from '@data/models/user';
-import { withCurrentUser } from '@data/with-current-user';
+import { withCurrentUser } from '@data/containers/with-current-user';
 
 import { deleteToken, getPictureUrl } from '@lib/auth0';
 import './header.scss';

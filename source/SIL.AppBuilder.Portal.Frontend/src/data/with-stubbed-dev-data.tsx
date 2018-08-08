@@ -4,7 +4,7 @@ import { compose } from 'recompose';
 
 // Don't have API data yet?
 // Stub it with this!
-export function withStubbedDevData(typeName: string, forcedId: string, attributes: any) {
+export function withStubbedDevData(typeName: string, forcedId: string, attributes: any, relationships = {}) {
   const mapRecordsToProps = {
     existing: q => q.findRecord({ id: forcedId, type: typeName })
   };
@@ -29,7 +29,8 @@ export function withStubbedDevData(typeName: string, forcedId: string, attribute
           type: typeName,
           id: forcedId,
           // remoteId: forcedId,
-          attributes
+          attributes,
+          relationships
         }), { devOnly: true }).then(data => {
           console.debug('DEV: created:', data);
 
