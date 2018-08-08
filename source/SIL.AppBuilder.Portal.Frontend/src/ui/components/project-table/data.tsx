@@ -55,7 +55,7 @@ export function withData(WrappedComponent) {
 
       const dataProps = {
         projects
-      }
+      };
 
       if (this.isLoading()) {
         return <Loader/>;

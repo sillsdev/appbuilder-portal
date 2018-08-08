@@ -90,7 +90,7 @@ export function withData(WrappedComponent) {
 
       const actionProps = {
         toggleLock: this.toggleLock
-      }
+      };
 
       if (this.isLoading()) {
         return <Loader />;

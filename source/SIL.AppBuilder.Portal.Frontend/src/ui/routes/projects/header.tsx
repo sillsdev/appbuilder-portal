@@ -20,7 +20,7 @@ class Header extends React.Component<IOwnProps & i18nProps> {
       'own': t('projects.switcher.dropdown.myProjects'),
       'organization': t('projects.switcher.dropdown.orgProjects'),
       'archived': t('projects.switcher.dropdown.archived')
-    }
+    };
 
     return (
       <div className='flex justify-content-space-between p-t-md-xs p-b-md-xs'>
@@ -43,7 +43,7 @@ class Header extends React.Component<IOwnProps & i18nProps> {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
 }
