@@ -34,6 +34,7 @@ const MenuItem = ({name, to, onClick}) => {
 class Navigation extends React.Component<IProps & i18nProps> {
 
   render() {
+
     const currentOrganizationId = getCurrentOrganizationId();
     const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
 
@@ -55,8 +56,8 @@ class Navigation extends React.Component<IProps & i18nProps> {
         />
 
         <MenuItem
-          name={t('sidebar.archivedProjects')}
-          to='/projects/archived'
+          name={t('sidebar.organizationProjects')}
+          to='/projects'
           onClick={closeSidebar}
         />
 

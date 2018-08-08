@@ -38,7 +38,7 @@ export default {
   sidebar: {
     myTasks: 'Mis tareas',
     myProjects: 'Mis Proyectos',
-    archivedProjects: 'Proyectos archivados',
+    organizationProjects: 'Proyectos de Organización',
     users: 'Usuarios',
     organizationSettings: 'Configuración de organización',
     projectDirectory: 'Directorio de proyectos',
@@ -129,6 +129,12 @@ export default {
       dropdown: {
         myProjects: 'Mis Projectos',
         archived: 'Archivados'
+      }
+    },
+    noneFound: 'No projects matching the selected criteria were found.',
+    table: {
+      columns: {
+
       }
     }
   },

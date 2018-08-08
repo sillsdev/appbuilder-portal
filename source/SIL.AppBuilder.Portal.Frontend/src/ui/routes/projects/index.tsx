@@ -7,7 +7,8 @@ import { requireAuth } from '@lib/auth';
 import { NotFound } from '@ui/routes/errors';
 import { withLayout } from '@ui/components/layout';
 
-import ListRoute, { pathName as listPath } from './list';
+import MyProjectsRoute, { pathName as myProjectPath } from './my-projects';
+import OrgProjectsRoute, { pathName as orgProjectsPath } from './org-projects';
 
 export const pathName = '/projects';
 
@@ -15,7 +16,9 @@ class ProjectsRoot extends React.Component {
   render() {
     return (
       <Switch>
-        <Route exact path={listPath} component={ListRoute} />
+        <Route exact path={orgProjectsPath} component={OrgProjectsRoute} />
+        <Route exact path={myProjectPath} component={MyProjectsRoute} />
+
         <Route component={NotFound} />
       </Switch>
     );

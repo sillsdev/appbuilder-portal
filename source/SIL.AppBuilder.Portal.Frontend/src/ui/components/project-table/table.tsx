@@ -2,9 +2,10 @@ import * as React from 'react';
 
 import Header from './header';
 import Row from './row';
+import { ProjectAttributes } from '@data/models/project';
 
 interface IOwnProps {
-  projects: any[];
+  projects: Array<JSONAPI<ProjectAttributes>>;
 }
 
 type IProps =
@@ -12,10 +13,9 @@ type IProps =
 
 
 export default class Table extends React.Component<IProps> {
+
   render() {
     const { projects } = this.props;
-
-    console.log('Table', this.props);
 
     return (
       <table className='ui table product-table'>
@@ -29,4 +29,5 @@ export default class Table extends React.Component<IProps> {
       </table>
     );
   }
+
 }

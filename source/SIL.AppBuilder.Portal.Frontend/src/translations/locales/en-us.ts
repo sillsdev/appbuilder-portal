@@ -40,7 +40,7 @@ export default {
   sidebar: {
     myTasks: 'My Tasks',
     myProjects: 'My Projects',
-    archivedProjects: 'Archived Projects',
+    organizationProjects: 'Organization Projects',
     users: 'Users',
     organizationSettings: 'Organization Settings',
     projectDirectory: 'Project Directory',

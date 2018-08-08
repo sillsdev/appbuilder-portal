@@ -1,105 +1,76 @@
 import * as React from 'react';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { compose } from 'recompose';
+import { WithDataProps } from 'react-orbitjs';
 
-import { TYPE_NAME as PROJECT } from '@data/models/project';
-import { PLURAL_NAME as PRODUCTS } from '@data/models/product';
+import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
-import { ISortProps } from '@data/containers/sorting';
-import { IPaginateProps } from '@data/containers/pagination';
-import { defaultSourceOptions } from '@data';
+import { TYPE_NAME as OWNER } from '@data/models/user';
 
-function isEmpty(data) {
-  return (!data || (Array.isArray(data) && data.length === 0));
-}
+import { query, defaultSourceOptions } from '@data';
 
-function mapRecordsToProps(passedProps) {
-  const {
-    sortProperty, defaultSort,
-    filterOptions, pageOptions
-  } = passedProps;
+import { PageLoader as Loader } from '@ui/components/loaders';
+
+function mapNetworkToProps(passedProps) {
 
   return {
-    fromCache: q => {
-      return q.findRecords(PROJECT);
-
-    }
-       // .sort(sortProperty || defaultSort)
-       /* .filter(filterOptions || []) */
-       // .page({ offset: 0, limit: 20, ...( pageOptions || {} ) })
+    projects: [
+      q => q.findRecords(PROJECT),
+      {
+        sources: {
+          settings: {
+            ...defaultSourceOptions
+          }
+        }
+      }
+    ]
   };
 }
 
+interface IOwnProps {
+  projects: Array<JSONAPI<ProjectAttributes>>;
+}
+
 type IProps =
-  & ISortProps
-  & IPaginateProps
-//  & IFilteringProps
+  & IOwnProps
   & WithDataProps;
 
 
 export function withData(WrappedComponent) {
 
   class DataWrapper extends React.Component<IProps> {
-    state = {
-      fromNetwork: null
-    };
 
-    fetchData = async () => {
-      const {
-        queryStore,
-        sortProperty, defaultSort,
-        pageOptions
-      } = this.props;
+    isLoading = () => {
 
-      const records = await queryStore(
-        q => (
-          q.findRecords(PROJECT)
-           // .sort(sortProperty || defaultSort)
-           // TODO: tweak in JSONAPI pull strategy
-           /* .filter(filterOptions || []) */
-           // .page({ offset: 0, limit: 20, ...( pageOptions || {} ) })
-        ), {
-          label: `Query Projects`,
-          sources: {
-            remote: {
-              settings: {
-                ...defaultSourceOptions()
-              },
-              include: [ORGANIZATION]
-            }
-          }
-        }
-      );
-
-      this.setState({ fromNetwork: records });
-    }
-
-    componentDidMount() {
-
-      const { fromNetwork } = this.state;
-      const { fromCache } = this.props;
-
-      if (isEmpty(fromCache) && isEmpty(fromNetwork)) { this.fetchData(); }
+      const { projects } = this.props;
+      return !projects;
     }
 
 
     render() {
 
-      const { fromNetwork } = this.state;
-      const { fromCache } = this.props;
+      const {
+        projects,
+        ...otherProps
+      } = this.props;
 
       const dataProps = {
-        projects: !isEmpty(fromCache) ? fromCache : fromNetwork,
-        isLoading: isEmpty(fromCache) && isEmpty(fromNetwork)
-      };
+        projects
+      }
+
+      if (this.isLoading()) {
+        return <Loader/>;
+      }
 
       return (
         <WrappedComponent
           { ...dataProps }
-          { ...this.props }
+          { ...otherProps }
         />
       );
     }
   }
 
-  return withOrbit(mapRecordsToProps)(DataWrapper);
+  return compose(
+    query(mapNetworkToProps),
+  )(DataWrapper);
 }
