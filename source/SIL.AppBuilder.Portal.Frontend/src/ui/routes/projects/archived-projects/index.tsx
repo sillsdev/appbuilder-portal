@@ -6,7 +6,7 @@ import Header from '../header';
 
 export const pathName = '/projects/archived';
 
-class MyProjects extends React.Component {
+class ArchivedProjects extends React.Component {
 
   render() {
     return (
@@ -18,4 +18,4 @@ class MyProjects extends React.Component {
   }
 }
 
-export default MyProjects;
+export default ArchivedProjects;
