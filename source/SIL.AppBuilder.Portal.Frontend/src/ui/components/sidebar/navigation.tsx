@@ -10,7 +10,14 @@ export interface IProps {
   closeSidebar: () => void;
 }
 
-const MenuItem = ({name, to, onClick}) => {
+interface MenuItem {
+  name: string;
+  to: string;
+  onClick: (e) => void;
+  exact?: boolean;
+}
+
+const MenuItem = ({ name, to, onClick, exact }: MenuItem) => {
 
   return (
     <>
@@ -18,14 +25,17 @@ const MenuItem = ({name, to, onClick}) => {
       name={name}
       as={NavLink}
       to={to}
+      exact
       activeClassName='active'
-        className='d-xs-none d-sm-none d-md-none d-lg-block d-xl-block' />
+      className='d-xs-none d-sm-none d-md-none d-lg-block d-xl-block'
+    />
     <Menu.Item
       name={name}
       as={NavLink}
       to={to}
       activeClassName='active'
       onClick={onClick}
+      exact
       className='d-xs-block d-sm-block d-md-block d-lg-none d-xl-none' />
     </>
   );
@@ -52,12 +62,14 @@ class Navigation extends React.Component<IProps & i18nProps> {
         <MenuItem
           name={t('sidebar.myProjects')}
           to='/projects/own'
+          exact
           onClick={closeSidebar}
         />
 
         <MenuItem
           name={t('sidebar.organizationProjects')}
-          to='/projects'
+          to='/projects/organization'
+          exact
           onClick={closeSidebar}
         />
 

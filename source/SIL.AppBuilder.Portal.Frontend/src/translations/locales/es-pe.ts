@@ -127,8 +127,9 @@ export default {
       myProjects: `Mis Proyectos ({numProjects})`,
       archived: `Archivados ({numProjects})`,
       dropdown: {
+        orgProjects: 'Projectos de organización',
         myProjects: 'Mis Projectos',
-        archived: 'Archivados'
+        archived: 'Proyectos archivados'
       }
     },
     noneFound: 'No projects matching the selected criteria were found.',

@@ -138,8 +138,9 @@ export default {
       myProjects: `My Projects ({numProjects})`,
       archived: `Archived ({numProjects})`,
       dropdown: {
+        orgProjects: 'Organization Projects',
         myProjects: 'My Projects',
-        archived: 'Archived'
+        archived: 'Archived Projects'
       }
     }
   },
