@@ -65,7 +65,7 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         tasks: { type: 'hasMany', model: 'task', inverse: 'project'},
-        products: { type: 'hasMany', model: 'product', inverse: 'projects' },
+        products: { type: 'hasMany', model: 'product', inverse: 'project' },
         organization: { type: 'hasOne', model: 'organization', inverse: 'projects'},
         owner: { type: 'hasOne', model: 'user', inverse: 'projects' }
       }
@@ -77,7 +77,14 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         tasks: { type: 'hasMany', model: 'task', inverse: 'project' },
-        projects: { type: 'hasMany', model: 'product', inverse: 'products' }
+        project: { type: 'hasMany', model: 'project', inverse: 'products' }
+      }
+    },
+    productDefinition: {
+      keys: { remoteId: {} },
+      attributes: {},
+      relationships: {
+
       }
     },
     task: {

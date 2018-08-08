@@ -36,6 +36,7 @@ class TaskRow extends React.Component<IProps> {
   render() {
     const { t, task, product, project, assignedTo } = this.props;
 
+    console.log('row props', this.props);
     if (!task || !task.attributes) {
       return <tr><td colSpan={6}><Loader /></td></tr>;
     }
@@ -46,10 +47,12 @@ class TaskRow extends React.Component<IProps> {
 
     const claimedBy = hasName ? `${givenName || ''} ${familyName || ''}` : t('tasks.unclaimed');
 
+    const projectAttrs = project.attributes || {};
+
     return (
       <tr>
         <td>
-          <Link to={`/projects/${project.id}`}>{project.name}</Link>
+          <Link to={`/projects/${project.id}`}>{projectAttrs.name}</Link>
         </td>
         <td>
           <ProductIcon product={product} />

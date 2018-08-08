@@ -82,32 +82,46 @@ class Tasks extends React.Component<IProps> {
 export default compose(
   withLayout,
   requireAuth,
-  withStubbedDevData('user', '10', {
+  withStubbedDevData('user', 10, {
     givenName: 'Devin',
     familyName: 'Devmily',
   }),
-  withStubbedDevData('task', '1', {
+  withStubbedDevData('task', 1, {
     status: 'pending',
     waitTime: 80000
-  }, {
-    project: {
-      data: { id: 1, type: 'project' }
-    },
-    product: {
-      data: { id: 1, type: 'product' }
-    },
-    assigned: {
-      data: { id: 10, type: 'user' }
-    }
+   }, {
+   project: {
+     data: { id: 10, type: 'project' }
+   },
+   product: {
+     data: { id: 10, type: 'product' }
+   },
+   assigned: {
+     data: { id: 10, type: 'user' }
+   }
   }),
-  withStubbedDevData('project', '1', {
-    name: 'dev project name'
-  }, {
+  withStubbedDevData('project', 10, {
+      name: 'dev project name',
+      dateCreated: new Date(),
+      language: 'en-US',
+      type: 'Scripture App Builder',
+      description: "NIV Bible",
+    }, {
     tasks: {
       data: [{ id: 1, type: 'task' }]
     },
     products: {
-      data: [{ id: 1, type: 'product' }]
+      data: [{ id: 10, type: 'product' }]
+    },
+  }),
+  withStubbedDevData('product', 10, {
+      name: 'dev product name (android)'
+    }, {
+    tasks: {
+      data: [{ id: 1, type: 'task' }]
+    },
+    project: {
+      data: { id: 10, type: 'project' }
     },
   }),
   // query(mapNetworkToProps),
