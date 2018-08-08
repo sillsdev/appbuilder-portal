@@ -10,7 +10,7 @@ import * as toast from '@lib/toast';
 import { getPictureUrl } from '@lib/auth0';
 import { idFor, defaultOptions } from '@data';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
-import { withCurrentUser } from '@data/with-current-user';
+import { withCurrentUser } from '@data/containers/with-current-user';
 
 import EditProfileForm from './form';
 import { withData } from './with-data';

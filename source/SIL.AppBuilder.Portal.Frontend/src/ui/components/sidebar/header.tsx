@@ -14,6 +14,7 @@ export interface IProps {
   isOrgSwitcherActive: boolean;
   toggleOrgSwitcher: () => void;
   organization: JSONAPI<OrganizationAttributes>;
+  currentOrganization: JSONAPI<OrganizationAttributes>;
 }
 
 const mapStateToProps = ({ data }) => ({

@@ -30,6 +30,10 @@ describe('Acceptance | Sidebar', () => {
       expect(location().pathname).to.eq('/tasks');
     });
 
+    afterEach(() => {
+      localStorage.clear();
+    });
+
     describe('Open sidebar',() => {
       beforeEach(async () => {
         await page.clickOpenSidebarButton();

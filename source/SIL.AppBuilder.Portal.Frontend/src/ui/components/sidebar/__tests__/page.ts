@@ -14,4 +14,4 @@ export class SidebarInteractor {
   isSidebarVisible = isPresent('.is-sidebar-visible [data-test-sidebar]');
 }
 
-export default new SidebarInteractor();
+export default new SidebarInteractor('[data-test-app-container]');

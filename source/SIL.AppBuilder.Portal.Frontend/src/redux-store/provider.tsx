@@ -60,7 +60,8 @@ export default class ReduxProvider extends React.Component<IProps> {
     store.subscribe(() => {
       const currentState = store.getState();
       const toPersist = {
-        data: currentState.data
+        data: currentState.data,
+        ui: currentState.ui
       };
 
       // NOTE: that for non-react/redux things (jquery, fetch, etc),
