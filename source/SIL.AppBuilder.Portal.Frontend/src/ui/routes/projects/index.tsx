@@ -8,9 +8,9 @@ import { requireAuth } from '@lib/auth';
 import { NotFound } from '@ui/routes/errors';
 import { withLayout } from '@ui/components/layout';
 
-import MyProjectsTable from './my-projects-table';
-import OrgProjectsTable from './org-projects-table';
-import ArchivedProjectsTable from './archived-projects-table';
+import MyProjectsRoute, { pathName as myProjectPath } from './my-projects';
+import OrganizationProjectsRoute, { pathName as organizationProjectPath } from './organization-projects';
+import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './archived-projects';
 
 import Header from './header';
 
@@ -23,24 +23,9 @@ class ProjectsRoot extends React.Component {
     return (
       <div className='ui container'>
         <Switch>
-          <Route exact path='/projects/own' render={(routeProps) => (
-            <>
-              <Header filter='own'/>
-              <MyProjectsTable/>
-            </>
-          )} />
-          <Route exact path='/projects/organization' render={(routeProps) => (
-            <>
-              <Header filter='organization' />
-              <OrgProjectsTable />
-            </>
-          )} />
-          <Route exact path='/projects/archived' render={(routeProps) => (
-            <>
-              <Header filter='archived' />
-              <ArchivedProjectsTable />
-            </>
-          )} />
+          <Route exact path={myProjectPath} component={MyProjectsRoute} />
+          <Route exact path={organizationProjectPath} component={OrganizationProjectsRoute} />
+          <Route exact path={archivedProjectPath} component={ArchivedProjectsRoute} />
 
           <Route component={NotFound} />
         </Switch>
