@@ -20,6 +20,8 @@ export interface IOwnProps {
   product: JSONAPI<ProductAttributes>;
   project: JSONAPI<ProjectAttributes>;
   assignedTo: JSONAPI<UserAttributes>;
+  cellClasses: string;
+  cellSecondaryClasses: string;
 }
 
 export type IProps =
@@ -34,32 +36,36 @@ const mapRecordsToProps = ({ task: { type, id } }) => ({
 
 class TaskRow extends React.Component<IProps> {
   render() {
-    const { t, task, product, project, assignedTo } = this.props;
+    const {
+      t, task, product, project, assignedTo,
+      cellClasses, cellSecondaryClasses
+    } = this.props;
 
-    console.log('row props', this.props);
     if (!task || !task.attributes) {
       return <tr><td colSpan={6}><Loader /></td></tr>;
     }
 
     const { status, waitTime } = task.attributes;
-    const { givenName, familyName } = (assignedTo || {}) as UserAttributes;
+    const { givenName, familyName } = (assignedTo.attributes || {}) as UserAttributes;
     const hasName = givenName || familyName;
 
     const claimedBy = hasName ? `${givenName || ''} ${familyName || ''}` : t('tasks.unclaimed');
 
     const projectAttrs = project.attributes || {};
+    const productAttrs = product.attributes || {};
 
     return (
       <tr>
         <td>
           <Link to={`/projects/${project.id}`}>{projectAttrs.name}</Link>
         </td>
-        <td>
+        <td className={cellSecondaryClasses}>
+          {productAttrs.name}
           <ProductIcon product={product} />
         </td>
-        <td>{claimedBy}</td>
-        <td>{status}</td>
-        <td>
+        <td className={cellClasses}>{claimedBy}</td>
+        <td className={cellClasses}>{status}</td>
+        <td className={cellClasses}>
           {prettyMs(waitTime)}
         </td>
         <td>

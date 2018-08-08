@@ -5,8 +5,9 @@ import { compose } from 'recompose';
 // Don't have API data yet?
 // Stub it with this!
 export function withStubbedDevData(typeName: string, forcedId: string | number, attributes: any, relationships = {}) {
+  const existingKey = `existing-${typeName}-${forcedId}`;
   const mapRecordsToProps = {
-    existing: q => q.findRecord({ id: forcedId, type: typeName })
+    [existingKey]: q => q.findRecord({ id: forcedId, type: typeName })
   };
 
   return InnerComponent => {
@@ -14,9 +15,11 @@ export function withStubbedDevData(typeName: string, forcedId: string | number, 
       state = { _data: undefined };
 
       componentDidMount() {
-        const { updateStore, existing } = this.props;
+        const { updateStore, [existingKey]: existing } = this.props;
 
-        if (existing) {
+        // without checking attributes, a record may 'exist'
+        // due to a previous record referencing the relationship to this record
+        if (existing && existing.attributes) {
           console.debug(`DEV: record already exists`, existing);
           this.setState({ _data: existing });
           return;

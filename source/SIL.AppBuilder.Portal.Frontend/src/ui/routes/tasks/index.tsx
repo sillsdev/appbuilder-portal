@@ -44,24 +44,30 @@ class Tasks extends React.Component<IProps> {
   render() {
     const { tasks, t } = this.props;
 
+    const cellClasses = 'd-xs-none d-md-table-cell';
+    const cellSecondaryClasses = 'd-xs-none d-sm-table-cell';
+
     return (
       <Container className='tasks'>
         <h1 className='page-heading'>{t('tasks.title')}</h1>
 
-        <table className='ui table'>
+        <table className='ui table unstackable'>
           <thead>
             <tr>
               <th>{t('tasks.project')}</th>
-              <th>{t('tasks.product')}</th>
-              <th>{t('tasks.assignedTo')}</th>
-              <th>{t('tasks.status')}</th>
-              <th>{t('tasks.waitTime')}</th>
+              <th className={cellSecondaryClasses}>{t('tasks.product')}</th>
+              <th className={cellClasses}>{t('tasks.assignedTo')}</th>
+              <th className={cellClasses}>{t('tasks.status')}</th>
+              <th className={cellClasses}>{t('tasks.waitTime')}</th>
               <th />
             </tr>
           </thead>
           <tbody>
             { tasks && tasks.map(( task, i ) => (
-              <Row key={i} task={task} />
+              <Row key={i}
+                cellClasses={cellClasses}
+                cellSecondaryClasses={cellSecondaryClasses}
+                task={task} />
             )) }
 
             { isEmpty(tasks) && (
@@ -91,7 +97,7 @@ export default compose(
     waitTime: 80000
    }, {
    project: {
-     data: { id: 10, type: 'project' }
+     data: { id: 15, type: 'project' }
    },
    product: {
      data: { id: 10, type: 'product' }
@@ -100,7 +106,7 @@ export default compose(
      data: { id: 10, type: 'user' }
    }
   }),
-  withStubbedDevData('project', 10, {
+  withStubbedDevData('project', 15, {
       name: 'dev project name',
       dateCreated: new Date(),
       language: 'en-US',
@@ -121,7 +127,7 @@ export default compose(
       data: [{ id: 1, type: 'task' }]
     },
     project: {
-      data: { id: 10, type: 'project' }
+      data: { id: 15, type: 'project' }
     },
   }),
   // query(mapNetworkToProps),
