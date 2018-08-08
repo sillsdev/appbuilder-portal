@@ -6,7 +6,7 @@ import Header from '../header';
 
 export const pathName = '/projects/own';
 
-class MyProjects extends React.Component {
+export default class MyProjects extends React.Component {
 
   render() {
     return (
@@ -17,5 +17,3 @@ class MyProjects extends React.Component {
     );
   }
 }
-
-export default MyProjects;
