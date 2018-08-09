@@ -70,7 +70,6 @@ class Project extends React.Component<IProps> {
 
   toggleArchivedProject = (e) => {
     e.preventDefault();
-    debugger;
     const { project, toggleArchiveProject } = this.props;
     toggleArchiveProject(project);
   }
@@ -83,7 +82,7 @@ class Project extends React.Component<IProps> {
       return null;
     }
 
-    const { name, dateCreated } = project.attributes;
+    const { name, dateCreated, dateArchived } = project.attributes;
 
     return (
       <div className='ui container project-details'>
@@ -105,7 +104,10 @@ class Project extends React.Component<IProps> {
               >
                 <Dropdown.Menu>
                   <Dropdown.Item text={t('project.dropdown.transfer')} />
-                  <Dropdown.Item text={t('project.dropdown.archive')} onClick={this.toggleArchivedProject} />
+                  <Dropdown.Item
+                    text={!dateArchived ? t('project.dropdown.archive') : t('project.dropdown.reactivate')}
+                    onClick={this.toggleArchivedProject}
+                  />
                 </Dropdown.Menu>
               </Dropdown>
             </div>

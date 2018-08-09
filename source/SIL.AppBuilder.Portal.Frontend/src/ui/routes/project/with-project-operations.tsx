@@ -1,22 +1,35 @@
 import * as React from 'react';
 
+import { compose } from 'recompose';
+import { withTranslations, i18nProps } from '@lib/i18n';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { TYPE_NAME as PROJECT, ProjectAttributes} from '@data/models/project';
 import { attributesFor } from '@data';
 
+import * as toast from '@lib/toast';
+
 export function withProjectOperations(WrappedComponent) {
 
-  class DataWrapper extends React.Component<WithDataProps> {
+  class DataWrapper extends React.Component<WithDataProps & i18nProps> {
 
     toggleArchiveProject = async (project: JSONAPI<ProjectAttributes>) => {
 
-      const { updateStore } = this.props;
+      const { updateStore, t } = this.props;
       const { dateArchived } = attributesFor(project);
 
-      await updateStore(t => t.replaceAttribute(
-        { type: PROJECT, id: project.id },
-        'dateArchived', !dateArchived ? new Date() : null
-      ));
+      try {
+
+        await updateStore(t => t.replaceAttribute(
+          { type: PROJECT, id: project.id },
+          'dateArchived', !dateArchived ? new Date() : null
+        ));
+
+        toast.success(!dateArchived ? t('project.operations.archive.success') : t('project.operations.reactivate.success'));
+
+      } catch (e) {
+        console.error(e);
+        toast.error(!dateArchived ? t('project.operations.archive.error') : t('project.operations.reactivate.error'));
+      }
 
     }
 
@@ -33,5 +46,8 @@ export function withProjectOperations(WrappedComponent) {
 
   }
 
-  return withData({})(DataWrapper);
+  return compose(
+    withData({}),
+    withTranslations
+  )(DataWrapper);
 }
