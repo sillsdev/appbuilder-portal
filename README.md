@@ -14,13 +14,14 @@ cd source && \
 # api
 cd source && \
   docker build . -f Dockerfile.backend \
-    --tag "api-$CURRENT_VERSION" -- target release
+    --tag "api-$CURRENT_VERSION" --target runtime-release
 
 ```
 
 Running Locally:
 ```
-docker run -p 8080:80 nginx-7c7beb40f70906700788af192e54552eaf7b7fd8
+docker run -p 8080:80 nginx-$CURRENT_VERSION
+docker run -p 3000:7081 api-$CURRENT_VERSION
 ```
 
 
