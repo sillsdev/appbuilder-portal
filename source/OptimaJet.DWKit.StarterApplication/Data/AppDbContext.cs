@@ -43,18 +43,21 @@ namespace Optimajet.DWKit.StarterApplication.Data
                 .HasDefaultValue(ProfileVisibility.Public);
         }
 
-        // https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
+        //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
         private void AddTimestamps()
         {
             var entries = ChangeTracker.Entries().Where(e => e.Entity is ITrackDate && e.State == EntityState.Added || e.State == EntityState.Modified);
             DateTime now = DateTime.UtcNow;
             foreach (var entry in entries)
             {
-                if (entry.State == EntityState.Added)
+                if (entry.Entity is ITrackDate trackDate)
                 {
-                    ((ITrackDate)entry.Entity).DateCreated = now;
+                    if (entry.State == EntityState.Added)
+                    {
+                        trackDate.DateCreated = now;
+                    }
+                    trackDate.DateUpdated = now;
                 }
-                ((ITrackDate)entry.Entity).DateUpdated = now;
             }
         }
         public override int SaveChanges()
