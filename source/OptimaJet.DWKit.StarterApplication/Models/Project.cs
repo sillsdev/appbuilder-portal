@@ -1,9 +1,10 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    public class Project : Identifiable
+    public class Project : Identifiable, ITrackDate
     {
         [Attr("name")]
         public string Name { get; set; }
@@ -33,9 +34,12 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public bool Private { get; set; }
 
         [Attr("date-created")]
-        public DateTime DateCreated { get; set; }
+        public DateTime? DateCreated { get; set; }
 
         [Attr("date-updated")]
-        public DateTime DateUpdated { get; set; }
+        public DateTime? DateUpdated { get; set; }
+
+        [Attr("date-archived")]
+        public DateTime? DataArchived { get; set; }
     }
 }
