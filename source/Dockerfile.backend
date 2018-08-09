@@ -28,7 +28,7 @@ ENTRYPOINT ["dotnet", "test", "--logger:trx"]
 
 ###############################
 # Release
-FROM dependencies as build-release
+FROM dependencies as release
 WORKDIR /app/
 COPY OptimaJet.DWKit.StarterApplication/. /app/OptimaJet.DWKit.StarterApplication/
 COPY OptimaJet.DWKit.Application/. /app/OptimaJet.DWKit.Application/
