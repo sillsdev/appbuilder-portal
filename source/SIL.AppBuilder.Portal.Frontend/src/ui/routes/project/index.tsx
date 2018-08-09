@@ -13,6 +13,8 @@ import Location from './location';
 import Owners from './owners';
 import Reviewers from './reviewers';
 import { withData } from './with-data';
+import { withProjectOperations } from './with-project-operations';
+
 import * as moment from 'moment';
 
 import './project.scss';
@@ -26,6 +28,7 @@ export interface Params {
 interface PassedProps {
   match: Match<Params>;
   timeAgo: any;
+  toggleArchiveProject: (project: JSONAPI<ProjectAttributes>) => void;
 }
 
 interface QueriedProps {
@@ -65,6 +68,13 @@ class Project extends React.Component<IProps> {
     return tabPanes;
   }
 
+  toggleArchivedProject = (e) => {
+    e.preventDefault();
+    debugger;
+    const { project, toggleArchiveProject } = this.props;
+    toggleArchiveProject(project);
+  }
+
   render() {
 
     const { project, t, timeAgo } = this.props;
@@ -95,7 +105,7 @@ class Project extends React.Component<IProps> {
               >
                 <Dropdown.Menu>
                   <Dropdown.Item text={t('project.dropdown.transfer')} />
-                  <Dropdown.Item text={t('project.dropdown.archive')} />
+                  <Dropdown.Item text={t('project.dropdown.archive')} onClick={this.toggleArchivedProject} />
                 </Dropdown.Menu>
               </Dropdown>
             </div>
@@ -112,5 +122,6 @@ class Project extends React.Component<IProps> {
 export default compose(
   withLayout,
   translate('translations'),
+  withProjectOperations,
   withData,
 )(Project);

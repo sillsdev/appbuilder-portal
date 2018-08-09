@@ -20,7 +20,7 @@ class Row extends React.Component<IProps & i18nProps> {
 
     return (
       <tr>
-        <td><Link to={`project/${data.id}`}>{project.name}</Link></td>
+        <td><Link to={`/project/${data.id}`}>{project.name}</Link></td>
         <td className='bold'>{orgName}</td>
         <td>{project.language}</td>
         <td>{project.status}</td>
