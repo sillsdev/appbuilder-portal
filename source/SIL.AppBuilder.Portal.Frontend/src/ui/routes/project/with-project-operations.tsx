@@ -19,7 +19,7 @@ export function withProjectOperations(WrappedComponent) {
 
       try {
 
-        await updateStore(t => t.replaceAttribute(
+        await updateStore(ub => ub.replaceAttribute(
           { type: PROJECT, id: project.id },
           'dateArchived', !dateArchived ? new Date() : null
         ));
