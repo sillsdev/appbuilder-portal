@@ -18,6 +18,11 @@ cd source && \
 
 ```
 
+Running Locally:
+```
+docker run -p 8080:80 nginx-7c7beb40f70906700788af192e54552eaf7b7fd8
+```
+
 
 ## Development
 
