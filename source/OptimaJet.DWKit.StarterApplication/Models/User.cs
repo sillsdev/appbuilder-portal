@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿    using System.Linq;
 using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -33,6 +33,9 @@ namespace Optimajet.DWKit.StarterApplication.Models
 
         [Attr("auth0Id")]
         public string ExternalId { get; set; }
+
+        [Attr("profile-visibility")]
+        public ProfileVisibility ProfileVisibility { get; set; }
 
         //[HasMany("ownedOrganizations")]
         //public virtual List<Organization> OwnedOrganizations { get; set; }

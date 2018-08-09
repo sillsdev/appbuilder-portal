@@ -61,22 +61,22 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         private void ValidateOrganization(Project project)
         {
             //
-            // TODO: Needs testing
+            // TODO: Not working :-(
             //
-            if (project.Organization != project.Group.Owner)
-            {
-                var message = $"Project '{project.Name}': Group '{project.Group.Name}' not owned by project organization '{project.Organization.Name}'";
-                Log.Error(message);
-                throw new Exception(message);
-            }
+            //if (project.Organization != project.Group.Owner)
+            //{
+            //    var message = $"Project '{project.Name}': Group '{project.Group.Name}' not owned by project organization '{project.Organization.Name}'";
+            //    Log.Error(message);
+            //    throw new Exception(message);
+            //}
 
-            if (!project.Owner.OrganizationIds.Contains(project.OrganizationId))
-            {
-                var message = $"Project '{project.Name}': Owner '{project.Owner.Name}' not a member of project organization '{project.Organization.Name}'";
-                Log.Error(message);
-                throw new Exception(message);
+            //if (!project.Owner.OrganizationIds.Contains(project.OrganizationId))
+            //{
+            //    var message = $"Project '{project.Name}': Owner '{project.Owner.Name}' not a member of project organization '{project.Organization.Name}'";
+            //    Log.Error(message);
+            //    throw new Exception(message);
 
-            }
+            //}
         }
     }
 }

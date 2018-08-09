@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Optimajet.DWKit.StarterApplication.Models;
 
@@ -35,7 +38,35 @@ namespace Optimajet.DWKit.StarterApplication.Data
                 .WithOne(om => om.Organization)
                 .HasForeignKey(om => om.OrganizationId);
 
+            userEntity
+                .Property(u => u.ProfileVisibility)
+                .HasDefaultValue(ProfileVisibility.Public);
+        }
 
+        // https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
+        private void AddTimestamps()
+        {
+            var entries = ChangeTracker.Entries().Where(e => e.Entity is ITrackDate && e.State == EntityState.Added || e.State == EntityState.Modified);
+            DateTime now = DateTime.UtcNow;
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    ((ITrackDate)entry.Entity).DateCreated = now;
+                }
+                ((ITrackDate)entry.Entity).DateUpdated = now;
+            }
+        }
+        public override int SaveChanges()
+        {
+            AddTimestamps();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            AddTimestamps();
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         public DbSet<User> Users { get; set; }

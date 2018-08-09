@@ -4,16 +4,21 @@ using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
 {
-    public class OrganizationInviteRequest : Identifiable
+    public class OrganizationInviteRequest : Identifiable, ITrackDate
     {
         [Attr("name")]
         public string Name { get; set; }
+
         [Attr("orgAdminEmail")]
         public string OrgAdminEmail { get; set; }
+
         [Attr("websiteUrl")]
         public string WebsiteUrl { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime Created { get; set; } = DateTime.UtcNow;
+        [Attr("date-created")]
+        public DateTime? DateCreated { get; set; }
+
+        [Attr("date-updated")]
+        public DateTime? DateUpdated { get; set; }
     }
 }
