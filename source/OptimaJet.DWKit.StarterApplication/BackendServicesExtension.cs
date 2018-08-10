@@ -79,7 +79,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.Configure<OrganizationInviteRequestSettings>(options =>
             {
                 options.SuperAdminEmail = GetVarOrDefault("SUPERADMIN_EMAIL", "chris_hubbard@sil.org");
-                options.BaseUrl = GetVarOrDefault("UI_HOST", "http://localhost:9091");
+                options.BaseUrl = GetVarOrDefault("UI_URL", "http://localhost:9091");
             });
 
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
