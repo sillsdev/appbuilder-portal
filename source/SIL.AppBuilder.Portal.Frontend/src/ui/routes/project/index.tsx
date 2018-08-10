@@ -78,7 +78,7 @@ class Project extends React.Component<IProps> {
 
     const { project, t, timeAgo } = this.props;
 
-    if (!project) {
+    if (!project || !project.attributes) {
       return null;
     }
 

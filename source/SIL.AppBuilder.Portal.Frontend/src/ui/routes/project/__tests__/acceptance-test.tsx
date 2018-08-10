@@ -6,8 +6,9 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 
 import page from './page';
+import { pathName } from '../../users/edit/index';
 
-describe('Acceptance | Archive Project', () => {
+describe.only('Acceptance | Archive Project', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
@@ -22,11 +23,20 @@ describe('Acceptance | Archive Project', () => {
       }]
     });
 
-    this.mockGet(200, 'projects/1?include=organization', {
+    this.mockGet(200, 'projects/1', {
       data: {
         type: 'projects',
         id: '1',
-        attributes: {},
+        attributes: {
+          'date-archived': null,
+          'date-created': "2018-08-09T20:23:54.809962",
+          'date-updated': "2018-08-10T18:56:45.525297",
+          'description': "This is a dummy project",
+          'language': "Sogdian",
+          'name': "Dummy Project",
+          'private': false,
+          'type': "Sogdian Transalation"
+        },
         relationships: {
           organization: {
             data: { id: 1, type: 'organizations' }
@@ -49,7 +59,8 @@ describe('Acceptance | Archive Project', () => {
       await visit('/project/1');
     });
 
-    it('is in detail page',() => {
+    it('is in detail page', () => {
+      console.log(location().pathname);
       expect(location().pathname).to.equal('/project/1');
     });
 
@@ -57,7 +68,7 @@ describe('Acceptance | Archive Project', () => {
 
       beforeEach(async function () {
         await page.clickArchiveLink();
-      })
+      });
 
       describe('archive project', () => {
 
@@ -65,7 +76,7 @@ describe('Acceptance | Archive Project', () => {
 
           const { server } = this.polly;
 
-          server.patch('/project/1').intercept((req, res) => res.sendStatus(200));
+          server.patch('/api/project/1').intercept((req, res) => res.sendStatus(200));
         });
 
         it("it's archived", () => {
@@ -74,9 +85,9 @@ describe('Acceptance | Archive Project', () => {
 
         describe('reactivate project', () => {
 
-          beforeEach(async function() {
+          beforeEach(async function () {
             const { server } = this.polly;
-            server.patch('/project/1').intercept((req, res) => res.sendStatus(200));
+            server.patch('/api/project/1').intercept((req, res) => res.sendStatus(200));
           });
 
           it("it's reactivated", () => {
