@@ -85,7 +85,7 @@ class Project extends React.Component<IProps> {
     const { name, dateCreated, dateArchived } = project.attributes;
 
     return (
-      <div className='ui container project-details'>
+      <div className='ui container project-details' data-test-project>
         <div className='page-heading page-heading-border-sm'>
           <div className='flex justify-content-space-around'>
             <div className='flex-grow'>
@@ -105,6 +105,7 @@ class Project extends React.Component<IProps> {
                 <Dropdown.Menu>
                   <Dropdown.Item text={t('project.dropdown.transfer')} />
                   <Dropdown.Item
+                    data-test-archive
                     text={!dateArchived ? t('project.dropdown.archive') : t('project.dropdown.reactivate')}
                     onClick={this.toggleArchivedProject}
                   />

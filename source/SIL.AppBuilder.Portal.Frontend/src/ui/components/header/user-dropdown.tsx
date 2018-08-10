@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withRouter, RouteComponentProps  } from 'react-router-dom';
+import { withRouter, RouteComponentProps, NavLink  } from 'react-router-dom';
 import {
   Dropdown
 } from 'semantic-ui-react';
@@ -32,7 +32,7 @@ class UserDropdown extends React.Component<IProps> {
   }
 
   render() {
-    const { history, t, currentUser: { data: currentUser } } = this.props;
+    const { t, currentUser: { data: currentUser } } = this.props;
 
     return (
       <Dropdown
@@ -49,7 +49,8 @@ class UserDropdown extends React.Component<IProps> {
           <Dropdown.Item
             data-test-profile
             text={t('header.myProfile')}
-            onClick={e => history.push(`/users/${currentUser.id}/edit`)}
+            as={NavLink}
+            to={`/users/${currentUser.id}/edit`}
           />
           <Dropdown.Item text={t('header.help')} />
 
