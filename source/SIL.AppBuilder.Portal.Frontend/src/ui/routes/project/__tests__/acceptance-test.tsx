@@ -80,7 +80,7 @@ describe.only('Acceptance | Archive Project', () => {
         });
 
         it("it's archived", () => {
-          expect(page.archiveText()).to.equal('Reactivate');
+          expect(page.archiveText).to.equal('Reactivate');
         });
 
         describe('reactivate project', () => {
@@ -91,7 +91,7 @@ describe.only('Acceptance | Archive Project', () => {
           });
 
           it("it's reactivated", () => {
-            expect(page.archiveText()).to.equal('Archive');
+            expect(page.archiveText).to.equal('Archive');
           });
         });
       });
