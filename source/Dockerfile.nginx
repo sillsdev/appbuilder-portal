@@ -23,8 +23,6 @@ FROM base as build
 ENV AUTH0_CLIENT_ID n8IAE2O17FBrlQ667x5mydhpqelCBUWG
 ENV AUTH0_DOMAIN sil-appbuilder.auth0.com
 ENV AUTH0_CONNECTION Username-Password-Authentication
-ENV API_PROTOCOL "https://"
-ENV API_HOST "scriptoria.io"
 
 WORKDIR /src
 COPY --from=dependencies /src/node_modules ./node_modules

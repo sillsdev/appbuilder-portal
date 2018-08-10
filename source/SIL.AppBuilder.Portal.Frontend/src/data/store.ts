@@ -64,7 +64,7 @@ export async function createStore() {
   });
 
 
-  const baseUrl = `${apiEnv.protocol || 'http://'}${apiEnv.host || 'localhost'}/api`;
+  const baseUrl = `//${apiEnv.host || ''}/api`;
 
   const remote = new JSONAPISource({
     keyMap,

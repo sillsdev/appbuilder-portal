@@ -28,8 +28,6 @@ function checkEnvVar(varName) {
 checkEnvVar('AUTH0_CLIENT_ID');
 checkEnvVar('AUTH0_DOMAIN');
 checkEnvVar('AUTH0_CONNECTION');
-checkEnvVar('API_PROTOCOL');
-checkEnvVar('API_HOST');
 
 let config = {
   mode: isProduction ? 'production' : 'development',
