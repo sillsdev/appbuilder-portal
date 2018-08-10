@@ -47,6 +47,8 @@ namespace OptimaJet.DWKit.StarterApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
+            ConfigureConnectionString();
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
@@ -94,14 +96,21 @@ namespace OptimaJet.DWKit.StarterApplication
             // add the db context like you normally would
             services.AddDbContext<AppDbContext>(options =>
             { // use whatever provider you want, this is just an example
-                options.UseNpgsql(GetDbConnectionString());
+                options.UseNpgsql(Configuration["ConnectionStrings:default"]);
             });
         }
 
 
-        private string GetDbConnectionString()
+        private string ConfigureConnectionString()
         {
-            return Configuration["ConnectionStrings:default"];
+            var dbHost = GetVarOrThrow("POSTGRES_HOST");
+            var dbPort = GetVarOrDefault("POSTGRES_PORT", "5432");
+            var dbDatabase = GetVarOrThrow("POSTGRES_DB");
+            var dbUser = GetVarOrThrow("POSTGRES_USER");
+            var dbPassword = GetVarOrThrow("POSTGRES_PASSWORD");
+            var connectionString = $"Host={dbHost};Port={dbPort};Username={dbUser};Password={dbPassword};Database={dbDatabase}";
+            Configuration["ConnectionStrings:default"] = connectionString;
+            return connectionString;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

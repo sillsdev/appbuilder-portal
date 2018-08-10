@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using Serilog.Events;
-using dotenv;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
@@ -37,7 +33,8 @@ namespace OptimaJet.DWKit.StarterApplication
 
         public static IWebHost BuildWebHost(string[] args)
         {
-            var port = GetVarOrDefault("PORT", "48801");
+            var baseUrl = GetVarOrDefault("API_BASE_URL", "http://localhost:48801");
+            var port = new Uri(baseUrl).Port;
 
             return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
