@@ -76,7 +76,7 @@ describe.only('Acceptance | Archive Project', () => {
 
           const { server } = this.polly;
 
-          server.patch('/api/project/1').intercept((req, res) => res.sendStatus(200));
+          await server.patch('/api/project/1').intercept((req, res) => res.sendStatus(200));
         });
 
         it("it's archived", () => {
@@ -87,7 +87,7 @@ describe.only('Acceptance | Archive Project', () => {
 
           beforeEach(async function () {
             const { server } = this.polly;
-            server.patch('/api/project/1').intercept((req, res) => res.sendStatus(200));
+            await server.patch('/api/project/1').intercept((req, res) => res.sendStatus(200));
           });
 
           it("it's reactivated", () => {
