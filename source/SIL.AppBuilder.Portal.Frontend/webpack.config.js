@@ -17,11 +17,21 @@ if (isDevelopment) {
   if(result.error) throw result.error;
 }
 
+function checkEnvVar(varName) {
+  if (!process.env[varName]) {
+    console.error(`${varName} is not defined!`);
+    process.exit(1);
+  }
+}
+
+// sorry for the serial env var checking.
+checkEnvVar('AUTH0_CLIENT_ID');
+checkEnvVar('AUTH0_DOMAIN');
+checkEnvVar('AUTH0_CONNECTION');
 
 let config = {
   mode: isProduction ? 'production' : 'development',
-  // devtool: isProduction ? 'none' : 'inline-source-map',
-  devtool: 'inline-source-map',
+  devtool: isProduction ? 'none' : 'inline-source-map',
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),
@@ -45,15 +55,9 @@ let config = {
       },
     }),
     new ReactRootPlugin(),
-    // sep-thread type checking
-    new ForkTsCheckerWebpackPlugin(),
     // source maps!
     new webpack.SourceMapDevToolPlugin({
 
-    }),
-
-    new webpack.HotModuleReplacementPlugin({
-      // Options...
     }),
     ...plugins
   ],
@@ -73,6 +77,13 @@ let config = {
 };
 
 if (isDevelopment) {
+  config.plugins = config.plugins.concat([
+    new ForkTsCheckerWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin({
+      // Options...
+    }),
+  ]);
+
   config.devtool = 'cheap-module-eval-source-map';
   config.devServer = {
     contentBase: locate('dist'),

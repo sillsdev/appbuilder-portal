@@ -7,7 +7,7 @@ function locate(path) {
   return process.cwd() + '/' + path;
 }
 
-const environment = process.NODE_ENV || 'development';
+const environment = process.env.NODE_ENV || 'development';
 const isProduction = environment === 'production';
 const isDevelopment = environment === 'development';
 

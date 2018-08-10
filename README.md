@@ -1,5 +1,30 @@
 # AppBuilder Portal
 
+## Deployment
+
+### Building The Images
+```
+CURRENT_VERSION=$(git rev-parse HEAD)
+
+# nginx
+cd source && \
+  docker build . -f Dockerfile.nginx \
+    --tag "nginx-$CURRENT_VERSION" --target release
+
+# api
+cd source && \
+  docker build . -f Dockerfile.backend \
+    --tag "api-$CURRENT_VERSION" --target runtime-release
+
+```
+
+Running Locally:
+```
+docker run -p 8080:80 nginx-$CURRENT_VERSION
+docker run -p 3000:7081 api-$CURRENT_VERSION
+```
+
+
 ## Development
 
 Common scripts are in the `run` file, so be sure to check that for reference.

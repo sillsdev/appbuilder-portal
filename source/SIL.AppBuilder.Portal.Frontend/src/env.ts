@@ -16,7 +16,6 @@ export const auth0 = {
 
 export const api = {
   host: process.env.API_HOST,
-  protocol: process.env.API_PROTOCOL
 };
 
 export const app = {
