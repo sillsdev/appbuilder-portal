@@ -67,7 +67,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddReact();
 
             services.AddBugsnag(configuration =>
-                                configuration.ApiKey = GetVarOrDefault("BUGSNAG_API_KEY", ""));
+                                configuration.ApiKey = GetVarOrDefault("BUGSNAG_APIKEY", ""));
 
             services.AddMvc(options => {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));
