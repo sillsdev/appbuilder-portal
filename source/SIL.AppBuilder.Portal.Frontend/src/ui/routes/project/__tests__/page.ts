@@ -1,10 +1,10 @@
 import {
   interactor,
-  clickable, text, isPresent
+  clickable, text
 } from '@bigtest/interactor';
 
 @interactor
-export class Project {
+export class ProjectInteractor {
   constructor(selector?: string) { }
 
   clickArchiveLink = clickable('[data-test-archive]');
@@ -12,4 +12,4 @@ export class Project {
 
 }
 
-export default new Project('[data-test-project]');
+export default new ProjectInteractor('[data-test-project]');
