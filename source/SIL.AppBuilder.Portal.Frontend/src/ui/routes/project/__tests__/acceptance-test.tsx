@@ -6,7 +6,6 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 
 import page from './page';
-import { pathName } from '../../users/edit/index';
 
 describe.only('Acceptance | Archive Project', () => {
   setupApplicationTest();
@@ -60,7 +59,6 @@ describe.only('Acceptance | Archive Project', () => {
     });
 
     it('is in detail page', () => {
-      console.log(location().pathname);
       expect(location().pathname).to.equal('/project/1');
     });
 
@@ -73,10 +71,22 @@ describe.only('Acceptance | Archive Project', () => {
       describe('archive project', () => {
 
         beforeEach(async function () {
-
-          const { server } = this.polly;
-
-          await server.patch('/api/project/1').intercept((req, res) => res.sendStatus(200));
+          this.mockPatch(200, 'projects/1', {
+            data: {
+              type: 'projects',
+              id: '1',
+              attributes: {
+                'name': "Dummy Project",
+                'type': "Sogdian Transalation",
+                'description': "This is a dummy project",
+                'language': "Sogdian",
+                'private': false,
+                'date-created': "2018-08-09T20:23:54.809962",
+                'date-updated': "2018-08-10T23:59:55.7694263Z",
+                'date-archived': "2018-08-10T23:59:55.259Z"
+              },
+              relationships: {}
+          });
         });
 
         it("it's archived", () => {
@@ -86,8 +96,22 @@ describe.only('Acceptance | Archive Project', () => {
         describe('reactivate project', () => {
 
           beforeEach(async function () {
-            const { server } = this.polly;
-            await server.patch('/api/project/1').intercept((req, res) => res.sendStatus(200));
+            this.mockPatch(200, 'projects/1', {
+              data: {
+                type: 'projects',
+                id: '1',
+                attributes: {
+                  'name': "Dummy Project",
+                  'type': "Sogdian Transalation",
+                  'description': "This is a dummy project",
+                  'language': "Sogdian",
+                  'private': false,
+                  'date-created': "2018-08-09T20:23:54.809962",
+                  'date-updated': "2018-08-10T23:59:55.7694263Z",
+                  'date-archived': null
+                },
+                relationships: {}
+              });
           });
 
           it("it's reactivated", () => {

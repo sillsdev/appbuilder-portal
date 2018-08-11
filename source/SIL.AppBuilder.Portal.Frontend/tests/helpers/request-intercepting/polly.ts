@@ -4,7 +4,8 @@ import * as FetchAdapter from '@pollyjs/adapter-fetch';
 
 import Orbit from '@orbit/data';
 
-import { mockGet } from './requests';
+import { mockGet, mockPatch } from './requests';
+
 /*
   Register the adapters and persisters we want to use. This way all future
   polly instances can access them by name.
@@ -26,7 +27,7 @@ export function setupRequestInterceptor(config: any = {}) {
           context: window
         }
       },
-      // logging: true,
+      logging: true,
       recordFailedRequests: false,
       recordIfMissing: false,
       matchRequestsBy: {
@@ -48,6 +49,7 @@ export function setupRequestInterceptor(config: any = {}) {
     const { server } = this.polly;
 
     this.mockGet = mockGet(server);
+    this.mockPatch = mockPatch(server);
     this.stubOrbit = () => Orbit.fetch = window.fetch;
     this.debugFetch = () => {
       const originalFetch = window.fetch;
