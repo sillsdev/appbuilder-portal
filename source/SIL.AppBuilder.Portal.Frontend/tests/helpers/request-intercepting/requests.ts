@@ -9,5 +9,5 @@ export const mockGet = server => (status: number, path: string, jsonapiPayload: 
 export const mockPatch = server => (status: number, path: string, jsonapiPayload: {}) => {
   server.namespace('/api', () => {
     server.patch(path).intercept(respondWithJsonApi(status, jsonapiPayload));
-  })
-}
+  });
+};
