@@ -145,7 +145,8 @@ export default {
     overview: 'Información',
     dropdown: {
       transfer: 'Transferir propiedad',
-      archive: 'Archivar'
+      archive: 'Archivar',
+      reactivate: 'Reactivar'
     },
     details: {
       title: 'Detalles',
@@ -176,6 +177,12 @@ export default {
       reviewers: {
         title: 'Revisores',
         add: 'Agregar revisor'
+      }
+    },
+    operations: {
+      archive: {
+        success: 'Proyecto archivado',
+        error: 'Ocurrió un error al tratar de archivar un proyecto'
       }
     }
   },

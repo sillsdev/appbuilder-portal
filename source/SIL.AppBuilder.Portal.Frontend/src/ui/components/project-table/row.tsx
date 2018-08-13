@@ -6,12 +6,22 @@ import { Dropdown, Icon } from 'semantic-ui-react';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 import { withRelationship } from './withRelationship';
+import { withProjectOperations } from '@ui/routes/project/with-project-operations';
+import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProps {
   project: JSONAPI<ProjectAttributes>;
+  organization: JSONAPI<OrganizationAttributes>;
+  toggleArchiveProject: (project: JSONAPI<ProjectAttributes>) => void;
 }
 
 class Row extends React.Component<IProps & i18nProps> {
+
+  toggleArchivedProject = (e) => {
+    e.preventDefault();
+    const { project, toggleArchiveProject } = this.props;
+    toggleArchiveProject(project);
+  }
 
   render() {
     const { project: data, organization, t } = this.props;
@@ -20,7 +30,7 @@ class Row extends React.Component<IProps & i18nProps> {
 
     return (
       <tr>
-        <td><Link to={`project/${data.id}`}>{project.name}</Link></td>
+        <td><Link to={`/project/${data.id}`}>{project.name}</Link></td>
         <td className='bold'>{orgName}</td>
         <td>{project.language}</td>
         <td>{project.status}</td>
@@ -36,7 +46,10 @@ class Row extends React.Component<IProps & i18nProps> {
           >
             <Dropdown.Menu>
               <Dropdown.Item text={t('project.dropdown.transfer')} />
-              <Dropdown.Item text={t('project.dropdown.archive')} />
+              <Dropdown.Item
+                text={!project.dateArchived ? t('project.dropdown.archive') : t('project.dropdown.reactivate')}
+                onClick={this.toggleArchivedProject}
+              />
             </Dropdown.Menu>
           </Dropdown>
         </td>
@@ -47,5 +60,6 @@ class Row extends React.Component<IProps & i18nProps> {
 
 export default compose(
   translate('translations'),
-  withRelationship('organization')
+  withRelationship('organization'),
+  withProjectOperations
 )(Row);

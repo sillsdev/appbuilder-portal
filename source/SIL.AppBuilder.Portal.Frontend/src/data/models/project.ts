@@ -4,6 +4,7 @@ export interface ProjectAttributes {
   name: string;
   status: string;
   dateCreated: Date;
+  dateArchived: Date;
   language: string;
   type: string;
   description: string;

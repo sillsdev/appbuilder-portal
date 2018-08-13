@@ -150,7 +150,8 @@ export default {
     overview: 'Overview',
     dropdown: {
       transfer: 'Transfer Ownership',
-      archive: 'Archive'
+      archive: 'Archive',
+      reactivate: 'Reactivate'
     },
     details: {
       title: 'Details',
@@ -181,6 +182,16 @@ export default {
       reviewers: {
         title: 'Reviewers',
         add: 'add reviewer'
+      }
+    },
+    operations: {
+      archive: {
+        success: 'Project archived',
+        error: 'There was an error trying to archive the project'
+      },
+      reactivate: {
+        success: 'Project reactivated',
+        error: 'There was an error trying to reactivate the project'
       }
     }
   },
