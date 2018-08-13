@@ -19,8 +19,10 @@ export interface IState {
   timeZone: string;
   emailNotification: boolean;
   sshKey: string;
+  profileVisibility: number;
 }
 
+const PUBLIC_PROFILE = 1;
 
 @withTemplateHelpers
 class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
@@ -42,7 +44,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
   submit = async (e) => {
     e.preventDefault();
-    await this.props.onSubmit({ ...this.state });
+    await this.props.onSubmit({ ...this.state, profileVisibility: this.state.profileVisibility ? 1 : 0 });
   }
 
   render() {
@@ -50,7 +52,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const {
       givenName, familyName, email, phone,
       timeZone, emailNotification,
-      sshKey
+      sshKey, profileVisibility
     } = this.state;
 
     const { t } = this.props;
@@ -123,7 +125,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
         <h2 className='form-title'>{t('profile.notificationSettingsTitle')}</h2>
         <Form.Field>
-          <div className='notifications'>
+          <div className='toggle-selector'>
             <span>{t('profile.optOutOfEmailOption')}</span>
             <Checkbox
               data-test-profile-email-notification
@@ -135,6 +137,21 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
         </Form.Field>
 
         <Divider horizontal/>
+
+        <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
+        <Form.Field>
+          <div className='toggle-selector'>
+            <span>{t('profile.visibility.visible')}</span>
+            <Checkbox
+              data-test-profile-visible-profile
+              toggle
+              defaultChecked={profileVisibility === 1}
+              onChange={toggle('profileVisibility')}
+            />
+          </div>
+        </Form.Field>
+
+        <Divider horizontal />
 
         <h2 className='form-title'>{t('profile.sshSettingsTitle')}</h2>
         <Form.Field>

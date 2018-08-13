@@ -19,5 +19,6 @@ export interface UserAttributes {
   role?: {id: string, name: string}; // need api
   groups?: Array<{id:string, name: string}>; // need an api
   auth0Id?: string;
+  profileVisibility: number;
 }
 

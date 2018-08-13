@@ -105,7 +105,12 @@ export default {
     notificationSettingsTitle: 'Notification Settings',
     optOutOfEmailOption: 'I want to receive email notifications',
     sshSettingsTitle: 'Manage Personal SSH Keys',
-    sshKeyLabel: 'SSH Key'
+    sshKeyLabel: 'SSH Key',
+    visibleProfile: 'Profile visibility',
+    visibility: {
+      visible: 'My profile information is publicly viewable',
+      restricted: 'My profile information is restricted from the public'
+    }
   },
 
   errors: {
