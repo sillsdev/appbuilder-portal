@@ -29,10 +29,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         [Fact]
         public async Task Get_CurrentUser_Creates_User()
         {
+            int before = ReadTestData<AppDbContext, User>().Count;
             var user = await GetCurrentUser();
+            int after = ReadTestData<AppDbContext, User>().Count;
 
             Assert.Equal("test-auth0-id", user.ExternalId);
-            Assert.Equal(1, user.Id);
+            Assert.Equal(after, before + 1);
         }
 
         [Fact]
@@ -117,6 +119,28 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             var response = await Patch("/api/users/" + user.Id, payload);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Getting the current user (edit the user profile) when a different
+        /// organization is the current organization (e.g. viewing users from
+        /// a different organization) should always be allowed and return the
+        /// current user.
+        /// </summary>
+        /// <returns>The current user different organization found.</returns>
+        [Fact]
+        public async Task Get_CurrentUser_CurrentOrganizationDoesNotMatter_Found()
+        {
+            var user = await GetCurrentUser();
+            var myOrg = NeedsDefaultOrganization(user);
+
+            var otherOrg = AddEntity<AppDbContext, Organization>(new Organization
+            {
+                Name = "Foo"
+            });
+
+            var response = await Get($"/api/users/{user.Id}", otherOrg.Id.ToString());
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
