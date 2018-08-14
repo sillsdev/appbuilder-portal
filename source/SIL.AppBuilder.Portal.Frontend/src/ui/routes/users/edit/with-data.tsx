@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { match as Match, Redirect } from 'react-router';
 
-import { query } from '@data';
+import { query, defaultOptions } from '@data';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
@@ -29,7 +29,7 @@ export function withData(WrappedComponent) {
     const { params: { id } } = match;
 
     return {
-      user: q => q.findRecord({ id, type: USER })
+      user: [q => q.findRecord({ id, type: USER }), defaultOptions()]
     };
   };
 

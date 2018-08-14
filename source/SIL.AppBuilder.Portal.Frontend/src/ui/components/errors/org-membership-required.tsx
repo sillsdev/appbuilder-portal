@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import FocusPanel from '@ui/components/focus-panel';
 
@@ -9,12 +9,12 @@ class OrgMembershipRequired extends React.Component {
 
     return (
       <FocusPanel title={t('errors.orgMembershipRequired')}>
-        {t('errors.orgMembershipRequiredText')}
+        <div dangerouslySetInnerHTML={{ __html: t('errors.orgMembershipRequiredText') }} />
       </FocusPanel>
     );
   }
 }
 
-export default translate('translations')(OrgMembershipRequired);
+export default withTranslations(OrgMembershipRequired);
 
 
