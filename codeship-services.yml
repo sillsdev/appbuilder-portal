@@ -1,0 +1,5 @@
+api:
+    build:
+        image: sillsdev/appbuilder-portal-api
+        context: source
+        dockerfile: Dockerfile.backend
