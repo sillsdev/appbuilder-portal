@@ -79,7 +79,7 @@ export function withCurrentUser() {
           // is resolved
 
           // TODO: find a way to push this data into the orbit store
-          const response = await authenticatedGet('/api/users/current-user?include=organization-memberships');
+          const response = await authenticatedGet('/api/users/current-user?include=organization-memberships.organization');
           const json = await response.json();
 
           await this.getOrganizations(json);
