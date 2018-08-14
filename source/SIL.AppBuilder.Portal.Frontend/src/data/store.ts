@@ -39,8 +39,10 @@ class CustomJSONAPISerializer extends JSONAPISerializer {
 export function defaultOptions() {
   return {
     sources: {
-      settings: {
-        ...defaultSourceOptions()
+      remote: {
+        settings: {
+          ...defaultSourceOptions()
+        }
       }
     }
   };
@@ -75,7 +77,6 @@ export async function createStore() {
     defaultFetchSettings: {
       headers: {
         Accept: 'application/vnd.api+json',
-        ['content-type']: 'application/vnd.api+json',
         // these should be overwritten at runtime
         Authorization: 'Bearer not set',
         Organization: 'Org Id not set'

@@ -51,9 +51,9 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 
         public override async Task<User> GetAsync(int id)
         {
-            // The default implementation filters by selected organization.  The 
+            // The default implementation filters by selected organization.  The
             // current user might not be in that organization.
-            // Always allow getting the current user. 
+            // Always allow getting the current user.
             var currentUser = await GetByAuth0Id(CurrentUserContext.Auth0Id);
             if (currentUser != null && currentUser.Id == id) {
                 return await DefaultGet().Where(e => e.Id == id).FirstAsync();
