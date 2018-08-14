@@ -2,10 +2,12 @@ import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { compose } from 'recompose';
-import { UserAttributes, TYPE_NAME } from '@data/models/user';
-import  { keyMap } from '@data/schema';
-import { defaultSourceOptions } from '@data';
 import Orbit from '@orbit/data';
+
+import { defaultSourceOptions, pushPayload } from '@data';
+import  { keyMap } from '@data/schema';
+import { serializer } from '@data/store';
+import { UserAttributes, TYPE_NAME } from '@data/models/user';
 
 import { getAuth0Id } from '@lib/auth0';
 import { get as authenticatedGet } from '@lib/fetch';
@@ -17,12 +19,15 @@ import PageError from '@ui/components/errors/page';
 
 type UserPayload = JSONAPIDocument<UserAttributes>;
 
-const mapRecordsToProps = {
-  // currentUser: q => q.findRecord({ id: 'current-user', type: TYPE_NAME })
+const mapRecordsToProps = () => {
+  return {
+    usersMatchingLoggedInUser: q => q.findRecords(TYPE_NAME)
+      .filter({ attribute: 'auth0Id', value: getAuth0Id() })
+  };
 };
 
 interface IProps {
-  currentUser: UserPayload;
+  usersMatchingLoggedInUser: UserPayload;
 }
 
 interface IState {
@@ -61,17 +66,19 @@ export function withCurrentUser() {
       }
 
       async componentDidMount() {
-        const { updateStore, queryStore, currentUser: fromCache } = this.props;
+        const { updateStore, queryStore, usersMatchingLoggedInUser: fromCache } = this.props;
         const auth0IdFromJWT = getAuth0Id();
 
         // if we have a currentUser from cache, and the currentUser
         // matches the auth0Id we have from the JWT, then don't
         // make a network request.
-        // TODO: there is probably a native orbit way to do this.
+        //
         // NOTE: this whole lifecycle hook is kind of a hack for lack
         //       of a better 'get the current user' pattern.
-        if (fromCache && fromCache.attributes && fromCache.attributes.auth0Id === auth0IdFromJWT) {
-          this.setState({ currentUser: fromCache, isLoading: false });
+        const userFromCache = fromCache && fromCache[0];
+
+        if (userFromCache) {
+          this.setState({ currentUser: userFromCache, isLoading: false });
           return;
         }
 
@@ -79,14 +86,13 @@ export function withCurrentUser() {
           // TOOD: add nested include when:
           // https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
           // is resolved
-
-          // TODO: find a way to push this data into the orbit store
           const response = await authenticatedGet('/api/users/current-user?include=organization-memberships,group-memberships');
           const json = await response.json();
 
+          await pushPayload(updateStore, json);
           await this.getOrganizations(json);
 
-          this.setState({ currentUser: json, isLoading: false });
+          this.setState({ isLoading: false });
         } catch (e) {
           console.debug('error', e);
 
@@ -104,7 +110,7 @@ export function withCurrentUser() {
         if (isLoading) {
           return <PageLoader />;
         } else if (currentUser) {
-          const hasMembership = hasRelationship(currentUser, 'organization-memberships');
+          const hasMembership = hasRelationship(currentUser, 'organizationMemberships');
 
           if (hasMembership) {
             return <InnerComponent {...this.props} currentUser={currentUser} />;

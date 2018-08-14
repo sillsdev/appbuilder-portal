@@ -147,7 +147,7 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         ownedOrganizations: { type: 'hasMany', model: 'organization', inverse: 'owner' },
-        organizationMemberships: { type: 'hasMany', model: 'organization-membership', inverse: 'user' },
+        organizationMemberships: { type: 'hasMany', model: 'organizationMembership', inverse: 'user' },
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
         assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' },
         projects: { type: 'hasMany', model: 'project', inverse: 'owner' },

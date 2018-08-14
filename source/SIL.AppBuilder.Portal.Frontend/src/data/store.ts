@@ -29,6 +29,7 @@ class CustomJSONAPISerializer extends JSONAPISerializer {
   resourceKey(type: string) { return 'remoteId'; }
 }
 
+export const serializer = new JSONAPISerializer({ schema, keyMap });
 
 // DEBUG!
 // Orbit.fetch = (...args) => {
@@ -127,9 +128,10 @@ export async function createStore() {
     blocking: true,
 
     filter(query) {
-      const skip = !((query || {}).options || {}).devOnly;
+      const options = ((query || {}).options || {});
+      const keep = !(options.devOnly || options.skipRemote);
 
-      return skip;
+      return keep;
     }
   }));
 
