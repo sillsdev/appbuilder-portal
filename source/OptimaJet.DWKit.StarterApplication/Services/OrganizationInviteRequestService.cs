@@ -41,7 +41,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     request.Name,
                     request.OrgAdminEmail,
                     request.WebsiteUrl,
-                    Domain = settings.UIHost
+                    BaseUrl = settings.BaseUrl
                 }
             };
             var result = emailRepository.CreateAsync(email).Result;
