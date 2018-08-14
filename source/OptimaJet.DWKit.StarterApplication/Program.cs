@@ -33,8 +33,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
         public static IWebHost BuildWebHost(string[] args)
         {
-            var baseUrl = GetVarOrDefault("API_URL", "http://localhost:48801");
-            var port = new Uri(baseUrl).Port;
+            var port = GetVarOrDefault("API_PORT", "48801");
 
             return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
