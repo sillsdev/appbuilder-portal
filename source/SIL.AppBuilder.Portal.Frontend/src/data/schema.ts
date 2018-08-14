@@ -74,7 +74,10 @@ const schemaDefinition: SchemaSettings = {
     product: {
       keys: { remoteId: {} },
       attributes: {
-        name: { type: 'string' }
+        name: { type: 'string' },
+        dateCreated: { type: 'date'},
+        dateUpdated: { type: 'date'},
+        datePublished: { type: 'date'},
       },
       relationships: {
         tasks: { type: 'hasMany', model: 'task', inverse: 'project' },

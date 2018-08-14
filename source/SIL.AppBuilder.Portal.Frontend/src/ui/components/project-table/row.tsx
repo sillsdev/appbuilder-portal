@@ -26,7 +26,9 @@ class Row extends React.Component<IProps & i18nProps> {
   render() {
     const { project: data, organization, t } = this.props;
     const { attributes: project } = data;
-    const { name: orgName } = organization.attributes;
+    // the organization _shouldn't_ be missing attributes
+    // but it certainly can, when fake prorject data is used elsewhere.
+    const { name: orgName } = ( organization || {} ).attributes || {};
 
     return (
       <tr>

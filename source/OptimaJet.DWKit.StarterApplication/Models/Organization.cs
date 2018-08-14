@@ -23,5 +23,8 @@ namespace Optimajet.DWKit.StarterApplication.Models
 
         [HasMany("organization-memberships")]
         public virtual List<OrganizationMembership> OrganizationMemberships { get; set; }
+
+        [HasMany("groups")]
+        public virtual List<Group> Groups { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace Optimajet.DWKit.StarterApplication.Data
         // NOTE: only one side of a relationship needs to be specified.
         //       (because each declaration on a side actually defines
         //        both sides in a single fluent builder chain)
-        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var userEntity = modelBuilder.Entity<User>();
             var orgEntity = modelBuilder.Entity<Organization>();
@@ -37,6 +37,11 @@ namespace Optimajet.DWKit.StarterApplication.Data
                 .HasMany(o => o.OrganizationMemberships)
                 .WithOne(om => om.Organization)
                 .HasForeignKey(om => om.OrganizationId);
+
+            orgEntity
+                .HasMany(o => o.Groups)
+                .WithOne(g => g.Owner)
+                .HasForeignKey(g => g.OwnerId);
 
             userEntity
                 .Property(u => u.ProfileVisibility)

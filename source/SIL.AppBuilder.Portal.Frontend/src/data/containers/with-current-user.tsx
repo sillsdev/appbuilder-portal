@@ -12,6 +12,7 @@ import { get as authenticatedGet } from '@lib/fetch';
 import { hasRelationship } from '@data';
 
 import PageLoader from '@ui/components/loaders/page';
+import OrgMembershipRequired from '@ui/components/errors/org-membership-required';
 import PageError from '@ui/components/errors/page';
 
 type UserPayload = JSONAPIDocument<UserAttributes>;
@@ -50,6 +51,7 @@ export function withCurrentUser() {
           q => q.findRecords('organization'), {
           sources: {
             remote: {
+              include: 'groups',
               settings: {
                 ...defaultSourceOptions()
               },
@@ -79,7 +81,7 @@ export function withCurrentUser() {
           // is resolved
 
           // TODO: find a way to push this data into the orbit store
-          const response = await authenticatedGet('/api/users/current-user?include=organization-memberships');
+          const response = await authenticatedGet('/api/users/current-user?include=organization-memberships,group-memberships');
           const json = await response.json();
 
           await this.getOrganizations(json);
@@ -108,7 +110,7 @@ export function withCurrentUser() {
             return <InnerComponent {...this.props} currentUser={currentUser} />;
           }
 
-          return <Redirect to={'/errors/org-membership-required'} />;
+          return <OrgMembershipRequired />;
         }
 
         return <Redirect to={'/login'} />;

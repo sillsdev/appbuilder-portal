@@ -11,7 +11,7 @@ export interface DataProviderProps {
 export class DataProvider extends React.Component<DataProviderProps> {}
 
 export interface RecordsToProps {
-  [key: string]: (q: QueryBuilder) => any
+  [key: string]: (q: QueryBuilder) => any;
 }
 
 export interface WithData {
