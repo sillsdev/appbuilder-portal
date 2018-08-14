@@ -6,8 +6,11 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import TimezonePicker from 'react-timezone';
 
 import { UserAttributes } from '@data/models/user';
+import { idFor } from '@data';
 
 export interface IProps {
+  user: JSONAPI<UserAttributes>;
+  currentUser: JSONAPI<UserAttributes>;
   onSubmit: (data: UserAttributes) => Promise<void>;
 }
 
@@ -16,7 +19,7 @@ export interface IState {
   familyName: string;
   email: string;
   phone: string;
-  timeZone: string;
+  timezone: string;
   emailNotification: boolean;
   sshKey: string;
   profileVisibility: number;
@@ -44,18 +47,20 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
   submit = async (e) => {
     e.preventDefault();
-    await this.props.onSubmit({ ...this.state, profileVisibility: this.state.profileVisibility ? 1 : 0 });
+    const profileVisibility = this.state.profileVisibility ? 1 : 0 ;
+    await this.props.onSubmit({ ...this.state, profileVisibility });
   }
 
   render() {
     const { mut, toggle } = this;
     const {
       givenName, familyName, email, phone,
-      timeZone, emailNotification,
+      timezone, emailNotification,
       sshKey, profileVisibility
     } = this.state;
 
-    const { t } = this.props;
+    const { t, user, currentUser } = this.props;
+    const currentUserId = idFor(currentUser);
 
     return (
       <Form data-test-edit-profile>
@@ -108,9 +113,9 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
               <TimezonePicker
                 ref={input => this.timezoneInput = input}
                 className='timezone'
-                value={timeZone || ''}
+                value={timezone || ''}
                 onChange={tz => {
-                  this.setState({timeZone: tz});
+                  this.setState({timezone: tz});
                 }}
                 inputProps={{
                   placeholder: t('profile.timezonePlaceholder'),
@@ -138,20 +143,25 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
         <Divider horizontal/>
 
-        <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
-        <Form.Field>
-          <div className='toggle-selector'>
-            <span>{t('profile.visibility.visible')}</span>
-            <Checkbox
-              data-test-profile-visible-profile
-              toggle
-              defaultChecked={profileVisibility === 1}
-              onChange={toggle('profileVisibility')}
-            />
-          </div>
-        </Form.Field>
+        {
+          user.id === currentUserId &&
+          <>
+            <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
+            <Form.Field>
+              <div className='toggle-selector'>
+                <span>{t('profile.visibility.visible')}</span>
+                <Checkbox
+                  data-test-profile-visible-profile
+                  toggle
+                  defaultChecked={profileVisibility === PUBLIC_PROFILE}
+                  onChange={toggle('profileVisibility')}
+                />
+              </div>
+            </Form.Field>
 
-        <Divider horizontal />
+            <Divider horizontal />
+          </>
+        }
 
         <h2 className='form-title'>{t('profile.sshSettingsTitle')}</h2>
         <Form.Field>

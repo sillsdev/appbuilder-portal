@@ -3,7 +3,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { Container } from 'semantic-ui-react';
-import { withData as withOrbit } from 'react-orbitjs';
+import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 
 import * as toast from '@lib/toast';
@@ -20,11 +20,13 @@ export const pathName = '/users/:id/edit';
 
 export interface IOwnProps {
   user: JSONAPI<UserAttributes>;
+  currentUser: JSONAPI<UserAttributes>;
 }
 
 export type IProps =
   & IOwnProps
-  & i18nProps;
+  & i18nProps
+  & WithDataProps;
 
 class Profile extends React.Component<IProps> {
 
@@ -57,7 +59,7 @@ class Profile extends React.Component<IProps> {
   }
 
   render() {
-    const { t, user } = this.props;
+    const { t, user, currentUser } = this.props;
 
     return (
       <Container className='profile'>
@@ -65,7 +67,7 @@ class Profile extends React.Component<IProps> {
         <div>
           <h2>{t('profile.general')}</h2>
 
-          <EditProfileForm user={user} onSubmit={this.updateProfile} />
+          <EditProfileForm currentUser={currentUser} user={user} onSubmit={this.updateProfile} />
         </div>
       </Container>
     );
