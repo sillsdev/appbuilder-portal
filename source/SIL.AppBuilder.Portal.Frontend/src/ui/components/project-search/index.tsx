@@ -33,10 +33,7 @@ const selectorProps = {
 };
 
 interface IOwnProps {
-  organizations?: any;
-  groups?: any;
   languages?: any;
-  products?: any;
   updateFilter: (filter: IFilter) => void;
 }
 
@@ -45,12 +42,9 @@ type IProps =
 
 class Search extends React.Component<IProps> {
   buildOptions = () => {
-    let { organizations, languages, products, groups } = this.props;
+    let { languages } = this.props;
 
-    organizations = organizations || [];
     languages = languages || [];
-    products = products || [];
-    groups = groups || [];
 
     const completionData = [
       {
@@ -58,32 +52,9 @@ class Search extends React.Component<IProps> {
         type: 'string'
       },
       {
-        name: 'organization.name',
-        type: 'string',
-        enumerations: organizations.map(o => o.attributes.name),
-      },
-      {
         name: 'language',
         type: 'string',
         enumerations: languages.map(l => l.attributes.name),
-      },
-      {
-        name: 'owner.name',
-        type: 'string'
-      },
-      {
-        name: 'product.name',
-        type: 'string',
-        enumerations: products.map(p => p.attributes.name),
-      },
-      {
-        name: 'group.name',
-        type: 'string',
-        enumerations: groups.map(g => g.attributes.name),
-      },
-      {
-        name: 'product.datePublished',
-        type: 'string'
       }
     ];
 

@@ -37,6 +37,7 @@ export const pathName = '/directory';
 
 export interface IOwnProps {
   organizations: JSONAPI<OrganizationAttributes>;
+  setCurrentOrganizationId: (id: number | string) => void;
   groups: JSONAPI<GroupAttributes>;
 }
 
@@ -68,10 +69,7 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
         <div className='flex-row justify-content-space-between align-items-center'>
           <h2 className='page-heading'>{t('directory.title', { numProjects })}</h2>
 
-          <ProjectSearch
-            organizations={organizations}
-            groups={groups}
-            updateFilter={updateFilter}
+          <ProjectSearch updateFilter={updateFilter}
           />
         </div>
 
