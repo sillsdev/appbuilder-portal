@@ -20,9 +20,11 @@ import PageError from '@ui/components/errors/page';
 type UserPayload = JSONAPIDocument<UserAttributes>;
 
 const mapRecordsToProps = () => {
+  const auth0Id = getAuth0Id();
+
   return {
     usersMatchingLoggedInUser: q => q.findRecords(TYPE_NAME)
-      .filter({ attribute: 'auth0Id', value: getAuth0Id() })
+      .filter({ attribute: 'auth0Id', value: auth0Id })
   };
 };
 
@@ -34,6 +36,7 @@ interface IState {
   currentUser: UserPayload;
   isLoading: boolean;
   error?: any;
+  networkFetchComplete: boolean;
 }
 
 // TODO: store the attempted URL so that after login,
@@ -41,7 +44,10 @@ interface IState {
 export function withCurrentUser() {
   return InnerComponent => {
     class WrapperClass extends React.Component<IProps & WithDataProps, IState> {
-      state = { currentUser: undefined, isLoading: true, error: undefined };
+      state = {
+        currentUser: undefined, isLoading: true, error: undefined,
+        networkFetchComplete: false
+      };
 
       // TODO: remove this when the below linked github issue is resolved
       getOrganizations = async (user) => {
@@ -65,7 +71,11 @@ export function withCurrentUser() {
          });
       }
 
-      async componentDidMount() {
+      componentDidMount() {
+        this.fetchCurrentUser();
+      }
+
+      fetchCurrentUser = async () => {
         const { updateStore, queryStore, usersMatchingLoggedInUser: fromCache } = this.props;
         const auth0IdFromJWT = getAuth0Id();
 
@@ -92,12 +102,16 @@ export function withCurrentUser() {
           await pushPayload(updateStore, json);
           await this.getOrganizations(json);
 
-          this.setState({ isLoading: false });
+          console.debug('Current User Data has been fetched');
+          // this state value isn't used anywhere, but we need to trigger
+          // a re-render once the current user data has finished being consumed
+          this.setState({ networkFetchComplete: true });
         } catch (e) {
           console.debug('error', e);
 
           this.setState({ error: e });
         }
+
       }
 
       render() {
@@ -119,6 +133,7 @@ export function withCurrentUser() {
           return <OrgMembershipRequired />;
         }
 
+        // TODO: would it ever make sense to do an inline login instead of a redirect?
         return <Redirect to={'/login'} />;
       }
     }

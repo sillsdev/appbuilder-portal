@@ -1,11 +1,14 @@
 import * as React from 'react';
 
+import * as moment from 'moment';
+import { compose } from 'recompose';
 import { match as Match } from 'react-router';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { compose } from 'recompose';
+import { Tab, Dropdown, Icon } from 'semantic-ui-react';
+
 import { TYPE_NAME, ProjectAttributes } from '@data/models/project';
 import { withLayout } from '@ui/components/layout';
-import { Tab, Dropdown, Icon } from 'semantic-ui-react';
+
 import Details from './details';
 import Products from './products';
 import Settings from './settings';
@@ -15,7 +18,6 @@ import Reviewers from './reviewers';
 import { withData } from './with-data';
 import { withProjectOperations } from './with-project-operations';
 
-import * as moment from 'moment';
 
 import './project.scss';
 
@@ -75,7 +77,6 @@ class Project extends React.Component<IProps> {
   }
 
   render() {
-
     const { project, t, timeAgo } = this.props;
 
     if (!project || !project.attributes) {
@@ -91,7 +92,9 @@ class Project extends React.Component<IProps> {
             <div className='flex-grow'>
               <h1 className='title'>{name}</h1>
               <div className='subtitle'>
-                <span>Public</span><span className='dot-space font-normal'>.</span><span className='font-normal'>{`${t('project.createdOn')}`} </span><span>{moment(dateCreated).fromNow()}</span>
+                <span>Public</span><span className='dot-space font-normal'>.</span>
+                <span className='font-normal'>{t('project.createdOn')} </span>
+                <span>{moment(dateCreated).fromNow()}</span>
               </div>
             </div>
             <div className='flex-shrink' style={{ paddingTop: '20px'}}>

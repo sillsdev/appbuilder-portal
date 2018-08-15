@@ -5,6 +5,7 @@ import { compose } from 'recompose';
 import { requireAuth } from '@lib/auth';
 import NotFoundRoute from '@ui/routes/errors/not-found';
 
+import { withLayout } from '@ui/components/layout';
 import CreateOrganizationRoute, { pathName as createPath } from './create-organization';
 import MissingTokenRoute, { pathName as missingTokenPath } from './missing-token';
 
@@ -24,5 +25,6 @@ class InvitationsRoute extends React.Component {
 }
 
 export default compose(
-  requireAuth
+  // requireAuth,
+  withLayout
 )(InvitationsRoute);

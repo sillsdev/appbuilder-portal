@@ -171,38 +171,38 @@
   resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.15.19.tgz#5e1032c112118ef5e841439ad4eabdcc83e161bc"
 
 "@pollyjs/adapter-fetch@^1.0.0":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-fetch/-/adapter-fetch-1.0.2.tgz#8b4c6113734b961386ada3ecc32ed849a80049ed"
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-fetch/-/adapter-fetch-1.0.4.tgz#3f66b09f25a3de3ce3a7e89da89f09bf3906bd50"
   dependencies:
-    "@pollyjs/adapter" "^1.1.0"
-    "@pollyjs/utils" "^1.0.0"
+    "@pollyjs/adapter" "^1.1.2"
+    "@pollyjs/utils" "^1.0.2"
 
 "@pollyjs/adapter-xhr@^1.0.0":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-xhr/-/adapter-xhr-1.0.2.tgz#94437e5581ffb29955e60817b273676116e7e2cd"
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-xhr/-/adapter-xhr-1.0.4.tgz#626fd56feb454751ed94c76502a8f080b20019a4"
   dependencies:
-    "@pollyjs/adapter" "^1.1.0"
-    "@pollyjs/utils" "^1.0.0"
+    "@pollyjs/adapter" "^1.1.2"
+    "@pollyjs/utils" "^1.0.2"
     nise "^1.4.1"
 
-"@pollyjs/adapter@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter/-/adapter-1.1.0.tgz#6d2f42d240cda2a5660e70a1eedb72c4b3b2bd4e"
+"@pollyjs/adapter@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter/-/adapter-1.1.2.tgz#de6fc2977bd3ef711b87af2c8139c06406447a7d"
   dependencies:
-    "@pollyjs/utils" "^1.0.0"
+    "@pollyjs/utils" "^1.0.2"
 
 "@pollyjs/cli@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/cli/-/cli-1.0.0.tgz#34ba48d5e9c9a74246d29988561ff09e383ac583"
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@pollyjs/cli/-/cli-1.0.2.tgz#befaa617a101f4e8ecfd44e08be18bb241f25d7c"
   dependencies:
-    "@pollyjs/node-server" "^1.0.0"
+    "@pollyjs/node-server" "^1.0.2"
     commander "^2.15.1"
 
 "@pollyjs/core@^1.0.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-1.1.1.tgz#c768de8e75bb3ce08ac7389e58e3329face2aaa3"
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-1.1.3.tgz#31b41464c16ff354abbfd09cead0104b6dd6a8e9"
   dependencies:
-    "@pollyjs/utils" "^1.0.0"
+    "@pollyjs/utils" "^1.0.2"
     "@sindresorhus/fnv1a" "^1.0.0"
     blueimp-md5 "^2.10.0"
     fast-json-stable-stringify "^2.0.0"
@@ -211,13 +211,12 @@
     merge-options "^1.0.1"
     route-recognizer "^0.3.3"
     slugify "^1.3.0"
-    url-parse "^1.4.1"
 
-"@pollyjs/node-server@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/node-server/-/node-server-1.0.0.tgz#754b65c39f46a0330e3b1035eae1934d4b27d0d7"
+"@pollyjs/node-server@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@pollyjs/node-server/-/node-server-1.0.2.tgz#9b998463534552441575c1b1fd06bf675ded0b2e"
   dependencies:
-    "@pollyjs/utils" "^1.0.0"
+    "@pollyjs/utils" "^1.0.2"
     body-parser "^1.18.3"
     cors "^2.8.4"
     express "^4.16.3"
@@ -227,26 +226,26 @@
     nocache "^2.0.0"
 
 "@pollyjs/persister-rest@^1.0.0":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@pollyjs/persister-rest/-/persister-rest-1.0.2.tgz#816ec857f7bc37063ad1d75b3b77f62a69419ebc"
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@pollyjs/persister-rest/-/persister-rest-1.0.4.tgz#eef95cae9e2e2d7978fa09de65b9bae3a21ce356"
   dependencies:
-    "@pollyjs/persister" "^1.0.1"
-    "@pollyjs/utils" "^1.0.0"
+    "@pollyjs/persister" "^1.0.3"
+    "@pollyjs/utils" "^1.0.2"
 
-"@pollyjs/persister@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@pollyjs/persister/-/persister-1.0.1.tgz#b6b578398e7f60a9b9ce3dde63668a9c94fcd8a0"
+"@pollyjs/persister@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@pollyjs/persister/-/persister-1.0.3.tgz#7c70830f4895df0b59d339f815cc87e027c14f75"
   dependencies:
-    "@pollyjs/utils" "^1.0.0"
+    "@pollyjs/utils" "^1.0.2"
     bowser "^1.9.3"
     fast-json-stable-stringify "^2.0.0"
     lodash-es "^4.17.10"
     set-cookie-parser "^2.2.0"
     utf8-byte-length "^1.0.4"
 
-"@pollyjs/utils@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/utils/-/utils-1.0.0.tgz#2ca60641ea85b666f9d68f0dfba8b57a96c30674"
+"@pollyjs/utils@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@pollyjs/utils/-/utils-1.0.2.tgz#76871120ad564993d9d1c80b448da79df63e97a3"
   dependencies:
     url-parse "^1.4.1"
 
@@ -270,9 +269,13 @@
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@sinonjs/samsam/-/samsam-2.0.0.tgz#9163742ac35c12d3602dece74317643b35db6a80"
 
-"@types/auth0-js@*", "@types/auth0-js@^8.11.2":
+"@types/auth0-js@*":
   version "8.11.4"
   resolved "https://registry.yarnpkg.com/@types/auth0-js/-/auth0-js-8.11.4.tgz#2a853127da2aae4ddf2b6dc3e7ffd785ca248cd7"
+
+"@types/auth0-js@^8.11.2":
+  version "8.11.5"
+  resolved "https://registry.yarnpkg.com/@types/auth0-js/-/auth0-js-8.11.5.tgz#21fe20e74bf62caf58b5502f22b1bf80d245a691"
 
 "@types/auth0-lock@^11.4.4":
   version "11.4.5"
@@ -443,8 +446,8 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^16.0.38":
-  version "16.4.9"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.9.tgz#98b4dba5a0419dbd594f5dbbb2479e1e153431bb"
+  version "16.4.10"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.10.tgz#fb577091034b25a81f829923e7d38258f43e3165"
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -672,6 +675,10 @@ acorn@^5.0.0, acorn@^5.6.2:
 after@0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/after/-/after-0.8.2.tgz#fedb394f9f0e02aa9768e702bda23b505fae7e1f"
+
+ajv-errors@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/ajv-errors/-/ajv-errors-1.0.0.tgz#ecf021fa108fd17dfb5e6b383f2dd233e31ffc59"
 
 ajv-keywords@^3.1.0:
   version "3.2.0"
@@ -2890,8 +2897,8 @@ forever-agent@~0.6.1:
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
 
 fork-ts-checker-webpack-plugin@^0.4.2:
-  version "0.4.7"
-  resolved "https://registry.yarnpkg.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-0.4.7.tgz#6302e118f64df9c9be29bb0d5a69c40134305b1b"
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-0.4.8.tgz#a93cb5f1240a56367a1daa2ad2d46f24f8ef2861"
   dependencies:
     babel-code-frame "^6.22.0"
     chalk "^2.4.1"
@@ -4633,7 +4640,17 @@ nice-try@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.4.tgz#d93962f6c52f2c1558c0fbda6d512819f1efe1c4"
 
-nise@^1.4.1, nise@^1.4.2:
+nise@^1.4.1:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/nise/-/nise-1.4.3.tgz#d1996e8d15256ceff1a0a1596e0c72bff370e37c"
+  dependencies:
+    "@sinonjs/formatio" "^2.0.0"
+    just-extend "^1.1.27"
+    lolex "^2.3.2"
+    path-to-regexp "^1.7.0"
+    text-encoding "^0.6.4"
+
+nise@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/nise/-/nise-1.4.2.tgz#a9a3800e3994994af9e452333d549d60f72b8e8c"
   dependencies:
@@ -6064,7 +6081,15 @@ sax@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
-schema-utils@^0.4.3, schema-utils@^0.4.4, schema-utils@^0.4.5:
+schema-utils@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-1.0.0.tgz#0b79a93204d7b600d4b2850d1f66c2a34951c770"
+  dependencies:
+    ajv "^6.1.0"
+    ajv-errors "^1.0.0"
+    ajv-keywords "^3.1.0"
+
+schema-utils@^0.4.4, schema-utils@^0.4.5:
   version "0.4.7"
   resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-0.4.7.tgz#ba74f597d2be2ea880131746ee17d0a093c68187"
   dependencies:
@@ -6845,8 +6870,8 @@ ts-loader@^4.4.1:
     semver "^5.0.1"
 
 ts-node@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-7.0.0.tgz#a94a13c75e5e1aa6b82814b84c68deb339ba7bff"
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-7.0.1.tgz#9562dc2d1e6d248d24bc55f773e3f614337d9baf"
   dependencies:
     arrify "^1.0.0"
     buffer-from "^1.1.0"
@@ -6879,7 +6904,7 @@ tslib@1.9.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
 
-tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
 
@@ -6888,12 +6913,12 @@ tslint-config-prettier@^1.13.0:
   resolved "https://registry.yarnpkg.com/tslint-config-prettier/-/tslint-config-prettier-1.14.0.tgz#860b36634e53f4c70c64c51ff3ef7fd9bbab7676"
 
 tslint-eslint-rules@^5.3.1:
-  version "5.3.1"
-  resolved "https://registry.yarnpkg.com/tslint-eslint-rules/-/tslint-eslint-rules-5.3.1.tgz#10dec4361df0b3e4385d91ff8e0226bda4ec2ad4"
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/tslint-eslint-rules/-/tslint-eslint-rules-5.4.0.tgz#e488cc9181bf193fe5cd7bfca213a7695f1737b5"
   dependencies:
     doctrine "0.7.2"
     tslib "1.9.0"
-    tsutils "2.8.0"
+    tsutils "^3.0.0"
 
 tslint-no-unused-expression-chai@^0.1.3:
   version "0.1.3"
@@ -6924,15 +6949,15 @@ tslint@^5.10.0:
     tslib "^1.8.0"
     tsutils "^2.27.2"
 
-tsutils@2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.8.0.tgz#0160173729b3bf138628dd14a1537e00851d814a"
-  dependencies:
-    tslib "^1.7.1"
-
 tsutils@^2.13.1, tsutils@^2.27.2, tsutils@^2.3.0:
   version "2.29.0"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.29.0.tgz#32b488501467acbedd4b85498673a0812aca0b99"
+  dependencies:
+    tslib "^1.8.1"
+
+tsutils@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.0.0.tgz#0c5070a17a0503e056da038c48b5a1870a50a9ad"
   dependencies:
     tslib "^1.8.1"
 
@@ -7090,12 +7115,12 @@ url-join@^4.0.0:
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
 
 url-loader@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/url-loader/-/url-loader-1.0.1.tgz#61bc53f1f184d7343da2728a1289ef8722ea45ee"
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/url-loader/-/url-loader-1.1.0.tgz#64dd296626d935c68d72ed9d9c69cf3c6ff933ac"
   dependencies:
     loader-utils "^1.1.0"
     mime "^2.0.3"
-    schema-utils "^0.4.3"
+    schema-utils "1.0.0"
 
 url-parse@^1.1.8, url-parse@^1.4.1, url-parse@^1.4.3:
   version "1.4.3"
