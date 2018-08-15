@@ -33,7 +33,7 @@ class Notifications extends React.Component<IProps> {
     visible: false
   };
 
-  // TODO: Remove this method we are connected to the Backend
+  // TODO: Remove this method when we are connected to the Backend
   generateRandomTaks = async () => {
     await this.props.updateStore(t => [
       t.addRecord({
@@ -64,7 +64,7 @@ class Notifications extends React.Component<IProps> {
   }
 
   componentDidMount() {
-    this.generateRandomTaks();
+    this.generateRandomTaks(); //TODO: Remove this when we get notifications from the backend
   }
 
   seenNotifications = () => {
@@ -75,7 +75,7 @@ class Notifications extends React.Component<IProps> {
     return this.props.notifications.reduce((memo, not) => memo || not.attributes.show, false);
   }
 
-  markNotificationToSeen = async () => {
+  markNotificationsToSeen = async () => {
 
     const { notifications } = this.props;
 
@@ -84,6 +84,12 @@ class Notifications extends React.Component<IProps> {
         type: TYPE_NAME, id: not.id
       }, 'isViewed', true)),
       { devOnly: true });
+  }
+
+  markNotificationToSeen = async (notification) => {
+    await this.props.updateStore(t => t.replaceAttribute({
+      type: TYPE_NAME, id: notification.id
+    }, 'isViewed', true), { devOnly: true});
   }
 
   clearAll = async (e) => {
@@ -104,8 +110,27 @@ class Notifications extends React.Component<IProps> {
   }
 
   toggle = (e) => {
+
+    if (this.state.visible) {
+      this.markNotificationsToSeen();
+    }
+
     this.setState({
       visible: !this.state.visible
+    });
+  }
+
+  sortNotifications = (notifications) => {
+    return notifications.sort((a, b) => {
+
+      return (a.attributes.time === b.attributes.time) ? 0 :
+        a.attributes.time > b.attributes.time ? -1 : 1;
+
+    }).sort((a, b) => {
+
+      return (a.attributes.isViewed === b.attributes.isViewed) ? 0 :
+        a.attributes.isViewed ? 1 : -1;
+
     });
   }
 
@@ -145,17 +170,7 @@ class Notifications extends React.Component<IProps> {
               </div>
               <div className={notifications.length > 3 ? 'scrollable-menu' : ''}>
                 {
-                  notifications.sort((a, b) => {
-
-                    return (a.attributes.time === b.attributes.time) ? 0 :
-                      a.attributes.time > b.attributes.time ? -1 : 1;
-
-                  }).sort((a, b) => {
-
-                    return (a.attributes.isViewed === b.attributes.isViewed) ? 0 :
-                      a.attributes.isViewed ? 1 : -1;
-
-                  }).map((notification, index) => {
+                  this.sortNotifications(notifications).map((notification, index) => {
 
                     const { title, description, time, isViewed } = notification.attributes;
 
@@ -164,10 +179,10 @@ class Notifications extends React.Component<IProps> {
                     }
 
                     return (
-                      <div
-                        className={`notification-item ${isViewed ? 'seen' : 'not-seen'}`}
-                        key={index}
-                      >
+                      <div className={`notification-item ${isViewed ? 'seen' : 'not-seen'}`} key={index} onClick={e => {
+                        e.preventDefault();
+                        this.markNotificationToSeen(notification);
+                      }}>
                         <a className='close' href='#' onClick={e => {
                           e.preventDefault();
                           this.clearOne(notification.id);
