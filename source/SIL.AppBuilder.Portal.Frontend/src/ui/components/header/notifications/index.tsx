@@ -64,7 +64,7 @@ class Notifications extends React.Component<IProps> {
   }
 
   componentDidMount() {
-    this.generateRandomTaks(); //TODO: Remove this when we get notifications from the backend
+    this.generateRandomTaks(); // TODO: Remove this when we get notifications from the backend
   }
 
   seenNotifications = () => {
