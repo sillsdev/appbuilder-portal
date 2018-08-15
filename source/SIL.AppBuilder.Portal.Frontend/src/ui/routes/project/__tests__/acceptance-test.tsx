@@ -7,7 +7,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe.only('Acceptance | Archive Project', () => {
+describe('Acceptance | Archive Project', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
@@ -86,6 +86,7 @@ describe.only('Acceptance | Archive Project', () => {
                 'date-archived': "2018-08-10T23:59:55.259Z"
               },
               relationships: {}
+            }
           });
         });
 
@@ -111,7 +112,8 @@ describe.only('Acceptance | Archive Project', () => {
                   'date-archived': null
                 },
                 relationships: {}
-              });
+              }
+            });
           });
 
           it("it's reactivated", () => {

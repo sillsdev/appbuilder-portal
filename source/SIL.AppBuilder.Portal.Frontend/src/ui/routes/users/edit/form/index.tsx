@@ -47,7 +47,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
   submit = async (e) => {
     e.preventDefault();
-    const profileVisibility = this.state.profileVisibility ? 1 : 0 ;
+    const profileVisibility = this.state.profileVisibility ? PUBLIC_PROFILE : 0 ;
     await this.props.onSubmit({ ...this.state, profileVisibility });
   }
 
@@ -59,8 +59,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
       sshKey, profileVisibility
     } = this.state;
 
-    const { t, user, currentUser } = this.props;
-    const currentUserId = idFor(currentUser);
+    const { t } = this.props;
 
     return (
       <Form data-test-edit-profile>
@@ -143,25 +142,20 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
         <Divider horizontal/>
 
-        {
-          user.id === currentUserId &&
-          <>
-            <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
-            <Form.Field>
-              <div className='toggle-selector'>
-                <span>{t('profile.visibility.visible')}</span>
-                <Checkbox
-                  data-test-profile-visible-profile
-                  toggle
-                  defaultChecked={profileVisibility === PUBLIC_PROFILE}
-                  onChange={toggle('profileVisibility')}
-                />
-              </div>
-            </Form.Field>
+        <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
+        <Form.Field>
+          <div className='toggle-selector'>
+            <span>{t('profile.visibility.visible')}</span>
+            <Checkbox
+              data-test-profile-visible-profile
+              toggle
+              defaultChecked={profileVisibility === PUBLIC_PROFILE}
+              onChange={toggle('profileVisibility')}
+            />
+          </div>
+        </Form.Field>
 
-            <Divider horizontal />
-          </>
-        }
+        <Divider horizontal />
 
         <h2 className='form-title'>{t('profile.sshSettingsTitle')}</h2>
         <Form.Field>

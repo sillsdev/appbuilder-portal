@@ -91,6 +91,7 @@ export default {
     title: 'Profile',
     pictureTitle: 'Profile Picture',
     general: 'General',
+    generalInformation: 'General Information',
     updated: 'User updated successfully!',
     updatePicture: 'Update your picture at Gravatar.com',
     uploadPicture: 'Upload new picture',
@@ -107,6 +108,8 @@ export default {
     sshSettingsTitle: 'Manage Personal SSH Keys',
     sshKeyLabel: 'SSH Key',
     visibleProfile: 'Profile visibility',
+    noPhone: 'no phone added',
+    noTimezone: '(GMT-0)',
     visibility: {
       visible: 'My profile information is publicly viewable',
       restricted: 'My profile information is restricted from the public'

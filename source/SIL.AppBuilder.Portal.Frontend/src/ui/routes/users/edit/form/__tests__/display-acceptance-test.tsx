@@ -43,6 +43,7 @@ describe('Acceptance | Edit Profile Form', () => {
       await page.fillEmail('fake@domain.com');
       await page.fillPhone('997528963');
       await page.clickEmailNotification();
+      await page.clickProfileVisibility();
       await page.fillSSHKey('abcd');
     });
 
@@ -52,6 +53,7 @@ describe('Acceptance | Edit Profile Form', () => {
       expect(page.email).to.equal('fake@domain.com');
       expect(page.phone).to.equal('997528963');
       expect(page.emailNotification).to.be.true;
+      expect(page.profileVisibility).to.be.true;
       expect(page.sshKey).to.equal('abcd');
 
     });

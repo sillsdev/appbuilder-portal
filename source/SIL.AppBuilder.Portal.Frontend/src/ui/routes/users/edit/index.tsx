@@ -30,10 +30,6 @@ export type IProps =
 
 class Profile extends React.Component<IProps> {
 
-  state = {
-    imageData: null
-  };
-
   onChangePicture = (imageData) => {
     this.setState({imageData});
   }
@@ -43,12 +39,11 @@ class Profile extends React.Component<IProps> {
     const id = idFor(user);
 
     try {
-      const { imageData } = this.state;
 
       await this.props.updateStore(tr => tr.replaceRecord({
         id,
         type: TYPE_NAME,
-        attributes: { ...formData, imageData }
+        attributes: { ...formData }
       }), defaultOptions());
 
       toast.success(t('profile.updated'));
@@ -67,7 +62,7 @@ class Profile extends React.Component<IProps> {
         <div>
           <h2>{t('profile.general')}</h2>
 
-          <EditProfileForm currentUser={currentUser} user={user} onSubmit={this.updateProfile} />
+          <EditProfileForm user={user} onSubmit={this.updateProfile} />
         </div>
       </Container>
     );
