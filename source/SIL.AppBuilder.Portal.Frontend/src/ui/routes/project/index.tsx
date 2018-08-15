@@ -45,7 +45,6 @@ export type IProps =
 class Project extends React.Component<IProps> {
 
   renderTabPanes = () => {
-
     const { t, project } = this.props;
 
     const tabPanes = [{

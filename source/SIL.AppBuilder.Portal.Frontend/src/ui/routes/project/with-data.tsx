@@ -4,7 +4,7 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { query, defaultSourceOptions } from '@data';
 
-import { TYPE_NAME as PROJECT } from '@data/models/project';
+import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { PLURAL_NAME as PRODUCTS } from '@data/models/product';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 
@@ -19,15 +19,43 @@ const mapNetworkToProps = (passedProps) => {
       sources: {
         remote: {
           settings: { ...defaultSourceOptions() },
-          include: [PRODUCTS, ORGANIZATION]
+          include: [/* PRODUCTS, */ ORGANIZATION]
         }
       }
     }]
   };
 };
 
-export function withData(WrappedComponent) {
+const mapRecordsToProps = (passedProps) => {
+  const { match } = passedProps;
+  const { params: { id } } = match;
+
+  return {
+    projectFromCache: q => q.findRecord({ id, type: PROJECT })
+  };
+};
+
+interface IProps {
+  project: JSONAPI<ProjectAttributes>;
+  projectFromCache: JSONAPI<ProjectAttributes>;
+}
+
+export function withData<T>(WrappedComponent) {
+  class DataWrapper extends React.Component<IProps & T> {
+    render() {
+      const { project, projectFromCache, ...otherProps } = this.props;
+
+      const dataProps = {
+        project: projectFromCache || project
+      };
+
+      return <WrappedComponent { ...otherProps } { ...dataProps }/>;
+    }
+  }
+
+
   return compose(
     query(mapNetworkToProps),
-  )(WrappedComponent);
+    withOrbit(mapRecordsToProps)
+  )(DataWrapper);
 }

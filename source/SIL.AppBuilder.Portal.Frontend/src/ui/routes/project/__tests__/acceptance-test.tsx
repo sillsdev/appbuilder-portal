@@ -56,9 +56,7 @@ describe('Acceptance | Archive Project', () => {
       describe('the archive button is clicked', () => {
         beforeEach(async () => {
           await visit('/project/1');
-          debugger;
           await page.clickArchiveLink();
-          debugger;
         });
 
         it("changes the button text", () => {
