@@ -17,6 +17,9 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("build-engine-api-access-token")]
         public string BuildEngineApiAccessToken { get; set; }
 
+        [Attr("use-sil-build-infrastructure")]
+        public bool UseSilBuildInfrastructure { get; set; }
+
         [HasOne("owner")]
         public virtual User Owner { get; set; }
         public int OwnerId { get; set; }
