@@ -68,7 +68,12 @@ export default class ReduxProvider extends React.Component<IProps> {
       //       we need to manually set this specific key
       setCurrentOrganizationId(currentState.data.currentOrganizationId);
 
-      localStorage.setItem('reduxState', JSON.stringify(toPersist));
+      try {
+        localStorage.setItem('reduxState', JSON.stringify(toPersist));
+      } catch (e) {
+        console.error(toPersist, e);
+        throw e;
+      }
     });
 
     return store;

@@ -13,7 +13,6 @@ export class FormInteractor {
   fillEmail = fillable('[data-test-profile-email]');
   fillPhone = fillable('[data-test-profile-phone]');
   fillLocalization = fillable('[data-test-profile-localization]');
-  fillSSHKey = fillable('[data-test-profile-ssh-key]');
 
   clickEmailNotification = clickable('[data-test-profile-email-notification]');
   clickSubmit = clickable('[data-test-profile-submit]');
@@ -24,7 +23,6 @@ export class FormInteractor {
   phone = value('[data-test-profile-phone]');
   localization = value('[data-test-profile-localization]');
   emailNotification = isPresent('[data-test-profile-email-notification].checked');
-  sshKey = value('[data-test-profile-ssh-key]');
 
 }
 

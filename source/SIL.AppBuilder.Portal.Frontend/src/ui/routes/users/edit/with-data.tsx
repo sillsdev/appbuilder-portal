@@ -29,6 +29,7 @@ export function withData(WrappedComponent) {
     const { params: { id } } = match;
 
     return {
+      cacheKey: [id],
       user: [q => q.findRecord({ id, type: USER }), defaultOptions()]
     };
   };

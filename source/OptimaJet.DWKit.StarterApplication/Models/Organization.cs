@@ -17,12 +17,18 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("build-engine-api-access-token")]
         public string BuildEngineApiAccessToken { get; set; }
 
+        [Attr("use-sil-build-infrastructure")]
+        public bool UseSilBuildInfrastructure { get; set; }
+
         [HasOne("owner")]
         public virtual User Owner { get; set; }
         public int OwnerId { get; set; }
 
         [HasMany("organization-memberships", Link.None)]
         public virtual List<OrganizationMembership> OrganizationMemberships { get; set; }
+
+        [HasMany("groups")]
+        public virtual List<Group> Groups { get; set; }
 
         [HasMany("organization-product-definitions", Link.None)]
         public virtual List<OrganizationProductDefinition> OrganizationProductDefinitions { get; set;}
