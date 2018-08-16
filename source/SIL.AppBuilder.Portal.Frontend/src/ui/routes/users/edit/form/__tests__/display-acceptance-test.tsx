@@ -1,12 +1,9 @@
-import * as React from 'react';
-import * as sinon from 'sinon';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
-import Form from '../index';
 import page from './page';
 
 describe('Acceptance | Edit Profile Form', () => {
@@ -43,7 +40,6 @@ describe('Acceptance | Edit Profile Form', () => {
       await page.fillEmail('fake@domain.com');
       await page.fillPhone('997528963');
       await page.clickEmailNotification();
-      await page.fillSSHKey('abcd');
     });
 
     it('has values', () => {
@@ -52,7 +48,6 @@ describe('Acceptance | Edit Profile Form', () => {
       expect(page.email).to.equal('fake@domain.com');
       expect(page.phone).to.equal('997528963');
       expect(page.emailNotification).to.be.true;
-      expect(page.sshKey).to.equal('abcd');
 
     });
   });

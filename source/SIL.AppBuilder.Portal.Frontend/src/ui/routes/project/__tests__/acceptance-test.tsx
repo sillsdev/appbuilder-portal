@@ -7,7 +7,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe.only('Acceptance | Archive Project', () => {
+describe('Acceptance | Archive Project', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();

@@ -129,17 +129,6 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
           </div>
         </Form.Field>
 
-        {/* <Divider horizontal/>
-
-        <h2 className='form-title'>{t('profile.sshSettingsTitle')}</h2>
-        <Form.Field>
-          <label>{t('profile.sshKeyLabel')}</label>
-          <input
-            data-test-profile-ssh-key
-            value={sshKey}
-            onChange={mut('sshKey')} />
-        </Form.Field> */}
-
         <Divider horizontal />
 
         <Button
