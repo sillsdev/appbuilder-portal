@@ -43,7 +43,7 @@ class Notifications extends React.Component<IProps> {
   render() {
 
     const { t, timeAgo } = this.props;
-    const { notifications, seenNotifications, showNotifications } = this.props;
+    const { notifications, haveAllNotificationsBeenSeen, isThereAtLeastOneNotificationToShow } = this.props;
     const { clearAll, clearOne, markNotificationToSeen } = this.props;
 
     return (
@@ -58,18 +58,18 @@ class Notifications extends React.Component<IProps> {
           style={{ position: 'relative' }}
           onClick={this.toggle}
         >
-          {!seenNotifications && <div className='red-dot' />}
+          {!haveAllNotificationsBeenSeen && <div className='red-dot' />}
           <i className='alarm large circular icon no-shadows' />
         </div>
 
         <div className={`ui menu transition notifications ${this.state.visible ? 'visible' : ''}`}>
           {
-            notifications && notifications.length > 0 && showNotifications ?
+            notifications && notifications.length > 0 && isThereAtLeastOneNotificationToShow ?
             <>
               <div className="notification-buttons">
                 <a href="#" onClick={e => {
-                  e.preventDefault();
-                   clearAll();
+                    e.preventDefault();
+                    clearAll();
                   }}
                 >
                   {t('header.clearAll') }
