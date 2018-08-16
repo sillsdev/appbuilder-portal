@@ -7,33 +7,46 @@ import { OrganizationInviteAttributes } from '@data/models/organization-invite';
 
 export interface IProps {
   onSubmit: (data: OrganizationInviteAttributes) => Promise<void>;
+  name?: string;
+  orgAdminEmail?: string;
+  websiteUrl?: string;
 }
 
 export interface IState {
-  name: string;
-  ownerEmail: string;
-  expiresAt: Date;
+  name?: string;
+  ownerEmail?: string;
+  expiresAt?: Date;
+  url?: string;
 }
 
 @withTemplateHelpers
 export default class InviteOrganizationDisplay extends React.Component<IProps, IState> {
   mut: Mut;
-  state = { name: '', ownerEmail: '', expiresAt: tomorrow() };
+
+  constructor(props) {
+    super(props);
+
+    const { name, orgAdminEmail, websiteUrl } = props;
+
+    this.state = {
+      name,
+      ownerEmail: orgAdminEmail,
+      url: websiteUrl,
+      expiresAt: tomorrow()
+    };
+  }
 
   submit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     await this.props.onSubmit(this.state);
-    this.reset();
-  }
 
-  reset = () => {
-    this.setState({ name: '', ownerEmail: '', expiresAt: tomorrow() });
+    this.setState({});
   }
 
   render() {
     const { mut } = this;
-    const { name, ownerEmail } = this.state;
+    const { name, ownerEmail, url } = this.state;
 
     return (
       <div>
@@ -44,7 +57,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
             <input
               data-test-owner-email
               type='text'
-              value={ownerEmail}
+              value={ownerEmail || ''}
               onChange={mut('ownerEmail')} />
           </div>
 
@@ -53,8 +66,18 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
             <input
               data-test-org-name
               type='text'
-              value={name}
+              value={name || ''}
               onChange={mut('name')} />
+          </div>
+
+
+          <div className='field'>
+            <label>Organization Website URL</label>
+            <input
+              data-test-org-url
+              type='text'
+              value={url || ''}
+              onChange={mut('url')} />
           </div>
 
           <button
