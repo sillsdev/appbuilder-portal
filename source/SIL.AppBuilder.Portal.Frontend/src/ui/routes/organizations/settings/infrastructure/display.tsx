@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import { Checkbox, Form, Button } from 'semantic-ui-react';
-import { OrganizationAttributes } from '@data/models/organization';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
+import { attributesFor } from '@data';
+import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProps {
   onChange: (payload: OrganizationAttributes) => void;
@@ -24,7 +25,7 @@ class InfrastructureDisplay extends React.Component<IProps & i18nProps> {
     const {
       useSilBuildInfrastructure,
       buildEngineUrl, buildEngineApiAccessToken
-    } = organization.attributes;
+    } = attributesFor(organization);
 
     this.state = {
       useSilBuildInfrastructure,

@@ -5,7 +5,6 @@ import { TYPE_NAME as ORGANITZATION } from '@data/models/organization';
 
 
 export function withRelationship(relationshipName: string) {
-
   function mapRecordsToProps(passedProps) {
     const { project } = passedProps;
 
@@ -15,9 +14,6 @@ export function withRelationship(relationshipName: string) {
   }
 
   return InnerComponent => {
-
     return withOrbit(mapRecordsToProps)(InnerComponent);
-
   };
-
 }

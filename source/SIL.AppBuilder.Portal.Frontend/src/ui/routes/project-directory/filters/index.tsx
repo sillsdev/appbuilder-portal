@@ -9,73 +9,93 @@ import MomentLocaleUtils, {
   parseDate,
 } from 'react-day-picker/moment';
 
+import { OrganizationAttributes } from '@data/models/organization';
+import { IFilter } from '@data/containers/with-filtering';
+import {
+  withCurrentOrganization,
+  IProvidedProps as ICurrentOrgProps
+} from '@data/containers/with-current-organization';
+
 import 'react-day-picker/lib/style.css';
 import './filters.scss';
 
 interface IState {
   products: any[];
   selectedProduct : string;
-  organizations: any[];
   selectedOrganization: string;
   from: any;
   to: any;
 }
 
-class Filter extends React.Component<i18nProps, IState> {
+interface IOwnProps {
+  updateFilter: (filter: IFilter) => void;
+  organizations: Array<JSONAPI<OrganizationAttributes>>;
+  onOrganizationChange: (id: string | number) => void;
+}
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      products: [{ text: 'All Products', value: 'all' }, { text: 'Android APK w/ Embedded Audio', value: 'android-apk' }, { text: 'HTML Website', value: 'website'}],
-      selectedProduct: null,
-      organizations: [{ text: 'All organizations', value: 'all'}, { text: 'SIL International', value: 'SIL'}],
-      selectedOrganization: null,
-      from: '',
-      to: ''
-    };
+type IProps =
+& ICurrentOrgProps
+& IOwnProps
+& i18nProps;
 
-    this.handleProductChange = this.handleProductChange.bind(this);
-    this.handleOrganizationChange = this.handleOrganizationChange.bind(this);
-    this.handleToChange = this.handleToChange.bind(this);
-    this.handleFromChange = this.handleFromChange.bind(this);
-    this.disableFrom = this.disableFrom.bind(this);
-    this.disableTo = this.disableTo.bind(this);
+class Filter extends React.Component<IProps, IState> {
+  state = {
+    products: [{ text: 'All Products', value: 'all' }, { text: 'Android APK w/ Embedded Audio', value: 'android-apk' }, { text: 'HTML Website', value: 'website'}],
+    selectedProduct: null,
+    selectedOrganization: null,
+    from: '',
+    to: ''
+  };
+
+  handleProductChange = (e, { value }) => {
+    this.props.updateFilter({ attribute: 'products.productDefinition.name', value });
+
+    this.setState({ selectedProduct: value });
   }
 
-  handleProductChange(e) {
-    this.setState({ selectedProduct: e.target.value });
+  handleOrganizationChange = (e, { value }) => {
+    const { onOrganizationChange } = this.props;
+
+    onOrganizationChange(value);
   }
 
-  handleOrganizationChange(e) {
-    this.setState({ selectedOrganization: e.target.value });
-  }
+  handleToChange = (to) => {
+    this.props.updateFilter({ attribute: 'products.dateUpdated', value: to });
 
-  handleToChange(to) {
     this.setState({ to });
   }
 
-  handleFromChange (from) {
+  handleFromChange = (from) => {
+    this.props.updateFilter({ attribute: 'products.dateUpdated', value: from });
+
     this.setState({from});
   }
 
-  disableFrom(day) {
-
+  disableFrom = (day) => {
     const { to } = this.state;
-    return day > (new Date()) || (to !== '' && day > to);
+    const compare = (to && to !== '' && to) || new Date();
+
+    return day > compare;
   }
 
-  disableTo(day) {
-
+  disableTo = (day) => {
     const { from } = this.state;
-    return day > (new Date()) || (from !== '' && day < from);
+    const compare = (from && from !== '' && from) || new Date();
+
+    return day < compare;
   }
 
   render() {
-
     const today = new Date();
 
-    const { t } = this.props;
+    const { t, organizations, currentOrganizationId } = this.props;
     const { from, to } = this.state;
+    const organizationOptions = [{ text: 'All Organizations', value: ''}].concat(
+      organizations.map(o => ({
+        text: o.attributes.name,
+        value: o.id
+      }))
+    );
 
     return (
       <div className='flex filters'>
@@ -91,10 +111,11 @@ class Filter extends React.Component<i18nProps, IState> {
             <Dropdown
               className='w-100'
               onChange={this.handleOrganizationChange}
-              options={this.state.organizations}
-              defaultValue={this.state.organizations[0].value} />
+              options={organizationOptions}
+              defaultValue={currentOrganizationId} />
           </div>
         </div>
+
         <div className='flex justify-content-end w-50'>
           <div className='input m-r-30'>
             <div className='dateRange'>{t('directory.filters.dateRange')}</div>
@@ -135,6 +156,7 @@ class Filter extends React.Component<i18nProps, IState> {
 }
 
 export default compose(
-  translate('translations')
+  translate('translations'),
+  withCurrentOrganization
 )(Filter);
 

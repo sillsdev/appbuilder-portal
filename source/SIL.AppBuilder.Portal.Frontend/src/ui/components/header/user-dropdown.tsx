@@ -14,7 +14,7 @@ import './header.scss';
 
 interface IOwnProps {
   toggleSidebar: () => void;
-  currentUser: JSONAPIDocument<UserAttributes>;
+  currentUser: JSONAPI<UserAttributes>;
 }
 
 export type IProps =
@@ -32,7 +32,7 @@ class UserDropdown extends React.Component<IProps> {
   }
 
   render() {
-    const { t, currentUser: { data: currentUser } } = this.props;
+    const { t, currentUser } = this.props;
 
     return (
       <Dropdown

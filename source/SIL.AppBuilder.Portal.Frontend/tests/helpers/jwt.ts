@@ -1,11 +1,13 @@
 import * as CryptoJS from 'crypto-js';
 
+export const fakeAuth0Id = 'whatever-user-id';
+
 // inspiration from: https://codepen.io/jpetitcolas/pen/zxGxKN
 export function fakeAuth0JWT(data = {}) {
 
   const header = objectToJWTPartial({ alg: 'HS256', typ: 'JWT' });
   const payload = objectToJWTPartial({
-    sub: 'whatever-user-id',
+    sub: fakeAuth0Id,
     exp: new Date().getTime() + 3600000,
     picture: 'https://i.imgur.com/oHM3bhj.gif',
     ...data
