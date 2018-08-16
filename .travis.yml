@@ -32,6 +32,19 @@ matrix:
             sudo pip install -U docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
           )
+      before_deploy:
+        # must cleanup root owned files
+        - time ( sudo ./run clean:api )
+      deploy:
+        provider: script
+        script: time ./scripts/deploy-travis.sh $TRAVIS_COMMIT latest
+        on:
+          branch: master
+#      deploy:
+#        provider: script
+#        script: time ./scripts/deploy-travis.sh $TRAVIS_COMMIT staging
+#        on:
+#          branch: develop
 
     # - env: PROJECT=source/SIL.AppBuilder.Portal.Backend.Tests
 
