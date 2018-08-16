@@ -40,8 +40,8 @@ export function withData(WrappedComponent) {
       const { notifications } = this.props;
 
       await this.props.updateStore(t =>
-        notifications.map(not => t.replaceAttribute({
-          type: NOTIFICATION, id: not.id
+        notifications.map(notification => t.replaceAttribute({
+          type: NOTIFICATION, id: notification.id
         }, 'isViewed', true)),
         { ...defaultOptions(), devOnly: true });
     }
@@ -71,12 +71,12 @@ export function withData(WrappedComponent) {
 
     haveAllNotificationsBeenSeen = () => {
       return this.props.notifications &&
-        this.props.notifications.reduce((memo, not) => memo && not.attributes.isViewed, true);
+        this.props.notifications.reduce((memo, notification) => memo && notification.attributes.isViewed, true);
     }
 
     isThereAtLeastOneNotificationToShow = () => {
       return this.props.notifications &&
-        this.props.notifications.reduce((memo, not) => memo || not.attributes.show, false);
+        this.props.notifications.reduce((memo, notification) => memo || notification.attributes.show, false);
     }
 
     sortNotifications = (notifications) => {
