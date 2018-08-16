@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using JsonApiDotNetCore.Models;
 
@@ -41,5 +42,9 @@ namespace Optimajet.DWKit.StarterApplication.Models
 
         [Attr("date-archived")]
         public DateTime? DataArchived { get; set; }
+
+        [HasMany("reviewers", Link.None)]
+        public virtual List<Reviewer> Reviewers { get; set; }
+
     }
 }
