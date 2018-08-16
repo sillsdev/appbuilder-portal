@@ -6,7 +6,7 @@ import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
-import Form from '../index';
+import enUS from '@ui/../translations/locales/en-us';
 import page from './page';
 
 describe('Acceptance | Edit Profile Form', () => {
@@ -57,5 +57,25 @@ describe('Acceptance | Edit Profile Form', () => {
       expect(page.sshKey).to.equal('abcd');
 
     });
+  });
+
+  describe('Profile visibility', () => {
+    beforeEach(async () => {
+      await page.clickProfileVisibility();
+    });
+
+    it('change its text when clicked', () => {
+      expect(page.profileVisibilityText, enUS.profile.visibility.visible);
+    });
+
+    describe('change it back',() => {
+      beforeEach(async () => {
+        await page.clickProfileVisibility();
+      });
+
+      it('changes', () => {
+        expect(page.profileVisibilityText, enUS.profile.visibility.restricted);
+      })
+    })
   });
 });

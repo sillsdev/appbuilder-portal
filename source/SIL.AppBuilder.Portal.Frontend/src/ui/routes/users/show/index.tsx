@@ -25,21 +25,25 @@ class User extends React.Component<IProps> {
     const { t, user: userData } = this.props;
     const user = userData.attributes;
 
+    const fullname = `${user.givenName} ${user.familyName}`;
+    const phone = user.phone ? user.phone : t('profile.noPhone');
+    const timezone = user.timezone ? `(${user.timezone})` : t('profile.noTimezone')
+
     return (
       <div className='ui container show-profile'>
         <h2 className='m-t-lg m-b-lg'>{t('profile.generalInformation')}</h2>
         <div className='flex-row'>
           <div>
-            <img className='round' src={getPictureUrl()} />
+            <img className='round-border' src={getPictureUrl()} />
           </div>
           <div>
-            <h4>{`${user.givenName} ${user.familyName}`}</h4>
+            <h4>{fullname}</h4>
             <p>{user.email}</p>
             {
               user && user.profileVisibility &&
-              <>
-                <p>{user.phone ? user.phone : t('profile.noPhone') }</p>
-                <p>{user.timezone ? `(${user.timezone})` : t('profile.noTimezone')}</p>
+              <>e
+                <p>{phone}</p>
+                <p>{timezone}</p>
               </>
             }
           </div>

@@ -28,6 +28,8 @@ export class FormInteractor {
   profileVisibility = isPresent('[data-test-profile-visible-profile].checked');
   sshKey = value('[data-test-profile-ssh-key]');
 
+  profileVisibilityText = value('[data-test-profile-visible-text]');
+
 }
 
 export default new FormInteractor('[data-test-edit-profile]');

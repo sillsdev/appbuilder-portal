@@ -26,6 +26,7 @@ export interface IState {
 }
 
 const PUBLIC_PROFILE = 1;
+const PRIVATE_PROFILE = 0;
 
 @withTemplateHelpers
 class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
@@ -47,7 +48,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
   submit = async (e) => {
     e.preventDefault();
-    const profileVisibility = this.state.profileVisibility ? PUBLIC_PROFILE : 0 ;
+    const profileVisibility = this.state.profileVisibility ? PUBLIC_PROFILE : PRIVATE_PROFILE;
     await this.props.onSubmit({ ...this.state, profileVisibility });
   }
 
@@ -60,6 +61,8 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     } = this.state;
 
     const { t } = this.props;
+
+    const profileVisibilityText = profileVisibility ? t('profile.visibility.visible') : t('profile.visibility.restricted');
 
     return (
       <Form data-test-edit-profile>
@@ -145,7 +148,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
         <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
         <Form.Field>
           <div className='toggle-selector'>
-            <span>{t('profile.visibility.visible')}</span>
+            <span data-test-profile-visible-text>{profileVisibilityText}</span>
             <Checkbox
               data-test-profile-visible-profile
               toggle

@@ -12,6 +12,10 @@
     border-bottom: 1px solid $border-color;
   }
 
+  .round-border {
+    border-radius: 50%;
+  }
+
   @each $position in $positions {
     $posKey: nth($position, 1);
     $posValue: nth($position, 2);
