@@ -30,11 +30,11 @@ export class InviteOrganization extends React.Component<IProps> {
 
   create = async (payload: OrganizationInviteAttributes) => {
     const { updateStore: update } = this.props;
-    const { name, ownerEmail, expiresAt } = payload;
+    const { name, ownerEmail, expiresAt, url } = payload;
 
     return await update(t => t.addRecord({
       type: TYPE_NAME,
-      attributes: { name, ownerEmail, expiresAt }
+      attributes: { name, ownerEmail, expiresAt, url }
     }), defaultOptions());
   }
 
