@@ -15,8 +15,8 @@ import { uuid } from '@orbit/utils';
 const mapRecordsToProps = (passedProps) => {
   return {
     notifications: q => q.findRecords(NOTIFICATION)
-  }
-}
+  };
+};
 
 export interface DataProps {
   notifications: Array<JSONAPI<NotificationAttributes>>;
@@ -93,7 +93,7 @@ export function withData(WrappedComponent) {
         return (a.attributes.isViewed === b.attributes.isViewed) ? 0 :
           a.attributes.isViewed ? 1 : -1;
 
-      })
+      });
     }
 
 
@@ -105,13 +105,13 @@ export function withData(WrappedComponent) {
         notifications: this.sortNotifications(notifications), // When API endpoint ready we should add query result here
         seenNotifications: this.seenNotifications(),
         showNotifications: this.showNotifications(),
-      }
+      };
 
       const actionProps = {
         markNotificationsToSeen: this.markNotificationsToSeen,
         clearAll: this.clearAll,
         clearOne: this.clearOne
-      }
+      };
 
       return <WrappedComponent {...otherProps} {...dataProps} {...actionProps} />;
 
@@ -120,7 +120,7 @@ export function withData(WrappedComponent) {
   }
 
   return compose(
-    //query(mapNetworkToProps),
+    // query(mapNetworkToProps),
     withStubbedDevData('notification', 1, {
       title: 'New Task',
       description: 'Chris Hubbard has requested approval for Sogdian Bible Public Domain.',
