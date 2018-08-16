@@ -41,7 +41,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
 
     await this.props.onSubmit(this.state);
 
-    this.setState({});
+    this.setState({ name: '', ownerEmail: '', url: '', expiresAt: tomorrow() });
   }
 
   render() {
