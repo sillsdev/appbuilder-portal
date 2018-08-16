@@ -3,7 +3,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { Container } from 'semantic-ui-react';
-import { withData as withOrbit } from 'react-orbitjs';
+import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 
 import * as toast from '@lib/toast';
@@ -24,29 +24,21 @@ export interface IOwnProps {
 
 export type IProps =
   & IOwnProps
+  & WithDataProps
   & i18nProps;
 
 class Profile extends React.Component<IProps> {
-
-  state = {
-    imageData: null
-  };
-
-  onChangePicture = (imageData) => {
-    this.setState({imageData});
-  }
 
   updateProfile = async (formData: UserAttributes): Promise<void> => {
     const { t, user } = this.props;
     const id = idFor(user);
 
     try {
-      const { imageData } = this.state;
 
       await this.props.updateStore(tr => tr.replaceRecord({
         id,
         type: TYPE_NAME,
-        attributes: { ...formData, imageData }
+        attributes: { ...formData }
       }), defaultOptions());
 
       toast.success(t('profile.updated'));
