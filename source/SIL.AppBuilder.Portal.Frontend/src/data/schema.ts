@@ -74,7 +74,10 @@ const schemaDefinition: SchemaSettings = {
     product: {
       keys: { remoteId: {} },
       attributes: {
-        name: { type: 'string' }
+        name: { type: 'string' },
+        dateCreated: { type: 'date'},
+        dateUpdated: { type: 'date'},
+        datePublished: { type: 'date'},
       },
       relationships: {
         tasks: { type: 'hasMany', model: 'task', inverse: 'project' },
@@ -107,7 +110,8 @@ const schemaDefinition: SchemaSettings = {
         description: { type: 'string' },
         time: { type: 'date' },
         link: { type: 'string' },
-        isViewed: { type: 'boolean' }
+        isViewed: { type: 'boolean' },
+        show: { type: 'boolean' }
       }
     },
     role: {
@@ -145,7 +149,7 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         ownedOrganizations: { type: 'hasMany', model: 'organization', inverse: 'owner' },
-        organizationMemberships: { type: 'hasMany', model: 'organization-membership', inverse: 'user' },
+        organizationMemberships: { type: 'hasMany', model: 'organizationMembership', inverse: 'user' },
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
         assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' },
         projects: { type: 'hasMany', model: 'project', inverse: 'owner' },

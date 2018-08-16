@@ -15,11 +15,12 @@ namespace Optimajet.DWKit.StarterApplication.Data
         // NOTE: only one side of a relationship needs to be specified.
         //       (because each declaration on a side actually defines
         //        both sides in a single fluent builder chain)
-        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var userEntity = modelBuilder.Entity<User>();
             var orgEntity = modelBuilder.Entity<Organization>();
             var orgMemberEntity = modelBuilder.Entity<OrganizationMembership>();
+            var orgProductDefinitionEntity = modelBuilder.Entity<OrganizationProductDefinition>();
             var orgInviteEntity = modelBuilder.Entity<OrganizationInvite>();
             var groupMemberEntity = modelBuilder.Entity<GroupMembership>();
 
@@ -38,9 +39,19 @@ namespace Optimajet.DWKit.StarterApplication.Data
                 .WithOne(om => om.Organization)
                 .HasForeignKey(om => om.OrganizationId);
 
+            orgEntity
+                .HasMany(o => o.Groups)
+                .WithOne(g => g.Owner)
+                .HasForeignKey(g => g.OwnerId);
+
             userEntity
                 .Property(u => u.ProfileVisibility)
                 .HasDefaultValue(ProfileVisibility.Public);
+
+            orgEntity
+                .HasMany(o => o.OrganizationProductDefinitions)
+                .WithOne(opd => opd.Organization)
+                .HasForeignKey(opd => opd.OrganizationId);
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
@@ -82,6 +93,7 @@ namespace Optimajet.DWKit.StarterApplication.Data
         public DbSet<OrganizationInviteRequest> OrganizationInviteRequests { get; set; }
         public DbSet<Email> Emails { get; set; }
         public DbSet<ProductDefinition> ProductDefinitions { get; set; }
+        public DbSet<OrganizationProductDefinition> OrganizationProductDefinitions { get; set; }
         public DbSet<WorkflowDefinition> WorkflowDefinitions { get; set; }
         public DbSet<ApplicationType> ApplicationTypes { get; set; }
     }

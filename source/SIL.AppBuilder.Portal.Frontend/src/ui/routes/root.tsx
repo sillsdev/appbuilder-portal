@@ -38,7 +38,7 @@ export default class RootPage extends React.Component {
 
             <Route exact path={rootPath} component={IndexRoute} />
             <Route path={tasksPath} component={TasksRoute} />
-            <Route path={invitationsPath} component={withLayout(InvitationsRoute)} />
+            <Route path={invitationsPath} component={InvitationsRoute} />
 
             <Route exact path={requestOrgAccessPath} component={RequestOrgAccessRoute} />
             <Route path={requestOrgAccessSuccessPath} component={RequestOrgAccessSuccessRoute} />

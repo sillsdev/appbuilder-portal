@@ -11,7 +11,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 {
     public class EmailService : IEmailService
     {
-        protected readonly EmailSettings settings;
         protected readonly FluentEmail.Core.Interfaces.ISender sender;
         protected readonly IJobRepository<Email> emailRepository;
         protected readonly FluentEmail.Core.IFluentEmailFactory emailFactory;
@@ -19,7 +18,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public EmailService( 
             IJobRepository<Email> emailRepository,
-            IOptions<EmailSettings> options,
             FluentEmail.Core.IFluentEmailFactory emailFactory,
             IClient bugsnagClient,
             FluentEmail.Core.Interfaces.ISender sender)
@@ -27,7 +25,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             this.emailRepository = emailRepository;
             this.emailFactory = emailFactory;
             this.bugsnagClient = bugsnagClient;
-            this.settings = options.Value;
             this.sender = sender;
         }
 

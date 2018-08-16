@@ -27,7 +27,7 @@ class TestWrapper extends React.Component<any, any> {
     // TODO: find a way to seed the data provider with data
 
     const RouteListener = (InnerComponent) => withRouter((props) => {
-      props.history.listen(l => console.debug('Current History Entry: ', l));
+      props.history.listen(l => console.debug('Current History Entry: ', l, props));
 
       return <InnerComponent { ...componentProps } />;
     });

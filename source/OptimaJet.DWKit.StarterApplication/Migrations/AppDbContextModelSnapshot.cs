@@ -169,6 +169,24 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("OrganizationMemberships");
                 });
 
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationProductDefinition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<int>("ProductDefinitionId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ProductDefinitionId");
+
+                    b.ToTable("OrganizationProductDefinitions");
+                });
+
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.ProductDefinition", b =>
                 {
                     b.Property<int>("Id")
@@ -282,7 +300,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
             modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Group", b =>
                 {
                     b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Owner")
-                        .WithMany()
+                        .WithMany("Groups")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -318,6 +336,19 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "User")
                         .WithMany("OrganizationMemberships")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationProductDefinition", b =>
+                {
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Organization")
+                        .WithMany("OrganizationProductDefinitions")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.ProductDefinition", "ProductDefinition")
+                        .WithMany()
+                        .HasForeignKey("ProductDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

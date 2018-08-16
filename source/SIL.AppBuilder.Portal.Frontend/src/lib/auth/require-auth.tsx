@@ -8,6 +8,8 @@ import { requireAuthHelper } from './require-auth-helper';
 import { storePath } from './return-to';
 
 export function requireAuth(Component) {
+  // this.displayName = 'RequireAuth';
+
   const checkForAuth = (propsWithRouting: RouterProps) => {
     const authenticated = isLoggedIn();
 
@@ -29,3 +31,4 @@ export function requireAuth(Component) {
   return requireAuthHelper(checkForAuth);
 }
 
+requireAuth.displayName = 'RequireAuth';

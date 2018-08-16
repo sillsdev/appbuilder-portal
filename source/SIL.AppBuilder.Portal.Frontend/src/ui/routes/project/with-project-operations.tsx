@@ -4,7 +4,7 @@ import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { TYPE_NAME as PROJECT, ProjectAttributes} from '@data/models/project';
-import { attributesFor } from '@data';
+import { attributesFor, defaultOptions } from '@data';
 
 import * as toast from '@lib/toast';
 
@@ -22,7 +22,7 @@ export function withProjectOperations(WrappedComponent) {
         await updateStore(ub => ub.replaceAttribute(
           { type: PROJECT, id: project.id },
           'dateArchived', !dateArchived ? new Date() : null
-        ));
+        ), defaultOptions());
 
         toast.success(!dateArchived ? t('project.operations.archive.success') : t('project.operations.reactivate.success'));
 

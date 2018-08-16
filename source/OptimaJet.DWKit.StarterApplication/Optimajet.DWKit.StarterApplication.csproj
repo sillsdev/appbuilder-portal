@@ -29,7 +29,6 @@
     <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
     <PackageReference Include="dotenv.net" Version="1.0.3" />
     <PackageReference Include="DWKit-Core" Version="2.1.1" />
-    <PackageReference Include="JsonApiDotnetCore" Version="2.3.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.1" />
@@ -58,6 +57,7 @@
     <PackageReference Include="SparkPostDotNet" Version="0.3.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.6.20" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.4.8.2" />
+    <PackageReference Include="JsonApiDotNetCore" Version="2.5.1" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />

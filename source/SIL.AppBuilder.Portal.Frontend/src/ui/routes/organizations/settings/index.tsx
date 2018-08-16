@@ -8,6 +8,8 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import * as toast from '@lib/toast';
 import NotFound from '@ui/routes/errors/not-found';
+import { defaultOptions } from '@data';
+import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
 
 
 import InfoRoute, { pathName as infoPath } from './basic-info';
@@ -17,7 +19,6 @@ import GroupsRoute, { pathName as groupsPath } from './groups';
 import InfrastructureRoute, { pathName as infrastructurePath } from './infrastructure';
 import Navigation from './navigation';
 
-import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
 
 export const pathName = '/organizations/:orgId/settings';
 
@@ -68,10 +69,10 @@ class SettingsRoute extends React.Component<IProps> {
       type: TYPE_NAME,
       id: orgId,
       attributes: {
-        ...organization,
+        ...organization.attributes,
         ...payload
       }
-    }));
+    }), defaultOptions());
   }
 
   render() {

@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { FindRecordsTerm } from '@orbit/data';
 import { WithDataProps } from 'react-orbitjs';
 
+import { IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as OWNER } from '@data/models/user';
@@ -10,15 +12,19 @@ import { query, defaultSourceOptions } from '@data';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
 
-function mapNetworkToProps(passedProps) {
+function mapNetworkToProps(passedProps: IFilterProps) {
+  const { applyFilter, filters } = passedProps;
 
   return {
+    cacheKey: [filters],
     projects: [
-      q => q.findRecords(PROJECT),
+      q => applyFilter(q.findRecords(PROJECT)),
       {
         sources: {
-          settings: {
-            ...defaultSourceOptions
+          remote: {
+            settings: {
+              ...defaultSourceOptions()
+            }
           }
         }
       }
@@ -26,8 +32,10 @@ function mapNetworkToProps(passedProps) {
   };
 }
 
-interface IOwnProps {
+export interface IOwnProps {
   projects: Array<JSONAPI<ProjectAttributes>>;
+  error?: any;
+  applyFilter: (builder: FindRecordsTerm) => FindRecordsTerm;
 }
 
 type IProps =
@@ -36,26 +44,18 @@ type IProps =
 
 
 export function withData(WrappedComponent) {
-
   class DataWrapper extends React.Component<IProps> {
 
     isLoading = () => {
+      const { projects, error } = this.props;
 
-      const { projects } = this.props;
-      return !projects;
+      return !error && !projects;
     }
 
 
     render() {
-
-      const {
-        projects,
-        ...otherProps
-      } = this.props;
-
-      const dataProps = {
-        projects
-      };
+      const { error, projects, ...otherProps } = this.props;
+      const dataProps = { projects, error };
 
       if (this.isLoading()) {
         return <Loader/>;
@@ -71,6 +71,6 @@ export function withData(WrappedComponent) {
   }
 
   return compose(
-    query(mapNetworkToProps),
+    query(mapNetworkToProps, { passthroughError: true }),
   )(DataWrapper);
 }

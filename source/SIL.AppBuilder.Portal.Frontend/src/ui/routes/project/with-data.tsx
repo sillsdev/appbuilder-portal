@@ -1,85 +1,61 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { TYPE_NAME as PROJECT } from '@data/models/project';
+import { query, defaultSourceOptions } from '@data';
+
+import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { PLURAL_NAME as PRODUCTS } from '@data/models/product';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
-import { defaultSourceOptions } from '@data';
 
-function isEmpty(data) {
-  return (!data || (Array.isArray(data) && data.length === 0));
-}
-
-const mapRecordsToProps = (ownProps) => {
-  const { match } = ownProps;
+const mapNetworkToProps = (passedProps) => {
+  const { match } = passedProps;
   const { params: { id } } = match;
 
   return {
-    fromCache: q => q.findRecord({ id, type: PROJECT }),
+    cacheKey: `project-${id}`,
+    project: [q => q.findRecord({ id, type: PROJECT }), {
+      label: 'Find Project',
+      sources: {
+        remote: {
+          settings: { ...defaultSourceOptions() },
+          include: [/* PRODUCTS, */ ORGANIZATION]
+        }
+      }
+    }]
   };
 };
 
+const mapRecordsToProps = (passedProps) => {
+  const { match } = passedProps;
+  const { params: { id } } = match;
 
-export function withData(WrappedComponent) {
+  return {
+    projectFromCache: q => q.findRecord({ id, type: PROJECT })
+  };
+};
 
-  class DataWrapper extends React.Component<WithDataProps> {
+interface IProps {
+  project: JSONAPI<ProjectAttributes>;
+  projectFromCache: JSONAPI<ProjectAttributes>;
+}
 
-    state = {
-      fromNetwork: null
-    };
-
-    fetchData = async () => {
-      const { queryStore, match } = this.props;
-      const { params: { id } } = match;
-
-      const record = await queryStore(
-        q => (
-          q.findRecord({ type: PROJECT, id })
-        ), {
-          label: `Query Project`,
-          sources: {
-            remote: {
-              settings: {
-                ...defaultSourceOptions()
-              },
-              include: [ORGANIZATION]
-            }
-          }
-        }
-      );
-
-      this.setState({ fromNetwork: record });
-    }
-
-    componentDidMount() {
-
-      const { fromNetwork } = this.state;
-      const { fromCache } = this.props;
-
-      if (isEmpty(fromCache) && isEmpty(fromNetwork)) { this.fetchData(); }
-    }
-
-
+export function withData<T>(WrappedComponent) {
+  class DataWrapper extends React.Component<IProps & T> {
     render() {
-
-      const { fromNetwork } = this.state;
-      const { fromCache } = this.props;
+      const { project, projectFromCache, ...otherProps } = this.props;
 
       const dataProps = {
-        project: !isEmpty(fromCache) ? fromCache : fromNetwork,
-        isLoading: isEmpty(fromNetwork)
+        project: projectFromCache || project
       };
 
-      console.log(dataProps);
-
-      return (
-        <WrappedComponent
-          {...this.props}
-          {...dataProps}
-        />
-      );
+      return <WrappedComponent { ...otherProps } { ...dataProps }/>;
     }
   }
 
-  return withOrbit(mapRecordsToProps)(DataWrapper);
+
+  return compose(
+    query(mapNetworkToProps),
+    withOrbit(mapRecordsToProps)
+  )(DataWrapper);
 }

@@ -13,7 +13,6 @@ export class FormInteractor {
   fillEmail = fillable('[data-test-profile-email]');
   fillPhone = fillable('[data-test-profile-phone]');
   fillLocalization = fillable('[data-test-profile-localization]');
-  fillSSHKey = fillable('[data-test-profile-ssh-key]');
 
   clickEmailNotification = clickable('[data-test-profile-email-notification]');
   clickProfileVisibility = clickable('[data-test-profile-visible-profile]');
@@ -26,8 +25,6 @@ export class FormInteractor {
   localization = value('[data-test-profile-localization]');
   emailNotification = isPresent('[data-test-profile-email-notification].checked');
   profileVisibility = isPresent('[data-test-profile-visible-profile].checked');
-  sshKey = value('[data-test-profile-ssh-key]');
-
   profileVisibilityText = value('[data-test-profile-visible-text]');
 
 }

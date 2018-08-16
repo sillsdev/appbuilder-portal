@@ -5,6 +5,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import TimezonePicker from 'react-timezone';
 
+<<<<<<< HEAD
 import { UserAttributes } from '@data/models/user';
 import { idFor } from '@data';
 
@@ -12,6 +13,10 @@ export interface IProps {
   user: JSONAPI<UserAttributes>;
   currentUser: JSONAPI<UserAttributes>;
   onSubmit: (data: UserAttributes) => Promise<void>;
+=======
+export interface IProps {
+  onSubmit: (data: IState) => Promise<void>;
+>>>>>>> master
 }
 
 export interface IState {
@@ -21,8 +26,11 @@ export interface IState {
   phone: string;
   timezone: string;
   emailNotification: boolean;
+<<<<<<< HEAD
   sshKey: string;
   profileVisibility: number;
+=======
+>>>>>>> master
 }
 
 const PUBLIC_PROFILE = 1;
@@ -41,8 +49,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const userAttributes = props.user.attributes;
 
     this.state = {
-      ...userAttributes,
-      sshKey: ''
+      ...userAttributes
     };
   }
 
@@ -56,8 +63,12 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const { mut, toggle } = this;
     const {
       givenName, familyName, email, phone,
+<<<<<<< HEAD
       timezone, emailNotification,
       sshKey, profileVisibility
+=======
+      timezone, emailNotification
+>>>>>>> master
     } = this.state;
 
     const { t } = this.props;
@@ -143,7 +154,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
           </div>
         </Form.Field>
 
-        <Divider horizontal/>
+        <Divider horizontal />
 
         <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
         <Form.Field>
@@ -159,15 +170,6 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
         </Form.Field>
 
         <Divider horizontal />
-
-        <h2 className='form-title'>{t('profile.sshSettingsTitle')}</h2>
-        <Form.Field>
-          <label>{t('profile.sshKeyLabel')}</label>
-          <input
-            data-test-profile-ssh-key
-            value={sshKey}
-            onChange={mut('sshKey')} />
-        </Form.Field>
 
         <Button
           data-test-profile-submit

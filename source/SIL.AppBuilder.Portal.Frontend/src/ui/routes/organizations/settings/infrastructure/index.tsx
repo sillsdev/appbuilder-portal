@@ -17,7 +17,7 @@ export interface IProps {
 }
 
 
-class InfrastructureRoute extends React.Component<IProps & i18nProps> {
+class InfrastructureRoute extends React.Component<IProps> {
   update = (attributes) => {
     const { update } = this.props;
     const {
