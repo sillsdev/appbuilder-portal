@@ -1,13 +1,17 @@
 import * as React from 'react';
 
-import { ProjectAttributes } from '@data/models/project';
 import { Link } from 'react-router-dom';
 import { Dropdown, Icon } from 'semantic-ui-react';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
-import { withRelationship } from './withRelationship';
+
 import { withProjectOperations } from '@ui/routes/project/with-project-operations';
+
+import { attributesFor } from '@data';
+import { ProjectAttributes } from '@data/models/project';
 import { OrganizationAttributes } from '@data/models/organization';
+
+import { withRelationship } from './withRelationship';
 
 export interface IProps {
   project: JSONAPI<ProjectAttributes>;
@@ -28,7 +32,7 @@ class Row extends React.Component<IProps & i18nProps> {
     const { attributes: project } = data;
     // the organization _shouldn't_ be missing attributes
     // but it certainly can, when fake prorject data is used elsewhere.
-    const { name: orgName } = ( organization || {} ).attributes || {};
+    const { name: orgName } = attributesFor(organization);
 
     return (
       <tr>
