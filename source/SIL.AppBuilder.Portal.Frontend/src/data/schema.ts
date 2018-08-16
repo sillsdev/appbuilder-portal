@@ -110,7 +110,8 @@ const schemaDefinition: SchemaSettings = {
         description: { type: 'string' },
         time: { type: 'date' },
         link: { type: 'string' },
-        isViewed: { type: 'boolean' }
+        isViewed: { type: 'boolean' },
+        show: { type: 'boolean' }
       }
     },
     role: {
