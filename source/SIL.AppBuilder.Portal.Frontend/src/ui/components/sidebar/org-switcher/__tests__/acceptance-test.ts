@@ -48,14 +48,11 @@ describe('Acceptance | Organization Switcher', () => {
       await app.openOrgSwitcher();
 
       expect(app.isOrgSwitcherVisible).to.be.true;
-
-      // this shouldn't be needed. I'm upset.
-      await wait(2500);
     });
 
     it('renders each organization by name', () => {
-      const text = switcher.orgNames;
-      debugger;
+      const nodes = switcher.orgNames;
+      const text = nodes.map(t => t.innerText).join();
 
       expect(text).to.include('SIL International');
       expect(text).to.include('DeveloperTown');
@@ -64,7 +61,11 @@ describe('Acceptance | Organization Switcher', () => {
 
     describe('Selecting an orgaization', () => {
       beforeEach(async () => {
+        await switcher.selectOrg();
+      });
 
+      it('hides the org switcher', () => {
+        expect(app.isOrgSwitcherVisible).to.be.false;
       });
     });
   });
