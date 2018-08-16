@@ -1,12 +1,10 @@
 import * as React from 'react';
-import Layout from '@ui/components/layout';
-import { withCurrentUser } from '@data/with-current-user';
-
+import { withLayout } from '@ui/components/layout';
 
 export function withAuthLayout(Component) {
-  return (props) => (
-    <Layout>
-      <Component {...props} />
-    </Layout>
-  );
+  console.warn(`
+    [DEPRECATED]: use withLayout from @ui/components/layout instead of withAuthLayout
+  `);
+
+  return withLayout(Component);
 }

@@ -6,7 +6,7 @@ import { withPagination } from '@data/containers/pagination';
 
 import Table from '@ui/components/project-table/table';
 import { withData } from '@ui/components/project-table/data';
-import { withFiltering } from '@ui/components/project-table/with-filtering';
+import { withFiltering } from '@data/containers/with-filtering';
 
 import '@ui/components/project-table/project-table.scss';
 

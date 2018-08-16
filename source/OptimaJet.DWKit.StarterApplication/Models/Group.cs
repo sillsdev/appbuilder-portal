@@ -15,4 +15,4 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public int OwnerId { get; set; }
     }
 }
-    
+

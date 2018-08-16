@@ -3,7 +3,7 @@ import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, respondWithJsonApi } from 'tests/helpers/index';
-import { fakeAuth0JWT } from 'tests/helpers/jwt';
+import { fakeAuth0JWT, fakeAuth0Id } from 'tests/helpers/jwt';
 
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 
@@ -32,7 +32,7 @@ describe('Acceptance | Authentication', () => {
         data: {
           id: 1,
           type: 'users',
-          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' },
+          attributes: { id: 1, auth0Id: fakeAuth0Id },
           relationships: {
             ['organization-memberships']: {
               data: [
@@ -53,7 +53,6 @@ describe('Acceptance | Authentication', () => {
     describe('logging out', () => {
       beforeEach(async function() {
         await visit('/tasks');
-        await app.clickNotificationsBell();
         await app.clickLogout();
       });
 

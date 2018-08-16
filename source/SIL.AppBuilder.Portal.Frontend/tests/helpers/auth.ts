@@ -1,7 +1,7 @@
 import { beforeEach, afterEach } from '@bigtest/mocha';
 import { expect } from 'chai';
 
-import { fakeAuth0JWT } from './jwt';
+import { fakeAuth0JWT, fakeAuth0Id } from './jwt';
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import { respondWithJsonApi } from './request-intercepting/jsonapi';
 
@@ -15,12 +15,40 @@ export function useFakeAuthentication() {
     const { server } = this.polly;
 
     server.namespace('/api', () => {
+      server.get('/organizations')
+        .intercept(respondWithJsonApi(200, {
+          data: [{
+            type: 'organizations',
+            id: 1,
+            attributes: {}
+          }],
+          included: [
+            {
+              id: 1,
+              type: 'organization-memberships',
+              attributes: {},
+              relationships: {
+                user: { data: { id: 1, type: 'users' } },
+                organization: { data: { id: 1, type: 'organizations' } }
+              }
+            },
+            {
+              id: 1,
+              type: 'groups' ,
+              attributes: { name: 'Some Group' },
+              relationships: {
+                organization: { data: { id: 1, type: 'organizations' } }
+              }
+            }
+          ]
+      }));
+
       server.get('/users/current-user')
         .intercept(respondWithJsonApi(200, {
         data: {
           id: 1,
           type: 'users',
-          attributes: { id: 1, auth0Id: 'my-fake-auth0Id' },
+          attributes: { id: 1, auth0Id: fakeAuth0Id },
           relationships: {
             ['organization-memberships']: {
               data: [
@@ -35,9 +63,8 @@ export function useFakeAuthentication() {
             type: 'organization-memberships',
             attributes: {},
             relationships: {
-              user: {
-                data: { id: 1, type: 'users' }
-              }
+              user: { data: { id: 1, type: 'users' } },
+              organization: { data: { id: 1, type: 'organizations' } }
             }
           }
         ]

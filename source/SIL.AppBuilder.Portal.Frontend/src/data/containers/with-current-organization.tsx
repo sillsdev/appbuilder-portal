@@ -15,6 +15,11 @@ interface IState {
   error?: any;
 }
 
+export interface IProvidedProps {
+  currentOrganizationId: string | number;
+  organization: JSONAPI<OrganizationAttributes>;
+}
+
 export function withCurrentOrganization(InnerComponent) {
   const mapStateToProps = ({ data }) => ({
     currentOrganizationId: data.currentOrganizationId
