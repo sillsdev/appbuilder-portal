@@ -37,7 +37,7 @@ class Sidebar extends React.Component<IProps> {
 
         { !isOrgSwitcherActive && <Navigation closeSidebar={closeSidebar}/> }
 
-        { isOrgSwitcherActive && <OrgSwitcher /> }
+        { isOrgSwitcherActive && <OrgSwitcher toggle={orgSwitchToggler} /> }
 
       </div>
     );

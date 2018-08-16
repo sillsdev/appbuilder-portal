@@ -61,6 +61,11 @@ export function setupApplicationTest(initialState = {}, history?: History) {
       },
     });
   });
+
+
+  afterEach(() => {
+    localStorage.clear();
+  });
 }
 
 // Mounting with context is needed because some components,

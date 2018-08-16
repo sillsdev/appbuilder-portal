@@ -6,7 +6,7 @@ import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import { respondWithJsonApi } from './request-intercepting/jsonapi';
 
 // this requires the request interceptor
-export function useFakeAuthentication() {
+export function useFakeAuthentication(currentUser?: object, organizations?: object) {
   beforeEach(function() {
     setToken(fakeAuth0JWT());
 
@@ -16,7 +16,7 @@ export function useFakeAuthentication() {
 
     server.namespace('/api', () => {
       server.get('/organizations')
-        .intercept(respondWithJsonApi(200, {
+        .intercept(respondWithJsonApi(200, organizations || {
           data: [{
             type: 'organizations',
             id: 1,
@@ -44,7 +44,7 @@ export function useFakeAuthentication() {
       }));
 
       server.get('/users/current-user')
-        .intercept(respondWithJsonApi(200, {
+        .intercept(respondWithJsonApi(200, currentUser || {
         data: {
           id: 1,
           type: 'users',

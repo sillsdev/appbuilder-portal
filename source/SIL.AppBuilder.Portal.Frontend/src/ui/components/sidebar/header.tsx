@@ -42,6 +42,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
         justify-content-space-between ${bgClass} ${className}`}>
 
         <div
+          data-test-org-switcher-toggler
           className='switcher p-l-md no-select flex-row align-items-center'
           onClick={toggleOrgSwitcher}>
 

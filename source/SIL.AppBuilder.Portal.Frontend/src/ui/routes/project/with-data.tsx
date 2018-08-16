@@ -53,7 +53,6 @@ export function withData<T>(WrappedComponent) {
     }
   }
 
-
   return compose(
     query(mapNetworkToProps),
     withOrbit(mapRecordsToProps)

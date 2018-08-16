@@ -15,14 +15,6 @@ describe('Acceptance | Sidebar', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  beforeEach(function () {
-    this.mockGet(200, '/organizations', { data: [{
-      type: 'organizations',
-      id: 1,
-      attributes: {}
-    }] });
-  });
-
   describe('navigate to tasks page',() => {
     beforeEach(async () => {
       await visit('/tasks');
@@ -52,9 +44,6 @@ describe('Acceptance | Sidebar', () => {
           expect(page.isSidebarVisible).to.be.false;
         });
       });
-
     });
-
   });
-
 });

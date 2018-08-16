@@ -1,80 +1,57 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { defaultSourceOptions } from '@data';
-import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
+import { query, defaultSourceOptions, defaultOptions } from '@data';
+import { IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
+import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
 import { isEmpty } from '@lib/collection';
 
 function mapRecordsToProps(passedProps) {
-  const { filterOptions } = passedProps;
+  const { filterOptions, applyFilter } = passedProps;
 
   return {
     fromCache: q =>
-      q.findRecords(ORGANIZATION)
-       /* .filter(filterOptions || []) */
+      applyFilter(q.findRecords(ORGANIZATION))
   };
 }
 
-type IProps =
-  /* & IFilteringProps */
-& WithDataProps;
+function mapNetworkToProps(passedProps) {
+  const { applyFilter } = passedProps;
 
-interface IState {
-  name?: string;
+  return {
+    organizations: [
+      q => applyFilter(q.findRecords(ORGANIZATION)),
+      defaultOptions()
+    ]
+  };
 }
 
-// http://orbitjs.com/v0.15/guide/querying-data.html
-export function withData(WrappedComponent) {
-  class DataWrapper extends React.Component<IProps, IState> {
-    state = { name: '' };
+interface IOwnProps {
+  organizations: Array<JSONAPI<OrganizationAttributes>>;
+  fromCache: Array<JSONAPI<OrganizationAttributes>>;
+}
 
-    searchByName = (name) => {
-      this.setState({ name }, this.fetchData);
-    }
+type IProps =
+& IOwnProps
+& IFilterProps
+& WithDataProps;
 
-    fetchData = async () => {
-      const { queryStore } = this.props;
-      const { name } = this.state;
-
-      const records = await queryStore(
-        q => q.findRecords(ORGANIZATION)
-              .filter({ attribute: 'name', value: name })
-        , {
-        sources: {
-          remote: {
-            settings: {
-              ...defaultSourceOptions()
-            }
-          }
-        }
-      });
-
-      this.setState({ fromNetwork: records });
-    }
-
-
+export function withData<T>(WrappedComponent) {
+  class DataWrapper extends React.Component<IProps & T> {
     render() {
-      const { fromNetwork } = this.state;
-      const { fromCache } = this.props;
-
-      if (isEmpty(fromCache) && !fromNetwork) { this.fetchData(); }
-
-      const organizations = fromCache || fromNetwork;
+      const { organizations, fromCache, ...otherProps } = this.props;
 
       const dataProps = {
-        organizations,
-        isLoading: isEmpty(organizations),
-        searchByName: this.searchByName
+        organizations: fromCache || organizations
       };
 
-      return (
-        <WrappedComponent
-          { ...dataProps }
-          { ...this.props }
-        />
-      );
+      return <WrappedComponent { ...otherProps } { ...dataProps }/>;
     }
   }
 
-  return withOrbit(mapRecordsToProps)(DataWrapper);
+  return compose(
+    query(mapNetworkToProps),
+    withOrbit(mapRecordsToProps)
+  )(DataWrapper);
 }
