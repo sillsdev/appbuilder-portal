@@ -74,7 +74,6 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
       fetchData = async () => {
         const result = map(this.props);
 
-        console.log(result);
         if (arePropsEqual(result, this.mapResult)) {
           return;
         }
