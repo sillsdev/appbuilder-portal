@@ -1,12 +1,10 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Optimajet.DWKit.StarterApplication.Exceptions;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
-using Serilog;
 
 namespace Optimajet.DWKit.StarterApplication.Controllers
 {
@@ -25,10 +23,13 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         }
 
         [HttpGet("current-user")]
-        public IActionResult GetCurrentUser() {
+        public async Task<IActionResult> GetCurrentUser() {
             var currentUser = CurrentUser;
 
-            return Ok(currentUser);
+            System.Console.WriteLine(currentUser.Id);
+            System.Console.WriteLine("hiiiiiiiiiiiiiiiiiiiii");
+
+            return await base.GetAsync(currentUser.Id);
         }
 
     }
