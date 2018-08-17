@@ -1,27 +1,31 @@
 import * as React from 'react';
-import { Menu, Icon } from 'semantic-ui-react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { WithDataProps } from 'react-orbitjs';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { OrganizationAttributes } from '@data/models/organization';
-import { withCurrentOrganization } from '@data/containers/with-current-organization';
+import { withCurrentOrganization, IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-current-organization';
 import { debounce } from '@lib/debounce';
 import { setCurrentOrganization } from '@store/data';
 
-import Loader from '@ui/components/loaders/page';
+import { withFiltering, IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 
 import { withData } from './with-data';
+import Display from './display';
 
 export interface IOwnProps {
   organizations: Array<JSONAPI<OrganizationAttributes>>;
   isLoading: boolean;
   searchByName: (name: string) => void;
+  setCurrentOrganizationId: (id: string | number) => void;
+  toggle: () => void;
 }
 
 export type IProps =
   & IOwnProps
+  & IFilterProps
+  & WithCurrentOrgProps
   & WithDataProps
   & i18nProps;
 
@@ -31,25 +35,25 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class OrgSwitcher extends React.Component<IProps> {
-  state = { search: '' };
+  state = { searchTerm: '' };
 
-  selectOrganization = (id) => (e) => {
-    const { setCurrentOrganizationId } = this.props;
-
+  selectOrganization = (id) => () => {
+    const { setCurrentOrganizationId, toggle } = this.props;
     setCurrentOrganizationId(id);
+    toggle();
   }
 
   search = debounce(() => {
-    const { searchByName } = this.props;
-    const { search } = this.state;
+    const { updateFilter } = this.props;
+    const { searchTerm } = this.state;
 
-    searchByName(search);
+    updateFilter({ attribute: 'name', value: `${searchTerm}*` });
   }, 250);
 
   didTypeInSearch = (e) => {
-    const search = e.target.value;
+    const searchTerm = e.target.value;
 
-    this.setState({ search }, this.search);
+    this.setState({ searchTerm }, this.search);
   }
 
   render() {
@@ -60,54 +64,24 @@ class OrgSwitcher extends React.Component<IProps> {
       isLoading
     } = this.props;
 
-    const { search } = this.state;
+    const { searchTerm } = this.state;
 
     const allOrgsSelected = '' === currentOrganizationId;
     const orgs = organizations || [];
-    const showSearch = orgs.length > 4;
+
+    const displayProps = {
+      t,
+      isLoading,
+      allOrgsSelected,
+      currentOrganizationId,
+      organizations: orgs,
+      searchTerm,
+      didTypeInSearch: this.didTypeInSearch,
+      selectOrganization: this.selectOrganization,
+    };
 
     return (
-      <Menu className='m-t-none no-borders h-100 overflows' pointing secondary vertical>
-        { showSearch && (
-          <Menu.Item className='flex-row align-items-center border-bottom'>
-            <Icon name='search' />
-            <div className='ui input'>
-              <input
-                value={search}
-                className='no-borders bg-white'
-                onChange={this.didTypeInSearch}
-                placeholder={t('search')} type='text' />
-            </div>
-          </Menu.Item>
-        )}
-
-        { isLoading && <Loader /> }
-
-        { !isLoading && orgs.map(({ attributes, id }, index) => (
-
-          <Menu.Item
-            key={index}
-            className={`
-              flex-row align-items-center
-              ${id === currentOrganizationId ? 'active' : ''}`}
-            name={attributes.name}
-            onClick={this.selectOrganization(id)}>
-
-            <span className='list-thumbnail m-r-md'>
-              &nbsp;
-            </span>
-
-            <span>{attributes.name}</span>
-          </Menu.Item>
-        )) }
-
-        <hr />
-
-        <Menu.Item
-          className={allOrgsSelected && 'active' || ''}
-          name={t('org.allOrganizations')}
-          onClick={this.selectOrganization('')} />
-      </Menu>
+      <Display { ...displayProps } />
     );
   }
 }
@@ -116,5 +90,6 @@ export default compose(
   translate('translations'),
   connect(null, mapDispatchToProps),
   withCurrentOrganization,
+  withFiltering,
   withData,
 )(OrgSwitcher);

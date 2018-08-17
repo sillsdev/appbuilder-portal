@@ -17,6 +17,12 @@ export class AppInteractor {
 
   selectLocale = selectable('[data-test-locale-switcher]');
   myProfileText = text('[data-test-header-avatar] [data-test-profile]');
+
+
+  openSidebar = clickable('[data-test-header-sidebar-button]');
+  isSidebarVisible = isPresent('.is-sidebar-visible [data-test-sidebar]');
+  openOrgSwitcher = clickable('[data-test-org-switcher-toggler]');
+  isOrgSwitcherVisible = isPresent('[data-test-org-switcher]');
 }
 
 export default new AppInteractor('[data-test-app-container]');
