@@ -39,7 +39,7 @@ class LoginRoute extends React.Component<RouterProps & i18nProps> {
               alt="JWT Auth for open source projects" src="//cdn.auth0.com/oss/badges/a0-badge-light.png"/>
           </a>
           <br />
-          <Link to={'/open-source'}>{t('opensource')}</Link>
+          <Link to={'/open-source'} className='white-text'>{t('opensource')}</Link>
         </div>
       </div>
     );
