@@ -20,6 +20,7 @@ namespace Optimajet.DWKit.StarterApplication.Data
             var userEntity = modelBuilder.Entity<User>();
             var orgEntity = modelBuilder.Entity<Organization>();
             var orgMemberEntity = modelBuilder.Entity<OrganizationMembership>();
+            var projectEntity = modelBuilder.Entity<Project>();
             var orgProductDefinitionEntity = modelBuilder.Entity<OrganizationProductDefinition>();
             var orgInviteEntity = modelBuilder.Entity<OrganizationInvite>();
             var groupMemberEntity = modelBuilder.Entity<GroupMembership>();
@@ -52,6 +53,11 @@ namespace Optimajet.DWKit.StarterApplication.Data
                 .HasMany(o => o.OrganizationProductDefinitions)
                 .WithOne(opd => opd.Organization)
                 .HasForeignKey(opd => opd.OrganizationId);
+
+            projectEntity
+                .HasMany(r => r.Reviewers)
+                .WithOne(rp => rp.Project)
+                .HasForeignKey(rp => rp.ProjectId);
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
@@ -96,5 +102,6 @@ namespace Optimajet.DWKit.StarterApplication.Data
         public DbSet<OrganizationProductDefinition> OrganizationProductDefinitions { get; set; }
         public DbSet<WorkflowDefinition> WorkflowDefinitions { get; set; }
         public DbSet<ApplicationType> ApplicationTypes { get; set; }
+        public DbSet<Reviewer> Reviewers { get; set; }
     }
 }
