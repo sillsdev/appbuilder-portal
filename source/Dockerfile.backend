@@ -1,8 +1,8 @@
-# sdk/latest as of 2018-06-20
+# sdk/latest as of 2018-08-20
 
 ###############################
 # Dependencies
-FROM microsoft/dotnet:2.1.302-sdk as dependencies
+FROM microsoft/dotnet:2.1.400-sdk-bionic as dependencies
 WORKDIR /app
 
 COPY OptimaJet.DWKit.Application/*.csproj /app/OptimaJet.DWKit.Application/
@@ -26,8 +26,20 @@ COPY ./ /app/
 COPY --from=dependencies /app /app
 WORKDIR /app/OptimaJet.DWKit.StarterApplication
 RUN dotnet publish -c Release -o out
+# Need dummy values for POSTGRES_* variables for migrations to run
+RUN POSTGRES_HOST=build \
+    POSTGRES_DB=build \
+    POSTGRES_USER=build \
+    POSTGRES_PASSWORD=build \
+    dotnet ef migrations script --idempotent --output "out/migrations.sql"
 
-FROM microsoft/dotnet:2.1.302-sdk AS runtime-release
+FROM microsoft/dotnet:2.1.400-sdk-bionic AS runtime-release
 WORKDIR /app
 COPY --from=build-release /app/OptimaJet.DWKit.StarterApplication/out ./
-ENTRYPOINT ["dotnet", "Optimajet.DWKit.StarterApplication.dll"]
+COPY --from=build-release /app/run-api.sh ./
+RUN curl -o /usr/local/bin/runny https://raw.githubusercontent.com/silinternational/runny/0.2/runny \
+    && chmod a+x /usr/local/bin/runny
+RUN apt-get update && apt-get install -y \
+    postgresql-client-10 \
+ && rm -rf /var/lib/apt/lists/*
+CMD ["/app/run-api.sh"]
