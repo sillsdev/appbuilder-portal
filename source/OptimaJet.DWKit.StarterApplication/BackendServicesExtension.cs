@@ -43,11 +43,11 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
 
             services.AddScoped<UserRepository>();
+            services.AddScoped<GroupRepository>();
 
             services.AddScoped<UserService>();
             services.AddScoped<OrganizationService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
-
 
             services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
             services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
