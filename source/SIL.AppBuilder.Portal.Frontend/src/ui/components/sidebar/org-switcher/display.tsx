@@ -27,19 +27,7 @@ export type IProps =
   & WithDataProps
   & i18nProps;
 
-interface IState {
-  showSearch: boolean;
-}
-
-class OrgSwitcherDisplay extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-
-    const showSearch = props.organizations.length > 4;
-
-    this.state = { showSearch };
-  }
-
+class OrgSwitcherDisplay extends React.Component<IProps> {
   render() {
     const {
       t,
@@ -52,14 +40,17 @@ class OrgSwitcherDisplay extends React.Component<IProps, IState> {
       selectOrganization
     } = this.props;
 
-    const { showSearch } = this.state;
+    const showSearch = organizations.length > 4 || !!searchTerm;
 
     return (
       <Menu
         data-test-org-switcher
         className='m-t-none no-borders h-100 overflows' pointing secondary vertical>
         { showSearch && (
-          <Menu.Item className='flex-row align-items-center border-bottom'>
+          <Menu.Item
+            data-test-org-switcher-search
+            className='flex-row align-items-center border-bottom'>
+
             <Icon name='search' />
             <div className='ui input'>
               <input
