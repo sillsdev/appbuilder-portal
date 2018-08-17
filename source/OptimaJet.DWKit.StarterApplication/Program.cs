@@ -6,6 +6,7 @@ using Serilog.Events;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
+using static OptimaJet.DWKit.StarterApplication.Utility.ConfigurationExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -13,6 +14,7 @@ namespace OptimaJet.DWKit.StarterApplication
     {
         private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
           .SetBasePath(Directory.GetCurrentDirectory())
+          .AddEnvFiles()
           .AddEnvironmentVariables()
           .Build();
 

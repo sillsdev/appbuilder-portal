@@ -16,7 +16,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             var variable = Environment.GetEnvironmentVariable(name);
 
             if (string.IsNullOrEmpty(variable)) {
-                throw new System.Exception("Env var: " + name + "is not defined");
+                throw new System.Exception("Env var: " + name + " is not defined");
             }
 
             return variable;
