@@ -12,63 +12,57 @@ export function useFakeAuthentication(currentUser?: object, organizations?: obje
 
     expect(isLoggedIn()).to.eq(true, 'user should be logged in, but is unauthenticated');
 
-    const { server } = this.polly;
-
-    server.namespace('/api', () => {
-      server.get('/organizations')
-        .intercept(respondWithJsonApi(200, organizations || {
-          data: [{
-            type: 'organizations',
-            id: 1,
-            attributes: {}
-          }],
-          included: [
-            {
-              id: 1,
-              type: 'organization-memberships',
-              attributes: {},
-              relationships: {
-                user: { data: { id: 1, type: 'users' } },
-                organization: { data: { id: 1, type: 'organizations' } }
-              }
-            },
-            {
-              id: 1,
-              type: 'groups' ,
-              attributes: { name: 'Some Group' },
-              relationships: {
-                organization: { data: { id: 1, type: 'organizations' } }
-              }
-            }
-          ]
-      }));
-
-      server.get('/users/current-user')
-        .intercept(respondWithJsonApi(200, currentUser || {
-        data: {
+    this.mockGet(200, '/organizations', organizations || {
+      data: [{
+        type: 'organizations',
+        id: 1,
+        attributes: {}
+      }],
+      included: [
+        {
           id: 1,
-          type: 'users',
-          attributes: { id: 1, auth0Id: fakeAuth0Id },
+          type: 'organization-memberships',
+          attributes: {},
           relationships: {
-            ['organization-memberships']: {
-              data: [
-                { id: 1, type: 'organization-memberships' },
-              ]
-            }
+            user: { data: { id: 1, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } }
           }
         },
-        included: [
-          {
-            id: 1,
-            type: 'organization-memberships',
-            attributes: {},
-            relationships: {
-              user: { data: { id: 1, type: 'users' } },
-              organization: { data: { id: 1, type: 'organizations' } }
-            }
+        {
+          id: 1,
+          type: 'groups' ,
+          attributes: { name: 'Some Group' },
+          relationships: {
+            organization: { data: { id: 1, type: 'organizations' } }
           }
-        ]
-      }));
+        }
+      ]
+    });
+
+    this.mockGet(200, '/users/current-user', currentUser || {
+      data: {
+        id: 1,
+        type: 'users',
+        attributes: { id: 1, auth0Id: fakeAuth0Id },
+        relationships: {
+          ['organization-memberships']: {
+            data: [
+              { id: 1, type: 'organization-memberships' },
+            ]
+          }
+        }
+      },
+      included: [
+        {
+          id: 1,
+          type: 'organization-memberships',
+          attributes: {},
+          relationships: {
+            user: { data: { id: 1, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } }
+          }
+        }
+      ]
     });
   });
 
