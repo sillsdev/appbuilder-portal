@@ -109,6 +109,6 @@ describe('Acceptance | Archive Project', () => {
         });
 
       });
-    })
-  })
-})
+    });
+  });
+});
