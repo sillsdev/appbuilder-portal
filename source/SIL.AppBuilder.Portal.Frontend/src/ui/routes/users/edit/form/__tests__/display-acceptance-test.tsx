@@ -56,6 +56,7 @@ describe('Acceptance | Edit Profile Form', () => {
 
     describe('Profile visibility', () => {
       beforeEach(async () => {
+        await visit('/users/1/edit');
         await page.clickProfileVisibility();
       });
 
