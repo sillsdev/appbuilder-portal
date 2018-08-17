@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
-import enUS from '@ui/../translations/locales/en-us';
+import enUS from '@translations/locales/en-us';
 import page from './page';
 
 describe('Acceptance | Edit Profile Form', () => {

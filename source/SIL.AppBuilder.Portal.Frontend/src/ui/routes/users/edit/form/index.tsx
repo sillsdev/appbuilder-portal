@@ -60,7 +60,10 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
     const { t } = this.props;
 
-    const profileVisibilityText = profileVisibility ? t('profile.visibility.visible') : t('profile.visibility.restricted');
+    const profileVisibilityText =
+      profileVisibility ?
+        t('profile.visibility.visible') :
+        t('profile.visibility.restricted');
 
     return (
       <Form data-test-edit-profile>

@@ -41,7 +41,7 @@ class User extends React.Component<IProps> {
             <p>{user.email}</p>
             {
               user && user.profileVisibility &&
-              <>e
+              <>
                 <p>{phone}</p>
                 <p>{timezone}</p>
               </>

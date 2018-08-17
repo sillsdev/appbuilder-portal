@@ -16,6 +16,7 @@
       "@store/*": ["src/redux-store/*"],
       "@ui/*": ["src/ui/*"],
       "@lib/*": ["src/lib/*"],
+      "@translations/*": ["src/translations/*"],
       "@env": ["src/env.ts"],
       "tests/*": [ "tests/*" ],
       "vendor/*": [ "src/vendor/*" ],
