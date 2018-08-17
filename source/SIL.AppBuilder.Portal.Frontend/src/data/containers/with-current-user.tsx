@@ -10,7 +10,7 @@ import { serializer } from '@data/store';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
 
 import { getAuth0Id } from '@lib/auth0';
-import { get as authenticatedGet } from '@lib/fetch';
+import { get as authenticatedGet, tryParseJson } from '@lib/fetch';
 import { hasRelationship } from '@data';
 
 import PageLoader from '@ui/components/loaders/page';
@@ -107,7 +107,7 @@ export function withCurrentUser() {
           // https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
           // is resolved
           const response = await authenticatedGet('/api/users/current-user?include=organization-memberships,group-memberships');
-          const json = await response.json();
+          const json = await tryParseJson(response);
 
           await pushPayload(updateStore, json);
           await this.getOrganizations(json);
