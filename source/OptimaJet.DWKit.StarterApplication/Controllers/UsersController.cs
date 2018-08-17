@@ -26,9 +26,6 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         public async Task<IActionResult> GetCurrentUser() {
             var currentUser = CurrentUser;
 
-            System.Console.WriteLine(currentUser.Id);
-            System.Console.WriteLine("hiiiiiiiiiiiiiiiiiiiii");
-
             return await base.GetAsync(currentUser.Id);
         }
 

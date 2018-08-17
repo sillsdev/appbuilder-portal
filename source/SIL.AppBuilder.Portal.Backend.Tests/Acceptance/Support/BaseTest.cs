@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
@@ -112,6 +113,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
 
             return deserializedBody;
+        }
+
+        public async Task<Document> DeserializeDocument(HttpResponseMessage response)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+
+            var deserializedBody = JsonConvert.DeserializeObject<Document>(body);
+
+            return deserializedBody;
+
         }
 
         #endregion

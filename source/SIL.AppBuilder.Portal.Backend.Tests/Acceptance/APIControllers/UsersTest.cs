@@ -27,6 +27,22 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         }
 
         [Fact]
+        public async Task Get_CurrentUser_Includes_IncludedResources()
+        {
+            var response = await Get("/api/users/current-user?include=organization-memberships");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var document = await DeserializeDocument(response);
+            var firstIncluded = document.Included[0];
+
+            Assert.NotNull(firstIncluded.Relationships);
+
+        }
+
+
+
+        [Fact]
         public async Task Get_CurrentUser_Creates_User()
         {
             int before = ReadTestData<AppDbContext, User>().Count;

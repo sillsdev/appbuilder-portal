@@ -35,8 +35,9 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
         {
             get {
                 var exists = HttpContext.Items.ContainsKey(CURRENT_USER_KEY);
+                var existing = HttpContext.Items[CURRENT_USER_KEY];
 
-                if (exists) return (User)HttpContext.Items[CURRENT_USER_KEY];
+                if (exists && existing != null) return (User)existing;
 
                 // current user has not yet been found for this request.
                 // find or create because users are managed by auth0 and
