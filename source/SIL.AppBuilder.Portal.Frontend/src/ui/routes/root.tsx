@@ -48,6 +48,7 @@ export default class RootPage extends React.Component {
             <Route path={directoryPath} component={DirectoryRoute} />
             <Route path={projectsPath} component={ProjectsRoute} />
             <Route path={projectDetailPath} component={ProjectDetailRoute} />
+
             <Route path={usersPath} component={UsersRoute} />
 
             <Route component={ErrorRootRoute} />

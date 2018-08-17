@@ -141,6 +141,7 @@ const schemaDefinition: SchemaSettings = {
         email: { type: 'string' },
         phone: { type: 'string'},
         isLocked: { type: 'boolean' },
+        profileVisibility: { type: 'number' },
 
         timezone: { type: 'string' },
         localization: { type: 'string' },

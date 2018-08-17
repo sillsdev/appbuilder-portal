@@ -4,6 +4,7 @@ import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { Container } from 'semantic-ui-react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+
 import { defaultHeaders } from '@lib/fetch';
 
 import * as toast from '@lib/toast';
@@ -20,6 +21,7 @@ export const pathName = '/users/:id/edit';
 
 export interface IOwnProps {
   user: JSONAPI<UserAttributes>;
+  currentUser: JSONAPI<UserAttributes>;
 }
 
 export type IProps =
@@ -60,7 +62,7 @@ class Profile extends React.Component<IProps> {
   }
 
   render() {
-    const { t, user } = this.props;
+    const { t, user, currentUser } = this.props;
 
     return (
       <Container className='profile'>

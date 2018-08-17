@@ -5,7 +5,12 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import TimezonePicker from 'react-timezone';
 
+import { UserAttributes } from '@data/models/user';
+import { idFor } from '@data';
+
 export interface IProps {
+  user: JSONAPI<UserAttributes>;
+  currentUser: JSONAPI<UserAttributes>;
   onSubmit: (data: IState) => Promise<void>;
 }
 
@@ -16,8 +21,11 @@ export interface IState {
   phone: string;
   timezone: string;
   emailNotification: boolean;
+  profileVisibility: number;
 }
 
+const PUBLIC_PROFILE = 1;
+const PRIVATE_PROFILE = 0;
 
 @withTemplateHelpers
 class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
@@ -38,17 +46,24 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
   submit = async (e) => {
     e.preventDefault();
-    await this.props.onSubmit({ ...this.state });
+    const profileVisibility = this.state.profileVisibility ? PUBLIC_PROFILE : PRIVATE_PROFILE;
+    await this.props.onSubmit({ ...this.state, profileVisibility });
   }
 
   render() {
     const { mut, toggle } = this;
     const {
       givenName, familyName, email, phone,
-      timezone, emailNotification
+      timezone, emailNotification,
+      profileVisibility
     } = this.state;
 
     const { t } = this.props;
+
+    const profileVisibilityText =
+      profileVisibility ?
+        t('profile.visibility.visible') :
+        t('profile.visibility.restricted');
 
     return (
       <Form data-test-edit-profile>
@@ -118,7 +133,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
         <h2 className='form-title'>{t('profile.notificationSettingsTitle')}</h2>
         <Form.Field>
-          <div className='notifications'>
+          <div className='toggle-selector'>
             <span>{t('profile.optOutOfEmailOption')}</span>
             <Checkbox
               data-test-profile-email-notification
@@ -126,6 +141,21 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
               defaultChecked={emailNotification}
               onChange={toggle('emailNotification')}
               />
+          </div>
+        </Form.Field>
+
+        <Divider horizontal />
+
+        <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
+        <Form.Field>
+          <div className='toggle-selector'>
+            <span data-test-profile-visible-text>{profileVisibilityText}</span>
+            <Checkbox
+              data-test-profile-visible-profile
+              toggle
+              defaultChecked={profileVisibility === PUBLIC_PROFILE}
+              onChange={toggle('profileVisibility')}
+            />
           </div>
         </Form.Field>
 

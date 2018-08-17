@@ -15,6 +15,7 @@ export class FormInteractor {
   fillLocalization = fillable('[data-test-profile-localization]');
 
   clickEmailNotification = clickable('[data-test-profile-email-notification]');
+  clickProfileVisibility = clickable('[data-test-profile-visible-profile]');
   clickSubmit = clickable('[data-test-profile-submit]');
 
   firstname = value('[data-test-profile-firstname]');
@@ -23,6 +24,8 @@ export class FormInteractor {
   phone = value('[data-test-profile-phone]');
   localization = value('[data-test-profile-localization]');
   emailNotification = isPresent('[data-test-profile-email-notification].checked');
+  profileVisibility = isPresent('[data-test-profile-visible-profile].checked');
+  profileVisibilityText = value('[data-test-profile-visible-text]');
 
 }
 

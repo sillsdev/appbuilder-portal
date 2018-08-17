@@ -87,6 +87,7 @@ export default {
     title: 'Perfil',
     pictureTitle: 'Imagen de Perfil',
     general: 'General',
+    generalInformation: 'Información general',
     updated: 'Usuario actualizado correctamente!',
     updatePicture: 'Actualiza tu image en Gravatar.com',
     uploadPicture: 'Carga una nueva figura',
@@ -101,7 +102,14 @@ export default {
     notificationSettingsTitle: 'Configuración de Notificaciones',
     optOutOfEmailOption: 'Deseo recibir notificaciones por correo electrónico',
     sshSettingsTitle: 'Administra tus llaves personales SSH',
-    sshKeyLabel: 'Llave SSH Key'
+    sshKeyLabel: 'Llave SSH Key',
+    visibleProfile: 'Visibilidad del Perfil',
+    noPhone: 'Sin teléfono',
+    noTimezone: 'Usando el tiempo del servidor GMT-0',
+    visibility: {
+      visible: 'La información de mi perfil es pública',
+      restricted: 'La información de mi está restringida del público'
+    }
   },
 
   errors: {

@@ -4,6 +4,7 @@ import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
+import enUS from '@translations/locales/en-us';
 import page from './page';
 
 describe('Acceptance | Edit Profile Form', () => {
@@ -39,6 +40,7 @@ describe('Acceptance | Edit Profile Form', () => {
           await page.fillEmail('fake@domain.com');
           await page.fillPhone('997528963');
           await page.clickEmailNotification();
+          await page.clickProfileVisibility();
         });
 
         it('has values', () => {
@@ -47,9 +49,32 @@ describe('Acceptance | Edit Profile Form', () => {
           expect(page.email).to.equal('fake@domain.com');
           expect(page.phone).to.equal('997528963');
           expect(page.emailNotification).to.be.true;
+          expect(page.profileVisibility).to.be.true;
         });
       });
     });
+
+    describe('Profile visibility', () => {
+      beforeEach(async () => {
+        await visit('/users/1/edit');
+        await page.clickProfileVisibility();
+      });
+
+      it('change its text when clicked', () => {
+        expect(page.profileVisibilityText, enUS.profile.visibility.visible);
+      });
+
+      describe('change it back', () => {
+        beforeEach(async () => {
+          await page.clickProfileVisibility();
+        });
+
+        it('changes', () => {
+          expect(page.profileVisibilityText, enUS.profile.visibility.restricted);
+        });
+      });
+    });
+
   });
 
 });
