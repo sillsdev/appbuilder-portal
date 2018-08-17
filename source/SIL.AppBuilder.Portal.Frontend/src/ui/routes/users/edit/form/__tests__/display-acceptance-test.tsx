@@ -70,8 +70,8 @@ describe('Acceptance | Edit Profile Form', () => {
 
         it('changes', () => {
           expect(page.profileVisibilityText, enUS.profile.visibility.restricted);
-        })
-      })
+        });
+      });
     });
 
   });

@@ -5,18 +5,13 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import TimezonePicker from 'react-timezone';
 
-<<<<<<< HEAD
 import { UserAttributes } from '@data/models/user';
 import { idFor } from '@data';
 
 export interface IProps {
   user: JSONAPI<UserAttributes>;
   currentUser: JSONAPI<UserAttributes>;
-  onSubmit: (data: UserAttributes) => Promise<void>;
-=======
-export interface IProps {
   onSubmit: (data: IState) => Promise<void>;
->>>>>>> master
 }
 
 export interface IState {
@@ -26,11 +21,7 @@ export interface IState {
   phone: string;
   timezone: string;
   emailNotification: boolean;
-<<<<<<< HEAD
-  sshKey: string;
   profileVisibility: number;
-=======
->>>>>>> master
 }
 
 const PUBLIC_PROFILE = 1;
@@ -63,12 +54,8 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const { mut, toggle } = this;
     const {
       givenName, familyName, email, phone,
-<<<<<<< HEAD
       timezone, emailNotification,
-      sshKey, profileVisibility
-=======
-      timezone, emailNotification
->>>>>>> master
+      profileVisibility
     } = this.state;
 
     const { t } = this.props;

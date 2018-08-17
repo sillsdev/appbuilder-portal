@@ -27,7 +27,7 @@ class User extends React.Component<IProps> {
 
     const fullname = `${user.givenName} ${user.familyName}`;
     const phone = user.phone ? user.phone : t('profile.noPhone');
-    const timezone = user.timezone ? `(${user.timezone})` : t('profile.noTimezone')
+    const timezone = user.timezone ? `(${user.timezone})` : t('profile.noTimezone');
 
     return (
       <div className='ui container show-profile'>

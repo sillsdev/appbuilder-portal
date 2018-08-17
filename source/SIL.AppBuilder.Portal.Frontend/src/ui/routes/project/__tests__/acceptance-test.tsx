@@ -152,6 +152,6 @@ describe('Acceptance | Archive Project', () => {
         });
 
       });
-    });
-  });
-});
+    })
+  })
+})
