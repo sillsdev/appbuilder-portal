@@ -28,5 +28,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             return base.Get()
                        .Where(g => g.OwnerId == OrganizationContext.OrganizationId);
         }
+
+        public IQueryable<Group>UnfilteredGet()
+        {
+            return base.Get();
+        }
     }
 }

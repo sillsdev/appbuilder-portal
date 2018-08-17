@@ -49,6 +49,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                        .Where(u => u.OrganizationMemberships.Any(o => o.OrganizationId == OrganizationContext.OrganizationId));
         }
 
+        public IQueryable<User>UnfilteredGet()
+        {
+            return base.Get();
+        }
         public override async Task<User> GetAsync(int id)
         {
             // The default implementation filters by selected organization.  The
