@@ -20,6 +20,7 @@ import DirectoryRoute, { pathName as directoryPath } from '@ui/routes/project-di
 import ProjectsRoute, { pathName as projectsPath } from '@ui/routes/projects';
 import ProjectDetailRoute, { pathName as projectDetailPath } from '@ui/routes/project';
 import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
+import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-source';
 
 import ErrorRootRoute from '@ui/routes/errors';
 
@@ -49,6 +50,8 @@ export default class RootPage extends React.Component {
             <Route path={projectsPath} component={ProjectsRoute} />
             <Route path={projectDetailPath} component={ProjectDetailRoute} />
             <Route path={usersPath} component={UsersRoute} />
+
+            <Route path={openSourcePath} component={OpenSourceRoute} />
 
             <Route component={ErrorRootRoute} />
           </Switch>

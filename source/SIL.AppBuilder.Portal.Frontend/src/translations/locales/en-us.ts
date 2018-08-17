@@ -8,6 +8,13 @@ export default {
 
   updated: 'Updated!',
 
+  opensource: 'Open Source',
+
+  attributions: {
+    title: 'Open Source Project used in Scriptoria',
+    subtitle: 'Libraries used by License',
+  },
+
   common: {
     search: 'Search',
     change: 'Change',
