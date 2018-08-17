@@ -1,6 +1,20 @@
 import { getToken } from './auth0';
 import { getCurrentOrganizationId } from './current-organization';
 
+export const tryParseJson = async (response) => {
+  const text = await response.text();
+
+  try {
+    const json = JSON.parse(text);
+
+    return json;
+  } catch (e) {
+    console.debug('payload text: ', text, response);
+
+    throw e;
+  }
+};
+
 // These methods mimic the fetch API.
 
 export function get(url: string, options: any = {}) {

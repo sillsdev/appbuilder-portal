@@ -1,12 +1,13 @@
 import * as React from "react";
 import { compose } from 'recompose';
+import { WithDataProps } from "react-orbitjs";
+import { Dropdown } from "semantic-ui-react";
+import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+
 import { withCurrentUser } from "@data/containers/with-current-user";
 import { UserAttributes } from "@data/models/user";
 import { TYPE_NAME as USER } from "@data/models/user";
 import { attributesFor } from "@data/helpers";
-import { WithDataProps } from "react-orbitjs";
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { Dropdown } from "semantic-ui-react";
 
 export interface IOwnProps {
   currentUser: JSONAPI<UserAttributes>;
@@ -28,7 +29,7 @@ class LocaleSelect extends React.Component<IProps> {
 
     const { i18n } = this.props;
     const { currentUser } = this.props;
-    const { id } = currentUser.data;
+    const { id } = currentUser;
 
     i18n.changeLanguage(value);
 

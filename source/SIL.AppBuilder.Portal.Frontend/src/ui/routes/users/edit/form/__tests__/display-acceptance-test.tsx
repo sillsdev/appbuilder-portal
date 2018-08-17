@@ -12,7 +12,6 @@ describe('Acceptance | Edit Profile Form', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-
   describe('a user exists', () => {
     beforeEach(function() {
       this.mockGet(200, '/users/1', { data: {

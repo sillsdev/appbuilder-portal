@@ -15,28 +15,30 @@ interface MenuItem {
   to: string;
   onClick: (e) => void;
   exact?: boolean;
+  className?: string;
 }
 
-const MenuItem = ({ name, to, onClick, exact }: MenuItem) => {
+const MenuItem = ({ name, to, onClick, exact, className }: MenuItem) => {
 
   return (
     <>
-    <Menu.Item
-      name={name}
-      as={NavLink}
-      to={to}
-      exact
-      activeClassName='active'
-      className='d-xs-none d-sm-none d-md-none d-lg-block d-xl-block'
-    />
-    <Menu.Item
-      name={name}
-      as={NavLink}
-      to={to}
-      activeClassName='active'
-      onClick={onClick}
-      exact
-      className='d-xs-block d-sm-block d-md-block d-lg-none d-xl-none' />
+      <Menu.Item
+        name={name}
+        as={NavLink}
+        to={to}
+        exact
+        activeClassName='active'
+        className={`${className} d-xs-none d-sm-none d-md-none d-lg-block d-xl-block`}
+      />
+      <Menu.Item
+        name={name}
+        as={NavLink}
+        to={to}
+        activeClassName='active'
+        onClick={onClick}
+        exact
+        className={`${className} d-xs-block d-sm-block d-md-block d-lg-none d-xl-none`}
+      />
     </>
   );
 };
@@ -98,6 +100,14 @@ class Navigation extends React.Component<IProps & i18nProps> {
         <MenuItem
           name={t('sidebar.addProject')}
           to='add-projects'
+          onClick={closeSidebar} />
+
+        <hr />
+
+        <MenuItem
+          name={t('opensource')}
+          to='open-source'
+          className='m-t-lg'
           onClick={closeSidebar} />
       </Menu>
     );
