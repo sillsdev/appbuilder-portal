@@ -112,6 +112,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             return deserializedBody;
         }
 
+        public async Task<Documents> DeserializeDocumentList(HttpResponseMessage response)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+
+            var deserializedBody = JsonConvert.DeserializeObject<Documents>(body);
+
+            return deserializedBody;
+        }
+
+
         public async Task<Document> DeserializeDocument(HttpResponseMessage response)
         {
             var body = await response.Content.ReadAsStringAsync();

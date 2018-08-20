@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Data;
+using JsonApiDotNetCore.Internal.Query;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,28 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             this.OrganizationContext = organizationContext;
             this.CurrentUserContext = currentUserContext;
         }
+
+        public override IQueryable<User> Filter(IQueryable<User> query, FilterQuery filterQuery)
+        {
+            var attribute = filterQuery.Attribute;
+            var value = filterQuery.Value;
+            var isOrgId = attribute.Equals("organization-id", StringComparison.OrdinalIgnoreCase);
+
+            if (isOrgId) {
+                // TODO: would it make sense to define a custom predicate for this usage?
+                //       semantically, this would be:
+                //          ?filter[organization-memberships.organization-id]=anyEq:orgId
+                //
+                // NOTE: Current usage is:
+                //          ?filter[organization-id]=orgId
+                return query.Where(
+                    u => u.OrganizationMemberships
+                          .Any(om => om.OrganizationId.ToString() == value));
+            }
+
+            return base.Filter(query, filterQuery);
+        }
+
 
         public override IQueryable<User> Get()
         {
