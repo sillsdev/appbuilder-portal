@@ -40,12 +40,14 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             {
                 // No organization specified, so include all users in the all the 
                 // organizations that the current user is a member
+                var orgIds = currentUser.OrganizationIds ?? Enumerable.Empty<int>();
+
                 return query
                     .Where(u => (
                         u.Id == currentUser.Id 
                         || (u.OrganizationMemberships
                                 .Select(o => o.OrganizationId)
-                                .Intersect(currentUser.OrganizationIds)
+                                .Intersect(orgIds)
                                 .Any()
                             )
                     ));
@@ -64,6 +66,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         public async Task<User> GetByAuth0Id(string auth0Id)
             => await base.Get()
                 .Where(e => e.ExternalId == auth0Id)
+                .Include(user => user.OrganizationMemberships)
                 .FirstOrDefaultAsync();
     }
 }
