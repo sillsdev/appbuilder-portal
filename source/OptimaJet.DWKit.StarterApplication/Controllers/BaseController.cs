@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using JsonApiDotNetCore.Controllers;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
@@ -42,7 +43,7 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
                 // current user has not yet been found for this request.
                 // find or create because users are managed by auth0 and
                 // creation isn't proxied through the api.
-                var user = FindOrCreateCurrentUser();
+                var user = FindOrCreateCurrentUser().Result;
 
                 HttpContext.Items[CURRENT_USER_KEY] = user;
 
@@ -51,9 +52,9 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
 
         }
 
-        private User FindOrCreateCurrentUser()
+        private async Task<User> FindOrCreateCurrentUser()
         {
-            var existing = userService.EntityRepository.GetByAuth0Id(currentUserContext.Auth0Id).Result;
+            var existing = await userService.EntityRepository.GetByAuth0Id(currentUserContext.Auth0Id);
 
             if (existing != null) return existing;
 
@@ -66,7 +67,7 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
                 FamilyName = currentUserContext.FamilyName
             };
 
-            var newEntity = userService.CreateAsync(newUser).Result;
+            var newEntity = await userService.CreateAsync(newUser);
 
             return newEntity;
         }

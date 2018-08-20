@@ -28,6 +28,5 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
 
             return await base.GetAsync(currentUser.Id);
         }
-
     }
 }
