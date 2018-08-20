@@ -22,7 +22,10 @@ describe.only('Acceptance | Disable User', () => {
   });
 
   describe('an active users exists', () => {
-    beforeEach(function () {
+    beforeEach(async function () {
+
+      await visit('/users');
+
       this.mockGet(200, '/users', {
         data: [{
           type: 'users',
@@ -30,16 +33,6 @@ describe.only('Acceptance | Disable User', () => {
           attributes: {
             name: "Fake user",
             'is-locked': false
-          }
-        }]
-      });
-
-      this.mockGet(200, '/organizations', () => {
-        data: [{
-          id: "1",
-          type: 'organizations',
-          attributes: {
-            name: 'SIL International'
           }
         }]
       });
