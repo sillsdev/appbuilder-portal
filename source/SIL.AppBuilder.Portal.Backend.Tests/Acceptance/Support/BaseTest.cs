@@ -56,8 +56,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.api+json");
 
-
-
             return await MakeRequest(request, organizationId);
         }
 
@@ -111,7 +109,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
               .GetService<IJsonApiDeSerializer>()
               .Deserialize<T>(body);
 
-
             return deserializedBody;
         }
 
@@ -122,7 +119,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             var deserializedBody = JsonConvert.DeserializeObject<Document>(body);
 
             return deserializedBody;
-
         }
 
         #endregion

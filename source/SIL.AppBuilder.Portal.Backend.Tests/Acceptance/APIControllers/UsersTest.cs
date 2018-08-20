@@ -92,6 +92,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             Assert.Equal(expectedGivenName, updatedUser.GivenName);
         }
 
+
         [Fact]
         public async Task Patch_SomeUser()
         {
@@ -118,6 +119,23 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             var updatedUser = await Deserialize<User>(response);
 
             Assert.Equal(expectedGivenName, updatedUser.GivenName);
+        }
+
+        [Fact]
+        public async Task Patch_SomeUser_FromTheWrongOrganization()
+        {
+            var tuple = NeedsConfiguredCurrentUser();
+            var user = AddEntity<AppDbContext, User>(new User());
+            var expectedGivenName = user.GivenName + "-updated!";
+            var payload = ResourcePatchPayload(
+                "users", user.Id, new Dictionary<string, object>()
+                {
+                    { "given-name", expectedGivenName }
+                });
+
+            var response = await Patch("/api/users/" + user.Id, payload);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
 
