@@ -78,7 +78,7 @@ export function withData(WrappedComponent) {
         t('users.operations.unlock.error');
 
       try {
-        await updateStore(t => t.replaceAttribute(
+        await updateStore(us => us.replaceAttribute(
           { type: USER, id: user.id }, 'isLocked', !user.attributes.isLocked
         ), defaultOptions());
 
