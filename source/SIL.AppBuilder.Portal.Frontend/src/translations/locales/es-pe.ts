@@ -202,7 +202,7 @@ export default {
         name: 'Nombre',
         role: 'Rol',
         groups: 'Grupo',
-        disabled: 'Deshabilitado'
+        active: 'Activo'
       }
     }
   }

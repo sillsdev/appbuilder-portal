@@ -14,7 +14,7 @@ class Header extends React.Component<i18nProps> {
           <th>{t('users.table.columns.name')}</th>
           <th>{t('users.table.columns.role')}</th>
           <th>{t('users.table.columns.groups')}</th>
-          <th>{t('users.table.columns.disabled')}</th>
+          <th>{t('users.table.columns.active')}</th>
         </tr>
       </thead>
     );

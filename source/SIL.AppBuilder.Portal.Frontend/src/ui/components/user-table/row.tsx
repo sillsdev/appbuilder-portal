@@ -25,7 +25,7 @@ class Row extends React.Component<IProps> {
 
     const firstName = user.givenName || `(${t('profile.firstName')})`;
     const lastName = user.familyName || `(${t('profile.lastName')})`;
-    const isLocked = user.isLocked;
+    const isActive = !user.isLocked;
 
     return (
       <tr>
@@ -45,9 +45,10 @@ class Row extends React.Component<IProps> {
         </td >
         <td>
           <Radio
+            data-test-toggle-lock
             toggle
             onChange={ _ => toggleLock(userData)}
-            checked={isLocked} />
+            checked={isActive} />
         </td>
       </tr >
     );

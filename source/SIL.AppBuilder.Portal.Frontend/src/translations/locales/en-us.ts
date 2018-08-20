@@ -219,7 +219,7 @@ export default {
         name: 'Name',
         role: 'Role',
         groups: 'Groups',
-        disabled: 'Disabled'
+        active: 'Active'
       }
     }
   }
