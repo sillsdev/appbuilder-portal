@@ -1,15 +1,15 @@
 
 import {
-  interactor, isPresent,
-  clickable, value,
+  interactor, hasClass,
+  clickable
 } from '@bigtest/interactor';
 
 @interactor
 export class UserInteractor {
   constructor(selector?: string) { }
 
-  clickLockUser = clickable('[data-test-toggle-lock]:first');
-  unlockUser = isPresent('[data-test-toggle-lock]:first.checked');
+  clickLockUser = clickable('[data-test-toggle-lock]:first-child');
+  unlockUser = hasClass('[data-test-toggle-lock]:first-child','checked');
 
 }
 

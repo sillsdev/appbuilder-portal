@@ -6,26 +6,14 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe.only('Acceptance | Disable User', () => {
+describe('Acceptance | Disable User', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
   describe('navigates to users page', () => {
-    beforeEach(async function () {
-      await visit('/users');
-    });
 
-    it('is in users page', () => {
-      expect(location().pathname).to.equal('/users');
-    });
-  });
-
-  describe('an active users exists', () => {
-    beforeEach(async function () {
-
-      await visit('/users');
-
+    beforeEach(function () {
       this.mockGet(200, '/users', {
         data: [{
           type: 'users',
@@ -36,28 +24,55 @@ describe.only('Acceptance | Disable User', () => {
           }
         }]
       });
+
+      this.mockGet(200,'/groups', {
+        data: [{
+          type: 'groups',
+          id: '2',
+          attributes: {
+            name: 'Fake group'
+          }
+        }]
+      });
     });
 
-    describe('locking user', () => {
-      beforeEach(function () {
-        this.mockPatch(200, 'users/1', {
-          data: {
-            type: 'users',
-            id: '1',
-            attributes: {
-              'is-locked': true
-            },
-          }
-        });
+    beforeEach(async function () {
+      await visit('/users');
+    });
+
+    it('is in users page', () => {
+      expect(location().pathname).to.equal('/users');
+    });
+
+    describe('an active users exists', () => {
+
+      it('active user', () => {
+        console.log(page.unlockUser);
+        expect(page.unlockUser).to.equal(true);
       });
 
-      describe('the disable user toggle is clicked', () => {
-        beforeEach(async () => {
-          await page.clickLockUser();
+      describe('locking user', () => {
+        beforeEach(function () {
+          this.mockPatch(200, 'users/1', {
+            data: {
+              type: 'users',
+              id: '1',
+              attributes: {
+                'is-locked': true
+              },
+            }
+          });
         });
 
-        it("changes the button text", () => {
-          expect(page.unlockUser).to.equal(false);
+        describe('toggle is clicked', () => {
+          beforeEach(async () => {
+            await page.clickLockUser();
+          });
+
+          it("user locked", () => {
+            console.log(page.unlockUser);
+            expect(page.unlockUser).to.equal(false);
+          });
         });
       });
     });
