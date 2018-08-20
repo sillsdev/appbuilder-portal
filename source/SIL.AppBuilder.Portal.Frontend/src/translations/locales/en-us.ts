@@ -221,6 +221,16 @@ export default {
         groups: 'Groups',
         active: 'Active'
       }
+    },
+    operations: {
+      lock: {
+        success: 'User is locked',
+        error: 'There was an error locking the user'
+      },
+      unlock: {
+        success: 'User is active',
+        error: 'there was an error activating the user'
+      }
     }
   }
 

@@ -7,10 +7,12 @@ import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
 
-import { query, defaultSourceOptions, isRelatedTo, defaultOptions } from '@data';
-import { isEmpty } from '@lib/collection';
+import { query, defaultOptions } from '@data';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
+
+import * as toast from '@lib/toast';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 function mapNetworkToProps(passedProps) {
 
@@ -22,7 +24,10 @@ function mapNetworkToProps(passedProps) {
       q => q.findRecords(USER),
       defaultOptions()
     ],
-    groups: q => q.findRecords(GROUP)
+    groups: [
+      q => q.findRecords(GROUP),
+      defaultOptions()
+    ]
   };
 }
 
@@ -47,6 +52,7 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
+  & i18nProps
   & WithDataProps;
 
 export function withData(WrappedComponent) {
@@ -61,11 +67,27 @@ export function withData(WrappedComponent) {
 
     toggleLock = async (user) => {
 
-      const { updateStore } = this.props;
+      const { updateStore, t } = this.props;
 
-      await updateStore(t => t.replaceAttribute(
-        { type: USER, id: user.id }, 'isLocked', !user.attributes.isLocked
-      ));
+      const successMessage = !user.attributes.isLocked ?
+        t('users.operations.lock.success') :
+        t('users.operations.unlock.success');
+
+      const errorMessage = !user.attributes.isLocked ?
+        t('users.operations.lock.error') :
+        t('users.operations.unlock.error');
+
+      try {
+        await updateStore(t => t.replaceAttribute(
+          { type: USER, id: user.id }, 'isLocked', !user.attributes.isLocked
+        ), defaultOptions());
+
+        toast.success(successMessage);
+
+      } catch(e) {
+        console.error(e);
+        toast.error(errorMessage);
+      }
     }
 
     render() {
@@ -114,5 +136,6 @@ export function withData(WrappedComponent) {
     connect(mapStateToProps),
     query(mapNetworkToProps),
     withOrbit(mapRecordsToProps),
+    withTranslations
   )(DataWrapper);
 }

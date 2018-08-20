@@ -204,6 +204,16 @@ export default {
         groups: 'Grupo',
         active: 'Activo'
       }
+    },
+    operations: {
+      lock: {
+        success: 'Usuario inactivo',
+        error: 'Hubo un error al desactivar al usuario'
+      },
+      unlock: {
+        success: 'Usuario activo',
+        error: 'Hubo un error al activar al usuario'
+      }
     }
   }
 

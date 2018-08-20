@@ -25,7 +25,7 @@ class Table extends React.Component<IProps> {
     const { users, groups, t, toggleLock } = this.props;
 
     return (
-      <table className= 'ui table user-table' >
+      <table data-test-users className= 'ui table user-table' >
         <Header />
         <tbody>
 
