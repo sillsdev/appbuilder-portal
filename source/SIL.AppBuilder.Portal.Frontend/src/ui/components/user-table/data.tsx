@@ -7,10 +7,17 @@ import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
 
+<<<<<<< HEAD
 import { query, defaultSourceOptions, isRelatedTo, defaultOptions } from '@data';
 import { isEmpty } from '@lib/collection';
+=======
+import { query, defaultSourceOptions, defaultOptions } from '@data';
+>>>>>>> master
 
 import { PageLoader as Loader } from '@ui/components/loaders';
+
+import * as toast from '@lib/toast';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 function mapNetworkToProps(passedProps) {
 
@@ -20,12 +27,18 @@ function mapNetworkToProps(passedProps) {
     //       is resolved
     users: [
       q => q.findRecords(USER),
-      defaultOptions()
+      {
+        sources: {
+          remote: {
+            settings: {
+              ...defaultSourceOptions()
+            },
+            include: [MEMBERSHIPS]
+          }
+        }
+      }
     ],
-    groups: [
-      q => q.findRecords(GROUP),
-      defaultOptions()
-    ]
+    groups: [q => q.findRecords(GROUP), defaultOptions()]
   };
 }
 
@@ -50,6 +63,7 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
+  & i18nProps
   & WithDataProps;
 
 export function withData(WrappedComponent) {
@@ -64,11 +78,27 @@ export function withData(WrappedComponent) {
 
     toggleLock = async (user) => {
 
-      const { updateStore } = this.props;
+      const { updateStore, t } = this.props;
 
-      await updateStore(t => t.replaceAttribute(
-        { type: USER, id: user.id }, 'isLocked', !user.attributes.isLocked
-      ));
+      const currentLockedState = user.attributes.isLocked;
+      const nextLockedState = !currentLockedState;
+
+      const getMessage = (nextState, type = 'success') => {
+        const state = nextState ? 'lock' : 'unlock';
+        return t(`users.operations.${state}.${type}`);
+      };
+
+      try {
+        await updateStore(us => us.replaceAttribute(
+          { type: USER, id: user.id }, 'isLocked', nextLockedState
+        ), defaultOptions());
+
+        toast.success(getMessage(nextLockedState));
+
+      } catch(e) {
+        console.error(e);
+        toast.error(getMessage(nextLockedState,'error'));
+      }
     }
 
     render() {
@@ -117,5 +147,6 @@ export function withData(WrappedComponent) {
     connect(mapStateToProps),
     query(mapNetworkToProps),
     withOrbit(mapRecordsToProps),
+    withTranslations
   )(DataWrapper);
 }

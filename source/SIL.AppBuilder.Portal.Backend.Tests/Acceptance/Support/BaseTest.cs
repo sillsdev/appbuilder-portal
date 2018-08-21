@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
@@ -54,8 +55,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             };
 
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.api+json");
-
-
 
             return await MakeRequest(request, organizationId);
         }
@@ -110,6 +109,24 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
               .GetService<IJsonApiDeSerializer>()
               .Deserialize<T>(body);
 
+            return deserializedBody;
+        }
+
+        public async Task<Documents> DeserializeDocumentList(HttpResponseMessage response)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+
+            var deserializedBody = JsonConvert.DeserializeObject<Documents>(body);
+
+            return deserializedBody;
+        }
+
+
+        public async Task<Document> DeserializeDocument(HttpResponseMessage response)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+
+            var deserializedBody = JsonConvert.DeserializeObject<Document>(body);
 
             return deserializedBody;
         }
