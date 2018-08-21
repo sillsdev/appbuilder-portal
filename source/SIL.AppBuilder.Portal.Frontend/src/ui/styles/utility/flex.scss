@@ -14,6 +14,13 @@
     flex-direction: column-reverse;
   }
 
+  @for $i from 0 through 20 {
+    $basis: $i * 5;
+    .flex-#{$basis}#{$modifier} {
+      flex-basis: #{$basis}%;
+    }
+  }
+
   .flex-grow#{$modifier} { flex-grow: 1; }
   .flex#{$modifier} { display: flex; }
 

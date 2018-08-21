@@ -161,6 +161,14 @@ export default {
   },
 
   project: {
+    title: 'Project',
+    newProject: 'New Project',
+    projectName: 'Project Name',
+    projectGroup: 'Project Group',
+    languageCode: 'Language Code',
+    type: 'Type',
+    visibilityLabel: 'Private',
+    visibilityDescription: 'If you make your project Private, it will not be viewable in the directory or accessible by other organizations',
     createdOn: 'Created',
     overview: 'Overview',
     dropdown: {

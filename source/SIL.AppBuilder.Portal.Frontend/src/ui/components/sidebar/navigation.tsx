@@ -99,7 +99,7 @@ class Navigation extends React.Component<IProps & i18nProps> {
 
         <MenuItem
           name={t('sidebar.addProject')}
-          to='add-projects'
+          to='/projects/new'
           onClick={closeSidebar} />
 
         <hr />
