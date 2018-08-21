@@ -52,15 +52,18 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                        .Where(p => p.OrganizationId == OrganizationContext.OrganizationId);
         }
 
+        public IQueryable<Project> UnfilteredGet()
+        {
+            return base.Get();
+        }
+
         public override async Task<Project> UpdateAsync(int id, Project entity)
         {
-            var result = ValidateOranizationUpdate(entity, id);
             return await base.UpdateAsync(id, entity);
         }
 
         public override async Task<Project> CreateAsync(Project entity)
         {
-            ValidateOrganizationAdd(entity);
             return await base.CreateAsync(entity);
         }
 

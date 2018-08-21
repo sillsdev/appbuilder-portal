@@ -76,5 +76,7 @@
     <Folder Include="Migrations\" />
     <Folder Include="Repositories\Contracts\" />
     <Folder Include="Templates\" />
+    <Folder Include="Forms\" />
+    <Folder Include="Forms\Projects\" />
   </ItemGroup>
 </Project>
