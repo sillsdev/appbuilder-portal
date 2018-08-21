@@ -19,6 +19,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
         public User user1 { get; private set; }
         public User user2 { get; private set; }
         public User user3 { get; private set; }
+        public Organization org1 { get; private set; }
+
+        private Organization org2;
 
         public GetAllTests(TestFixture<NoAuthStartup> fixture) : base(fixture)
         {
@@ -50,6 +53,21 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
             Assert.Contains(CurrentUser.Id, ids);
             Assert.DoesNotContain(user2.Id, ids);
             Assert.DoesNotContain(user3.Id, ids);
+        }
+
+        [Fact]
+        public async Task Get_Users_ForAOrganization_TheCurrentUser_IsNotAMemberOf() 
+        {
+            BuildTestData();
+
+            var url = "/api/users?filter[organization-id]=" + org2.Id;
+            var response = await Get(url, CurrentOrganizationId);
+            
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var document = await DeserializeDocumentList(response);
+
+            Assert.Equal(0, document.Data.Count);
         }
 
         [Fact]
@@ -114,8 +132,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
             user1 = AddEntity<AppDbContext, User>(new User());
             user2 = AddEntity<AppDbContext, User>(new User());
             user3 = AddEntity<AppDbContext, User>(new User());
-            var org1 = AddEntity<AppDbContext, Organization>(new Organization());
-            var org2 = AddEntity<AppDbContext, Organization>(new Organization());
+            org1 = AddEntity<AppDbContext, Organization>(new Organization());
+            org2 = AddEntity<AppDbContext, Organization>(new Organization());
 
             AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership {
                 UserId = user1.Id,
