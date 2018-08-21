@@ -7,7 +7,7 @@ import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
 
-import { query, defaultSourceOptions, isRelatedTo } from '@data';
+import { query, defaultSourceOptions, isRelatedTo, defaultOptions } from '@data';
 import { isEmpty } from '@lib/collection';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
@@ -20,18 +20,12 @@ function mapNetworkToProps(passedProps) {
     //       is resolved
     users: [
       q => q.findRecords(USER),
-      {
-        sources: {
-          remote: {
-            settings: {
-              ...defaultSourceOptions
-            },
-            include: [MEMBERSHIPS]
-          }
-        }
-      }
+      defaultOptions()
     ],
-    groups: q => q.findRecords(GROUP)
+    groups: [
+      q => q.findRecords(GROUP),
+      defaultOptions()
+    ]
   };
 }
 

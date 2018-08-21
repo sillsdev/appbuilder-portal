@@ -18,15 +18,14 @@ export default class Table extends React.Component<IProps> {
     const { projects } = this.props;
 
     return (
-      <table className='ui table product-table'>
+      <div className='project-table'>
         <Header />
-        <tbody>
         {
           projects && projects.map((project, index) => (
-          <Row key={index} project={project} />
-        ))}
-        </tbody>
-      </table>
+            <Row key={index} project={project} />
+          ))
+        }
+      </div>
     );
   }
 

@@ -1,7 +1,56 @@
-.project-actions {
-  color: #4a4a4a;
+.project-table {
 
-  i {
-    opacity: 0.5;
+  color: #515151;
+  font-family: Montserrat;
+  font-size: 13px;
+
+  a {
+    font-family: Montserrat;
+    font-size: 13px;
+    font-weight: bold;
+    color: #4a90e2;
   }
+
+  .header {
+
+    font-weight: bold;
+    border-bottom: 2px solid #515151;
+    background: transparent;
+
+  }
+
+  .row-header {
+    background-color: #fbfbfb;
+    border: solid 1px #dfdfdf;
+    margin-top: 6px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    font-weight: bold;
+  }
+
+  .grid {
+
+    .col {
+      width: 32%;
+      padding: .92857143em .78571429em;
+    }
+    .action {
+      width: 4%;
+      padding: .92857143em .78571429em;
+      text-align: center;
+
+      i {
+        margin: 0;
+      }
+    }
+  }
+
+  .project-actions {
+    color: #4a4a4a;
+
+    i {
+      opacity: 0.5;
+    }
+  }
+
 }

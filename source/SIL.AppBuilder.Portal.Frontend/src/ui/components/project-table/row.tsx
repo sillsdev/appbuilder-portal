@@ -35,13 +35,11 @@ class Row extends React.Component<IProps & i18nProps> {
     const { name: orgName } = attributesFor(organization);
 
     return (
-      <tr>
-        <td><Link to={`/project/${data.id}`}>{project.name}</Link></td>
-        <td className='bold'>{orgName}</td>
-        <td>{project.language}</td>
-        <td>{project.status}</td>
-        <td>{project.lastUpdatedAt}</td>
-        <td>
+      <div className='flex row-header grid'>
+        <div className='col'><Link to={`/project/${data.id}`}>{project.name}</Link></div>
+        <div className='col'>{orgName}</div>
+        <div className='col'>{project.language}</div>
+        <div className='action'>
           <Dropdown
             className='project-actions'
             pointing='top right'
@@ -58,8 +56,8 @@ class Row extends React.Component<IProps & i18nProps> {
               />
             </Dropdown.Menu>
           </Dropdown>
-        </td>
-      </tr>
+        </div>
+      </div>
     );
   }
 }

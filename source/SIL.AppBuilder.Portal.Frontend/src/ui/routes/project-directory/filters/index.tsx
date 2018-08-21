@@ -92,7 +92,7 @@ class Filter extends React.Component<IProps, IState> {
     const { from, to } = this.state;
     const organizationOptions = [{ text: 'All Organizations', value: ''}].concat(
       organizations.map(o => ({
-        text: o.attributes.name,
+        text: o.attributes ? o.attributes.name : '',
         value: o.id
       }))
     );
