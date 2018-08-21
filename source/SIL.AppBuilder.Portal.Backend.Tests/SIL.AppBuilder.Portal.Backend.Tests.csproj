@@ -27,12 +27,12 @@
     <ProjectReference Include="../OptimaJet.DWKit.Application/OptimaJet.DWKit.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
-   <Content Include="appsettings.json">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-   </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
 
    <Content Include=".env.dev">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
    </Content>
  </ItemGroup>
 </Project>
