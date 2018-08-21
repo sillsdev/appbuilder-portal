@@ -47,7 +47,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
         {
             BuildTestData();
 
-            var url = "/api/users?include=organization-memberships&filter[organization-id=" + CurrentOrganizationId;
+            var url = "/api/users?include=organization-memberships&filter[organization-id]=" + CurrentOrganizationId;
             var response = await Get(url, CurrentOrganizationId);
             
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
