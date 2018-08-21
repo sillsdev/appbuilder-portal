@@ -16,6 +16,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
         public User CurrentUser { get; }
         public OrganizationMembership CurrentUserMembership { get; }
         public string CurrentOrganizationId { get; }
+        public User user1 { get; private set; }
+        public User user2 { get; private set; }
+        public User user3 { get; private set; }
 
         public GetAllTests(TestFixture<NoAuthStartup> fixture) : base(fixture)
         {
@@ -40,6 +43,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
             var users = await DeserializeList<User>(response);
 
             Assert.Equal(2, users.Count);
+
+            var ids = users.Select(u => u.Id);
+
+            Assert.Contains(user1.Id, ids);
+            Assert.Contains(CurrentUser.Id, ids);
+            Assert.DoesNotContain(user2.Id, ids);
+            Assert.DoesNotContain(user3.Id, ids);
         }
 
         [Fact]
@@ -70,6 +80,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
             var users = await DeserializeList<User>(response);
 
             Assert.Equal(3, users.Count);
+
+            var ids = users.Select(u => u.Id);
+
+            Assert.Contains(user1.Id, ids);
+            Assert.Contains(user2.Id, ids);
+            Assert.Contains(CurrentUser.Id, ids);
+            Assert.DoesNotContain(user3.Id, ids);
         }
 
         [Fact]
@@ -86,27 +103,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
             Assert.Equal(0, users.Count);
         }
 
-        [Fact]
-        public async Task Get_Users_WithoutSpecifyingAFilter() 
-        {
-            var data = BuildTestData();
-            var availableUsers = data.Item1;
-            var availableIds = availableUsers.Select(u => u.Id).ToList();
-
-            var response = await Get("/api/users");
-            var users = await DeserializeList<User>(response);
-
-            Assert.Equal(3, users.Count);
-
-            var ids = users.Select(u => u.Id);
-
-            Assert.Contains(availableIds[0], ids);
-            Assert.Contains(availableIds[1], ids);
-            Assert.DoesNotContain(availableIds[2], ids);
-
-        }
-
-
         private Tuple<List<User>, List<Organization>> BuildTestData() 
         {
             // CurrentOrg
@@ -115,9 +111,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
             //  - currentUser, user2
             // Org2
             //  - user3
-            var user1 = AddEntity<AppDbContext, User>(new User());
-            var user2 = AddEntity<AppDbContext, User>(new User());
-            var user3 = AddEntity<AppDbContext, User>(new User());
+            user1 = AddEntity<AppDbContext, User>(new User());
+            user2 = AddEntity<AppDbContext, User>(new User());
+            user3 = AddEntity<AppDbContext, User>(new User());
             var org1 = AddEntity<AppDbContext, Organization>(new Organization());
             var org2 = AddEntity<AppDbContext, Organization>(new Organization());
 
