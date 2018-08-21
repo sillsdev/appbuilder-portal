@@ -219,7 +219,17 @@ export default {
         name: 'Name',
         role: 'Role',
         groups: 'Groups',
-        disabled: 'Disabled'
+        active: 'Active'
+      }
+    },
+    operations: {
+      lock: {
+        success: 'User is locked',
+        error: 'There was an error locking the user'
+      },
+      unlock: {
+        success: 'User is active',
+        error: 'there was an error activating the user'
       }
     }
   }
