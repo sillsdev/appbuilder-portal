@@ -119,7 +119,7 @@ export function withCurrentUser() {
         } catch (e) {
           console.debug('error', e);
 
-          this.setState({ error: e });
+          this.setState({ error: e, networkFetchComplete: true });
         }
 
       }
