@@ -9,7 +9,7 @@ export class UserInteractor {
   constructor(selector?: string) { }
 
   clickLockUser = clickable('[data-test-toggle-lock]:first-child');
-  unlockUser = hasClass('[data-test-toggle-lock]:first-child','checked');
+  isUserActive = hasClass('[data-test-toggle-lock]:first-child','checked');
 
 }
 

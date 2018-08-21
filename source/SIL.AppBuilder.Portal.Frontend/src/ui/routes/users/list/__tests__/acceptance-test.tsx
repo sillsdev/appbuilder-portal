@@ -47,8 +47,7 @@ describe('Acceptance | Disable User', () => {
     describe('an active users exists', () => {
 
       it('active user', () => {
-        console.log(page.unlockUser);
-        expect(page.unlockUser).to.equal(true);
+        expect(page.isUserActive).to.equal(true);
       });
 
       describe('locking user', () => {
@@ -70,8 +69,7 @@ describe('Acceptance | Disable User', () => {
           });
 
           it("user locked", () => {
-            console.log(page.unlockUser);
-            expect(page.unlockUser).to.equal(false);
+            expect(page.isUserActive).to.equal(false);
           });
         });
       });

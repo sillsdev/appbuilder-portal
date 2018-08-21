@@ -47,7 +47,7 @@ class Row extends React.Component<IProps> {
           <Radio
             data-test-toggle-lock
             toggle
-            onChange={ _ => toggleLock(userData)}
+            onChange={_ => toggleLock(userData)}
             checked={isActive} />
         </td>
       </tr >

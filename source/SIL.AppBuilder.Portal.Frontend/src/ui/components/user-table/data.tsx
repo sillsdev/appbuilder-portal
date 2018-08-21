@@ -69,24 +69,24 @@ export function withData(WrappedComponent) {
 
       const { updateStore, t } = this.props;
 
-      const successMessage = !user.attributes.isLocked ?
-        t('users.operations.lock.success') :
-        t('users.operations.unlock.success');
+      const currentLockedState = user.attributes.isLocked;
+      const nextLockedState = !currentLockedState;
 
-      const errorMessage = !user.attributes.isLocked ?
-        t('users.operations.lock.error') :
-        t('users.operations.unlock.error');
+      const getMessage = (nextLockedState, type = 'success') => {
+        const state = nextLockedState ? 'lock' : 'unlock';
+        return t(`users.operations.${state}.${type}`);
+      }
 
       try {
         await updateStore(us => us.replaceAttribute(
-          { type: USER, id: user.id }, 'isLocked', !user.attributes.isLocked
+          { type: USER, id: user.id }, 'isLocked', nextLockedState
         ), defaultOptions());
 
-        toast.success(successMessage);
+        toast.success(getMessage(nextLockedState));
 
       } catch(e) {
         console.error(e);
-        toast.error(errorMessage);
+        toast.error(getMessage(nextLockedState,'error'));
       }
     }
 
