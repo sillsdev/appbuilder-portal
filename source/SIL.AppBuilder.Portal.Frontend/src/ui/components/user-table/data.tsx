@@ -78,10 +78,10 @@ export function withData(WrappedComponent) {
       const currentLockedState = user.attributes.isLocked;
       const nextLockedState = !currentLockedState;
 
-      const getMessage = (nextLockedState, type = 'success') => {
-        const state = nextLockedState ? 'lock' : 'unlock';
+      const getMessage = (nextState, type = 'success') => {
+        const state = nextState ? 'lock' : 'unlock';
         return t(`users.operations.${state}.${type}`);
-      }
+      };
 
       try {
         await updateStore(us => us.replaceAttribute(
