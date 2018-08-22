@@ -50,6 +50,14 @@ const schemaDefinition: SchemaSettings = {
         organization: { type: 'hasOne', model: 'organization', inverse: 'userMemberships' },
       }
     },
+    groupMembership: {
+      keys: { remoteId: {} },
+      attributes: {},
+      relationships: {
+        user: { type: 'hasOne', model: 'user', inverse: 'groupMemberships' },
+        group: { type: 'hasOne', model: 'group', inverse: 'userMemberships' }
+      }
+    },
     project: {
       keys: { remoteId: {} },
       attributes: {
@@ -129,7 +137,8 @@ const schemaDefinition: SchemaSettings = {
         name: { type: 'string' }
       },
       relationships: {
-        users: { type: 'hasMany', model: 'user', inverse: 'groups'}
+        users: { type: 'hasMany', model: 'user', inverse: 'groups' },
+        userMemberships: { type: 'hasMany', model: 'user-membership', inverse: 'group' },
       }
     },
     user: {
@@ -150,6 +159,7 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         ownedOrganizations: { type: 'hasMany', model: 'organization', inverse: 'owner' },
         organizationMemberships: { type: 'hasMany', model: 'organizationMembership', inverse: 'user' },
+        groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'user' },
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
         assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' },
         projects: { type: 'hasMany', model: 'project', inverse: 'owner' },
