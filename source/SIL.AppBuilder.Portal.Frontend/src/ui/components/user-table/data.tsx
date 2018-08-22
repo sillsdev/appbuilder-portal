@@ -7,12 +7,7 @@ import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
 
-<<<<<<< HEAD
-import { query, defaultSourceOptions, isRelatedTo, defaultOptions } from '@data';
-import { isEmpty } from '@lib/collection';
-=======
 import { query, defaultSourceOptions, defaultOptions } from '@data';
->>>>>>> master
 
 import { PageLoader as Loader } from '@ui/components/loaders';
 
