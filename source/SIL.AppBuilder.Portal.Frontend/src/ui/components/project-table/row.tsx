@@ -53,27 +53,27 @@ class Row extends React.Component<IProps & i18nProps> {
         <div className='products-grid'>
           <div className='flex grid products-header'>
             <div className='col flex-grow-xs'>Products</div>
-            <div className='col d-xs-none d-md-block'>Status</div>
-            <div className='col d-xs-none d-md-block'>Last updated</div>
-            <div className='action d-xs-none d-md-block' />
+            <div className='col flex-grow-xs d-xs-none d-md-block'>Status</div>
+            <div className='col flex-grow-xs d-xs-none d-md-block'>Last updated</div>
+            <div className='action flex-grow-xs d-xs-none d-md-block' />
           </div>
           <div className='flex flex-column-xs flex-row-md grid product'>
-            <div className='col flex-grow-xs w-100-xs'>
+            <div className='col flex-grow-xs w-100-xs-only'>
               <ProductIcon product={htmlProduct}/>
               {htmlProduct.attributes.name}
             </div>
-            <div className='col flex-grow-xs w-100-xs'>Build(v1.0)</div>
-            <div className='col flex-grow-xs w-100-xs'>2018-04-21</div>
+            <div className='col flex-grow-xs w-100-xs-only'>Build(v1.0)</div>
+            <div className='col flex-grow-xs w-100-xs-only'>2018-04-21</div>
             <div className='action' />
           </div>
           <div className='flex flex-column-xs flex-row-md grid product'>
-            <div className='col flex-grow-xs w-100-xs'>
+            <div className='col flex-grow-xs w-100-xs-only'>
               <ProductIcon product={androidProduct} />
               {androidProduct.attributes.name}
             </div>
-            <div className='col flex-grow-xs w-100-xs'>Build(v1.12.1)</div>
-            <div className='col flex-grow-xs w-100-xs'>2018-05-22</div>
-            <div className='action flex-grow-xs w-100-xs'/>
+            <div className='col flex-grow-xs w-100-xs-only'>Build(v1.12.1)</div>
+            <div className='col flex-grow-xs w-100-xs-only'>2018-05-22</div>
+            <div className='action flex-grow-xs w-100-xs-only'/>
           </div>
         </div>
       </>

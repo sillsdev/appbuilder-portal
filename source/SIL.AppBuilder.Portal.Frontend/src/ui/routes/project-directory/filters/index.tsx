@@ -16,6 +16,8 @@ import {
   IProvidedProps as ICurrentOrgProps
 } from '@data/containers/with-current-organization';
 
+import { attributesFor } from '@data';
+
 import 'react-day-picker/lib/style.css';
 import './filters.scss';
 
@@ -86,13 +88,12 @@ class Filter extends React.Component<IProps, IState> {
   }
 
   render() {
-    const today = new Date();
 
     const { t, organizations, currentOrganizationId } = this.props;
     const { from, to } = this.state;
     const organizationOptions = [{ text: 'All Organizations', value: ''}].concat(
       organizations.map(o => ({
-        text: o.attributes ? o.attributes.name : '',
+        text: attributesFor(o).name || '',
         value: o.id
       }))
     );
