@@ -1,11 +1,8 @@
 import * as React from 'react';
 
 import { Link } from 'react-router-dom';
-import { Dropdown, Icon } from 'semantic-ui-react';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
-
-import { withProjectOperations } from '@ui/routes/project/with-project-operations';
 
 import { attributesFor } from '@data';
 import { ProjectAttributes } from '@data/models/project';
@@ -13,6 +10,7 @@ import { OrganizationAttributes } from '@data/models/organization';
 
 import { withRelationship } from './withRelationship';
 import ProductIcon from '@ui/components/product-icon';
+import RowActions from '@ui/components/project-table/row-actions';
 
 export interface IProps {
   project: JSONAPI<ProjectAttributes>;
@@ -35,22 +33,12 @@ const androidProduct = {
 
 class Row extends React.Component<IProps & i18nProps> {
 
-  toggleArchivedProject = (e) => {
-    e.preventDefault();
-    const { project, toggleArchiveProject } = this.props;
-    toggleArchiveProject(project);
-  }
-
   render() {
     const { project: data, organization, t } = this.props;
     const { attributes: project } = data;
     // the organization _shouldn't_ be missing attributes
     // but it certainly can, when fake prorject data is used elsewhere.
     const { name: orgName } = attributesFor(organization);
-
-    const dropdownItemText = !project.dateArchived ?
-      t('project.dropdown.archive') :
-      t('project.dropdown.reactivate');
 
     return (
       <>
@@ -59,22 +47,7 @@ class Row extends React.Component<IProps & i18nProps> {
           <div className='col'>{orgName}</div>
           <div className='col'>{project.language}</div>
           <div className='action'>
-            <Dropdown
-              className='project-actions'
-              pointing='top right'
-              icon={null}
-              trigger={
-                <Icon name='ellipsis vertical' size='large' />
-              }
-            >
-              <Dropdown.Menu>
-                <Dropdown.Item text={t('project.dropdown.transfer')} />
-                <Dropdown.Item
-                  text={dropdownItemText}
-                  onClick={this.toggleArchivedProject}
-                />
-              </Dropdown.Menu>
-            </Dropdown>
+            <RowActions project={data} />
           </div>
         </div>
         <div className='products-grid'>
@@ -110,6 +83,5 @@ class Row extends React.Component<IProps & i18nProps> {
 
 export default compose(
   translate('translations'),
-  withRelationship('organization'),
-  withProjectOperations
+  withRelationship('organization')
 )(Row);

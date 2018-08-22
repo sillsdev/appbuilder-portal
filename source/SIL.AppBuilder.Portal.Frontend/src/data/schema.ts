@@ -55,7 +55,7 @@ const schemaDefinition: SchemaSettings = {
       attributes: {},
       relationships: {
         user: { type: 'hasOne', model: 'user', inverse: 'groupMemberships' },
-        group: { type: 'hasOne', model: 'group', inverse: 'userMemberships' }
+        group: { type: 'hasOne', model: 'group', inverse: 'groupMemberships' }
       }
     },
     project: {
@@ -137,8 +137,8 @@ const schemaDefinition: SchemaSettings = {
         name: { type: 'string' }
       },
       relationships: {
-        users: { type: 'hasMany', model: 'user', inverse: 'groups'},
-        userMemberships: { type: 'hasMany', model: 'user-membership', inverse: 'group' },
+        users: { type: 'hasMany', model: 'user', inverse: 'groups' },
+        groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'group' },
       }
     },
     user: {
