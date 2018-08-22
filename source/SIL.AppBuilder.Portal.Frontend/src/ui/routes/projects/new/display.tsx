@@ -70,7 +70,9 @@ export default class Display extends React.Component<IProps, IState> {
     `;
 
     return (
-      <div className='p-t-xl flex-column align-items-center justify-content-center'>
+      <div
+        data-test-new-project-form
+        className='p-t-xl flex-column align-items-center justify-content-center'>
         <Card className='w-100'>
           <Card.Header className='flex-row justify-content-space-between'>
             <h1 className='ui header p-l-md p-r-md m-t-md m-b-md'>{t('project.newProject')}</h1>
@@ -135,7 +137,10 @@ export default class Display extends React.Component<IProps, IState> {
             {t('common.cancel')}
           </Link>
 
-          <button className={submitClasses} onClick={this.onSubmit}>
+          <button
+            data-test-save
+            className={submitClasses}
+            onClick={this.onSubmit}>
             {t('common.save')}
           </button>
         </div>

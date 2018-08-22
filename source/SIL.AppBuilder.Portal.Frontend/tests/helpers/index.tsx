@@ -1,6 +1,7 @@
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
+export { fakeAuth0Id } from './jwt';
 export { useFakeAuthentication } from './auth';
 export { setupRequestInterceptor } from './request-intercepting/polly';
 export { respondWithJsonApi } from './request-intercepting/jsonapi';
