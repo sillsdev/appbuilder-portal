@@ -23,13 +23,13 @@ const htmlProduct = {
   id: '1',
   type: 'product',
   attributes: { name: 'HTML'}
-}
+};
 
 const androidProduct = {
   id: '2',
   type: 'product',
   attributes: { name: 'Android APK (Streaming Audio) ' }
-}
+};
 
 class Row extends React.Component<IProps & i18nProps> {
 
@@ -55,7 +55,7 @@ class Row extends React.Component<IProps & i18nProps> {
             <div className='col'>Products</div>
             <div className='col'>Status</div>
             <div className='col'>Last updated</div>
-            <div className='action'></div>
+            <div className='action' />
           </div>
           <div className='flex grid product'>
             <div className='col'>
@@ -64,7 +64,7 @@ class Row extends React.Component<IProps & i18nProps> {
             </div>
             <div className='col'>Build(v1.0)</div>
             <div className='col'>2018-04-21</div>
-            <div className='action'></div>
+            <div className='action' />
           </div>
           <div className='flex grid product'>
             <div className='col'>
@@ -73,7 +73,7 @@ class Row extends React.Component<IProps & i18nProps> {
             </div>
             <div className='col'>Build(v1.12.1)</div>
             <div className='col'>2018-05-22</div>
-            <div className='action'></div>
+            <div className='action'/>
           </div>
         </div>
       </>
