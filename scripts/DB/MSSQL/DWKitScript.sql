@@ -1,7 +1,7 @@
 /*
 Company: OptimaJet
 Project: DWKIT Provider for MSSQL
-Version: 2.1
+Version: 2.2
 File: DWKitScript.sql
 */
 
@@ -37,6 +37,12 @@ IF NOT EXISTS (SELECT 1 FROM [dwAppSettings] WHERE Name = N'ApplicationName')
 BEGIN
 	INSERT dbo.dwAppSettings(Name, Value, GroupName, ParamName, [Order], EditorType, IsHidden) VALUES (N'ApplicationName', N'DWKit', N'Application settings', N'Name', 0, 0, 0)
 	PRINT '[dwAppSettings] - Add param [ApplicationName]'
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dwAppSettings] WHERE Name = N'IntegrationApiKey')
+BEGIN
+	INSERT INTO [dwAppSettings] ([Name],[GroupName],[ParamName],[Value],[Order],[EditorType],[IsHidden]) VALUES (N'IntegrationApiKey',N'Application settings',N'Api key','',2,0,0 )
+	PRINT '[dwAppSettings] - Add param [IntegrationApiKey]'
 END
 
 --UploadedFiles---------------------------------------------------------------

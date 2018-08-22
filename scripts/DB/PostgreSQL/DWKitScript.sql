@@ -1,7 +1,7 @@
 /*
 Company: OptimaJet
 Project: DWKIT Provider for PostgreSQL
-Version: 2.1
+Version: 2.2
 File: DWKitScript.sql
 */
 
@@ -26,6 +26,10 @@ BEGIN
 	
 	IF NOT EXISTS(SELECT 1 FROM "dwAppSettings" WHERE "Name" = N'ApplicationName') THEN
 		INSERT INTO "dwAppSettings"("Name", "Value", "GroupName", "ParamName", "Order", "EditorType") VALUES (N'ApplicationName', N'DWKit', N'Application settings', N'Name', 0, 0);
+	END IF;
+
+	IF NOT EXISTS(SELECT 1 FROM "dwAppSettings" WHERE "Name" = N'IntegrationApiKey') THEN
+		INSERT INTO "dwAppSettings" ("Name","GroupName","ParamName","Value","Order","EditorType","IsHidden")VALUES (N'IntegrationApiKey',N'Application settings',N'Api key','',2,0,false );
 	END IF;
 END $AppSettingsValues$;
 
