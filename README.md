@@ -24,6 +24,27 @@ docker run -p 8080:80 nginx-$CURRENT_VERSION
 docker run -p 3000:7081 api-$CURRENT_VERSION
 ```
 
+## Production
+
+### Database configuration
+
+DWKit requires database scripts to be executed before running the backend
+ * `scripts/DB/PostgreSQL/DWKitScript.sql`
+ * `scripts/DB/PostgreSQL/Workflow_CreatePersistenceObjects.sql`
+
+These seem to be idempotent, but we do not have a guarantee that they will remain that way.
+
+The backend has a Entity Framework Core migrations script generated into the production docker image (created by `source/Dockerfile.backend`) and is run at startup (by `source/run-api.sh`).  
+
+If you need to rollback a production release that contains a new migration change, you can generate a rollback sql script by running the following command in the `source/OptimaJet.DWKit.StarterApplication` directory of the code current at production (that you wish to rollback):
+```bash
+dotnet ef migrations script --idempotent --output rollback.sql <FROM> <TO>
+```
+To get the `<FROM>` and `<TO>` values, run the following command in the same directory:
+```bash
+dotnet ef migrations list
+```
+For the `<FROM>` value, use the last migration.  For the `<TO>` value, use the last migration in the point in the history of migrations that you would like to rollback to.
 
 ## Development
 
