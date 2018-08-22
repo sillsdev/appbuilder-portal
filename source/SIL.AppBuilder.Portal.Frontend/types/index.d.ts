@@ -1,6 +1,10 @@
 type Troolean =
-  | boolean
-  | undefined;
+| boolean
+| undefined;
+
+type Id =
+| string
+| number;
 
 declare module "public/images/*";
 

@@ -18,6 +18,7 @@ export default {
   common: {
     search: 'Search',
     change: 'Change',
+    cancel: 'Cancel',
     save: 'Save',
     name: 'Name',
     abbreviation: 'Abbreviation',

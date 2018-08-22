@@ -15,10 +15,10 @@
   }
 
   @for $i from 0 through 20 {
-    $basis: $i * 5;
+    $basis: $i * 5.0 ;
 
     .flex-#{$basis}#{$modifier} {
-      flex-basis: percentage($basis);
+      flex-basis: percentage($basis / 100);
     }
   }
 
