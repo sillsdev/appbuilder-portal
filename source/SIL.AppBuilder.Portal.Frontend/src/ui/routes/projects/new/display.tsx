@@ -85,7 +85,10 @@ export default class Display extends React.Component<IProps, IState> {
               <div className='flex justify-content-space-between'>
                 <Form.Field className='flex-50 m-r-md'>
                   <label>{t('project.projectName')}</label>
-                  <input required value={name || ''} onChange={mut('name')} />
+                  <input required
+                    data-test-name
+                    value={name || ''}
+                    onChange={mut('name')} />
                 </Form.Field>
 
                 <Form.Field className='flex-50 m-l-md'>
@@ -101,12 +104,18 @@ export default class Display extends React.Component<IProps, IState> {
               <div className='flex justify-content-space-between'>
                 <Form.Field className='flex-50 m-r-md'>
                   <label>{t('project.languageCode')}</label>
-                  <input required value={language || ''} onChange={mut('language')} />
+                  <input required
+                    data-test-language
+                    value={language || ''}
+                    onChange={mut('language')} />
                 </Form.Field>
 
                 <Form.Field className='flex-50 m-l-md'>
                   <label>{t('project.type')}</label>
-                  <input required value={type || ''} onChange={mut('type')} />
+                  <input required
+                    data-test-type
+                    value={type || ''}
+                    onChange={mut('type')} />
                 </Form.Field>
               </div>
 
@@ -116,6 +125,7 @@ export default class Display extends React.Component<IProps, IState> {
                     <span className='bold'>{t('project.visibilityLabel')}</span>
                     <Checkbox
                       toggle
+                      data-test-visibility
                       checked={isPublic}
                       onChange={toggle('isPublic')}
                       />

@@ -8,7 +8,7 @@ export function withAccessRestriction(WrappedComponent) {
   return props => {
     const { t, currentUser } = props;
 
-    const hasGroups = hasRelationship(currentUser, 'groups');
+    const hasGroups = hasRelationship(currentUser, 'groupMemberships');
 
     if (hasGroups) {
       return <WrappedComponent { ...props } />;

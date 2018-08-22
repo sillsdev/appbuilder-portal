@@ -30,6 +30,13 @@ export function hasRelationship(payload, name: string): boolean {
   return data.length > 0;
 }
 
+export function relationshipFor(payload: any, relationshipName: string) {
+  const relationships = relationshipsFor(payload);
+  const relation = relationships[relationshipName] || {};
+
+  return relation;
+}
+
 export function isRelatedTo(payload: any, relationshipName: string, id: string) {
   const relationships = relationshipsFor(payload);
   const relation = relationships[relationshipName] || {};
@@ -40,6 +47,4 @@ export function isRelatedTo(payload: any, relationshipName: string, id: string) 
   }
 
   return relationData.id === id;
-
-
 }

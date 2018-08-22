@@ -86,12 +86,18 @@ describe('Acceptance | New Project', () => {
       ]
     });
 
+    beforeEach(function() {
+      this.mockGet(200, '/groups', {
+        data: [
+          { id: 1, type: 'groups', attributes: { name: 'Group 1' } }
+        ]
+      });
+    });
+
     describe('navigates to the new project page', () => {
       beforeEach(async function() {
         await visit('/projects/new');
-      });
 
-      it('is not redirected', () => {
         expect(location().pathname).to.equal('/projects/new');
       });
 
@@ -100,24 +106,72 @@ describe('Acceptance | New Project', () => {
       });
 
       describe('name is required', () => {
+        beforeEach(() => {
+          page.fillLanguage('english');
+          page.fillType('SAB');
+          page.chooseGroup('Group 1');
+        });
 
+
+        it('has not enabled the save button', () => {
+          expect(page.isSaveDisabled).to.be.true;
+        });
       });
 
-      describe('group is required', () => {
+      describe('group defaults to first option', () => {
+        beforeEach(() => {
+          page.fillName('some name');
+          page.fillLanguage('english');
+          page.fillType('SAB');
+        });
 
+        it('has a value', () => {
+          expect(page.selectedGroup).to.equal('Group 1');
+        });
+
+        it('has enabled the save button', () => {
+          expect(page.isSaveDisabled).to.be.false;
+        });
       });
 
       describe('type is required', () => {
+        beforeEach(() => {
+          page.fillName('some name');
+          page.fillLanguage('english');
+        });
 
+        it('has not enabled the save button', () => {
+          expect(page.isSaveDisabled).to.be.true;
+        });
       });
 
       describe('language is required', () => {
+        beforeEach(() => {
+          page.fillName('some name');
+          page.fillType('SAB');
+        });
 
+        it('has not enabled the save button', () => {
+          expect(page.isSaveDisabled).to.be.true;
+        });
       });
 
       describe('visibility is toggleable', () => {
+        it('defaults to true / checked', () => {
+          expect(page.isVisibilityChecked).to.be.true;
+        });
 
+        describe('is toggled', () => {
+          beforeEach(() => {
+            page.toggleVisibility();
+          });
+
+          it('is now unchecked', () => {
+            expect(page.isVisibilityChecked).to.be.false;
+          });
+        });
       });
     });
   });
 });
+
