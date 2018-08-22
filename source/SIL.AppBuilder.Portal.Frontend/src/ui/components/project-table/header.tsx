@@ -11,14 +11,15 @@ type IProps =
 
 class Header extends React.Component<IProps> {
   render() {
+
     const { t } = this.props;
 
     return (
       <div className='flex header grid'>
         <div className='col'>Project</div>
-        <div className='col'>Organization</div>
-        <div className='col'>Language</div>
-        <div className='action'><Icon name='dropdown' /></div>
+        <div className='col d-xs-none d-md-block'>Organization</div>
+        <div className='col d-xs-none d-md-block'>Language</div>
+        <div className='action d-xs-none d-md-block'><Icon name='dropdown' /></div>
       </div>
     );
   }

@@ -43,37 +43,37 @@ class Row extends React.Component<IProps & i18nProps> {
     return (
       <>
         <div className='flex row-header grid'>
-          <div className='col'><Link to={`/project/${data.id}`}>{project.name}</Link></div>
-          <div className='col'>{orgName}</div>
-          <div className='col'>{project.language}</div>
+          <div className='col flex-grow-xs'><Link to={`/project/${data.id}`}>{project.name}</Link></div>
+          <div className='col d-xs-none'>{orgName}</div>
+          <div className='col d-xs-none'>{project.language}</div>
           <div className='action'>
             <RowActions project={data} />
           </div>
         </div>
         <div className='products-grid'>
           <div className='flex grid products-header'>
-            <div className='col'>Products</div>
-            <div className='col'>Status</div>
-            <div className='col'>Last updated</div>
-            <div className='action' />
+            <div className='col flex-grow-xs'>Products</div>
+            <div className='col d-xs-none d-md-block'>Status</div>
+            <div className='col d-xs-none d-md-block'>Last updated</div>
+            <div className='action d-xs-none d-md-block' />
           </div>
           <div className='flex grid product'>
-            <div className='col'>
+            <div className='col flex-grow-xs'>
               <ProductIcon product={htmlProduct}/>
               {htmlProduct.attributes.name}
             </div>
-            <div className='col'>Build(v1.0)</div>
-            <div className='col'>2018-04-21</div>
-            <div className='action' />
+            <div className='col d-xs-none d-md-block '>Build(v1.0)</div>
+            <div className='col d-xs-none d-md-block '>2018-04-21</div>
+            <div className='action d-xs-none d-md-block' />
           </div>
           <div className='flex grid product'>
-            <div className='col'>
+            <div className='col flex-grow-xs'>
               <ProductIcon product={androidProduct} />
               {androidProduct.attributes.name}
             </div>
-            <div className='col'>Build(v1.12.1)</div>
-            <div className='col'>2018-05-22</div>
-            <div className='action'/>
+            <div className='col d-xs-none d-md-block'>Build(v1.12.1)</div>
+            <div className='col d-xs-none d-md-block'>2018-05-22</div>
+            <div className='action d-xs-none d-md-block'/>
           </div>
         </div>
       </>
