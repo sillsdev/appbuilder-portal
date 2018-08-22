@@ -127,6 +127,7 @@ export default {
   errors: {
     notFoundTitle: 'Not Found!',
     notFoundDescription: 'Something went wrong and the page or resource could not be found!',
+    groupRequired: 'You must be a member of at least one group.',
     orgMembershipRequired: 'Organization Membership is Required',
     orgMembershipRequiredText: `
       In order to use Scriptoria, you must be a member of at least one organization.
@@ -168,7 +169,7 @@ export default {
     projectGroup: 'Project Group',
     languageCode: 'Language Code',
     type: 'Type',
-    visibilityLabel: 'Private',
+    visibilityLabel: 'Public',
     visibilityDescription: 'If you make your project Private, it will not be viewable in the directory or accessible by other organizations',
     createdOn: 'Created',
     overview: 'Overview',

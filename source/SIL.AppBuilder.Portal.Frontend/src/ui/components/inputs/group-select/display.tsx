@@ -15,6 +15,16 @@ type IProps =
 & IDataProps;
 
 export default class GroupSelectDisplay extends React.Component<IProps> {
+  componentDidMount() {
+    const { selected, groups, onChange } = this.props;
+
+    if (!selected && groups && groups.length > 0) {
+      const firstId = groups[0].id;
+
+      onChange(firstId);
+    }
+  }
+
   onSelect = (e, { value }) => {
     e.preventDefault();
 
@@ -26,6 +36,7 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
   render() {
     const { groups, selected } = this.props;
 
+
     const groupOptions = groups.map(group => ({
       text: attributesFor(group).name,
       value: group.id
@@ -36,7 +47,7 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
         data-test-group-select
         inline
         options={groupOptions}
-        defaultvalue={selected}
+        value={selected}
         onChange={this.onSelect}
       />
     );

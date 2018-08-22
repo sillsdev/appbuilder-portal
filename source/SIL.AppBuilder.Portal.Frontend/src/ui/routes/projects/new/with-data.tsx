@@ -27,7 +27,7 @@ export function withData(WrappedComponent) {
             data: { id: groupId, type: GROUP }
           }
         }
-      }), defaultOptions())
+      }), defaultOptions());
     }
 
     render() {

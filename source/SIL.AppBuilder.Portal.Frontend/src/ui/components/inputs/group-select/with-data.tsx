@@ -2,7 +2,10 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { query, defaultOptions } from '@data';
 import { WithDataProps } from 'react-orbitjs';
+
+import { isRelatedTo } from '@data';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
+import { UserAttributes } from '@data/models/user';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
 
@@ -12,6 +15,8 @@ export interface IProvidedProps {
 
 interface IOwnProps {
   groups: Array<JSONAPI<GroupAttributes>>;
+  scopeToCurrentUser: boolean;
+  currentUser: JSONAPI<UserAttributes>;
 }
 
 type IProps =
@@ -27,11 +32,17 @@ export function withData(WrappedComponent) {
 
   class DataWrapper extends React.Component<IProps> {
     render() {
-      const { groups, ...otherProps } = this.props;
+      const { groups, currentUser, scopeToCurrentUser, ...otherProps } = this.props;
 
       if (!groups) {
         return <Loader />;
       }
+
+      const availableGroups = scopeToCurrentUser
+        ? groups.filter(group => (
+            isRelatedTo(currentUser, 'groups', group.id)
+          ))
+        : groups;
 
       const props = {
         ...otherProps,

@@ -12,6 +12,6 @@ export interface ProjectAttributes {
   allowOtherToDownload: boolean;
   location: string;
   lastUpdatedAt: Date;
-  isPrivate: boolean;
+  isPublic: boolean;
   organization: any; // TODO Remove this when API is ready
 }

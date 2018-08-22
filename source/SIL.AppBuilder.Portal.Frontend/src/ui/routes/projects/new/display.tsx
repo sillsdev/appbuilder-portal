@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Card, Form, Checkbox } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 
 import { i18nProps } from '@lib/i18n';
@@ -16,8 +17,9 @@ interface IState {
   name?: string;
   groupId?: Id;
   language?: string;
-  isPrivate?: boolean;
-  disableSubmit: boolean
+  isPublic?: boolean;
+  disableSubmit: boolean;
+  type?: string;
 }
 
 @withTemplateHelpers
@@ -25,15 +27,16 @@ export default class Display extends React.Component<IProps, IState> {
   mut: Mut;
   toggle: Toggle;
 
-  state: IState = { disableSubmit: false };
+  state: IState = { disableSubmit: false, isPublic: true };
 
   areAllRequiredFieldsPresent = () => {
-    const { name, groupId, language } = this.state;
+    const { name, groupId, language, type } = this.state;
 
     return (
       !isEmpty(name)
       && !isEmpty(groupId)
       && !isEmpty(language)
+      && !isEmpty(type)
     );
   }
 
@@ -48,9 +51,9 @@ export default class Display extends React.Component<IProps, IState> {
 
     this.setState({ disableSubmit: true });
 
-    const { name, groupId, language, isPrivate } = this.state;
+    const { name, groupId, language, isPublic, type } = this.state;
 
-    await create({ name, language, isPrivate }, groupId);
+    await create({ name, language, isPublic, type }, groupId);
 
     this.setState({ disableSubmit: false });
 
@@ -59,7 +62,7 @@ export default class Display extends React.Component<IProps, IState> {
   render() {
     const { mut, toggle } = this;
     const { t } = this.props;
-    const { name, groupId, language, isPrivate, disableSubmit } = this.state;
+    const { name, groupId, language, isPublic, disableSubmit, type } = this.state;
 
     const submitClasses = `
       ui button primary huge
@@ -86,6 +89,7 @@ export default class Display extends React.Component<IProps, IState> {
                 <Form.Field className='flex-50 m-l-md'>
                   <label>{t('project.projectGroup')}</label>
                   <GroupSelect
+                    scopeToCurrentUser={true}
                     selected={groupId}
                     onChange={mut('groupId')}
                   />
@@ -97,18 +101,21 @@ export default class Display extends React.Component<IProps, IState> {
                   <label>{t('project.languageCode')}</label>
                   <input required value={language || ''} onChange={mut('language')} />
                 </Form.Field>
-                <span className='flex-50 m-r-md' />
+
+                <Form.Field className='flex-50 m-l-md'>
+                  <label>{t('project.type')}</label>
+                  <input required value={type || ''} onChange={mut('type')} />
+                </Form.Field>
               </div>
 
-              <h2 className='form-title'>{t('project.type')}</h2>
-              <Form.Field>
+              <Form.Field className='m-t-xl'>
                 <div className='flex-row'>
                   <div className='toggle-selector flex-row flex-50-sm flex-25-lg  justify-content-space-between'>
                     <span className='bold'>{t('project.visibilityLabel')}</span>
                     <Checkbox
                       toggle
-                      checked={isPrivate}
-                      onChange={toggle('isPrivate')}
+                      checked={isPublic}
+                      onChange={toggle('isPublic')}
                       />
                   </div>
                 </div>
@@ -124,11 +131,11 @@ export default class Display extends React.Component<IProps, IState> {
 
 
         <div className='w-100 flex-row flex-grow justify-content-space-between'>
-          <button className='ui button basic huge'>
+          <Link className='ui button basic huge' to='/'>
             {t('common.cancel')}
-          </button>
+          </Link>
 
-          <button className={submitClasses}>
+          <button className={submitClasses} onClick={this.onSubmit}>
             {t('common.save')}
           </button>
         </div>
