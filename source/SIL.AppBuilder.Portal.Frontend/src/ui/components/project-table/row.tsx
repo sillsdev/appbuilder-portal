@@ -57,23 +57,23 @@ class Row extends React.Component<IProps & i18nProps> {
             <div className='col d-xs-none d-md-block'>Last updated</div>
             <div className='action d-xs-none d-md-block' />
           </div>
-          <div className='flex grid product'>
-            <div className='col flex-grow-xs'>
+          <div className='flex flex-column-xs flex-row-md grid product'>
+            <div className='col flex-grow-xs w-100-xs'>
               <ProductIcon product={htmlProduct}/>
               {htmlProduct.attributes.name}
             </div>
-            <div className='col d-xs-none d-md-block '>Build(v1.0)</div>
-            <div className='col d-xs-none d-md-block '>2018-04-21</div>
-            <div className='action d-xs-none d-md-block' />
+            <div className='col flex-grow-xs w-100-xs'>Build(v1.0)</div>
+            <div className='col flex-grow-xs w-100-xs'>2018-04-21</div>
+            <div className='action' />
           </div>
-          <div className='flex grid product'>
-            <div className='col flex-grow-xs'>
+          <div className='flex flex-column-xs flex-row-md grid product'>
+            <div className='col flex-grow-xs w-100-xs'>
               <ProductIcon product={androidProduct} />
               {androidProduct.attributes.name}
             </div>
-            <div className='col d-xs-none d-md-block'>Build(v1.12.1)</div>
-            <div className='col d-xs-none d-md-block'>2018-05-22</div>
-            <div className='action d-xs-none d-md-block'/>
+            <div className='col flex-grow-xs w-100-xs'>Build(v1.12.1)</div>
+            <div className='col flex-grow-xs w-100-xs'>2018-05-22</div>
+            <div className='action flex-grow-xs w-100-xs'/>
           </div>
         </div>
       </>
