@@ -42,6 +42,7 @@ namespace OptimaJet.DWKit.Application
 
 #if (DEBUG)
             DWKitRuntime.UseMetadataCache = false;
+            //CodeActionsCompiller.DebugMode = true;
 #elif (RELEASE)
             DWKitRuntime.UseMetadataCache = true;
 #endif
@@ -57,8 +58,9 @@ namespace OptimaJet.DWKit.Application
             }
             
             CodeActionsCompiller.RegisterAssembly(typeof(WorkflowRuntime).Assembly);
-            CodeActionsCompiller.DebugMode = true;
-            //DWKitRuntime.CompileAllCodeActionsAsync().Wait();
+            //It is necessery to have this assembly for compile code with dynamic
+            CodeActionsCompiller.RegisterAssembly(typeof(Microsoft.CSharp.RuntimeBinder.Binder).Assembly);
+            DWKitRuntime.CompileAllCodeActionsAsync().Wait();
             DWKitRuntime.ServerActions.RegisterUsersProvider("filters", new Filters());
             DWKitRuntime.ServerActions.RegisterUsersProvider("triggers", new Triggers());
         }

@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../OptimaJet.DWKit.StarterApplication/Optimajet.DWKit.StarterApplication.csproj" />
+    <ProjectReference Include="../OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj" />
     <ProjectReference Include="../OptimaJet.DWKit.Application/OptimaJet.DWKit.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
