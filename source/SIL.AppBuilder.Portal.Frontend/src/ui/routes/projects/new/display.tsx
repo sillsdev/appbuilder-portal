@@ -12,7 +12,7 @@ export default class Display extends React.Component<IProps> {
     const { t } = this.props;
 
     return (
-      <div className='p-t-xl flex justify-content-center'>
+      <div className='p-t-xl flex-column align-items-center justify-content-center'>
         <Card className='w-100'>
           <Card.Header>
             <h1 className='ui header p-l-md p-r-md m-t-md m-b-md'>{t('project.newProject')}</h1>
@@ -23,20 +23,20 @@ export default class Display extends React.Component<IProps> {
               <h2 className='form-title'>{t('project.title')}</h2>
 
               <div className='flex justify-content-space-between'>
-                <Form.Field className='flex-50'>
+                <Form.Field className='flex-50 m-r-md'>
                   <label>{t('project.projectName')}</label>
-                  <input />
+                  <input required />
                 </Form.Field>
 
-                <Form.Field className='flex-50'>
+                <Form.Field className='flex-50 m-l-md'>
                   <label>{t('project.projectGroup')}</label>
-                  <input />
+                  <input required />
                 </Form.Field>
               </div>
 
               <Form.Field>
                 <label>{t('project.languageCode')}</label>
-                <input />
+                <input required />
               </Form.Field>
 
               <h2 className='form-title'>{t('project.type')}</h2>
@@ -54,6 +54,10 @@ export default class Display extends React.Component<IProps> {
             </Form>
           </Card.Content>
         </Card>
+        <div className='w-100 flex-row flex-grow justify-content-space-between'>
+          <button>Cancel</button>
+          <button>Save</button>
+        </div>
       </div>
     );
   }
