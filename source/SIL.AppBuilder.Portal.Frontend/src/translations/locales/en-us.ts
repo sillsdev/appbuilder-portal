@@ -129,6 +129,7 @@ export default {
     notFoundTitle: 'Not Found!',
     notFoundDescription: 'Something went wrong and the page or resource could not be found!',
     groupRequired: 'You must be a member of at least one group.',
+    userForbidden: 'An error occurred: Forbidden. Please contact your organization administrator.',
     orgMembershipRequired: 'Organization Membership is Required',
     orgMembershipRequiredText: `
       In order to use Scriptoria, you must be a member of at least one organization.

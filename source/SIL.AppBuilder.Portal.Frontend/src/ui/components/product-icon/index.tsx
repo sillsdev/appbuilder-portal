@@ -18,7 +18,7 @@ export interface IProps {
 export default class ProductIcon extends React.Component<IProps> {
   render() {
     const { product } = this.props;
-    const name  = product.name || '';
+    const name  = product.attributes.name || '';
     const closestKey = Object.keys(iconMap).find(key => name.toLowerCase().includes(key));
     const icon = iconMap[closestKey] || 'file';
 

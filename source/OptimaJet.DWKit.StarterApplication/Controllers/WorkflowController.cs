@@ -124,7 +124,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 else
                 {
                     var data = await DataSource.GetDataForFormAsync(new GetDataRequest(name) { Filter = filterItems, FilterActionName = filterActionName });
-                    entityId = (Guid?)data?.GetId();
+                    entityId = (Guid?)data.Entity?.GetId();
                 }
 
                 var userId = GetUserId();

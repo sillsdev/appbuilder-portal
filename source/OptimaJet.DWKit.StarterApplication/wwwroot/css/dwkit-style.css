@@ -73,8 +73,9 @@ div.field > label {
     width: 200px;
 }
 
-.dwkit-collectioneditor{
+.dwkit-collectioneditor {
     width: 100%;
+    table-layout: fixed;
 }
 .dwkit-collectioneditor-header{
     font-weight: 600;
@@ -218,7 +219,7 @@ div.field > label {
 }
 
 .react-grid-Cell{
-    border:none;
+    border:inherit;
     background: transparent;
 }
 
@@ -315,16 +316,25 @@ div.field > label {
     margin-top: 20px;
 }
 
-.dwkit-application-header-center{
+.dwkit-application-header-center {
     float: left;
-    margin-top: 24px;
+    margin-top: 27px;
     margin-left: 70px;
+    width: calc(100% - 500px);
 }
 
-.dwkit-application-header-center .ui.selection.dropdown{
-    width:300px!important;
-    padding-top: 16px!important;
-    margin-left: 10px;
+.dwkit-application-header-center .ui.fluid.search > .ui.icon.input {
+    width: 100%;
+}
+
+.dwkit-application-header-center .ui.fluid.search > .ui.icon.input > input {
+    border: none;
+    border-bottom-style: solid;
+    border-bottom-color: #F24D00;
+    border-bottom-width: 1px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 0px;
 }
 
 .dwkit-application-header-right{
@@ -405,11 +415,21 @@ div.field > label {
     background: transparent;
 }
 
+.ui.form .disabled.field, .ui.form .disabled.fields .field, .ui.form .field :disabled {
+    opacity: 1;
+}
+
+.ui.disabled.dropdown, .ui.dropdown .menu > .disabled.item {
+    opacity: 1;
+}
+
+.ui.form .field.disabled > label, .ui.form .fields.disabled > label {
+    opacity: 1;
+}
 
 /**
  * Alertify
  */
-
 .alertify,
 .alertify-show,
 .alertify-log {
@@ -1081,12 +1101,24 @@ div.filepicker {
           border-bottom: 6px solid #be2626; 
         }
 
+.react-datepicker select.react-datepicker__month-select {
+    padding: inherit;
+}
 
-        .react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle, .react-datepicker-popper[data-placement^="top"] .react-datepicker__triangle, .react-datepicker__year-read-view--down-arrow,
+.react-datepicker select.react-datepicker__year-select {
+    padding: inherit;
+}
+.react-datepicker {
+    width: max-content;
+}
+
+
+.react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle, .react-datepicker-popper[data-placement^="top"] .react-datepicker__triangle, .react-datepicker__year-read-view--down-arrow,
 .react-datepicker__month-read-view--down-arrow,
 .react-datepicker__month-year-read-view--down-arrow {
-  margin-left: -8px;
-  position: absolute; }
+    margin-left: -8px;
+    position: absolute;
+}
   .react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle, .react-datepicker-popper[data-placement^="top"] .react-datepicker__triangle, .react-datepicker__year-read-view--down-arrow,
   .react-datepicker__month-read-view--down-arrow,
   .react-datepicker__month-year-read-view--down-arrow, .react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle::before, .react-datepicker-popper[data-placement^="top"] .react-datepicker__triangle::before, .react-datepicker__year-read-view--down-arrow::before,

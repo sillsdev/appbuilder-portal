@@ -40,8 +40,13 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                     }
                     catch
                     {
-                        if (DWKitRuntime.ServerActions.ContainsFilter(urlFilter))
-                            filterActionName = urlFilter;
+                        var filterActions = DWKitRuntime.ServerActions.GetFilterNames().Where(n => n.Equals(urlFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+                        string filterAction = null;
+                        filterAction = filterActions.Count == 1 ? filterActions.First() 
+                            : filterActions.FirstOrDefault(n => n.Equals(urlFilter, StringComparison.Ordinal));
+                        
+                        if (!string.IsNullOrEmpty(filterAction))
+                            filterActionName = filterAction;
                         else
                         {
                             idValue = urlFilter;
@@ -88,7 +93,13 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 }
 
                 var data = await DataSource.GetDataForFormAsync(getRequest).ConfigureAwait(false);
-                return Json(new ItemSuccessResponse<object>(data.ToDictionary(true)));
+                
+                if (data.IsFromUrl && FailResponse.IsFailResponse(data.Entity, out FailResponse fail))
+                {
+                    return Json(fail);
+                }
+                
+                return Json(new ItemSuccessResponse<object>(data.Entity.ToDictionary(true)));
             }
             catch (Exception e)
             {

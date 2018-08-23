@@ -5,10 +5,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { Container } from 'semantic-ui-react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { defaultHeaders } from '@lib/fetch';
-
 import * as toast from '@lib/toast';
-import { getPictureUrl } from '@lib/auth0';
 import { idFor, defaultOptions } from '@data';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
 import { withCurrentUser } from '@data/containers/with-current-user';
@@ -41,18 +38,7 @@ class Profile extends React.Component<IProps> {
         id,
         type: TYPE_NAME,
         attributes: { ...formData }
-      }), {
-        sources: {
-          remote: {
-            settings: {
-              headers: {
-                ...defaultHeaders(),
-                ['content-type']: 'application/vnd.api+json'
-              }
-            }
-          }
-        }
-      });
+      }), defaultOptions());
 
       toast.success(t('profile.updated'));
 
