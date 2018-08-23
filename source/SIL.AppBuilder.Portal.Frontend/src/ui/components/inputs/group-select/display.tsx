@@ -35,7 +35,7 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
 
   render() {
     const { groups, selected } = this.props;
-
+    debugger;
 
     const groupOptions = groups.map(group => ({
       text: attributesFor(group).name,

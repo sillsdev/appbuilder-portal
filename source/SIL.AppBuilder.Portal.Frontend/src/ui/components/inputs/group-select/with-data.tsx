@@ -4,6 +4,7 @@ import { query, defaultOptions } from '@data';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { isRelatedTo, relationshipsFor, relationshipFor } from '@data';
+import { withRelationship } from '@data/containers/with-relationship';
 import { TYPE_NAME as GROUP, PLURAL_NAME as GROUPS, GroupAttributes } from '@data/models/group';
 import { TYPE_NAME as GROUP_MEMBERSHIP } from '@data/models/group-membership';
 import { UserAttributes } from '@data/models/user';
@@ -16,7 +17,8 @@ export interface IProvidedProps {
 
 interface IOwnProps {
   groups: Array<JSONAPI<GroupAttributes>>;
-  groupMemberships: Array<JSONAPI<{}>>;
+  groupMembershipsFromCache: Array<JSONAPI<{}>>;
+  currentUserGroupMemberships: Array<JSONAPI<{}>>;
   scopeToCurrentUser: boolean;
   currentUser: JSONAPI<UserAttributes>;
 }
@@ -32,31 +34,35 @@ export function withData(WrappedComponent) {
     };
   };
 
-  const mapRecordsToProps = (passedProps) => ({
-    groupMemberships: q => {
-      console.log(passedProps);
-     return q.findRecords(GROUP_MEMBERSHIP)
+  const mapRecordsToProps = (passedProps) => {
+    const { currentUser } = passedProps;
+    const { type, id } = currentUser;
+
+    return {
+      groupMembershipsFromCache: q => q.findRelatedRecord({ type, id }, 'groupMemberships')
     }
-  });
+  };
 
   class DataWrapper extends React.Component<IProps> {
     render() {
-      const { groups, groupMemberships, currentUser, scopeToCurrentUser, ...otherProps } = this.props;
+      const {
+        groupMembershipsFromCache,
+        groups,
+        currentUserGroupMemberships,
+        currentUser,
+        scopeToCurrentUser,
+        ...otherProps
+      } = this.props;
 
-      if (!groups || !groupMemberships) {
+      if (!groups || !groupMembershipsFromCache) {
         return <Loader />;
       }
 
-      let availableGroups;
+      let availableGroups: Array<JSONAPI<{}>>;
 
       if (scopeToCurrentUser) {
-        const memberships = relationshipFor(currentUser, 'groupMemberships');
-        const membershipIds = (memberships.data || []).map(m => m.id);
-        const applicableMemberships = groupMemberships.filter(gm => (
-          membershipIds.include(gm.id)
-        ));
-
-        const groupIds = applicableMemberships.map(gm => relationshipFor(gm, GROUPS).data.id);
+        const groupIds = groupMembershipsFromCache
+          .map(gm => relationshipFor(gm, GROUPS).data.id);
 
         availableGroups = groups.filter(g => groupIds.include(g.id));
       } else {
@@ -79,6 +85,7 @@ export function withData(WrappedComponent) {
 
   return compose(
     query(mapNetworkToProps),
+    /* withRelationship('currentUser', 'groupMemberships', 'currentUserGroupMemberships'), */
     withOrbit(mapRecordsToProps),
   )(DataWrapper);
 }

@@ -150,7 +150,8 @@ export async function createStore() {
   // }));
 
   // this.coordinator.addStrategy(new EventLoggingStrategy({
-  //   sources: ['remote', 'inMemory']
+  //   // sources: ['remote', 'inMemory']
+  //   sources: ['inMemory']
   // }));
 
 
