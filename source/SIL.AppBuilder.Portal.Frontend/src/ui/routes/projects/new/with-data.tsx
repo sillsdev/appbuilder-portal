@@ -34,7 +34,7 @@ export function withData(WrappedComponent) {
       const props = {
         ...this.props,
         create: this.create,
-      }
+      };
 
       return <WrappedComponent { ...props } />;
     }

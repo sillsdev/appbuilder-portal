@@ -16,6 +16,6 @@ export function withAccessRestriction(WrappedComponent) {
 
     toast.error(t('errors.groupRequired'));
 
-    return <Redirect to={'/'} />
-  }
+    return <Redirect to={'/'} />;
+  };
 }

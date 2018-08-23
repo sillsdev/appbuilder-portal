@@ -19,7 +19,7 @@ export class CreateProjectInteractor {
   fillType = fillable('[data-test-type]');
   toggleVisibility = clickable('[data-test-visibility]');
 
-  isVisibilityChecked = is('[data-test-visibility]', ':checked');
+  isVisibilityChecked = isPresent('[data-test-visibility].checked');
 
 
   selectedGroup = text('.selected');

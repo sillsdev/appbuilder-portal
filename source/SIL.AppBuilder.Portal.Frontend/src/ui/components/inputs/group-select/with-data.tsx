@@ -5,7 +5,7 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { isRelatedTo, relationshipsFor, relationshipFor } from '@data';
 import { withRelationship } from '@data/containers/with-relationship';
-import { TYPE_NAME as GROUP, PLURAL_NAME as GROUPS, GroupAttributes } from '@data/models/group';
+import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { TYPE_NAME as GROUP_MEMBERSHIP } from '@data/models/group-membership';
 import { UserAttributes } from '@data/models/user';
 
@@ -39,8 +39,8 @@ export function withData(WrappedComponent) {
     const { type, id } = currentUser;
 
     return {
-      groupMembershipsFromCache: q => q.findRelatedRecord({ type, id }, 'groupMemberships')
-    }
+      groupMembershipsFromCache: q => q.findRelatedRecords({ type, id }, 'groupMemberships')
+    };
   };
 
   class DataWrapper extends React.Component<IProps> {
@@ -62,9 +62,9 @@ export function withData(WrappedComponent) {
 
       if (scopeToCurrentUser) {
         const groupIds = groupMembershipsFromCache
-          .map(gm => relationshipFor(gm, GROUPS).data.id);
+          .map(gm => relationshipFor(gm, GROUP).data.id);
 
-        availableGroups = groups.filter(g => groupIds.include(g.id));
+        availableGroups = groups.filter(g => groupIds.includes(g.id));
       } else {
         availableGroups = groups;
       }

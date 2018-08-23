@@ -119,10 +119,10 @@ describe('Acceptance | New Project', () => {
       });
 
       describe('group defaults to first option', () => {
-        beforeEach(() => {
-          page.fillName('some name');
-          page.fillLanguage('english');
-          page.fillType('SAB');
+        beforeEach(async function() {
+          await page.fillName('some name');
+          await page.fillLanguage('english');
+          await page.fillType('SAB');
         });
 
         it('has a value', () => {
@@ -162,8 +162,8 @@ describe('Acceptance | New Project', () => {
         });
 
         describe('is toggled', () => {
-          beforeEach(() => {
-            page.toggleVisibility();
+          beforeEach(async function() {
+            await page.toggleVisibility();
           });
 
           it('is now unchecked', () => {

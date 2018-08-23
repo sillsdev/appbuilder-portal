@@ -15,8 +15,8 @@ export function withRelationship(targetProperty: string, relationshipName: strin
       };
 
       return <WrappedComponent { ...nextProps } />;
-    }
-  }
+    };
+  };
 }
 
 export function withRelationshipData(targetProperty: string, relationshipName: string, propertyName?: string) {
