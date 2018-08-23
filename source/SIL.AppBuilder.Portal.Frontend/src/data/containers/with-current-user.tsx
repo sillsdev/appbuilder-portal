@@ -137,11 +137,8 @@ export function withCurrentUser() {
         }
 
         if (isLoading) {
-
           return <PageLoader />;
-
         } else if (currentUser) {
-
           const hasMembership = hasRelationship(currentUser, 'organizationMemberships');
 
           if (hasMembership) {
