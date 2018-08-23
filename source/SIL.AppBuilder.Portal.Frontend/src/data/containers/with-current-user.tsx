@@ -113,7 +113,7 @@ export function withCurrentUser() {
 
           if (this.isUserLocked(response)) {
             console.debug('Current user is Locked');
-            throw new Error('Your user has been locked, contact you organization administrator');
+            throw new Error('You are no longer allowed to login. Please contact your organization administrator');
           }
 
           const json = await tryParseJson(response);
@@ -137,7 +137,6 @@ export function withCurrentUser() {
         const { error, currentUser, isLoading } = this.state;
 
         if (error) {
-          debugger;
           return <PageError error={error} />;
         }
 
