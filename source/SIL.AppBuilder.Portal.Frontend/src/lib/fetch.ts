@@ -2,6 +2,7 @@ import { getToken } from './auth0';
 import { getCurrentOrganizationId } from './current-organization';
 
 export const tryParseJson = async (response) => {
+
   const text = await response.text();
 
   try {

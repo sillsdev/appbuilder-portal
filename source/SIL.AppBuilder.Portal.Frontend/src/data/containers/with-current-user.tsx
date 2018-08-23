@@ -2,11 +2,8 @@ import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { compose } from 'recompose';
-import Orbit from '@orbit/data';
 
 import { defaultSourceOptions, pushPayload } from '@data';
-import  { keyMap } from '@data/schema';
-import { serializer } from '@data/store';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
 
 import { getAuth0Id } from '@lib/auth0';
@@ -16,6 +13,8 @@ import { hasRelationship } from '@data';
 import PageLoader from '@ui/components/loaders/page';
 import OrgMembershipRequired from '@ui/components/errors/org-membership-required';
 import PageError from '@ui/components/errors/page';
+
+import { deleteToken } from '@lib/auth0';
 
 type UserPayload = JSONAPIDocument<UserAttributes>;
 
@@ -79,10 +78,14 @@ export function withCurrentUser() {
         this.fetchCurrentUser();
       }
 
+      isUserLocked = (response) => {
+        return response.status === 403;
+      }
+
       fetchCurrentUser = async () => {
         const { networkFetchComplete, currentUser } = this.state;
 
-        const { updateStore, queryStore, usersMatchingLoggedInUser: fromCache } = this.props;
+        const { updateStore, usersMatchingLoggedInUser: fromCache } = this.props;
         const auth0IdFromJWT = getAuth0Id();
 
         // if we have a currentUser from cache, and the currentUser
@@ -107,6 +110,12 @@ export function withCurrentUser() {
           // https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
           // is resolved
           const response = await authenticatedGet('/api/users/current-user?include=organization-memberships,group-memberships');
+
+          if (this.isUserLocked(response)) {
+            console.debug('Current user is Locked');
+            throw new Error('Your user has been locked, contact you organization administrator');
+          }
+
           const json = await tryParseJson(response);
 
           await pushPayload(updateStore, json);
@@ -128,12 +137,16 @@ export function withCurrentUser() {
         const { error, currentUser, isLoading } = this.state;
 
         if (error) {
+          debugger;
           return <PageError error={error} />;
         }
 
         if (isLoading) {
+
           return <PageLoader />;
+
         } else if (currentUser) {
+
           const hasMembership = hasRelationship(currentUser, 'organizationMemberships');
 
           if (hasMembership) {
