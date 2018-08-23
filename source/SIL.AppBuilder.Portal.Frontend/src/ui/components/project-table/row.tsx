@@ -52,7 +52,7 @@ class Row extends React.Component<IProps & i18nProps> {
         </div>
         <div className='products-grid'>
           <div className='flex grid products-header'>
-            <div className='col flex-grow-xs'>Products</div>
+            <div className='col flex-grow-xs product-xs-only'>Products</div>
             <div className='col flex-grow-xs d-xs-none d-md-block'>Status</div>
             <div className='col flex-grow-xs d-xs-none d-md-block'>Last updated</div>
             <div className='action flex-grow-xs d-xs-none d-md-block' />

@@ -1,4 +1,5 @@
 @import '../../styles/_base/variables.scss';
+@import '../../styles/vendor/bootstrap4/breakpoints.scss';
 
 .project-table {
 
@@ -80,4 +81,11 @@
     }
   }
 
+  @include media-breakpoint-only('xs',$grid-breakpoints) {
+    .product-xs-only {
+      font-size: 14px;
+      padding-left: 0px !important;
+      border-bottom: 1px solid;
+    }
+  }
 }
