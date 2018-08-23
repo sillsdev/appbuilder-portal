@@ -78,10 +78,6 @@ export function withCurrentUser() {
         this.fetchCurrentUser();
       }
 
-      isUserLocked = (response) => {
-        return response.status === 403;
-      }
-
       fetchCurrentUser = async () => {
         const { networkFetchComplete, currentUser } = this.state;
 
@@ -111,9 +107,9 @@ export function withCurrentUser() {
           // is resolved
           const response = await authenticatedGet('/api/users/current-user?include=organization-memberships,group-memberships');
 
-          if (this.isUserLocked(response)) {
-            console.debug('Current user is Locked');
-            throw new Error('You are no longer allowed to login. Please contact your organization administrator');
+          if (response.status === 403) {
+            console.debug('Current user is Forbidden');
+            throw new Error('An error occurred: Forbidden. Please contact your organization administrator.');
           }
 
           const json = await tryParseJson(response);
