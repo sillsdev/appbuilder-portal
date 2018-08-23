@@ -114,7 +114,8 @@ export default {
 
   errors: {
     notFoundTitle: 'No encontrado!',
-    notFoundDescription: 'Algo salió mal y no pudimos encontrar esta página o recursos!'
+    notFoundDescription: 'Algo salió mal y no pudimos encontrar esta página o recursos!',
+    userForbidden: 'Ocurrió un error: Prohibido. Contácte con su administrador'
   },
 
   tasks: {

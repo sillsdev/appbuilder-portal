@@ -3,7 +3,6 @@ import { getCurrentOrganizationId } from './current-organization';
 
 export const tryParseJson = async (response) => {
   const text = await response.text();
-
   try {
     const json = JSON.parse(text);
 

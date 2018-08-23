@@ -2,11 +2,8 @@ import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { compose } from 'recompose';
-import Orbit from '@orbit/data';
 
 import { defaultSourceOptions, pushPayload } from '@data';
-import  { keyMap } from '@data/schema';
-import { serializer } from '@data/store';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
 
 import { getAuth0Id } from '@lib/auth0';
@@ -16,6 +13,9 @@ import { hasRelationship } from '@data';
 import PageLoader from '@ui/components/loaders/page';
 import OrgMembershipRequired from '@ui/components/errors/org-membership-required';
 import PageError from '@ui/components/errors/page';
+
+import { deleteToken } from '@lib/auth0';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 type UserPayload = JSONAPIDocument<UserAttributes>;
 
@@ -43,7 +43,7 @@ interface IState {
 //     we can navigate back.
 export function withCurrentUser() {
   return InnerComponent => {
-    class WrapperClass extends React.Component<IProps & WithDataProps, IState> {
+    class WrapperClass extends React.Component<IProps & WithDataProps & i18nProps, IState> {
       state = {
         currentUser: undefined, isLoading: true, error: undefined,
         networkFetchComplete: false
@@ -82,7 +82,7 @@ export function withCurrentUser() {
       fetchCurrentUser = async () => {
         const { networkFetchComplete, currentUser } = this.state;
 
-        const { updateStore, queryStore, usersMatchingLoggedInUser: fromCache } = this.props;
+        const { updateStore, usersMatchingLoggedInUser: fromCache, t } = this.props;
         const auth0IdFromJWT = getAuth0Id();
 
         // if we have a currentUser from cache, and the currentUser
@@ -107,6 +107,13 @@ export function withCurrentUser() {
           // https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
           // is resolved
           const response = await authenticatedGet('/api/users/current-user?include=organization-memberships,group-memberships');
+
+          if (response.status === 403) {
+            console.debug('Current user is Forbidden');
+            deleteToken();
+            throw new Error(t('errors.userForbidden'));
+          }
+
           const json = await tryParseJson(response);
 
           await pushPayload(updateStore, json);
@@ -149,7 +156,8 @@ export function withCurrentUser() {
     }
 
     return compose(
-      withData(mapRecordsToProps)
+      withData(mapRecordsToProps),
+      withTranslations
     )(WrapperClass);
   };
 }
