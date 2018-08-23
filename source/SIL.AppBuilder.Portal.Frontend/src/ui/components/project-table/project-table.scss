@@ -1,7 +1,91 @@
-.project-actions {
-  color: #4a4a4a;
+@import '../../styles/_base/variables.scss';
+@import '../../styles/vendor/bootstrap4/breakpoints.scss';
 
-  i {
-    opacity: 0.5;
+.project-table {
+
+  color: $gray;
+  font-family: Montserrat;
+  font-size: 13px;
+  margin-bottom: 20px;
+
+  a {
+    font-family: Montserrat;
+    font-size: 13px;
+    font-weight: bold;
+    color: $blue-highlight;
+  }
+
+  .header {
+
+    font-weight: bold;
+    border-bottom: 2px solid $gray;
+    background: transparent;
+
+  }
+
+  .row-header {
+    background-color: $lighterer-gray;
+    border: solid 1px $lighter-gray;
+    margin-top: 6px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    font-weight: bold;
+  }
+
+  .grid {
+
+    .col {
+      width: 32%;
+      padding: .92857143em .78571429em;
+    }
+    .action {
+      padding: .92857143em .78571429em;
+      text-align: center;
+
+      i {
+        margin: 0;
+      }
+    }
+  }
+
+  .products-grid {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background-color: $white;
+    border: solid 1px $lighterer-gray;
+    padding-left: 14px;
+    padding-right: 14px;
+
+    .products-header {
+      font-family: Montserrat;
+      font-size: 11px;
+      color: $light-gray;
+      padding: 2px;
+      font-weight: bold;
+    }
+
+    .product {
+      border-bottom: 1px solid $border-color;
+    }
+
+    .product:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .project-actions {
+    color: $gray-dark;
+
+    i {
+      opacity: 0.5;
+    }
+  }
+
+  @include media-breakpoint-only('xs',$grid-breakpoints) {
+    .product-xs-only {
+      font-size: 14px;
+      padding-left: 0px !important;
+      border-bottom: 1px solid;
+    }
   }
 }
