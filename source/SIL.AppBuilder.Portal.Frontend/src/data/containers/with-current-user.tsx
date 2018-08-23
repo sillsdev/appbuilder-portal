@@ -15,6 +15,7 @@ import OrgMembershipRequired from '@ui/components/errors/org-membership-required
 import PageError from '@ui/components/errors/page';
 
 import { deleteToken } from '@lib/auth0';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 type UserPayload = JSONAPIDocument<UserAttributes>;
 
@@ -42,7 +43,7 @@ interface IState {
 //     we can navigate back.
 export function withCurrentUser() {
   return InnerComponent => {
-    class WrapperClass extends React.Component<IProps & WithDataProps, IState> {
+    class WrapperClass extends React.Component<IProps & WithDataProps & i18nProps, IState> {
       state = {
         currentUser: undefined, isLoading: true, error: undefined,
         networkFetchComplete: false
@@ -81,7 +82,7 @@ export function withCurrentUser() {
       fetchCurrentUser = async () => {
         const { networkFetchComplete, currentUser } = this.state;
 
-        const { updateStore, usersMatchingLoggedInUser: fromCache } = this.props;
+        const { updateStore, usersMatchingLoggedInUser: fromCache, t } = this.props;
         const auth0IdFromJWT = getAuth0Id();
 
         // if we have a currentUser from cache, and the currentUser
@@ -109,7 +110,8 @@ export function withCurrentUser() {
 
           if (response.status === 403) {
             console.debug('Current user is Forbidden');
-            throw new Error('An error occurred: Forbidden. Please contact your organization administrator.');
+            deleteToken();
+            throw new Error(t('errors.userForbidden'));
           }
 
           const json = await tryParseJson(response);
@@ -154,7 +156,8 @@ export function withCurrentUser() {
     }
 
     return compose(
-      withData(mapRecordsToProps)
+      withData(mapRecordsToProps),
+      withTranslations
     )(WrapperClass);
   };
 }
