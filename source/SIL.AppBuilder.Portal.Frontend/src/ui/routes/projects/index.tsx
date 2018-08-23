@@ -11,6 +11,7 @@ import { withLayout } from '@ui/components/layout';
 import MyProjectsRoute, { pathName as myProjectPath } from './my-projects';
 import OrganizationProjectsRoute, { pathName as organizationProjectPath } from './organization-projects';
 import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './archived-projects';
+import NewProjectRoute, { pathName as newProjectPath } from './new';
 
 import Header from './header';
 
@@ -26,6 +27,7 @@ class ProjectsRoot extends React.Component {
           <Route exact path={myProjectPath} component={MyProjectsRoute} />
           <Route exact path={organizationProjectPath} component={OrganizationProjectsRoute} />
           <Route exact path={archivedProjectPath} component={ArchivedProjectsRoute} />
+          <Route exact path={newProjectPath} component={NewProjectRoute} />
 
           <Route component={NotFound} />
         </Switch>

@@ -18,6 +18,7 @@ export default {
   common: {
     search: 'Search',
     change: 'Change',
+    cancel: 'Cancel',
     save: 'Save',
     name: 'Name',
     abbreviation: 'Abbreviation',
@@ -124,8 +125,10 @@ export default {
   },
 
   errors: {
+    generic: 'An error occurred! {errorMessage}',
     notFoundTitle: 'Not Found!',
     notFoundDescription: 'Something went wrong and the page or resource could not be found!',
+    groupRequired: 'You must be a member of at least one group.',
     userForbidden: 'An error occurred: Forbidden. Please contact your organization administrator.',
     orgMembershipRequired: 'Organization Membership is Required',
     orgMembershipRequiredText: `
@@ -162,6 +165,14 @@ export default {
   },
 
   project: {
+    title: 'Project',
+    newProject: 'New Project',
+    projectName: 'Project Name',
+    projectGroup: 'Project Group',
+    languageCode: 'Language Code',
+    type: 'Type',
+    visibilityLabel: 'Public',
+    visibilityDescription: 'If you make your project Private, it will not be viewable in the directory or accessible by other organizations',
     createdOn: 'Created',
     overview: 'Overview',
     dropdown: {
