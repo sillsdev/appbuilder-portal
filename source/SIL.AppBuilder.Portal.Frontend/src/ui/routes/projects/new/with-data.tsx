@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { defaultOptions } from '@data';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+
+import { defaultOptions } from '@data';
 import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
+
 
 import { PageLoader as Loader } from '@ui/components/loaders';
 

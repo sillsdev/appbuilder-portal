@@ -125,6 +125,7 @@ export default {
   },
 
   errors: {
+    generic: 'An error occurred! {errorMessage}',
     notFoundTitle: 'Not Found!',
     notFoundDescription: 'Something went wrong and the page or resource could not be found!',
     groupRequired: 'You must be a member of at least one group.',

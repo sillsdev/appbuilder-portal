@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 
 import { i18nProps } from '@lib/i18n';
+import * as toast from '@lib/toast';
 import { isEmpty } from '@lib/collection';
 import GroupSelect from '@ui/components/inputs/group-select';
 
@@ -47,13 +48,17 @@ export default class Display extends React.Component<IProps, IState> {
   }
 
   onSubmit = async () => {
-    const { create } = this.props;
+    const { create, t } = this.props;
 
     this.setState({ disableSubmit: true });
 
     const { name, groupId, language, isPublic, type } = this.state;
 
-    await create({ name, language, isPublic, type }, groupId);
+    try {
+      await create({ name, language, isPublic, type }, groupId);
+    } catch (e) {
+      toast.error(t('errors.generic', { errorMessage: e.message }));
+    }
 
     this.setState({ disableSubmit: false });
 
