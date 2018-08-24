@@ -48,6 +48,9 @@ namespace Optimajet.DWKit.StarterApplication.Data
             userEntity
                 .Property(u => u.ProfileVisibility)
                 .HasDefaultValue(ProfileVisibility.Public);
+            userEntity
+                .Property(u => u.EmailNotification)
+                .HasDefaultValue(true);
 
             orgEntity
                 .HasMany(o => o.OrganizationProductDefinitions)

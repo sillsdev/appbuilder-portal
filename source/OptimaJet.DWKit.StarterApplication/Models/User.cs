@@ -37,6 +37,9 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("profile-visibility")]
         public ProfileVisibility ProfileVisibility { get; set; }
 
+        [Attr("email-notification")]
+        public bool EmailNotification { get; set; }
+
         //[HasMany("ownedOrganizations")]
         //public virtual List<Organization> OwnedOrganizations { get; set; }
 
