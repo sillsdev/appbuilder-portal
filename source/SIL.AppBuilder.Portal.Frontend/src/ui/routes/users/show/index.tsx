@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import md5 from 'md5-hash';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withData } from '../edit/with-data';
 import { UserAttributes } from '@data/models/user';
 import { attributesFor } from '@data';
 
-import md5 from 'md5-hash';
 
 import './show.scss';
 
@@ -30,7 +31,7 @@ class User extends React.Component<IProps> {
     const phone = user.phone ? user.phone : t('profile.noPhone');
     const timezone = user.timezone ? `(${user.timezone})` : t('profile.noTimezone');
 
-    const gravatarHash = md5(user.email.trim().toLowerCase());
+    const gravatarHash = md5((user.email || '').trim().toLowerCase());
 
     return (
       <div className='ui container show-profile'>
