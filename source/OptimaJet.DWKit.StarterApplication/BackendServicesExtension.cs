@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Optimajet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.Forms;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
@@ -41,13 +42,17 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<OrganizationInviteRequest>, OrganizationInviteRequestRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
+            services.AddScoped<IResourceService<Group>, GroupService>();
+            services.AddScoped<IResourceService<Project>, ProjectService>();
 
             services.AddScoped<UserRepository>();
+            services.AddScoped<GroupRepository>();
+            services.AddScoped<ProjectRepository>();
 
             services.AddScoped<UserService>();
             services.AddScoped<OrganizationService>();
+            services.AddScoped<GroupService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
-
 
             services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
             services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();

@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Data;
+using JsonApiDotNetCore.Internal.Query;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
-using Serilog;
+using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
+using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
@@ -16,6 +19,8 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         public IOrganizationContext OrganizationContext { get; }
         public ICurrentUserContext CurrentUserContext { get; }
         public UserRepository UserRepository { get; set; }
+        public GroupRepository GroupRepository { get; set; }
+        public IEntityRepository<Organization> OrganizationRepository { get; set; }
 
         public ProjectRepository(
             ILoggerFactory loggerFactory,
@@ -23,60 +28,46 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             IOrganizationContext organizationContext,
             ICurrentUserContext currentUserContext,
             UserRepository userRepository,
+            GroupRepository groupRepository,
+            IEntityRepository<Organization> organizationRepository,
             IDbContextResolver contextResolver
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
             this.OrganizationContext = organizationContext;
             this.CurrentUserContext = currentUserContext;
             this.UserRepository = userRepository;
+            this.GroupRepository = groupRepository;
+            this.OrganizationRepository = organizationRepository;
         }
-
-        public override IQueryable<Project> Get()
+        public override IQueryable<Project> Filter(IQueryable<Project> query, FilterQuery filterQuery)
         {
-            if (OrganizationContext.SpecifiedOrganizationDoesNotExist) return Enumerable.Empty<Project>().AsQueryable();
-            if (!OrganizationContext.HasOrganization)
-            {
-                // No organization specified, so include all projects in the all the organizations that the current user is a member
-                var currentUser = UserRepository.GetByAuth0Id(CurrentUserContext.Auth0Id).Result;
-                return base.Get()
-                           .Where(p => currentUser.OrganizationIds.Contains(p.OrganizationId));
-            }
-            // Get users in the current organization
-            return base.Get()
-                       .Where(p => p.OrganizationId == OrganizationContext.OrganizationId);
+            return query.OptionallyFilterOnQueryParam(filterQuery,
+                                                      "organization-header",
+                                                      UserRepository,
+                                                      CurrentUserContext,
+                                                      GetWithFilter,
+                                                      base.Filter,
+                                                      GetWithOrganizationId,
+                                                      GetWithOrganizationContextAndOrgId);
         }
 
-        public override async Task<Project> UpdateAsync(int id, Project entity)
+        private IQueryable<Project> GetWithOrganizationId(IQueryable<Project> query,
+                                        IEnumerable<int> orgIds)
         {
-            ValidateOrganization(entity);
-            return await base.UpdateAsync(id, entity);
-        }
+            // Get all projects in the all the organizations that the current user is a member
 
-        public override async Task<Project> CreateAsync(Project entity)
+            return query
+                .Where(p => orgIds.Contains(p.OrganizationId));
+        }
+        private IQueryable<Project> GetWithOrganizationContextAndOrgId(IQueryable<Project> query,
+                                        IEnumerable<int> orgIds)
         {
-            ValidateOrganization(entity);
-            return await base.CreateAsync(entity);
+            // Get projects in the specified organization if that organization is accessible by the current user
+            return query
+                .Where(p => (p.OrganizationId == OrganizationContext.OrganizationId)
+                       && (orgIds.Contains(p.OrganizationId))
+                      );
         }
 
-        private void ValidateOrganization(Project project)
-        {
-            //
-            // TODO: Not working :-(
-            //
-            //if (project.Organization != project.Group.Owner)
-            //{
-            //    var message = $"Project '{project.Name}': Group '{project.Group.Name}' not owned by project organization '{project.Organization.Name}'";
-            //    Log.Error(message);
-            //    throw new Exception(message);
-            //}
-
-            //if (!project.Owner.OrganizationIds.Contains(project.OrganizationId))
-            //{
-            //    var message = $"Project '{project.Name}': Owner '{project.Owner.Name}' not a member of project organization '{project.Organization.Name}'";
-            //    Log.Error(message);
-            //    throw new Exception(message);
-
-            //}
-        }
     }
 }

@@ -34,12 +34,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
         #region HTTP Request Helpers
 
-        public async Task<HttpResponseMessage> Get(string url, string organizationId = "")
+        public async Task<HttpResponseMessage> Get(string url, string organizationId = "", bool addOrgHeader = true)
         {
             var httpMethod = new HttpMethod("GET");
             var request = new HttpRequestMessage(httpMethod, url);
 
-            return await MakeRequest(request, organizationId);
+            return await MakeRequest(request, organizationId, addOrgHeader);
         }
 
         public async Task<HttpResponseMessage> Patch(string url, object content, string organizationId = "")
@@ -57,6 +57,24 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.api+json");
 
             return await MakeRequest(request, organizationId);
+        }
+
+        public async Task<HttpResponseMessage> Post(string url, object content, string organizationId = "")
+        {
+            var httpMethod = new HttpMethod("POST");
+            var serializedContent = JsonConvert.SerializeObject(content);
+            var request = new HttpRequestMessage(httpMethod, url)
+            {
+                Content = new StringContent(
+                    serializedContent,
+                    Encoding.UTF8,
+                    "application/vnd.api+json"
+                )
+            };
+
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.api+json");
+
+            return await MakeRequest(request, organizationId, false);
         }
 
         public object ResourcePatchPayload(
@@ -77,9 +95,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             };
         }
 
-        public async Task<HttpResponseMessage> MakeRequest(HttpRequestMessage request, string organizationId = "")
+        public async Task<HttpResponseMessage> MakeRequest(HttpRequestMessage request, string organizationId = "", bool addOrgHeader = true)
         {
-            request.Headers.Add("Organization", organizationId);
+            if (addOrgHeader)
+            {
+                request.Headers.Add("Organization", organizationId);
+            }
 
             var body = await _fixture.Client.SendAsync(request);
 
