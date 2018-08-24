@@ -3,7 +3,6 @@ import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withData } from '../edit/with-data';
 import { UserAttributes } from '@data/models/user';
-import { getPictureUrl } from '@lib/auth0';
 import { attributesFor } from '@data';
 
 import md5 from 'md5-hash';
