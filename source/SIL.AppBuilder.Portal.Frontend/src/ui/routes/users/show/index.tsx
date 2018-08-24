@@ -6,6 +6,8 @@ import { UserAttributes } from '@data/models/user';
 import { getPictureUrl } from '@lib/auth0';
 import { attributesFor } from '@data';
 
+import md5 from 'md5-hash';
+
 import './show.scss';
 
 export const pathName = '/users/:id';
@@ -29,12 +31,14 @@ class User extends React.Component<IProps> {
     const phone = user.phone ? user.phone : t('profile.noPhone');
     const timezone = user.timezone ? `(${user.timezone})` : t('profile.noTimezone');
 
+    const gravatarHash = md5(user.email.trim().toLowerCase());
+
     return (
       <div className='ui container show-profile'>
         <h2 className='m-t-lg m-b-lg'>{t('profile.generalInformation')}</h2>
         <div className='flex-row'>
           <div>
-            <img className='round-border' src={getPictureUrl()} />
+            <img src={`https://www.gravatar.com/avatar/${gravatarHash}?s=130&d=identicon`} />
           </div>
           <div>
             <h4>{fullname}</h4>
