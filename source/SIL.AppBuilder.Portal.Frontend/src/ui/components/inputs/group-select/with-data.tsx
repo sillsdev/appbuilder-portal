@@ -79,6 +79,7 @@ export function withData(WrappedComponent) {
 
       const props = {
         ...otherProps,
+        selected,
         groups: availableGroups,
         disableSelection
       };

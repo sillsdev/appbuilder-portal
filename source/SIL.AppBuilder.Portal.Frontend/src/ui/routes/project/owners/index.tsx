@@ -14,6 +14,7 @@ import * as toast from '@lib/toast';
 
 
 import GroupSelect from '@ui/components/inputs/group-select';
+import UserSelect from '@ui/components/inputs/user-select';
 
 interface Params {
   project: JSONAPI<ProjectAttributes>;
@@ -30,7 +31,8 @@ const mapRecordsToProps = (passedProps) => {
 
   return {
     group: q => q.findRelatedRecord({ type, id }, 'group'),
-    organization: q => q.findRelatedRecord({ type, id }, 'organization')
+    organization: q => q.findRelatedRecord({ type, id }, 'organization'),
+    owner: q => q.findRelatedRecord({ type, id }, 'owner'),
   };
 };
 
@@ -45,11 +47,23 @@ class Owners extends React.Component<IProps> {
       toast.error(t('errors.generic', { errorMessage: e.message }));
     }
   }
+
+  updateOwner = async (userId) => {
+    const { updateOwner, t } = this.props;
+
+    try {
+      await updateOwner(userId);
+    } catch (e) {
+      toast.error(t('errors.generic', { errorMessage: e.message }));
+    }
+  }
+
   render() {
-    const { t, project, group, organization } = this.props;
+    const { t, project, group, organization, owner } = this.props;
     const { language, type } = attributesFor(project);
     const groupId = group.id;
     const organizationId = organization.id;
+    const ownerId = owner.id;
 
     return (
       <div className='owner'>
@@ -63,10 +77,9 @@ class Owners extends React.Component<IProps> {
           <h4>{t('project.side.projectOwner')}</h4>
           <div className='flex justify-content-space-around content'>
             <div className='flex-grow'>
-              <a href='#'>Andrew Nichols</a>
-            </div>
-            <div className=''>
-              <a href='#'>{t('common.change')}</a>
+              <UserSelect
+                selected={ownerId}
+                onChange={this.updateOwner} />
             </div>
           </div>
         </div>
