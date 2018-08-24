@@ -106,5 +106,6 @@ namespace Optimajet.DWKit.StarterApplication.Data
         public DbSet<WorkflowDefinition> WorkflowDefinitions { get; set; }
         public DbSet<ApplicationType> ApplicationTypes { get; set; }
         public DbSet<Reviewer> Reviewers { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }

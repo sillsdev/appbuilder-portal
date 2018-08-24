@@ -38,6 +38,7 @@
   <ItemGroup>
     <Folder Include="Acceptance\APIControllers\Groups\" />
     <Folder Include="Acceptance\APIControllers\Projects\" />
+    <Folder Include="Acceptance\APIControllers\Products\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Acceptance\APIControllers\ProjectsTest.cs" />
