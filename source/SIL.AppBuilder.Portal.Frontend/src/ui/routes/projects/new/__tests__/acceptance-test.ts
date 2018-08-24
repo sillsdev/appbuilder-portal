@@ -109,7 +109,7 @@ describe('Acceptance | New Project', () => {
         beforeEach(() => {
           page.fillLanguage('english');
           page.fillType('SAB');
-          page.chooseGroup('Group 1');
+          page.groupSelect.chooseGroup('Group 1');
         });
 
 
@@ -126,7 +126,7 @@ describe('Acceptance | New Project', () => {
         });
 
         it('has a value', () => {
-          expect(page.selectedGroup).to.equal('Group 1');
+          expect(page.groupSelect.selectedGroup).to.equal('Group 1');
         });
 
         it('has enabled the save button', () => {

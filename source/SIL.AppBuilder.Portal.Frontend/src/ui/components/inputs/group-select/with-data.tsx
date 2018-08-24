@@ -13,6 +13,7 @@ import { PageLoader as Loader } from '@ui/components/loaders';
 
 export interface IProvidedProps {
   groups: Array<JSONAPI<GroupAttributes>>;
+  disableSelection: true;
 }
 
 interface IOwnProps {
@@ -21,6 +22,7 @@ interface IOwnProps {
   currentUserGroupMemberships: Array<JSONAPI<{}>>;
   scopeToCurrentUser: boolean;
   currentUser: JSONAPI<UserAttributes>;
+  selected: Id;
 }
 
 type IProps =
@@ -51,6 +53,7 @@ export function withData(WrappedComponent) {
         currentUserGroupMemberships,
         currentUser,
         scopeToCurrentUser,
+        selected,
         ...otherProps
       } = this.props;
 
@@ -60,23 +63,24 @@ export function withData(WrappedComponent) {
 
       let availableGroups: Array<JSONAPI<{}>>;
 
-      if (scopeToCurrentUser) {
-        const groupIds = groupMembershipsFromCache
-          .map(gm => relationshipFor(gm, GROUP).data.id);
+      const groupIds = groupMembershipsFromCache
+        .map(gm => relationshipFor(gm, GROUP).data.id);
 
-        availableGroups = groups.filter(g => groupIds.includes(g.id));
+      if (scopeToCurrentUser) {
+        availableGroups = groups.filter(g => g.id === selected || groupIds.includes(g.id));
       } else {
         availableGroups = groups;
       }
-      const availableGroups = scopeToCurrentUser
-        ? groups.filter(group => (
-            isRelatedTo(currentUser, 'groups', group.id)
-          ))
-        : groups;
+
+      const disableSelection = (
+        availableGroups.length === 1 ||
+          (availableGroups.length === 2 && groupIds.length === 1)
+      );
 
       const props = {
         ...otherProps,
-        groups,
+        groups: availableGroups,
+        disableSelection
       };
 
       return <WrappedComponent { ...props } />;

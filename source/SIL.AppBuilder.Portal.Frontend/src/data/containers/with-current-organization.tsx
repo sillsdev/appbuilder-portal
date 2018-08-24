@@ -26,9 +26,12 @@ export function withCurrentOrganization(InnerComponent) {
   });
 
   function mapRecordsToProps(passedProps) {
+    const { currentOrganizationId: id } = passedProps;
+
+    if (!id || id === '') { return {}; }
+
     return {
-      fromCache: q =>
-        q.findRecord({ type: TYPE_NAME, id: passedProps.currentOrganizationId })
+      fromCache: q => q.findRecord({ type: TYPE_NAME, id })
     };
   }
 
@@ -38,7 +41,7 @@ export function withCurrentOrganization(InnerComponent) {
     getOrganization = async () => {
       const { queryStore, currentOrganizationId: id }  = this.props;
 
-      if (id === '') { return; }
+      if (!id || id === '') { return; }
 
       // TODO: do we need to get any common related things?
 

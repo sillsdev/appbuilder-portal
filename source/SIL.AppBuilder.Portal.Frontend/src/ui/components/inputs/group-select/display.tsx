@@ -8,6 +8,7 @@ import { IProvidedProps as IDataProps } from './with-data';
 interface IOwnProps {
   selected: Id;
   onChange: (groupId: Id) => void;
+  disableSelection?: boolean;
 }
 
 type IProps =
@@ -34,17 +35,19 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
   }
 
   render() {
-    const { groups, selected } = this.props;
+    const { groups, selected, disableSelection } = this.props;
 
-    const groupOptions = groups.map(group => ({
-      text: attributesFor(group).name,
-      value: group.id
-    }));
+    const groupOptions = groups
+      .filter(group => attributesFor(group).name)
+      .map(group => ({
+        text: attributesFor(group).name,
+        value: group.id
+      }));
 
     return (
       <Dropdown
         data-test-group-select
-        inline
+        disabled={disableSelection || false}
         options={groupOptions}
         value={selected}
         onChange={this.onSelect}
