@@ -34,20 +34,20 @@ class User extends React.Component<IProps> {
     const gravatarHash = md5((user.email || '').trim().toLowerCase());
 
     return (
-      <div className='ui container show-profile'>
+      <div data-test-show-profile className='ui container show-profile'>
         <h2 className='m-t-lg m-b-lg'>{t('profile.generalInformation')}</h2>
         <div className='flex-row'>
           <div>
-            <img src={`https://www.gravatar.com/avatar/${gravatarHash}?s=130&d=identicon`} />
+            <img data-test-show-profile-image src={`https://www.gravatar.com/avatar/${gravatarHash}?s=130&d=identicon`} />
           </div>
           <div>
-            <h4>{fullname}</h4>
-            <p>{user.email}</p>
+            <h4 data-test-show-profile-name>{fullname}</h4>
+            <p data-test-show-profile-email>{user.email}</p>
             {
               user && user.profileVisibility &&
               <>
-                <p>{phone}</p>
-                <p>{timezone}</p>
+                <p data-test-show-profile-phone>{phone}</p>
+                <p data-test-show-profile-timezone>{timezone}</p>
               </>
             }
           </div>
