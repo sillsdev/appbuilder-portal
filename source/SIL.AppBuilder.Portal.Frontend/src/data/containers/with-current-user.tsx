@@ -80,6 +80,7 @@ export function withCurrentUser() {
       }
 
       fetchCurrentUser = async () => {
+        if (this.makingRequest) return;
         const { networkFetchComplete, currentUser } = this.state;
 
         const { updateStore, usersMatchingLoggedInUser: fromCache, t } = this.props;
@@ -95,6 +96,7 @@ export function withCurrentUser() {
         const cacheId = userFromCache && userFromCache.attributes && userFromCache.attributes.auth0Id;
         const existingId = currentUser && currentUser.attributes && currentUser.attributes.auth0Id;
 
+        debugger;
         if (cacheId === auth0IdFromJWT && existingId !== cacheId) {
           this.setState({ currentUser: userFromCache, isLoading: false, networkFetchComplete: true });
           return;
@@ -103,6 +105,7 @@ export function withCurrentUser() {
         if (networkFetchComplete) { return; }
 
         try {
+          this.makingRequest = true;
           // TOOD: add nested include when:
           // https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
           // is resolved
@@ -129,6 +132,7 @@ export function withCurrentUser() {
           console.debug('Current User Data has been fetched');
           // this state value isn't used anywhere, but we need to trigger
           // a re-render once the current user data has finished being consumed
+          this.makingRequest = false;
           this.setState({ networkFetchComplete: true });
         } catch (e) {
           console.debug('error', e);

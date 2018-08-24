@@ -17,16 +17,6 @@ type IProps =
 & IDataProps;
 
 export default class UserSelectDisplay extends React.Component<IProps> {
-  componentDidMount() {
-    const { selected, users, onChange } = this.props;
-
-    if (!selected && users && users.length > 0) {
-      const firstId = users[0].id;
-
-      onChange(firstId);
-    }
-  }
-
   onSelect = (e, { value }) => {
     e.preventDefault();
 
@@ -41,7 +31,7 @@ export default class UserSelectDisplay extends React.Component<IProps> {
     const userOptions = users
       .map(user => {
         const attrs = attributesFor(user);
-        
+
         return {
           text: name(attrs),
           value: user.id

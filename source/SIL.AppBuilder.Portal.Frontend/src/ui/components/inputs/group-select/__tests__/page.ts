@@ -1,10 +1,6 @@
 import {
   interactor,
-  clickable,
   text,
-  selectable,
-  isPresent,
-  fillable,
   is,
   collection
 } from '@bigtest/interactor';

@@ -7,7 +7,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe('Acceptance | Archive Project', () => {
+describe('Acceptance | Project Edit | Archive Project', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
@@ -24,6 +24,7 @@ describe('Acceptance | Archive Project', () => {
 
   describe('an active project exists', () => {
     beforeEach(function() {
+      this.mockGet(200, 'users', { data: [] });
       this.mockGet(200, '/groups', { data: [] });
       this.mockGet(200, 'projects/1', { data: {
           type: 'projects',
@@ -33,12 +34,14 @@ describe('Acceptance | Archive Project', () => {
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
-            group: { data: { id: 1, type: 'groups' } }
+            group: { data: { id: 1, type: 'groups' } },
+            owner: { data: { id: 2, type: 'users' } }
           }
         },
         included: [
           { type: 'organizations', id: 1, },
-          { type: 'groups', id: 1, attributes: { name: 'Some Group' } }
+          { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
+          { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
         ]
       });
     });
@@ -70,6 +73,7 @@ describe('Acceptance | Archive Project', () => {
 
   describe('an archived project exists', () => {
     beforeEach(function() {
+      this.mockGet(200, 'users', { data: [] });
       this.mockGet(200, '/groups', { data: [] });
       this.mockGet(200, 'projects/1', {
         data: {
@@ -80,12 +84,14 @@ describe('Acceptance | Archive Project', () => {
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
-            group: { data: { id: 1, type: 'groups' } }
+            group: { data: { id: 1, type: 'groups' } },
+            owner: { data: { id: 2, type: 'users' } }
           }
         },
         included: [
           { type: 'organizations', id: 1, },
-          { type: 'groups', id: 1, attributes: { name: 'Some Group' } }
+          { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
+          { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
         ]
       });
     });

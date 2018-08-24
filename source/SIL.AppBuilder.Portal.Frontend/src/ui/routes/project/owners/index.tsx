@@ -6,6 +6,7 @@ import { withData as withOrbit } from 'react-orbitjs';
 
 import { attributesFor } from '@data';
 import { ProjectAttributes } from '@data/models/project';
+import { withCurrentUser } from '@data/containers/with-current-user';
 import {
   withDataActions, IProvidedProps as IDataActionProps
 } from '@data/containers/resources/project/with-data-actions';
@@ -26,13 +27,14 @@ type IProps =
   & i18nProps;
 
 const mapRecordsToProps = (passedProps) => {
-  const { project } = passedProps;
+  const { project, currentUser } = passedProps;
   const { type, id } = project;
 
   return {
     group: q => q.findRelatedRecord({ type, id }, 'group'),
     organization: q => q.findRelatedRecord({ type, id }, 'organization'),
     owner: q => q.findRelatedRecord({ type, id }, 'owner'),
+
   };
 };
 
@@ -101,6 +103,7 @@ class Owners extends React.Component<IProps> {
 
 export default compose(
   translate('translations'),
+  withCurrentUser(),
   withOrbit(mapRecordsToProps),
   withDataActions
 )(Owners);
