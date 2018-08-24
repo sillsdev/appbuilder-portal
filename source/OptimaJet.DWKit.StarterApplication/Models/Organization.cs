@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
@@ -35,5 +37,9 @@ namespace Optimajet.DWKit.StarterApplication.Models
 
         [HasMany("organization-product-definitions", Link.None)]
         public virtual List<OrganizationProductDefinition> OrganizationProductDefinitions { get; set;}
+
+        [NotMapped]
+        public IEnumerable<int> ProductDefinitionIds => OrganizationProductDefinitions?.Select(pd => pd.ProductDefinitionId);
+
     }
 }

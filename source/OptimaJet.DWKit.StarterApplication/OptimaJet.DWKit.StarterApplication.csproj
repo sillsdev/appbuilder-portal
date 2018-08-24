@@ -79,6 +79,7 @@
     <Folder Include="Forms\" />
     <Folder Include="Forms\Projects\" />
     <Folder Include="Forms\Groups\" />
+    <Folder Include="Forms\Products\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services\CurrentUserMemberships.cs" />
