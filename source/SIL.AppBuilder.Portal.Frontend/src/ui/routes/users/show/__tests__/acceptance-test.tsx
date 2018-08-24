@@ -38,7 +38,7 @@ describe('Acceptance | Show User', () => {
     it('shows basic information', () => {
       expect(page.name).to.be.true;
       expect(page.email).to.be.true;
-    })
+    });
 
     it('shows profile image', () => {
       expect(page.image).to.be.true;
