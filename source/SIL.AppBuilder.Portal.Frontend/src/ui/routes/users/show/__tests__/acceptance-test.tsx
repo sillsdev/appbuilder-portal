@@ -6,7 +6,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe.only('Acceptance | Show User', () => {
+describe('Acceptance | Show User', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
