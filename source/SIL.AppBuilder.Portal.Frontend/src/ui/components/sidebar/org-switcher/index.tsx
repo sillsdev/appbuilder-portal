@@ -90,6 +90,6 @@ export default compose(
   translate('translations'),
   connect(null, mapDispatchToProps),
   withCurrentOrganization,
-  withFiltering,
+  withFiltering(),
   withData,
 )(OrgSwitcher);
