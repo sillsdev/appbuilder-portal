@@ -80,7 +80,7 @@ export function withCurrentUser() {
       }
 
       fetchCurrentUser = async () => {
-        if (this.makingRequest) return;
+        if (this.makingRequest) { return; }
         const { networkFetchComplete, currentUser } = this.state;
 
         const { updateStore, usersMatchingLoggedInUser: fromCache, t } = this.props;

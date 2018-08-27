@@ -19,5 +19,5 @@ export interface UserAttributes {
 
 
 export function name(attrs: UserAttributes) {
-  return `${attrs.givenName} ${attrs.familyName}`
+  return `${attrs.givenName} ${attrs.familyName}`;
 }

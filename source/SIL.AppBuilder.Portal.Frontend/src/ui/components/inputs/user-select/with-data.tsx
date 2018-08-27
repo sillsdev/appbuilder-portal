@@ -91,7 +91,7 @@ export function withData(WrappedComponent) {
         filteredUsers = users.filter(user => {
           const relation = relationshipFor(user, 'groupMemberships');
           const belongsToGroup = (relation.data || []).find(gm => {
-            return validMembershipIds.includes(gm.id)
+            return validMembershipIds.includes(gm.id);
           });
 
           return belongsToGroup;
