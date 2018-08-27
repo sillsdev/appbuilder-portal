@@ -96,7 +96,6 @@ export function withCurrentUser() {
         const cacheId = userFromCache && userFromCache.attributes && userFromCache.attributes.auth0Id;
         const existingId = currentUser && currentUser.attributes && currentUser.attributes.auth0Id;
 
-        debugger;
         if (cacheId === auth0IdFromJWT && existingId !== cacheId) {
           this.setState({ currentUser: userFromCache, isLoading: false, networkFetchComplete: true });
           return;
