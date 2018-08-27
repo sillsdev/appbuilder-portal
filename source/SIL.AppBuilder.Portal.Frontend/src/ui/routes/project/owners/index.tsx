@@ -81,6 +81,8 @@ class Owners extends React.Component<IProps> {
             <div className='flex-grow'>
               <UserSelect
                 selected={ownerId}
+                groupId={groupId}
+                restrictToGroup={true}
                 onChange={this.updateOwner} />
             </div>
           </div>

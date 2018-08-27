@@ -44,25 +44,62 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
           organization: { data: { id: 1, type: 'organizations' } }
         }
       },
+      { id: 2, type: 'groups' ,
+        attributes: { name: 'Group 2' },
+        relationships: {
+          organization: { data: { id: 1, type: 'organizations' } }
+        }
+      },
     ] });
 
     this.mockGet(200, 'users', { data: [
-      { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
-      { type: 'users' , id: 3, attributes: { familyName: 'last3', givenName: 'first3' } },
+      { type: 'users' , id: 1, attributes: { familyName: 'fake', givenName: 'fake' },
+        relationships: {
+          ['group-memberships']: {
+            data: [ { id: 4, type: 'group-membership' } ]
+          }
+        }
+      },
+      { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' },
+        relationships: {
+          ['group-memberships']: {
+            data: [ { id: 5, type: 'group-membership' } ]
+          }
+        }
+      },
+      { type: 'users' , id: 3, attributes: { familyName: 'last3', givenName: 'first3' },
+        relationships: {
+          ['group-memberships']: {
+            data: [ { id: 6, type: 'group-membership' } ]
+          }
+        }
+      },
       { type: 'users' , id: 4,
         attributes: { familyName: 'last4', givenName: 'first4' },
         relationships: {
           ['group-memberships']: {
-            data: [ { id: 3, type: 'group-membership' } ]
+            data: [ { id: 7, type: 'group-membership' } ]
           }
         }
       },
     ],
     included: [
-      { type: 'group-memberships', id: 3, attributes: {}, relationships: {
+      // { type: 'group-memberships', id: 4, attributes: {}, relationships: {
+      //   group: { data: { id: 1, type: 'groups' } },
+      //   user: { data: { id: 1, type: 'users' } }
+      // } },
+      { type: 'group-memberships', id: 5, attributes: {}, relationships: {
+        group: { data: { id: 1, type: 'groups' } },
+        user: { data: { id: 2, type: 'users' } }
+      } },
+      { type: 'group-memberships', id: 6, attributes: {}, relationships: {
+        group: { data: { id: 1, type: 'groups' } },
+        user: { data: { id: 3, type: 'users' } }
+      } },
+      { type: 'group-memberships', id: 7, attributes: {}, relationships: {
         group: { data: { id: 2, type: 'groups' } },
         user: { data: { id: 4, type: 'users' } }
-      } }
+      } },
     ]});
   });
 

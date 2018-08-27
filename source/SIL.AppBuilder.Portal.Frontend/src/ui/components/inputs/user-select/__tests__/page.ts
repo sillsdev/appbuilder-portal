@@ -10,7 +10,7 @@ import {
     constructor(selector?: string) { }
 
     isDisabled = is('.disabled');
-    selectedUser = text('.selected');
+    selectedUser = text('div.text[aria-live="polite"]');
 
     options = collection('.item');
 

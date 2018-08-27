@@ -110,7 +110,6 @@ export function userInSameOrgAndGroup(orgId, groupId) {
         ['group-memberships']: {
           data: [
             { id: 1, type: 'group-memberships' },
-            { id: 2, type: 'group-memberships' },
           ]
         }
       }
@@ -122,20 +121,10 @@ export function userInSameOrgAndGroup(orgId, groupId) {
           user: { data: { id: 1, type: 'users' } },
           organization: { data: { id: orgId, type: 'organizations' } }
       }},
-      { id: 1, type: 'group-memberships',
-        attributes: {},
-        relationships: {
-          user: { data: { id: 1, type: 'users' } },
-          group: { data: { id: groupId, type: 'group' } }
-        }
-      },
-      { id: 2, type: 'group-memberships',
-        attributes: {},
-        relationships: {
-          user: { data: { id: 1, type: 'users' } },
-          group: { data: { id: groupId + 2, type: 'group' } }
-        }
-      }
+      { type: 'group-memberships', id: 4, attributes: {}, relationships: {
+        group: { data: { id: 1, type: 'groups' } },
+        user: { data: { id: 1, type: 'users' } }
+      } },
     ]
   }, {
     data: [{ type: 'organizations', id: orgId, attributes: {} }],

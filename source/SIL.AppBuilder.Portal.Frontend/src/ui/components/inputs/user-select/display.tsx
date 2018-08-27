@@ -10,6 +10,8 @@ interface IOwnProps {
   selected: Id;
   onChange: (userId: Id) => void;
   disableSelection?: boolean;
+  groupId: Id;
+  restrictToGroup: boolean;
 }
 
 type IProps =
@@ -29,6 +31,7 @@ export default class UserSelectDisplay extends React.Component<IProps> {
     const { users, selected, disableSelection } = this.props;
 
     const userOptions = users
+      .filter(user => user.attributes)
       .map(user => {
         const attrs = attributesFor(user);
 

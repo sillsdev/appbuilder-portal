@@ -100,7 +100,58 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
   });
 
   describe('the user is in both the same organization and the same group as the project', () => {
-    userInSameOrgAndGroup(1, 1);
+    useFakeAuthentication({
+      data: {
+        id: 1,
+        type: 'users',
+        attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+        relationships: {
+          ['organization-memberships']: {
+            data: [
+              { id: 1, type: 'organization-memberships' },
+            ]
+          },
+          ['group-memberships']: {
+            data: [
+              { id: 1, type: 'group-memberships' },
+            ]
+          }
+        }
+      },
+      included: [
+        { id: 1, type: 'organization-memberships',
+          attributes: {},
+          relationships: {
+            user: { data: { id: 1, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } }
+        }},
+        { id: 1, type: 'group-memberships',
+          attributes: {},
+          relationships: {
+            user: { data: { id: 1, type: 'users' } },
+            group: { data: { id: 1, type: 'group' } }
+          }
+        },
+        { id: 2, type: 'group-memberships',
+          attributes: {},
+          relationships: {
+            user: { data: { id: 1, type: 'users' } },
+            group: { data: { id: 3, type: 'group' } }
+          }
+        }
+      ]
+    }, {
+      data: [{ type: 'organizations', id: 1, attributes: {} }],
+      included: [
+        { id: 1, type: 'organization-memberships',
+          attributes: {},
+          relationships: {
+            user: { data: { id: 1, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } }
+          }
+        },
+      ]
+    });
 
     beforeEach(async function() {
       await visit('/project/1');
