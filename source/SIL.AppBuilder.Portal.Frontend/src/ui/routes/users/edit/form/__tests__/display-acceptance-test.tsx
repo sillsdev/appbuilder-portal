@@ -76,7 +76,7 @@ describe('Acceptance | Edit Profile Form', () => {
 
   });
 
-  describe('Email notification', () => {
+  describe('Email notification positive', () => {
     beforeEach(function () {
       this.mockGet(200, '/users/1', {
         data: {
@@ -95,6 +95,29 @@ describe('Acceptance | Edit Profile Form', () => {
 
     it('Email notification toggle is on',() => {
       expect(page.isEmailNotificationChecked).to.be.true;
+    });
+
+  });
+
+  describe('Email notification negative', () => {
+    beforeEach(function () {
+      this.mockGet(200, '/users/1', {
+        data: {
+          type: 'users',
+          id: '1',
+          attributes: {
+            emailNotification: false
+          }
+        }
+      });
+    });
+
+    beforeEach(async () => {
+      await visit('/users/1/edit');
+    });
+
+    it('Email notification toggle is off', () => {
+      expect(page.isEmailNotificationChecked).to.be.false;
     });
 
   });
