@@ -9,7 +9,7 @@ import {
 } from 'tests/helpers/index';
 
 import {
-  userInDifferntOrganization,
+  userInDifferentOrganization,
   userInSameOrgDifferentGroup,
   userInSameOrgAndGroup
 } from './user-scenarios';
@@ -60,7 +60,7 @@ describe('Acceptance | Project Edit', () => {
     });
 
     describe('the user is not in the same organization as the project', () => {
-      userInDifferntOrganization(2);
+      userInDifferentOrganization(2);
 
       beforeEach(async function() {
         await visit('/project/1');

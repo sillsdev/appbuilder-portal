@@ -1,6 +1,6 @@
 import { useFakeAuthentication, fakeAuth0Id } from 'tests/helpers/index';
 
-export function userInDifferntOrganization(orgId: number) {
+export function userInDifferentOrganization(orgId: number) {
   useFakeAuthentication({
     data: {
       id: 1,
