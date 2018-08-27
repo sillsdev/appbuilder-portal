@@ -23,7 +23,7 @@ export class FormInteractor {
   email = value('[data-test-profile-email]');
   phone = value('[data-test-profile-phone]');
   localization = value('[data-test-profile-localization]');
-  emailNotification = isPresent('[data-test-profile-email-notification].checked');
+  isEmailNotificationChecked = isPresent('[data-test-profile-email-notification].checked');
   profileVisibility = isPresent('[data-test-profile-visible-profile].checked');
   profileVisibilityText = value('[data-test-profile-visible-text]');
 

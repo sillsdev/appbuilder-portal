@@ -47,7 +47,7 @@ describe('Acceptance | Edit Profile Form', () => {
           expect(page.lastname).to.equal('Name');
           expect(page.email).to.equal('fake@domain.com');
           expect(page.phone).to.equal('997528963');
-          expect(page.emailNotification).to.be.true;
+          expect(page.isEmailNotificationChecked).to.be.true;
           expect(page.profileVisibility).to.be.true;
         });
       });
@@ -72,6 +72,29 @@ describe('Acceptance | Edit Profile Form', () => {
           expect(page.profileVisibilityText, enUS.profile.visibility.restricted);
         });
       });
+    });
+
+  });
+
+  describe('Email notification', () => {
+    beforeEach(function () {
+      this.mockGet(200, '/users/1', {
+        data: {
+          type: 'users',
+          id: '1',
+          attributes: {
+            emailNotification: true
+          }
+        }
+      });
+    });
+
+    beforeEach(async () => {
+      await visit('/users/1/edit');
+    });
+
+    it('Email notification toggle is on',() => {
+      expect(page.isEmailNotificationChecked).to.be.true;
     });
 
   });
