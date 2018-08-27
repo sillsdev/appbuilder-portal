@@ -76,50 +76,54 @@ describe('Acceptance | Edit Profile Form', () => {
 
   });
 
-  describe('Email notification positive', () => {
-    beforeEach(function () {
-      this.mockGet(200, '/users/1', {
-        data: {
-          type: 'users',
-          id: '1',
-          attributes: {
-            emailNotification: true
+  describe('the email notification value from the backend is represented via the checkbox', () => {
+
+    describe('when the value from the backend is true', () => {
+      beforeEach(function () {
+        this.mockGet(200, '/users/1', {
+          data: {
+            type: 'users',
+            id: '1',
+            attributes: {
+              emailNotification: true
+            }
           }
-        }
+        });
+      });
+
+      beforeEach(async () => {
+        await visit('/users/1/edit');
+      });
+
+      it('it is checked', () => {
+        expect(page.isEmailNotificationChecked).to.be.true;
       });
     });
 
-    beforeEach(async () => {
-      await visit('/users/1/edit');
-    });
+    describe('when the value from the backend is false', () => {
+      beforeEach(function () {
+        this.mockGet(200, '/users/1', {
+          data: {
+            type: 'users',
+            id: '1',
+            attributes: {
+              emailNotification: false
+            }
+          }
+        });
+      });
 
-    it('Email notification toggle is on',() => {
-      expect(page.isEmailNotificationChecked).to.be.true;
+      beforeEach(async () => {
+        await visit('/users/1/edit');
+      });
+
+      it('it is not checked', () => {
+        expect(page.isEmailNotificationChecked).to.be.false;
+      });
     });
 
   });
 
-  describe('Email notification negative', () => {
-    beforeEach(function () {
-      this.mockGet(200, '/users/1', {
-        data: {
-          type: 'users',
-          id: '1',
-          attributes: {
-            emailNotification: false
-          }
-        }
-      });
-    });
 
-    beforeEach(async () => {
-      await visit('/users/1/edit');
-    });
-
-    it('Email notification toggle is off', () => {
-      expect(page.isEmailNotificationChecked).to.be.false;
-    });
-
-  });
 
 });
