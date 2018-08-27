@@ -75,7 +75,6 @@ export function withData(WrappedComponent) {
       let filteredUsers = users;
       let disableSelection = false;
 
-
       if (restrictToGroup) {
         const groupMembershipsForGroup = groupMemberships.filter(gm => {
           const relation = relationshipFor(gm, 'group');
@@ -89,6 +88,10 @@ export function withData(WrappedComponent) {
           .map(gm => gm.id);
 
         filteredUsers = users.filter(user => {
+          if (user.id === selected) {
+            return true;
+          }
+
           const relation = relationshipFor(user, 'groupMemberships');
           const belongsToGroup = (relation.data || []).find(gm => {
             return validMembershipIds.includes(gm.id);
