@@ -114,6 +114,13 @@ export function withCurrentUser() {
             throw new Error(t('errors.userForbidden'));
           }
 
+          if (response.status === 401) {
+            console.debug('Current user auth expired');
+            deleteToken();
+
+            throw new Error(t('errors.notAuthorized'));
+          }
+
           const json = await tryParseJson(response);
 
           await pushPayload(updateStore, json);

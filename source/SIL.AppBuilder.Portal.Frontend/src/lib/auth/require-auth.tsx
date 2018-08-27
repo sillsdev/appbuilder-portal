@@ -3,6 +3,7 @@ import { RouterProps, Redirect } from 'react-router';
 
 import { withCurrentUser } from '@data/containers/with-current-user';
 import { isLoggedIn } from '@lib/auth0';
+import * as toast from '@lib/toast';
 
 import { requireAuthHelper } from './require-auth-helper';
 import { storePath } from './return-to';
@@ -14,6 +15,8 @@ export function requireAuth(Component) {
     const authenticated = isLoggedIn();
 
     if (authenticated) {
+      console.debug('The user is authenticated');
+
       const WithUser = withCurrentUser()(Component);
 
       return <WithUser { ...propsWithRouting } />;
