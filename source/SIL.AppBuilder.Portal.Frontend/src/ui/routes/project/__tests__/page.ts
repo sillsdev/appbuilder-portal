@@ -4,6 +4,7 @@ import {
 } from '@bigtest/interactor';
 
 import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
+import userInteractor from '@ui/components/inputs/user-select/__tests__/page';
 
 @interactor
 export class ProjectInteractor {
@@ -13,6 +14,7 @@ export class ProjectInteractor {
   archiveText = text('[data-test-archive] span');
 
   groupSelect = groupInteractor;
+  userSelect = userInteractor;
 }
 
 export default new ProjectInteractor('[data-test-project]');

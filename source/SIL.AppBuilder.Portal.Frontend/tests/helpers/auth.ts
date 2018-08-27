@@ -43,7 +43,7 @@ export function useFakeAuthentication(currentUser?: object, organizations?: obje
       data: {
         id: 1,
         type: 'users',
-        attributes: { id: 1, auth0Id: fakeAuth0Id },
+        attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
         relationships: {
           ['organization-memberships']: {
             data: [

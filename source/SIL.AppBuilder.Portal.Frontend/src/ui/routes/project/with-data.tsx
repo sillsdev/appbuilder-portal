@@ -22,7 +22,7 @@ const mapNetworkToProps = (passedProps) => {
       sources: {
         remote: {
           settings: { ...defaultSourceOptions() },
-          include: [/* PRODUCTS, */ ORGANIZATION, GROUP]
+          include: [/* PRODUCTS, */ ORGANIZATION, GROUP, 'owner']
         }
       }
     }]
