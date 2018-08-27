@@ -22,21 +22,23 @@ describe('Acceptance | Archive Project', () => {
     });
   });
 
-  describe('an active prjoject exists', () => {
+  describe('an active project exists', () => {
     beforeEach(function() {
-      this.mockGet(200, 'projects/1', {
-        data: {
+      this.mockGet(200, '/groups', { data: [] });
+      this.mockGet(200, 'projects/1', { data: {
           type: 'projects',
           id: '1',
           attributes: {
             'date-archived': null,
           },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
+            organization: { data: { id: 1, type: 'organizations' } },
+            group: { data: { id: 1, type: 'groups' } }
           }
         },
         included: [
-          { type: 'organizations', id: 1, }
+          { type: 'organizations', id: 1, },
+          { type: 'groups', id: 1, attributes: { name: 'Some Group' } }
         ]
       });
     });
@@ -68,6 +70,7 @@ describe('Acceptance | Archive Project', () => {
 
   describe('an archived project exists', () => {
     beforeEach(function() {
+      this.mockGet(200, '/groups', { data: [] });
       this.mockGet(200, 'projects/1', {
         data: {
           type: 'projects',
@@ -76,11 +79,13 @@ describe('Acceptance | Archive Project', () => {
             'date-archived': "2018-08-10T23:59:55.259Z"
           },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
+            organization: { data: { id: 1, type: 'organizations' } },
+            group: { data: { id: 1, type: 'groups' } }
           }
         },
         included: [
-          { type: 'organizations', id: 1, }
+          { type: 'organizations', id: 1, },
+          { type: 'groups', id: 1, attributes: { name: 'Some Group' } }
         ]
       });
     });
@@ -94,12 +99,11 @@ describe('Acceptance | Archive Project', () => {
             attributes: {
               'date-archived': null
             },
-            relationships: {},
           }});
       });
 
       describe('the reactivate button is clicked', () => {
-        beforeEach(async () => {
+        beforeEach(async function() {
           await visit('/project/1');
           await page.clickArchiveLink();
         });

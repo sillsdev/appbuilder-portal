@@ -12,6 +12,12 @@ import { ReduxProvider } from '@store/index';
 import { DataProvider } from '@data/index';
 
 
+import 'semantic-ui-css/semantic.min.css';
+import 'vendor/legacy-support';
+import '@ui/styles/app.scss';
+import '@ui/../global-config';
+
+
 import i18n from '../../src/translations';
 
 // the same as @ui/application, but allows

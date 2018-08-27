@@ -7,6 +7,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { Tab, Dropdown, Icon } from 'semantic-ui-react';
 
 import { TYPE_NAME, ProjectAttributes } from '@data/models/project';
+import { withCurrentUser } from '@data/containers/with-current-user';
 import { withLayout } from '@ui/components/layout';
 import { requireAuth } from '@lib/auth';
 
@@ -18,6 +19,7 @@ import Owners from './owners';
 import Reviewers from './reviewers';
 import { withData } from './with-data';
 import { withProjectOperations } from './with-project-operations';
+import { withAccessRestriction } from './with-access-restriction';
 
 
 import './project.scss';
@@ -72,7 +74,9 @@ class Project extends React.Component<IProps> {
 
   toggleArchivedProject = (e) => {
     e.preventDefault();
+
     const { project, toggleArchiveProject } = this.props;
+
     toggleArchiveProject(project);
   }
 
@@ -131,4 +135,6 @@ export default compose(
   translate('translations'),
   withProjectOperations,
   withData,
+  withCurrentUser(),
+  withAccessRestriction
 )(Project);

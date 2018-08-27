@@ -9,14 +9,13 @@ import MomentLocaleUtils, {
   parseDate,
 } from 'react-day-picker/moment';
 
+import { attributesFor } from '@data';
 import { OrganizationAttributes } from '@data/models/organization';
 import { IFilter } from '@data/containers/with-filtering';
 import {
   withCurrentOrganization,
   IProvidedProps as ICurrentOrgProps
 } from '@data/containers/with-current-organization';
-
-import { attributesFor } from '@data';
 
 import 'react-day-picker/lib/style.css';
 import './filters.scss';
