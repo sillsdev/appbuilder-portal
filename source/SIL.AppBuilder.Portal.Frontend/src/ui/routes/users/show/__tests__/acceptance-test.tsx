@@ -6,6 +6,8 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
+const gravatarURLRegex = /https:\/\/www\.gravatar\.com\/avatar\/[a-f0-9]{32}\?s=130&d=identicon/g;
+
 describe('Acceptance | Show User', () => {
   setupApplicationTest();
   setupRequestInterceptor();
@@ -47,7 +49,6 @@ describe('Acceptance | Show User', () => {
       });
 
       it('Image src is a valid gravatar URL', () => {
-        const gravatarURLRegex = /https:\/\/www\.gravatar\.com\/avatar\/[a-f0-9]{32}\?s=130&d=identicon/g
         expect(gravatarURLRegex.test(page.imageSrc)).to.be.true;
       });
 
@@ -79,7 +80,6 @@ describe('Acceptance | Show User', () => {
     });
 
     it('Profile image still generates a valid gravatar URL',() => {
-      const gravatarURLRegex = /https:\/\/www\.gravatar\.com\/avatar\/[a-f0-9]{32}\?s=130&d=identicon/g
       expect(gravatarURLRegex.test(page.imageSrc)).to.be.true;
     });
 
@@ -142,6 +142,6 @@ describe('Acceptance | Show User', () => {
       expect(page.isphonePresent).to.be.false;
       expect(page.isTimezonePresent).to.be.false;
     });
-  })
+  });
 
 });
