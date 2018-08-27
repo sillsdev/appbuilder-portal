@@ -64,7 +64,8 @@ export function withData(WrappedComponent) {
       let availableGroups: Array<JSONAPI<{}>>;
 
       const groupIds = groupMembershipsFromCache
-        .map(gm => relationshipFor(gm, GROUP).data.id);
+        .filter(gm => gm)
+        .map(gm => (relationshipFor(gm, GROUP).data || {}).id);
 
       if (scopeToCurrentUser) {
         availableGroups = groups.filter(g => g.id === selected || groupIds.includes(g.id));
@@ -79,6 +80,7 @@ export function withData(WrappedComponent) {
 
       const props = {
         ...otherProps,
+        selected,
         groups: availableGroups,
         disableSelection
       };

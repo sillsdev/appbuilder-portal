@@ -6,6 +6,7 @@ import { withData as withOrbit } from 'react-orbitjs';
 
 import { attributesFor } from '@data';
 import { ProjectAttributes } from '@data/models/project';
+import { withCurrentUser } from '@data/containers/with-current-user';
 import {
   withDataActions, IProvidedProps as IDataActionProps
 } from '@data/containers/resources/project/with-data-actions';
@@ -14,6 +15,7 @@ import * as toast from '@lib/toast';
 
 
 import GroupSelect from '@ui/components/inputs/group-select';
+import UserSelect from '@ui/components/inputs/user-select';
 
 interface Params {
   project: JSONAPI<ProjectAttributes>;
@@ -25,12 +27,14 @@ type IProps =
   & i18nProps;
 
 const mapRecordsToProps = (passedProps) => {
-  const { project } = passedProps;
+  const { project, currentUser } = passedProps;
   const { type, id } = project;
 
   return {
     group: q => q.findRelatedRecord({ type, id }, 'group'),
-    organization: q => q.findRelatedRecord({ type, id }, 'organization')
+    organization: q => q.findRelatedRecord({ type, id }, 'organization'),
+    owner: q => q.findRelatedRecord({ type, id }, 'owner'),
+
   };
 };
 
@@ -45,11 +49,23 @@ class Owners extends React.Component<IProps> {
       toast.error(t('errors.generic', { errorMessage: e.message }));
     }
   }
+
+  updateOwner = async (userId) => {
+    const { updateOwner, t } = this.props;
+
+    try {
+      await updateOwner(userId);
+    } catch (e) {
+      toast.error(t('errors.generic', { errorMessage: e.message }));
+    }
+  }
+
   render() {
-    const { t, project, group, organization } = this.props;
+    const { t, project, group, organization, owner } = this.props;
     const { language, type } = attributesFor(project);
     const groupId = group.id;
     const organizationId = organization.id;
+    const ownerId = owner.id;
 
     return (
       <div className='owner'>
@@ -63,10 +79,11 @@ class Owners extends React.Component<IProps> {
           <h4>{t('project.side.projectOwner')}</h4>
           <div className='flex justify-content-space-around content'>
             <div className='flex-grow'>
-              <a href='#'>Andrew Nichols</a>
-            </div>
-            <div className=''>
-              <a href='#'>{t('common.change')}</a>
+              <UserSelect
+                selected={ownerId}
+                groupId={groupId}
+                restrictToGroup={true}
+                onChange={this.updateOwner} />
             </div>
           </div>
         </div>
@@ -88,6 +105,7 @@ class Owners extends React.Component<IProps> {
 
 export default compose(
   translate('translations'),
+  withCurrentUser(),
   withOrbit(mapRecordsToProps),
   withDataActions
 )(Owners);

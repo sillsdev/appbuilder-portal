@@ -17,3 +17,7 @@ export interface UserAttributes {
   profileVisibility?: number;
 }
 
+
+export function name(attrs: UserAttributes) {
+  return `${attrs.givenName} ${attrs.familyName}`;
+}
