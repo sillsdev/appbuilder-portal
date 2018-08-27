@@ -111,6 +111,7 @@ export function withData(WrappedComponent) {
 
       const actionProps = {
         markNotificationsToSeen: this.markNotificationsToSeen,
+        markNotificationToSeen: this.markNotificationToSeen,
         clearAll: this.clearAll,
         clearOne: this.clearOne
       };
