@@ -47,7 +47,7 @@ describe('Acceptance | Edit Profile Form', () => {
           expect(page.lastname).to.equal('Name');
           expect(page.email).to.equal('fake@domain.com');
           expect(page.phone).to.equal('997528963');
-          expect(page.emailNotification).to.be.true;
+          expect(page.isEmailNotificationChecked).to.be.true;
           expect(page.profileVisibility).to.be.true;
         });
       });
@@ -75,5 +75,55 @@ describe('Acceptance | Edit Profile Form', () => {
     });
 
   });
+
+  describe('the email notification value from the backend is represented via the checkbox', () => {
+
+    describe('when the value from the backend is true', () => {
+      beforeEach(function () {
+        this.mockGet(200, '/users/1', {
+          data: {
+            type: 'users',
+            id: '1',
+            attributes: {
+              emailNotification: true
+            }
+          }
+        });
+      });
+
+      beforeEach(async () => {
+        await visit('/users/1/edit');
+      });
+
+      it('it is checked', () => {
+        expect(page.isEmailNotificationChecked).to.be.true;
+      });
+    });
+
+    describe('when the value from the backend is false', () => {
+      beforeEach(function () {
+        this.mockGet(200, '/users/1', {
+          data: {
+            type: 'users',
+            id: '1',
+            attributes: {
+              emailNotification: false
+            }
+          }
+        });
+      });
+
+      beforeEach(async () => {
+        await visit('/users/1/edit');
+      });
+
+      it('it is not checked', () => {
+        expect(page.isEmailNotificationChecked).to.be.false;
+      });
+    });
+
+  });
+
+
 
 });
