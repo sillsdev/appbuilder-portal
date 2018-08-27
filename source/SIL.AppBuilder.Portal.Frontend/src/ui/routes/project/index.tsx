@@ -8,6 +8,7 @@ import { Tab, Dropdown, Icon } from 'semantic-ui-react';
 
 import { TYPE_NAME, ProjectAttributes } from '@data/models/project';
 import { withLayout } from '@ui/components/layout';
+import { requireAuth } from '@lib/auth';
 
 import Details from './details';
 import Products from './products';
@@ -125,6 +126,7 @@ class Project extends React.Component<IProps> {
 }
 
 export default compose(
+  requireAuth,
   withLayout,
   translate('translations'),
   withProjectOperations,
