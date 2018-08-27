@@ -87,11 +87,11 @@ class Notifications extends React.Component<IProps> {
                     }
 
                     return (
-                      <div className={`notification-item ${viewState}`} key={notification.id} onClick={e => {
+                      <div data-test-notification className={`notification-item ${viewState}`} key={notification.id} onClick={e => {
                         e.preventDefault();
                         markNotificationToSeen(notification);
                       }}>
-                        <a className='close' href='#' onClick={e => {
+                        <a data-test-notification-close-one className='close' href='#' onClick={e => {
                           e.preventDefault();
                           clearOne(notification.id);
                         }}>
