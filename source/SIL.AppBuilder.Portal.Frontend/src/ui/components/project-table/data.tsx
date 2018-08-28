@@ -16,7 +16,7 @@ function mapNetworkToProps(passedProps: IFilterProps) {
   const { applyFilter, filters } = passedProps;
 
   return {
-    /* cacheKey: [filters], */
+    cacheKey: [filters],
     projects: [
       q => applyFilter(q.findRecords(PROJECT)),
       {

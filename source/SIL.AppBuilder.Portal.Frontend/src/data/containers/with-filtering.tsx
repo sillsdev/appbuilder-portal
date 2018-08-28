@@ -58,7 +58,6 @@ export function withFiltering(opts: IFilterOptions = {}) {
         if (isEmpty(filters) && isEmpty(options.requiredFilters)) {
           return builder;
         }
-        debugger;
 
         return builder.filter(...filters, ...options.requiredFilters);
       }
