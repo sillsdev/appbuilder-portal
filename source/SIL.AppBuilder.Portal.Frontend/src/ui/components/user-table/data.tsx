@@ -2,17 +2,17 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-
-import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
-import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
-import { PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
-
-import { query, defaultSourceOptions, defaultOptions } from '@data';
-
-import { PageLoader as Loader } from '@ui/components/loaders';
-
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
+
+import { TYPE_NAME as USER, PLURAL_NAME as USERS, UserAttributes } from '@data/models/user';
+import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
+import { TYPE_NAME as MEMBERSHIP,PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
+import { PageLoader as Loader } from '@ui/components/loaders';
+import { query, defaultSourceOptions, defaultOptions, isRelatedTo, relationshipFor } from '@data';
+import { withCurrentOrganization } from '@data/containers/with-current-organization';
+import { OrganizationMembershipAttributes } from '../../../data/models/organization-membership';
+import { attributesFor } from '@data/helpers';
 
 function mapNetworkToProps(passedProps) {
 
@@ -20,19 +20,18 @@ function mapNetworkToProps(passedProps) {
     // TODO: combine into one query when
     //       https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
     //       is resolved
-    users: [
-      q => q.findRecords(USER),
-      {
-        sources: {
-          remote: {
-            settings: {
-              ...defaultSourceOptions()
-            },
-            include: [MEMBERSHIPS]
-          }
+    users: [q => q.findRecords(USER),
+    {
+      sources: {
+        remote: {
+          settings: {
+            ...defaultSourceOptions()
+          },
+          include: [MEMBERSHIPS]
         }
       }
-    ],
+    }],
+    organizationMemberShips: [q => q.findRecords(MEMBERSHIP), defaultOptions()],
     groups: [q => q.findRecords(GROUP), defaultOptions()]
   };
 }
@@ -54,6 +53,7 @@ interface IOwnProps {
   usersFromCache: Array<JSONAPI<UserAttributes>>;
   groups: Array<JSONAPI<GroupAttributes>>;
   currentOrganizationId: string;
+  organizationMemberShips: Array<JSONAPI<OrganizationMembershipAttributes>>;
 }
 
 type IProps =
@@ -66,9 +66,9 @@ export function withData(WrappedComponent) {
   class DataWrapper extends React.Component<IProps> {
 
     isLoading = () => {
-      const { users, groups } = this.props;
+      const { users, groups, organizationMemberShips } = this.props;
 
-      return !users || !groups;
+      return !users || !groups || !organizationMemberShips;
     }
 
     toggleLock = async (user) => {
@@ -96,10 +96,29 @@ export function withData(WrappedComponent) {
       }
     }
 
+    // isRelatedTo = (user, organizationMemberships, orgId) => {
+    //   debugger;
+
+    //   // All organization are selected
+    //   if (!orgId) {
+    //     return true;
+    //   }
+
+    //   const { data: memberships } = organizationMemberships;
+    //   const { data: { id } } = relationshipFor(user, 'organizationMembership');
+
+    //   const foundMemberships = memberships.filter(membership => {
+    //     return  membership.id == id;
+    //   })
+
+    //   return foundMemberships.length > 0;
+    // }
+
     render() {
       const {
         users, usersFromCache,
         groups,
+        organizationMemberShips,
         currentOrganizationId: orgId,
         ...otherProps
       } = this.props;
@@ -114,7 +133,7 @@ export function withData(WrappedComponent) {
         users: usersToDisplay.filter(user => {
           return (
             // TODO: need a way to test against the joined organization
-            !!user.attributes // && isRelatedTo(user, 'organizationMemberships', orgId)
+            !!user.attributes //&& this.isRelatedTo(user, organizationMemberShips, orgId)
           );
         }),
         groups
@@ -142,6 +161,7 @@ export function withData(WrappedComponent) {
     connect(mapStateToProps),
     query(mapNetworkToProps),
     withOrbit(mapRecordsToProps),
-    withTranslations
+    withTranslations,
+    withCurrentOrganization
   )(DataWrapper);
 }

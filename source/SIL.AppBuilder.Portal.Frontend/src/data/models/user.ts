@@ -1,4 +1,5 @@
 export const TYPE_NAME = 'user';
+export const PLURAL_NAME = 'users';
 
 export interface UserAttributes {
   givenName?: string;

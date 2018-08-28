@@ -8,9 +8,6 @@ import { compose } from 'recompose';
 import Table from './table';
 import { withData } from './data';
 
-  export default compose(
-//    withSorting({ defaultSort: 'name' }),
-//    withPagination,
-//    withFiltering,
-    withData
-  )(Table);
+export default compose(
+  withData
+)(Table);
