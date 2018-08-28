@@ -14,9 +14,9 @@ export default compose(
   withSorting({ defaultSort: 'name' }),
   withPagination,
   withFiltering({
-    /* requiredFilters: [ */
-    /*   { attribute: 'date-archived', value: 'eq:' } */
-    /* ] */
+    // requiredFilters: [
+    //   { attribute: 'date-archived', value: 'eq:' }
+    // ]
   }),
   withData,
 )(Table);

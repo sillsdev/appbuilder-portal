@@ -149,10 +149,10 @@ export async function createStore() {
   //   blocking: true
   // }));
 
-  this.coordinator.addStrategy(new EventLoggingStrategy({
-    // sources: ['remote', 'inMemory']
-    sources: ['inMemory']
-  }));
+  // this.coordinator.addStrategy(new EventLoggingStrategy({
+  //   // sources: ['remote', 'inMemory']
+  //   sources: ['inMemory']
+  // }));
 
 
   // // If there is data already stored locally, throw it in memory
