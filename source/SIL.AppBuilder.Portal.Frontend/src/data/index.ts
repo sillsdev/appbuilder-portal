@@ -6,7 +6,7 @@ export { defaultSourceOptions, defaultOptions } from './store';
 export {
   attributesFor, idFor,
   relationshipsFor, hasRelationship, isRelatedTo,
-  relationshipFor
+  relationshipFor, firstError
 } from './helpers';
 
 export { queryApi as query } from './query';
