@@ -17,6 +17,8 @@ import PageError from '@ui/components/errors/page';
 import { deleteToken } from '@lib/auth0';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
+import * as toast from '@lib/toast';
+
 type UserPayload = JSONAPIDocument<UserAttributes>;
 
 const mapRecordsToProps = () => {
@@ -39,9 +41,18 @@ interface IState {
   networkFetchComplete: boolean;
 }
 
+const defaultOptions = {
+  redirectOnFailure: true
+}
+
 // TODO: store the attempted URL so that after login,
 //     we can navigate back.
-export function withCurrentUser() {
+export function withCurrentUser(opts = {}) {
+  const options = {
+    ...defaultOptions,
+    ...opts
+  };
+
   return InnerComponent => {
     class WrapperClass extends React.Component<IProps & WithDataProps & i18nProps, IState> {
       state = {
@@ -145,6 +156,12 @@ export function withCurrentUser() {
         const { error, currentUser, isLoading } = this.state;
 
         if (error) {
+          if (options.redirectOnFailure) {
+            toast.error(error);
+
+            return <Redirect to={'/login'} />;
+          }
+
           return <PageError error={error} />;
         }
 
