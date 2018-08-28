@@ -53,7 +53,6 @@ export function withData(WrappedComponent) {
     }
 
     clearAll = async () => {
-
       const { notifications } = this.props;
 
       await this.props.updateStore(t =>

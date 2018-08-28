@@ -96,6 +96,6 @@ export default compose (
     groups: q => q.findRecords(GROUP)
   }),
   connect(null, mapDispatchToProps),
-  withFiltering,
+  withFiltering(),
   withProjects
 )(ProjectDirectoryRoute);
