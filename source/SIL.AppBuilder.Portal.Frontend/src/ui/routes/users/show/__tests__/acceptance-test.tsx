@@ -39,7 +39,7 @@ describe('Acceptance | Show User', () => {
 
     it('shows basic information', () => {
       expect(page.isNamePresent).to.be.true;
-      expect(page.isEmailPresent).to.be.true;
+      expect(page.isEmailPresent).to.be.false;
     });
 
     describe('Profile image is present and has a valid gravatar URL', () => {
