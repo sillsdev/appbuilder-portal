@@ -15,7 +15,7 @@ export default compose(
   withPagination,
   withFiltering({
     requiredFilters: [
-      { attribute: 'date-archived', value: 'ne:' }
+      { attribute: 'date-archived', value: 'ne:null' }
     ]
   }),
   withData,

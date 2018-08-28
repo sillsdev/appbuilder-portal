@@ -43,7 +43,7 @@ interface IState {
 
 const defaultOptions = {
   redirectOnFailure: true
-}
+};
 
 // TODO: store the attempted URL so that after login,
 //     we can navigate back.
@@ -124,8 +124,8 @@ export function withCurrentUser(opts = {}) {
           const unauthorized = status === 401;
 
           if (status === 403 || status === 401) {
-            const json = await tryParseJson(response);
-            const error = firstError(json).title;
+            const errorJson = await tryParseJson(response);
+            const error = firstError(errorJson).title;
             const defaultMessage = unauthorized ? t('errors.notAuthorized') : t('errors.userForbidden');
 
             deleteToken();

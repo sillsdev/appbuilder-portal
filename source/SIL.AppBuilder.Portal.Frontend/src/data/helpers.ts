@@ -50,8 +50,8 @@ export function isRelatedTo(payload: any, relationshipName: string, id: string) 
 }
 
 export function firstError(json) {
-  if (!json || !json.errors) { return {} };
-  
+  if (!json || !json.errors) { return {}; }
+
   const errors = json.errors || [];
   const first = errors[0];
 

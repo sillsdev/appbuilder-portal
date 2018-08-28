@@ -80,5 +80,5 @@ export function withFiltering(opts: IFilterOptions = {}) {
     }
 
     return FilterWrapper;
-  }
+  };
 }
