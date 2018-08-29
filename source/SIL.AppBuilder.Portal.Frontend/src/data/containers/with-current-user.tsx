@@ -8,7 +8,7 @@ import { UserAttributes, TYPE_NAME } from '@data/models/user';
 
 import { getAuth0Id } from '@lib/auth0';
 import { get as authenticatedGet, tryParseJson } from '@lib/fetch';
-import { hasRelationship } from '@data';
+import { hasRelationship, firstError } from '@data';
 
 import PageLoader from '@ui/components/loaders/page';
 import OrgMembershipRequired from '@ui/components/errors/org-membership-required';
@@ -16,6 +16,8 @@ import PageError from '@ui/components/errors/page';
 
 import { deleteToken } from '@lib/auth0';
 import { withTranslations, i18nProps } from '@lib/i18n';
+
+import * as toast from '@lib/toast';
 
 type UserPayload = JSONAPIDocument<UserAttributes>;
 
@@ -39,9 +41,18 @@ interface IState {
   networkFetchComplete: boolean;
 }
 
+const defaultOptions = {
+  redirectOnFailure: true
+};
+
 // TODO: store the attempted URL so that after login,
 //     we can navigate back.
-export function withCurrentUser() {
+export function withCurrentUser(opts = {}) {
+  const options = {
+    ...defaultOptions,
+    ...opts
+  };
+
   return InnerComponent => {
     class WrapperClass extends React.Component<IProps & WithDataProps & i18nProps, IState> {
       state = {
@@ -109,18 +120,16 @@ export function withCurrentUser() {
           // https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
           // is resolved
           const response = await authenticatedGet('/api/users/current-user?include=organization-memberships,group-memberships');
+          const status = response.status;
+          const unauthorized = status === 401;
 
-          if (response.status === 403) {
-            console.debug('Current user is Forbidden');
+          if (status === 403 || status === 401) {
+            const errorJson = await tryParseJson(response);
+            const error = firstError(errorJson).title;
+            const defaultMessage = unauthorized ? t('errors.notAuthorized') : t('errors.userForbidden');
+
             deleteToken();
-            throw new Error(t('errors.userForbidden'));
-          }
-
-          if (response.status === 401) {
-            console.debug('Current user auth expired');
-            deleteToken();
-
-            throw new Error(t('errors.notAuthorized'));
+            throw new Error(error || defaultMessage);
           }
 
           const json = await tryParseJson(response);
@@ -145,6 +154,12 @@ export function withCurrentUser() {
         const { error, currentUser, isLoading } = this.state;
 
         if (error) {
+          if (options.redirectOnFailure) {
+            toast.error(error);
+
+            return <Redirect to={'/login'} />;
+          }
+
           return <PageError error={error} />;
         }
 

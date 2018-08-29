@@ -60,11 +60,6 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
     const { t } = this.props;
 
-    const profileVisibilityText =
-      profileVisibility ?
-        t('profile.visibility.visible') :
-        t('profile.visibility.restricted');
-
     return (
       <Form data-test-edit-profile>
         <Grid>
@@ -149,7 +144,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
         <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
         <Form.Field>
           <div className='toggle-selector'>
-            <span data-test-profile-visible-text>{profileVisibilityText}</span>
+            <span data-test-profile-visible-text>{t('profile.visibility.visible')}</span>
             <Checkbox
               data-test-profile-visible-profile
               toggle

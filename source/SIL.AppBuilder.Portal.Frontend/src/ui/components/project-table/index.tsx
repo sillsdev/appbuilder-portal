@@ -17,6 +17,6 @@ export { default as Table } from './table';
 export default compose(
   withSorting({ defaultSort: 'name' }),
   withPagination,
-  withFiltering,
+  withFiltering(),
   withData,
 )(Table);

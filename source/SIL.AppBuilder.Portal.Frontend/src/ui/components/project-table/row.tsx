@@ -38,10 +38,13 @@ class Row extends React.Component<IProps & i18nProps> {
     const { attributes: project } = data;
     // the organization _shouldn't_ be missing attributes
     // but it certainly can, when fake prorject data is used elsewhere.
-    const { name: orgName } = attributesFor(organization);
+    const { name: orgName, archivedAt } = attributesFor(organization);
+
+    const isArchived = archivedAt != null;
+    const archiveStyle = { opacity: isArchived ? '1' : '0.5'};
 
     return (
-      <>
+      <div>
         <div className='flex row-header grid'>
           <div className='col flex-grow-xs'><Link to={`/project/${data.id}`}>{project.name}</Link></div>
           <div className='col d-xs-none'>{orgName}</div>
@@ -76,7 +79,7 @@ class Row extends React.Component<IProps & i18nProps> {
             <div className='action flex-grow-xs w-100-xs-only'/>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 }

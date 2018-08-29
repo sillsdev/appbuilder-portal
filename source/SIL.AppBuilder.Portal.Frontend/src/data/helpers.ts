@@ -48,3 +48,12 @@ export function isRelatedTo(payload: any, relationshipName: string, id: string) 
 
   return relationData.id === id;
 }
+
+export function firstError(json) {
+  if (!json || !json.errors) { return {}; }
+
+  const errors = json.errors || [];
+  const first = errors[0];
+
+  return first || {};
+}

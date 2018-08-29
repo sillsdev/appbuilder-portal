@@ -13,6 +13,10 @@ import '@ui/components/project-table/project-table.scss';
 export default compose(
   withSorting({ defaultSort: 'name' }),
   withPagination,
-  withFiltering,
+  withFiltering({
+    requiredFilters: [
+      { attribute: 'date-archived', value: 'eq:' }
+    ]
+  }),
   withData,
 )(Table);

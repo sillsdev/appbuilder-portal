@@ -42,14 +42,14 @@ class User extends React.Component<IProps> {
           </div>
           <div>
             <h4 data-test-show-profile-name>{fullname}</h4>
-            <p data-test-show-profile-email>{user.email}</p>
             {
               user && user.profileVisibility &&
               <>
+                <p data-test-show-profile-email>{user.email}</p>
                 <p data-test-show-profile-phone>{phone}</p>
                 <p data-test-show-profile-timezone>{timezone}</p>
               </>
-            }
+            || null }
           </div>
         </div>
       </div>

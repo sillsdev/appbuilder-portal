@@ -238,11 +238,11 @@ export default {
     },
     operations: {
       lock: {
-        success: 'User is locked',
+        success: 'User is locked. A locked user will not be able to log in to Scriptoria.',
         error: 'There was an error locking the user'
       },
       unlock: {
-        success: 'User is active',
+        success: 'User is active. The user will now be able to log in to Scriptoria.',
         error: 'there was an error activating the user'
       }
     }

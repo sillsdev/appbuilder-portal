@@ -19,6 +19,16 @@ interface IState {
   filters: IFilter[];
 }
 
+interface IFilterOptions {
+  defaultFilters?: IFilter[];
+  requiredFilters?: IFilter[];
+}
+
+const defaultOptions = {
+  defaultFilters: [],
+  requiredFilters: []
+};
+
 // example hookup
 //
 //
@@ -28,40 +38,47 @@ interface IState {
 //            .sort('name'),
 //   ]
 // });
-export function withFiltering(WrappedComponent) {
-  class FilterWrapper extends React.Component<{}, IState> {
-    state = { filters: [] };
+export function withFiltering(opts: IFilterOptions = {}) {
+  const options = {
+    ...defaultOptions,
+    ...opts
+  };
 
-    updateFilter = (filter: IFilter) => {
-      this.setState({ filters: [ filter ] });
-    }
+  return WrappedComponent => {
+    class FilterWrapper extends React.Component<{}, IState> {
+      state = { filters: options.defaultFilters };
 
-    applyFilter = (builder: FindRecordsTerm): FindRecordsTerm => {
-      const { filters } = this.state;
-
-      if (isEmpty(filters)) {
-        return builder;
+      updateFilter = (filter: IFilter) => {
+        this.setState({ filters: [ filter ] });
       }
 
-      return builder.filter(...filters);
+      applyFilter = (builder: FindRecordsTerm): FindRecordsTerm => {
+        const { filters } = this.state;
+
+        if (isEmpty(filters) && isEmpty(options.requiredFilters)) {
+          return builder;
+        }
+
+        return builder.filter(...filters, ...options.requiredFilters);
+      }
+
+      render() {
+        const { filters } = this.state;
+        const filterProps: IProvidedProps = {
+          filters,
+          updateFilter: this.updateFilter,
+          applyFilter: this.applyFilter
+        };
+
+        return (
+          <WrappedComponent
+            { ...this.props }
+            { ...filterProps }
+            />
+        );
+      }
     }
 
-    render() {
-      const { filters } = this.state;
-      const filterProps: IProvidedProps = {
-        filters,
-        updateFilter: this.updateFilter,
-        applyFilter: this.applyFilter
-      };
-
-      return (
-        <WrappedComponent
-          { ...this.props }
-          { ...filterProps }
-          />
-      );
-    }
-  }
-
-  return FilterWrapper;
+    return FilterWrapper;
+  };
 }
