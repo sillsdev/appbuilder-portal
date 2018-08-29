@@ -111,7 +111,7 @@ export function withData(WrappedComponent) {
         const organizationId = (organization.data || {}).id;
 
 
-        return user.id === userId && organizationId == orgId;
+        return user.id === userId && organizationId === orgId;
       });
 
       return memberships.length > 0;
