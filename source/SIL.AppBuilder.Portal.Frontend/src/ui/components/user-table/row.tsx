@@ -30,7 +30,7 @@ class Row extends React.Component<IProps> {
     return (
       <tr>
         <td>
-          <Link to={`/users/${userData.id}/edit`}>
+          <Link data-test-user-table-username to={`/users/${userData.id}/edit`}>
             {firstName} {lastName}
           </Link>
         </td>

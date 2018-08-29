@@ -110,7 +110,6 @@ export function withData(WrappedComponent) {
         const userId = (relationUser.data || {}).id;
         const organizationId = (organization.data || {}).id;
 
-
         return user.id === userId && organizationId === orgId;
       });
 
