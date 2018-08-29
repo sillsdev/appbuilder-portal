@@ -7,38 +7,35 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { TYPE_NAME as USER, PLURAL_NAME as USERS, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
-import { TYPE_NAME as MEMBERSHIP,PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
+import { TYPE_NAME as MEMBERSHIP, PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
 import { PageLoader as Loader } from '@ui/components/loaders';
 import { query, defaultSourceOptions, defaultOptions, isRelatedTo, relationshipFor } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
-import { OrganizationMembershipAttributes } from '../../../data/models/organization-membership';
-import { attributesFor } from '@data/helpers';
+import { OrganizationMembershipAttributes } from '@data/models/organization-membership';
 
 function mapNetworkToProps(passedProps) {
 
+  // TODO: combine into one query when
+  //       https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
+  //       is resolved
   return {
-    // TODO: combine into one query when
-    //       https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
-    //       is resolved
-    users: [q => q.findRecords(USER),
-    {
+    users: [
+      q => q.findRecords(USER), {
       sources: {
         remote: {
-          settings: {
-            ...defaultSourceOptions()
-          },
+          settings: { ...defaultSourceOptions() },
           include: [MEMBERSHIPS]
         }
       }
     }],
-    organizationMemberShips: [q => q.findRecords(MEMBERSHIP), defaultOptions()],
     groups: [q => q.findRecords(GROUP), defaultOptions()]
   };
 }
 
 function mapRecordsToProps(passedProps) {
   return {
-    usersFromCache: q => q.findRecords(USER)
+    usersFromCache: q => q.findRecords(USER),
+    organizationMemberships: q => q.findRecords('organizationMembership')
   };
 }
 
@@ -53,7 +50,7 @@ interface IOwnProps {
   usersFromCache: Array<JSONAPI<UserAttributes>>;
   groups: Array<JSONAPI<GroupAttributes>>;
   currentOrganizationId: string;
-  organizationMemberShips: Array<JSONAPI<OrganizationMembershipAttributes>>;
+  organizationMemberships: Array<JSONAPI<{}>>;
 }
 
 type IProps =
@@ -66,9 +63,10 @@ export function withData(WrappedComponent) {
   class DataWrapper extends React.Component<IProps> {
 
     isLoading = () => {
-      const { users, groups, organizationMemberShips } = this.props;
 
-      return !users || !groups || !organizationMemberShips;
+      const { users, groups, organizationMemberships } = this.props;
+
+      return !users || !groups || !organizationMemberships;
     }
 
     toggleLock = async (user) => {
@@ -96,29 +94,34 @@ export function withData(WrappedComponent) {
       }
     }
 
-    // isRelatedTo = (user, organizationMemberships, orgId) => {
-    //   debugger;
+    isRelatedTo = (user, organizationMemberships, orgId) => {
 
-    //   // All organization are selected
-    //   if (!orgId) {
-    //     return true;
-    //   }
 
-    //   const { data: memberships } = organizationMemberships;
-    //   const { data: { id } } = relationshipFor(user, 'organizationMembership');
+      // All organization are selected
+      if (!orgId) {
+        return true;
+      }
 
-    //   const foundMemberships = memberships.filter(membership => {
-    //     return  membership.id == id;
-    //   })
+      const memberships = organizationMemberships.filter(om => {
 
-    //   return foundMemberships.length > 0;
-    // }
+        const relationUser = relationshipFor(om, 'user');
+        const organization = relationshipFor(om, 'organization');
+
+        const userId = (relationUser.data || {}).id;
+        const organizationId = (organization.data || {}).id;
+
+
+        return user.id === userId && organizationId == orgId;
+      });
+
+      return memberships.length > 0;
+    }
 
     render() {
       const {
         users, usersFromCache,
         groups,
-        organizationMemberShips,
+        organizationMemberships,
         currentOrganizationId: orgId,
         ...otherProps
       } = this.props;
@@ -133,7 +136,7 @@ export function withData(WrappedComponent) {
         users: usersToDisplay.filter(user => {
           return (
             // TODO: need a way to test against the joined organization
-            !!user.attributes //&& this.isRelatedTo(user, organizationMemberShips, orgId)
+            !!user.attributes && this.isRelatedTo(user, organizationMemberships, orgId)
           );
         }),
         groups
