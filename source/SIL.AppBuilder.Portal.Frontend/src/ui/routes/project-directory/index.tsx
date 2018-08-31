@@ -37,7 +37,7 @@ import { ResourceObject } from 'jsonapi-typescript';
 export const pathName = '/directory';
 
 export interface IOwnProps {
-  organizations: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
+  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
   setCurrentOrganizationId: (id: number | string) => void;
   groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
 }

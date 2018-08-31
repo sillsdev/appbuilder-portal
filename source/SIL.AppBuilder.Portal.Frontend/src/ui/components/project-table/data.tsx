@@ -34,7 +34,7 @@ function mapNetworkToProps(passedProps: IFilterProps) {
 }
 
 export interface IOwnProps {
-  projects: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  projects: Array<ResourceObject<PROJECTS_TYPE, ProjectAttributes>>;
   error?: any;
   applyFilter: (builder: FindRecordsTerm) => FindRecordsTerm;
 }
