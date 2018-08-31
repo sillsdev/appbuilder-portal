@@ -11,7 +11,7 @@ import { USERS_TYPE, GROUPS_TYPE } from '@data';
 
 export interface IOwnProps {
   user: ResourceObject<USERS_TYPE, UserAttributes>;
-  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
   toggleLock: (user: ResourceObject<USERS_TYPE, UserAttributes>) => void;
 }
 

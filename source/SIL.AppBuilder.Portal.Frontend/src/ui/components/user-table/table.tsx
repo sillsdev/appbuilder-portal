@@ -13,8 +13,8 @@ import { ResourceObject } from 'jsonapi-typescript';
 import { USERS_TYPE, GROUPS_TYPE } from '@data';
 
 interface IOwnProps {
-  users: ResourceObject<USERS_TYPE, UserAttributes>[];
-  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
   toggleLock: (user: ResourceObject<USERS_TYPE, UserAttributes>) => void;
 }
 

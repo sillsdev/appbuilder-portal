@@ -29,8 +29,8 @@ function mapNetworkToProps(passedProps) {
 }
 
 interface IOwnProps {
-  organizations: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>[];
-  fromCache: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>[];
+  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  fromCache: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
 }
 
 type IProps =

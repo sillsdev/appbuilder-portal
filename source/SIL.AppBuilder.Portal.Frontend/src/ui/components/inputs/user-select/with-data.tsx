@@ -11,15 +11,15 @@ import { withCurrentUser } from '@data/containers/with-current-user';
 import { PageLoader as Loader } from '@ui/components/loaders';
 
 export interface IProvidedProps {
-  users: ResourceObject<USERS_TYPE, UserAttributes>[];
+  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
   disableSelection: true;
 }
 
 interface IOwnProps {
-  users: ResourceObject<USERS_TYPE, UserAttributes>[];
-  groupMemberships: ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>[];
-  currentUsersGroupMemberships: ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>[];
-  usersFromCache: ResourceObject<USERS_TYPE, UserAttributes>[];
+  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  groupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
+  currentUsersGroupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
+  usersFromCache: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   selected: Id;
   groupId: Id;

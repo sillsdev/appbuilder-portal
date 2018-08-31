@@ -46,11 +46,11 @@ function mapStateToProps({ data }) {
 }
 
 interface IOwnProps {
-  users: ResourceObject<USERS_TYPE, UserAttributes>[];
-  usersFromCache: ResourceObject<USERS_TYPE, UserAttributes>[];
-  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  usersFromCache: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
   currentOrganizationId: string;
-  organizationMemberships: ResourceObject<ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipAttributes>[];
+  organizationMemberships: Array<ResourceObject<ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipAttributes>>;
 }
 
 type IProps =

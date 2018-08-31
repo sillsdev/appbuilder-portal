@@ -5,7 +5,7 @@ type IJsonApiPayload<TType extends string, TAttrs extends AttributesObject> =
   | ResourceObject<TType, TAttrs>;
 
 export function attributesFor<
-  TType extends string, 
+  TType extends string,
   TAttrs extends AttributesObject
   >(payload: IJsonApiPayload<TType, TAttrs>): TAttrs {
 
@@ -15,7 +15,7 @@ export function attributesFor<
   if (data) { return attributesFor(data); }
 
   const attributes = (payload as ResourceObject<TType, TAttrs>).attributes;
-  
+
   return (attributes || {}) as TAttrs;
 }
 
@@ -26,7 +26,7 @@ export function idFor(payload: any): string {
 }
 
 export function relationshipsFor<
-  TType extends string, 
+  TType extends string,
   TAttrs extends AttributesObject
   >(payload: IJsonApiPayload<TType, TAttrs>): RelationshipsObject {
   if (!payload) { return {}; }
@@ -42,7 +42,7 @@ export function relationshipsFor<
 
 export function hasRelationship(payload, name: string): boolean {
   const filtered = relationshipFor(payload, name);
-  const data = (filtered.data || []) as Array<any>;
+  const data = (filtered.data || []) as any[];
 
   return data.length > 0;
 }

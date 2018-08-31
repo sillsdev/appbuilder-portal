@@ -21,7 +21,7 @@ import { ResourceObject } from 'jsonapi-typescript';
 export const pathName = '/tasks';
 
 export interface IOwnProps {
-  tasks: ResourceObject<TASKS_TYPE, TaskAttributes>[];
+  tasks: Array<ResourceObject<TASKS_TYPE, TaskAttributes>>;
 }
 
 export type IProps =

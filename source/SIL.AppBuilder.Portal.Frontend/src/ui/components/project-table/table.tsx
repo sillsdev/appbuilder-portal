@@ -7,7 +7,7 @@ import { ResourceObject } from 'jsonapi-typescript';
 import { PROJECTS_TYPE } from '@data';
 
 interface IOwnProps {
-  projects: ResourceObject<PROJECTS_TYPE, ProjectAttributes>[];
+  projects: Array<ResourceObject<PROJECTS_TYPE, ProjectAttributes>>;
 }
 
 type IProps =

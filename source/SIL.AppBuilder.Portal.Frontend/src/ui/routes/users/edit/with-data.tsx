@@ -38,7 +38,7 @@ export function withData(WrappedComponent) {
   class DataWrapper extends React.Component<IProps> {
     render() {
       const { user } = this.props;
-      
+
       if (!user) {
         return <Loader />;
       }

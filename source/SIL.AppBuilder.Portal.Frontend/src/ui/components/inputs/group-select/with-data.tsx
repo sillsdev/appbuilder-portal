@@ -12,14 +12,14 @@ import { PageLoader as Loader } from '@ui/components/loaders';
 import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProvidedProps {
-  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
   disableSelection: true;
 }
 
 interface IOwnProps {
-  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
-  groupMembershipsFromCache: ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>[];
-  currentUserGroupMemberships: ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>[];
+  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
+  groupMembershipsFromCache: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
+  currentUserGroupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
   scopeToCurrentUser: boolean;
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   selected: Id;
@@ -61,7 +61,7 @@ export function withData(WrappedComponent) {
         return <Loader />;
       }
 
-      let availableGroups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+      let availableGroups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
 
       const groupIds = groupMembershipsFromCache
         .filter(gm => gm)

@@ -31,7 +31,7 @@ interface IState {
 
 interface IOwnProps {
   updateFilter: (filter: IFilter) => void;
-  organizations: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>[];
+  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
   onOrganizationChange: (id: string | number) => void;
 }
 

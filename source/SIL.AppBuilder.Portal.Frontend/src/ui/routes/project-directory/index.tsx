@@ -39,7 +39,7 @@ export const pathName = '/directory';
 export interface IOwnProps {
   organizations: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
   setCurrentOrganizationId: (id: number | string) => void;
-  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
 }
 
 export type IProps =
