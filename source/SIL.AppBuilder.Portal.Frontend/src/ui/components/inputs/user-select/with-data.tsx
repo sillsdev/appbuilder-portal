@@ -1,25 +1,26 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { ResourceObject } from 'jsonapi-typescript';
 
-import { query, defaultSourceOptions, relationshipFor } from '@data';
+import { query, defaultSourceOptions, relationshipFor, USERS_TYPE, GROUP_MEMBERSHIPS_TYPE } from '@data';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
-import { TYPE_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
+import { TYPE_NAME as GROUP_MEMBERSHIPS, GroupMembershipAttributes } from '@data/models/group-membership';
 import { withCurrentUser } from '@data/containers/with-current-user';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
 
 export interface IProvidedProps {
-  users: Array<JSONAPI<UserAttributes>>;
+  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
   disableSelection: true;
 }
 
 interface IOwnProps {
-  users: Array<JSONAPI<UserAttributes>>;
-  groupMemberships: Array<JSONAPI<{}>>;
-  currentUsersGroupMemberships: Array<JSONAPI<{}>>;
-  usersFromCache: Array<JSONAPI<{}>>;
-  currentUser: JSONAPI<UserAttributes>;
+  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  groupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
+  currentUsersGroupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
+  usersFromCache: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   selected: Id;
   groupId: Id;
   restrictToGroup: boolean;

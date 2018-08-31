@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { ResourceObject } from 'jsonapi-typescript';
 
-import { TYPE_NAME as USER, PLURAL_NAME as USERS, UserAttributes } from '@data/models/user';
+import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
-import { TYPE_NAME as MEMBERSHIP, PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
+import { PLURAL_NAME as MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
 import { PageLoader as Loader } from '@ui/components/loaders';
-import { query, defaultSourceOptions, defaultOptions, isRelatedTo, relationshipFor } from '@data';
+import { query, defaultSourceOptions, defaultOptions, relationshipFor, ORGANIZATION_MEMBERSHIPS_TYPE, GROUPS_TYPE, USERS_TYPE } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
-import { OrganizationMembershipAttributes } from '@data/models/organization-membership';
 
-function mapNetworkToProps(passedProps) {
+function mapNetworkToProps() {
 
   // TODO: combine into one query when
   //       https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
@@ -32,7 +32,7 @@ function mapNetworkToProps(passedProps) {
   };
 }
 
-function mapRecordsToProps(passedProps) {
+function mapRecordsToProps() {
   return {
     usersFromCache: q => q.findRecords(USER),
     organizationMemberships: q => q.findRecords('organizationMembership')
@@ -46,11 +46,11 @@ function mapStateToProps({ data }) {
 }
 
 interface IOwnProps {
-  users: Array<JSONAPI<UserAttributes>>;
-  usersFromCache: Array<JSONAPI<UserAttributes>>;
-  groups: Array<JSONAPI<GroupAttributes>>;
+  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  usersFromCache: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
   currentOrganizationId: string;
-  organizationMemberships: Array<JSONAPI<{}>>;
+  organizationMemberships: Array<ResourceObject<ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipAttributes>>;
 }
 
 type IProps =

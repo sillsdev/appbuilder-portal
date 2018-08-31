@@ -1,12 +1,22 @@
-type IJsonApiPayload<T> =
-  | JSONAPIDocument<T>
-  | JSONAPI<T>;
+import { SingleResourceDoc, AttributesObject, ResourceObject, RelationshipsObject, RelationshipsWithData, ErrorObject, ResourceLinkage } from "jsonapi-typescript";
 
-export function attributesFor<T>(payload: IJsonApiPayload<T>): T | object {
-  if (!payload) { return {}; }
-  if (payload.data) { return attributesFor(payload.data); }
+type IJsonApiPayload<TType extends string, TAttrs extends AttributesObject> =
+  | SingleResourceDoc<TType, TAttrs>
+  | ResourceObject<TType, TAttrs>;
 
-  return payload.attributes || {};
+export function attributesFor<
+  TType extends string,
+  TAttrs extends AttributesObject
+  >(payload: IJsonApiPayload<TType, TAttrs>): TAttrs {
+
+  if (!payload) { return ({} as TAttrs); }
+
+  const data = (payload as SingleResourceDoc<TType, TAttrs>).data;
+  if (data) { return attributesFor(data); }
+
+  const attributes = (payload as ResourceObject<TType, TAttrs>).attributes;
+
+  return (attributes || {}) as TAttrs;
 }
 
 export function idFor(payload: any): string {
@@ -15,41 +25,47 @@ export function idFor(payload: any): string {
   return payload.id;
 }
 
-export function relationshipsFor(payload: IJsonApiPayload<T>): T | object {
+export function relationshipsFor<
+  TType extends string,
+  TAttrs extends AttributesObject
+  >(payload: IJsonApiPayload<TType, TAttrs>): RelationshipsObject {
   if (!payload) { return {}; }
-  if (payload.data) { return relationshipsFor(payload.data); }
 
-  return payload.relationships || {};
+  const data = (payload as SingleResourceDoc<TType, TAttrs>).data;
+  if (data) { return relationshipsFor(data); }
+
+
+  const relationships = (payload as ResourceObject<TType, TAttrs>).relationships;
+
+  return relationships || {};
 }
 
 export function hasRelationship(payload, name: string): boolean {
-  const relationships = relationshipsFor(payload);
-  const filtered = relationships[name] || {};
-  const data = filtered.data || [];
+  const filtered = relationshipFor(payload, name);
+  const data = (filtered.data || []) as any[];
 
   return data.length > 0;
 }
 
-export function relationshipFor(payload: any, relationshipName: string) {
+export function relationshipFor(payload: any, relationshipName: string): RelationshipsWithData {
   const relationships = relationshipsFor(payload);
   const relation = relationships[relationshipName] || {};
 
-  return relation;
+  return relation as RelationshipsWithData;
 }
 
-export function isRelatedTo(payload: any, relationshipName: string, id: string) {
-  const relationships = relationshipsFor(payload);
-  const relation = relationships[relationshipName] || {};
-  const relationData = relation.data || {} as object | object[];
+export function isRelatedTo(payload: any, relationshipName: string, id: string): boolean {
+  const relation = relationshipFor(payload, relationshipName);
+  const relationData = relation.data || {} as ResourceLinkage;
 
   if (Array.isArray(relationData)) {
-    return relationData.find(r => r.id === id);
+    return !!relationData.find(r => r.id === id);
   }
 
   return relationData.id === id;
 }
 
-export function firstError(json) {
+export function firstError(json): ErrorObject {
   if (!json || !json.errors) { return {}; }
 
   const errors = json.errors || [];

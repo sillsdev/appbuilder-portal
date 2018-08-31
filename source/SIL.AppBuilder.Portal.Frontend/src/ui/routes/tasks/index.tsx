@@ -6,7 +6,7 @@ import { Container, Icon, Button } from 'semantic-ui-react';
 import { uuid } from '@orbit/utils';
 import { withData, WithDataProps } from 'react-orbitjs';
 
-import { query } from '@data';
+import { query, TASKS_TYPE } from '@data';
 import { withStubbedDevData } from '@data/with-stubbed-dev-data';
 import { TaskAttributes, TYPE_NAME as TASKS } from '@data/models/task';
 import { withTranslations, i18nProps } from '@lib/i18n';
@@ -16,11 +16,12 @@ import { withLayout } from '@ui/components/layout';
 
 import './tasks.scss';
 import Row from './row';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/tasks';
 
 export interface IOwnProps {
-  tasks: Array<JSONAPI<TaskAttributes>>;
+  tasks: Array<ResourceObject<TASKS_TYPE, TaskAttributes>>;
 }
 
 export type IProps =

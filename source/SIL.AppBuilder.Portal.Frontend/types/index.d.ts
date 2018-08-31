@@ -24,18 +24,3 @@ interface Auth0JWT {
   gender: string;
   email: string;
 }
-
-
-// Resource
-declare interface JSONAPI<Attributes, Relationships = {}> {
-  id: string;
-  type: string;
-  attributes: Attributes;
-  relationships?: Relationships;
-};
-
-// Document
-declare interface JSONAPIDocument<Attributes, Relationships = {}> {
-  data: JSONAPI<Attributes, Relationships>;
-  included?: Array<JSONAPI<any, any>>;
-};

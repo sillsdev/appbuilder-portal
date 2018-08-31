@@ -9,7 +9,7 @@ import MomentLocaleUtils, {
   parseDate,
 } from 'react-day-picker/moment';
 
-import { attributesFor } from '@data';
+import { attributesFor, ORGANIZATIONS_TYPE } from '@data';
 import { OrganizationAttributes } from '@data/models/organization';
 import { IFilter } from '@data/containers/with-filtering';
 import {
@@ -19,6 +19,7 @@ import {
 
 import 'react-day-picker/lib/style.css';
 import './filters.scss';
+import { ResourceObject } from 'jsonapi-typescript';
 
 interface IState {
   products: any[];
@@ -30,7 +31,7 @@ interface IState {
 
 interface IOwnProps {
   updateFilter: (filter: IFilter) => void;
-  organizations: Array<JSONAPI<OrganizationAttributes>>;
+  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
   onOrganizationChange: (id: string | number) => void;
 }
 

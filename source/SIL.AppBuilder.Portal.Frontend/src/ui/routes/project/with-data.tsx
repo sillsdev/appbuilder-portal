@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { query, defaultSourceOptions, defaultOptions } from '@data';
+import { query, defaultSourceOptions, defaultOptions, PROJECTS_TYPE } from '@data';
 
 import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { PLURAL_NAME as PRODUCTS } from '@data/models/product';
@@ -10,6 +10,7 @@ import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as GROUP } from '@data/models/group';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
+import { ResourceObject } from 'jsonapi-typescript';
 
 const mapNetworkToProps = (passedProps) => {
   const { match } = passedProps;
@@ -39,8 +40,8 @@ const mapRecordsToProps = (passedProps) => {
 };
 
 interface IProps {
-  project: JSONAPI<ProjectAttributes>;
-  projectFromCache: JSONAPI<ProjectAttributes>;
+  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  projectFromCache: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
 }
 
 export function withData<T>(WrappedComponent) {

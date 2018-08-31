@@ -1,13 +1,15 @@
+import { AttributesObject } from "jsonapi-typescript";
+
 export const TYPE_NAME = 'organizationInvite';
 
-export interface OrganizationInviteAttributes {
+export interface OrganizationInviteAttributes extends AttributesObject {
   name?: string;
   ownerEmail?: string;
   url?: string;
   expiresAt?: Date;
 }
 
-export interface RequestAccessForOrganizationAttributes {
+export interface RequestAccessForOrganizationAttributes extends AttributesObject {
   name: string;
   orgAdminEmail: string;
   websiteUrl: string;

@@ -2,10 +2,11 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { query, defaultSourceOptions, defaultOptions } from '@data';
+import { query, defaultSourceOptions, defaultOptions, ORGANIZATIONS_TYPE } from '@data';
 import { IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
 import { isEmpty } from '@lib/collection';
+import { ResourceObject } from 'jsonapi-typescript';
 
 function mapRecordsToProps(passedProps) {
   const { filterOptions, applyFilter } = passedProps;
@@ -28,8 +29,8 @@ function mapNetworkToProps(passedProps) {
 }
 
 interface IOwnProps {
-  organizations: Array<JSONAPI<OrganizationAttributes>>;
-  fromCache: Array<JSONAPI<OrganizationAttributes>>;
+  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  fromCache: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
 }
 
 type IProps =

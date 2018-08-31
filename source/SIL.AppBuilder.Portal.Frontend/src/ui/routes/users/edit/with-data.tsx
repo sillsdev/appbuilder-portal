@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { match as Match, Redirect } from 'react-router';
+import { Document, ResourceObject, SingleResourceDoc } from 'jsonapi-typescript';
 
-import { query, defaultOptions } from '@data';
+import { query, defaultOptions, USERS_TYPE } from '@data';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
@@ -16,7 +17,7 @@ interface PassedProps {
 }
 
 interface IOwnProps {
-  user: JSONAPIDocument<UserAttributes>;
+  user: SingleResourceDoc<USERS_TYPE, UserAttributes>;
 }
 
 type IProps =

@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Menu } from 'semantic-ui-react';
 
-import { attributesFor } from '@data';
+import { attributesFor, ORGANIZATIONS_TYPE } from '@data';
 import { OrganizationAttributes } from '@data/models/organization';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
   onClick: (e: any) => void;
   isActive: boolean;
 }

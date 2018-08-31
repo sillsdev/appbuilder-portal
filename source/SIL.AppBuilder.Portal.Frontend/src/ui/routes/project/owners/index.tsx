@@ -4,7 +4,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
-import { attributesFor } from '@data';
+import { attributesFor, PROJECTS_TYPE } from '@data';
 import { ProjectAttributes } from '@data/models/project';
 import { withCurrentUser } from '@data/containers/with-current-user';
 import {
@@ -16,9 +16,10 @@ import * as toast from '@lib/toast';
 
 import GroupSelect from '@ui/components/inputs/group-select';
 import UserSelect from '@ui/components/inputs/user-select';
+import { ResourceObject } from 'jsonapi-typescript';
 
 interface Params {
-  project: JSONAPI<ProjectAttributes>;
+  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
 }
 
 type IProps =
