@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { query, defaultOptions } from '@data';
+import { query, defaultOptions, GROUPS_TYPE, GROUP_MEMBERSHIPS_TYPE, USERS_TYPE } from '@data';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { relationshipFor } from '@data';
@@ -12,16 +12,16 @@ import { PageLoader as Loader } from '@ui/components/loaders';
 import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProvidedProps {
-  groups: ResourceObject<'groups', GroupAttributes>[];
+  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
   disableSelection: true;
 }
 
 interface IOwnProps {
-  groups: ResourceObject<'groups', GroupAttributes>[];
-  groupMembershipsFromCache: ResourceObject<'group-memberships', GroupMembershipAttributes>[];
-  currentUserGroupMemberships: ResourceObject<'group-memberships', GroupMembershipAttributes>[];
+  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+  groupMembershipsFromCache: ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>[];
+  currentUserGroupMemberships: ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>[];
   scopeToCurrentUser: boolean;
-  currentUser: ResourceObject<'users', UserAttributes>;
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   selected: Id;
 }
 
@@ -61,7 +61,7 @@ export function withData(WrappedComponent) {
         return <Loader />;
       }
 
-      let availableGroups: ResourceObject<'groups', GroupAttributes>[];
+      let availableGroups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
 
       const groupIds = groupMembershipsFromCache
         .filter(gm => gm)

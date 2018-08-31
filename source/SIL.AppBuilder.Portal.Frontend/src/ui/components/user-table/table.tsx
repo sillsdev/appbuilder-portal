@@ -10,11 +10,12 @@ import Row from './row';
 
 import './user-table.scss';
 import { ResourceObject } from 'jsonapi-typescript';
+import { USERS_TYPE, GROUPS_TYPE } from '@data';
 
 interface IOwnProps {
-  users: ResourceObject<'users', UserAttributes>[];
-  groups: ResourceObject<'groups', GroupAttributes>[];
-  toggleLock: (user: ResourceObject<'users', UserAttributes>) => void;
+  users: ResourceObject<USERS_TYPE, UserAttributes>[];
+  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+  toggleLock: (user: ResourceObject<USERS_TYPE, UserAttributes>) => void;
 }
 
 type IProps =

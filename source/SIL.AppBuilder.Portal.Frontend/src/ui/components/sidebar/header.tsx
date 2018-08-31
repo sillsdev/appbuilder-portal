@@ -8,14 +8,15 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { OrganizationAttributes } from '@data/models/organization';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { ResourceObject } from 'jsonapi-typescript';
+import { ORGANIZATIONS_TYPE } from '@data';
 
 export interface IProps {
   closeSidebar: () => void;
   className?: string;
   isOrgSwitcherActive: boolean;
   toggleOrgSwitcher: () => void;
-  organization: ResourceObject<'organizations', OrganizationAttributes>;
-  currentOrganization: ResourceObject<'organizations', OrganizationAttributes>;
+  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
+  currentOrganization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
 const mapStateToProps = ({ data }) => ({

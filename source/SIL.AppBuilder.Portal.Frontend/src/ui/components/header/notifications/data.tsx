@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { TYPE_NAME as NOTIFICATION, NotificationAttributes } from '@data/models/notification';
-import { query, defaultOptions } from '@data';
+import { query, defaultOptions, NOTIFICATIONS_TYPE } from '@data';
 import { withStubbedDevData } from '@data/with-stubbed-dev-data';
 import { ResourceObject } from 'jsonapi-typescript';
 
@@ -20,7 +20,7 @@ const mapRecordsToProps = (passedProps) => {
 };
 
 export interface DataProps {
-  notifications: Array<ResourceObject<'notifications', NotificationAttributes>>;
+  notifications: Array<ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes>>;
   haveAllNotificationsBeenSeen: boolean;
   isThereAtLeastOneNotificationToShow: boolean;
 }
@@ -29,7 +29,7 @@ export interface ActionProps {
   markNotificationsToSeen: () => void;
   clearAll: () => void;
   clearOne: (id: string) => void;
-  markNotificationToSeen: (notification: ResourceObject<'notifications', NotificationAttributes>) => void;
+  markNotificationToSeen: (notification: ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes>) => void;
 }
 
 export function withData(WrappedComponent) {

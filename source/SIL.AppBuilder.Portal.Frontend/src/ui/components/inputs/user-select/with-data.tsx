@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
 
-import { query, defaultSourceOptions, relationshipFor } from '@data';
+import { query, defaultSourceOptions, relationshipFor, USERS_TYPE, GROUP_MEMBERSHIPS_TYPE } from '@data';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP_MEMBERSHIPS, GroupMembershipAttributes } from '@data/models/group-membership';
 import { withCurrentUser } from '@data/containers/with-current-user';
@@ -11,16 +11,16 @@ import { withCurrentUser } from '@data/containers/with-current-user';
 import { PageLoader as Loader } from '@ui/components/loaders';
 
 export interface IProvidedProps {
-  users: ResourceObject<'users', UserAttributes>[];
+  users: ResourceObject<USERS_TYPE, UserAttributes>[];
   disableSelection: true;
 }
 
 interface IOwnProps {
-  users: ResourceObject<'users', UserAttributes>[];
-  groupMemberships: ResourceObject<'group-memberships', GroupMembershipAttributes>[];
-  currentUsersGroupMemberships: ResourceObject<'group-memberships', GroupMembershipAttributes>[];
-  usersFromCache: ResourceObject<'users', UserAttributes>[];
-  currentUser: ResourceObject<'users', UserAttributes>;
+  users: ResourceObject<USERS_TYPE, UserAttributes>[];
+  groupMemberships: ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>[];
+  currentUsersGroupMemberships: ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>[];
+  usersFromCache: ResourceObject<USERS_TYPE, UserAttributes>[];
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   selected: Id;
   groupId: Id;
   restrictToGroup: boolean;

@@ -9,9 +9,10 @@ import { UserAttributes } from "@data/models/user";
 import { TYPE_NAME as USER } from "@data/models/user";
 import { attributesFor } from "@data/helpers";
 import { ResourceObject } from "jsonapi-typescript";
+import { USERS_TYPE } from "@data";
 
 export interface IOwnProps {
-  currentUser: ResourceObject<'users', UserAttributes>;
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   onChange: (locale: string) => void;
   className?: string;
 }

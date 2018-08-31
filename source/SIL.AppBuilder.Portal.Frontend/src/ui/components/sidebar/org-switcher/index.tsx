@@ -14,9 +14,10 @@ import { withFiltering, IProvidedProps as IFilterProps } from '@data/containers/
 import { withData } from './with-data';
 import Display from './display';
 import { ResourceObject } from 'jsonapi-typescript';
+import { ORGANIZATIONS_TYPE } from '@data';
 
 export interface IOwnProps {
-  organizations: ResourceObject<'organizations', OrganizationAttributes>[];
+  organizations: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>[];
   isLoading: boolean;
   searchByName: (name: string) => void;
   setCurrentOrganizationId: (id: Id) => void;

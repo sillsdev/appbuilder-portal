@@ -8,7 +8,7 @@ import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as OWNER } from '@data/models/user';
 
-import { query, defaultSourceOptions } from '@data';
+import { query, defaultSourceOptions, PROJECTS_TYPE } from '@data';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
 import { ResourceObject } from 'jsonapi-typescript';
@@ -34,7 +34,7 @@ function mapNetworkToProps(passedProps: IFilterProps) {
 }
 
 export interface IOwnProps {
-  projects: ResourceObject<'projects', ProjectAttributes>;
+  projects: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
   error?: any;
   applyFilter: (builder: FindRecordsTerm) => FindRecordsTerm;
 }

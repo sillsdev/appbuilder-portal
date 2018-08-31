@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { query, defaultSourceOptions, defaultOptions } from '@data';
+import { query, defaultSourceOptions, defaultOptions, ORGANIZATIONS_TYPE } from '@data';
 import { IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
 import { isEmpty } from '@lib/collection';
@@ -29,8 +29,8 @@ function mapNetworkToProps(passedProps) {
 }
 
 interface IOwnProps {
-  organizations: ResourceObject<'organizations', OrganizationAttributes>[];
-  fromCache: ResourceObject<'organizations', OrganizationAttributes>[];
+  organizations: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>[];
+  fromCache: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>[];
 }
 
 type IProps =

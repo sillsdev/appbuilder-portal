@@ -7,11 +7,12 @@ import GroupDropdown from './dropdown';
 import { Link } from 'react-router-dom';
 import { Radio } from 'semantic-ui-react';
 import { ResourceObject } from 'jsonapi-typescript';
+import { USERS_TYPE, GROUPS_TYPE } from '@data';
 
 export interface IOwnProps {
-  user: ResourceObject<'users', UserAttributes>;
-  groups: ResourceObject<'groups', GroupAttributes>[];
-  toggleLock: (user: ResourceObject<'users', UserAttributes>) => void;
+  user: ResourceObject<USERS_TYPE, UserAttributes>;
+  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
+  toggleLock: (user: ResourceObject<USERS_TYPE, UserAttributes>) => void;
 }
 
 export type IProps =

@@ -5,13 +5,13 @@ import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
-import { attributesFor } from '@data';
+import { attributesFor, ORGANIZATIONS_TYPE } from '@data';
 import { OrganizationAttributes } from '@data/models/organization';
 import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
   onChange: (payload: OrganizationAttributes) => void;
-  organization: ResourceObject<'organizations', OrganizationAttributes>;
+  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
 @withTemplateHelpers

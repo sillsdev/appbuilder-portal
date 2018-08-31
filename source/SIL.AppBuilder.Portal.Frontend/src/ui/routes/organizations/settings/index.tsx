@@ -8,7 +8,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import * as toast from '@lib/toast';
 import NotFound from '@ui/routes/errors/not-found';
-import { defaultOptions } from '@data';
+import { defaultOptions, ORGANIZATIONS_TYPE } from '@data';
 import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
 
 
@@ -32,7 +32,7 @@ interface PassedProps {
 }
 
 interface QueriedProps {
-  organization: ResourceObject<'organizations', OrganizationAttributes>;
+  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
 export type IProps =

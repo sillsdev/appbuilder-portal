@@ -10,9 +10,10 @@ import Loader from '@ui/components/loaders/page';
 
 import Row from './row';
 import { ResourceObject } from 'jsonapi-typescript';
+import { ORGANIZATIONS_TYPE } from '@data';
 
 export interface IOwnProps {
-  organizations: ResourceObject<'organizations', OrganizationAttributes>[];
+  organizations: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>[];
   isLoading: boolean;
   searchByName: (name: string) => void;
   toggle: () => void;
