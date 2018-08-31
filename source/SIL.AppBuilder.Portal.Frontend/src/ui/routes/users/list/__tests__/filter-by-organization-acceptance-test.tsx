@@ -118,7 +118,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
             await switcher.selectOrg();
           });
 
-          it('Only the user that belongs to the same organization are displayed', () => {
+          it('Only display the users that belong to the selected organization', () => {
 
             expect(page.usernames().length).to.equal(2);
 
@@ -126,7 +126,11 @@ describe('Acceptance | User list | Filtering users by organization', () => {
             const text = usernames.map(u => u.text).join();
 
             expect(text).to.include('fake fake');
+            expect(text).to.include('One fake');
+            expect(text).to.not.include('Two fake');
+
           });
+
         });
       });
     });
