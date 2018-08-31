@@ -32,6 +32,8 @@ class ProductsRoute extends React.Component<IProps & i18nProps> {
     const { organization, t } = this.props;
     const { makePrivateByDefault } = organization.attributes;
 
+    const makePublicByDefault = !makePrivateByDefault;
+
     return (
       <div className='sub-page-content'>
         <h2 className='bold m-b-xl'>{t('org.productsTitle')}</h2>
@@ -42,7 +44,7 @@ class ProductsRoute extends React.Component<IProps & i18nProps> {
             <p className='input-info'>{t('org.makePrivateDescription')}</p>
           </div>
           <Checkbox toggle className='m-l-lg'
-            checked={makePrivateByDefault}
+            checked={makePublicByDefault}
             onChange={this.togglePrivacy}
             />
         </div>

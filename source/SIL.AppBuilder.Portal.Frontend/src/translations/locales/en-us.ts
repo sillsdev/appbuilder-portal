@@ -71,9 +71,9 @@ export default {
     settingsTitle: 'Organization Settings',
     selectLogo: 'Select Logo',
     productsTitle: 'Products and Publishing',
-    makePrivateTitle: 'Make Projects Private by Default',
+    makePrivateTitle: 'Make Projects Public by Default',
     makePrivateDescription: `
-      When a new project is created, it will be defaulted to Private.
+      When a new project is created, it will be defaulted to Public.
       (Private projects cannot be viewed by anyone outside of your organization)`,
     productSelectTitle: 'Select all the products you would like to make available to your organization',
     navBasic: 'Basic Info',
