@@ -50,12 +50,6 @@ export default class ReduxProvider extends React.Component<IProps> {
     // Start sagas, etc
     setupMiddleware(store);
 
-    // TODO: is there a situation in development where
-    //       we want the store exposed?
-    // if (window.Cypress) {
-    //   window.__store__ = store;
-    // }
-
     // persist certain things between reloads
     store.subscribe(() => {
       const currentState = store.getState();
