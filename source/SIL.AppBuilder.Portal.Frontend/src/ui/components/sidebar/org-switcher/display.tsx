@@ -74,6 +74,7 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
         <hr />
 
         <Menu.Item
+          data-test-select-item-all-org
           className={allOrgsSelected && 'active' || ''}
           name={t('org.allOrganizations')}
           onClick={selectOrganization('')} />

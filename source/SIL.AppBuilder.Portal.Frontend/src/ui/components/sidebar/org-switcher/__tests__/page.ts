@@ -13,7 +13,7 @@ export class OrgSwitcherInteractor {
 
   orgNames = findAll('[data-test-org-select-item]');
   selectOrg = clickable('[data-test-org-select-item]');
-
+  selectAllOrg = clickable('[data-test-select-item-all-org]');
   isSearchVisible = isPresent('[data-test-org-switcher-search]');
 
 }
