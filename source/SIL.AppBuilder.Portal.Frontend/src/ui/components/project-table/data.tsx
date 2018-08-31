@@ -11,6 +11,7 @@ import { TYPE_NAME as OWNER } from '@data/models/user';
 import { query, defaultSourceOptions } from '@data';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
+import { ResourceObject } from 'jsonapi-typescript';
 
 function mapNetworkToProps(passedProps: IFilterProps) {
   const { applyFilter, filters } = passedProps;
@@ -33,7 +34,7 @@ function mapNetworkToProps(passedProps: IFilterProps) {
 }
 
 export interface IOwnProps {
-  projects: Array<JSONAPI<ProjectAttributes>>;
+  projects: ResourceObject<'projects', ProjectAttributes>;
   error?: any;
   applyFilter: (builder: FindRecordsTerm) => FindRecordsTerm;
 }

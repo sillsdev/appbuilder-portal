@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { compose } from 'recompose';
+import { SingleResourceDoc } from 'jsonapi-typescript';
 
 import { defaultSourceOptions, pushPayload } from '@data';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
@@ -19,7 +20,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import * as toast from '@lib/toast';
 
-type UserPayload = JSONAPIDocument<UserAttributes>;
+type UserPayload = SingleResourceDoc<'users', UserAttributes>;
 
 const mapRecordsToProps = () => {
   const auth0Id = getAuth0Id();

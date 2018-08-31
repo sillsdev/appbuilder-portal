@@ -3,9 +3,10 @@ import { Menu } from 'semantic-ui-react';
 
 import { attributesFor } from '@data';
 import { OrganizationAttributes } from '@data/models/organization';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<'organizations', OrganizationAttributes>;
   onClick: (e: any) => void;
   isActive: boolean;
 }

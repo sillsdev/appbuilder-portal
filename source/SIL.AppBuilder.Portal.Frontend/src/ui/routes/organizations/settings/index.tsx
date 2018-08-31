@@ -18,6 +18,7 @@ import ProductsRoute, { pathName as productsPath } from './products';
 import GroupsRoute, { pathName as groupsPath } from './groups';
 import InfrastructureRoute, { pathName as infrastructurePath } from './infrastructure';
 import Navigation from './navigation';
+import { ResourceObject } from 'jsonapi-typescript';
 
 
 export const pathName = '/organizations/:orgId/settings';
@@ -31,7 +32,7 @@ interface PassedProps {
 }
 
 interface QueriedProps {
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<'organizations', OrganizationAttributes>;
 }
 
 export type IProps =

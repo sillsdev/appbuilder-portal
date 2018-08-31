@@ -9,15 +9,16 @@ import { defaultSourceOptions } from '@data';
 
 import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
+import { ResourceObject } from 'jsonapi-typescript';
 
 interface IState {
-  fromNetwork?: JSONAPI<OrganizationAttributes>;
+  fromNetwork?: ResourceObject<'organizations', OrganizationAttributes>;
   error?: any;
 }
 
 export interface IProvidedProps {
   currentOrganizationId: string | number;
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<'organizations', OrganizationAttributes>;
 }
 
 export function withCurrentOrganization(InnerComponent) {

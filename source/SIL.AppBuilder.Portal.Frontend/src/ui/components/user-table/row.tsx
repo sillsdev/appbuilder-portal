@@ -6,11 +6,12 @@ import { GroupAttributes } from '@data/models/group';
 import GroupDropdown from './dropdown';
 import { Link } from 'react-router-dom';
 import { Radio } from 'semantic-ui-react';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IOwnProps {
-  user: JSONAPI<UserAttributes>;
-  groups: Array<JSONAPI<GroupAttributes>>;
-  toggleLock: (user: JSONAPI<UserAttributes>) => void;
+  user: ResourceObject<'users', UserAttributes>;
+  groups: ResourceObject<'groups', GroupAttributes>[];
+  toggleLock: (user: ResourceObject<'users', UserAttributes>) => void;
 }
 
 export type IProps =

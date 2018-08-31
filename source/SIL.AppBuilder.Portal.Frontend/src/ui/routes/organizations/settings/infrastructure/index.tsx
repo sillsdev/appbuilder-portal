@@ -3,6 +3,7 @@ import { match as Match } from 'react-router';
 import { OrganizationAttributes } from '@data/models/organization';
 
 import Display from './display';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/organizations/:orgId/settings/infrastructure';
 
@@ -13,7 +14,7 @@ export interface Params {
 export interface IProps {
   match: Match<Params>;
   update: (payload: OrganizationAttributes) => void;
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<'organizations', OrganizationAttributes>;
 }
 
 

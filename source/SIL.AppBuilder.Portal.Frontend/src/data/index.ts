@@ -21,3 +21,14 @@ export async function pushPayload(updateStore, payload) {
     q => resources.map(
       resource => q.addRecord(resource)), { skipRemote: true });
 }
+
+
+
+export type ORGANIZATIONS_TYPE = 'organizations';
+export type GROUPS_TYPE = 'groups';
+export type PROJECTS_TYPE = 'projects';
+export type USERS_TYPE = 'users';
+export type PRODUCTS_TYPE = 'products';
+export type TASKS_TYPE = 'tasks';
+export type ORGANIZATION_MEMBERSHIPS_TYPE = 'organization-memberships';
+export type GROUP_MEMBERSHIPS_TYPES = 'group-memberships';

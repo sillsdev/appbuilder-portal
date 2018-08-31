@@ -8,10 +8,11 @@ import { attributesFor } from '@data';
 import { ProjectAttributes } from '@data/models/project';
 
 import { withProjectOperations } from '@ui/routes/project/with-project-operations';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
-  project: JSONAPI<ProjectAttributes>;
-  toggleArchiveProject: (project: JSONAPI<ProjectAttributes>) => void;
+  project: ResourceObject<'projects', ProjectAttributes>;
+  toggleArchiveProject: (project: ResourceObject<'projects', ProjectAttributes>) => void;
 }
 
 class RowActions extends React.Component<IProps & i18nProps> {

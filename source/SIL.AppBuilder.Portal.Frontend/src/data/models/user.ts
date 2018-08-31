@@ -1,7 +1,9 @@
+import { AttributesObject } from 'jsonapi-typescript';
+
 export const TYPE_NAME = 'user';
 export const PLURAL_NAME = 'users';
 
-export interface UserAttributes {
+export interface UserAttributes extends AttributesObject {
   givenName?: string;
   familyName?: string;
   name?: string;

@@ -6,6 +6,7 @@ import { query, defaultSourceOptions, defaultOptions } from '@data';
 import { IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
 import { isEmpty } from '@lib/collection';
+import { ResourceObject } from 'jsonapi-typescript';
 
 function mapRecordsToProps(passedProps) {
   const { filterOptions, applyFilter } = passedProps;
@@ -28,8 +29,8 @@ function mapNetworkToProps(passedProps) {
 }
 
 interface IOwnProps {
-  organizations: Array<JSONAPI<OrganizationAttributes>>;
-  fromCache: Array<JSONAPI<OrganizationAttributes>>;
+  organizations: ResourceObject<'organizations', OrganizationAttributes>[];
+  fromCache: ResourceObject<'organizations', OrganizationAttributes>[];
 }
 
 type IProps =

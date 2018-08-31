@@ -3,25 +3,25 @@ import { compose } from 'recompose';
 import { query, defaultOptions } from '@data';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { isRelatedTo, relationshipsFor, relationshipFor } from '@data';
-import { withRelationship } from '@data/containers/with-relationship';
+import { relationshipFor } from '@data';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
-import { TYPE_NAME as GROUP_MEMBERSHIP } from '@data/models/group-membership';
+import { GroupMembershipAttributes } from '@data/models/group-membership';
 import { UserAttributes } from '@data/models/user';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProvidedProps {
-  groups: Array<JSONAPI<GroupAttributes>>;
+  groups: ResourceObject<'groups', GroupAttributes>[];
   disableSelection: true;
 }
 
 interface IOwnProps {
-  groups: Array<JSONAPI<GroupAttributes>>;
-  groupMembershipsFromCache: Array<JSONAPI<{}>>;
-  currentUserGroupMemberships: Array<JSONAPI<{}>>;
+  groups: ResourceObject<'groups', GroupAttributes>[];
+  groupMembershipsFromCache: ResourceObject<'group-memberships', GroupMembershipAttributes>[];
+  currentUserGroupMemberships: ResourceObject<'group-memberships', GroupMembershipAttributes>[];
   scopeToCurrentUser: boolean;
-  currentUser: JSONAPI<UserAttributes>;
+  currentUser: ResourceObject<'users', UserAttributes>;
   selected: Id;
 }
 
@@ -30,7 +30,7 @@ type IProps =
   & WithDataProps;
 
 export function withData(WrappedComponent) {
-  const mapNetworkToProps = (passedProps) => {
+  const mapNetworkToProps = () => {
     return {
       groups: [q => q.findRecords(GROUP), defaultOptions()]
     };
@@ -61,7 +61,7 @@ export function withData(WrappedComponent) {
         return <Loader />;
       }
 
-      let availableGroups: Array<JSONAPI<{}>>;
+      let availableGroups: ResourceObject<'groups', GroupAttributes>[];
 
       const groupIds = groupMembershipsFromCache
         .filter(gm => gm)

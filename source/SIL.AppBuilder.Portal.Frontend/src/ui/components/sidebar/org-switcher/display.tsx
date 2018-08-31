@@ -9,16 +9,17 @@ import { IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-cur
 import Loader from '@ui/components/loaders/page';
 
 import Row from './row';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IOwnProps {
-  organizations: Array<JSONAPI<OrganizationAttributes>>;
+  organizations: ResourceObject<'organizations', OrganizationAttributes>[];
   isLoading: boolean;
   searchByName: (name: string) => void;
   toggle: () => void;
   searchTerm: string;
   allOrgsSelected: boolean;
   didTypeInSearch: (e: any) => void;
-  selectOrganization: (id: number | string) => (e: any) => void;
+  selectOrganization: (id: Id) => (e: any) => void;
 }
 
 export type IProps =

@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
+import { ResourceObject } from 'jsonapi-typescript';
+import { ProductAttributes } from '@data/models/product';
 
 const iconMap = {
   android: 'android',
@@ -7,12 +9,7 @@ const iconMap = {
 };
 
 export interface IProps {
-  product: JSONAPI<{
-    name: string;
-    // type?
-    // TODO: figure out better mapping for this
-    //       we'll know for certain as we actually start to work with products
-  }>;
+  product: ResourceObject<'products', ProductAttributes>;
 }
 
 export default class ProductIcon extends React.Component<IProps> {

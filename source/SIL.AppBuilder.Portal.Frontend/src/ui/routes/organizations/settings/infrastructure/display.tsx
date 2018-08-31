@@ -7,10 +7,11 @@ import { compose } from 'recompose';
 
 import { attributesFor } from '@data';
 import { OrganizationAttributes } from '@data/models/organization';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
   onChange: (payload: OrganizationAttributes) => void;
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<'organizations', OrganizationAttributes>;
 }
 
 @withTemplateHelpers

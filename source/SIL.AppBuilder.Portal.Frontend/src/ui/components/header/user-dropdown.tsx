@@ -11,10 +11,11 @@ import { withCurrentUser } from '@data/containers/with-current-user';
 
 import { deleteToken, getPictureUrl } from '@lib/auth0';
 import './header.scss';
+import { ResourceObject } from 'jsonapi-typescript';
 
 interface IOwnProps {
   toggleSidebar: () => void;
-  currentUser: JSONAPI<UserAttributes>;
+  currentUser: ResourceObject<'users', UserAttributes>;
 }
 
 export type IProps =

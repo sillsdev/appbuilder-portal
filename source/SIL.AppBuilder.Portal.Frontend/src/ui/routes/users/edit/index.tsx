@@ -6,19 +6,20 @@ import { Container } from 'semantic-ui-react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import * as toast from '@lib/toast';
-import { idFor, defaultOptions } from '@data';
+import { idFor, defaultOptions, USERS_TYPE } from '@data';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
 import { withCurrentUser } from '@data/containers/with-current-user';
 
 import EditProfileForm from './form';
 import { withData } from './with-data';
 import './profile.scss';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/users/:id/edit';
 
 export interface IOwnProps {
-  user: JSONAPI<UserAttributes>;
-  currentUser: JSONAPI<UserAttributes>;
+  user: ResourceObject<USERS_TYPE, UserAttributes>;
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
 }
 
 export type IProps =

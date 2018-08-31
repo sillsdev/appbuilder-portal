@@ -3,6 +3,7 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { defaultOptions } from '@data';
 import { ProjectAttributes } from '@data/models/project';
+import { ResourceObject } from 'jsonapi-typescript';
 
 
 export interface IProvidedProps {
@@ -12,7 +13,7 @@ export interface IProvidedProps {
 }
 
 interface IOwnProps {
-  project: JSONAPI<ProjectAttributes>;
+  project: ResourceObject<'projects', ProjectAttributes>;
 }
 
 type IProps =

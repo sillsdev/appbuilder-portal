@@ -1,25 +1,26 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { ResourceObject } from 'jsonapi-typescript';
 
 import { query, defaultSourceOptions, relationshipFor } from '@data';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
-import { TYPE_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
+import { TYPE_NAME as GROUP_MEMBERSHIPS, GroupMembershipAttributes } from '@data/models/group-membership';
 import { withCurrentUser } from '@data/containers/with-current-user';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
 
 export interface IProvidedProps {
-  users: Array<JSONAPI<UserAttributes>>;
+  users: ResourceObject<'users', UserAttributes>[];
   disableSelection: true;
 }
 
 interface IOwnProps {
-  users: Array<JSONAPI<UserAttributes>>;
-  groupMemberships: Array<JSONAPI<{}>>;
-  currentUsersGroupMemberships: Array<JSONAPI<{}>>;
-  usersFromCache: Array<JSONAPI<{}>>;
-  currentUser: JSONAPI<UserAttributes>;
+  users: ResourceObject<'users', UserAttributes>[];
+  groupMemberships: ResourceObject<'group-memberships', GroupMembershipAttributes>[];
+  currentUsersGroupMemberships: ResourceObject<'group-memberships', GroupMembershipAttributes>[];
+  usersFromCache: ResourceObject<'users', UserAttributes>[];
+  currentUser: ResourceObject<'users', UserAttributes>;
   selected: Id;
   groupId: Id;
   restrictToGroup: boolean;

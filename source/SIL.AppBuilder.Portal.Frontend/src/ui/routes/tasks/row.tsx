@@ -14,12 +14,14 @@ import { UserAttributes } from '@data/models/user';
 
 import ProductIcon from '@ui/components/product-icon';
 import { RectLoader as Loader } from '@ui/components/loaders';
+import { ResourceObject } from 'jsonapi-typescript';
+import { TASKS_TYPE, PRODUCTS_TYPE, PROJECTS_TYPE, USERS_TYPE } from '@data';
 
 export interface IOwnProps {
-  task: JSONAPI<TaskAttributes>;
-  product: JSONAPI<ProductAttributes>;
-  project: JSONAPI<ProjectAttributes>;
-  assignedTo: JSONAPI<UserAttributes>;
+  task: ResourceObject<TASKS_TYPE, TaskAttributes>;
+  product: ResourceObject<PRODUCTS_TYPE, ProductAttributes>;
+  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  assignedTo: ResourceObject<USERS_TYPE, UserAttributes>;
   cellClasses: string;
   cellSecondaryClasses: string;
 }

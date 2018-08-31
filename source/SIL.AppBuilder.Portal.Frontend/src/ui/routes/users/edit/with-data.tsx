@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { match as Match, Redirect } from 'react-router';
+import { Document, ResourceObject, SingleResourceDoc } from 'jsonapi-typescript';
 
 import { query, defaultOptions } from '@data';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
@@ -16,7 +17,7 @@ interface PassedProps {
 }
 
 interface IOwnProps {
-  user: JSONAPIDocument<UserAttributes>;
+  user: SingleResourceDoc<'users', UserAttributes>;
 }
 
 type IProps =
@@ -37,7 +38,7 @@ export function withData(WrappedComponent) {
   class DataWrapper extends React.Component<IProps> {
     render() {
       const { user } = this.props;
-
+      
       if (!user) {
         return <Loader />;
       }

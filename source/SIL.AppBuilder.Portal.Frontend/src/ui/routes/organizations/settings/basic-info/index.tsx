@@ -8,6 +8,7 @@ import { compose } from 'recompose';
 import { OrganizationAttributes } from '@data/models/organization';
 
 import SelectLogo from '../select-logo';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/organizations/:orgId/settings';
 
@@ -23,7 +24,7 @@ export interface Params {
 export interface IProps {
   match: Match<Params>;
   update: (payload: OrganizationAttributes) => void;
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<'organizations', OrganizationAttributes>;
 }
 
 @withTemplateHelpers

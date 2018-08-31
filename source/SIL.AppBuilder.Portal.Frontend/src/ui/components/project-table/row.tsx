@@ -11,11 +11,12 @@ import { OrganizationAttributes } from '@data/models/organization';
 import { withRelationship } from './withRelationship';
 import ProductIcon from '@ui/components/product-icon';
 import RowActions from '@ui/components/project-table/row-actions';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
-  project: JSONAPI<ProjectAttributes>;
-  organization: JSONAPI<OrganizationAttributes>;
-  toggleArchiveProject: (project: JSONAPI<ProjectAttributes>) => void;
+  project: ResourceObject<'projects', ProjectAttributes>;
+  organization: ResourceObject<'organizations', OrganizationAttributes>;
+  toggleArchiveProject: (project: ResourceObject<'projects', ProjectAttributes>) => void;
 }
 
 // TODO: Remove this when we had products associated to projects

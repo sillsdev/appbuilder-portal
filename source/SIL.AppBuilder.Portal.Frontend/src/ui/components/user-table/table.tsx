@@ -9,11 +9,12 @@ import Header from './header';
 import Row from './row';
 
 import './user-table.scss';
+import { ResourceObject } from 'jsonapi-typescript';
 
 interface IOwnProps {
-  users: Array<JSONAPI<UserAttributes>>;
-  groups: Array<JSONAPI<GroupAttributes>>;
-  toggleLock: (user: JSONAPI<UserAttributes>) => void;
+  users: ResourceObject<'users', UserAttributes>[];
+  groups: ResourceObject<'groups', GroupAttributes>[];
+  toggleLock: (user: ResourceObject<'users', UserAttributes>) => void;
 }
 
 type IProps =

@@ -5,6 +5,8 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
 import { TYPE_NAME, OrganizationAttributes } from '@data/models/organization';
+import { ORGANIZATIONS_TYPE } from '@data';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/organizations/:orgId/settings/products';
 
@@ -15,7 +17,7 @@ export interface Params {
 export interface IProps {
   match: Match<Params>;
   update: (payload: OrganizationAttributes) => void;
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
 class ProductsRoute extends React.Component<IProps & i18nProps> {

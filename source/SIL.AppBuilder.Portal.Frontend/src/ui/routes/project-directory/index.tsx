@@ -11,7 +11,7 @@ import { GroupAttributes } from '@data/models/group';
 import { withSorting } from '@data/containers/sorting';
 import { withPagination } from '@data/containers/pagination';
 
-import { query, defaultOptions } from '@data';
+import { query, defaultOptions, ORGANIZATIONS_TYPE, GROUPS_TYPE } from '@data';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as GROUP } from '@data/models/group';
 
@@ -32,13 +32,14 @@ import ProjectSearch from '@ui/components/project-search';
 import '@ui/components/project-table/project-table.scss';
 
 import Filters from './filters';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/directory';
 
 export interface IOwnProps {
-  organizations: JSONAPI<OrganizationAttributes>;
+  organizations: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
   setCurrentOrganizationId: (id: number | string) => void;
-  groups: JSONAPI<GroupAttributes>;
+  groups: ResourceObject<GROUPS_TYPE, GroupAttributes>[];
 }
 
 export type IProps =

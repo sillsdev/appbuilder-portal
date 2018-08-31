@@ -13,12 +13,13 @@ import { withFiltering, IProvidedProps as IFilterProps } from '@data/containers/
 
 import { withData } from './with-data';
 import Display from './display';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IOwnProps {
-  organizations: Array<JSONAPI<OrganizationAttributes>>;
+  organizations: ResourceObject<'organizations', OrganizationAttributes>[];
   isLoading: boolean;
   searchByName: (name: string) => void;
-  setCurrentOrganizationId: (id: string | number) => void;
+  setCurrentOrganizationId: (id: Id) => void;
   toggle: () => void;
 }
 

@@ -6,11 +6,12 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import TimezonePicker from 'react-timezone';
 
 import { UserAttributes } from '@data/models/user';
-import { idFor } from '@data';
+import { idFor, USERS_TYPE } from '@data';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
-  user: JSONAPI<UserAttributes>;
-  currentUser: JSONAPI<UserAttributes>;
+  user: ResourceObject<USERS_TYPE, UserAttributes>;
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   onSubmit: (data: IState) => Promise<void>;
 }
 
