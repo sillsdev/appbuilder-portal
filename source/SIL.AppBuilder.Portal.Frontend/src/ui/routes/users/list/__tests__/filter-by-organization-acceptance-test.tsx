@@ -87,54 +87,48 @@ describe('Acceptance | User list | Filtering users by organization', () => {
       });
     });
 
-    beforeEach(async function () {
-      await visit('/users');
-    });
-
-    describe('Render user table when "all organization" is selected',() => {
+    describe('Select all organizations',() => {
 
       beforeEach(async function () {
+        await visit('/users');
         await app.openSidebar();
         await app.openOrgSwitcher();
         await switcher.selectAllOrg();
       });
 
-      it('all user are rendered', () => {
+      describe('Renders users page', () => {
 
-        expect(page.usernames().length).to.equal(3);
+        it('Should see all users', () => {
 
-        const usernames = page.usernames();
-        const text = usernames.map(u => u.text).join();
+          expect(page.usernames().length).to.equal(3);
 
-        expect(text).to.include('fake fake');
-        expect(text).to.include('One fake');
-        expect(text).to.include('Two fake');
+          const usernames = page.usernames();
+          const text = usernames.map(u => u.text).join();
+
+          expect(text).to.include('fake fake');
+          expect(text).to.include('One fake');
+          expect(text).to.include('Two fake');
+        });
+
+        describe('Select a specific organization', () => {
+
+          beforeEach(async function () {
+            await app.openSidebar();
+            await app.openOrgSwitcher();
+            await switcher.selectOrg();
+          });
+
+          it('Only the user that belongs to the same organization are displayed', () => {
+
+            expect(page.usernames().length).to.equal(2);
+
+            const usernames = page.usernames();
+            const text = usernames.map(u => u.text).join();
+
+            expect(text).to.include('fake fake');
+          });
+        });
       });
-    });
-
-    describe('Render user table when first organization is selected',() => {
-
-      beforeEach(async function() {
-        await app.openSidebar();
-        await app.openOrgSwitcher();
-        await switcher.selectOrg();
-      });
-
-      it('users from first organization are rendered', () => {
-        expect(page.usernames().length).to.equal(2);
-      });
-
-      it('Only the users from the selected organization are rendered', () => {
-
-        const usernames = page.usernames();
-        const text = usernames.map(u => u.text).join();
-
-        expect(text).to.include('fake fake');
-
-      });
-
     });
   });
-
-
 });
