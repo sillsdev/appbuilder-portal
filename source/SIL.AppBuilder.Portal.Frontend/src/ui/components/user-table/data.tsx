@@ -6,7 +6,7 @@ import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { TYPE_NAME as USER, PLURAL_NAME as USERS, UserAttributes } from '@data/models/user';
-import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
+import { PLURAL_NAME as GROUP_MEMBERSHIP } from '@data/models/group-membership';
 import { TYPE_NAME as MEMBERSHIP, PLURAL_NAME as MEMBERSHIPS } from '@data/models/organization-membership';
 import { PageLoader as Loader } from '@ui/components/loaders';
 import { query, defaultSourceOptions, defaultOptions, isRelatedTo, relationshipFor } from '@data';
@@ -24,11 +24,10 @@ function mapNetworkToProps(passedProps) {
       sources: {
         remote: {
           settings: { ...defaultSourceOptions() },
-          include: [MEMBERSHIPS]
+          include: [MEMBERSHIPS, GROUP_MEMBERSHIP]
         }
       }
-    }],
-    groups: [q => q.findRecords(GROUP), defaultOptions()]
+    }]
   };
 }
 
@@ -48,7 +47,6 @@ function mapStateToProps({ data }) {
 interface IOwnProps {
   users: Array<JSONAPI<UserAttributes>>;
   usersFromCache: Array<JSONAPI<UserAttributes>>;
-  groups: Array<JSONAPI<GroupAttributes>>;
   currentOrganizationId: string;
   organizationMemberships: Array<JSONAPI<{}>>;
 }
@@ -64,9 +62,9 @@ export function withData(WrappedComponent) {
 
     isLoading = () => {
 
-      const { users, groups, organizationMemberships } = this.props;
+      const { users,  organizationMemberships } = this.props;
 
-      return !users || !groups || !organizationMemberships;
+      return !users || !organizationMemberships;
     }
 
     toggleLock = async (user) => {
@@ -119,7 +117,6 @@ export function withData(WrappedComponent) {
     render() {
       const {
         users, usersFromCache,
-        groups,
         organizationMemberships,
         currentOrganizationId: orgId,
         ...otherProps
@@ -137,8 +134,7 @@ export function withData(WrappedComponent) {
             // TODO: need a way to test against the joined organization
             !!user.attributes && this.isRelatedTo(user, organizationMemberships, orgId)
           );
-        }),
-        groups
+        })
       };
 
       const actionProps = {
