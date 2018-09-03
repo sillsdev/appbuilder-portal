@@ -5,6 +5,8 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
 import { TYPE_NAME, OrganizationAttributes } from '@data/models/organization';
+import { ORGANIZATIONS_TYPE } from '@data';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/organizations/:orgId/settings/products';
 
@@ -15,7 +17,7 @@ export interface Params {
 export interface IProps {
   match: Match<Params>;
   update: (payload: OrganizationAttributes) => void;
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
 class ProductsRoute extends React.Component<IProps & i18nProps> {
@@ -30,6 +32,8 @@ class ProductsRoute extends React.Component<IProps & i18nProps> {
     const { organization, t } = this.props;
     const { makePrivateByDefault } = organization.attributes;
 
+    const makePublicByDefault = !makePrivateByDefault;
+
     return (
       <div className='sub-page-content'>
         <h2 className='bold m-b-xl'>{t('org.productsTitle')}</h2>
@@ -40,7 +44,7 @@ class ProductsRoute extends React.Component<IProps & i18nProps> {
             <p className='input-info'>{t('org.makePrivateDescription')}</p>
           </div>
           <Checkbox toggle className='m-l-lg'
-            checked={makePrivateByDefault}
+            checked={makePublicByDefault}
             onChange={this.togglePrivacy}
             />
         </div>

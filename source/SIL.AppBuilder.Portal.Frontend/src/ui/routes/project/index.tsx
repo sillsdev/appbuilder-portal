@@ -23,6 +23,8 @@ import { withAccessRestriction } from './with-access-restriction';
 
 
 import './project.scss';
+import { ResourceObject } from 'jsonapi-typescript';
+import { PROJECTS_TYPE } from '@data';
 
 export const pathName = '/project/:id';
 
@@ -33,11 +35,11 @@ export interface Params {
 interface PassedProps {
   match: Match<Params>;
   timeAgo: any;
-  toggleArchiveProject: (project: JSONAPI<ProjectAttributes>) => void;
+  toggleArchiveProject: (project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>) => void;
 }
 
 interface QueriedProps {
-  project: JSONAPI<ProjectAttributes>;
+  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
 }
 
 export type IProps =

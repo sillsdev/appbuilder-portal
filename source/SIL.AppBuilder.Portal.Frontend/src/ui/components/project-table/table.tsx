@@ -3,9 +3,11 @@ import * as React from 'react';
 import Header from './header';
 import Row from './row';
 import { ProjectAttributes } from '@data/models/project';
+import { ResourceObject } from 'jsonapi-typescript';
+import { PROJECTS_TYPE } from '@data';
 
 interface IOwnProps {
-  projects: Array<JSONAPI<ProjectAttributes>>;
+  projects: Array<ResourceObject<PROJECTS_TYPE, ProjectAttributes>>;
 }
 
 type IProps =

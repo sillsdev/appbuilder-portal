@@ -5,15 +5,16 @@ import md5 from 'md5-hash';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withData } from '../edit/with-data';
 import { UserAttributes } from '@data/models/user';
-import { attributesFor } from '@data';
+import { attributesFor, USERS_TYPE } from '@data';
 
 
 import './show.scss';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/users/:id';
 
 export interface IOwnProps {
-  user: JSONAPI<UserAttributes>;
+  user: ResourceObject<USERS_TYPE, UserAttributes>;
 }
 
 export type IProps =

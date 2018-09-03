@@ -1,6 +1,9 @@
-export const TYPE_NAME = 'project';
+import { AttributesObject } from "jsonapi-typescript";
 
-export interface ProjectAttributes {
+export const TYPE_NAME = 'project';
+export const PLURAL_NAME = 'projects';
+
+export interface ProjectAttributes extends AttributesObject {
   name: string;
   status: string;
   dateCreated: Date;

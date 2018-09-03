@@ -5,6 +5,7 @@
   "main": "src/index.html",
   "scripts": {
     "ts-node": "./node_modules/.bin/ts-node",
+    "tsc": "./node_modules/.bin/tsc",
     "karma": "./node_modules/.bin/karma",
     "webpack": "./node_modules/.bin/webpack-cli",
     "polly": "./node_modules/.bin/polly",
@@ -19,7 +20,8 @@
     "test:ci": "CI=true yarn karma:start --single-run",
     "lint": "yarn tslint",
     "lint:fix": "yarn lint --fix",
-    "tslint-check": "./node_modules/.bin/tslint-config-prettier-check ./tslint.json"
+    "tslint-check": "./node_modules/.bin/tslint-config-prettier-check ./tslint.json",
+    "typecheck": "yarn tsc --noEmit"
   },
   "dependencies": {
     "@orbit/coordinator": "^0.15.14",
@@ -118,6 +120,7 @@
     "http-proxy-middleware": "^0.18.0",
     "http-shutdown": "^1.2.0",
     "jquery": "^3.3.1",
+    "jsonapi-typescript": "^0.0.9",
     "karma": "^3.0.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",

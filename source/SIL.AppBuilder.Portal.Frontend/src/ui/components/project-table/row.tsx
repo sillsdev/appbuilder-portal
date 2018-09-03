@@ -4,18 +4,19 @@ import { Link } from 'react-router-dom';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
-import { attributesFor } from '@data';
+import { attributesFor, PROJECTS_TYPE, ORGANIZATIONS_TYPE } from '@data';
 import { ProjectAttributes } from '@data/models/project';
 import { OrganizationAttributes } from '@data/models/organization';
 
 import { withRelationship } from './withRelationship';
 import ProductIcon from '@ui/components/product-icon';
 import RowActions from '@ui/components/project-table/row-actions';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
-  project: JSONAPI<ProjectAttributes>;
-  organization: JSONAPI<OrganizationAttributes>;
-  toggleArchiveProject: (project: JSONAPI<ProjectAttributes>) => void;
+  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
+  toggleArchiveProject: (project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>) => void;
 }
 
 // TODO: Remove this when we had products associated to projects

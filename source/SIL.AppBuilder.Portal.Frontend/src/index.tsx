@@ -7,7 +7,6 @@ import './global-config';
 import 'semantic-ui-css/semantic.min.css';
 
 import './ui/styles/app.scss';
-// require('public/images/*');
 
 import Application from './ui/application';
 

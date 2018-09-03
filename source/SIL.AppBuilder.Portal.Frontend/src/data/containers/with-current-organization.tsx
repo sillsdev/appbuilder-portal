@@ -5,19 +5,20 @@ import { compose } from 'recompose';
 
 import { OrganizationAttributes, TYPE_NAME } from '../models/organization';
 import { isEmpty } from '@lib/collection';
-import { defaultSourceOptions } from '@data';
+import { defaultSourceOptions, ORGANIZATIONS_TYPE } from '@data';
 
 import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
+import { ResourceObject } from 'jsonapi-typescript';
 
 interface IState {
-  fromNetwork?: JSONAPI<OrganizationAttributes>;
+  fromNetwork?: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
   error?: any;
 }
 
 export interface IProvidedProps {
   currentOrganizationId: string | number;
-  organization: JSONAPI<OrganizationAttributes>;
+  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
 export function withCurrentOrganization(InnerComponent) {

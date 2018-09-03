@@ -4,14 +4,15 @@ import { compose } from 'recompose';
 import { Dropdown, Icon } from 'semantic-ui-react';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import { attributesFor } from '@data';
+import { attributesFor, PROJECTS_TYPE } from '@data';
 import { ProjectAttributes } from '@data/models/project';
 
 import { withProjectOperations } from '@ui/routes/project/with-project-operations';
+import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
-  project: JSONAPI<ProjectAttributes>;
-  toggleArchiveProject: (project: JSONAPI<ProjectAttributes>) => void;
+  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  toggleArchiveProject: (project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>) => void;
 }
 
 class RowActions extends React.Component<IProps & i18nProps> {

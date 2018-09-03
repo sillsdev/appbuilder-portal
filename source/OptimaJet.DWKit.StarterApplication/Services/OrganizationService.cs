@@ -29,7 +29,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         {
             var newEntity = await base.CreateAsync(entity);
 
-            // an org can only be created by the owner of the org. (for now anyway)            
+            // an org can only be created by the owner of the org. (for now anyway)
             var membership = new OrganizationMembership {
                 User = newEntity.Owner,
                 Organization = newEntity

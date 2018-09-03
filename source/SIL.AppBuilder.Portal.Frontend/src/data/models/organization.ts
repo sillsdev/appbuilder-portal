@@ -1,6 +1,8 @@
+import { AttributesObject } from "jsonapi-typescript";
+
 export const TYPE_NAME = 'organization';
 
-export interface OrganizationAttributes {
+export interface OrganizationAttributes extends AttributesObject {
   // from an invite
   token?: string;
 
