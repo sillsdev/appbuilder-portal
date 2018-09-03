@@ -23,7 +23,7 @@ type IProps =
 export default class GroupSelectDisplay extends React.Component<IProps, IState> {
 
   state = {
-    options: undefined,
+    options: [],
     selectedOptions: []
   }
 
@@ -54,7 +54,7 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
       .filter(group => attributesFor(group).name)
       .map(group => ({
         text: attributesFor(group).name,
-        value: group.id
+        id: group.id
       }));
 
     return groupOptions;
@@ -73,14 +73,16 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
     const { selectedOptions, options } = this.state;
 
     if (selectedOptions && selectedOptions.length === 0) {
-      return '-';
+      return 'None';
     }
 
     if (selectedOptions.length === options.length) {
-      return 'ALL';
+      return 'All groups';
     }
 
-    return selectedOptions.map(item => item.value).join(', ');
+    const getShortName = (text) => text.split(' ').length > 1 ? `${text.split(' ')[0]}...` : text;
+
+    return selectedOptions.map(item => getShortName(item.text)).join(', ');
   }
 
   updateOptionsSelected = (id) => {
@@ -93,18 +95,22 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
 
     if (!optionSelected) { return; }
 
+    //If option is in selectedOptions, remove it
     if (isOptionInSelectedOptions(optionSelected)) {
-
-      this.setState({
-        selectedOptions: [...this.state.selectedOptions, optionSelected]
-      });
-
-    } else {
 
       const selectOptionsFiltered = selectedOptions.filter(i => i.id !== optionSelected.id);
 
       this.setState({
         selectedOptions: selectOptionsFiltered
+      });
+
+    } else {
+
+      this.setState({
+        selectedOptions: [
+          ...selectedOptions,
+          optionSelected
+        ]
       });
 
     }
@@ -138,7 +144,7 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
                 }}>
                   <Checkbox
                     value={item.id}
-                    label={item.value}
+                    label={item.text}
                     checked={this.isItemSelected(item.id)}
                   />
                 </div>

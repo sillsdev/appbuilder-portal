@@ -7,7 +7,7 @@ import { ResourceObject } from 'jsonapi-typescript';
 
 import { GroupAttributes } from '@data/models/group';
 import { UserAttributes } from '@data/models/user';
-import GroupDropdown from './dropdown';
+import GroupDropdown from '@ui/components/inputs/multi-group-select';
 import { withGroups }  from './with-groups';
 
 import { USERS_TYPE, GROUPS_TYPE } from '@data';
