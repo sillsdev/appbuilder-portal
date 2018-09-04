@@ -9,14 +9,15 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         // tests are not intended to be automated, just to interact with a real 
         // system and show how the API is used.
         //
+        const string skipIntegrationTest = "Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public string BaseUrl { get; set; } = "https://buildengine.gtis.guru"; // This is our staging version of BuildEngine
         public string ApiAccessKey { get; set; } = "";
         public string UserId { get; set; } = ""; // Email address
         public string GroupId { get; set; } = ""; // Some shared group
-        public string PublishingKey { get; set; } = "ssh-rsa ..."; // Get this from Scripture App Builder
+        public string PublishingKey { get; set; } = ""; // Get this from Scripture App Builder
 
-        [Theory]
-        [InlineData(1)]
+        [Theory(Skip = skipIntegrationTest)]
+        [InlineData(4)]
         public void GetTestProject(int projectId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
@@ -24,7 +25,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.NotNull(response);
         }
 
-        [Fact]
+        [Fact(Skip = skipIntegrationTest)]
         public void GetTestProjects()
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
@@ -33,7 +34,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         }
 
 
-        [Fact]
+        [Fact(Skip = skipIntegrationTest)]
         public void CreateTestProject()
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
@@ -61,8 +62,8 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.NotEqual(DateTime.MinValue, response.Updated);
         }
 
-        [Theory]
-        [InlineData(4)]
+        [Theory(Skip = skipIntegrationTest)]
+        [InlineData(5)]
         public void DeleteTestProject(int projectId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
