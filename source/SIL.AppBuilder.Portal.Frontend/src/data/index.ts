@@ -24,6 +24,7 @@ export async function pushPayload(updateStore, payload) {
 
 
 
+// JSONAPI types
 export type ORGANIZATIONS_TYPE = 'organizations';
 export type GROUPS_TYPE = 'groups';
 export type PROJECTS_TYPE = 'projects';

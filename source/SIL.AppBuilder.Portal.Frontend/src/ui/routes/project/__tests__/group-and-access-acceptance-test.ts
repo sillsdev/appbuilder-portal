@@ -140,17 +140,6 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
           }
         }
       ]
-    }, {
-      data: [{ type: 'organizations', id: 1, attributes: {} }],
-      included: [
-        { id: 1, type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
-        },
-      ]
     });
 
     beforeEach(async function() {

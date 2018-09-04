@@ -6,38 +6,11 @@ import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import { respondWithJsonApi } from './request-intercepting/jsonapi';
 
 // this requires the request interceptor
-export function useFakeAuthentication(currentUser?: object, organizations?: object) {
+export function useFakeAuthentication(currentUser?: object) {
   beforeEach(function() {
     setToken(fakeAuth0JWT());
 
     expect(isLoggedIn()).to.eq(true, 'user should be logged in, but is unauthenticated');
-
-    this.mockGet(200, '/organizations', organizations || {
-      data: [{
-        type: 'organizations',
-        id: 1,
-        attributes: {}
-      }],
-      included: [
-        {
-          id: 1,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
-        },
-        {
-          id: 1,
-          type: 'groups' ,
-          attributes: { name: 'Some Group' },
-          relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
-        }
-      ]
-    });
 
     this.mockGet(200, '/users/current-user', currentUser || {
       data: {
@@ -59,6 +32,19 @@ export function useFakeAuthentication(currentUser?: object, organizations?: obje
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } }
+          }
+        },
+        {
+          type: 'organizations',
+          id: 1,
+          attributes: {}
+        },
+        {
+          id: 1,
+          type: 'groups' ,
+          attributes: { name: 'Some Group' },
+          relationships: {
             organization: { data: { id: 1, type: 'organizations' } }
           }
         }

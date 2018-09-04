@@ -16,32 +16,24 @@ describe('Acceptance | User list | Filtering users by organization', () => {
 
   describe('User belongs multiple organizations', () => {
 
-    useFakeAuthentication(undefined, {
-      data: [{
-        type: 'organizations', id: 1,
-        attributes: {
-          name: 'SIL International'
-        }
-      }, {
-        type: 'organizations', id: 2,
-        attributes: {
-          name: 'DeveloperTown'
-        }
-      }, {
-        type: 'organizations', id: 3,
-        attributes: {
-          name: 'Kalaam Media'
-        }
-      }]
-    });
+    useFakeAuthentication();
 
     beforeEach(function() {
-      this.mockGet(200, '/groups', {
+      this.mockGet(200, '/organizations', {
         data: [{
-          type: 'groups',
-          id: '2',
+          type: 'organizations', id: 1,
           attributes: {
-            name: 'Fake group'
+            name: 'SIL International'
+          }
+        }, {
+          type: 'organizations', id: 2,
+          attributes: {
+            name: 'DeveloperTown'
+          }
+        }, {
+          type: 'organizations', id: 3,
+          attributes: {
+            name: 'Kalaam Media'
           }
         }]
       });

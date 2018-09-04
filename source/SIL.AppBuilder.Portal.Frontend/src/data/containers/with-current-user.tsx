@@ -61,28 +61,6 @@ export function withCurrentUser(opts = {}) {
         networkFetchComplete: false
       };
 
-      // TODO: remove this when the below linked github issue is resolved
-      getOrganizations = async (user) => {
-        const { queryStore } = this.props;
-        const included = user.included || [];
-        const memberships = included.filter(i => i.type === 'organization-memberships');
-
-
-        // TODO: this currently gets all organizations
-        //       remove when we have nested includes supports.
-        return await queryStore(
-          q => q.findRecords('organization'), {
-          sources: {
-            remote: {
-              include: 'groups',
-              settings: {
-                ...defaultSourceOptions()
-              },
-            }
-          }
-         });
-      }
-
       componentDidMount() {
         this.fetchCurrentUser();
       }
@@ -120,7 +98,7 @@ export function withCurrentUser(opts = {}) {
           // TOOD: add nested include when:
           // https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
           // is resolved
-          const response = await authenticatedGet('/api/users/current-user?include=organization-memberships,group-memberships');
+          const response = await authenticatedGet('/api/users/current-user?include=organization-memberships.organization,group-memberships.group');
           const status = response.status;
           const unauthorized = status === 401;
 
@@ -136,7 +114,6 @@ export function withCurrentUser(opts = {}) {
           const json = await tryParseJson(response);
 
           await pushPayload(updateStore, json);
-          await this.getOrganizations(json);
 
           console.debug('Current User Data has been fetched');
           // this state value isn't used anywhere, but we need to trigger
