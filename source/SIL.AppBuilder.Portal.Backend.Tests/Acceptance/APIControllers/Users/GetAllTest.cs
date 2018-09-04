@@ -67,7 +67,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
 
             var document = await DeserializeDocumentList(response);
 
-            Assert.Equal(0, document.Data.Count);
+            Assert.Empty(document.Data);
         }
 
         [Fact]

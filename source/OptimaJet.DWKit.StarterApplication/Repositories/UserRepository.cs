@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Data;
@@ -8,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
+using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
+using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
@@ -29,67 +32,66 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 
         public override IQueryable<User> Filter(IQueryable<User> query, FilterQuery filterQuery)
         {
-            var attribute = filterQuery.Attribute;
-            var value = filterQuery.Value;
-            var isOrgId = attribute.Equals("organization-id", StringComparison.OrdinalIgnoreCase);
+            return query.OptionallyFilterOnQueryParam(filterQuery,
+                                          "organization-id",
+                                          this,
+                                          CurrentUserContext,
+                                          GetWithOrganizationId,
+                                          FilterOnOrganizationHeader,
+                                          null,
+                                          null);
 
-            if (isOrgId) {
-                // TODO: would it make sense to define a custom predicate for this usage?
-                //       semantically, this would be:
-                //          ?filter[organization-memberships.organization-id]=anyEq:orgId
-                //
-                // NOTE: Current usage is:
-                //          ?filter[organization-id]=orgId
-                return query.Where(
-                    u => u.OrganizationMemberships
-                          .Any(om => om.OrganizationId.ToString() == value));
-            }
-
-            return base.Filter(query, filterQuery);
         }
-
-
-        public override IQueryable<User> Get()
+        protected IQueryable<User> FilterOnOrganizationHeader(IQueryable<User>query, FilterQuery filterQuery)
         {
-            if (OrganizationContext.SpecifiedOrganizationDoesNotExist) {
-                return Enumerable.Empty<User>().AsQueryable();
-            }
+            return query.OptionallyFilterOnQueryParam(filterQuery,
+                                          "organization-header",
+                                          this,
+                                          CurrentUserContext,
+                                          GetWithFilter,
+                                          base.Filter,
+                                         GetAllUsersByCurrentUser,
+                                         GetWithOrganizationContext);
 
-            var currentUser = GetByAuth0Id(CurrentUserContext.Auth0Id).Result;
+        }
+        private IQueryable<User> GetAllUsersByCurrentUser(IQueryable<User> query,
+                                               IEnumerable<int> orgIds)
+        {
+            // Get all users in the all the 
+            // organizations that the current user is a member
 
-            var query = base.Get();
-
-            if (!OrganizationContext.HasOrganization)
-            {
-                // No organization specified, so include all users in the all the 
-                // organizations that the current user is a member
-                var orgIds = currentUser.OrganizationIds ?? Enumerable.Empty<int>();
-
-                return query
-                    .Where(u => (
-                        u.Id == currentUser.Id 
-                        || (u.OrganizationMemberships
-                                .Select(o => o.OrganizationId)
-                                .Intersect(orgIds)
-                                .Any()
-                            )
-                    ));
-            }
-
+            return query
+                .Where(u => u.OrganizationMemberships
+                            .Select(o => o.OrganizationId)
+                            .Intersect(orgIds)
+                            .Any());
+        }
+        private IQueryable<User> GetWithOrganizationContext(IQueryable<User> query,
+                                                IEnumerable<int> orgIds)
+        {
             // Get users in the current organization
             return query
-                .Where(u => (
-                    u.Id == currentUser.Id 
-                    || (u.OrganizationMemberships
-                            .Any(o => o.OrganizationId == OrganizationContext.OrganizationId)
-                        )
-                ));
+                .Where(u => u.OrganizationMemberships
+                            .Any(o => o.OrganizationId == OrganizationContext.OrganizationId));
+        }
+        private IQueryable<User> GetWithOrganizationId(IQueryable<User> query,
+               string value,
+               UserRepository userRepository,
+               ICurrentUserContext currentUserContext,
+               Func<IQueryable<User>, IEnumerable<int>, IQueryable<User>> query1,
+               Func<IQueryable<User>, IEnumerable<int>, IQueryable<User>> query2)
+        {
+            return query.Where(
+                      u => u.OrganizationMemberships
+                     .Any(om => om.OrganizationId.ToString() == value));
         }
 
         public async Task<User> GetByAuth0Id(string auth0Id)
-            => await base.Get()
-                .Where(e => e.ExternalId == auth0Id)
-                .Include(user => user.OrganizationMemberships)
-                .FirstOrDefaultAsync();
+        {
+            return await base.Get()
+                       .Where(e => e.ExternalId == auth0Id)
+                       .Include(user => user.OrganizationMemberships)
+                       .FirstOrDefaultAsync();
+        }
     }
 }

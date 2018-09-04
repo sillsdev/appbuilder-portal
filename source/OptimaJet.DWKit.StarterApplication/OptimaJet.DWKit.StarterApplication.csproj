@@ -76,5 +76,14 @@
     <Folder Include="Migrations\" />
     <Folder Include="Repositories\Contracts\" />
     <Folder Include="Templates\" />
+    <Folder Include="Forms\" />
+    <Folder Include="Forms\Projects\" />
+    <Folder Include="Forms\Groups\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Services\CurrentUserMemberships.cs" />
+    <Compile Remove="Services\Contracts\ICurrentUserOrganizationsContext.cs" />
+    <Compile Remove="Services\Contracts\ICurrentUserMembershipsContext.cs" />
+    <Compile Remove="Services\CurrentUserMemberships.cs" />
   </ItemGroup>
 </Project>
