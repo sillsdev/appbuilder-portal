@@ -14,14 +14,6 @@ describe('Acceptance | Authentication', () => {
   setupApplicationTest();
   setupRequestInterceptor();
 
-  beforeEach(function () {
-    this.mockGet(200, '/organizations', { data: [{
-      type: 'organizations',
-      id: 1,
-      attributes: {}
-    }] });
-  });
-
   describe('is authenticated', () => {
     beforeEach(function() {
       const { server } = this.polly;
@@ -40,7 +32,15 @@ describe('Acceptance | Authentication', () => {
               ]
             }
           }
-        }
+        },
+        included: [
+          { type: 'organization-memberships', id: 1, attributes: {},
+            relationships: {
+              organization: { data: { id: 1, type: 'organizations' } },
+              user: { data: { id: 1, type: 'users' } }
+            }},
+          { type: 'organizations', id: 1, attributes: {} }
+        ]
       }));
 
       expect(isLoggedIn()).to.be.true;

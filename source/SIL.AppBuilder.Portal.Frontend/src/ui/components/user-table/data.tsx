@@ -8,34 +8,32 @@ import { ResourceObject } from 'jsonapi-typescript';
 
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
-import { PLURAL_NAME as MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
+import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
+import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
+import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
 import { PageLoader as Loader } from '@ui/components/loaders';
 import { query, defaultSourceOptions, defaultOptions, relationshipFor, ORGANIZATION_MEMBERSHIPS_TYPE, GROUPS_TYPE, USERS_TYPE } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 
 function mapNetworkToProps() {
-
-  // TODO: combine into one query when
-  //       https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
-  //       is resolved
   return {
     users: [
       q => q.findRecords(USER), {
       sources: {
         remote: {
           settings: { ...defaultSourceOptions() },
-          include: [MEMBERSHIPS]
+          include: [`${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}`, `${GROUP_MEMBERSHIPS}.${GROUP}`]
         }
       }
     }],
-    groups: [q => q.findRecords(GROUP), defaultOptions()]
   };
 }
 
 function mapRecordsToProps() {
   return {
     usersFromCache: q => q.findRecords(USER),
-    organizationMemberships: q => q.findRecords('organizationMembership')
+    organizationMemberships: q => q.findRecords('organizationMembership'),
+    groups: q => q.findRecords(GROUP)
   };
 }
 
