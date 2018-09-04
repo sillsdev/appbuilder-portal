@@ -95,9 +95,7 @@ export function withCurrentUser(opts = {}) {
 
         try {
           this.makingRequest = true;
-          // TOOD: add nested include when:
-          // https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
-          // is resolved
+
           const response = await authenticatedGet('/api/users/current-user?include=organization-memberships.organization,group-memberships.group');
           const status = response.status;
           const unauthorized = status === 401;
