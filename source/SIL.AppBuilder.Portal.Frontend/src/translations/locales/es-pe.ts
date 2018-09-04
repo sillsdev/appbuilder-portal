@@ -11,7 +11,13 @@ export default {
   common: {
     search: 'Buscar',
     change: 'Cambiar',
-    save: 'Guardar'
+    save: 'Guardar',
+    inputs: {
+      multiGroup: {
+        none: 'Ninguno',
+        all: 'Todos los grupos'
+      }
+    }
   },
 
   auth: {

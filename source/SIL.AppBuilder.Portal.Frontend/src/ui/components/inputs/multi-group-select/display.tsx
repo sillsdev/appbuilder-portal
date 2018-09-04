@@ -1,9 +1,11 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 import { Dropdown, Checkbox } from 'semantic-ui-react';
 
 import { attributesFor } from '@data';
 
 import { IProvidedProps as IDataProps } from '../group-select/with-data';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   selectedGroups: Id[];
@@ -18,9 +20,10 @@ export interface IState {
 
 type IProps =
   & IOwnProps
-  & IDataProps;
+  & IDataProps
+  & i18nProps;
 
-export default class GroupSelectDisplay extends React.Component<IProps, IState> {
+class GroupSelectDisplay extends React.Component<IProps, IState> {
 
   state = {
     options: [],
@@ -60,24 +63,17 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
     return groupOptions;
   }
 
-  onSelect = (e, { value }) => {
-    e.preventDefault();
-
-    const { onChange } = this.props;
-
-    onChange(value);
-  }
-
   getText = () => {
 
     const { selectedOptions, options } = this.state;
+    const { t } = this.props;
 
     if (selectedOptions && selectedOptions.length === 0) {
-      return 'None';
+      return t('common.inputs.multiGroup.none');
     }
 
     if (selectedOptions.length === options.length) {
-      return 'All groups';
+      return t('common.inputs.multiGroup.all');
     }
 
     const getShortName = (text) => text.split(' ').length > 1 ? `${text.split(' ')[0]}...` : text;
@@ -88,6 +84,7 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
   updateOptionsSelected = (id) => {
 
     const { options, selectedOptions } = this.state;
+    const { onChange } = this.props;
 
     const optionSelected = options.find(opt => opt.id === id);
 
@@ -102,6 +99,8 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
 
       this.setState({
         selectedOptions: selectOptionsFiltered
+      },() => {
+        onChange(this.state.selectedOptions);
       });
 
     } else {
@@ -111,6 +110,8 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
           ...selectedOptions,
           optionSelected
         ]
+      }, () => {
+        onChange(this.state.selectedOptions);
       });
 
     }
@@ -135,7 +136,7 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
           className='w-100 groupDropdown'
 
         >
-          <Dropdown.Menu className='groups'>
+          <Dropdown.Menu className='groups' data-test-multi-group-menu>
             {
               options.map((item, index) => (
                 <div key={index} className="item" onClick={e => {
@@ -143,6 +144,7 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
                   this.updateOptionsSelected(item.id);
                 }}>
                   <Checkbox
+                    data-test-multi-group-checkbox
                     value={item.id}
                     label={item.text}
                     checked={this.isItemSelected(item.id)}
@@ -157,3 +159,7 @@ export default class GroupSelectDisplay extends React.Component<IProps, IState> 
 
   }
 }
+
+export default compose(
+  withTranslations
+)(GroupSelectDisplay)

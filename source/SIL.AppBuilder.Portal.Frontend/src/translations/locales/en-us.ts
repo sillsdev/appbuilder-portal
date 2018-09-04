@@ -22,6 +22,12 @@ export default {
     save: 'Save',
     name: 'Name',
     abbreviation: 'Abbreviation',
+    inputs: {
+      multiGroup: {
+        none: 'None',
+        all: 'All groups'
+      }
+    }
   },
 
   auth: {

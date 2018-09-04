@@ -92,6 +92,57 @@ export function withData(WrappedComponent) {
       }
     }
 
+    updateUserGroups = async (user, groupsIds) => {
+
+      const { updateStore } = this.props;
+
+      const userGroupRelations = relationshipFor(user, 'groupMemberships');
+      const userGroupMemberships = userGroupRelations.data.map(g => g.id);
+
+      const isInUserRelations = (userGroupMemberships, groupId) => {
+        return userGroupMemberships.find(uGroup => uGroup.id == groupId) != undefined;
+      }
+
+      const groupsToAdd = groupsIds.reduce((memo,groupId) => {
+        if (!isInUserRelations(userGroupMemberships,groupId)) {
+          memo.push(groupId);
+        }
+        return memo;
+      },[]);
+
+      const groupsToRemove = userGroupMemberships.reduce((memo, uGroup) => {
+        if (isInUserRelations(groupsIds, uGroup.id)) {
+          memo.push(uGroup.id);
+        }
+        return memo;
+      }, []);
+
+      try {
+
+        updateStore(t =>
+          groupsToAdd.map(gm => t.addToRelatedRecords(
+            { type: 'user', id: user.id },
+            'groupMemberships',
+            { type:'groupMembership', id: gm.id }
+          ))
+        );
+
+        updateStore(t =>
+          groupsToRemove.map(gm => t.removeFromRelatedRecords(
+            { type: 'user', id: user.id },
+            'groupMemberships',
+            { type: 'groupMembership', id: gm }
+          ))
+        );
+
+      } catch (e) {
+        console.error(e);
+
+      }
+
+
+    }
+
     isRelatedTo = (user, organizationMemberships, orgId) => {
 
 
@@ -138,7 +189,8 @@ export function withData(WrappedComponent) {
       };
 
       const actionProps = {
-        toggleLock: this.toggleLock
+        toggleLock: this.toggleLock,
+        updateUserGroups: this.updateUserGroups
       };
 
       if (this.isLoading()) {
