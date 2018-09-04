@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using SimpleJson;
+using Humanizer;
 
 namespace SIL.AppBuilder.BuildEngineApiClient
 {
@@ -8,7 +9,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         protected override string MapClrMemberNameToJsonFieldName(string clrPropertyName)
         {
             //PascalCase to snake_case
-            return string.Concat(clrPropertyName.Select((x, i) => char.IsUpper(x) ? (i > 0 ? "_" : "") + char.ToLower(x).ToString() : x.ToString()));
+            return clrPropertyName.Underscore();
         }
     }
 }
