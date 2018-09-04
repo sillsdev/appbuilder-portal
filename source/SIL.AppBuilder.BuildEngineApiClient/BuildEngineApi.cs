@@ -63,13 +63,13 @@ namespace SIL.AppBuilder.BuildEngineApiClient
 
         public List<ProjectResponse> GetProjects()
         {
-            var request = new RestRequest("project");
+            var request = CreateRequest("project");
             return Execute<List<ProjectResponse>>(request);
         }
 
         public ProjectResponse GetProject(int projectId)
         {
-            var request = new RestRequest("project/{projectId}")
+            var request = CreateRequest("project/{projectId}")
                 .AddParameter("projectId", projectId, ParameterType.UrlSegment);
             return Execute<ProjectResponse>(request);
         }
