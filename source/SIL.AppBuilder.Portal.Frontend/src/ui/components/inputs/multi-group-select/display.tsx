@@ -7,15 +7,17 @@ import { attributesFor } from '@data';
 import { IProvidedProps as IDataProps } from '../group-select/with-data';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-interface IOwnProps {
-  selectedGroups: Id[];
-  onChange: (groupIds: Id[]) => void;
-  disableSelection?: boolean;
-}
+import { ResourceObject } from 'jsonapi-typescript';
+import { GroupAttributes } from '@data/models/group';
+import { USERS_TYPE, GROUP_MEMBERSHIPS_TYPE } from '@data';
+import { UserAttributes } from '@data/models/user';
+import { relationshipFor } from '@data/helpers';
 
-export interface IState {
-  options: Array<{ id: string, value: string }>;
-  selectedOptions: Array<{ id: string, value: string }>;
+interface IOwnProps {
+  user: ResourceObject<USERS_TYPE, UserAttributes>;
+  userGroupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupAttributes>>;
+  addGroupToUserMembership: (userId: Id, groupId: Id) => void;
+  removeGroupFromMembership: (groupMembershipId: Id) => void;
 }
 
 type IProps =
@@ -23,33 +25,7 @@ type IProps =
   & IDataProps
   & i18nProps;
 
-class GroupSelectDisplay extends React.Component<IProps, IState> {
-
-  state = {
-    options: [],
-    selectedOptions: []
-  }
-
-  componentDidMount() {
-    const { groups } = this.props;
-
-    if (groups && groups.length > 0) {
-      const dropdownOptions = this.groupToDropdownOptions(groups);
-      this.setState({ options: dropdownOptions });
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-
-    const newDropdownOptions = this.groupToDropdownOptions(this.props.groups);
-    const prevDropdownOptions = this.groupToDropdownOptions(prevProps.groups);
-    const newValues = newDropdownOptions.map(o => o.id).join('');
-    const oldValues = prevDropdownOptions.map(o => o.id).join('');
-
-    if(newValues != oldValues) {
-      this.setState({ options: newDropdownOptions });
-    }
-  }
+class GroupSelectDisplay extends React.Component<IProps> {
 
   groupToDropdownOptions = (groups) => {
 
@@ -65,72 +41,53 @@ class GroupSelectDisplay extends React.Component<IProps, IState> {
 
   getText = () => {
 
-    const { selectedOptions, options } = this.state;
-    const { t } = this.props;
+    const { userGroupMemberships, groups, t } = this.props;
 
-    if (selectedOptions && selectedOptions.length === 0) {
+    if (userGroupMemberships && userGroupMemberships.length === 0) {
       return t('common.inputs.multiGroup.none');
     }
 
-    if (selectedOptions.length === options.length) {
+    if (userGroupMemberships.length === groups.length) {
       return t('common.inputs.multiGroup.all');
     }
 
     const getShortName = (text) => text.split(' ').length > 1 ? `${text.split(' ')[0]}...` : text;
 
-    return selectedOptions.map(item => getShortName(item.text)).join(', ');
+    return userGroupMemberships.map(groupMembership => {
+
+      const groupId = relationshipFor(groupMembership,'group').data.id;
+      const group = groups.find(g => g.id == groupId);
+      return getShortName(attributesFor(group).name);
+    }).join(', ');
   }
 
-  updateOptionsSelected = (id) => {
+  isGroupInUserGroupMemberships = (groupId) => {
 
-    const { options, selectedOptions } = this.state;
-    const { onChange } = this.props;
+    const { userGroupMemberships } = this.props;
 
-    const optionSelected = options.find(opt => opt.id === id);
-
-    const isOptionInSelectedOptions = (o) => selectedOptions.find(i => i.id === o.id) != undefined
-
-    if (!optionSelected) { return; }
-
-    //If option is in selectedOptions, remove it
-    if (isOptionInSelectedOptions(optionSelected)) {
-
-      const selectOptionsFiltered = selectedOptions.filter(i => i.id !== optionSelected.id);
-
-      this.setState({
-        selectedOptions: selectOptionsFiltered
-      },() => {
-        onChange(this.state.selectedOptions);
-      });
-
-    } else {
-
-      this.setState({
-        selectedOptions: [
-          ...selectedOptions,
-          optionSelected
-        ]
-      }, () => {
-        onChange(this.state.selectedOptions);
-      });
-
+    if (!userGroupMemberships) {
+      return false;
     }
-  }
 
-  isItemSelected = (id) => {
-    const { selectedOptions } = this.state;
-    return selectedOptions.filter(i => i.id === id).length > 0;
+    const userGroupIds = userGroupMemberships.map(gm => relationshipFor(gm,'group').data.id);
+
+    return userGroupIds.filter(userGroupId => userGroupId === groupId).length > 0;
   }
 
   render() {
-    const { disableSelection } = this.props;
-    const { options } = this.state;
+
+    const { user, groups, userGroupMemberships, addGroupToUserMembership, removeGroupFromMembership } = this.props;
+
+    if (!groups) {
+      return null;
+    }
+
+    const options = this.groupToDropdownOptions(groups);
 
     return (
       <>
         <Dropdown
           data-test-multi-group-select
-          disabled={disableSelection || false}
           multiple
           text={this.getText()}
           className='w-100 groupDropdown'
@@ -138,19 +95,35 @@ class GroupSelectDisplay extends React.Component<IProps, IState> {
         >
           <Dropdown.Menu className='groups' data-test-multi-group-menu>
             {
-              options.map((item, index) => (
-                <div key={index} className="item" onClick={e => {
-                  e.stopPropagation();
-                  this.updateOptionsSelected(item.id);
-                }}>
-                  <Checkbox
-                    data-test-multi-group-checkbox
-                    value={item.id}
-                    label={item.text}
-                    checked={this.isItemSelected(item.id)}
-                  />
-                </div>
-              ))
+              options.map((item, index) => {
+
+                const groupId = item.id;
+                const isInMembership = this.isGroupInUserGroupMemberships(groupId);
+                const shouldAddToMembership = !isInMembership;
+
+                return (
+                  <div key={index} className="item" onClick={e => {
+                    e.stopPropagation();
+                    if (shouldAddToMembership) {
+                      addGroupToUserMembership(user.id, groupId);
+                    } else {
+                      const groupMembershipId = userGroupMemberships.find(gm => {
+                        debugger;
+                        return relationshipFor(gm, 'group').data.id == groupId;
+                      })
+                      removeGroupFromMembership(groupMembershipId.id);
+                    }
+                  }}>
+                    <Checkbox
+                      data-test-multi-group-checkbox
+                      value={item.id}
+                      label={item.text}
+                      checked={isInMembership}
+                    />
+                  </div>
+                );
+              }
+              )
             }
           </Dropdown.Menu>
         </Dropdown>

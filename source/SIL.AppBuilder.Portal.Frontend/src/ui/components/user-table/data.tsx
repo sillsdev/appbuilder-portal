@@ -119,21 +119,43 @@ export function withData(WrappedComponent) {
 
       try {
 
-        updateStore(t =>
-          groupsToAdd.map(gm => t.addToRelatedRecords(
-            { type: 'user', id: user.id },
-            'groupMemberships',
-            { type:'groupMembership', id: gm.id }
-          ))
-        );
+        // const groupMemberships = groupsIds.map(group => ({
+        //   type: 'groupMembership',
+        //   id: group.id
+        // }));
 
-        updateStore(t =>
-          groupsToRemove.map(gm => t.removeFromRelatedRecords(
-            { type: 'user', id: user.id },
-            'groupMemberships',
-            { type: 'groupMembership', id: gm }
-          ))
-        );
+        // updateStore(t => t.replaceRelatedRecords(
+        //     { type: 'user', id: user.id },
+        //     'groupMemberships',
+        //     groupMemberships
+        //   ),
+        //   defaultOptions()
+        // );
+
+        // updateStore(t =>
+        //   groupsToAdd.map(gm => t.addToRelatedRecords(
+        //     { type: 'user', id: user.id },
+        //     'groupMemberships',
+        //     { type:'group', id: gm.id }
+        //   )),
+        //   defaultOptions()
+        // );
+
+        updateStore(t => t.addRecord({
+            type: 'groupMembership', relationships: {
+            user: { data: { type: 'user', id: '3' }},
+            group: { data: { type: 'group', id: '1' }}
+            }
+          }
+        ));
+
+        // updateStore(t =>
+        //   groupsToRemove.map(gm => t.removeFromRelatedRecords(
+        //     { type: 'user', id: user.id },
+        //     'groupMemberships',
+        //     { type: 'groupMembership', id: gm }
+        //   ))
+        // );
 
       } catch (e) {
         console.error(e);

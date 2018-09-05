@@ -1,10 +1,11 @@
 import { compose } from 'recompose';
 
-import { withCurrentUser } from '@data/containers/with-current-user';
-import { withData } from '../group-select/with-data';
+import { withData } from './with-data';
 import Display from './display';
 
+import { withGroupMemberships } from './with-group-memberships';
+
 export default compose(
-  withCurrentUser(),
-  withData
+  withData,
+  withGroupMemberships()
 )(Display);
