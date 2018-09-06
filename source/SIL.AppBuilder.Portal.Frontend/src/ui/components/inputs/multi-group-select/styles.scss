@@ -1,0 +1,13 @@
+@import '../../../styles/_base/variables.scss';
+
+.org-name-title {
+  background-color: $lightest-gray !important;
+  font-weight: bold !important;
+  padding-left: 0.78571rem !important;
+}
+
+.groups {
+  height: 300px;
+  max-height: 300px;
+  overflow-y: scroll;
+}

@@ -40,6 +40,7 @@ const schemaDefinition: SchemaSettings = {
         users: { type: 'hasMany', model: 'user', inverse: 'organizations' },
         projects: { type: 'hasMany', model: 'user', inverse: 'organization'},
         userMemberships: { type: 'hasMany', model: 'organization-membership', inverse: 'organization' },
+        groups: { type: 'hasMany', model: 'group', inverse: 'owner' }
       }
     },
     organizationMembership: {
@@ -141,6 +142,7 @@ const schemaDefinition: SchemaSettings = {
         users: { type: 'hasMany', model: 'user', inverse: 'groups' },
         groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'group' },
         projects: { type: 'hasMany', model: 'project', inverse: 'group' },
+        owner: { type: 'hasOne', model: 'organization', inverse: 'groups'}
       }
     },
     user: {

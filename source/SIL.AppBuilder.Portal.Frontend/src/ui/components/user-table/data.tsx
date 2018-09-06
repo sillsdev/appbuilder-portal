@@ -6,35 +6,34 @@ import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { ResourceObject } from 'jsonapi-typescript';
 
-import { TYPE_NAME as USER, PLURAL_NAME as USERS, UserAttributes } from '@data/models/user';
-import { PLURAL_NAME as GROUP_MEMBERSHIP } from '@data/models/group-membership';
-import { PLURAL_NAME as MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
+import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
+import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
+import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
+import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
+import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
 import { PageLoader as Loader } from '@ui/components/loaders';
 import { query, defaultSourceOptions, defaultOptions, relationshipFor, ORGANIZATION_MEMBERSHIPS_TYPE, GROUPS_TYPE, USERS_TYPE } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 
 function mapNetworkToProps() {
-
-  // TODO: combine into one query when
-  //       https://github.com/json-api-dotnet/JsonApiDotNetCore/issues/39
-  //       is resolved
   return {
     users: [
       q => q.findRecords(USER), {
       sources: {
         remote: {
           settings: { ...defaultSourceOptions() },
-          include: [MEMBERSHIPS, GROUP_MEMBERSHIP]
+          include: [`${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}`, `${GROUP_MEMBERSHIPS}.${GROUP}`]
         }
       }
-    }]
+    }],
   };
 }
 
 function mapRecordsToProps() {
   return {
     usersFromCache: q => q.findRecords(USER),
-    organizationMemberships: q => q.findRecords('organizationMembership')
+    organizationMemberships: q => q.findRecords('organizationMembership'),
+    groups: q => q.findRecords(GROUP)
   };
 }
 
@@ -92,79 +91,6 @@ export function withData(WrappedComponent) {
       }
     }
 
-    updateUserGroups = async (user, groupsIds) => {
-
-      const { updateStore } = this.props;
-
-      const userGroupRelations = relationshipFor(user, 'groupMemberships');
-      const userGroupMemberships = userGroupRelations.data.map(g => g.id);
-
-      const isInUserRelations = (userGroupMemberships, groupId) => {
-        return userGroupMemberships.find(uGroup => uGroup.id == groupId) != undefined;
-      }
-
-      const groupsToAdd = groupsIds.reduce((memo,groupId) => {
-        if (!isInUserRelations(userGroupMemberships,groupId)) {
-          memo.push(groupId);
-        }
-        return memo;
-      },[]);
-
-      const groupsToRemove = userGroupMemberships.reduce((memo, uGroup) => {
-        if (isInUserRelations(groupsIds, uGroup.id)) {
-          memo.push(uGroup.id);
-        }
-        return memo;
-      }, []);
-
-      try {
-
-        // const groupMemberships = groupsIds.map(group => ({
-        //   type: 'groupMembership',
-        //   id: group.id
-        // }));
-
-        // updateStore(t => t.replaceRelatedRecords(
-        //     { type: 'user', id: user.id },
-        //     'groupMemberships',
-        //     groupMemberships
-        //   ),
-        //   defaultOptions()
-        // );
-
-        // updateStore(t =>
-        //   groupsToAdd.map(gm => t.addToRelatedRecords(
-        //     { type: 'user', id: user.id },
-        //     'groupMemberships',
-        //     { type:'group', id: gm.id }
-        //   )),
-        //   defaultOptions()
-        // );
-
-        updateStore(t => t.addRecord({
-            type: 'groupMembership', relationships: {
-            user: { data: { type: 'user', id: '3' }},
-            group: { data: { type: 'group', id: '1' }}
-            }
-          }
-        ));
-
-        // updateStore(t =>
-        //   groupsToRemove.map(gm => t.removeFromRelatedRecords(
-        //     { type: 'user', id: user.id },
-        //     'groupMemberships',
-        //     { type: 'groupMembership', id: gm }
-        //   ))
-        // );
-
-      } catch (e) {
-        console.error(e);
-
-      }
-
-
-    }
-
     isRelatedTo = (user, organizationMemberships, orgId) => {
 
 
@@ -211,8 +137,7 @@ export function withData(WrappedComponent) {
       };
 
       const actionProps = {
-        toggleLock: this.toggleLock,
-        updateUserGroups: this.updateUserGroups
+        toggleLock: this.toggleLock
       };
 
       if (this.isLoading()) {

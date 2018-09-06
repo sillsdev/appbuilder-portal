@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +21,11 @@ namespace Optimajet.DWKit.StarterApplication.Controllers
             UserService userService)
             : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         {
+        }
+        [HttpPost]
+        public override async Task<IActionResult> PostAsync([FromBody] User entity)
+        {
+            throw new JsonApiException(405, $"Not implemented for User resource.");
         }
 
         [HttpGet("current-user")]

@@ -25,7 +25,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         {
             this.HttpContext = httpContextAccessor.HttpContext;
             this.OrganizationService = organizationService;
-            parsed = false;
+            this.parsed = false;
         }
 
         private void Parse()

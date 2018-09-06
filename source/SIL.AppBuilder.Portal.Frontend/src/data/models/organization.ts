@@ -1,6 +1,7 @@
 import { AttributesObject } from "jsonapi-typescript";
 
 export const TYPE_NAME = 'organization';
+export const PLURAL_NAME = 'organizations';
 
 export interface OrganizationAttributes extends AttributesObject {
   // from an invite

@@ -4,11 +4,12 @@ import { Dropdown, Checkbox } from 'semantic-ui-react';
 
 import { attributesFor } from '@data';
 
-import { IProvidedProps as IDataProps } from '../group-select/with-data';
+import { IProvidedProps as IDataProps } from './with-data';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { ResourceObject } from 'jsonapi-typescript';
 import { GroupAttributes } from '@data/models/group';
+import { GroupMembershipAttributes } from '@data/models/group-membership';
 import { USERS_TYPE, GROUP_MEMBERSHIPS_TYPE } from '@data';
 import { UserAttributes } from '@data/models/user';
 import { relationshipFor } from '@data/helpers';
@@ -16,6 +17,7 @@ import { relationshipFor } from '@data/helpers';
 interface IOwnProps {
   user: ResourceObject<USERS_TYPE, UserAttributes>;
   userGroupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupAttributes>>;
+  groupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
   addGroupToUserMembership: (userId: Id, groupId: Id) => void;
   removeGroupFromMembership: (groupMembershipId: Id) => void;
 }
@@ -56,7 +58,7 @@ class GroupSelectDisplay extends React.Component<IProps> {
     return userGroupMemberships.map(groupMembership => {
 
       const groupId = relationshipFor(groupMembership,'group').data.id;
-      const group = groups.find(g => g.id == groupId);
+      const group = groups.find(g => g.id === groupId);
       return getShortName(attributesFor(group).name);
     }).join(', ');
   }
@@ -74,15 +76,28 @@ class GroupSelectDisplay extends React.Component<IProps> {
     return userGroupIds.filter(userGroupId => userGroupId === groupId).length > 0;
   }
 
+  onGroupClick = (shouldAddToMembership, userId, groupId) => (e) => {
+    e.stopPropagation();
+
+    const { userGroupMemberships, addGroupToUserMembership, removeGroupFromMembership } = this.props;
+
+    if (shouldAddToMembership) {
+      addGroupToUserMembership(userId, groupId);
+    } else {
+      const groupMembershipId = userGroupMemberships.find(gm => {
+        return relationshipFor(gm, 'group').data.id === groupId;
+      });
+      removeGroupFromMembership(groupMembershipId.id);
+    }
+  }
+
   render() {
 
-    const { user, groups, userGroupMemberships, addGroupToUserMembership, removeGroupFromMembership } = this.props;
+    const { user, groupsByOrganization } = this.props;
 
-    if (!groups) {
+    if (!groupsByOrganization) {
       return null;
     }
-
-    const options = this.groupToDropdownOptions(groups);
 
     return (
       <>
@@ -95,35 +110,34 @@ class GroupSelectDisplay extends React.Component<IProps> {
         >
           <Dropdown.Menu className='groups' data-test-multi-group-menu>
             {
-              options.map((item, index) => {
+              groupsByOrganization.map((org, index) => (
+                <React.Fragment key={index}>
+                  <div key={index} className='item org-name-title'>{org.orgName}</div>
+                  {
+                    this.groupToDropdownOptions(org.groups).map((item,gindex) => {
 
-                const groupId = item.id;
-                const isInMembership = this.isGroupInUserGroupMemberships(groupId);
-                const shouldAddToMembership = !isInMembership;
+                      const groupId = item.id;
+                      const isInMembership = this.isGroupInUserGroupMemberships(groupId);
+                      const shouldAddToMembership = !isInMembership;
 
-                return (
-                  <div key={index} className="item" onClick={e => {
-                    e.stopPropagation();
-                    if (shouldAddToMembership) {
-                      addGroupToUserMembership(user.id, groupId);
-                    } else {
-                      const groupMembershipId = userGroupMemberships.find(gm => {
-                        debugger;
-                        return relationshipFor(gm, 'group').data.id == groupId;
-                      })
-                      removeGroupFromMembership(groupMembershipId.id);
-                    }
-                  }}>
-                    <Checkbox
-                      data-test-multi-group-checkbox
-                      value={item.id}
-                      label={item.text}
-                      checked={isInMembership}
-                    />
-                  </div>
-                );
-              }
-              )
+                      return (
+                        <div
+                          key={gindex}
+                          className="item"
+                          onClick={this.onGroupClick(shouldAddToMembership, user.id, groupId)}
+                        >
+                          <Checkbox
+                            data-test-multi-group-checkbox
+                            value={item.id}
+                            label={item.text}
+                            checked={isInMembership}
+                          />
+                        </div>
+                      );
+                    })
+                  }
+                </React.Fragment>
+              ))
             }
           </Dropdown.Menu>
         </Dropdown>
@@ -135,4 +149,4 @@ class GroupSelectDisplay extends React.Component<IProps> {
 
 export default compose(
   withTranslations
-)(GroupSelectDisplay)
+)(GroupSelectDisplay);

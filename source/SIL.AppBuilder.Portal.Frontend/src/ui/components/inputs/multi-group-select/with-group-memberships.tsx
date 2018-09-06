@@ -13,5 +13,5 @@ export function withGroupMemberships() {
 
   return InnerComponent => {
     return withOrbit(mapRecordsToProps)(InnerComponent);
-  }
+  };
 }

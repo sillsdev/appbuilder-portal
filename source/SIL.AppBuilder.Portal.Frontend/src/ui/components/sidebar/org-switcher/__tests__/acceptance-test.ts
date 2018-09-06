@@ -28,23 +28,27 @@ describe('Acceptance | Organization Switcher', () => {
   setupRequestInterceptor();
 
   describe('The Current User is a member of multiple organizations', () => {
-    useFakeAuthentication(undefined, {
-      data: [{
-        type: 'organizations', id: 1,
-        attributes: {
-          name: 'SIL International'
-        }
-      }, {
-        type: 'organizations', id: 2,
-        attributes: {
-          name: 'DeveloperTown'
-        }
-      }, {
-        type: 'organizations', id: 3,
-        attributes: {
-          name: 'Kalaam Media'
-        }
-      }]
+    useFakeAuthentication();
+
+    beforeEach(function() {
+      this.mockGet(200, '/organizations', {
+        data: [{
+          type: 'organizations', id: 1,
+          attributes: {
+            name: 'SIL International'
+          }
+        }, {
+          type: 'organizations', id: 2,
+          attributes: {
+            name: 'DeveloperTown'
+          }
+        }, {
+          type: 'organizations', id: 3,
+          attributes: {
+            name: 'Kalaam Media'
+          }
+        }]
+      });
     });
 
     beforeEach(async () => {
@@ -76,38 +80,42 @@ describe('Acceptance | Organization Switcher', () => {
   });
 
   describe('The current user is a member of lots of organizations', () => {
-    useFakeAuthentication(undefined, {
-      data: [{
-        type: 'organizations', id: 1,
-        attributes: {
-          name: 'SIL International'
-        }
-      }, {
-        type: 'organizations', id: 2,
-        attributes: {
-          name: 'DeveloperTown'
-        }
-      }, {
-        type: 'organizations', id: 3,
-        attributes: {
-          name: 'Kalaam Media'
-        }
-      }, {
-        type: 'organizations', id: 4,
-        attributes: {
-          name: 'The Ember Learning Team'
-        }
-      }, {
-        type: 'organizations', id: 5,
-        attributes: {
-          name: 'Blizzard Entertainment'
-        }
-      }, {
-        type: 'organizations', id: 5,
-        attributes: {
-          name: 'Linkedin'
-        }
-      }]
+    useFakeAuthentication();
+
+    beforeEach(function() {
+      this.mockGet(200, '/organizations', {
+        data: [{
+          type: 'organizations', id: 1,
+          attributes: {
+            name: 'SIL International'
+          }
+        }, {
+          type: 'organizations', id: 2,
+          attributes: {
+            name: 'DeveloperTown'
+          }
+        }, {
+          type: 'organizations', id: 3,
+          attributes: {
+            name: 'Kalaam Media'
+          }
+        }, {
+          type: 'organizations', id: 4,
+          attributes: {
+            name: 'The Ember Learning Team'
+          }
+        }, {
+          type: 'organizations', id: 5,
+          attributes: {
+            name: 'Blizzard Entertainment'
+          }
+        }, {
+          type: 'organizations', id: 5,
+          attributes: {
+            name: 'Linkedin'
+          }
+        }]
+      });
     });
 
     beforeEach(async () => {

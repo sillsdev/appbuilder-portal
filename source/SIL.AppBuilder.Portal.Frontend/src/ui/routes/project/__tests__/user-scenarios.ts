@@ -32,17 +32,6 @@ export function userInDifferentOrganization(orgId: number) {
         }
       }
     ]
-  }, {
-    data: [{ type: 'organizations', id: orgId, attributes: {} }],
-    included: [
-      { id: 1, type: 'organization-memberships',
-        attributes: {},
-        relationships: {
-          user: { data: { id: 1, type: 'users' } },
-          organization: { data: { id: orgId, type: 'organizations' } }
-        }
-      },
-    ]
   });
 }
 
@@ -81,17 +70,6 @@ export function userInSameOrgDifferentGroup(orgId, groupId) {
         }
       }
     ]
-  }, {
-    data: [{ type: 'organizations', id: orgId, attributes: {} }],
-    included: [
-      { id: 1, type: 'organization-memberships',
-        attributes: {},
-        relationships: {
-          user: { data: { id: 1, type: 'users' } },
-          organization: { data: { id: orgId, type: 'organizations' } }
-        }
-      },
-    ]
   });
 }
 
@@ -125,17 +103,6 @@ export function userInSameOrgAndGroup(orgId, groupId) {
         group: { data: { id: 1, type: 'groups' } },
         user: { data: { id: 1, type: 'users' } }
       } },
-    ]
-  }, {
-    data: [{ type: 'organizations', id: orgId, attributes: {} }],
-    included: [
-      { id: 1, type: 'organization-memberships',
-        attributes: {},
-        relationships: {
-          user: { data: { id: 1, type: 'users' } },
-          organization: { data: { id: orgId, type: 'organizations' } }
-        }
-      },
     ]
   });
 }
