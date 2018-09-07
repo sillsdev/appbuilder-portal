@@ -25,6 +25,7 @@ import { withAccessRestriction } from './with-access-restriction';
 import './project.scss';
 import { ResourceObject } from 'jsonapi-typescript';
 import { PROJECTS_TYPE } from '@data';
+import { withTranslations } from '@lib/i18n';
 
 export const pathName = '/project/:id';
 
@@ -132,11 +133,11 @@ class Project extends React.Component<IProps> {
 }
 
 export default compose(
-  requireAuth,
+  withTranslations,
+  // requireAuth,
   withLayout,
-  translate('translations'),
-  withProjectOperations,
-  withData,
   withCurrentUser(),
+  withData,
+  withProjectOperations,
   withAccessRestriction
 )(Project);

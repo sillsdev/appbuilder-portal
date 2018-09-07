@@ -21,8 +21,8 @@ describe('Acceptance | Project Edit | Archive Project', () => {
   });
 
   describe('an active project exists', () => {
-    beforeEach(function () {
-      this.mockGet(200, 'users', { data: [] });
+    beforeEach(function() {
+      this.mockGet(200, '/users', { data: [] });
       this.mockGet(200, '/groups', { data: [] });
       this.mockGet(200, 'projects/1', {
         data: {
@@ -38,7 +38,7 @@ describe('Acceptance | Project Edit | Archive Project', () => {
           }
         },
         included: [
-          { type: 'organizations', id: 1, },
+          { type: 'organizations', id: 1, attributes: {} },
           { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
           { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
         ]

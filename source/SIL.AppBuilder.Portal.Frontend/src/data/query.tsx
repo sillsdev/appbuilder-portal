@@ -80,7 +80,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
         this.mapResult = result;
 
-        const { queryStore } = this.props;
+        const { dataStore } = this.props;
 
         const responses = {};
         const requestPromises = Object.keys(result).map(async (key: string) => {
@@ -89,7 +89,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
           const query = result[key];
           const args = typeof query === 'function' ? [query] : query;
 
-          const queryResult = await queryStore(...args);
+          const queryResult = await dataStore.query(...args);
 
           responses[key] = queryResult;
 
@@ -99,6 +99,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         try {
           await Promise.all(requestPromises);
         } catch (e) {
+          console.error(responses, e);
           this.setState({ error: e });
         }
 

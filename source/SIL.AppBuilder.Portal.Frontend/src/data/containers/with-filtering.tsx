@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { FindRecordsTerm } from '@orbit/data';
+import { camelize } from '@orbit/utils';
 
 import { isEmpty } from '@lib/collection';
 
@@ -12,11 +13,8 @@ export interface IFilter {
 export interface IProvidedProps {
   filters: IFilter[];
   updateFilter: (filter: IFilter) => void;
-  applyFilter: (builder: FindRecordsTerm) => FindRecordsTerm;
-}
-
-interface IState {
-  filters: IFilter[];
+  applyFilter: (builder: FindRecordsTerm, onCache?: boolean) => FindRecordsTerm;
+  removeFilter: (filter: IFilter | string) => void;
 }
 
 interface IFilterOptions {
@@ -24,9 +22,14 @@ interface IFilterOptions {
   requiredFilters?: IFilter[];
 }
 
+interface IState {
+  filters: IFilter[];
+  options: IFilterOptions;
+}
+
 const defaultOptions = {
   defaultFilters: [],
-  requiredFilters: []
+  requiredFilters: [],
 };
 
 // example hookup
@@ -39,27 +42,82 @@ const defaultOptions = {
 //   ]
 // });
 export function withFiltering(opts: IFilterOptions = {}) {
-  const options = {
-    ...defaultOptions,
-    ...opts
-  };
+  let optionsFunction;
+
+  if (typeof opts !== 'function') {
+    optionsFunction = (props) => opts;
+  } else {
+    optionsFunction = opts;
+  }
 
   return WrappedComponent => {
     class FilterWrapper extends React.Component<{}, IState> {
-      state = { filters: options.defaultFilters };
+      constructor(props) {
+        super(props);
 
-      updateFilter = (filter: IFilter) => {
-        this.setState({ filters: [ filter ] });
+        const options = {
+          ...defaultOptions,
+          ...optionsFunction(props)
+        };
+
+        const filters = [
+          ...options.defaultFilters
+        ];
+
+        this.state = { filters, options };
       }
 
-      applyFilter = (builder: FindRecordsTerm): FindRecordsTerm => {
+      // TODO: currently this only sets a filter.
+      //       this should find and replace via attribute.
+      updateFilter = (filter: IFilter) => {
         const { filters } = this.state;
+
+        const newFilters = filters.filter(currentFilter => {
+          return currentFilter.attribute !== filter.attribute;
+        }).push(filter);
+
+        this.setState({ filters: newFilters });
+      }
+
+      removeFilter = (filter: IFilter | string) => {
+        const { filters } = this.state;
+        const attrToRemove = (filter as IFilter).attribute || filter;
+
+        const newFiletrs = filters.filter(currentFilter => {
+          return currentFilter.attribute !== attrToRemove;
+        });
+      }
+
+      // NOTE: onCache signifies that that the filtering will only happen on the cache store.
+      //       This, unfortunately is needed due to the backend and frontend not having
+      //       the same filter implementation.
+      //       For example:
+      //       - on the backend: { attribute: 'date-archived', value: 'isnull:' }
+      //       - on the frontend: { attribute: 'dateArchived', value: null },
+      //       these are equivalent.
+      //       this technical limitation also stems from the fact that all values
+      //       are strings when sent across the network.
+      applyFilter = (builder: FindRecordsTerm, onCache = false): FindRecordsTerm => {
+        const { filters, options } = this.state;
 
         if (isEmpty(filters) && isEmpty(options.requiredFilters)) {
           return builder;
         }
 
-        return builder.filter(...filters, ...options.requiredFilters);
+        const allFilters = [ ...filters, ...options.requiredFilters ];
+        const filtersToApply = onCache ? allFilters.map(this._filterOperationMap) : allFilters;
+
+        return builder.filter(...filtersToApply);
+      }
+
+      _filterOperationMap(filter: IFilter): IFilter {
+        const attribute = camelize(filter.attribute);
+
+        switch(filter.value) {
+          case 'isnull:': return { ...filter, attribute, value: null };
+          case 'isnotnull:': return { ...filter, attribute, value: '', op: 'gt' };
+          default: return { ...filter, attribute };
+        }
       }
 
       render() {
@@ -67,7 +125,8 @@ export function withFiltering(opts: IFilterOptions = {}) {
         const filterProps: IProvidedProps = {
           filters,
           updateFilter: this.updateFilter,
-          applyFilter: this.applyFilter
+          applyFilter: this.applyFilter,
+          removeFilter: this.removeFilter
         };
 
         return (
