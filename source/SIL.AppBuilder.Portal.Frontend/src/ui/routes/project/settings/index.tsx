@@ -10,7 +10,7 @@ import { withSettings } from './with-settings';
 
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
-  toggleField: (project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>, fieldName: string, newToggleState: boolean) => void;
+  toggleField: (fieldName: string, newToggleState: boolean) => void;
 }
 
 type IProps =
@@ -22,11 +22,11 @@ class Settings extends React.Component<IProps> {
 
   toggle = (e, toggleData) => {
 
-    const { project, toggleField } = this.props;
+    const { toggleField } = this.props;
 
     const newToggleState = toggleData.checked;
 
-    toggleField(project, toggleData.name, newToggleState);
+    toggleField(toggleData.name, newToggleState);
   }
 
   render() {

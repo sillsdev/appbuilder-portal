@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withData, WithDataProps } from 'react-orbitjs';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import * as toast from '@lib/toast';
 
-import { TYPE_NAME as PROJECT } from '@data/models/project';
-import { defaultOptions } from '@data';
+import { withDataActions, IProvidedProps } from '@data/containers/resources/project/with-data-actions';
 
 
 export function withSettings(WrappedComponent) {
 
-  class DataWrapper extends React.Component<WithDataProps & i18nProps> {
+  class DataWrapper extends React.Component<i18nProps & IProvidedProps> {
 
     getMessage = (fieldName, type = 'on') => {
 
@@ -20,17 +18,12 @@ export function withSettings(WrappedComponent) {
 
     }
 
-    toggleField = async (project, fieldName, newToggleState) => {
+    toggleField = async (fieldName, newToggleState) => {
 
-      const { updateStore } = this.props;
+      const { updateAttribute } = this.props;
 
       try {
-
-        updateStore(t => t.replaceAttribute(
-          project,
-          fieldName,
-          newToggleState
-        ), defaultOptions());
+        await updateAttribute(fieldName, newToggleState);
         toast.success(this.getMessage(fieldName, newToggleState ? 'on': 'off'));
       } catch (e) {
         console.log(e);
@@ -52,7 +45,7 @@ export function withSettings(WrappedComponent) {
   }
 
   return compose(
-    withData({}),
+    withDataActions,
     withTranslations
   )(DataWrapper);
 
