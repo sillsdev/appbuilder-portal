@@ -18,11 +18,11 @@ export function withSettings(WrappedComponent) {
 
       return t(`users.operations.${fieldName}.${type}`);
 
-    };
+    }
 
     toggleField = async (projectId, fieldName, newToggleState) => {
 
-      const { updateStore, t } = this.props;
+      const { updateStore } = this.props;
 
       try {
 
