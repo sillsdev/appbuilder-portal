@@ -23,8 +23,5 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("date-published")]
         public DateTime? DatePublished { get; set; }
 
-        [NotMapped]
-        public int OrganizationId => Project.OrganizationId; // OrganizationProductDefinitions?.Select(pd => pd.ProductDefinitionId);
-
     }
 }
