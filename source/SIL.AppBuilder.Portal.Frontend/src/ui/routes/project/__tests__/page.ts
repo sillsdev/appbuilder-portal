@@ -14,7 +14,7 @@ export class ProjectInteractor {
   archiveText = text('[data-test-archive] span');
 
   isAutomaticRebuildChecked = isPresent('[data-test-project-settings-automatic-build].checked');
-  isAllowDownloadChecked = isPresent('[data-test-project-settings-allow-download].cheked');
+  isAllowDownloadChecked = isPresent('[data-test-project-settings-allow-download].checked');
 
   groupSelect = groupInteractor;
   userSelect = userInteractor;
