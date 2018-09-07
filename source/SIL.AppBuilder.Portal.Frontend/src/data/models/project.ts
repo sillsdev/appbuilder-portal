@@ -12,7 +12,7 @@ export interface ProjectAttributes extends AttributesObject {
   type: string;
   description: string;
   automaticRebuild: boolean;
-  allowOtherToDownload: boolean;
+  allowDownload: boolean;
   location: string;
   lastUpdatedAt: Date;
   isPublic: boolean;

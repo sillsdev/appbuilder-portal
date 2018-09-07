@@ -221,6 +221,16 @@ export default {
       reactivate: {
         success: 'Project reactivated',
         error: 'There was an error trying to reactivate the project'
+      },
+      automaticBuild: {
+        on: 'Automatic builds is ON',
+        off: 'Automatic builds is OFF',
+        error: 'Error: We could not change automatic build status'
+      },
+      allowDownload: {
+        on: 'Allow project download is ON',
+        off: 'Allow project download is OFF',
+        error: 'Error: We could not change Allow Download status'
       }
     }
   },

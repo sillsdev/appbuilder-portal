@@ -69,7 +69,7 @@ const schemaDefinition: SchemaSettings = {
         type: { type: 'string'},
         description: { type: 'string' },
         automaticRebuild: { type: 'boolean' },
-        allowOtherToDownload: { type: 'boolean' },
+        allowDownload: { type: 'boolean' },
         location: { type: 'string' }
       },
       relationships: {
