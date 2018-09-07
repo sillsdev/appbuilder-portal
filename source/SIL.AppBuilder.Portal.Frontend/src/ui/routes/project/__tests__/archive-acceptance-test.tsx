@@ -4,7 +4,6 @@ import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers/index';
 
-
 import page from './page';
 
 describe('Acceptance | Project Edit | Archive Project', () => {
@@ -16,7 +15,6 @@ describe('Acceptance | Project Edit | Archive Project', () => {
     beforeEach(async function () {
       await visit('/project/1');
     });
-
     it('is in detail page', () => {
       expect(location().pathname).to.equal('/project/1');
     });
@@ -26,7 +24,8 @@ describe('Acceptance | Project Edit | Archive Project', () => {
     beforeEach(function() {
       this.mockGet(200, '/users', { data: [] });
       this.mockGet(200, '/groups', { data: [] });
-      this.mockGet(200, 'projects/1', { data: {
+      this.mockGet(200, 'projects/1', {
+        data: {
           type: 'projects',
           id: '1',
           attributes: {
@@ -41,11 +40,10 @@ describe('Acceptance | Project Edit | Archive Project', () => {
         included: [
           { type: 'organizations', id: 1, attributes: {} },
           { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
-          { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
+          { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
         ]
       });
     });
-
     describe('archiving the project', () => {
       beforeEach(function () {
         this.mockPatch(200, 'projects/1', {
@@ -55,15 +53,14 @@ describe('Acceptance | Project Edit | Archive Project', () => {
             attributes: {
               'date-archived': "2018-08-10T23:59:55.259Z"
             },
-        }});
+          }
+        });
       });
-
       describe('the archive button is clicked', () => {
         beforeEach(async () => {
           await visit('/project/1');
           await page.clickArchiveLink();
         });
-
         it("changes the button text", () => {
           expect(page.archiveText).to.equal('Reactivate');
         });
@@ -72,7 +69,7 @@ describe('Acceptance | Project Edit | Archive Project', () => {
   });
 
   describe('an archived project exists', () => {
-    beforeEach(function() {
+    beforeEach(function () {
       this.mockGet(200, 'users', { data: [] });
       this.mockGet(200, '/groups', { data: [] });
       this.mockGet(200, 'projects/1', {
@@ -91,11 +88,10 @@ describe('Acceptance | Project Edit | Archive Project', () => {
         included: [
           { type: 'organizations', id: 1, },
           { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
-          { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
+          { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
         ]
       });
     });
-
     describe('reactivating a project', () => {
       beforeEach(function () {
         this.mockPatch(200, 'projects/1', {
@@ -105,19 +101,17 @@ describe('Acceptance | Project Edit | Archive Project', () => {
             attributes: {
               'date-archived': null
             },
-          }});
+          }
+        });
       });
-
       describe('the reactivate button is clicked', () => {
-        beforeEach(async function() {
+        beforeEach(async function () {
           await visit('/project/1');
           await page.clickArchiveLink();
         });
-
         it("changes the button text", () => {
           expect(page.archiveText).to.equal('Archive');
         });
-
       });
     });
   });

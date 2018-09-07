@@ -6,9 +6,11 @@ import { ProjectAttributes } from '@data/models/project';
 import { Checkbox } from 'semantic-ui-react';
 import { ResourceObject } from 'jsonapi-typescript';
 import { PROJECTS_TYPE } from '@data';
+import { withSettings } from './with-settings';
 
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  toggleField: (fieldName: string, newToggleState: boolean) => void;
 }
 
 type IProps =
@@ -18,10 +20,19 @@ type IProps =
 
 class Settings extends React.Component<IProps> {
 
+  toggle = (e, toggleData) => {
+
+    const { toggleField } = this.props;
+
+    const newToggleState = toggleData.checked;
+
+    toggleField(toggleData.name, newToggleState);
+  }
+
   render() {
 
     const { t, project } = this.props;
-    const { automaticRebuild, allowOtherToDownload } = project.attributes;
+    const { automaticBuilds, allowDownloads } = project.attributes;
 
     return (
       <div className='settings'>
@@ -33,8 +44,11 @@ class Settings extends React.Component<IProps> {
           </div>
           <div className='flex-shrink'>
             <Checkbox
+              data-test-project-settings-automatic-build
               toggle
-              defaultChecked={automaticRebuild}
+              name='automaticBuilds'
+              defaultChecked={automaticBuilds}
+              onChange={this.toggle}
             />
           </div>
         </div>
@@ -45,17 +59,20 @@ class Settings extends React.Component<IProps> {
           </div>
           <div className='flex-shrink'>
             <Checkbox
+              data-test-project-settings-allow-download
               toggle
-              defaultChecked={automaticRebuild}
+              name='allowDownloads'
+              defaultChecked={allowDownloads}
+              onChange={this.toggle}
             />
           </div>
         </div>
       </div>
     );
-
   }
 }
 
 export default compose(
-  translate('translations')
+  translate('translations'),
+  withSettings
 )(Settings);

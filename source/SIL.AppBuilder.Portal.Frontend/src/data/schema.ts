@@ -69,8 +69,8 @@ const schemaDefinition: SchemaSettings = {
         language: { type: 'string' },
         type: { type: 'string'},
         description: { type: 'string' },
-        automaticRebuild: { type: 'boolean' },
-        allowOtherToDownload: { type: 'boolean' },
+        automaticBuilds: { type: 'boolean' },
+        allowDownloads: { type: 'boolean' },
         location: { type: 'string' },
         // filter keys
         ownerId: { type: 'string' }
