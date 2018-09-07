@@ -12,7 +12,9 @@ import {
   isRelatedRecord,
   withLoader,
   buildFindRecord,
-  localIdFromRecordIdentity
+  localIdFromRecordIdentity,
+  idsForRelationship,
+  recordsWithIdIn
 } from '@data';
 
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
@@ -64,21 +66,10 @@ export function withData(WrappedComponent) {
 
       let availableGroups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
 
-      const groupIds = groupMembershipsForCurrentUser
-        .map(gm => {
-          const relationData = relationshipFor(gm, 'group').data;
-
-          if (!relationData) { return; }
-
-          return localIdFromRecordIdentity(relationData);
-        })
-        .filter(id => id);
+      const groupIds = idsForRelationship(groupMembershipsForCurrentUser, 'group');
 
       if (scopeToCurrentUser) {
-        availableGroups = groups
-          .filter(g => {
-            return g.id === selected || groupIds.includes(g.id);
-          });
+        availableGroups = recordsWithIdIn(groups, [selected, ...groupIds]);
       } else {
         availableGroups = groups;
       }

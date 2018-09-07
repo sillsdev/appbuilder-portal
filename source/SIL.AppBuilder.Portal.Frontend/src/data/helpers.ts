@@ -6,7 +6,7 @@ import {
   ResourceLinkage
 } from "jsonapi-typescript";
 
-import { idFromRecordIdentity } from './store-helpers';
+import { idFromRecordIdentity, localIdFromRecordIdentity } from './store-helpers';
 
 type IJsonApiPayload<TType extends string, TAttrs extends AttributesObject> =
   | SingleResourceDoc<TType, TAttrs>
@@ -31,6 +31,22 @@ export function idFor(payload: any): string {
   if (payload.data) { return idFor(payload.data); }
 
   return payload.id;
+}
+
+export function idsForRelationship(collection, relationshipName) {
+  const localIds = collection.map(record => {
+    const relationData = relationshipFor(record, relationshipName).data;
+
+    if (!relationData) { return; }
+
+    return localIdFromRecordIdentity(relationData);
+  }).filter(id => id);
+
+  return localIds;
+}
+
+export function recordsWithIdIn(collection, ids) {
+  return collection.filter(record => ids.includes(record.id));
 }
 
 export function relationshipsFor<
