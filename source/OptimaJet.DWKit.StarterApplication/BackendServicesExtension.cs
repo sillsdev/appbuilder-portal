@@ -29,9 +29,9 @@ namespace OptimaJet.DWKit.StarterApplication
         {
             // add jsonapi dotnet core
             // - includes IHttpContextAccessor as a singleton
-            services.AddJsonApi<AppDbContext>(
-                opt => opt.Namespace = "api"
-            );
+            services.AddJsonApi<AppDbContext>(options => {
+                options.Namespace = "api";
+            });
 
             services.AddHttpContextAccessor();
 
@@ -64,7 +64,7 @@ namespace OptimaJet.DWKit.StarterApplication
         {
             var mailSender = GetVarOrDefault("MAIL_SENDER", "LogEmail");
             switch (mailSender) {
-                case "SparkPost": 
+                case "SparkPost":
                     services.AddScoped(typeof(ISender), typeof(SparkPostSender));
                     services.Configure<SparkPostOptions>(options => options.ApiKey = GetVarOrThrow("MAIL_SPARKPOST_APIKEY"));
                     services.AddSparkPost();

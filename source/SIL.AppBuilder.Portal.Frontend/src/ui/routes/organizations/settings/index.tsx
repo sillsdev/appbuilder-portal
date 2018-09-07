@@ -8,7 +8,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import * as toast from '@lib/toast';
 import NotFound from '@ui/routes/errors/not-found';
-import { defaultOptions, ORGANIZATIONS_TYPE } from '@data';
+import { defaultOptions, ORGANIZATIONS_TYPE, query, withLoader, buildFindRecord, buildOptions } from '@data';
 import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
 
 
@@ -19,6 +19,7 @@ import GroupsRoute, { pathName as groupsPath } from './groups';
 import InfrastructureRoute, { pathName as infrastructurePath } from './infrastructure';
 import Navigation from './navigation';
 import { ResourceObject } from 'jsonapi-typescript';
+import { withTranslations } from '@lib/i18n';
 
 
 export const pathName = '/organizations/:orgId/settings';
@@ -46,7 +47,8 @@ const mapRecordsToProps = (ownProps: PassedProps) => {
   const { params: { orgId } } = match;
 
   return {
-    organization: q => q.findRecord({ id: orgId, type: TYPE_NAME }),
+    cacheKey: [`org-${orgId}`],
+    organization: [q => buildFindRecord(q, TYPE_NAME, orgId), buildOptions()],
   };
 };
 
@@ -129,6 +131,7 @@ class SettingsRoute extends React.Component<IProps> {
 }
 
 export default compose(
-  withData(mapRecordsToProps),
-  translate('translations')
+  query(mapRecordsToProps),
+  withLoader(({ organization }) => !organization),
+  withTranslations
 )(SettingsRoute);

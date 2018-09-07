@@ -10,6 +10,7 @@ body {
   .auth0-lock.auth0-lock .auth0-lock-center {
     display: block;
     position: static;
+    z-index: 500 !important;
   }
 
   .auth0-lock.auth0-lock .auth0-lock-header {

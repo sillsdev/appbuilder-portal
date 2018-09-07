@@ -82,17 +82,20 @@ describe('Acceptance | New Project', () => {
             user: { data: { id: 1, type: 'users' } },
             group: { data: { id: 1, type: 'groups' } }
           }
+        },
+        {
+          id: 1, type: 'groups', attributes: { name: 'Group 1' }
         }
       ]
     });
 
-    beforeEach(function() {
-      this.mockGet(200, '/groups', {
-        data: [
-          { id: 1, type: 'groups', attributes: { name: 'Group 1' } }
-        ]
-      });
-    });
+    // beforeEach(function() {
+    //   this.mockGet(200, '/groups', {
+    //     data: [
+    //       { id: 1, type: 'groups', attributes: { name: 'Group 1' } }
+    //     ]
+    //   });
+    // });
 
     describe('navigates to the new project page', () => {
       beforeEach(async function() {

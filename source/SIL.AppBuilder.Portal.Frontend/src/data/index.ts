@@ -1,27 +1,31 @@
-import { serializer } from './store';
-
 export { default as DataProvider } from './provider';
+
 export { defaultSourceOptions, defaultOptions } from './store';
+export {
+  create,
+  update,
+  buildNew,
+  recordIdentityFrom,
+  idFromRecordIdentity,
+  buildFindRecord,
+  buildOptions,
+  buildFindRelatedRecords,
+  buildFindRelatedRecord,
+  localIdFromRecordIdentity
+} from './store-helpers';
 
 export {
   attributesFor, idFor,
   relationshipsFor, hasRelationship, isRelatedTo,
-  relationshipFor, firstError
+  relationshipFor, firstError,
+  isRelatedRecord
 } from './helpers';
+
+export { withLoader } from './containers/with-loader';
 
 export { queryApi as query } from './query';
 
-export async function pushPayload(updateStore, payload) {
-  const normalized =  serializer.deserializeDocument(payload);
-
-  const datas = Array.isArray(normalized.data) ? normalized.data : [normalized.data];
-  const resources = datas.concat(normalized.included || []);
-
-  await updateStore(
-    q => resources.map(
-      resource => q.addRecord(resource)), { skipRemote: true });
-}
-
+export { pushPayload } from './push-payload';
 
 
 // JSONAPI types

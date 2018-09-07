@@ -18,6 +18,7 @@ namespace Optimajet.DWKit.StarterApplication.Models
 
         [HasOne("owner")]
         public virtual User Owner { get; set; }
+        [Attr("owner-id")]
         public int OwnerId { get; set; }
 
         [HasOne("group")]

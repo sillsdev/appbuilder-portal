@@ -28,7 +28,7 @@ export function requireAuth(Component) {
 
     // toast.error('You must be logged in to do that');
 
-    return <Redirect to={'/login'} />;
+    return <Redirect push={true} to={'/login'} />;
   };
 
   return requireAuthHelper(checkForAuth);

@@ -7,6 +7,7 @@ import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 
 import AddGroupForm from './add-group';
 import List from './list';
+import { withTranslations } from '@lib/i18n';
 
 export const pathName = '/organizations/:orgId/settings/groups';
 
@@ -60,5 +61,5 @@ class GroupsRoute extends React.Component<IProps & i18nProps, IState> {
 }
 
 export default compose(
-  translate('translations')
+  withTranslations
 )( GroupsRoute );

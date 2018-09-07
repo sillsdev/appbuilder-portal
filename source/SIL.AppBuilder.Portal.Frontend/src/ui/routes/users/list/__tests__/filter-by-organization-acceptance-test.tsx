@@ -74,6 +74,17 @@ describe('Acceptance | User list | Filtering users by organization', () => {
               user: { data: { id: 3, type: 'users' } },
               organization: { data: { id: 2, type: 'organizations' } }
             }
+          },
+          {
+            type: 'organizations', id: 1,
+            attributes: {
+              name: 'SIL International'
+            }
+          }, {
+            type: 'organizations', id: 2,
+            attributes: {
+              name: 'DeveloperTown'
+            }
           }
         ]
       });

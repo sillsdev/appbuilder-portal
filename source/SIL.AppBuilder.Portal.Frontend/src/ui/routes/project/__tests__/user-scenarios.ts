@@ -1,5 +1,27 @@
 import { useFakeAuthentication, fakeAuth0Id } from 'tests/helpers/index';
 
+
+const groups = [
+  { id: 1, type: 'groups' ,
+    attributes: { name: 'Group 1' },
+    relationships: {
+      organization: { data: { id: 1, type: 'organizations' } }
+    }
+  },
+  { id: 2, type: 'groups' ,
+    attributes: { name: 'Group 2' },
+    relationships: {
+      organization: { data: { id: 1, type: 'organizations' } }
+    }
+  },
+  { id: 3, type: 'groups' ,
+    attributes: { name: 'Group 3' },
+    relationships: {
+      organization: { data: { id: 1, type: 'organizations' } }
+    }
+  }
+];
+
 export function userInDifferentOrganization(orgId: number) {
   useFakeAuthentication({
     data: {
@@ -30,7 +52,8 @@ export function userInDifferentOrganization(orgId: number) {
             ]
           }
         }
-      }
+      },
+      ...groups
     ]
   });
 }
@@ -53,7 +76,7 @@ export function userInSameOrgDifferentGroup(orgId, groupId) {
             { id: 2, type: 'group-memberships' },
           ]
         }
-      }
+      },
     },
     included: [
       { id: 1, type: 'organization-memberships',
@@ -68,7 +91,8 @@ export function userInSameOrgDifferentGroup(orgId, groupId) {
           user: { data: { id: 1, type: 'users' } },
           group: { data: { id: groupId, type: 'group' } }
         }
-      }
+      },
+      ...groups
     ]
   });
 }
@@ -103,6 +127,25 @@ export function userInSameOrgAndGroup(orgId, groupId) {
         group: { data: { id: 1, type: 'groups' } },
         user: { data: { id: 1, type: 'users' } }
       } },
+            { id: 1, type: 'groups' ,
+        attributes: { name: 'Group 1' },
+        relationships: {
+          organization: { data: { id: 1, type: 'organizations' } }
+        }
+      },
+      { id: 2, type: 'groups' ,
+        attributes: { name: 'Group 2' },
+        relationships: {
+          organization: { data: { id: 1, type: 'organizations' } }
+        }
+      },
+      { id: 3, type: 'groups' ,
+        attributes: { name: 'Group 3' },
+        relationships: {
+          organization: { data: { id: 1, type: 'organizations' } }
+        }
+      },
+      ...groups
     ]
   });
 }
