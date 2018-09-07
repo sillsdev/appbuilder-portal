@@ -12,7 +12,8 @@ import { withCurrentUser } from '@data/containers/with-current-user';
 import { deleteToken, getPictureUrl } from '@lib/auth0';
 import './header.scss';
 import { ResourceObject } from 'jsonapi-typescript';
-import { USERS_TYPE } from '@data';
+import { USERS_TYPE, idFromRecordIdentity } from '@data';
+import { withLogout } from '@data/containers/with-logout';
 
 interface IOwnProps {
   toggleSidebar: () => void;
@@ -25,16 +26,10 @@ export type IProps =
   & i18nProps;
 
 class UserDropdown extends React.Component<IProps> {
-
-  handleSignOut = () => {
-    const { history } = this.props;
-
-    deleteToken();
-    history.push('/login');
-  }
-
   render() {
-    const { t, currentUser } = this.props;
+    const { t, currentUser, logout } = this.props;
+
+    const currentUserId = idFromRecordIdentity(currentUser as any);
 
     return (
       <Dropdown
@@ -52,14 +47,14 @@ class UserDropdown extends React.Component<IProps> {
             data-test-profile
             text={t('header.myProfile')}
             as={NavLink}
-            to={`/users/${currentUser.id}/edit`}
+            to={`/users/${currentUserId}/edit`}
           />
           <Dropdown.Item text={t('header.help')} />
 
           <Dropdown.Item
             data-test-logout
             text={t('header.signOut')}
-            onClick={this.handleSignOut}/>
+            onClick={logout}/>
 
         </Dropdown.Menu>
       </Dropdown>
@@ -71,4 +66,5 @@ export default compose(
   withRouter,
   withCurrentUser(),
   translate('translations'),
+  withLogout
 )(UserDropdown);

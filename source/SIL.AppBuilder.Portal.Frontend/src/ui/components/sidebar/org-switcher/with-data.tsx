@@ -2,14 +2,13 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { query, defaultSourceOptions, defaultOptions, ORGANIZATIONS_TYPE } from '@data';
+import { query, defaultOptions, ORGANIZATIONS_TYPE } from '@data';
 import { IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
-import { isEmpty } from '@lib/collection';
 import { ResourceObject } from 'jsonapi-typescript';
 
 function mapRecordsToProps(passedProps) {
-  const { filterOptions, applyFilter } = passedProps;
+  const { applyFilter } = passedProps;
 
   return {
     fromCache: q =>
@@ -42,9 +41,10 @@ export function withData<T>(WrappedComponent) {
   class DataWrapper extends React.Component<IProps & T> {
     render() {
       const { organizations, fromCache, ...otherProps } = this.props;
+      const orgs = fromCache || organizations;
 
       const dataProps = {
-        organizations: fromCache || organizations
+        organizations: orgs.filter(o => o.attributes)
       };
 
       return <WrappedComponent { ...otherProps } { ...dataProps }/>;

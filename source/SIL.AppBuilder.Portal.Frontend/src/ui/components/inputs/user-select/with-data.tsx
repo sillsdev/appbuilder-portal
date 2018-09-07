@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
 
-import { query, defaultSourceOptions, relationshipFor, USERS_TYPE, GROUP_MEMBERSHIPS_TYPE } from '@data';
+import { query, defaultSourceOptions, relationshipFor, USERS_TYPE, GROUP_MEMBERSHIPS_TYPE, isRelatedRecord, isRelatedTo, idFromRecordIdentity, recordIdentityFrom } from '@data';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP_MEMBERSHIPS, GroupMembershipAttributes } from '@data/models/group-membership';
 import { withCurrentUser } from '@data/containers/with-current-user';
@@ -78,10 +78,9 @@ export function withData(WrappedComponent) {
 
       if (restrictToGroup) {
         const groupMembershipsForGroup = groupMemberships.filter(gm => {
-          const relation = relationshipFor(gm, 'group');
-          const { id } = relation.data || {};
+          const isRelated = isRelatedTo(gm, 'group', `${groupId}`);
 
-          return id === groupId;
+          return isRelated;
         });
 
         const validMembershipIds = groupMembershipsForGroup
@@ -89,7 +88,7 @@ export function withData(WrappedComponent) {
           .map(gm => gm.id);
 
         filteredUsers = users.filter(user => {
-          if (user.id === selected) {
+          if (idFromRecordIdentity(user as any) === selected) {
             return true;
           }
 

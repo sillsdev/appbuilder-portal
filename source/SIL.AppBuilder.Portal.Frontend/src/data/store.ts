@@ -74,7 +74,7 @@ export async function createStore() {
     schema,
     name: 'remote',
     host: baseUrl,
-    // SerializerClass: CustomJSONAPISerializer,
+    SerializerClass: CustomJSONAPISerializer,
     defaultFetchSettings: {
       headers: {
         Accept: 'application/vnd.api+json',
@@ -150,8 +150,8 @@ export async function createStore() {
   // }));
 
   // this.coordinator.addStrategy(new EventLoggingStrategy({
-  //   // sources: ['remote', 'inMemory']
-  //   sources: ['inMemory']
+  //   sources: ['remote', 'inMemory']
+  //   // sources: ['inMemory']
   // }));
 
 

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
-import { attributesFor, PROJECTS_TYPE, ORGANIZATIONS_TYPE } from '@data';
+import { attributesFor, PROJECTS_TYPE, ORGANIZATIONS_TYPE, idFromRecordIdentity } from '@data';
 import { ProjectAttributes } from '@data/models/project';
 import { OrganizationAttributes } from '@data/models/organization';
 
@@ -43,11 +43,12 @@ class Row extends React.Component<IProps & i18nProps> {
 
     const isArchived = archivedAt != null;
     const archiveStyle = { opacity: isArchived ? '1' : '0.5'};
+    const projectId = idFromRecordIdentity(data as any);
 
     return (
       <div>
         <div className='flex row-header grid'>
-          <div className='col flex-grow-xs'><Link to={`/project/${data.id}`}>{project.name}</Link></div>
+          <div className='col flex-grow-xs'><Link to={`/project/${projectId}`}>{project.name}</Link></div>
           <div className='col d-xs-none'>{orgName}</div>
           <div className='col d-xs-none'>{project.language}</div>
           <div className='action'>

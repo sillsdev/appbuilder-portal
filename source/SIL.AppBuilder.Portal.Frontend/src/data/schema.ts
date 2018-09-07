@@ -40,6 +40,7 @@ const schemaDefinition: SchemaSettings = {
         users: { type: 'hasMany', model: 'user', inverse: 'organizations' },
         projects: { type: 'hasMany', model: 'user', inverse: 'organization'},
         userMemberships: { type: 'hasMany', model: 'organization-membership', inverse: 'organization' },
+        groups: { type: 'hasMany', model: 'group', inverse: 'owner' },
       }
     },
     organizationMembership: {
@@ -70,7 +71,9 @@ const schemaDefinition: SchemaSettings = {
         description: { type: 'string' },
         automaticRebuild: { type: 'boolean' },
         allowOtherToDownload: { type: 'boolean' },
-        location: { type: 'string' }
+        location: { type: 'string' },
+        // filter keys
+        ownerId: { type: 'string' }
       },
       relationships: {
         tasks: { type: 'hasMany', model: 'task', inverse: 'project'},
@@ -138,9 +141,9 @@ const schemaDefinition: SchemaSettings = {
         name: { type: 'string' }
       },
       relationships: {
-        users: { type: 'hasMany', model: 'user', inverse: 'groups' },
         groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'group' },
         projects: { type: 'hasMany', model: 'project', inverse: 'group' },
+        owner: { type: 'hasOne', model: 'organization', inverse: 'groups' },
       }
     },
     user: {

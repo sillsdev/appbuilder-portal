@@ -10,7 +10,7 @@ import Loader from '@ui/components/loaders/page';
 
 import Row from './row';
 import { ResourceObject } from 'jsonapi-typescript';
-import { ORGANIZATIONS_TYPE } from '@data';
+import { ORGANIZATIONS_TYPE, idFromRecordIdentity } from '@data';
 
 export interface IOwnProps {
   organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
@@ -35,7 +35,6 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
       t,
       organizations,
       currentOrganizationId,
-      isLoading,
       allOrgsSelected,
       searchTerm,
       didTypeInSearch,
@@ -64,14 +63,16 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
           </Menu.Item>
         )}
 
-        { isLoading && <Loader /> }
+        { organizations.map(organization => {
+          const id = idFromRecordIdentity(organization as any);
 
-        { !isLoading && organizations.map(organization => (
-          <Row key={organization.id}
-            organization={organization}
-            onClick={selectOrganization(organization.id)}
-            isActive={currentOrganizationId === organization.id} />
-        ))}
+          return (
+            <Row key={organization.id}
+              organization={organization}
+              onClick={selectOrganization(id)}
+              isActive={currentOrganizationId === id} />
+          );
+        })}
 
         <hr />
 

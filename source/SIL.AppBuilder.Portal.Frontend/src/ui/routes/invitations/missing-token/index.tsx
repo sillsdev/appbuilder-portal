@@ -21,7 +21,7 @@ class CreateOrganizationRoute extends React.Component<IProps & i18nProps> {
     const { params } = match;
 
     if (params.token && params.token !== '') {
-      return <Redirect to={notFoundPath} />;
+      return <Redirect push={true} to={notFoundPath} />;
     }
 
     return (

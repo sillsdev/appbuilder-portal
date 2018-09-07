@@ -5574,9 +5574,9 @@ react-notify-toast@^0.5.0:
     object-assign "^4.0.0"
     prop-types "^15.5.8"
 
-react-orbitjs@^0.1.6:
+"react-orbitjs@github:NullVoxPopuli/react-orbitjs#7ac6f3d4b295f29076014ef6c1864f614782d40b":
   version "0.1.8"
-  resolved "https://registry.yarnpkg.com/react-orbitjs/-/react-orbitjs-0.1.8.tgz#a4ec043d7adb78089ee2f5c42893dda092989ff9"
+  resolved "https://codeload.github.com/NullVoxPopuli/react-orbitjs/tar.gz/7ac6f3d4b295f29076014ef6c1864f614782d40b"
   dependencies:
     hoist-non-react-statics "^2.3.1"
     prop-types "^15.6.0"
