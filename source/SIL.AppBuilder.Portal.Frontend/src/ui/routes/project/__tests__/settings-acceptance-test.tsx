@@ -22,8 +22,8 @@ describe('Acceptance | Project View | Settings toggles', () => {
           type: 'projects',
           id: '1',
           attributes: {
-            'automaticRebuild': true,
-            'allowDownload': true
+            'automaticBuilds': true,
+            'allowDownloads': true
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },

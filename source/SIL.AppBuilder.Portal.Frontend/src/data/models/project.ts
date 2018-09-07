@@ -11,8 +11,8 @@ export interface ProjectAttributes extends AttributesObject {
   language: string;
   type: string;
   description: string;
-  automaticRebuild: boolean;
-  allowDownload: boolean;
+  automaticBuilds: boolean;
+  allowDownloads: boolean;
   location: string;
   lastUpdatedAt: Date;
   isPublic: boolean;

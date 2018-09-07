@@ -16,7 +16,7 @@ export function withSettings(WrappedComponent) {
 
       const { t } = this.props;
 
-      return t(`users.operations.${fieldName}.${type}`);
+      return t(`project.operations.${fieldName}.${type}`);
 
     }
 

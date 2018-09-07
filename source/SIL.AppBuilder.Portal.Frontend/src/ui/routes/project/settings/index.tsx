@@ -32,7 +32,7 @@ class Settings extends React.Component<IProps> {
   render() {
 
     const { t, project } = this.props;
-    const { automaticRebuild, allowDownload } = project.attributes;
+    const { automaticBuilds, allowDownloads } = project.attributes;
 
     return (
       <div className='settings'>
@@ -46,8 +46,8 @@ class Settings extends React.Component<IProps> {
             <Checkbox
               data-test-project-settings-automatic-build
               toggle
-              name='automaticBuild'
-              defaultChecked={automaticRebuild}
+              name='automaticBuilds'
+              defaultChecked={automaticBuilds}
               onChange={this.toggle}
             />
           </div>
@@ -61,8 +61,8 @@ class Settings extends React.Component<IProps> {
             <Checkbox
               data-test-project-settings-allow-download
               toggle
-              name='allowDownload'
-              defaultChecked={allowDownload}
+              name='allowDownloads'
+              defaultChecked={allowDownloads}
               onChange={this.toggle}
             />
           </div>
