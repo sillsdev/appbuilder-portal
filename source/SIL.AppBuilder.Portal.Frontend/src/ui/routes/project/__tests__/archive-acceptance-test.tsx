@@ -7,72 +7,14 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe('Acceptance | Project Edit | Archive Project', () => {
+describe.only('Acceptance | Project View | Settings toggles', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  describe('navigates to project details page', () => {
-    beforeEach(async function () {
-      await visit('/project/1');
-    });
+  describe('Toggle default to true', () => {
 
-    it('is in detail page', () => {
-      expect(location().pathname).to.equal('/project/1');
-    });
-  });
-
-  describe('an active project exists', () => {
-    beforeEach(function() {
-      this.mockGet(200, 'users', { data: [] });
-      this.mockGet(200, '/groups', { data: [] });
-      this.mockGet(200, 'projects/1', { data: {
-          type: 'projects',
-          id: '1',
-          attributes: {
-            'date-archived': null,
-          },
-          relationships: {
-            organization: { data: { id: 1, type: 'organizations' } },
-            group: { data: { id: 1, type: 'groups' } },
-            owner: { data: { id: 2, type: 'users' } }
-          }
-        },
-        included: [
-          { type: 'organizations', id: 1, },
-          { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
-          { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
-        ]
-      });
-    });
-
-    describe('archiving the project', () => {
-      beforeEach(function () {
-        this.mockPatch(200, 'projects/1', {
-          data: {
-            type: 'projects',
-            id: '1',
-            attributes: {
-              'date-archived': "2018-08-10T23:59:55.259Z"
-            },
-        }});
-      });
-
-      describe('the archive button is clicked', () => {
-        beforeEach(async () => {
-          await visit('/project/1');
-          await page.clickArchiveLink();
-        });
-
-        it("changes the button text", () => {
-          expect(page.archiveText).to.equal('Reactivate');
-        });
-      });
-    });
-  });
-
-  describe('an archived project exists', () => {
-    beforeEach(function() {
+    beforeEach(function () {
       this.mockGet(200, 'users', { data: [] });
       this.mockGet(200, '/groups', { data: [] });
       this.mockGet(200, 'projects/1', {
@@ -80,7 +22,8 @@ describe('Acceptance | Project Edit | Archive Project', () => {
           type: 'projects',
           id: '1',
           attributes: {
-            'date-archived': "2018-08-10T23:59:55.259Z"
+            'automaticRebuild': true,
+            'allowDownload': true
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
@@ -91,34 +34,19 @@ describe('Acceptance | Project Edit | Archive Project', () => {
         included: [
           { type: 'organizations', id: 1, },
           { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
-          { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
+          { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
         ]
       });
     });
 
-    describe('reactivating a project', () => {
-      beforeEach(function () {
-        this.mockPatch(200, 'projects/1', {
-          data: {
-            type: 'projects',
-            id: '1',
-            attributes: {
-              'date-archived': null
-            },
-          }});
-      });
+    beforeEach(async function () {
+      await visit('/project/1');
+    });
 
-      describe('the reactivate button is clicked', () => {
-        beforeEach(async function() {
-          await visit('/project/1');
-          await page.clickArchiveLink();
-        });
-
-        it("changes the button text", () => {
-          expect(page.archiveText).to.equal('Archive');
-        });
-
-      });
+    it('Toggles are on', () => {
+      expect(location().pathname).to.equal('/project/1');
+      expect(page.isAutomaticRebuildChecked).to.be.true;
+      expect(page.isAllowDownloadChecked).to.be.true;
     });
   });
 });

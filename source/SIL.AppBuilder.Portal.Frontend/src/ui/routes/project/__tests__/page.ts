@@ -1,6 +1,6 @@
 import {
   interactor,
-  clickable, text
+  clickable, text, isPresent
 } from '@bigtest/interactor';
 
 import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
@@ -12,6 +12,9 @@ export class ProjectInteractor {
 
   clickArchiveLink = clickable('[data-test-archive]');
   archiveText = text('[data-test-archive] span');
+
+  isAutomaticRebuildChecked = isPresent('[data-test-project-settings-automatic-build].checked');
+  isAllowDownloadChecked = isPresent('[data-test-project-settings-allow-download].cheked');
 
   groupSelect = groupInteractor;
   userSelect = userInteractor;
