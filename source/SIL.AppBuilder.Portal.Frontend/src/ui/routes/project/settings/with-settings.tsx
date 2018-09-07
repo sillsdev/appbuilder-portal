@@ -20,14 +20,14 @@ export function withSettings(WrappedComponent) {
 
     }
 
-    toggleField = async (projectId, fieldName, newToggleState) => {
+    toggleField = async (project, fieldName, newToggleState) => {
 
       const { updateStore } = this.props;
 
       try {
 
         updateStore(t => t.replaceAttribute(
-          { type: PROJECT, id: projectId },
+          project,
           fieldName,
           newToggleState
         ), defaultOptions());

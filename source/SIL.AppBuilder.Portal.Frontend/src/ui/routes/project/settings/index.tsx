@@ -10,7 +10,7 @@ import { withSettings } from './with-settings';
 
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
-  toggleField: (projectId: Id, fieldName: string, newToggleState: boolean) => void;
+  toggleField: (project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>, fieldName: string, newToggleState: boolean) => void;
 }
 
 type IProps =
@@ -26,7 +26,7 @@ class Settings extends React.Component<IProps> {
 
     const newToggleState = toggleData.checked;
 
-    toggleField(project.id, toggleData.name, newToggleState);
+    toggleField(project, toggleData.name, newToggleState);
   }
 
   render() {
