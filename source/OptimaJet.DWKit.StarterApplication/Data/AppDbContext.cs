@@ -61,6 +61,14 @@ namespace Optimajet.DWKit.StarterApplication.Data
                 .HasMany(r => r.Reviewers)
                 .WithOne(rp => rp.Project)
                 .HasForeignKey(rp => rp.ProjectId);
+
+            projectEntity
+                .Property(p => p.AllowDownloads)
+                .HasDefaultValue(true);
+
+            projectEntity
+                .Property(p => p.AutomaticBuilds)
+                .HasDefaultValue(true);
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
