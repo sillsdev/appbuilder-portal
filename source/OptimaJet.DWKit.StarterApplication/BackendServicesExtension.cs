@@ -40,10 +40,12 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<Group>, GroupRepository>();
             services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
             services.AddScoped<IEntityRepository<OrganizationInviteRequest>, OrganizationInviteRequestRepository>();
+            services.AddScoped<IEntityRepository<Product>, ProductRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
             services.AddScoped<IResourceService<Group>, GroupService>();
             services.AddScoped<IResourceService<Project>, ProjectService>();
+            services.AddScoped<IResourceService<Product>, ProductService>();
 
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();

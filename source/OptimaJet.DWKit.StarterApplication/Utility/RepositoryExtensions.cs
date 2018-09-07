@@ -27,8 +27,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
             if (isTargetParam)
             {
-                var result = getMethod(query, value, userRepository, currentUserContext, query1, query2);//filterOn(query, value);
-                return result;
+                return getMethod(query, value, userRepository, currentUserContext, query1, query2);//filterOn(query, value);
             }
             return exitFilter(query, filterQuery);
         }
@@ -47,7 +46,6 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
                 return query1(query, orgIds);
             }
-
             return query2(query, orgIds);
         }
 
