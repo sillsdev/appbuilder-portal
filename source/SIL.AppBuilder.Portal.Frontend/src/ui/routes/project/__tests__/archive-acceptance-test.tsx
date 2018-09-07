@@ -7,7 +7,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe.only('Acceptance | Project View | Settings toggles', () => {
+describe('Acceptance | Project View | Settings toggles', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
