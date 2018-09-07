@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { compose } from 'recompose';
-import { SingleResourceDoc } from 'jsonapi-typescript';
+import { SingleResourceDoc, ResourceObject } from 'jsonapi-typescript';
 
-import { defaultSourceOptions, pushPayload, USERS_TYPE } from '@data';
+import { pushPayload, USERS_TYPE } from '@data';
 import { UserAttributes, TYPE_NAME } from '@data/models/user';
 
 import { getAuth0Id } from '@lib/auth0';
@@ -19,6 +19,7 @@ import { deleteToken } from '@lib/auth0';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import * as toast from '@lib/toast';
+import { attributesFor } from '@data/helpers';
 
 type UserPayload = SingleResourceDoc<USERS_TYPE, UserAttributes>;
 
@@ -30,6 +31,10 @@ const mapRecordsToProps = () => {
       .filter({ attribute: 'auth0Id', value: auth0Id })
   };
 };
+
+export interface IProvidedProps {
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
+}
 
 interface IProps {
   usersMatchingLoggedInUser: UserPayload;
@@ -56,13 +61,21 @@ export function withCurrentUser(opts = {}) {
 
   return InnerComponent => {
     class WrapperClass extends React.Component<IProps & WithDataProps & i18nProps, IState> {
-      state = {
-        currentUser: undefined, isLoading: true, error: undefined,
-        networkFetchComplete: false
-      };
+      makingRequest: boolean;
+
+      constructor(props) {
+        super(props);
+
+        this.state = {
+          currentUser: undefined, isLoading: true, error: undefined,
+          networkFetchComplete: false
+        };
+      }
 
       componentDidMount() {
         this.fetchCurrentUser();
+
+
       }
 
       componentDidUpdate(previousProps, previousState) {
@@ -83,8 +96,8 @@ export function withCurrentUser(opts = {}) {
         // NOTE: this whole lifecycle hook is kind of a hack for lack
         //       of a better 'get the current user' pattern.
         const userFromCache = fromCache && fromCache[0];
-        const cacheId = userFromCache && userFromCache.attributes && userFromCache.attributes.auth0Id;
-        const existingId = currentUser && currentUser.attributes && currentUser.attributes.auth0Id;
+        const cacheId = attributesFor(userFromCache).auth0Id;
+        const existingId = attributesFor(currentUser).auth0Id;
 
         if (cacheId === auth0IdFromJWT && existingId !== cacheId) {
           this.setState({ currentUser: userFromCache, isLoading: false, networkFetchComplete: true });
@@ -96,7 +109,11 @@ export function withCurrentUser(opts = {}) {
         try {
           this.makingRequest = true;
 
-          const response = await authenticatedGet('/api/users/current-user?include=organization-memberships.organization,group-memberships.group');
+          const response = await authenticatedGet([
+            '/api/users/current-user',
+            '?include=organization-memberships.organization,group-memberships.group'
+          ].join(''));
+
           const status = response.status;
           const unauthorized = status === 401;
 
@@ -133,7 +150,7 @@ export function withCurrentUser(opts = {}) {
           if (options.redirectOnFailure) {
             toast.error(error);
 
-            return <Redirect to={'/login'} />;
+            return <Redirect push={true} to={'/login'} />;
           }
 
           return <PageError error={error} />;
@@ -148,11 +165,11 @@ export function withCurrentUser(opts = {}) {
             return <InnerComponent {...this.props} currentUser={currentUser} />;
           }
 
-          return <OrgMembershipRequired />;
+          return <Redirect push={true} to={'/organization-membership-required'} />;
         }
 
         // TODO: would it ever make sense to do an inline login instead of a redirect?
-        return <Redirect to={'/login'} />;
+        return <Redirect push={true} to={'/login'} />;
       }
     }
 

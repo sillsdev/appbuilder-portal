@@ -39,27 +39,6 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
         { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
       ]
     });
-
-    this.mockGet(200, 'groups', { data: [
-      { id: 1, type: 'groups' ,
-        attributes: { name: 'Group 1' },
-        relationships: {
-          organization: { data: { id: 1, type: 'organizations' } }
-        }
-      },
-      { id: 2, type: 'groups' ,
-        attributes: { name: 'Group 2' },
-        relationships: {
-          organization: { data: { id: 1, type: 'organizations' } }
-        }
-      },
-      { id: 3, type: 'groups' ,
-        attributes: { name: 'Group 3' },
-        relationships: {
-          organization: { data: { id: 1, type: 'organizations' } }
-        }
-      }
-    ] });
   });
 
   describe('the user is not in the same organization as the project', () => {
@@ -114,6 +93,7 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
           ['group-memberships']: {
             data: [
               { id: 1, type: 'group-memberships' },
+              { id: 2, type: 'group-memberships' },
             ]
           }
         }
@@ -137,6 +117,24 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
           relationships: {
             user: { data: { id: 1, type: 'users' } },
             group: { data: { id: 3, type: 'group' } }
+          }
+        },
+        { id: 1, type: 'groups' ,
+          attributes: { name: 'Group 1' },
+          relationships: {
+            organization: { data: { id: 1, type: 'organizations' } }
+          }
+        },
+        { id: 2, type: 'groups' ,
+          attributes: { name: 'Group 2' },
+          relationships: {
+            organization: { data: { id: 1, type: 'organizations' } }
+          }
+        },
+        { id: 3, type: 'groups' ,
+          attributes: { name: 'Group 3' },
+          relationships: {
+            organization: { data: { id: 1, type: 'organizations' } }
           }
         }
       ]

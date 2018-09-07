@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 
-import { requireAuth } from '@lib/auth';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { withLayout } from '@ui/components/layout';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import UserTable from '@ui/components/user-table';
+import { withTranslations } from '@lib/i18n';
 
 export const pathName = '/users';
 
@@ -32,5 +31,5 @@ class Users extends React.Component<i18nProps> {
 }
 
 export default compose(
-  translate('translations'),
+  withTranslations,
 )(Users);

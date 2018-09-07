@@ -1,16 +1,16 @@
-import * as React from 'react';
 import { compose } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { withData as withOrbit } from 'react-orbitjs';
 
-import { query, defaultSourceOptions, defaultOptions, PROJECTS_TYPE } from '@data';
+import {
+  query, buildFindRecord, buildOptions
+} from '@data';
 
-import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
-import { PLURAL_NAME as PRODUCTS } from '@data/models/product';
+import { TYPE_NAME as PROJECT } from '@data/models/project';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as GROUP } from '@data/models/group';
 
-import { PageLoader as Loader } from '@ui/components/loaders';
-import { ResourceObject } from 'jsonapi-typescript';
+import { withLoader } from '@data/containers/with-loader';
+import { withError } from '@data/containers/with-error';
 
 const mapNetworkToProps = (passedProps) => {
   const { match } = passedProps;
@@ -18,15 +18,9 @@ const mapNetworkToProps = (passedProps) => {
 
   return {
     cacheKey: `project-${id}`,
-    project: [q => q.findRecord({ id, type: PROJECT }), {
-      label: 'Find Project',
-      sources: {
-        remote: {
-          settings: { ...defaultSourceOptions() },
-          include: [/* PRODUCTS, */ ORGANIZATION, GROUP, 'owner']
-        }
-      }
-    }]
+    project: [q => buildFindRecord(q, PROJECT, id), buildOptions({
+      include: [/* PRODUCTS, */ ORGANIZATION, GROUP, 'owner']
+    })]
   };
 };
 
@@ -35,44 +29,16 @@ const mapRecordsToProps = (passedProps) => {
   const { params: { id } } = match;
 
   return {
-    projectFromCache: q => q.findRecord({ id, type: PROJECT })
+    project: q => buildFindRecord(q, PROJECT, id )
   };
 };
 
-interface IProps {
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
-  projectFromCache: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
-}
 
-export function withData<T>(WrappedComponent) {
-  class DataWrapper extends React.Component<IProps & T> {
-    update = async (attributes: ProjectAttributes) => {
-      const { project, updateStore } = this.props;
-      const { type, id } = project;
-
-      return updateStore(q => q.replaceRecord({
-        type, id,
-        attributes,
-      }), defaultOptions());
-    }
-
-    render() {
-      const { project, projectFromCache, ...otherProps } = this.props;
-
-      const dataProps = {
-        project: projectFromCache || project
-      };
-
-      if (!dataProps.project) {
-        return <Loader />;
-      }
-
-      return <WrappedComponent { ...otherProps } { ...dataProps }/>;
-    }
-  }
-
+export function withData(WrappedComponent) {
   return compose(
-    query(mapNetworkToProps),
+    query(mapNetworkToProps, { passthroughError: true }),
+    withError('error', ({ error }) => error),
+    withLoader(({ project }) => !project),
     withOrbit(mapRecordsToProps)
-  )(DataWrapper);
+  )(WrappedComponent);
 }

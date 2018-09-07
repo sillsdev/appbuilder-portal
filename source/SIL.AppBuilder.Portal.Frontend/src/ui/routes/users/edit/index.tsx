@@ -1,19 +1,22 @@
 import * as React from 'react';
 
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { Container } from 'semantic-ui-react';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { WithDataProps } from 'react-orbitjs';
+import { ResourceObject } from 'jsonapi-typescript';
 
+import { withTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
-import { idFor, defaultOptions, USERS_TYPE } from '@data';
-import { UserAttributes, TYPE_NAME } from '@data/models/user';
+
+import { USERS_TYPE, update } from '@data';
+import { UserAttributes } from '@data/models/user';
 import { withCurrentUser } from '@data/containers/with-current-user';
 
 import EditProfileForm from './form';
 import { withData } from './with-data';
+
 import './profile.scss';
-import { ResourceObject } from 'jsonapi-typescript';
 
 export const pathName = '/users/:id/edit';
 
@@ -29,17 +32,11 @@ export type IProps =
 
 class Profile extends React.Component<IProps> {
 
-  updateProfile = async (formData: UserAttributes): Promise<void> => {
-    const { t, user } = this.props;
-    const id = idFor(user);
+  updateProfile = async (attributes: UserAttributes): Promise<void> => {
+    const { t, user, dataStore } = this.props;
 
     try {
-
-      await this.props.updateStore(tr => tr.replaceRecord({
-        id,
-        type: TYPE_NAME,
-        attributes: { ...formData }
-      }), defaultOptions());
+      await update(dataStore, user, { attributes });
 
       toast.success(t('profile.updated'));
 
@@ -49,7 +46,7 @@ class Profile extends React.Component<IProps> {
   }
 
   render() {
-    const { t, user, currentUser } = this.props;
+    const { t, user } = this.props;
 
     return (
       <Container className='profile'>
@@ -66,8 +63,7 @@ class Profile extends React.Component<IProps> {
 
 // TODO: if no permission to edit, redirect to view
 export default compose(
+  withTranslations,
   withCurrentUser(),
-  withOrbit({}),
   withData,
-  translate('translations')
 )(Profile);

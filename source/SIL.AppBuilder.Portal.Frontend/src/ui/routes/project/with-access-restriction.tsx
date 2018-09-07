@@ -4,7 +4,13 @@ import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import * as toast from '@lib/toast';
-import { hasRelationship, relationshipFor } from '@data';
+import {
+  hasRelationship,
+  relationshipFor,
+  isRelatedRecord,
+  buildFindRelatedRecords,
+  buildFindRelatedRecord
+} from '@data';
 
 // The current user must:
 // - have at least organization membership that matches the
@@ -14,21 +20,19 @@ export function withAccessRestriction(WrappedComponent) {
     const { currentUser, project } = passedProps;
 
     return {
-      userOrgMemberships: q => q.findRelatedRecords(
-        { type: currentUser.type, id: currentUser.id }, 'organizationMemberships'),
-      projectOrg: q => q.findRelatedRecord(
-        { type: project.type, id: project.id }, 'organization')
+      // TODO: remove orgMemberships when testing is complete
+      orgMemberships: q => q.findRecords('organizationMembership'),
+      userOrgMemberships: q => buildFindRelatedRecords(q, currentUser, 'organizationMemberships'),
+      projectOrg: q => buildFindRelatedRecord(q, project, 'organization')
     };
   };
 
 
   const DataWrapper = props => {
-    const { t, userOrgMemberships, projectOrg } = props;
+    const { t, userOrgMemberships, projectOrg, orgMemberships } = props;
 
     const userOrgIds = userOrgMemberships.filter(om => {
-      const org = relationshipFor(om, 'organization').data || {};
-
-      return org.id === projectOrg.id;
+      return isRelatedRecord(om, projectOrg);
     });
 
     const isAMember = userOrgIds.length > 0;
@@ -39,7 +43,7 @@ export function withAccessRestriction(WrappedComponent) {
 
     toast.error(t('errors.notAMemberOfOrg'));
 
-    return <Redirect to={'/'} />;
+    return <Redirect push={true} to={'/'} />;
   };
 
   return compose(

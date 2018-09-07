@@ -1,45 +1,34 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { connect } from 'react-redux';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import * as toast from '@lib/toast';
-import { withTranslations, i18nProps } from '@lib/i18n';
 import { ResourceObject } from 'jsonapi-typescript';
+
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
-import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
+import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
 import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
-import { PageLoader as Loader } from '@ui/components/loaders';
-import { query, defaultSourceOptions, defaultOptions, relationshipFor, ORGANIZATION_MEMBERSHIPS_TYPE, GROUPS_TYPE, USERS_TYPE } from '@data';
+import { query, ORGANIZATION_MEMBERSHIPS_TYPE, GROUPS_TYPE, USERS_TYPE, withLoader, buildOptions, isRelatedTo, ORGANIZATIONS_TYPE } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
+import { IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
 
 function mapNetworkToProps() {
   return {
     users: [
-      q => q.findRecords(USER), {
-      sources: {
-        remote: {
-          settings: { ...defaultSourceOptions() },
-          include: [`${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}`, `${GROUP_MEMBERSHIPS}.${GROUP}`]
-        }
-      }
-    }],
+      q => q.findRecords(USER),
+      buildOptions({
+        include: [`${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}`, `${GROUP_MEMBERSHIPS}.${GROUP}`]
+      })
+    ],
   };
 }
 
 function mapRecordsToProps() {
   return {
-    usersFromCache: q => q.findRecords(USER),
     organizationMemberships: q => q.findRecords('organizationMembership'),
     groups: q => q.findRecords(GROUP)
-  };
-}
-
-function mapStateToProps({ data }) {
-  return {
-    currentOrganizationId: data.currentOrganizationId
   };
 }
 
@@ -47,68 +36,30 @@ interface IOwnProps {
   users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
   usersFromCache: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
   groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
-  currentOrganizationId: string;
+  currentOrganization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
   organizationMemberships: Array<ResourceObject<ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipAttributes>>;
 }
 
 type IProps =
   & IOwnProps
   & i18nProps
+  & IActionProps
   & WithDataProps;
 
 export function withData(WrappedComponent) {
 
   class DataWrapper extends React.Component<IProps> {
-
-    isLoading = () => {
-
-      const { users, groups, organizationMemberships } = this.props;
-
-      return !users || !groups || !organizationMemberships;
-    }
-
-    toggleLock = async (user) => {
-
-      const { updateStore, t } = this.props;
-
-      const currentLockedState = user.attributes.isLocked;
-      const nextLockedState = !currentLockedState;
-
-      const getMessage = (nextState, type = 'success') => {
-        const state = nextState ? 'lock' : 'unlock';
-        return t(`users.operations.${state}.${type}`);
-      };
-
-      try {
-        await updateStore(us => us.replaceAttribute(
-          { type: USER, id: user.id }, 'isLocked', nextLockedState
-        ), defaultOptions());
-
-        toast.success(getMessage(nextLockedState));
-
-      } catch(e) {
-        console.error(e);
-        toast.error(getMessage(nextLockedState,'error'));
-      }
-    }
-
-    isRelatedTo = (user, organizationMemberships, orgId) => {
-
-
+    isRelatedTo = (user, organizationMemberships, organization) => {
       // All organization are selected
-      if (!orgId) {
+      if (!organization) {
         return true;
       }
 
       const memberships = organizationMemberships.filter(om => {
+        const isRelatedToUser = isRelatedTo(om, 'user', user.id);
+        const isRelatedToOrg = isRelatedTo(om, 'organization', organization.id);
 
-        const relationUser = relationshipFor(om, 'user');
-        const organization = relationshipFor(om, 'organization');
-
-        const userId = (relationUser.data || {}).id;
-        const organizationId = (organization.data || {}).id;
-
-        return user.id === userId && organizationId === orgId;
+        return isRelatedToUser && isRelatedToOrg;
       });
 
       return memberships.length > 0;
@@ -116,24 +67,20 @@ export function withData(WrappedComponent) {
 
     render() {
       const {
-        users, usersFromCache,
+        users,
         groups,
         organizationMemberships,
-        currentOrganizationId: orgId,
+        currentOrganization,
         ...otherProps
       } = this.props;
 
-      // TODO: extract cache handling into query
-      const usersToDisplay = (
-        (usersFromCache && usersFromCache.length > 0 && usersFromCache) ||
-          users || []
-      );
+      const usersToDisplay = users || [];
 
       const dataProps = {
         users: usersToDisplay.filter(user => {
           return (
             // TODO: need a way to test against the joined organization
-            !!user.attributes && this.isRelatedTo(user, organizationMemberships, orgId)
+            !!user.attributes && this.isRelatedTo(user, organizationMemberships, currentOrganization)
           );
         }),
         groups
@@ -142,10 +89,6 @@ export function withData(WrappedComponent) {
       const actionProps = {
         toggleLock: this.toggleLock
       };
-
-      if (this.isLoading()) {
-        return <Loader />;
-      }
 
       return (
         <WrappedComponent
@@ -158,10 +101,12 @@ export function withData(WrappedComponent) {
   }
 
   return compose(
-    connect(mapStateToProps),
+    withCurrentOrganization,
     query(mapNetworkToProps),
     withOrbit(mapRecordsToProps),
+    withLoader(({ users, groups, organizationMemberships }) =>
+        !users || !groups || !organizationMemberships
+    ),
     withTranslations,
-    withCurrentOrganization
   )(DataWrapper);
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { withData as withOrbit } from 'react-orbitjs';
+import { withData as withCache } from 'react-orbitjs';
 
 
 import { ProjectAttributes } from '@data/models/project';
@@ -12,19 +12,20 @@ import { withSorting } from '@data/containers/sorting';
 import { withPagination } from '@data/containers/pagination';
 
 import { query, defaultOptions, ORGANIZATIONS_TYPE, GROUPS_TYPE } from '@data';
+import { TYPE_NAME as PROJECT } from '@data/models/project';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as GROUP } from '@data/models/group';
 
 import { requireAuth } from '@lib/auth';
 
-import {
-  Table,
-  IDataProps, withData as withProjects
-} from '@ui/components/project-table';
 
+import { withCurrentUser } from '@data/containers/with-current-user';
+import { withLoader } from '@data/containers/with-loader';
+import { withNetwork as withProjects } from '@data/containers/resources/project/list';
 import { withFiltering, IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 import { setCurrentOrganization } from '@store/data';
 
+import { Table, IDataProps } from '@ui/components/project-table';
 import { withLayout } from '@ui/components/layout';
 import { ErrorMessage } from '@ui/components/errors';
 import ProjectSearch from '@ui/components/project-search';
@@ -92,11 +93,22 @@ export default compose (
   translate('translations'),
   requireAuth,
   withLayout,
-  withOrbit({
-    organizations: q => q.findRecords(ORGANIZATION),
-    groups: q => q.findRecords(GROUP)
-  }),
   connect(null, mapDispatchToProps),
-  withFiltering(),
-  withProjects
+  withCurrentUser(),
+  withFiltering(({ currentUser }) => ({
+    requiredFilters: [
+      { attribute: 'date-archived', value: 'isnull:' }
+    ]
+  })),
+  withProjects,
+  withLoader(({ error, projects }) => !error && !projects),
+  withCache(({ applyFilter }) => ({
+    organizations: q => q.findRecords(ORGANIZATION),
+    groups: q => q.findRecords(GROUP),
+    projects: q => {
+      const result = applyFilter(q.findRecords(PROJECT), true);
+
+      return result;
+    }
+  })),
 )(ProjectDirectoryRoute);

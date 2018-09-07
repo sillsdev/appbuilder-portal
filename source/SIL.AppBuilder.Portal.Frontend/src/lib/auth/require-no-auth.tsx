@@ -16,7 +16,7 @@ export function requireNoAuth(redirectPath = '/') {
 
       // toast.error('You must be logged out to do that');
 
-      return <Redirect to={redirectPath} />;
+      return <Redirect push={true} to={redirectPath} />;
     };
 
     return requireAuthHelper(checkForNoAuth);

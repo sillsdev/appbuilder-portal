@@ -1,13 +1,19 @@
 import * as React from 'react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-
-import { UserAttributes } from '@data/models/user';
-import { GroupAttributes } from '@data/models/group';
-import GroupDropdown from './dropdown';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Radio } from 'semantic-ui-react';
 import { ResourceObject } from 'jsonapi-typescript';
-import { USERS_TYPE, GROUPS_TYPE } from '@data';
+import { compose } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
+
+import { withTranslations } from '@lib/i18n';
+import * as toast from '@lib/toast';
+
+import { USERS_TYPE, GROUPS_TYPE, attributesFor, idFromRecordIdentity } from '@data';
+import { withDataActions, IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
+import { UserAttributes } from '@data/models/user';
+import { GroupAttributes } from '@data/models/group';
+
 
 export interface IOwnProps {
   user: ResourceObject<USERS_TYPE, UserAttributes>;
@@ -17,13 +23,36 @@ export interface IOwnProps {
 
 export type IProps =
   & i18nProps
+  & IActionProps
   & IOwnProps;
 
 class Row extends React.Component<IProps> {
+  getMessage = (nextState, type = 'success') => {
+    const state = nextState ? 'lock' : 'unlock';
+
+    return this.props.t(`users.operations.${state}.${type}`);
+  }
+
+  toggleLock = async () => {
+    const { updateAttribute, user } = this.props;
+
+    const currentLockedState = user.attributes.isLocked;
+    const nextLockedState = !currentLockedState;
+
+    try {
+      await updateAttribute('isLocked', nextLockedState);
+
+      toast.success(this.getMessage(nextLockedState));
+    } catch(e) {
+      console.error(e);
+      toast.error(this.getMessage(nextLockedState,'error'));
+    }
+  }
 
   render() {
-    const { user: userData, groups, t, toggleLock } = this.props;
-    const user = userData.attributes || {} as UserAttributes;
+    const { user: userData, t } = this.props;
+    const user = attributesFor(userData) as UserAttributes;
+    const userId = idFromRecordIdentity(userData as any);
 
     const firstName = user.givenName || `(${t('profile.firstName')})`;
     const lastName = user.familyName || `(${t('profile.lastName')})`;
@@ -32,7 +61,7 @@ class Row extends React.Component<IProps> {
     return (
       <tr>
         <td>
-          <Link data-test-user-table-username to={`/users/${userData.id}/edit`}>
+          <Link data-test-user-table-username to={`/users/${userId}/edit`}>
             {firstName} {lastName}
           </Link>
         </td>
@@ -49,7 +78,7 @@ class Row extends React.Component<IProps> {
           <Radio
             data-test-toggle-lock
             toggle
-            onChange={_ => toggleLock(userData)}
+            onChange={this.toggleLock}
             checked={isActive} />
         </td>
       </tr >
@@ -57,4 +86,8 @@ class Row extends React.Component<IProps> {
   }
 }
 
-export default translate('translations')(Row);
+export default compose(
+  withTranslations,
+  withDataActions,
+  withOrbit(({ user }) => ({ user: q => q.findRecord(user) }))
+)(Row);

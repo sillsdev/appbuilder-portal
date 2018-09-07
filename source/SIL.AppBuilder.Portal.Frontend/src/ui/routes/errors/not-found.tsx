@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { withTranslations } from '@lib/i18n';
 
 export const pathName = '/not-found';
 
@@ -18,6 +19,6 @@ class NotFoundRoute extends React.Component<i18nProps> {
 }
 
 export default compose(
-  translate('translations')
+  withTranslations
 )(NotFoundRoute);
 

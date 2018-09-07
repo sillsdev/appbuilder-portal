@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { WithDataProps } from 'react-orbitjs';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { OrganizationAttributes } from '@data/models/organization';
 import { withCurrentOrganization, IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-current-organization';
@@ -15,6 +15,7 @@ import { withData } from './with-data';
 import Display from './display';
 import { ResourceObject } from 'jsonapi-typescript';
 import { ORGANIZATIONS_TYPE } from '@data';
+import { withTranslations } from '@lib/i18n';
 
 export interface IOwnProps {
   organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
@@ -89,7 +90,7 @@ class OrgSwitcher extends React.Component<IProps> {
 }
 
 export default compose(
-  translate('translations'),
+  withTranslations,
   connect(null, mapDispatchToProps),
   withCurrentOrganization,
   withFiltering(),

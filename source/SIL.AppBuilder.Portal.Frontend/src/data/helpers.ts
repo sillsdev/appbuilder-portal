@@ -1,4 +1,12 @@
-import { SingleResourceDoc, AttributesObject, ResourceObject, RelationshipsObject, RelationshipsWithData, ErrorObject, ResourceLinkage } from "jsonapi-typescript";
+import {
+  SingleResourceDoc,
+  AttributesObject, ResourceObject,
+  RelationshipsObject, RelationshipsWithData,
+  ErrorObject,
+  ResourceLinkage
+} from "jsonapi-typescript";
+
+import { idFromRecordIdentity } from './store-helpers';
 
 type IJsonApiPayload<TType extends string, TAttrs extends AttributesObject> =
   | SingleResourceDoc<TType, TAttrs>
@@ -63,6 +71,12 @@ export function isRelatedTo(payload: any, relationshipName: string, id: string):
   }
 
   return relationData.id === id;
+}
+
+export function isRelatedRecord<TType extends string = ''>(payload: any, record: ResourceObject<TType>) {
+  const id = idFromRecordIdentity<TType>(record as any);
+
+  return isRelatedTo(payload, record.type, id) || isRelatedTo(payload, record.type, record.id);
 }
 
 export function firstError(json): ErrorObject {
