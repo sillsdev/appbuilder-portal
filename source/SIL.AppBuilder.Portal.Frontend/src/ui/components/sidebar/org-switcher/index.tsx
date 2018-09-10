@@ -93,6 +93,10 @@ export default compose(
   withTranslations,
   connect(null, mapDispatchToProps),
   withCurrentOrganization,
-  withFiltering(),
+  withFiltering({
+    requiredFilters: [
+      { attribute: 'scope-to-current-user', value: 'isnull:' }
+    ]
+  }),
   withData,
 )(OrgSwitcher);

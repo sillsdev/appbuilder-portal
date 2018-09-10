@@ -1,26 +1,17 @@
-import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, mapProps } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { query, defaultOptions, ORGANIZATIONS_TYPE } from '@data';
+import { query, defaultOptions, ORGANIZATIONS_TYPE, withLoader } from '@data';
 import { IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
 import { ResourceObject } from 'jsonapi-typescript';
-
-function mapRecordsToProps(passedProps) {
-  const { applyFilter } = passedProps;
-
-  return {
-    fromCache: q =>
-      applyFilter(q.findRecords(ORGANIZATION))
-  };
-}
+import { withCurrentUser, IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 
 function mapNetworkToProps(passedProps) {
   const { applyFilter } = passedProps;
 
   return {
-    organizations: [
+    fromNetwork: [
       q => applyFilter(q.findRecords(ORGANIZATION)),
       defaultOptions()
     ]
@@ -29,30 +20,27 @@ function mapNetworkToProps(passedProps) {
 
 interface IOwnProps {
   organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
-  fromCache: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
 }
 
 type IProps =
 & IOwnProps
 & IFilterProps
+& ICurrentUserProps
 & WithDataProps;
 
-export function withData<T>(WrappedComponent) {
-  class DataWrapper extends React.Component<IProps & T> {
-    render() {
-      const { organizations, fromCache, ...otherProps } = this.props;
-      const orgs = fromCache || organizations;
-
-      const dataProps = {
-        organizations: orgs.filter(o => o.attributes)
-      };
-
-      return <WrappedComponent { ...otherProps } { ...dataProps }/>;
-    }
-  }
-
+export function withData(WrappedComponent) {
   return compose(
+    withCurrentUser(),
     query(mapNetworkToProps),
-    withOrbit(mapRecordsToProps)
-  )(DataWrapper);
+    withLoader(({ fromNetwork }) => !fromNetwork),
+    withOrbit(({ applyFilter }: IProps) => ({
+      organizations: q => applyFilter(q.findRecords(ORGANIZATION), true, true)
+    })),
+    // if something doesn't have attributes, it hasn't been fetched from the remote
+    mapProps((props: IProps) => ({ 
+      ...props, 
+      organizations: props.organizations.filter(o => o.attributes)
+    })),
+    withLoader(({ organizations }) => !organizations),
+  )(WrappedComponent);
 }

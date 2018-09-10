@@ -51,6 +51,19 @@ const defaultOptions = {
   redirectOnFailure: true
 };
 
+
+class ServerError extends Error {
+  status: number;
+  text: string;
+
+  constructor(status, text) {
+    super(text);
+
+    this.status = status;
+    this.text = text;
+  }
+}
+
 // TODO: store the attempted URL so that after login,
 //     we can navigate back.
 export function withCurrentUser(opts = {}) {
@@ -84,7 +97,7 @@ export function withCurrentUser(opts = {}) {
 
       fetchCurrentUser = async () => {
         if (this.makingRequest) { return; }
-        const { networkFetchComplete, currentUser } = this.state;
+        const { error, networkFetchComplete, currentUser } = this.state;
 
         const { updateStore, usersMatchingLoggedInUser: fromCache, t } = this.props;
         const auth0IdFromJWT = getAuth0Id();
@@ -104,7 +117,7 @@ export function withCurrentUser(opts = {}) {
           return;
         }
 
-        if (networkFetchComplete) { return; }
+        if (error || networkFetchComplete) { return; }
 
         try {
           this.makingRequest = true;
@@ -124,6 +137,11 @@ export function withCurrentUser(opts = {}) {
 
             deleteToken();
             throw new Error(error || defaultMessage);
+          }
+
+          if (status >= 500) {
+            const text = await response.text();
+            throw new ServerError(status, text);
           }
 
           const json = await tryParseJson(response);
@@ -147,6 +165,10 @@ export function withCurrentUser(opts = {}) {
         const { error, currentUser, isLoading } = this.state;
 
         if (error) {
+          if (error.status && error.status >= 500) {
+            return <PageError error={error} />;
+          }
+
           if (options.redirectOnFailure) {
             toast.error(error);
 

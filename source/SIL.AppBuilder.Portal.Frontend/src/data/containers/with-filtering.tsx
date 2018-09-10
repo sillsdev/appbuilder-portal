@@ -13,7 +13,7 @@ export interface IFilter {
 export interface IProvidedProps {
   filters: IFilter[];
   updateFilter: (filter: IFilter) => void;
-  applyFilter: (builder: FindRecordsTerm, onCache?: boolean) => FindRecordsTerm;
+  applyFilter: (builder: FindRecordsTerm, onCache?: boolean, ignoreRequired?: boolean) => FindRecordsTerm;
   removeFilter: (filter: IFilter | string) => void;
 }
 
@@ -97,14 +97,14 @@ export function withFiltering(opts: IFilterOptions = {}) {
       //       these are equivalent.
       //       this technical limitation also stems from the fact that all values
       //       are strings when sent across the network.
-      applyFilter = (builder: FindRecordsTerm, onCache = false): FindRecordsTerm => {
+      applyFilter = (builder: FindRecordsTerm, onCache = false, ignoreRequired = false): FindRecordsTerm => {
         const { filters, options } = this.state;
 
         if (isEmpty(filters) && isEmpty(options.requiredFilters)) {
           return builder;
         }
 
-        const allFilters = [ ...filters, ...options.requiredFilters ];
+        const allFilters = [ ...filters, ...(ignoreRequired ? [] : options.requiredFilters) ];
         const filtersToApply = onCache ? allFilters.map(this._filterOperationMap) : allFilters;
 
         return builder.filter(...filtersToApply);
