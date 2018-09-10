@@ -69,6 +69,13 @@ namespace Optimajet.DWKit.StarterApplication.Data
             projectEntity
                 .Property(p => p.AutomaticBuilds)
                 .HasDefaultValue(true);
+
+            orgEntity
+                .Property(o => o.UseSilBuildInfrastructure)
+                .HasDefaultValue(true);
+            orgEntity
+                .Property(o => o.PublicByDefault)
+                .HasDefaultValue(true);
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/

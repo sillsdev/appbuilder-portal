@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Optimajet.DWKit.StarterApplication.Data;
@@ -10,9 +11,10 @@ using Optimajet.DWKit.StarterApplication.Models;
 namespace Optimajet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180911122209_AddPublicByDefaultToOrganization")]
+    partial class AddPublicByDefaultToOrganization
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,9 +108,13 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("OwnerId");
 
-                    b.Property<bool>("PublicByDefault");
+                    b.Property<bool>("PublicByDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
 
-                    b.Property<bool>("UseSilBuildInfrastructure");
+                    b.Property<bool>("UseSilBuildInfrastructure")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
 
                     b.Property<string>("WebsiteUrl");
 
