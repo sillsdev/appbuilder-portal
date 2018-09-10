@@ -5,6 +5,8 @@ import { defaultOptions, PROJECTS_TYPE } from '@data';
 import { ProjectAttributes } from '@data/models/project';
 import { ResourceObject } from 'jsonapi-typescript';
 import { recordIdentityFromKeys } from '@data/store-helpers';
+import { compose } from 'recompose';
+import { requireProps } from '@lib/debug';
 
 
 export interface IProvidedProps {
@@ -81,5 +83,8 @@ export function withDataActions<T>(WrappedComponent) {
     }
   }
 
-  return withOrbit({})(ProjectDataActionWrapper);
+  return compose(
+    withOrbit({}),
+    requireProps('project')
+  )(ProjectDataActionWrapper);
 }
