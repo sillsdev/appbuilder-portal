@@ -21,12 +21,6 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
                 // foreign key failures
                 return;
             }
-            if ((project.Organization == null))
-            {
-                var message = $"The project for this product does not have a valid organization";
-                AddError(message);
-                return; // Can't proceed further without causing exceptions
-            }
 
             if (!project.Organization.ProductDefinitionIds.Contains(productDefinition.Id))
             {
@@ -36,7 +30,7 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
             // The current user should be a member of the organization
             if (!CurrentUserOrgIds.Contains(project.Organization.Id))
             {
-                var message = ("The current user is not a member of the product organization");
+                var message = ("The current user is not a member of the organization");
                 AddError(message);
             }
 

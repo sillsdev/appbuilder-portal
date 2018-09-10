@@ -18,8 +18,8 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             Func<IQueryable<T>, string, UserRepository, ICurrentUserContext, 
                  Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>>, Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>>, IQueryable<T>> getMethod,
             Func<IQueryable<T>, FilterQuery, IQueryable<T>> exitFilter,
-            Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>> query1,
-            Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>> query2)
+            Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>> getAllQuery,
+            Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>> getFilteredQuery)
         {
             var attribute = filterQuery.Attribute;
             var value = filterQuery.Value;
@@ -27,7 +27,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
             if (isTargetParam)
             {
-                return getMethod(query, value, userRepository, currentUserContext, query1, query2);//filterOn(query, value);
+                return getMethod(query, value, userRepository, currentUserContext, getAllQuery, getFilteredQuery);
             }
             return exitFilter(query, filterQuery);
         }
@@ -35,8 +35,8 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
            string value,
            UserRepository userRepository,
            ICurrentUserContext currentUserContext,
-           Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>> query1,
-           Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>> query2)
+           Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>> getAllQuery,
+           Func<IQueryable<T>, IEnumerable<int>, IQueryable<T>> getFilteredQuery)
         {
             var currentUser = userRepository.GetByAuth0Id(currentUserContext.Auth0Id).Result;
             var orgIds = currentUser.OrganizationIds.OrEmpty();
@@ -44,9 +44,9 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             if (string.IsNullOrEmpty(value))
             {
 
-                return query1(query, orgIds);
+                return getAllQuery(query, orgIds);
             }
-            return query2(query, orgIds);
+            return getFilteredQuery(query, orgIds);
         }
 
     }
