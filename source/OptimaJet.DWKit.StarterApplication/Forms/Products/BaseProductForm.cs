@@ -30,7 +30,7 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
 
             if (!project.Organization.ProductDefinitionIds.Contains(productDefinition.Id))
             {
-                var message = $"This product is not defined for the product's project organization";
+                var message = $"This product is not permitted for the organization";
                 AddError(message);
             }
             // The current user should be a member of the organization
