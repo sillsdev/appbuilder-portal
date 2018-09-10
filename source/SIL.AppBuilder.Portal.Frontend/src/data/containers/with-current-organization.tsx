@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { withData } from 'react-orbitjs';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
+import { compose, branch } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
+import { Redirect } from 'react-router';
 
 import { OrganizationAttributes, TYPE_NAME } from '../models/organization';
 import { ORGANIZATIONS_TYPE } from '@data';
 
 import { buildFindRecord } from '@data/store-helpers';
+import * as toast from '@lib/toast';
 
 export interface IProvidedProps {
   currentOrganizationId: string | number;
@@ -55,4 +57,15 @@ export function withCurrentOrganization(InnerComponent) {
     connect(mapStateToProps),
     withData(mapRecordsToProps)
   )(WrapperClass);
+}
+
+export function requireOrganizationToBeSelected(InnerComponent) {
+  return branch(
+    (props: IProvidedProps) => props.currentOrganizationId === '',
+    () => () => {
+      toast.warning('An Organization must be selected to view this page');
+      
+      return <Redirect to={'/'} push={true} />
+    }
+  )(InnerComponent);
 }

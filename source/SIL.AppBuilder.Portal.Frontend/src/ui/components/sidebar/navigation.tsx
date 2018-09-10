@@ -13,18 +13,19 @@ export interface IProps {
 interface MenuItem {
   name: string;
   to: string;
+  tag: any;
   onClick: (e) => void;
   exact?: boolean;
   className?: string;
 }
 
-const MenuItem = ({ name, to, onClick, exact, className }: MenuItem) => {
+const MenuItem = ({ name, to, onClick, exact, className, tag }: MenuItem) => {
 
   return (
     <>
       <Menu.Item
         name={name}
-        as={NavLink}
+        as={tag || NavLink}
         to={to}
         exact
         activeClassName='active'
@@ -32,7 +33,7 @@ const MenuItem = ({ name, to, onClick, exact, className }: MenuItem) => {
       />
       <Menu.Item
         name={name}
-        as={NavLink}
+        as={tag || NavLink}
         to={to}
         activeClassName='active'
         onClick={onClick}
@@ -49,6 +50,7 @@ class Navigation extends React.Component<IProps & i18nProps> {
 
     const currentOrganizationId = getCurrentOrganizationId();
     const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
+    const allOrgsSelected = '' === currentOrganizationId;
 
     const { t, closeSidebar } = this.props;
 
@@ -98,9 +100,12 @@ class Navigation extends React.Component<IProps & i18nProps> {
         <hr />
 
         <MenuItem
+          className={allOrgsSelected && 'disabled'}
+          tag={allOrgsSelected ? 'span' : NavLink}
           name={t('sidebar.addProject')}
           to='/projects/new'
           onClick={closeSidebar} />
+        
 
         <hr />
 

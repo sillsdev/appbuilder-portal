@@ -74,7 +74,9 @@ export function withFiltering(opts: IFilterOptions = {}) {
 
         const newFilters = filters.filter(currentFilter => {
           return currentFilter.attribute !== filter.attribute;
-        }).push(filter);
+        })
+        
+        newFilters.push(filter);
 
         this.setState({ filters: newFilters });
       }
@@ -86,6 +88,8 @@ export function withFiltering(opts: IFilterOptions = {}) {
         const newFiletrs = filters.filter(currentFilter => {
           return currentFilter.attribute !== attrToRemove;
         });
+
+        this.setState({ filters: newFiletrs });
       }
 
       // NOTE: onCache signifies that that the filtering will only happen on the cache store.
@@ -104,7 +108,8 @@ export function withFiltering(opts: IFilterOptions = {}) {
           return builder;
         }
 
-        const allFilters = [ ...filters, ...(ignoreRequired ? [] : options.requiredFilters) ];
+        const required = ignoreRequired ? [] : options.requiredFilters;
+        const allFilters = [ ...filters, ...required ];
         const filtersToApply = onCache ? allFilters.map(this._filterOperationMap) : allFilters;
 
         return builder.filter(...filtersToApply);
