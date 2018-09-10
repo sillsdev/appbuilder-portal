@@ -14,15 +14,14 @@ export class OrgSwitcherInteractor {
   orgNames = findAll('[data-test-org-select-item]');
   selectOrg = clickable('[data-test-org-select-item]');
 
-  chooseOrganization(text: string) {
-    return this
-    .when(() => {
+  chooseOrganization(orgText: string) {
+    return this.when(() => {
       const el = this
         .$$('.item')
-        .find(item => item.innerText.includes(text));
+        .find(item => item.innerText.includes(orgText));
 
         if (!el) {
-          throw new Error(`cannot find ".item" with text "${text}"`);
+          throw new Error(`cannot find ".item" with text "${orgText}"`);
         }
 
         return el;
