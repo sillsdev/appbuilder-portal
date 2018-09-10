@@ -58,6 +58,8 @@ class TestWrapper extends React.Component<any, any> {
 
 export function setupApplicationTest(initialState = {}, history?: History) {
   beforeEach(async function() {
+    localStorage.clear();
+
     const historyForTesting = history || createHistory();
 
     this.app = await setupAppForTesting(TestWrapper, {
