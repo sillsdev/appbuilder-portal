@@ -118,7 +118,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
           beforeEach(async function () {
             await app.openSidebar();
             await app.openOrgSwitcher();
-            await switcher.selectOrg();
+            await switcher.chooseOrganization("SIL International");
           });
 
           it('Only display the users that belong to the selected organization', () => {
