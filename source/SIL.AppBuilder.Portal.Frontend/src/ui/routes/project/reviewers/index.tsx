@@ -6,13 +6,12 @@ import { Icon } from 'semantic-ui-react';
 
 import { ProjectAttributes } from '@data/models/project';
 import { ReviewerAttributes } from '@data/models/reviewer';
-import { attributesFor } from '@data';
+
 import { PROJECTS_TYPE, REVIEWERS_TYPE } from '@data';
 import { withReviewers } from './with-reviewers';
-import { withDataActions, IProvidedProps } from '@data/containers/resources/reviewer/with-data-actions';
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
-import { isEmpty } from '@lib/collection';
-import { isValidEmail } from '@lib/validations';
+
+import AddReviewerForm from './form';
+import ReviewerItem from './item';
 
 import './styles.scss';
 
@@ -23,145 +22,40 @@ interface Params {
 
 type IProps =
   & Params
-  & i18nProps
-  & IProvidedProps;
+  & i18nProps;
 
-@withTemplateHelpers
+
 class Reviewers extends React.Component<IProps> {
 
-  mut: Mut;
-
   state = {
-    isAddFormVisible: false,
-    name: '',
-    nameError: '',
-    email: '',
-    emailError: ''
+    isAddFormVisible: false
   };
 
   toggleAddForm = () => {
    this.setState({ isAddFormVisible: !this.state.isAddFormVisible });
   }
 
-  resetForm = () => {
-    this.setState({
-      name: '',
-      nameError: '',
-      email: '',
-      emailError: ''
-    });
-  }
-
-  isValidForm = () => {
-    const { name, email } = this.state;
-    const { t } = this.props;
-
-    if (isEmpty(name)) {
-      this.setState({ nameError: t('project.side.reviewers.form.nameError') });
-    }
-
-    if (isEmpty(email)) {
-      this.setState({ emailError: t('project.side.reviewers.form.emptyEmailError') });
-    }
-
-    if (!isValidEmail(email)) {
-      this.setState({ emailError: t('project.side.reviewers.form.invalidEmailError') });
-    }
-
-    return !isEmpty(name) && !isEmpty(email) && isValidEmail(email);
-  }
-
-  addReviewer = () => {
-    const { name, email } = this.state;
-    const { createRecord, project } = this.props;
-
-    try {
-
-      if (this.isValidForm()) {
-
-        const attributes = { name, email };
-        const relationships = { project: { data: { type: 'project', id: project.id } } };
-
-        createRecord(attributes, relationships);
-        this.resetForm();
-
-      }
-
-    } catch(e) {
-      console.error(e);
-    }
-  }
-
-  removeReviewer = (reviewer) => () => {
-
-    const { removeRecord } = this.props;
-
-    try {
-      removeRecord(reviewer);
-    } catch (e) {
-      console.error(e);
-    }
-
-  }
-
   render() {
 
-    const { mut } = this;
-    const { t, reviewers } = this.props;
-    const { isAddFormVisible, nameError, emailError } = this.state;
+    const { t, reviewers, project } = this.props;
+    const { isAddFormVisible } = this.state;
+
+    const text = isAddFormVisible ?
+      t('project.side.reviewers.close') :
+      t('project.side.reviewers.add')
 
     return (
       <div className='reviewers'>
         <div className='flex justify-content-space-around header align-items-center'>
           <h4 className='flex-grow'>{t('project.side.reviewers.title')}</h4>
-          <a href='#' onClick={this.toggleAddForm}>
-            { isAddFormVisible ?
-              t('project.side.reviewers.close') :
-              t('project.side.reviewers.add')
-            }
-          </a>
+          <a href='#' onClick={this.toggleAddForm}>{text}</a>
         </div>
-        {
-          isAddFormVisible &&
-          <form className='ui form add-form' onSubmit={this.addReviewer}>
-            <div className='field'>
-              <input
-                type='text'
-                placeholder={t('project.side.reviewers.form.name')}
-                value={this.state.name}
-                onChange={mut('name')}
-              />
-              { nameError && <span className='error'>{nameError}</span> }
-            </div>
-            <div className='field'>
-              <input
-                type='text'
-                placeholder={t('project.side.reviewers.form.email')}
-                value={this.state.email}
-                onChange={mut('email')}
-              />
-              {emailError && <span className='error'>{emailError}</span>}
-            </div>
-            <button className='ui button'>{t('project.side.reviewers.form.submit')}</button>
-          </form>
-        }
+        { isAddFormVisible && <AddReviewerForm project={project} /> }
         <div className='list'>
         {
-          reviewers && reviewers.map((reviewer,index) => {
-
-            const { name, email } = attributesFor(reviewer);
-            const itemText = `${name} (${email})`;
-            return (
-              <div key={index} className='flex justify-content-space-between item'>
-                <div>{itemText}</div>
-                <div>
-                  <a href='#' onClick={this.removeReviewer(reviewer)}>
-                    <Icon name='close'/>
-                  </a>
-                </div>
-              </div>
-            );
-          })
+          reviewers && reviewers.map((reviewer,index) => (
+            <ReviewerItem key={index} reviewer={reviewer} />
+          ))
         }
         </div>
       </div>
@@ -173,6 +67,5 @@ class Reviewers extends React.Component<IProps> {
 
 export default compose(
   translate('translations'),
-  withReviewers,
-  withDataActions
+  withReviewers
 )(Reviewers);
