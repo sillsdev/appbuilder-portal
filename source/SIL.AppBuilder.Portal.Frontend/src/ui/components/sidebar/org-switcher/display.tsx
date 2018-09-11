@@ -38,10 +38,13 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
       allOrgsSelected,
       searchTerm,
       didTypeInSearch,
-      selectOrganization
+      selectOrganization,
+      searchResults
     } = this.props;
 
-    const showSearch = organizations.length > 4 || !!searchTerm;
+    const showSearch = organizations.length > 4;
+    const results = searchResults || organizations;
+    const noResults = (!results || results.length === 0);
 
     return (
       <Menu
@@ -63,7 +66,7 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
           </Menu.Item>
         )}
 
-        { organizations.map(organization => {
+        { results.map(organization => {
           const id = idFromRecordIdentity(organization as any);
 
           return (
@@ -73,6 +76,12 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
               isActive={currentOrganizationId === id} />
           );
         })}
+
+        { noResults && (
+          <Menu.Item>
+            {t('common.noResults')}
+          </Menu.Item>
+        ) }
 
         <hr />
 

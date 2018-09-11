@@ -3,7 +3,7 @@ import { compose, mapProps } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
 
-import { query, defaultOptions, ORGANIZATIONS_TYPE, withLoader } from '@data';
+import { query, defaultOptions, ORGANIZATIONS_TYPE, withLoader, attributesFor } from '@data';
 import { IProvidedProps as IFilterProps, withFiltering } from '@data/containers/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
 import { withCurrentUser, IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
@@ -11,6 +11,7 @@ import { debounce } from '@lib/debounce';
 
 import { IProvidedProps as IReduxProps } from './with-redux';
 import { IGivenProps } from './types';
+import { SearchResults } from 'semantic-ui-react';
 
 
 function mapNetworkToProps(passedProps) {
@@ -30,10 +31,16 @@ interface IOwnProps {
 
 export interface IProvidedDataProps {
   organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  searchResults: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
   searchByName: (name: string) => void;
   selectOrganization: (id: string) => void;
   didTypeInSearch: (e: Event) => void;
   toggle: () => void;
+}
+
+interface IState {
+  searchResults?: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  searchTerm: string;
 }
 
 type IProps =
@@ -45,7 +52,7 @@ type IProps =
 & WithDataProps;
 
 export function withData(WrappedComponent) {
-  class DataWrapper extends React.Component<IProps> {
+  class DataWrapper extends React.Component<IProps, IState> {
     state = { searchTerm: '' };
 
     selectOrganization = (id) => () => {
@@ -55,10 +62,9 @@ export function withData(WrappedComponent) {
     }
 
     search = debounce(() => {
-      const { updateFilter } = this.props;
       const { searchTerm } = this.state;
 
-      updateFilter({ attribute: 'name', value: `${searchTerm}*` });
+      this.performSearch(searchTerm);
     }, 250);
 
     didTypeInSearch = (e) => {
@@ -67,11 +73,35 @@ export function withData(WrappedComponent) {
       this.setState({ searchTerm }, this.search);
     }
 
+    performSearch = async (searchTerm: string) => {
+      const { dataStore, applyFilter } = this.props;
+
+      await dataStore.query(q =>
+        q
+          .findRecords(ORGANIZATION)
+          .filter(
+            { attribute: 'name', value: `like:${searchTerm}`},
+            { attribute: 'scope-to-current-user', value: 'isnull:' }
+          ),
+        defaultOptions()
+      );
+
+      const records = await dataStore.cache.query(q => q.findRecords(ORGANIZATION));
+      const filtered = records.filter(record => {
+        const { name } = attributesFor(record);
+        if (!name) { return false; }
+
+        return (name as string).toLowerCase().includes(searchTerm.toLowerCase());
+      });
+
+      this.setState({ searchResults: filtered });
+    }
+
     render() {
-      const { searchTerm } = this.state;
+      const { searchTerm, searchResults } = this.state;
 
       const extraDataProps = {
-        searchTerm,
+        searchTerm, searchResults,
         didTypeInSearch: this.didTypeInSearch,
         selectOrganization: this.selectOrganization,
       };
@@ -86,15 +116,14 @@ export function withData(WrappedComponent) {
         { attribute: 'scope-to-current-user', value: 'isnull:' }
       ]
     }),
-    query(mapNetworkToProps),
-    withOrbit(({ applyFilter }: IProps) => ({
-      organizations: q => applyFilter(q.findRecords(ORGANIZATION), true, true)
+    withOrbit(() => ({
+      organizations: q => q.findRecords(ORGANIZATION)
     })),
     // if something doesn't have attributes, it hasn't been fetched from the remote
     mapProps((props: IProps) => ({
       ...props,
       organizations: props.organizations.filter(o => o.attributes)
     })),
-    withLoader(({ fromNetwork, organizations }) => !organizations),
+    withLoader(({ organizations }) => !organizations),
   )(DataWrapper);
 }

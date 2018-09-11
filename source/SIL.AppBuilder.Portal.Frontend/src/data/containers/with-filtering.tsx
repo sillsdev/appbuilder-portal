@@ -121,6 +121,10 @@ export function withFiltering(opts: IFilterOptions = {}) {
         switch(filter.value) {
           case 'isnull:': return { ...filter, attribute, value: null };
           case 'isnotnull:': return { ...filter, attribute, value: '', op: 'gt' };
+          // TODO: write a mapping for like for locale query
+          // TODO: also consider a different scheme of mapping remote filtering
+          //       with local filtering
+          // case 'like:': return { ...filter, attribute, value:}
           default: return { ...filter, attribute };
         }
       }

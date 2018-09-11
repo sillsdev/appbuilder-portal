@@ -17,6 +17,7 @@ export default {
 
   common: {
     search: 'Search',
+    noResults: 'No Results...',
     change: 'Change',
     cancel: 'Cancel',
     save: 'Save',
