@@ -10,6 +10,8 @@ import { ORGANIZATIONS_TYPE } from '@data';
 
 import { buildFindRecord } from '@data/store-helpers';
 import * as toast from '@lib/toast';
+import { withTranslations } from '@lib/i18n';
+import { i18nProps } from 'react-i18next/src/I18n';
 
 export interface IProvidedProps {
   currentOrganizationId: string | number;
@@ -60,12 +62,16 @@ export function withCurrentOrganization(InnerComponent) {
 }
 
 export function requireOrganizationToBeSelected(InnerComponent) {
-  return branch(
-    (props: IProvidedProps) => props.currentOrganizationId === '',
-    () => () => {
-      toast.warning('An Organization must be selected to view this page');
+  return compose(
+    withTranslations,
+    branch(
+      (props: IProvidedProps) => props.currentOrganizationId === '',
+      () => ({ t }: any) => {
 
-      return <Redirect to={'/'} push={true} />;
-    }
+        toast.warning(t('errors.orgMustBeSelected'));
+
+        return <Redirect to={'/'} push={true} />;
+      }
+    )
   )(InnerComponent);
 }
