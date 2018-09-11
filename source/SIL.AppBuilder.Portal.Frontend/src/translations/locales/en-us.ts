@@ -210,7 +210,13 @@ export default {
       projectGroup: 'Project Group',
       reviewers: {
         title: 'Reviewers',
-        add: 'add reviewer'
+        add: 'add reviewer',
+        close: 'close',
+        form: {
+          name: 'name',
+          email: 'email',
+          submit: 'Add Reviewer'
+        }
       }
     },
     operations: {
