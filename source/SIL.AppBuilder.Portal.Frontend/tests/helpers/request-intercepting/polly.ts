@@ -27,7 +27,7 @@ export function setupRequestInterceptor(config: any = {}) {
           context: window
         }
       },
-      logging: true,
+      // logging: true,
       recordFailedRequests: false,
       recordIfMissing: false,
       matchRequestsBy: {
