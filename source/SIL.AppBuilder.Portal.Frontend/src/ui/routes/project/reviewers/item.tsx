@@ -39,10 +39,12 @@ class ReviewerItem extends React.Component<IProps> {
     const itemText = `${name} (${email})`;
 
     return (
-      <div className='flex justify-content-space-between item'>
-        <div>{itemText}</div>
+      <div data-test-project-reviewer-item className='flex justify-content-space-between item'>
+        <div data-test-project-reviewer-item-text>
+          {itemText}
+        </div>
         <div>
-          <a href='#' onClick={this.removeReviewer(reviewer)}>
+          <a data-test-project-reviewers-remove-item href='#' onClick={this.removeReviewer(reviewer)}>
             <Icon name='close' />
           </a>
         </div>

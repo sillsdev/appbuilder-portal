@@ -88,9 +88,10 @@ class AddReviewerForm extends React.Component<IProps> {
     const { name, nameError, email, emailError } = this.state;
 
     return (
-      <form className='ui form add-form' onSubmit={this.addReviewer}>
+      <form data-test-project-reviewers-add-form className='ui form add-form' onSubmit={this.addReviewer}>
         <div className='field'>
           <input
+            data-test-project-reviewers-add-form-name
             type='text'
             placeholder={t('project.side.reviewers.form.name')}
             value={name}
@@ -100,6 +101,7 @@ class AddReviewerForm extends React.Component<IProps> {
         </div>
         <div className='field'>
           <input
+            data-test-project-reviewers-add-form-email
             type='text'
             placeholder={t('project.side.reviewers.form.email')}
             value={email}
@@ -107,9 +109,14 @@ class AddReviewerForm extends React.Component<IProps> {
           />
           {emailError && <span className='error'>{emailError}</span>}
         </div>
-        <button className='ui button'>{t('project.side.reviewers.form.submit')}</button>
+        <button
+          data-test-project-reviewers-add-form-submit
+          className='ui button'
+        >
+          {t('project.side.reviewers.form.submit')}
+        </button>
       </form>
-    )
+    );
   }
 
 }

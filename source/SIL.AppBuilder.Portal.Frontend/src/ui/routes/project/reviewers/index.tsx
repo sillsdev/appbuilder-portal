@@ -42,13 +42,13 @@ class Reviewers extends React.Component<IProps> {
 
     const text = isAddFormVisible ?
       t('project.side.reviewers.close') :
-      t('project.side.reviewers.add')
+      t('project.side.reviewers.add');
 
     return (
-      <div className='reviewers'>
+      <div data-test-project-reviewers className='reviewers'>
         <div className='flex justify-content-space-around header align-items-center'>
           <h4 className='flex-grow'>{t('project.side.reviewers.title')}</h4>
-          <a href='#' onClick={this.toggleAddForm}>{text}</a>
+          <a data-test-project-reviewers-toggler href='#' onClick={this.toggleAddForm}>{text}</a>
         </div>
         { isAddFormVisible && <AddReviewerForm project={project} /> }
         <div className='list'>

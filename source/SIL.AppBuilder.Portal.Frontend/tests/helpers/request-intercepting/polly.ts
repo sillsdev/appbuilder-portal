@@ -4,7 +4,7 @@ import * as FetchAdapter from '@pollyjs/adapter-fetch';
 
 import Orbit from '@orbit/data';
 
-import { mockGet, mockPatch } from './requests';
+import { mockGet, mockPatch, mockPost, mockDelete } from './requests';
 
 /*
   Register the adapters and persisters we want to use. This way all future
@@ -50,6 +50,8 @@ export function setupRequestInterceptor(config: any = {}) {
 
     this.mockGet = mockGet(server);
     this.mockPatch = mockPatch(server);
+    this.mockPost = mockPost(server);
+    this.mockDelete = mockDelete(server);
     this.stubOrbit = () => Orbit.fetch = window.fetch;
     this.debugFetch = () => {
       const originalFetch = window.fetch;
