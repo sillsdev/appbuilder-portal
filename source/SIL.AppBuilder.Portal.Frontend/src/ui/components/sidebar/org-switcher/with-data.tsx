@@ -73,8 +73,12 @@ export function withData(WrappedComponent) {
       this.setState({ searchTerm }, this.search);
     }
 
+    // TODO: clean this up once
+    //       https://github.com/orbitjs/orbit/pull/525
+    //       is merged, where we'll be able to retrieve the query result
+    //       without local filtering. (so we can skip the cache query step)
     performSearch = async (searchTerm: string) => {
-      const { dataStore, applyFilter } = this.props;
+      const { dataStore } = this.props;
 
       await dataStore.query(q =>
         q
@@ -87,6 +91,7 @@ export function withData(WrappedComponent) {
       );
 
       const records = await dataStore.cache.query(q => q.findRecords(ORGANIZATION));
+      // TODO: MAY need to do a local filter on organizations that the current user owns
       const filtered = records.filter(record => {
         const { name } = attributesFor(record);
         if (!name) { return false; }
