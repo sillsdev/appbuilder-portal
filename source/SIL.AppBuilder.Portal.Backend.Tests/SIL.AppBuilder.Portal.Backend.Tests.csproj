@@ -38,6 +38,7 @@
   <ItemGroup>
     <Folder Include="Acceptance\APIControllers\Groups\" />
     <Folder Include="Acceptance\APIControllers\Projects\" />
+    <Folder Include="Acceptance\APIControllers\Products\" />
     <Folder Include="Acceptance\APIControllers\Organizations\" />
   </ItemGroup>
   <ItemGroup>

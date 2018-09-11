@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Optimajet.DWKit.StarterApplication.Data;
@@ -10,9 +11,10 @@ using Optimajet.DWKit.StarterApplication.Models;
 namespace Optimajet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180824204201_AddProducts")]
+    partial class AddProducts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,8 +107,6 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.Property<string>("Name");
 
                     b.Property<int>("OwnerId");
-
-                    b.Property<bool>("PublicByDefault");
 
                     b.Property<bool>("UseSilBuildInfrastructure");
 
@@ -241,14 +241,6 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("AllowDownloads")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("AutomaticBuilds")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
 
                     b.Property<DateTime?>("DataArchived");
 
