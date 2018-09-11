@@ -53,17 +53,17 @@ export function withData(WrappedComponent) {
       setCurrentOrganizationId(id);
       toggle();
     }
-  
+
     search = debounce(() => {
       const { updateFilter } = this.props;
       const { searchTerm } = this.state;
-  
+
       updateFilter({ attribute: 'name', value: `${searchTerm}*` });
     }, 250);
-  
+
     didTypeInSearch = (e) => {
       const searchTerm = e.target.value;
-  
+
       this.setState({ searchTerm }, this.search);
     }
 
@@ -91,10 +91,10 @@ export function withData(WrappedComponent) {
       organizations: q => applyFilter(q.findRecords(ORGANIZATION), true, true)
     })),
     // if something doesn't have attributes, it hasn't been fetched from the remote
-    mapProps((props: IProps) => ({ 
-      ...props, 
+    mapProps((props: IProps) => ({
+      ...props,
       organizations: props.organizations.filter(o => o.attributes)
     })),
-    withLoader(({ fromNetwork, organizations }) => !fromNetwork || !organizations),
+    withLoader(({ fromNetwork, organizations }) => !organizations),
   )(DataWrapper);
 }

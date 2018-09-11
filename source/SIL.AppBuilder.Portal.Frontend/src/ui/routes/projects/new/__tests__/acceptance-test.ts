@@ -9,12 +9,12 @@ import {
 
 import page from './page';
 
-describe('Acceptance | New Project', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
-
-
-  describe('the user has no groups', () => {
+const scenarios = {
+  appWithSelectedOrg(orgId = '') {
+    setupApplicationTest({ data: { currentOrganizationId: orgId}});
+    setupRequestInterceptor();
+  },
+  userHasNoGroups() {
     useFakeAuthentication({
       data: {
         id: 1, type: 'users',
@@ -37,20 +37,8 @@ describe('Acceptance | New Project', () => {
         }
       ]
     });
-
-    describe('navigates to new project page', () => {
-      beforeEach(async function() {
-        await visit('/projects/new');
-      });
-
-      it('is redirected', () => {
-        expect(location().pathname).to.equal('/');
-      });
-    });
-  });
-
-
-  describe('the user has groups', () => {
+  },
+  userHasGroups() {
     useFakeAuthentication({
       data: {
         id: 1, type: 'users',
@@ -88,16 +76,47 @@ describe('Acceptance | New Project', () => {
         }
       ]
     });
+  }
+};
 
-    // beforeEach(function() {
-    //   this.mockGet(200, '/groups', {
-    //     data: [
-    //       { id: 1, type: 'groups', attributes: { name: 'Group 1' } }
-    //     ]
-    //   });
-    // });
+describe('Acceptance | New Project', () => {
+  describe('the user has no groups', () => {
+    scenarios.appWithSelectedOrg();
+    scenarios.userHasNoGroups();
+
+
+    describe('navigates to new project page', () => {
+      beforeEach(async function() {
+        await visit('/projects/new');
+      });
+
+      it('is redirected', () => {
+        expect(location().pathname).to.equal('/');
+      });
+    });
+  });
+
+
+  describe('the user has groups', () => {
+    describe('but has all organizations selected', () => {
+      scenarios.appWithSelectedOrg('');
+      scenarios.userHasNoGroups();
+
+      describe('navigates to the new project page', () => {
+        beforeEach(async function() {
+          await visit('/projects/new');
+        });
+
+        it('is redirected', () => {
+          expect(location().pathname).to.equal('/');
+        });
+      });
+    });
 
     describe('navigates to the new project page', () => {
+      scenarios.appWithSelectedOrg('1');
+      scenarios.userHasGroups();
+
       beforeEach(async function() {
         await visit('/projects/new');
 

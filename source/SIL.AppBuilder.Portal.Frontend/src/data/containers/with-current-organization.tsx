@@ -64,8 +64,8 @@ export function requireOrganizationToBeSelected(InnerComponent) {
     (props: IProvidedProps) => props.currentOrganizationId === '',
     () => () => {
       toast.warning('An Organization must be selected to view this page');
-      
-      return <Redirect to={'/'} push={true} />
+
+      return <Redirect to={'/'} push={true} />;
     }
   )(InnerComponent);
 }

@@ -20,6 +20,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import * as toast from '@lib/toast';
 import { attributesFor } from '@data/helpers';
+import { ServerError } from '@data/errors/server-error';
 
 type UserPayload = SingleResourceDoc<USERS_TYPE, UserAttributes>;
 
@@ -52,17 +53,6 @@ const defaultOptions = {
 };
 
 
-class ServerError extends Error {
-  status: number;
-  text: string;
-
-  constructor(status, text) {
-    super(text);
-
-    this.status = status;
-    this.text = text;
-  }
-}
 
 // TODO: store the attempted URL so that after login,
 //     we can navigate back.
@@ -132,11 +122,11 @@ export function withCurrentUser(opts = {}) {
 
           if (status === 403 || status === 401) {
             const errorJson = await tryParseJson(response);
-            const error = firstError(errorJson).title;
+            const errorTitle = firstError(errorJson).title;
             const defaultMessage = unauthorized ? t('errors.notAuthorized') : t('errors.userForbidden');
 
             deleteToken();
-            throw new Error(error || defaultMessage);
+            throw new Error(errorTitle || defaultMessage);
           }
 
           if (status >= 500) {

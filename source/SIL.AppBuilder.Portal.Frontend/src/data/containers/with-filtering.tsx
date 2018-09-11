@@ -74,8 +74,8 @@ export function withFiltering(opts: IFilterOptions = {}) {
 
         const newFilters = filters.filter(currentFilter => {
           return currentFilter.attribute !== filter.attribute;
-        })
-        
+        });
+
         newFilters.push(filter);
 
         this.setState({ filters: newFilters });

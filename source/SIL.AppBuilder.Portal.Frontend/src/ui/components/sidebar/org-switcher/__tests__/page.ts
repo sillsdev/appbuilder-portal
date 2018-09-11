@@ -1,21 +1,17 @@
 import {
+  Interactor,
   interactor,
-  text,
   clickable,
   findAll,
   isPresent,
 } from '@bigtest/interactor';
 
-@interactor
-export class OrgSwitcherInteractor {
-  constructor(selector?: string) {}
-
-
+class OrgSwitcher {
   orgNames = findAll('[data-test-org-select-item]');
   selectOrg = clickable('[data-test-org-select-item]');
 
-  chooseOrganization(orgText: string) {
-    return this.when(() => {
+  chooseOrganization(this: Interactor, orgText: string) {
+    return this.when<HTMLElement>(() => {
       const el = this
         .$$('.item')
         .find(item => item.innerText.includes(orgText));
@@ -30,7 +26,11 @@ export class OrgSwitcherInteractor {
 
   selectAllOrg = clickable('[data-test-select-item-all-org]');
   isSearchVisible = isPresent('[data-test-org-switcher-search]');
-
 }
 
-export default new OrgSwitcherInteractor('[data-test-org-switcher]');
+
+export const OrgSwitcherInteractor = interactor(OrgSwitcher);
+
+export type TOrgSwitcherInteractor = OrgSwitcher & Interactor;
+
+export default new (OrgSwitcherInteractor as any)('[data-test-org-switcher]') as TOrgSwitcherInteractor;

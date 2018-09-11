@@ -10,7 +10,7 @@ export function waitFor<TWrappedProps>(resultKey: string, asyncFn: (props) => Pr
       }
 
       componentDidMount() {
-        this.runAsync();    
+        this.runAsync();
       }
 
       runAsync = async () => {
@@ -25,5 +25,5 @@ export function waitFor<TWrappedProps>(resultKey: string, asyncFn: (props) => Pr
     }
 
     return WaitForWrapper;
-  }
+  };
 }

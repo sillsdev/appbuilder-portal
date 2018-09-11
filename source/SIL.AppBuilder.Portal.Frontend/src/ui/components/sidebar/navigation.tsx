@@ -105,7 +105,7 @@ class Navigation extends React.Component<IProps & i18nProps> {
           name={t('sidebar.addProject')}
           to='/projects/new'
           onClick={closeSidebar} />
-        
+
 
         <hr />
 
