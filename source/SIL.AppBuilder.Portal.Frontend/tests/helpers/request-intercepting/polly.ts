@@ -32,11 +32,16 @@ export function setupRequestInterceptor(config: any = {}) {
       recordIfMissing: false,
       matchRequestsBy: {
         order: false,
-        headers: false,
+        headers: true,
         // url: {
-        //   protocol: false,
-        //   port: false,
-        //   hostname: false,
+        //   protocol: true,
+        //   username: true,
+        //   password: true,
+        //   hostname: true,
+        //   port: true,
+        //   pathname: true,
+        //   query: true,
+        //   hash: false
         // }
       },
       ...config
