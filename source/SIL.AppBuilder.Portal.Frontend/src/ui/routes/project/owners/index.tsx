@@ -35,7 +35,6 @@ const mapRecordsToProps = (passedProps) => {
     group: q => q.findRelatedRecord({ type, id }, 'group'),
     organization: q => q.findRelatedRecord({ type, id }, 'organization'),
     owner: q => q.findRelatedRecord({ type, id }, 'owner'),
-
   };
 };
 
@@ -94,6 +93,7 @@ class Owners extends React.Component<IProps> {
           <GroupSelect
             data-test-group-select
             scopeToCurrentUser={true}
+            scopeToOrganization={organization}
             selected={groupId}
             onChange={this.updateGroup} />
         </div>
