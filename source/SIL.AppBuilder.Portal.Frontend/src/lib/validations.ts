@@ -4,5 +4,5 @@ export function isValidEmail(data) {
 
   return (
     !data || emailRegex.test(data)
-  )
+  );
 }

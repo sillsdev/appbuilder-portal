@@ -36,7 +36,7 @@ export function withDataActions<T>(WrappedComponent) {
           relationships
         }),
         defaultOptions()
-      )
+      );
     }
 
     removeRecord = async (reviewer) => {
@@ -48,7 +48,7 @@ export function withDataActions<T>(WrappedComponent) {
           type: 'reviewer', id: reviewer.id
         }),
         defaultOptions()
-      )
+      );
     }
 
     updateAttribute = async (attribute: string, value: any) => {

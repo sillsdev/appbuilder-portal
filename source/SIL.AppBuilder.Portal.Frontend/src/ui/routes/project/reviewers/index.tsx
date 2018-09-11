@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { ResourceObject } from 'jsonapi-typescript';
-import { Icon } from 'semantic-ui-react'
+import { Icon } from 'semantic-ui-react';
 
 import { ProjectAttributes } from '@data/models/project';
 import { ReviewerAttributes } from '@data/models/reviewer';
@@ -37,7 +37,7 @@ class Reviewers extends React.Component<IProps> {
     nameError: '',
     email: '',
     emailError: ''
-  }
+  };
 
   toggleAddForm = () => {
    this.setState({ isAddFormVisible: !this.state.isAddFormVisible });
@@ -49,15 +49,24 @@ class Reviewers extends React.Component<IProps> {
       nameError: '',
       email: '',
       emailError: ''
-    })
+    });
   }
 
   isValidForm = () => {
     const { name, email } = this.state;
+    const { t } = this.props;
 
-    isEmpty(name) && this.setState({ nameError: 'Name cannot be empty' });
-    isEmpty(email) && this.setState({ emailError: 'Email cannot be empty' });
-    !isValidEmail(email) && this.setState({ emailError: 'Invalid email address' });
+    if (isEmpty(name)) {
+      this.setState({ nameError: t('project.side.reviewers.form.nameError') });
+    }
+
+    if (isEmpty(email)) {
+      this.setState({ emailError: t('project.side.reviewers.form.emptyEmailError') });
+    }
+
+    if (!isValidEmail(email)) {
+      this.setState({ emailError: t('project.side.reviewers.form.invalidEmailError') });
+    }
 
     return !isEmpty(name) && !isEmpty(email) && isValidEmail(email);
   }
@@ -71,7 +80,7 @@ class Reviewers extends React.Component<IProps> {
       if (this.isValidForm()) {
 
         const attributes = { name, email };
-        const relationships = { project: { data: { type: 'project', id: project.id } } }
+        const relationships = { project: { data: { type: 'project', id: project.id } } };
 
         createRecord(attributes, relationships);
         this.resetForm();
@@ -99,7 +108,7 @@ class Reviewers extends React.Component<IProps> {
 
     const { mut } = this;
     const { t, reviewers } = this.props;
-    const { isAddFormVisible, name, nameError, email, emailError } = this.state;
+    const { isAddFormVisible, nameError, emailError } = this.state;
 
     return (
       <div className='reviewers'>
@@ -119,7 +128,7 @@ class Reviewers extends React.Component<IProps> {
               <input
                 type='text'
                 placeholder={t('project.side.reviewers.form.name')}
-                value={name}
+                value={this.state.name}
                 onChange={mut('name')}
               />
               { nameError && <span className='error'>{nameError}</span> }
@@ -128,7 +137,7 @@ class Reviewers extends React.Component<IProps> {
               <input
                 type='text'
                 placeholder={t('project.side.reviewers.form.email')}
-                value={email}
+                value={this.state.email}
                 onChange={mut('email')}
               />
               {emailError && <span className='error'>{emailError}</span>}
@@ -151,7 +160,7 @@ class Reviewers extends React.Component<IProps> {
                   </a>
                 </div>
               </div>
-            )
+            );
           })
         }
         </div>

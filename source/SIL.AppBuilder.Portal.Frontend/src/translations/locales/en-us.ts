@@ -214,7 +214,10 @@ export default {
         close: 'close',
         form: {
           name: 'name',
+          nameError: 'Name cannot be empty',
           email: 'email',
+          emptyEmailError: 'Email cannot be empty',
+          invalidEmailError: 'Invalid email address',
           submit: 'Add Reviewer'
         }
       }
