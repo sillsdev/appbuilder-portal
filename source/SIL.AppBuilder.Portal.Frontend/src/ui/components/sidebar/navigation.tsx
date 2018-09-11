@@ -111,7 +111,7 @@ class Navigation extends React.Component<IProps & i18nProps> {
 
         <MenuItem
           name={t('opensource')}
-          to='open-source'
+          to='/open-source'
           className='m-t-lg'
           onClick={closeSidebar} />
       </Menu>
