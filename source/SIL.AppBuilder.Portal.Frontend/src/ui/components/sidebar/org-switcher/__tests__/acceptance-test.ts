@@ -238,6 +238,8 @@ describe('Acceptance | Organization Switcher', () => {
       });
 
       it('hides the org switcher', () => {
+        // expect(switcher.selectedOrg).to.equal("SIL International");
+
         expect(app.isOrgSwitcherVisible).to.be.false;
       });
     });

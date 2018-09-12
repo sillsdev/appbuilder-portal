@@ -9,6 +9,7 @@ import { OrganizationAttributes } from '@data/models/organization';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { ResourceObject } from 'jsonapi-typescript';
 import { ORGANIZATIONS_TYPE } from '@data';
+import { withTranslations } from '@lib/i18n';
 
 export interface IProps {
   closeSidebar: () => void;
@@ -72,5 +73,5 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
 
 export default compose(
   withCurrentOrganization,
-  translate('translations')
+  withTranslations
 )(SidebarHeader);

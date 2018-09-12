@@ -20,6 +20,8 @@ class App {
   openSidebar = clickable('[data-test-header-sidebar-button]');
   isSidebarVisible = isPresent('.is-sidebar-visible [data-test-sidebar]');
   openOrgSwitcher = clickable('[data-test-org-switcher-toggler]');
+  selectedOrg = text('[data-test-org-switcher-toggler]');
+
   isOrgSwitcherVisible = isPresent('[data-test-org-switcher]');
 
   isLoaderVisible = isPresent('.spinner');

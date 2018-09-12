@@ -58,7 +58,7 @@ export function withCurrentOrganization(InnerComponent) {
   return compose(
     connect(mapStateToProps),
     branch(
-      ({ currentOrganizationId: id }) => id && id.length > 0,
+      ({ currentOrganizationId: id }) => id && `${id}`.length > 0,
       withData(mapRecordsToProps)
     )
   )(WrapperClass);
