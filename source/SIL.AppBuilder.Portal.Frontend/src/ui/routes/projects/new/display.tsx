@@ -71,7 +71,7 @@ export default class Display extends React.Component<IProps, IState> {
 
   render() {
     const { mut, toggle } = this;
-    const { t } = this.props;
+    const { t, currentOrganization } = this.props;
     const { name, groupId, language, isPublic, disableSubmit, type } = this.state;
 
     const submitClasses = `
@@ -105,6 +105,7 @@ export default class Display extends React.Component<IProps, IState> {
                   <label>{t('project.projectGroup')}</label>
                   <GroupSelect
                     scopeToCurrentUser={true}
+                    scopeToOrganization={currentOrganization}
                     selected={groupId}
                     onChange={mut('groupId')}
                   />
