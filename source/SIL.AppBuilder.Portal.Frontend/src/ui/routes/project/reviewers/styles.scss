@@ -1,0 +1,26 @@
+@import '../../../styles/_base/variables.scss';
+
+.reviewers {
+
+  .add-form {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid $border-light-color;
+
+    input {
+      font-size: 14px !important;
+    }
+
+    .error {
+      color: $alert;
+    }
+  }
+
+  .list {
+    padding: 15px 16px;
+
+    .item {
+      margin-bottom: 10px;
+    }
+  }
+}

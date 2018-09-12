@@ -83,7 +83,8 @@ const schemaDefinition: SchemaSettings = {
         products: { type: 'hasMany', model: 'product', inverse: 'project' },
         organization: { type: 'hasOne', model: 'organization', inverse: 'projects'},
         owner: { type: 'hasOne', model: 'user', inverse: 'projects' },
-        group: { type: 'hasOne', model: 'group', inverse: 'projects' }
+        group: { type: 'hasOne', model: 'group', inverse: 'projects' },
+        reviewers: { type: 'hasMany', model: 'reviewer', inverse: 'project' }
       }
     },
     product: {
@@ -147,6 +148,16 @@ const schemaDefinition: SchemaSettings = {
         groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'group' },
         projects: { type: 'hasMany', model: 'project', inverse: 'group' },
         owner: { type: 'hasOne', model: 'organization', inverse: 'groups' },
+      }
+    },
+    reviewer: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' },
+        email: { type: 'string' }
+      },
+      relationships: {
+        project: { type: 'hasOne', model: 'project', inverse: 'reviewers' }
       }
     },
     user: {

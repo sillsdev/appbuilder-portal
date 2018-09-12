@@ -40,3 +40,5 @@ export type USERS_TYPE = 'users';
 export type PRODUCTS_TYPE = 'products';
 export type ORGANIZATION_MEMBERSHIPS_TYPE = 'organization-memberships';
 export type GROUP_MEMBERSHIPS_TYPE = 'group-memberships';
+
+export type REVIEWERS_TYPE = 'reviewers';

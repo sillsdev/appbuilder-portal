@@ -8,6 +8,7 @@ import {
 import { TYPE_NAME as PROJECT } from '@data/models/project';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as GROUP } from '@data/models/group';
+import { PLURAL_NAME as REVIEWERS } from '@data/models/reviewer';
 
 import { withLoader } from '@data/containers/with-loader';
 import { withError } from '@data/containers/with-error';
@@ -19,7 +20,7 @@ const mapNetworkToProps = (passedProps) => {
   return {
     cacheKey: `project-${id}`,
     project: [q => buildFindRecord(q, PROJECT, id), buildOptions({
-      include: [/* PRODUCTS, */ ORGANIZATION, GROUP, 'owner']
+      include: [/* PRODUCTS, */ ORGANIZATION, GROUP, 'owner', REVIEWERS]
     })]
   };
 };

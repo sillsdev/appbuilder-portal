@@ -1,13 +1,23 @@
 import * as React from 'react';
-
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
-import { ProjectAttributes } from '@data/models/project';
 import { ResourceObject } from 'jsonapi-typescript';
-import { PROJECTS_TYPE } from '@data';
+
+import { ProjectAttributes } from '@data/models/project';
+import { ReviewerAttributes } from '@data/models/reviewer';
+
+import { PROJECTS_TYPE, REVIEWERS_TYPE } from '@data';
+import { withReviewers } from './with-reviewers';
+
+import AddReviewerForm from './form';
+import ReviewerItem from './item';
+
+import { withTranslations, i18nProps } from '@lib/i18n';
+
+import './styles.scss';
 
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  reviewers: Array<ResourceObject<REVIEWERS_TYPE, ReviewerAttributes>>;
 }
 
 type IProps =
@@ -17,18 +27,37 @@ type IProps =
 
 class Reviewers extends React.Component<IProps> {
 
+  state = {
+    isAddFormVisible: false
+  };
+
+  toggleAddForm = () => {
+   this.setState({ isAddFormVisible: !this.state.isAddFormVisible });
+  }
+
   render() {
 
-    const { t, project } = this.props;
-    const { language, type } = project.attributes;
+    const { t, reviewers, project } = this.props;
+    const { isAddFormVisible } = this.state;
+
+    const text = isAddFormVisible ?
+      t('project.side.reviewers.close') :
+      t('project.side.reviewers.add');
 
     return (
-      <div className='reviewers'>
+      <div data-test-project-reviewers className='reviewers'>
         <div className='flex justify-content-space-around header align-items-center'>
           <h4 className='flex-grow'>{t('project.side.reviewers.title')}</h4>
-          <a href='#'>{t('project.side.reviewers.add')}</a>
+          <a data-test-project-reviewers-toggler href='#' onClick={this.toggleAddForm}>{text}</a>
         </div>
-        <div />
+        { isAddFormVisible && <AddReviewerForm project={project} /> }
+        <div className='list'>
+        {
+          reviewers && reviewers.map((reviewer,index) => (
+            <ReviewerItem key={index} reviewer={reviewer} />
+          ))
+        }
+        </div>
       </div>
     );
 
@@ -37,5 +66,6 @@ class Reviewers extends React.Component<IProps> {
 }
 
 export default compose(
-  translate('translations')
+  withTranslations,
+  withReviewers
 )(Reviewers);

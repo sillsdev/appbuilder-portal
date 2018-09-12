@@ -212,7 +212,16 @@ export default {
       projectGroup: 'Project Group',
       reviewers: {
         title: 'Reviewers',
-        add: 'add reviewer'
+        add: 'add reviewer',
+        close: 'close',
+        form: {
+          name: 'name',
+          nameError: 'Name cannot be empty',
+          email: 'email',
+          emptyEmailError: 'Email cannot be empty',
+          invalidEmailError: 'Invalid email address',
+          submit: 'Add Reviewer'
+        }
       }
     },
     operations: {
