@@ -1,5 +1,7 @@
 # AppBuilder Portal
 
+[![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
+
 ## Deployment
 
 ### Building The Images
