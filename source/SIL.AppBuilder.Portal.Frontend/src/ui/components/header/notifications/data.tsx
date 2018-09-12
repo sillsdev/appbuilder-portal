@@ -12,7 +12,7 @@ const mapNetworkToProps = (passedProps) => {
     notifications: [
       q => q
         .findRecords(NOTIFICATION)
-        .sort('-time', '-isViewed'), 
+        .sort('-time', '-isViewed'),
       { ...defaultOptions(), devOnly: true }
     ]
   };
@@ -22,7 +22,7 @@ const mapRecordsToProps = (passedProps) => {
   return {
     notifications: q => q
       .findRecords(NOTIFICATION)
-      .sort('-time', '-isViewed'), 
+      .sort('-time', '-isViewed'),
   };
 };
 

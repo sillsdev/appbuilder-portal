@@ -45,8 +45,8 @@ describe('Acceptance | Notifications', () => {
     describe('Clears a single notification', () => {
       beforeEach(async () => {
         const numNotifications = page.countNotifications();
-        
-        expect(numNotifications).to.eq(2)
+
+        expect(numNotifications).to.eq(2);
 
         await page.clickCloseIndividualNotification();
       });
@@ -61,8 +61,8 @@ describe('Acceptance | Notifications', () => {
     describe('Clears all notifications', () => {
       beforeEach(async () => {
         const numNotifications = page.countNotifications();
-        
-        expect(numNotifications).to.eq(2)
+
+        expect(numNotifications).to.eq(2);
 
         await page.clickClearAll();
       });

@@ -66,7 +66,7 @@ class Notifications extends React.Component<IProps> {
           { hasNotifications && (
             <>
               <div className="notification-buttons">
-                <a href="#" 
+                <a href="#"
                   data-test-clear-all
                   onClick={this.clearAll}
                 >
@@ -79,7 +79,7 @@ class Notifications extends React.Component<IProps> {
                     <Row key={notification.id} notification={notification} />
                 ))}
               </div>
-            </> 
+            </>
           )}
 
           { !hasNotifications && (

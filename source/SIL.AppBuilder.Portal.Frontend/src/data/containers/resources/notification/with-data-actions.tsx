@@ -12,7 +12,7 @@ interface IProvidedProps {
 }
 
 interface IOwnProps {
-  notification: NotificationResource
+  notification: NotificationResource;
 }
 
 type IProps =
@@ -26,7 +26,7 @@ export function withDataActions<T>(WrappedComponent) {
       const { dataStore, notification } = this.props;
 
       await dataStore.update(
-        t => t.removeRecord(notification), 
+        t => t.removeRecord(notification),
         { ...defaultOptions(), devOnly: true }
       );
     }
@@ -35,7 +35,7 @@ export function withDataActions<T>(WrappedComponent) {
       const { dataStore, notification } = this.props;
 
       await dataStore.update(
-        t => t.replaceAttribute(notification, 'isViewed', true), 
+        t => t.replaceAttribute(notification, 'isViewed', true),
         { ...defaultOptions(), devOnly: true }
       );
     }
@@ -47,7 +47,7 @@ export function withDataActions<T>(WrappedComponent) {
         markAsSeen: this.markAsSeen
       };
 
-      return <WrappedComponent { ...dataProps } { ...this.props } />
+      return <WrappedComponent { ...dataProps } { ...this.props } />;
     }
   }
 

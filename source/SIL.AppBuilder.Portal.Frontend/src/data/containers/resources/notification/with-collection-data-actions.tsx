@@ -14,7 +14,7 @@ interface IProvidedProps {
 }
 
 interface IOwnProps {
-  notifications: Array<NotificationResource>
+  notifications: NotificationResource[];
 }
 
 type IProps =
@@ -41,13 +41,13 @@ export function withCollectionDataActions<T>(WrappedComponent) {
       await dataStore.update(
         t => {
           const operations = notifications
-            .map(notification => t.removeRecord(recordIdentityFromKeys(notification)))
+            .map(notification => t.removeRecord(recordIdentityFromKeys(notification)));
 
           return operations;
         },
         { ...defaultOptions(), devOnly: true }
       );
-      
+
       this.setState({ clearCount: this.state.clearCount + 1 });
     }
 
@@ -58,7 +58,7 @@ export function withCollectionDataActions<T>(WrappedComponent) {
         clearRound: this.state.clearCount
       };
 
-      return <WrappedComponent { ...dataProps } { ...this.props } />
+      return <WrappedComponent { ...dataProps } { ...this.props } />;
     }
   }
 

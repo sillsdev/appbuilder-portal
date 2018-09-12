@@ -64,10 +64,10 @@ class Row extends React.Component<IProps> {
         className={`notification-item ${viewState}`}
         onClick={this.markAsSeen}>
 
-        <a 
-          data-test-notification-close-one 
-          className='close' 
-          href='#' 
+        <a
+          data-test-notification-close-one
+          className='close'
+          href='#'
           onClick={this.clear}>
 
           <Icon name='close' />
