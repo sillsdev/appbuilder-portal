@@ -1,4 +1,6 @@
-import { AttributesObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from "jsonapi-typescript";
+
+export type NOTIFICATIONS_TYPE = 'notifications';
 
 export const TYPE_NAME = 'notification';
 
@@ -10,3 +12,5 @@ export interface NotificationAttributes extends AttributesObject {
   isViewed: boolean;
   show: boolean;
 }
+
+export type NotificationResource = ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes>;
