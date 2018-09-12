@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.StarterApplication;
 using OptimaJet.DWKit.StarterApplication.Services;
+using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests
 {
@@ -18,6 +19,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
 
             services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
             services.AddScoped<ICurrentUserContext, TestCurrentUserContext>();
+
+            services.AddScoped(typeof(IHangfireWrapper), typeof(TestHangfireWrapper));
 
 
             base.ConfigureDatabase(services);
