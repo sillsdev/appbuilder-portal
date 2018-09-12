@@ -40,6 +40,9 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("email-notification")]
         public bool EmailNotification { get; set; } = true;
 
+        [Attr("publishing-key")]
+        public string PublishingKey { get; set; }
+
         //[HasMany("ownedOrganizations")]
         //public virtual List<Organization> OwnedOrganizations { get; set; }
 
