@@ -39,6 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<User>, UserRepository>();
             services.AddScoped<IEntityRepository<Group>, GroupRepository>();
             services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
+            services.AddScoped<IEntityRepository<Organization>, OrganizationRepository>();
             services.AddScoped<IEntityRepository<OrganizationInviteRequest>, OrganizationInviteRequestRepository>();
             services.AddScoped<IEntityRepository<Product>, ProductRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
@@ -50,6 +51,8 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();
             services.AddScoped<ProjectRepository>();
+            services.AddScoped<OrganizationRepository>();
+            services.AddScoped<CurrentUserRepository>();
 
             services.AddScoped<UserService>();
             services.AddScoped<OrganizationService>();

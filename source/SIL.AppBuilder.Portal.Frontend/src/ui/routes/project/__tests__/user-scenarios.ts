@@ -5,19 +5,19 @@ const groups = [
   { id: 1, type: 'groups' ,
     attributes: { name: 'Group 1' },
     relationships: {
-      organization: { data: { id: 1, type: 'organizations' } }
+      owner: { data: { id: 1, type: 'organizations' } }
     }
   },
   { id: 2, type: 'groups' ,
     attributes: { name: 'Group 2' },
     relationships: {
-      organization: { data: { id: 1, type: 'organizations' } }
+      owner: { data: { id: 1, type: 'organizations' } }
     }
   },
   { id: 3, type: 'groups' ,
     attributes: { name: 'Group 3' },
     relationships: {
-      organization: { data: { id: 1, type: 'organizations' } }
+      owner: { data: { id: 1, type: 'organizations' } }
     }
   }
 ];

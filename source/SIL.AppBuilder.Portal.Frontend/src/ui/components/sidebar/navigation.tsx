@@ -49,6 +49,7 @@ class Navigation extends React.Component<IProps & i18nProps> {
 
     const currentOrganizationId = getCurrentOrganizationId();
     const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
+    const allOrgsSelected = '' === currentOrganizationId;
 
     const { t, closeSidebar } = this.props;
 
@@ -97,16 +98,26 @@ class Navigation extends React.Component<IProps & i18nProps> {
 
         <hr />
 
-        <MenuItem
-          name={t('sidebar.addProject')}
-          to='/projects/new'
-          onClick={closeSidebar} />
+        { allOrgsSelected && (
+          <Menu.Item
+            className={'disabled'}
+            to='/projects/new'>
+            <span>{t('sidebar.addProject')}</span>
+          </Menu.Item>
+        )}
+
+        { !allOrgsSelected && (
+          <MenuItem
+            name={t('sidebar.addProject')}
+            to='/projects/new'
+            onClick={closeSidebar} />
+        )}
 
         <hr />
 
         <MenuItem
           name={t('opensource')}
-          to='open-source'
+          to='/open-source'
           className='m-t-lg'
           onClick={closeSidebar} />
       </Menu>

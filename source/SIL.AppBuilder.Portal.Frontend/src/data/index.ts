@@ -11,14 +11,16 @@ export {
   buildOptions,
   buildFindRelatedRecords,
   buildFindRelatedRecord,
-  localIdFromRecordIdentity
+  localIdFromRecordIdentity,
 } from './store-helpers';
 
 export {
   attributesFor, idFor,
   relationshipsFor, hasRelationship, isRelatedTo,
   relationshipFor, firstError,
-  isRelatedRecord
+  isRelatedRecord,
+  idsForRelationship,
+  recordsWithIdIn
 } from './helpers';
 
 export { withLoader } from './containers/with-loader';

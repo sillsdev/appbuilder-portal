@@ -29,7 +29,7 @@ const mapRecordsToProps = (passedProps) => {
   const { params: { id } } = match;
 
   return {
-    project: q => buildFindRecord(q, PROJECT, id )
+    project: q => buildFindRecord(q, PROJECT, id ),
   };
 };
 

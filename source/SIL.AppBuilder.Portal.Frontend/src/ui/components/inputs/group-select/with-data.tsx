@@ -3,24 +3,25 @@ import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import {
-  query, defaultOptions,
   GROUPS_TYPE, GROUP_MEMBERSHIPS_TYPE, USERS_TYPE,
   buildFindRelatedRecords,
-  relationshipFor,
-  idFromRecordIdentity,
-  isRelatedTo,
   isRelatedRecord,
   withLoader,
-  buildFindRecord,
-  localIdFromRecordIdentity
+  idsForRelationship,
+  recordsWithIdIn,
+  buildFindRelatedRecord,
+  PROJECTS_TYPE,
+  ORGANIZATIONS_TYPE,
+  isRelatedTo
 } from '@data';
 
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { GroupMembershipAttributes } from '@data/models/group-membership';
 import { UserAttributes } from '@data/models/user';
 
-import { PageLoader as Loader } from '@ui/components/loaders';
 import { ResourceObject } from 'jsonapi-typescript';
+import { ProjectAttributes } from '@data/models/project';
+import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProvidedProps {
   groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
@@ -30,7 +31,8 @@ export interface IProvidedProps {
 interface IOwnProps {
   groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
   groupMembershipsForCurrentUser: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
-  scopeToCurrentUser: boolean;
+  scopeToCurrentUser?: boolean;
+  scopeToOrganization?: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   selected: Id;
 }
@@ -41,7 +43,7 @@ type IProps =
 
 export function withData(WrappedComponent) {
   const mapRecordsToProps = (passedProps) => {
-    const { currentUser } = passedProps;
+    const { currentUser, project } = passedProps;
 
     return {
       // all groups available to the current user should have been fetch with the
@@ -57,30 +59,27 @@ export function withData(WrappedComponent) {
         groupMembershipsForCurrentUser,
         groups,
         currentUser,
-        scopeToCurrentUser,
+        scopeToCurrentUser, scopeToOrganization,
         selected,
         ...otherProps
       } = this.props;
 
       let availableGroups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
 
-      const groupIds = groupMembershipsForCurrentUser
-        .map(gm => {
-          const relationData = relationshipFor(gm, 'group').data;
-
-          if (!relationData) { return; }
-
-          return localIdFromRecordIdentity(relationData);
-        })
-        .filter(id => id);
+      const groupIds = idsForRelationship(groupMembershipsForCurrentUser, 'group');
 
       if (scopeToCurrentUser) {
-        availableGroups = groups
-          .filter(g => {
-            return g.id === selected || groupIds.includes(g.id);
-          });
+        availableGroups = recordsWithIdIn(groups, [selected, ...groupIds]);
       } else {
         availableGroups = groups;
+      }
+
+      if (scopeToOrganization) {
+        availableGroups = availableGroups.filter(group => {
+          if (group.id === selected) { return true; }
+
+          return isRelatedTo(group, 'owner', scopeToOrganization.id);
+        });
       }
 
       const disableSelection = (

@@ -3,18 +3,15 @@ import { Menu, Icon } from 'semantic-ui-react';
 import { WithDataProps } from 'react-orbitjs';
 import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 
-import { OrganizationAttributes } from '@data/models/organization';
+import { idFromRecordIdentity } from '@data';
 import { IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-current-organization';
 
-import Loader from '@ui/components/loaders/page';
-
+import { IProvidedDataProps } from './with-data';
 import Row from './row';
-import { ResourceObject } from 'jsonapi-typescript';
-import { ORGANIZATIONS_TYPE, idFromRecordIdentity } from '@data';
+import { IProvidedProps as IReduxProps } from './with-redux';
+import { IGivenProps } from './types';
 
 export interface IOwnProps {
-  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
-  isLoading: boolean;
   searchByName: (name: string) => void;
   toggle: () => void;
   searchTerm: string;
@@ -24,9 +21,12 @@ export interface IOwnProps {
 }
 
 export type IProps =
+  & IGivenProps
+  & IReduxProps
   & IOwnProps
   & WithCurrentOrgProps
   & WithDataProps
+  & IProvidedDataProps
   & i18nProps;
 
 class OrgSwitcherDisplay extends React.Component<IProps> {
@@ -38,10 +38,13 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
       allOrgsSelected,
       searchTerm,
       didTypeInSearch,
-      selectOrganization
+      selectOrganization,
+      searchResults
     } = this.props;
 
-    const showSearch = organizations.length > 4 || !!searchTerm;
+    const showSearch = organizations.length > 4;
+    const results = searchResults || organizations;
+    const noResults = (!results || results.length === 0);
 
     return (
       <Menu
@@ -63,7 +66,7 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
           </Menu.Item>
         )}
 
-        { organizations.map(organization => {
+        { results.map(organization => {
           const id = idFromRecordIdentity(organization as any);
 
           return (
@@ -73,6 +76,12 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
               isActive={currentOrganizationId === id} />
           );
         })}
+
+        { noResults && (
+          <Menu.Item>
+            {t('common.noResults')}
+          </Menu.Item>
+        ) }
 
         <hr />
 

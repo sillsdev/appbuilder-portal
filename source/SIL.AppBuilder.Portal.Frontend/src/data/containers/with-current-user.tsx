@@ -20,6 +20,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import * as toast from '@lib/toast';
 import { attributesFor } from '@data/helpers';
+import { ServerError } from '@data/errors/server-error';
 
 type UserPayload = SingleResourceDoc<USERS_TYPE, UserAttributes>;
 
@@ -50,6 +51,8 @@ interface IState {
 const defaultOptions = {
   redirectOnFailure: true
 };
+
+
 
 // TODO: store the attempted URL so that after login,
 //     we can navigate back.
@@ -84,7 +87,7 @@ export function withCurrentUser(opts = {}) {
 
       fetchCurrentUser = async () => {
         if (this.makingRequest) { return; }
-        const { networkFetchComplete, currentUser } = this.state;
+        const { error, networkFetchComplete, currentUser } = this.state;
 
         const { updateStore, usersMatchingLoggedInUser: fromCache, t } = this.props;
         const auth0IdFromJWT = getAuth0Id();
@@ -104,7 +107,7 @@ export function withCurrentUser(opts = {}) {
           return;
         }
 
-        if (networkFetchComplete) { return; }
+        if (error || networkFetchComplete) { return; }
 
         try {
           this.makingRequest = true;
@@ -119,11 +122,16 @@ export function withCurrentUser(opts = {}) {
 
           if (status === 403 || status === 401) {
             const errorJson = await tryParseJson(response);
-            const error = firstError(errorJson).title;
+            const errorTitle = firstError(errorJson).title;
             const defaultMessage = unauthorized ? t('errors.notAuthorized') : t('errors.userForbidden');
 
             deleteToken();
-            throw new Error(error || defaultMessage);
+            throw new Error(errorTitle || defaultMessage);
+          }
+
+          if (status >= 500) {
+            const text = await response.text();
+            throw new ServerError(status, text);
           }
 
           const json = await tryParseJson(response);
@@ -147,6 +155,10 @@ export function withCurrentUser(opts = {}) {
         const { error, currentUser, isLoading } = this.state;
 
         if (error) {
+          if (error.status && error.status >= 500) {
+            return <PageError error={error} />;
+          }
+
           if (options.redirectOnFailure) {
             toast.error(error);
 
