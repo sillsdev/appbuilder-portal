@@ -34,6 +34,9 @@ const schemaDefinition: SchemaSettings = {
         // unpresisted, send-only attribute for when a user accepts an
         // invite to create an organization
         token: { type: 'string' },
+
+        // filter-keys - throw-away
+        scopeToCurrentUser: { type: 'string' },
       },
       relationships: {
         owner: { type: 'hasOne', model: 'user', inverse: 'ownedOrganizations' },

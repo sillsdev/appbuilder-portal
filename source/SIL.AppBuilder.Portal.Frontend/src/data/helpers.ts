@@ -6,7 +6,13 @@ import {
   ResourceLinkage
 } from "jsonapi-typescript";
 
-import { idFromRecordIdentity } from './store-helpers';
+import Store from '@orbit/store';
+import { QueryBuilder, QueryOrExpression } from '@orbit/data';
+
+import {
+  idFromRecordIdentity, localIdFromRecordIdentity, IIdentityFromKeys,
+  modelNameFromRelationship
+} from './store-helpers';
 
 type IJsonApiPayload<TType extends string, TAttrs extends AttributesObject> =
   | SingleResourceDoc<TType, TAttrs>
@@ -31,6 +37,22 @@ export function idFor(payload: any): string {
   if (payload.data) { return idFor(payload.data); }
 
   return payload.id;
+}
+
+export function idsForRelationship(collection, relationshipName) {
+  const localIds = collection.map(record => {
+    const relationData = relationshipFor(record, relationshipName).data;
+
+    if (!relationData) { return; }
+
+    return localIdFromRecordIdentity(relationData);
+  }).filter(id => id);
+
+  return localIds;
+}
+
+export function recordsWithIdIn(collection, ids) {
+  return collection.filter(record => ids.includes(record.id));
 }
 
 export function relationshipsFor<
@@ -78,6 +100,69 @@ export function isRelatedRecord<TType extends string = ''>(payload: any, record:
 
   return isRelatedTo(payload, record.type, id) || isRelatedTo(payload, record.type, record.id);
 }
+
+
+
+// NOTE:
+//   this function is pretty much 'filter'
+//   but hides the relational logic behind the filter.
+//   since a lot of logic in the app has to do with
+//   many-to-many / many-through-something-has-many relationships
+//   this function should be used to ensure that no extra data in the cache
+//   bleeds through what is intended to be seen.
+//
+// through is camelCase, and represents a relationship
+//
+// NOTE: this is a work in progress
+// TODO: finish this
+export async function cachedWithRelationThrough(
+  store: Store,
+  query: QueryOrExpression,
+  throughRelationshipName: string,
+  to: IIdentityFromKeys) {
+
+    const cacheResultsFromQuery = await store.cache.query(query);
+    // if something doesn't have attributes, it hasn't been fetched from the remote
+    const cacheResults = cacheResultsFromQuery.filter(r => r.attributes);
+
+    if (cacheResults.length === 0) { return []; }
+
+    const throughModelName = modelNameFromRelationship(cacheResults[0], throughRelationshipName);
+    const modelname = cacheResults[0].type;
+    const targetModelName = to.type;
+    // const joiningRelationName = inverseRelationshipOf(throughModelName, joiningRelationName);
+
+    const results: any = [];
+
+    const filterPromise = cacheResults.map(async cacheResult => {
+      const relation = relationshipFor(cacheResult, throughRelationshipName);
+      const { data: relationData } = relation;
+
+      if (!relationData) { return false; }
+
+      const joinRecords = await store.cache.query(q => q.findRelatedRecords(cacheResult, throughModelName));
+
+      if (joinRecords.length === 0) { return []; }
+
+      // TODO: make this lookup the other side of the relationship in case the
+      //       relationship name does not match the model name / type
+      const joinPromises = joinRecords.map(joinRecord => {
+        const isRelated = isRelatedRecord(joinRecord, to as any);
+
+        if (isRelated) {
+          results.push(cacheResult);
+        }
+      });
+
+    });
+
+    await Promise.all(filterPromise);
+
+  return results;
+}
+
+
+
 
 export function firstError(json): ErrorObject {
   if (!json || !json.errors) { return {}; }

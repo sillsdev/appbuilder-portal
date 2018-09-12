@@ -1,5 +1,6 @@
 import Store from '@orbit/store';
-import { QueryBuilder } from '@orbit/data';
+import { QueryBuilder, QueryOrExpression } from '@orbit/data';
+import { camelize } from '@orbit/utils';
 
 import { ResourceObject, AttributesObject } from 'jsonapi-typescript';
 
@@ -28,6 +29,28 @@ export function buildFindRecord(q: QueryBuilder, type: string, id: string) {
   const recordIdentity = recordIdentityFrom(id, type);
 
   return q.findRecord(recordIdentity);
+}
+
+export function modelNameFromRelationship(record: any, relationshipName: string) {
+  const recordModelName = record.type;
+
+  const { models } = schema;
+  const modelSchemaInfo = models[recordModelName];
+
+  const relationship = modelSchemaInfo.relationships[relationshipName];
+
+  const modelName = camelize(relationship.model);
+
+  return modelName;
+}
+
+export function inverseRelationshipOf(modelName: string, relationshipName) {
+  const { models } = schema;
+  const modelSchemaInfo = models[modelName];
+
+  const relationship = modelSchemaInfo.relationships[relationshipName];
+
+  return relationship.inverse;
 }
 
 export function buildOptions(options: IQueryOptions = {}, label?: string) {
@@ -79,7 +102,6 @@ export async function create<TAttrs, TRelationships>(
 
   return record;
 }
-
 
 // Example:
 // buildNew('projects', {
@@ -150,7 +172,7 @@ export function recordIdentityFrom(id: string, type: string) {
   return recordIdentityFromKeys({ keys: { remoteId: id }, type });
 }
 
-interface IIdentityFromKeys {
+export interface IIdentityFromKeys {
   type?: string;
   id?: string;
   keys?: any;

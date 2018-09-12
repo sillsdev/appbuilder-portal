@@ -13,7 +13,7 @@ export interface IFilter {
 export interface IProvidedProps {
   filters: IFilter[];
   updateFilter: (filter: IFilter) => void;
-  applyFilter: (builder: FindRecordsTerm, onCache?: boolean) => FindRecordsTerm;
+  applyFilter: (builder: FindRecordsTerm, onCache?: boolean, ignoreRequired?: boolean) => FindRecordsTerm;
   removeFilter: (filter: IFilter | string) => void;
 }
 
@@ -74,7 +74,9 @@ export function withFiltering(opts: IFilterOptions = {}) {
 
         const newFilters = filters.filter(currentFilter => {
           return currentFilter.attribute !== filter.attribute;
-        }).push(filter);
+        });
+
+        newFilters.push(filter);
 
         this.setState({ filters: newFilters });
       }
@@ -86,6 +88,8 @@ export function withFiltering(opts: IFilterOptions = {}) {
         const newFiletrs = filters.filter(currentFilter => {
           return currentFilter.attribute !== attrToRemove;
         });
+
+        this.setState({ filters: newFiletrs });
       }
 
       // NOTE: onCache signifies that that the filtering will only happen on the cache store.
@@ -97,14 +101,15 @@ export function withFiltering(opts: IFilterOptions = {}) {
       //       these are equivalent.
       //       this technical limitation also stems from the fact that all values
       //       are strings when sent across the network.
-      applyFilter = (builder: FindRecordsTerm, onCache = false): FindRecordsTerm => {
+      applyFilter = (builder: FindRecordsTerm, onCache = false, ignoreRequired = false): FindRecordsTerm => {
         const { filters, options } = this.state;
 
         if (isEmpty(filters) && isEmpty(options.requiredFilters)) {
           return builder;
         }
 
-        const allFilters = [ ...filters, ...options.requiredFilters ];
+        const required = ignoreRequired ? [] : options.requiredFilters;
+        const allFilters = [ ...filters, ...required ];
         const filtersToApply = onCache ? allFilters.map(this._filterOperationMap) : allFilters;
 
         return builder.filter(...filtersToApply);
@@ -116,6 +121,10 @@ export function withFiltering(opts: IFilterOptions = {}) {
         switch(filter.value) {
           case 'isnull:': return { ...filter, attribute, value: null };
           case 'isnotnull:': return { ...filter, attribute, value: '', op: 'gt' };
+          // TODO: write a mapping for like for locale query
+          // TODO: also consider a different scheme of mapping remote filtering
+          //       with local filtering
+          // case 'like:': return { ...filter, attribute, value:}
           default: return { ...filter, attribute };
         }
       }

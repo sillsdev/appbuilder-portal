@@ -184,6 +184,43 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal(expectedName, updatedProject.Name);
         }
         [Fact]
+        public async Task Patch_ProjectForOrganization()
+        {
+            BuildTestData();
+
+            var expectedName = project1.Name + "-updated!";
+            var payload = ResourcePatchPayload(
+                "projects", project1.Id, new Dictionary<string, object>()
+                {
+                    { "name", expectedName }
+                });
+
+            var response = await Patch("/api/projects/" + project1.Id, payload, project1.OrganizationId.ToString());
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var updatedProject = await Deserialize<Project>(response);
+
+            Assert.Equal(expectedName, updatedProject.Name);
+
+        }
+        [Fact]
+        public async Task Patch_ProjectForOtherOrganization_Failure()
+        {
+            BuildTestData();
+
+            var expectedName = project1.Name + "-updated!";
+            var payload = ResourcePatchPayload(
+                "projects", project1.Id, new Dictionary<string, object>()
+                {
+                    { "name", expectedName }
+                });
+
+            var response = await Patch("/api/projects/" + project1.Id, payload, org3.Id.ToString());
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+        [Fact]
         public async Task Patch_Invalid_Project()
         {
             BuildTestData();

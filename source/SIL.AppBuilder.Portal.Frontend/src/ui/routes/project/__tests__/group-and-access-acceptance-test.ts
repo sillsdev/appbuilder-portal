@@ -11,7 +11,6 @@ import {
 import {
   userInDifferentOrganization,
   userInSameOrgDifferentGroup,
-  userInSameOrgAndGroup
 } from './user-scenarios';
 
 import page from './page';
@@ -35,7 +34,12 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
       },
       included: [
         { type: 'organizations', id: 1, },
-        { type: 'groups', id: 1, attributes: { name: 'Group 1' } },
+        { type: 'groups', id: 1,
+          attributes: { name: 'Group 1' },
+          relationships: {
+            organization: { data: { id: 1, type: 'organizations' } }
+          }
+        },
         { type: 'users' , id: 2, attributes: { familyName: 'last', givenName: 'first' } },
       ]
     });
@@ -122,21 +126,21 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
         { id: 1, type: 'groups' ,
           attributes: { name: 'Group 1' },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
+            owner: { data: { id: 1, type: 'organizations' } }
           }
         },
         { id: 2, type: 'groups' ,
           attributes: { name: 'Group 2' },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
+            owner: { data: { id: 1, type: 'organizations' } }
           }
         },
         { id: 3, type: 'groups' ,
           attributes: { name: 'Group 3' },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
+            owner: { data: { id: 1, type: 'organizations' } }
           }
-        }
+        },
       ]
     });
 

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
@@ -18,7 +20,10 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public string BuildEngineApiAccessToken { get; set; }
 
         [Attr("use-sil-build-infrastructure")]
-        public bool UseSilBuildInfrastructure { get; set; }
+        public bool UseSilBuildInfrastructure { get; set; } = true;
+
+        [Attr("public-by-default")]
+        public bool PublicByDefault { get; set; } = true;
 
         [HasOne("owner")]
         public virtual User Owner { get; set; }
@@ -32,5 +37,9 @@ namespace Optimajet.DWKit.StarterApplication.Models
 
         [HasMany("organization-product-definitions", Link.None)]
         public virtual List<OrganizationProductDefinition> OrganizationProductDefinitions { get; set;}
+
+        [NotMapped]
+        public IEnumerable<int> ProductDefinitionIds => OrganizationProductDefinitions?.Select(pd => pd.ProductDefinitionId);
+
     }
 }

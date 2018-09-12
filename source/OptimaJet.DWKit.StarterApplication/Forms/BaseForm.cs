@@ -45,7 +45,7 @@ namespace OptimaJet.DWKit.StarterApplication.Forms
                 // Treating these errors as Not Found errors
                 if (OrganizationContext.HasOrganization)
                 {
-                    if (initialOrganizationId == OrganizationContext.OrganizationId)
+                    if (initialOrganizationId != OrganizationContext.OrganizationId)
                     {
                         var message = $"The current {objectType} doesn't belong to the organization specified in the header";
                         AddError(message, 404);

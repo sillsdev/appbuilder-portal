@@ -35,10 +35,10 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public string ExternalId { get; set; }
 
         [Attr("profile-visibility")]
-        public ProfileVisibility ProfileVisibility { get; set; }
+        public ProfileVisibility ProfileVisibility { get; set; } = ProfileVisibility.Public;
 
         [Attr("email-notification")]
-        public bool EmailNotification { get; set; }
+        public bool EmailNotification { get; set; } = true;
 
         //[HasMany("ownedOrganizations")]
         //public virtual List<Organization> OwnedOrganizations { get; set; }

@@ -17,6 +17,7 @@ export default {
 
   common: {
     search: 'Search',
+    noResults: 'No Results...',
     change: 'Change',
     cancel: 'Cancel',
     save: 'Save',
@@ -139,6 +140,7 @@ export default {
       Please contact your organization administrator to discuss receiving an invite to
       an organization on Scriptoria.
     `,
+    orgMustBeSelected: `An organization must be selected to view this page`,
   },
 
   tasks: {

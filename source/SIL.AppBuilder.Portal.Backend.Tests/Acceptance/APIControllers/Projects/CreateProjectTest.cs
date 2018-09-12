@@ -218,6 +218,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal(org1.Id, project.OrganizationId );
             Assert.Equal(group1.Id, project.GroupId);
             Assert.Equal("project5", project.Name);
+            Assert.True(project.AllowDownloads);
+            Assert.True(project.AutomaticBuilds);
         }
         [Fact]
         public async Task Create_Project_GroupOwner_Organization_Mismatch()
