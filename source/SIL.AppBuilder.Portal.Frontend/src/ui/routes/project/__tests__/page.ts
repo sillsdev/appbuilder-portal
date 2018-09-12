@@ -1,10 +1,12 @@
 import {
   interactor,
-  clickable, text, isPresent
+  clickable, text, isPresent,
+  fillable, count
 } from '@bigtest/interactor';
 
 import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
 import userInteractor from '@ui/components/inputs/user-select/__tests__/page';
+import reviewerInteractor from '@ui/routes/project/reviewers/__tests__/page';
 
 @interactor
 export class ProjectInteractor {
@@ -18,6 +20,7 @@ export class ProjectInteractor {
 
   groupSelect = groupInteractor;
   userSelect = userInteractor;
+  reviewers = reviewerInteractor;
 }
 
 export default new ProjectInteractor('[data-test-project]');

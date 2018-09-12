@@ -66,10 +66,6 @@ export function withDataActions<T>(WrappedComponent) {
       ), defaultOptions());
     }
 
-    addReviewer = (email: string) => {
-      console.error('not implemented');
-    }
-
     render() {
       const props = {
         ...this.props,

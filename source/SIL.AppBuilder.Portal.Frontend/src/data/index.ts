@@ -40,3 +40,4 @@ export type TASKS_TYPE = 'tasks';
 export type ORGANIZATION_MEMBERSHIPS_TYPE = 'organization-memberships';
 export type GROUP_MEMBERSHIPS_TYPE = 'group-memberships';
 export type NOTIFICATIONS_TYPE = 'notifications';
+export type REVIEWERS_TYPE = 'reviewers';
