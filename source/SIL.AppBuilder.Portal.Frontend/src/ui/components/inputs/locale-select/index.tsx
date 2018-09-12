@@ -9,7 +9,7 @@ import { UserAttributes } from "@data/models/user";
 import { TYPE_NAME as USER } from "@data/models/user";
 import { attributesFor } from "@data/helpers";
 import { ResourceObject } from "jsonapi-typescript";
-import { USERS_TYPE } from "@data";
+import { USERS_TYPE, update } from "@data";
 
 export interface IOwnProps {
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
@@ -30,14 +30,13 @@ class LocaleSelect extends React.Component<IProps> {
     e.preventDefault();
 
     const { i18n } = this.props;
-    const { currentUser } = this.props;
-    const { id } = currentUser;
+    const { currentUser, dataStore } = this.props;
 
     i18n.changeLanguage(value);
 
-    await this.props.updateStore(t => t.replaceAttribute(
-      { type: USER, id }, 'locale', value
-    ));
+    await update(dataStore, currentUser, {
+      attributes: { locale: value }
+    });
   }
 
   render() {
