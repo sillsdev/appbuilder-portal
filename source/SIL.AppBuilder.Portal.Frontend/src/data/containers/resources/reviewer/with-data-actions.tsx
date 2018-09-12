@@ -8,7 +8,7 @@ import { ReviewerAttributes } from '@data/models/reviewer';
 
 export interface IProvidedProps {
   createRecord: (attrs: ReviewerAttributes, relationships) => any;
-  removeRecord: (id: string) => any;
+  removeRecord: () => any;
   updateAttribute: (attribute: string, value: any) => any;
   updateAttributes: (attrs: ReviewerAttributes) => any;
 }
@@ -29,7 +29,7 @@ export function withDataActions<T>(WrappedComponent) {
 
       const { dataStore } = this.props;
 
-      const c = await dataStore.update(
+      await dataStore.update(
         q => q.addRecord({
           type: 'reviewer',
           attributes,
@@ -39,11 +39,11 @@ export function withDataActions<T>(WrappedComponent) {
       );
     }
 
-    removeRecord = async (reviewer) => {
+    removeRecord = async () => {
 
-      const { dataStore } = this.props;
+      const { reviewer, dataStore } = this.props;
 
-      const r = await dataStore.update(
+      await dataStore.update(
         q => q.removeRecord({
           type: 'reviewer', id: reviewer.id
         }),
@@ -54,7 +54,7 @@ export function withDataActions<T>(WrappedComponent) {
     updateAttribute = async (attribute: string, value: any) => {
       const { reviewer, dataStore } = this.props;
 
-      const u = await dataStore.update(
+      await dataStore.update(
         q => q.replaceAttribute(reviewer, attribute, value),
         defaultOptions()
       );

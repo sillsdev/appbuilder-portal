@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { ResourceObject } from 'jsonapi-typescript';
-import { Icon } from 'semantic-ui-react';
 
 import { ProjectAttributes } from '@data/models/project';
 import { ReviewerAttributes } from '@data/models/reviewer';
@@ -12,6 +10,8 @@ import { withReviewers } from './with-reviewers';
 
 import AddReviewerForm from './form';
 import ReviewerItem from './item';
+
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './styles.scss';
 
@@ -66,6 +66,6 @@ class Reviewers extends React.Component<IProps> {
 }
 
 export default compose(
-  translate('translations'),
+  withTranslations,
   withReviewers
 )(Reviewers);
