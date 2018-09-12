@@ -2,20 +2,27 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { TYPE_NAME as NOTIFICATION, NotificationAttributes } from '@data/models/notification';
-import { query, defaultOptions, NOTIFICATIONS_TYPE } from '@data';
+import { query, defaultOptions, NOTIFICATIONS_TYPE, withLoader } from '@data';
 import { withStubbedDevData } from '@data/with-stubbed-dev-data';
 import { ResourceObject } from 'jsonapi-typescript';
+import { withCollectionDataActions } from '@data/containers/resources/notification/with-collection-data-actions';
 
-// TODO: Use this map when API is ready
-// const mapNetworkToProps = (passedProps) => {
-//   return {
-//     notifications: q => q.findRecords(NOTIFICATION)
-//   };
-// };
+const mapNetworkToProps = (passedProps) => {
+  return {
+    notifications: [
+      q => q
+        .findRecords(NOTIFICATION)
+        .sort('-time', '-isViewed'),
+      { ...defaultOptions(), devOnly: true }
+    ]
+  };
+};
 
 const mapRecordsToProps = (passedProps) => {
   return {
-    notifications: q => q.findRecords(NOTIFICATION)
+    notifications: q => q
+      .findRecords(NOTIFICATION)
+      .sort('-time', '-isViewed'),
   };
 };
 
@@ -26,104 +33,39 @@ export interface DataProps {
 }
 
 export interface ActionProps {
-  markNotificationsToSeen: () => void;
+  markAllAsViewed: () => void;
   clearAll: () => void;
   clearOne: (id: string) => void;
-  markNotificationToSeen: (notification: ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes>) => void;
 }
 
 export function withData(WrappedComponent) {
 
   class DataWrapper extends React.Component<DataProps & WithDataProps> {
-
-    markNotificationsToSeen = async () => {
-
-      const { notifications } = this.props;
-
-      await this.props.updateStore(t =>
-        notifications.map(notification => t.replaceAttribute({
-          type: NOTIFICATION, id: notification.id
-        }, 'isViewed', true)),
-        { ...defaultOptions(), devOnly: true });
-    }
-
-    markNotificationToSeen = async (notification) => {
-      await this.props.updateStore(t => t.replaceAttribute({
-        type: NOTIFICATION, id: notification.id
-      }, 'isViewed', true), { ...defaultOptions(), devOnly: true });
-    }
-
-    clearAll = async () => {
-      const { notifications } = this.props;
-
-      await this.props.updateStore(t =>
-        notifications.map(notification => t.removeRecord({
-          type: NOTIFICATION, id: notification.id
-        })),
-        { ...defaultOptions(), devOnly: true });
-    }
-
-    clearOne = async (id) => {
-      await this.props.updateStore(t => t.removeRecord(
-        { type: NOTIFICATION, id }
-      ), { ...defaultOptions(), devOnly: true });
-    }
-
     haveAllNotificationsBeenSeen = () => {
-      return this.props.notifications &&
-        this.props.notifications.reduce((memo, notification) => memo && notification.attributes.isViewed, true);
+      const { notifications } = this.props;
+
+      return notifications &&
+        notifications.reduce((memo, notification) => memo && notification.attributes.isViewed, true);
     }
 
     isThereAtLeastOneNotificationToShow = () => {
-      return this.props.notifications &&
-        this.props.notifications.reduce((memo, notification) => memo || notification.attributes.show, false);
+      const { notifications } = this.props;
+
+      return notifications &&
+        notifications.reduce((memo, notification) => memo || notification.attributes.show, false);
     }
-
-    sortNotifications = (notifications) => {
-
-      if (!notifications) {
-        return [];
-      }
-
-      return notifications.sort((a, b) => {
-
-        return (a.attributes.time === b.attributes.time) ? 0 :
-          a.attributes.time > b.attributes.time ? -1 : 1;
-
-      }).sort((a, b) => {
-
-        return (a.attributes.isViewed === b.attributes.isViewed) ? 0 :
-          a.attributes.isViewed ? 1 : -1;
-
-      });
-    }
-
 
     render() {
-
-      const { notifications, ...otherProps } = this.props;
-
       const dataProps = {
-        notifications: this.sortNotifications(notifications), // When API endpoint ready we should add query result here
         haveAllNotificationsBeenSeen: this.haveAllNotificationsBeenSeen(),
         isThereAtLeastOneNotificationToShow: this.isThereAtLeastOneNotificationToShow(),
       };
 
-      const actionProps = {
-        markNotificationsToSeen: this.markNotificationsToSeen,
-        markNotificationToSeen: this.markNotificationToSeen,
-        clearAll: this.clearAll,
-        clearOne: this.clearOne
-      };
-
-      return <WrappedComponent {...otherProps} {...dataProps} {...actionProps} />;
-
+      return <WrappedComponent { ...this.props } {...dataProps} />;
     }
-
   }
 
   return compose(
-    // query(mapNetworkToProps),
     withStubbedDevData('notification', 1, {
       title: 'New Task',
       description: 'Chris Hubbard has requested approval for Sogdian Bible Public Domain.',
@@ -140,6 +82,9 @@ export function withData(WrappedComponent) {
       isViewed: true,
       show: true
     }),
+    query(mapNetworkToProps),
+    withLoader(({ notifications }) => !notifications),
+    withCollectionDataActions,
     withOrbit(mapRecordsToProps)
   )(DataWrapper);
 }

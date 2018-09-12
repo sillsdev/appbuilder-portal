@@ -115,7 +115,14 @@ export async function createStore() {
     on: 'beforeQuery',
     target: 'remote',
     action: 'pull',
-    blocking: true
+    blocking: true,
+
+    filter(query) {
+      const options = ((query || {}).options || {});
+      const keep = !(options.devOnly || options.skipRemote);
+
+      return keep;
+    }
   }));
 
   // Push updates to the server
