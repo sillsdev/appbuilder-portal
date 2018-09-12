@@ -40,37 +40,37 @@ describe('Acceptance | Notifications', () => {
           expect(page.hasNotifications).to.be.true;
         });
       });
-    });
 
-    describe('Clears a single notification', () => {
-      beforeEach(async () => {
-        const numNotifications = page.countNotifications();
+      describe('Clears a single notification', () => {
+        beforeEach(async () => {
+          const numNotifications = page.countNotifications();
 
-        expect(numNotifications).to.eq(2);
+          expect(numNotifications).to.eq(2);
 
-        await page.clickCloseIndividualNotification();
+          await page.clickCloseIndividualNotification();
+        });
+
+        it('there is one fewer notification', () => {
+          const numNotifications = page.countNotifications();
+
+          expect(numNotifications).to.eq(1);
+        });
       });
 
-      it('there is one fewer notification', () => {
-        const numNotifications = page.countNotifications();
+      describe('Clears all notifications', () => {
+        beforeEach(async () => {
+          const numNotifications = page.countNotifications();
 
-        expect(numNotifications).to.eq(1);
-      });
-    });
+          expect(numNotifications).to.eq(2);
 
-    describe('Clears all notifications', () => {
-      beforeEach(async () => {
-        const numNotifications = page.countNotifications();
+          await page.clickClearAll();
+        });
 
-        expect(numNotifications).to.eq(2);
+        it('has no more notifications listed', () => {
+          const numNotifications = page.countNotifications();
 
-        await page.clickClearAll();
-      });
-
-      it('has no more notifications listed', () => {
-        const numNotifications = page.countNotifications();
-
-        expect(numNotifications).to.eq(0);
+          expect(numNotifications).to.eq(0);
+        });
       });
     });
   });
