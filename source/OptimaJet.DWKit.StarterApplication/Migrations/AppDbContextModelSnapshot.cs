@@ -106,9 +106,13 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("OwnerId");
 
-                    b.Property<bool>("PublicByDefault");
+                    b.Property<bool>("PublicByDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
 
-                    b.Property<bool>("UseSilBuildInfrastructure");
+                    b.Property<bool>("UseSilBuildInfrastructure")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
 
                     b.Property<string>("WebsiteUrl");
 
