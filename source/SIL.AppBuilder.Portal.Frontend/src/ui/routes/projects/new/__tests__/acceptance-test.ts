@@ -72,7 +72,11 @@ const scenarios = {
           }
         },
         {
-          id: 1, type: 'groups', attributes: { name: 'Group 1' }
+          id: 1, type: 'groups', 
+          attributes: { name: 'Group 1' },
+          relationships: {
+            owner: { data: { id: 1, type: 'organizations' }}
+          }
         }
       ]
     });
