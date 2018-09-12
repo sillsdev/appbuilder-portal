@@ -67,7 +67,9 @@ class Notifications extends React.Component<IProps> {
             notifications && notifications.length > 0 && isThereAtLeastOneNotificationToShow ?
             <>
               <div className="notification-buttons">
-                <a href="#" onClick={e => {
+                <a href="#" 
+                  data-test-clear-all
+                  onClick={e => {
                     e.preventDefault();
                     clearAll();
                   }}
