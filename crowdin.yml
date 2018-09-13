@@ -1,3 +1,7 @@
 files:
   - source: /source/**/en-us.json
     translation: /source/**/%locale%.json
+    languages_mapping:
+      locale:
+        es-PE: es-pe
+        fr: fr-fr
