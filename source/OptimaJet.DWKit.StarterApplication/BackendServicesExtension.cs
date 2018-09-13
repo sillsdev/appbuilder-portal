@@ -93,7 +93,6 @@ namespace OptimaJet.DWKit.StarterApplication
             });
 
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
-            services.AddScoped(typeof(IHangfireWrapper), typeof(HangfireWrapper));
 
             return services;
         }
