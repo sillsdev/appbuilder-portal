@@ -1,0 +1,51 @@
+[
+  {
+    "key": "header_readiness_check",
+    "data-buildertype": "header",
+    "content": "Readiness Check",
+    "size": "medium"
+  },
+  {
+    "key": "container_1",
+    "data-buildertype": "container"
+  },
+  {
+    "key": "form_1",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "checkbox_ip_attribution",
+        "data-buildertype": "checkbox",
+        "label": "I have reviewed the Intellectual Property (IP) attributions guideline."
+      },
+      {
+        "key": "staticcontent_ip_attribution_guildelines_link",
+        "data-buildertype": "staticcontent",
+        "content": "<ul><li><a href=\"http://software.sil.org/scriptureappbuilder/service/checklist/\">Intellectual Property (IP) Attributions Guidelines</a></li></ul>",
+        "isHtml": true,
+        "style-font-size": "",
+        "events": {},
+        "style-marginLeft": "",
+        "style-marginTop": "",
+        "style-marginBottom": "",
+        "style-marginRight": "",
+        "style-source": "paddingTop: 5px;\npaddingBottom: 5px;"
+      },
+      {
+        "key": "checkbox_app_build",
+        "data-buildertype": "checkbox",
+        "label": "I have used {Application Name} on my computer to define and compile my app.  I have tested it and believe it is ready to publish widely."
+      },
+      {
+        "key": "checkbox_permission",
+        "data-buildertype": "checkbox",
+        "label": "I have been given permission by my organization to publish the contents of the app."
+      },
+      {
+        "key": "checkbox_copyright",
+        "data-buildertype": "checkbox",
+        "label": "I know who should be listed as copyright owners for the text and audio."
+      }
+    ]
+  }
+]
