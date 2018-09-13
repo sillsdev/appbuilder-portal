@@ -12,19 +12,23 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
     public class OrganizationInviteRequestRepository : ControllerRepository<OrganizationInviteRequest>
     {
+        private readonly IBackgroundJobClient backgroundJobClient;
+
         public OrganizationInviteRequestRepository(
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
-            IDbContextResolver contextResolver
+            IDbContextResolver contextResolver,
+            IBackgroundJobClient backgroundJobClient
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
+            this.backgroundJobClient = backgroundJobClient;
         }
 
         public override async Task<OrganizationInviteRequest> CreateAsync(OrganizationInviteRequest entity)
         {
             var result = await base.CreateAsync(entity);
             var data = new OrganizationInviteRequestServiceData { Id = result.Id };
-            BackgroundJob.Enqueue<IOrganizationInviteRequestService>(service => service.Process(data));
+            backgroundJobClient.Enqueue<IOrganizationInviteRequestService>(service => service.Process(data));
             return result;
         }
     }

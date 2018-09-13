@@ -20,9 +20,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
             services.AddScoped<ICurrentUserContext, TestCurrentUserContext>();
 
-            services.AddScoped(typeof(IHangfireWrapper), typeof(TestHangfireWrapper));
-
-
             base.ConfigureDatabase(services);
         }
     }
