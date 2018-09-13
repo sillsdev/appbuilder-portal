@@ -5,3 +5,6 @@ files:
       locale:
         es-PE: es-pe
         fr: fr-fr
+  - source: /source/OptimaJet.DWKit.StarterApplication/Metadata/Localization/base.json
+    translation: >-
+      /source/OptimaJet.DWKit.StarterApplication/Metadata/Localization/%locale%.json
