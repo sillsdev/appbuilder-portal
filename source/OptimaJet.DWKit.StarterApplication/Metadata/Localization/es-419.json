@@ -1,9 +1,33 @@
 {
-    "common": {
-        "dateFormat": "DD.MM.YYYY",
-        "timeFormat": "HH:mm"
-    },
-    "msg": {
-
-    }
+  "common": {
+    "dateFormat": "DD.MM.YYYY",
+    "timeFormat": "HH:mm"
+  },
+  "header": {
+    "currentUser_/admin": "Admin panel",
+    "currentUser_/account/logoff": "Logout"
+  },
+  "SIL_AppBuilders_Project_Approval": {
+    "header_approval_content": "Approval",
+    "input_UserName_label": "User Name",
+    "input_email_label": "Email",
+    "input_project_name_label": "Project Name",
+    "input_application_type_label": "Application Type",
+    "input_language_code_label": "Language Code",
+    "input_app_store_account_label": "App Store Account",
+    "input_default_language_label": "Default Language"
+  },
+  "SIL_AppBuilders_Readiness_Check": {
+    "header_readiness_check_content": "Readiness Check",
+    "checkbox_ip_attribution_label": "I have reviewed the Intellectual Property (IP) attributions guideline.",
+    "staticcontent_ip_attribution_guildelines_link_content": "<ul><li><a href=\"http://software.sil.org/scriptureappbuilder/service/checklist/\">Intellectual Property (IP) Attributions Guidelines</a></li></ul>",
+    "checkbox_app_build_label": "I have used {Application Name} on my computer to define and compile my app.  I have tested it and believe it is ready to publish widely.",
+    "checkbox_permission_label": "I have been given permission by my organization to publish the contents of the app.",
+    "checkbox_copyright_label": "I know who should be listed as copyright owners for the text and audio."
+  },
+  "login": {
+    "login_label": "Login",
+    "password_label": "Password",
+    "remember_label": "Remember"
+  }
 }
