@@ -19,15 +19,15 @@
   },
   "SIL_AppBuilders_Readiness_Check": {
     "header_readiness_check_content": "Disponibilidad",
-    "checkbox_ip_attribution_label": "I have reviewed the Intellectual Property (IP) attributions guideline.",
+    "checkbox_ip_attribution_label": "I revisado la guía de propiedad intelectual (PI).",
     "staticcontent_ip_attribution_guildelines_link_content": "<ul><li><a href=\"http://software.sil.org/scriptureappbuilder/service/checklist/\">Intellectual Property (IP) Attributions Guidelines</a></li></ul>",
     "checkbox_app_build_label": "I have used {Application Name} on my computer to define and compile my app.  I have tested it and believe it is ready to publish widely.",
     "checkbox_permission_label": "I have been given permission by my organization to publish the contents of the app.",
     "checkbox_copyright_label": "I know who should be listed as copyright owners for the text and audio."
   },
   "login": {
-    "login_label": "Login",
-    "password_label": "Password",
-    "remember_label": "Remember"
+    "login_label": "Ingresar",
+    "password_label": "Contraseña",
+    "remember_label": "Recordar"
   }
 }
