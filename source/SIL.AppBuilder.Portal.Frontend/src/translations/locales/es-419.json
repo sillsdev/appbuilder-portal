@@ -5,10 +5,19 @@
   "contactUs": "Contáctanos",
   "exampleForm": "Formulario de ejemplo",
   "updated": "Actualizado!",
+  "opensource": "Open Source",
+  "attributions": {
+    "title": "Proyecto Open Source usado en Scriptoria",
+    "subtitle": "Librerías usadas por la licencia"
+  },
   "common": {
     "search": "Buscar",
+    "noResults": "Sin resultados...",
     "change": "Cambiar",
-    "save": "Guardar"
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "name": "Nombre",
+    "abbreviation": "Abreviatura"
   },
   "auth": {
     "title": "Scriptoria",
@@ -66,9 +75,13 @@
     "addGroupButton": "Agrega un grupo",
     "basicTitle": "Información básica",
     "orgName": "Nombre de Organización",
-    "save": "Guardar"
+    "save": "Guardar",
+    "buildEngineUrl": "Build Engine URL",
+    "buildEngineApiAccessToken": "Build Engine API Access Token"
   },
-  "products": {},
+  "products": {
+
+  },
   "profile": {
     "title": "Perfil",
     "pictureTitle": "Imagen de Perfil",
@@ -82,8 +95,8 @@
     "email": "Correo Electrónico",
     "phone": "Teléfono",
     "location": "Localidad",
-    "locale": "Idioma",
     "timezone": "Zona horaria",
+    "locale": "Idioma",
     "timezonePlaceholder": "Selecciona tu zona horaria...",
     "notificationSettingsTitle": "Configuración de Notificaciones",
     "optOutOfEmailOption": "Deseo recibir notificaciones por correo electrónico",
@@ -98,9 +111,16 @@
     }
   },
   "errors": {
+    "generic": "An error occurred! {errorMessage}",
+    "notAuthorized": "You must login. This could be due to a prior login expiring.",
     "notFoundTitle": "No encontrado!",
     "notFoundDescription": "Algo salió mal y no pudimos encontrar esta página o recursos!",
-    "userForbidden": "Ocurrió un error: Prohibido. Contácte con su administrador"
+    "groupRequired": "You must be a member of at least one group.",
+    "userForbidden": "Ocurrió un error: Prohibido. Contácte con su administrador",
+    "notAMemberOfOrg": "You are not a member of that organization",
+    "orgMembershipRequired": "Organization Membership is Required",
+    "orgMembershipRequiredText": "\n      In order to use Scriptoria, you must be a member of at least one organization.\n      <br /><br />\n      Please contact your organization administrator to discuss receiving an invite to\n      an organization on Scriptoria.\n    ",
+    "orgMustBeSelected": "An organization must be selected to view this page"
   },
   "tasks": {
     "title": "Mis tareas",
@@ -123,13 +143,17 @@
         "myProjects": "Mis Projectos",
         "archived": "Proyectos archivados"
       }
-    },
-    "noneFound": "No projects matching the selected criteria were found.",
-    "table": {
-      "columns": {}
     }
   },
   "project": {
+    "title": "Proyecto",
+    "newProject": "Nuevo Proyecto",
+    "projectName": "Nombre de Proyecto",
+    "projectGroup": "Grupo del proyecto",
+    "languageCode": "Código de lenguaje",
+    "type": "Tipo",
+    "visibilityLabel": "Público",
+    "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesibles por otras organizaciones",
     "createdOn": "Creado",
     "overview": "Información",
     "dropdown": {
@@ -165,18 +189,42 @@
       "projectGroup": "Grupo del projecto",
       "reviewers": {
         "title": "Revisores",
-        "add": "Agregar revisor"
+        "add": "Agregar revisor",
+        "close": "cerrar",
+        "form": {
+          "name": "nombre",
+          "nameError": "Nombre no puede estar vacío",
+          "email": "correo electrónico",
+          "emptyEmailError": "Correo electrónico no puede estar vacío",
+          "invalidEmailError": "Dirección de correo electrónico no válida",
+          "submit": "Agregar revisor"
+        }
       }
     },
     "operations": {
       "archive": {
         "success": "Proyecto archivado",
         "error": "Ocurrió un error al tratar de archivar un proyecto"
+      },
+      "reactivate": {
+        "success": "Proyecto reactivado",
+        "error": "Hubo un error tratando de reactivar el proyecto"
+      },
+      "automaticBuilds": {
+        "on": "Contrucción automática activa",
+        "off": "Contrucción automática desactivada",
+        "error": "Error: We could not change automatic build status"
+      },
+      "allowDownloads": {
+        "on": "Permitir descargar activa",
+        "off": "Permitir descargas desactivada",
+        "error": "Error: We could not change Allow Download status"
       }
     }
   },
   "users": {
-    "title": "Manage Users",
+    "noneFound": "No users matching the selected criteria were found.",
+    "title": "Administración de usuarios",
     "table": {
       "columns": {
         "name": "Nombre",
