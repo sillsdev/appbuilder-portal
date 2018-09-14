@@ -22,7 +22,7 @@ export type IProps =
   & WithDataProps
   & i18nProps;
 
-const translationMap = {'en-US': 'en','es-PE': 'es'};
+const translationMap = {'en-US': 'en','es-419': 'es'};
 
 class LocaleSelect extends React.Component<IProps> {
 
