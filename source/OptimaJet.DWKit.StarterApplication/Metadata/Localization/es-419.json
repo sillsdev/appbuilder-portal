@@ -1,6 +1,6 @@
 {
   "common": {
-    "dateFormat": "DD.MM.YYYY",
+    "dateFormat": "DD.MM.AAAA",
     "timeFormat": "HH:mm"
   },
   "header": {
