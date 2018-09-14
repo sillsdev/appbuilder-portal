@@ -76,8 +76,8 @@
     "basicTitle": "Información básica",
     "orgName": "Nombre de Organización",
     "save": "Guardar",
-    "buildEngineUrl": "Build Engine URL",
-    "buildEngineApiAccessToken": "Build Engine API Access Token"
+    "buildEngineUrl": "URL del motor de construcción",
+    "buildEngineApiAccessToken": "Token de acceso del motor de construcción"
   },
   "products": {
 
@@ -111,16 +111,16 @@
     }
   },
   "errors": {
-    "generic": "An error occurred! {errorMessage}",
-    "notAuthorized": "You must login. This could be due to a prior login expiring.",
+    "generic": "¡Se ha producido un error! {errorMessage}",
+    "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a un inicio de sesión previo que expiró.",
     "notFoundTitle": "No encontrado!",
     "notFoundDescription": "Algo salió mal y no pudimos encontrar esta página o recursos!",
-    "groupRequired": "You must be a member of at least one group.",
+    "groupRequired": "Debe ser un miembro de al menos un grupo.",
     "userForbidden": "Ocurrió un error: Prohibido. Contácte con su administrador",
-    "notAMemberOfOrg": "You are not a member of that organization",
-    "orgMembershipRequired": "Organization Membership is Required",
-    "orgMembershipRequiredText": "\n      In order to use Scriptoria, you must be a member of at least one organization.\n      <br /><br />\n      Please contact your organization administrator to discuss receiving an invite to\n      an organization on Scriptoria.\n    ",
-    "orgMustBeSelected": "An organization must be selected to view this page"
+    "notAMemberOfOrg": "No es un miembro de esa organización",
+    "orgMembershipRequired": "Se requiere ser miembro de la organización",
+    "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Póngase en contacto con el administrador de la organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
+    "orgMustBeSelected": "Debe seleccionarse una organización para visualizar esta página"
   },
   "tasks": {
     "title": "Mis tareas",
@@ -213,17 +213,17 @@
       "automaticBuilds": {
         "on": "Contrucción automática activa",
         "off": "Contrucción automática desactivada",
-        "error": "Error: We could not change automatic build status"
+        "error": "Error: No pudimos cambiar el estado de \"construcción automática\""
       },
       "allowDownloads": {
         "on": "Permitir descargar activa",
         "off": "Permitir descargas desactivada",
-        "error": "Error: We could not change Allow Download status"
+        "error": "Error: No pudimos cambiar el estado de \"permitir descargas\""
       }
     }
   },
   "users": {
-    "noneFound": "No users matching the selected criteria were found.",
+    "noneFound": "No pudimos encontrar ninún usuario usando esos criterios de búsqueda.",
     "title": "Administración de usuarios",
     "table": {
       "columns": {
