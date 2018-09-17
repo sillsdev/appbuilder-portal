@@ -1,20 +1,17 @@
 import * as React from 'react';
 
-import * as moment from 'moment';
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+
 import { Tab, Dropdown, Icon } from 'semantic-ui-react';
 
-import { TYPE_NAME, ProjectAttributes } from '@data/models/project';
-import { withCurrentUser } from '@data/containers/with-current-user';
+import { ProjectAttributes } from '@data/models/project';
+import { withCurrentUser, IProvidedProps } from '@data/containers/with-current-user';
 import { withLayout } from '@ui/components/layout';
-import { requireAuth } from '@lib/auth';
 
 import Details from './details';
 import Products from './products';
 import Settings from './settings';
-import Location from './location';
 import Owners from './owners';
 import Reviewers from './reviewers';
 import { withData } from './with-data';
@@ -25,7 +22,9 @@ import { withAccessRestriction } from './with-access-restriction';
 import './project.scss';
 import { ResourceObject } from 'jsonapi-typescript';
 import { PROJECTS_TYPE } from '@data';
-import { withTranslations } from '@lib/i18n';
+import { withTranslations, i18nProps } from '@lib/i18n';
+import { attributesFor } from '@data/helpers';
+import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
 
 export const pathName = '/project/:id';
 
@@ -35,7 +34,6 @@ export interface Params {
 
 interface PassedProps {
   match: Match<Params>;
-  timeAgo: any;
   toggleArchiveProject: (project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>) => void;
 }
 
@@ -46,7 +44,8 @@ interface QueriedProps {
 export type IProps =
   & PassedProps
   & QueriedProps
-  & i18nProps;
+  & i18nProps
+  & ITimeProps;
 
 class Project extends React.Component<IProps> {
 
@@ -84,13 +83,18 @@ class Project extends React.Component<IProps> {
   }
 
   render() {
-    const { project, t, timeAgo } = this.props;
+    const { project, t, moment, timezone } = this.props;
 
     if (!project || !project.attributes) {
       return null;
     }
 
-    const { name, dateCreated, dateArchived } = project.attributes;
+    const { name, dateCreated, dateArchived } = attributesFor(project);
+
+    const toggleText = !dateArchived ?
+      t('project.dropdown.archive') :
+      t('project.dropdown.reactivate')
+
 
     return (
       <div className='ui container project-details' data-test-project>
@@ -101,7 +105,7 @@ class Project extends React.Component<IProps> {
               <div className='subtitle'>
                 <span>Public</span><span className='dot-space font-normal'>.</span>
                 <span className='font-normal'>{t('project.createdOn')} </span>
-                <span>{moment(dateCreated).fromNow()}</span>
+                <span>{moment.tz(dateCreated, timezone).fromNow()}</span>
               </div>
             </div>
             <div className='flex-shrink' style={{ paddingTop: '20px'}}>
@@ -116,7 +120,7 @@ class Project extends React.Component<IProps> {
                   <Dropdown.Item text={t('project.dropdown.transfer')} />
                   <Dropdown.Item
                     data-test-archive
-                    text={!dateArchived ? t('project.dropdown.archive') : t('project.dropdown.reactivate')}
+                    text={toggleText}
                     onClick={this.toggleArchivedProject}
                   />
                 </Dropdown.Menu>
@@ -136,7 +140,7 @@ export default compose(
   withTranslations,
   // requireAuth,
   withLayout,
-  withCurrentUser(),
+  withMomentTimezone,
   withData,
   withProjectOperations,
   withAccessRestriction

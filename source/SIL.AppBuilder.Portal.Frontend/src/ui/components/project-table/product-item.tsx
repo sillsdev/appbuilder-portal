@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 
 import ProductIcon from '@ui/components/product-icon';
 import { ResourceObject } from 'jsonapi-typescript';
@@ -8,17 +9,37 @@ import { attributesFor } from '@data/helpers';
 
 import { IProvidedProps } from './withTableColumns';
 import Column from './column';
+import { withTranslations } from '@lib/i18n';
+import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
 
 interface IOwnProps {
   product: ResourceObject<PRODUCTS_TYPE, ProductAttributes>;
 }
 
-class ProductItem extends React.Component<IOwnProps & IProvidedProps> {
+type IProps =
+  & IOwnProps
+  & IProvidedProps
+  & TimeProps
+
+class ProductItem extends React.Component<IProps> {
 
   render() {
 
-    const { product, isInSelectedColumns, columnWidth } = this.props;
-    const { name } = attributesFor(product);
+    const {
+      product,
+      isInSelectedColumns,
+      columnWidth,
+      moment,
+      timezone
+    } = this.props;
+
+    const {
+      name,
+      buildVersion,
+      buildDate,
+      createdOn,
+      updatedOn
+    } = attributesFor(product);
 
     const columnStyle = {
       width: `${columnWidth()}%`
@@ -31,25 +52,25 @@ class ProductItem extends React.Component<IOwnProps & IProvidedProps> {
           {name}
         </div>
         <Column
-          value='v1.0.0'
+          value={buildVersion}
           className='col flex-grow-xs w-100-xs-only'
           display={isInSelectedColumns('buildVersion')}
           style={columnStyle}
         />
         <Column
-          value='2018-06-21'
+          value={moment.tz(buildDate, timezone).format('L')}
           className='col flex-grow-xs w-100-xs-only'
           display={isInSelectedColumns('buildDate')}
           style={columnStyle}
         />
         <Column
-          value='2018-04-21'
+          value={moment.tz(createdOn, timezone).format('L')}
           className='col flex-grow-xs w-100-xs-only'
           display={isInSelectedColumns('createdOn')}
           style={columnStyle}
         />
         <Column
-          value='2018-04-22'
+          value={moment.tz(updatedOn, timezone).format('L')}
           className='col flex-grow-xs w-100-xs-only'
           display={isInSelectedColumns('updatedOn')}
           style={columnStyle}
@@ -61,4 +82,7 @@ class ProductItem extends React.Component<IOwnProps & IProvidedProps> {
 
 }
 
-export default ProductItem;
+export default compose(
+  withTranslations,
+  withMomentTimezone
+)(ProductItem);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 export interface IOwnProps {
-  value: string;
+  value: any;
   className?: string;
   style?: object;
   display: boolean;

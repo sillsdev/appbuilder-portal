@@ -6,7 +6,7 @@ import { defaultOptions, NotificationResource } from '@data';
 import { compose } from 'recompose';
 import { requireProps } from '@lib/debug';
 
-interface IProvidedProps {
+export interface IProvidedProps {
   clear: () => Promise<void>;
   markAsSeen: () => Promise<void>;
 }
