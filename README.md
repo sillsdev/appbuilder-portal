@@ -6,6 +6,16 @@ This process requires the coordination of user activites, project data, automate
 
 This process also requires management of resources to store project data (AWS CodeCommit), generate artifacts from project data (AWS CodeBuild), and store artifacts for distribution (AWS S3).  These resources are managed by an instance of [AppBuilder BuildEngine](https://github.com/sillsdev/appbuilder-buildengine-api).
 
+## Special Thanks
+
+For localization management:
+
+[<img src="readme_images/crowdin-logo.png" width="200">](https://crowdin.com)
+
+For error reporting:
+
+[<img src="readme_images/bugsnag-logo.png" width="200">](https://bugsnag.com/blog/bugsnag-loves-open-source)
+
 ## Status
 
 [![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
