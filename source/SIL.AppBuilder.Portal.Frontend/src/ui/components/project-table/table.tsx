@@ -6,7 +6,7 @@ import Row from './row';
 import { ProjectAttributes } from '@data/models/project';
 import { ResourceObject } from 'jsonapi-typescript';
 import { PROJECTS_TYPE } from '@data';
-import { withTableColumns, IProvidedProps } from './withTableColumns';
+import { IProvidedProps } from './withTableColumns';
 
 interface IOwnProps {
   projects: Array<ResourceObject<PROJECTS_TYPE, ProjectAttributes>>;
@@ -60,14 +60,4 @@ class Table extends React.Component<IProps> {
 
 }
 
-export default compose(
-  withTableColumns({
-    tableName: 'directory',
-    defaultColumns: [
-      { id: 'organization', type: 'header'},
-      { id: 'language', type: 'header'},
-      { id: 'buildVersion', type: 'product'},
-      { id: 'updatedOn', type: 'product'}
-    ]
-  })
-)(Table);
+export default Table;

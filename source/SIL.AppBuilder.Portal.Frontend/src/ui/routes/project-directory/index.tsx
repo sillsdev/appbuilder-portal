@@ -25,7 +25,8 @@ import { withNetwork as withProjects } from '@data/containers/resources/project/
 import { withFiltering, IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
 import { setCurrentOrganization } from '@store/data';
 
-import { Table, IDataProps } from '@ui/components/project-table';
+import { IDataProps } from '@ui/components/project-table';
+import Table from './table';
 import { withLayout } from '@ui/components/layout';
 import { ErrorMessage } from '@ui/components/errors';
 import ProjectSearch from '@ui/components/project-search';
