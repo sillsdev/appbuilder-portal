@@ -19,7 +19,7 @@ interface IOwnProps {
 type IProps =
   & IOwnProps
   & IProvidedProps
-  & TimeProps
+  & TimeProps;
 
 class ProductItem extends React.Component<IProps> {
 

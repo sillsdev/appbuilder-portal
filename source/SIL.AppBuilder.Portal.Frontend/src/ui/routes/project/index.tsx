@@ -93,7 +93,7 @@ class Project extends React.Component<IProps> {
 
     const toggleText = !dateArchived ?
       t('project.dropdown.archive') :
-      t('project.dropdown.reactivate')
+      t('project.dropdown.reactivate');
 
 
     return (

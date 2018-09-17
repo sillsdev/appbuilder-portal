@@ -7,8 +7,8 @@ import { withTranslations } from './i18n';
 import { attributesFor } from '../data/helpers';
 
 export interface IProvidedProps {
-  moment: moment.Moment,
-  timezone: string
+  moment: moment.Moment;
+  timezone: string;
 }
 
 export function withMomentTimezone(WrappedComponent) {
@@ -25,7 +25,7 @@ export function withMomentTimezone(WrappedComponent) {
       const timeProps = {
         moment,
         timezone
-      }
+      };
 
       return <WrappedComponent {...this.props} {...timeProps} />;
     }
