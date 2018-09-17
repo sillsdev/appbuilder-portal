@@ -220,6 +220,18 @@
       }
     }
   },
+  "projectTable": {
+    "columns": {
+      "owner": "Owner",
+      "organization": "Organization",
+      "language": "Language",
+      "group": "Group",
+      "buildVersion": "Build Version",
+      "buildDate": "Build Date",
+      "createdOn": "Created On",
+      "updatedOn": "Updated On"
+    }
+  },
   "users": {
     "noneFound": "No users matching the selected criteria were found.",
     "title": "Manage Users",

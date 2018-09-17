@@ -16,11 +16,9 @@
   }
 
   .header {
-
     font-weight: bold;
     border-bottom: 2px solid $gray;
     background: transparent;
-
   }
 
   .row-header {
@@ -35,15 +33,15 @@
   .grid {
 
     .col {
-      width: 32%;
       padding: .92857143em .78571429em;
     }
     .action {
-      padding: .92857143em .78571429em;
+      width: 40px;
+      padding: .92857143em 0 !important;
       text-align: center;
 
       i {
-        margin: 0;
+        margin: 0 !important;
       }
     }
   }
@@ -53,8 +51,6 @@
     border-bottom-right-radius: 4px;
     background-color: $white;
     border: solid 1px $lighterer-gray;
-    padding-left: 14px;
-    padding-right: 14px;
 
     .products-header {
       font-family: Montserrat;
@@ -78,6 +74,17 @@
 
     i {
       opacity: 0.5;
+    }
+  }
+
+  .columns-dropdown {
+    padding: 0 !important;
+    font-size: 1.5em !important;
+
+    .menu > .item {
+      padding: 14px 95px 14px 14px !important;
+      text-align: left;
+      border-bottom: 1px solid $border-color;
     }
   }
 
