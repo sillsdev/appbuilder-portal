@@ -6,9 +6,11 @@ This process requires the coordination of user activites, project data, automate
 
 This process also requires management of resources to store project data (AWS CodeCommit), generate artifacts from project data (AWS CodeBuild), and store artifacts for distribution (AWS S3).  These resources are managed by an instance of [AppBuilder BuildEngine](https://github.com/sillsdev/appbuilder-buildengine-api).
 
-## Build Status
+## Status
 
 [![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
+
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/scriptoria/localized.svg)](https://crowdin.com/project/scriptoria)
 
 ## Deployment
 
