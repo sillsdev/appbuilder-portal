@@ -224,14 +224,14 @@
   },
   "projectTable": {
     "columns": {
-      "owner": "Owner",
-      "organization": "Organization",
-      "language": "Language",
-      "group": "Group",
-      "buildVersion": "Build Version",
-      "buildDate": "Build Date",
-      "createdOn": "Created On",
-      "updatedOn": "Updated On"
+      "owner": "Propietario",
+      "organization": "Organización",
+      "language": "Idioma",
+      "group": "Grupo",
+      "buildVersion": "Versión",
+      "buildDate": "Fecha de compilación",
+      "createdOn": "Fecha Creación",
+      "updatedOn": "Actualizado en"
     }
   },
   "users": {
