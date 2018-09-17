@@ -22,7 +22,7 @@ class ProductItem extends React.Component<IOwnProps & IProvidedProps> {
 
     const columnStyle = {
       width: `${columnWidth()}%`
-    }
+    };
 
     return (
       <div className='flex flex-column-xs flex-row-md grid product'>

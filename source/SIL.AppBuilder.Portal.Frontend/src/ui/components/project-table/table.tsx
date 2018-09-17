@@ -36,7 +36,7 @@ class Table extends React.Component<IProps> {
       updateColumnSelection,
       isInSelectedColumns,
       columnWidth
-    }
+    };
 
     return (
       <div className='project-table'>
@@ -49,9 +49,9 @@ class Table extends React.Component<IProps> {
               selectedColumns,
               isInSelectedColumns,
               columnWidth
-            }
+            };
 
-            return <Row key={index} {...rowProps} />
+            return <Row key={index} {...rowProps} />;
           })
         }
       </div>

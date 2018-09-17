@@ -6,12 +6,12 @@ export interface SetColumnSelectionAction {
   type: string;
   payload: {
     tableName: string;
-    columns: Array<Column>;
-  }
+    columns: Column[];
+  };
 }
 
 // Action Creator
-export const setColumnSelection = (tableName: string, columns: Array<Column>): SetColumnSelectionAction => ({
+export const setColumnSelection = (tableName: string, columns: Column[]): SetColumnSelectionAction => ({
   type: SET_COLUMN_SELECTION,
   payload: {
     tableName,
@@ -27,6 +27,6 @@ export const reducer = (state: State, action: SetColumnSelectionAction) => {
     columnSelections: {
       [action.payload.tableName]: action.payload.columns
     }
-  }
+  };
 
 };

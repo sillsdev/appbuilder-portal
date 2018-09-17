@@ -2,11 +2,11 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 
-import { setColumnSelection, Column } from '@store/data';
+import { setColumnSelection as setColumnSelectionData, Column } from '@store/data';
 
 export interface IProvidedProps {
-  columns?: Array<Column>;
-  selectedColumns?: Array<Column>;
+  columns?: Column[];
+  selectedColumns?: Column[];
   updateColumnSelection?: (column) => void;
   isInSelectedColumns?: (columnId) => boolean;
   columnWidth: (type?: string) => number;
@@ -14,7 +14,7 @@ export interface IProvidedProps {
 
 interface IProps {
   tableName: string;
-  defaultColumns: Array<Column>;
+  defaultColumns: Column[];
 }
 
 interface IDataProps {
@@ -32,7 +32,7 @@ export function withTableColumns(props: IProps) {
       && data.columnSelections[tableName] || defaultColumns;
 
     return {
-      selectedColumns: selectedColumns
+      selectedColumns
     };
   }
 
@@ -41,9 +41,9 @@ export function withTableColumns(props: IProps) {
     const { tableName } = props;
 
     return {
-      setColumnSelection: (column) => dispatch(setColumnSelection(tableName, column))
-    }
-  };
+      setColumnSelection: (column) => dispatch(setColumnSelectionData(tableName, column))
+    };
+  }
 
   return InnerComponent => {
 
@@ -68,7 +68,7 @@ export function withTableColumns(props: IProps) {
 
       isInSelectedColumns = (columnId) => {
         const { selectedColumns } = this.props;
-        return selectedColumns.find(c => c.id === columnId) != undefined;
+        return selectedColumns.find(c => c.id === columnId) !== undefined;
       }
 
       columnWidth = (type = 'header') => {
@@ -88,17 +88,17 @@ export function withTableColumns(props: IProps) {
           { id: 'buildDate', type: 'product'},
           { id: 'createdOn', type: 'product'},
           { id: 'updatedOn', type: 'product'}
-        ]
+        ];
 
-        const props = {
+        const innerProps = {
           ...this.props,
           columns,
           updateColumnSelection: this.updateColumnSelection,
           isInSelectedColumns: this.isInSelectedColumns,
           columnWidth: this.columnWidth
-        }
+        };
 
-        return <InnerComponent {...props} />
+        return <InnerComponent {...innerProps} />;
       }
 
     }
@@ -106,6 +106,6 @@ export function withTableColumns(props: IProps) {
     return compose(
       connect(mapStateToProps, mapDispatchToProps)
     )(WrapperComponent);
-  }
+  };
 
 }

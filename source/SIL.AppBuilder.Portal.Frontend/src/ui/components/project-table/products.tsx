@@ -23,7 +23,7 @@ class Products extends React.Component<IProvidedProps> {
 
     const columnStyle = {
       width: `${columnWidth()}%`
-    }
+    };
 
     return (
       <div className='products-grid'>
@@ -64,9 +64,9 @@ class Products extends React.Component<IProvidedProps> {
               product,
               isInSelectedColumns,
               columnWidth
-            }
+            };
 
-            return <ProductItem key={index} {...productItemProps} />
+            return <ProductItem key={index} {...productItemProps} />;
           })
         }
       </div>

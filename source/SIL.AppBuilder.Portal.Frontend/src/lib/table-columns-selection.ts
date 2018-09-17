@@ -13,11 +13,11 @@ const getSelections = () => {
     console.error(e);
   }
   return [];
-}
+};
 
 const setSelections = (selections) => {
   localStorage.setItem(storageKey,JSON.stringify(selections));
-}
+};
 
 export function getTableColumnsSelection(key:string): string {
   const tableColumnsSelections = getSelections();

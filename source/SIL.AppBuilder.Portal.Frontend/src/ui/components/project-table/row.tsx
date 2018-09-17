@@ -44,12 +44,12 @@ class Row extends React.Component<IProps & IProvidedProps> {
 
     const columnStyle = {
       width: `${columnWidth()}%`
-    }
+    };
 
     const productsProps = {
       isInSelectedColumns,
       columnWidth
-    }
+    };
 
     return (
       <div>
