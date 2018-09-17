@@ -17,7 +17,7 @@ class ColumnSelector extends React.Component<IProvidedProps & i18nProps> {
 
     return (
       <Dropdown
-        data-test-table-columns
+        data-test-project-table-columns-selector
         multiple
         className='columns-dropdown'
         icon={null}
@@ -26,7 +26,7 @@ class ColumnSelector extends React.Component<IProvidedProps & i18nProps> {
           <Icon name='dropdown' size='large' />
         }
       >
-        <Dropdown.Menu className='columns' data-test-multi-group-menu>
+        <Dropdown.Menu className='columns'>
           {
             columns && columns.map((column, index) => (
               <React.Fragment key={index}>
@@ -35,7 +35,7 @@ class ColumnSelector extends React.Component<IProvidedProps & i18nProps> {
                   onClick={this.onColumnClick(column)}
                 >
                   <Checkbox
-                    data-test-multi-group-checkbox
+                    data-test-project-table-columns-selector-item
                     value={column.id}
                     label={t(`projectTable.columns.${column.id}`)}
                     checked={isInSelectedColumns(column.id)}

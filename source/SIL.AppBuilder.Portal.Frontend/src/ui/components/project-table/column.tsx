@@ -15,7 +15,14 @@ class Column extends React.Component<IOwnProps> {
 
     const columnClassName = className ? className : 'col d-xs-none d-md-block';
 
-    return display && <div className={columnClassName} style={style}>{value}</div>;
+    return display &&
+      <div
+        data-test-project-table-column
+        className={columnClassName}
+        style={style}
+      >
+        {value}
+      </div>;
   }
 
 }

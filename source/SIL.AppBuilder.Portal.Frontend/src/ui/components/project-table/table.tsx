@@ -39,7 +39,7 @@ class Table extends React.Component<IProps> {
     };
 
     return (
-      <div className='project-table'>
+      <div data-test-project-table className='project-table'>
         <Header { ...headerProps} />
         {
           projects && projects.map((project, index) => {
