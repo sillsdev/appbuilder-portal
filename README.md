@@ -20,6 +20,10 @@ For error reporting:
 
 [<img src="readme_images/bugsnag-logo.png" width="200">](https://bugsnag.com/blog/bugsnag-loves-open-source)
 
+For email notification delivery:
+
+[<img src="readme_images/sparkpost-logo.png" width="200">](https://www.sparkpost.com/)
+
 ## Status
 
 [![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
