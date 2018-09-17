@@ -1,4 +1,12 @@
 # AppBuilder Portal
+## Description
+The `appbuilder-portal` is the portal frontend/backend for the Scriptoria project.  This project provides software to automate the building and publishing of apps (and other related content) to App Stores and websites.
+
+This process requires the coordination of user activites, project data, automated services, and administrative activities (e.g. managing App Store listings).  The process is defined and managed by a [DW KIT](https://dwkit.com) Workflow instance.  The portal provides organization, group, user, project, and product management and provides access to users and organizational admins to interact with the workflow activities.
+
+This process also requires management of resources to store project data (AWS CodeCommit), generate artifacts from project data (AWS CodeBuild), and store artifacts for distribution (AWS S3).  These resources are managed by an instance of [AppBuilder BuildEngine](https://github.com/sillsdev/appbuilder-buildengine-api).
+
+## Build Status
 
 [![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
 
