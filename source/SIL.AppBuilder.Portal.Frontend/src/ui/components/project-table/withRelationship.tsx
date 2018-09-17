@@ -9,7 +9,7 @@ export function withRelationship(relationshipName: string) {
     const { project } = passedProps;
 
     return {
-      organization: q => q.findRelatedRecord({ type: PROJECT, id: project.id }, relationshipName)
+      [relationshipName]: q => q.findRelatedRecord({ type: PROJECT, id: project.id }, relationshipName)
     };
   }
 
