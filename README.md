@@ -8,6 +8,10 @@ This process also requires management of resources to store project data (AWS Co
 
 ## Special Thanks
 
+For authentication and authorization services:
+
+[<img src="readme_images/auth0-logo-whitebg.png" width="200">](https://auth0.com)
+
 For localization management:
 
 [<img src="readme_images/crowdin-logo.png" width="200">](https://crowdin.com)
