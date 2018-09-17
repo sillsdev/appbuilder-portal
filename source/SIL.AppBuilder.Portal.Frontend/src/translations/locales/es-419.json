@@ -222,6 +222,18 @@
       }
     }
   },
+  "projectTable": {
+    "columns": {
+      "owner": "Owner",
+      "organization": "Organization",
+      "language": "Language",
+      "group": "Group",
+      "buildVersion": "Build Version",
+      "buildDate": "Build Date",
+      "createdOn": "Created On",
+      "updatedOn": "Updated On"
+    }
+  },
   "users": {
     "noneFound": "No pudimos encontrar ninún usuario usando esos criterios de búsqueda.",
     "title": "Administración de usuarios",
