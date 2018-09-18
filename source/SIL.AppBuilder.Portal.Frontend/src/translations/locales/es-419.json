@@ -175,18 +175,18 @@
       "title": "Configuración",
       "automaticRebuild": {
         "title": "Reconstrucciones automáticas",
-        "description": "Cuando esté activo, Scriptoria reconstruirá automáticamente tus productos cuando el código fuente se actualice."
+        "description": "Cuando las reconstrucciones automáticas está activada, Scriptoria reconstruirá sus productos automáticamente cuando el código fuente se actualice"
       },
       "organizationDownloads": {
-        "title": "Permitir decargas",
-        "description": "Cuando está activo, cualquier usuario de Scriptoria que encuentre el proyecto podrá descargarlo junto con sus artefactos"
+        "title": "Permitir descargar a otras organizaciones",
+        "description": "Cuando está configuración está activa, cualquier usuario de Scriptoria que pueda ver su proyecto en el directorio, podrá descargarlo junto con sus artefactos"
       }
     },
     "side": {
-      "repositoryLocation": "Link al Repositorio",
+      "repositoryLocation": "Ubicación del repositorio",
       "organization": "Organización",
-      "projectOwner": "Dueño del projecto",
-      "projectGroup": "Grupo del projecto",
+      "projectOwner": "Dueño del proyecto",
+      "projectGroup": "Grupo de proyecto",
       "reviewers": {
         "title": "Revisores",
         "add": "Agregar revisor",
