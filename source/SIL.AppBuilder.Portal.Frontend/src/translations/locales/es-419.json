@@ -5,9 +5,9 @@
   "contactUs": "Contáctanos",
   "exampleForm": "Formulario de ejemplo",
   "updated": "¡Actualizado!",
-  "opensource": "Open Source",
+  "opensource": "Código abierto",
   "attributions": {
-    "title": "Proyecto Open Source usado en Scriptoria",
+    "title": "Proyecto de código abierto usado en Scriptoria",
     "subtitle": "Librerías usadas por la licencia"
   },
   "common": {
@@ -34,13 +34,13 @@
     "myProfile": "Mi perfil",
     "help": "Ayuda",
     "signOut": "Salir",
-    "clearAll": "Eliminar todas",
-    "emptyNotifications": "No tienes nuevas notificaciones."
+    "clearAll": "Limpiar todo",
+    "emptyNotifications": "No tienes notificaciones."
   },
   "sidebar": {
     "myTasks": "Mis tareas",
     "myProjects": "Mis Proyectos",
-    "organizationProjects": "Proyectos de Organización",
+    "organizationProjects": "Proyectos de organización",
     "users": "Usuarios",
     "organizationSettings": "Configuración de organización",
     "projectDirectory": "Directorio de proyectos",
