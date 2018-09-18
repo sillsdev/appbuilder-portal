@@ -185,7 +185,7 @@
     "side": {
       "repositoryLocation": "Ubicación del repositorio",
       "organization": "Organización",
-      "projectOwner": "Dueño del proyecto",
+      "projectOwner": "Propietario del proyecto",
       "projectGroup": "Grupo de proyecto",
       "reviewers": {
         "title": "Revisores",
@@ -204,20 +204,20 @@
     "operations": {
       "archive": {
         "success": "Proyecto archivado",
-        "error": "Ocurrió un error al tratar de archivar un proyecto"
+        "error": "Ocurrió un error al intentar archivar el proyecto"
       },
       "reactivate": {
         "success": "Proyecto reactivado",
-        "error": "Hubo un error tratando de reactivar el proyecto"
+        "error": "Ocurrió un error al intentar reactivar el proyecto"
       },
       "automaticBuilds": {
-        "on": "Contrucción automática activa",
-        "off": "Contrucción automática desactivada",
-        "error": "Error: No pudimos cambiar el estado de \"construcción automática\""
+        "on": "Compilaciones automáticas está activada",
+        "off": "Compilaciones automáticas está desactivada",
+        "error": "Error: No pudimos cambiar el estado de \"compilación automática\""
       },
       "allowDownloads": {
-        "on": "Permitir descargar activa",
-        "off": "Permitir descargas desactivada",
+        "on": "Permitir descarga de proyecto está activada",
+        "off": "Permitir descarga de proyecto está desactivada",
         "error": "Error: No pudimos cambiar el estado de \"permitir descargas\""
       }
     }
@@ -228,30 +228,30 @@
       "organization": "Organización",
       "language": "Idioma",
       "group": "Grupo",
-      "buildVersion": "Versión",
+      "buildVersion": "Versión de compilación",
       "buildDate": "Fecha de compilación",
-      "createdOn": "Fecha Creación",
-      "updatedOn": "Fecha de Actualización"
+      "createdOn": "Fecha de creación",
+      "updatedOn": "Fecha de actualización"
     }
   },
   "users": {
-    "noneFound": "No pudimos encontrar ninún usuario usando esos criterios de búsqueda.",
-    "title": "Administración de usuarios",
+    "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
+    "title": "Administrar usuarios",
     "table": {
       "columns": {
         "name": "Nombre",
         "role": "Rol",
-        "groups": "Grupo",
+        "groups": "Grupos",
         "active": "Activo"
       }
     },
     "operations": {
       "lock": {
-        "success": "Usuario inactivo",
-        "error": "Hubo un error al desactivar al usuario"
+        "success": "Usuario bloqueado. Un usuario bloqueado no podrá iniciar sesión en Scriptoria.",
+        "error": "Ocurrió un error al bloquear el usuario"
       },
       "unlock": {
-        "success": "Usuario activo",
+        "success": "Usuario activo. El usuario ahora podrá iniciar sesión en Scriptoria.",
         "error": "Hubo un error al activar al usuario"
       }
     }
