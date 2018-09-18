@@ -18,7 +18,7 @@
     "input_default_language_label": "Lenguaje por defecto"
   },
   "SIL_AppBuilders_Readiness_Check": {
-    "header_readiness_check_content": "Disponibilidad",
+    "header_readiness_check_content": "Chequeo de preparación",
     "checkbox_ip_attribution_label": "I revisado la guía de propiedad intelectual (PI).",
     "staticcontent_ip_attribution_guildelines_link_content": "<ul><li><a href=\"http://software.sil.org/scriptureappbuilder/service/checklist/\">Guía de atribuciones de propiedad intelectual (P.I.)</a></li></ul>",
     "checkbox_app_build_label": "He utilizado {Application Name} en mi computadora para definir y compilar mi aplicación. la he probado y creo que está lista para publicarla masivamente.",
