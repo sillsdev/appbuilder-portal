@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using JsonApiDotNetCore.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Models
@@ -20,14 +19,17 @@ namespace Optimajet.DWKit.StarterApplication.Models
         [Attr("date-updated")]
         public DateTime? DateUpdated { get; set; }
 
+        [Attr("workflow-job-id")]
+        public int WorkflowJobId { get; set; }
+
         [Attr("workflow-build-id")]
-        public string WorkflowBuildId { get; set; }
+        public int WorkflowBuildId { get; set; }
 
         [Attr("date-built")]
         public DateTime? DateBuilt { get; set; }
 
         [Attr("workflow-publish-id")]
-        public string WorkflowPublishId { get; set; }
+        public int WorkflowPublishId { get; set; }
 
         [Attr("date-published")]
         public DateTime? DatePublished { get; set; }
