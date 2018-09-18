@@ -101,26 +101,26 @@
     "notificationSettingsTitle": "Configuración de notificaciones",
     "optOutOfEmailOption": "Deseo recibir notificaciones por correo electrónico",
     "sshSettingsTitle": "Administrar claves personales SSH",
-    "sshKeyLabel": "Llave SSH Key",
-    "visibleProfile": "Visibilidad del Perfil",
+    "sshKeyLabel": "Clave SSH",
+    "visibleProfile": "Visibilidad del perfil",
     "noPhone": "Sin teléfono",
-    "noTimezone": "Usando el tiempo del servidor GMT-0",
+    "noTimezone": "(GMT-0)",
     "visibility": {
       "visible": "La información de mi perfil es pública",
-      "restricted": "La información de mi está restringida del público"
+      "restricted": "Mi información de perfil es restringida al público"
     }
   },
   "errors": {
-    "generic": "¡Se ha producido un error! {errorMessage}",
-    "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a un inicio de sesión previo que expiró.",
-    "notFoundTitle": "No encontrado!",
-    "notFoundDescription": "Algo salió mal y no pudimos encontrar esta página o recursos!",
+    "generic": "¡Ha ocurrido un error! {errorMessage}",
+    "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
+    "notFoundTitle": "\n¡No encontrado!",
+    "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
     "groupRequired": "Debe ser un miembro de al menos un grupo.",
-    "userForbidden": "Ocurrió un error: Prohibido. Contácte con su administrador",
+    "userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",
     "notAMemberOfOrg": "No es un miembro de esa organización",
     "orgMembershipRequired": "Se requiere ser miembro de la organización",
-    "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Póngase en contacto con el administrador de la organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
-    "orgMustBeSelected": "Debe seleccionarse una organización para visualizar esta página"
+    "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
+    "orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página"
   },
   "tasks": {
     "title": "Mis tareas",
