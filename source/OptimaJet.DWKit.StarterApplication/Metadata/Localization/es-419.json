@@ -19,10 +19,10 @@
   },
   "SIL_AppBuilders_Readiness_Check": {
     "header_readiness_check_content": "Chequeo de preparación",
-    "checkbox_ip_attribution_label": "I revisado la guía de propiedad intelectual (PI).",
-    "staticcontent_ip_attribution_guildelines_link_content": "<ul><li><a href=\"http://software.sil.org/scriptureappbuilder/service/checklist/\">Guía de atribuciones de propiedad intelectual (P.I.)</a></li></ul>",
-    "checkbox_app_build_label": "He utilizado {Application Name} en mi computadora para definir y compilar mi aplicación. la he probado y creo que está lista para publicarla masivamente.",
-    "checkbox_permission_label": "Mi organización me ha dado permiso para publicar el contenido de la aplicación.",
+    "checkbox_ip_attribution_label": "He revisado la guía de atribuciones de propiedad intelectual (PI).",
+    "staticcontent_ip_attribution_guildelines_link_content": "<ul><li><a href=\"http://software.sil.org/scriptureappbuilder/service/checklist/\">Guía de atribuciones de propiedad intelectual (PI)</a></li></ul>",
+    "checkbox_app_build_label": "He utilizado {Application Name} en mi computadora para definir y compilar mi aplicación. La he probado y creo que está lista para publicar masívamente.",
+    "checkbox_permission_label": "Tengo permiso de mi organización para publicar los contenidos de esta aplicación.",
     "checkbox_copyright_label": "Sé quien debería figurar como propietario(s) del copyright para el texto y el audio."
   },
   "login": {
