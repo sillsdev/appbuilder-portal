@@ -214,9 +214,11 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("ProjectId");
 
-                    b.Property<string>("WorkflowBuildId");
+                    b.Property<int>("WorkflowBuildId");
 
-                    b.Property<string>("WorkflowPublishId");
+                    b.Property<int>("WorkflowJobId");
+
+                    b.Property<int>("WorkflowPublishId");
 
                     b.HasKey("Id");
 
@@ -284,7 +286,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("Type");
 
-                    b.Property<string>("WorkflowProjectId");
+                    b.Property<int>("WorkflowProjectId");
 
                     b.HasKey("Id");
 

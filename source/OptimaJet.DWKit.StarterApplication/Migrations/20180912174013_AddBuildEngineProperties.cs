@@ -12,25 +12,34 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                 table: "Users",
                 nullable: true);
 
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<int>(
                 name: "WorkflowProjectId",
                 table: "Projects",
-                nullable: true);
+                nullable: false,
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "DateBuilt",
                 table: "Products",
                 nullable: true);
 
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<int>(
                 name: "WorkflowBuildId",
                 table: "Products",
-                nullable: true);
+                nullable: false,
+                defaultValue: 0);
 
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<int>(
+                name: "WorkflowJobId",
+                table: "Products",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.AddColumn<int>(
                 name: "WorkflowPublishId",
                 table: "Products",
-                nullable: true);
+                nullable: false,
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -49,6 +58,10 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
             migrationBuilder.DropColumn(
                 name: "WorkflowBuildId",
+                table: "Products");
+
+            migrationBuilder.DropColumn(
+                name: "WorkflowJobId",
                 table: "Products");
 
             migrationBuilder.DropColumn(

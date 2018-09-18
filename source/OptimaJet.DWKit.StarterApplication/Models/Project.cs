@@ -54,6 +54,6 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public bool AutomaticBuilds { get; set; } = true;
 
         [Attr("workflow-project-id")]
-        public string WorkflowProjectId { get; set; }
+        public int WorkflowProjectId { get; set; }
     }
 }
