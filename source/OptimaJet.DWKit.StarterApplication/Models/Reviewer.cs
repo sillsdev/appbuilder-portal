@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Optimajet.DWKit.StarterApplication.Models
+namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class Reviewer : Identifiable
     {

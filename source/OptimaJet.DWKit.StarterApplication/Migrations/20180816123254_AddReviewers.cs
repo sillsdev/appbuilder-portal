@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Optimajet.DWKit.StarterApplication.Migrations
+namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     public partial class AddReviewers : Migration
     {

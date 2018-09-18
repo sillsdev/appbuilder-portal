@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Optimajet.DWKit.StarterApplication.Exceptions
+namespace OptimaJet.DWKit.StarterApplication.Exceptions
 {
     public class PolicyCheckFailedException : Exception
     {

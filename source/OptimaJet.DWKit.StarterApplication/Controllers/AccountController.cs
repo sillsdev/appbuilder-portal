@@ -9,6 +9,7 @@ using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Security;
 using OptimaJet.DWKit.Core.View;
 using OptimaJet.DWKit.StarterApplication.Models;
+using User = OptimaJet.DWKit.Core.Security.User;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {

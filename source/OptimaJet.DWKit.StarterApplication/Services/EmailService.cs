@@ -3,7 +3,7 @@ using System.IO;
 using Bugsnag;
 using Hangfire;
 using Microsoft.Extensions.Options;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using Serilog;
 

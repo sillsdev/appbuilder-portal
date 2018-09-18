@@ -2,10 +2,10 @@ using System.Threading.Tasks;
 using JsonApiDotNetCore.Controllers;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 
-namespace Optimajet.DWKit.StarterApplication.Controllers
+namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     public class BaseController<T> : JsonApiController<T>  where T : class, IIdentifiable<int>
     {
