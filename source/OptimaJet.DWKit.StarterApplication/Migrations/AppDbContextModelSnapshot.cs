@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Optimajet.DWKit.StarterApplication.Data;
-using Optimajet.DWKit.StarterApplication.Models;
 
 namespace Optimajet.DWKit.StarterApplication.Migrations
 {
@@ -284,7 +283,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("Type");
 
-                    b.Property<string>("WorkflowProjectId");
+                    b.Property<int>("WorkflowProjectId");
 
                     b.HasKey("Id");
 
