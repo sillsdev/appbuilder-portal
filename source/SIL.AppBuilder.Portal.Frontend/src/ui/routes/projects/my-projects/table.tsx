@@ -8,11 +8,12 @@ import { withPagination } from '@data/containers/pagination';
 import { withFiltering } from '@data/containers/with-filtering';
 import { withLoader } from '@data/containers/with-loader';
 import { withNetwork } from '@data/containers/resources/project/list';
+import { withTableColumns } from '@ui/components/project-table/withTableColumns';
+import { withTableRows } from '@ui/components/project-table/with-table-rows';
 
 import { TYPE_NAME as PROJECT } from '@data/models/project';
 
 import Table from '@ui/components/project-table/table';
-import { withTableColumns } from '@ui/components/project-table/withTableColumns';
 
 import '@ui/components/project-table/project-table.scss';
 import { idFromRecordIdentity } from '@data';
@@ -49,4 +50,7 @@ export default compose(
       return result;
     }
   })),
+  withTableRows({
+    tableName: 'my-projects'
+  }),
 )(Table);

@@ -16,6 +16,7 @@ import RowActions from '@ui/components/project-table/row-actions';
 import { IProvidedProps } from './withTableColumns';
 import Products from './products';
 import Column from './column';
+import { Checkbox } from 'semantic-ui-react';
 
 export interface IProps {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
@@ -54,6 +55,11 @@ class Row extends React.Component<IProps & IProvidedProps> {
     return (
       <div>
         <div className='flex row-header grid'>
+          <div className='col selectable'>
+            <Checkbox
+              value={projectId}
+            />
+          </div>
           <div className='col flex-grow-xs' style={columnStyle}>
             <Link to={`/project/${projectId}`}>{projectName}</Link>
           </div>

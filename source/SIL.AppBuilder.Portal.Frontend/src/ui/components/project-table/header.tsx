@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { Checkbox } from 'semantic-ui-react';
 
-import { IProvidedProps } from './withTableColumns';
 import Column from './column';
 import ColumnSelector from './column-selector';
+import { IProvidedProps } from './withTableColumns';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {}
 
@@ -37,6 +38,11 @@ class Header extends React.Component<IProps> {
 
     return (
       <div className='flex header grid'>
+        <div className='col selectable'>
+          <Checkbox
+            value='all'
+          />
+        </div>
         <div className='flex justify-content-space-evenly flex-grow-xs'>
           <div className='col flex-grow-xs' style={columnStyle}>Project</div>
           <Column
