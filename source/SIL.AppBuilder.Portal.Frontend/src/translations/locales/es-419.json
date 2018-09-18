@@ -130,30 +130,30 @@
     "status": "Estado",
     "waitTime": "Tiempo de espera",
     "unclaimed": "[sin asignar]",
-    "noTasksTitle": "No hay tareas asignadas para ti.",
-    "noTasksDescription": "Las tareas que requieren tu atención aparecerán aqui.",
-    "reassign": "Asignar"
+    "noTasksTitle": "No tiene tareas asignadas.",
+    "noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
+    "reassign": "Reasignar"
   },
   "projects": {
     "switcher": {
-      "myProjects": "Mis Proyectos ({numProjects})",
+      "myProjects": "Mis proyectos ({numProjects})",
       "archived": "Archivados ({numProjects})",
       "dropdown": {
-        "orgProjects": "Projectos de organización",
-        "myProjects": "Mis Projectos",
+        "orgProjects": "Proyectos de organización",
+        "myProjects": "Mis Proyectos",
         "archived": "Proyectos archivados"
       }
     }
   },
   "project": {
     "title": "Proyecto",
-    "newProject": "Nuevo Proyecto",
-    "projectName": "Nombre de Proyecto",
-    "projectGroup": "Grupo del proyecto",
+    "newProject": "Nuevo proyecto",
+    "projectName": "Nombre de proyecto",
+    "projectGroup": "Grupo de proyecto",
     "languageCode": "Código de lenguaje",
     "type": "Tipo",
     "visibilityLabel": "Público",
-    "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesibles por otras organizaciones",
+    "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesible por otras organizaciones",
     "createdOn": "Creado",
     "overview": "Información",
     "dropdown": {
@@ -163,18 +163,18 @@
     },
     "details": {
       "title": "Detalles",
-      "language": "Lenguajes",
-      "type": "Tipo de Projecto"
+      "language": "Lenguaje",
+      "type": "Tipo de proyecto"
     },
     "products": {
       "title": "Productos",
-      "empty": "No tiene productos para este projecto.",
+      "empty": "No tiene productos para este proyecto.",
       "add": "agregar producto"
     },
     "settings": {
       "title": "Configuración",
       "automaticRebuild": {
-        "title": "Construcción automática",
+        "title": "Reconstrucciones automáticas",
         "description": "Cuando esté activo, Scriptoria reconstruirá automáticamente tus productos cuando el código fuente se actualice."
       },
       "organizationDownloads": {
