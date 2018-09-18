@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using JsonApiDotNetCore.Models;
 using Newtonsoft.Json;
 
-namespace Optimajet.DWKit.StarterApplication.Models
+namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class Email : Identifiable
     {

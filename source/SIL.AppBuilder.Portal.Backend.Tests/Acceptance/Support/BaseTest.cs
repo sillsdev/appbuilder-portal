@@ -10,8 +10,8 @@ using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Optimajet.DWKit.StarterApplication.Data;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication;
 using Xunit;
 

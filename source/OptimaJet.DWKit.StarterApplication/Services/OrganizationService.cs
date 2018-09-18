@@ -5,7 +5,7 @@ using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {

@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 
-namespace Optimajet.DWKit.StarterApplication.Controllers
+namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GroupsController : BaseController<Group>

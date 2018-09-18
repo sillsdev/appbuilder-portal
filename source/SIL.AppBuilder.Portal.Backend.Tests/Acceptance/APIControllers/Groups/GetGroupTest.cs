@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
-using Optimajet.DWKit.StarterApplication.Data;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.Models;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using Xunit;
 

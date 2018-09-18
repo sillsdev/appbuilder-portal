@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products

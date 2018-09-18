@@ -5,7 +5,7 @@ using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal.Query;
 using JsonApiDotNetCore.Services;
 using Microsoft.Extensions.Logging;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;

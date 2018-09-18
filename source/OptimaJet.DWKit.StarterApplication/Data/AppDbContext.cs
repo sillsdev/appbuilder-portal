@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 
-namespace Optimajet.DWKit.StarterApplication.Data
+namespace OptimaJet.DWKit.StarterApplication.Data
 {
     public class AppDbContext : DbContext
     {
