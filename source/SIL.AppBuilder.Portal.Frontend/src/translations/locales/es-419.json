@@ -69,14 +69,14 @@
     "navGroups": "Grupos",
     "navInfrastructure": "Infraestructura",
     "infrastructureTitle": "Infraestructura",
-    "useSilInfrastructureTitle": "Use la infraestructura de construcción AWS de SIL International",
+    "useSilInfrastructureTitle": "Use la infraestructura de compilación AWS de SIL International",
     "groupsTitle": "Grupos",
     "noGroups": "Su organización no tiene grupos",
     "addGroupButton": "Agregar grupo",
     "basicTitle": "Información básica",
     "orgName": "Nombre de organización",
     "save": "Guardar",
-    "buildEngineUrl": "URL del motor de construcción",
+    "buildEngineUrl": "URL del motor de compilación",
     "buildEngineApiAccessToken": "Token de acceso del motor de construcción"
   },
   "products": {
@@ -174,8 +174,8 @@
     "settings": {
       "title": "Configuración",
       "automaticRebuild": {
-        "title": "Reconstrucciones automáticas",
-        "description": "Cuando las reconstrucciones automáticas está activada, Scriptoria reconstruirá sus productos automáticamente cuando el código fuente se actualice"
+        "title": "Recompilaciones automáticas",
+        "description": "Cuando las recompilaciones automáticas están activadas, Scriptoria reconstruirá sus productos automáticamente cuando el código fuente se actualice"
       },
       "organizationDownloads": {
         "title": "Permitir descargar a otras organizaciones",
@@ -252,7 +252,7 @@
       },
       "unlock": {
         "success": "Usuario activo. El usuario ahora podrá iniciar sesión en Scriptoria.",
-        "error": "Hubo un error al activar al usuario"
+        "error": "ocurrió un error al activar el usuario"
       }
     }
   }
