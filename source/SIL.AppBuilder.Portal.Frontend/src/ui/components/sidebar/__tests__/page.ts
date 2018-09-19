@@ -9,7 +9,7 @@ export class SidebarInteractor {
 
   isSidebarVisible = isPresent('.is-sidebar-visible [data-test-sidebar]');
   isCloseButtonVisible = isHidden('[data-test-sidebar-close-button]');
-  isCloseButtonVisibleInResponsive = hasClass('[data-test-sidebar-close-button]','d-sm-none')
+  isCloseButtonVisibleInResponsive = hasClass('[data-test-sidebar-close-button]','d-sm-none');
 }
 
 export default new SidebarInteractor('[data-test-app-container]');

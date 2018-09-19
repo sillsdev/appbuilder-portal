@@ -20,7 +20,7 @@ const mapDispatchToProps = dispatch => {
   return {
     showSidebar: () => dispatch(showSidebarInStore()),
     hideSidebar: () => dispatch(hideSidebarInStore())
-  }
+  };
 };
 
 const SM_BREAKPOINT = 768;

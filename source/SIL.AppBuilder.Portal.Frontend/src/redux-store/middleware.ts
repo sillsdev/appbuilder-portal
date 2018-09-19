@@ -1,6 +1,6 @@
 import { Middleware, Store } from "redux";
 import createSagaMiddleWare from 'redux-saga';
-import logger from 'redux-logger'
+import logger from 'redux-logger';
 
 import { sagas } from './sagas';
 
