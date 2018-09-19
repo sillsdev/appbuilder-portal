@@ -26,9 +26,9 @@ class ProductItem extends React.Component<IOwnProps & IProvidedProps> {
 
     return (
       <div className='flex flex-column-xs flex-row-md grid product'>
-        <div className='col flex-grow-xs w-100-xs-only' style={columnStyle}>
+        <div className='col flex align-items-center flex-grow-xs w-100-xs-only' style={columnStyle}>
           <ProductIcon product={product} />
-          {name}
+          <span className='p-l-sm-xs'>{name}</span>
         </div>
         <Column
           value='v1.0.0'

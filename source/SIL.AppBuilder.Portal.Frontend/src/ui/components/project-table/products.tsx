@@ -29,7 +29,9 @@ class Products extends React.Component<IProvidedProps> {
       <div className='products-grid'>
         <div className='flex grid products-header'>
           <div className='flex justify-content-space-evenly flex-grow-xs'>
-            <div className='col flex-grow-xs product-xs-only' style={columnStyle}>Products</div>
+            <div className='col flex-grow-xs product-xs-only' style={columnStyle}>
+              Products
+            </div>
             <Column
               value='Version'
               className='col flex-grow-xs d-xs-none d-md-block'
