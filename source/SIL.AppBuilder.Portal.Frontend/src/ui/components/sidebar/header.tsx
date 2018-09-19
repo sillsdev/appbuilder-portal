@@ -60,7 +60,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
 
         <button
           data-test-sidebar-close-button
-          className='close'
+          className='close d-sm-none'
           onClick={closeSidebar}>
 
           <Icon name='close' size='large' />

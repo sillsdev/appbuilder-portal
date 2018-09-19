@@ -1,5 +1,6 @@
 import { Middleware, Store } from "redux";
 import createSagaMiddleWare from 'redux-saga';
+import logger from 'redux-logger'
 
 import { sagas } from './sagas';
 
@@ -10,5 +11,6 @@ export const setup = (store: Store<any>) => {
 };
 
 export const middleware: Middleware[] =  [
-  sagaMiddleware
+  sagaMiddleware,
+  logger
 ];

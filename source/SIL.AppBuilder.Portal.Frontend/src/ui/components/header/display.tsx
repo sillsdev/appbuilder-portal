@@ -15,7 +15,7 @@ import LocaleSelect from '@ui/components/inputs/locale-select';
 import './header.scss';
 
 export interface Props {
-  toggleSidebar: () => void;
+  showSidebar: () => void;
 }
 
 export type IProps =
@@ -32,16 +32,16 @@ class Header extends React.Component<IProps> {
   }
 
   render() {
-    const { history, toggleSidebar } = this.props;
+    const { history, showSidebar } = this.props;
 
     return (
       <Menu data-test-header-menu className='menu-navbar'>
         <Container>
-          <Menu.Item className='sidebar-button-item'>
+          <Menu.Item className='sidebar-button-item d-sm-none'>
             <Button
               data-test-header-sidebar-button
               className='sidebar-button'
-              onClick={toggleSidebar}>
+              onClick={showSidebar}>
               <Icon name='bars' size='large' />
             </Button>
           </Menu.Item>
