@@ -5,9 +5,9 @@
   "contactUs": "Contáctanos",
   "exampleForm": "Formulario de ejemplo",
   "updated": "¡Actualizado!",
-  "opensource": "Open Source",
+  "opensource": "Código abierto",
   "attributions": {
-    "title": "Proyecto Open Source usado en Scriptoria",
+    "title": "Proyecto de código abierto usado en Scriptoria",
     "subtitle": "Librerías usadas por la licencia"
   },
   "common": {
@@ -34,13 +34,13 @@
     "myProfile": "Mi perfil",
     "help": "Ayuda",
     "signOut": "Salir",
-    "clearAll": "Eliminar todas",
-    "emptyNotifications": "No tienes nuevas notificaciones."
+    "clearAll": "Limpiar todo",
+    "emptyNotifications": "No tienes notificaciones."
   },
   "sidebar": {
     "myTasks": "Mis tareas",
     "myProjects": "Mis Proyectos",
-    "organizationProjects": "Proyectos de Organización",
+    "organizationProjects": "Proyectos de organización",
     "users": "Usuarios",
     "organizationSettings": "Configuración de organización",
     "projectDirectory": "Directorio de proyectos",
@@ -49,34 +49,34 @@
   "invitations": {
     "orgPrompt": "¿Te gustaría registrar a tu organización?",
     "missingTokenTitle": "El token de invitación no existe",
-    "missingTokenPrompt": "Por favor revisa el link y prueba otra vez",
-    "orgInviteTitle": "Has sido invitado a crear una organización!",
-    "orgName": "Nombre de Organización",
-    "orgUrl": "URL del website de Organización",
-    "orgSubmit": "Agregar Organización"
+    "missingTokenPrompt": "Por favor revise el enlace y vuelva a intentarlo",
+    "orgInviteTitle": "¡Ud. ha sido invitado a crear una organización!",
+    "orgName": "Nombre de organización",
+    "orgUrl": "Dirección Web de la organización",
+    "orgSubmit": "Agregar organización"
   },
   "org": {
     "allOrganizations": "Todas las organizaciones",
-    "createSuccess": "Organización creada exitosamente!",
-    "settingsTitle": "Configuración de Organización",
-    "selectLogo": "Selecciona un logo",
-    "productsTitle": "Productos y publicaciones",
-    "makePrivateTitle": "Hacer privado al proyecto por defecto",
-    "makePrivateDescription": "\n      Cuando un proyecto es creado, por defecto es privado.\n      (Los proyectos privados no pueden ser visto por nadie fuera de tu organización)",
-    "productSelectTitle": "Selecciona todos los productos que quisieras estén disponibles para tu organización",
-    "navBasic": "Información Básica",
+    "createSuccess": "¡Organización creada exitosamente!",
+    "settingsTitle": "Configuración de organización",
+    "selectLogo": "Seleccionar logo",
+    "productsTitle": "Productos y Publicaciones",
+    "makePrivateTitle": "Hacer Proyectos públicos por defecto",
+    "makePrivateDescription": "\n      Cuando un proyecto es creado, será Público por defecto.\n      (Los proyectos privados no pueden ser visto por nadie fuera de su organización)",
+    "productSelectTitle": "Selecciona todos los productos que quisieras estén disponibles para su organización",
+    "navBasic": "Información básica",
     "navProducts": "Productos",
     "navGroups": "Grupos",
-    "navInfrastructure": "Infrastructura",
-    "infrastructureTitle": "Infrastructura",
-    "useSilInfrastructureTitle": "Usa la infraestructura de construcción SIL International - AWS",
+    "navInfrastructure": "Infraestructura",
+    "infrastructureTitle": "Infraestructura",
+    "useSilInfrastructureTitle": "Use la infraestructura de compilación AWS de SIL International",
     "groupsTitle": "Grupos",
-    "noGroups": "Tu organización no tiene grupos",
-    "addGroupButton": "Agrega un grupo",
+    "noGroups": "Su organización no tiene grupos",
+    "addGroupButton": "Agregar grupo",
     "basicTitle": "Información básica",
-    "orgName": "Nombre de Organización",
+    "orgName": "Nombre de organización",
     "save": "Guardar",
-    "buildEngineUrl": "URL del motor de construcción",
+    "buildEngineUrl": "URL del motor de compilación",
     "buildEngineApiAccessToken": "Token de acceso del motor de construcción"
   },
   "products": {
@@ -84,43 +84,43 @@
   },
   "profile": {
     "title": "Perfil",
-    "pictureTitle": "Imagen de Perfil",
+    "pictureTitle": "Imagen de perfil",
     "general": "General",
     "generalInformation": "Información general",
-    "updated": "Usuario actualizado correctamente!",
-    "updatePicture": "Actualiza tu image en Gravatar.com",
-    "uploadPicture": "Carga una nueva figura",
+    "updated": "¡Usuario actualizado correctamente!",
+    "updatePicture": "Actualize su imagen en Gravatar.com",
+    "uploadPicture": "Cargar una nueva imagen",
     "firstName": "Nombre",
     "lastName": "Apellido",
-    "email": "Correo Electrónico",
+    "email": "Correo electrónico",
     "phone": "Teléfono",
-    "location": "Localidad",
+    "location": "Ubicación",
     "timezone": "Zona horaria",
     "locale": "Idioma",
-    "timezonePlaceholder": "Selecciona tu zona horaria...",
-    "notificationSettingsTitle": "Configuración de Notificaciones",
+    "timezonePlaceholder": "Seleccione su zona horaria...",
+    "notificationSettingsTitle": "Configuración de notificaciones",
     "optOutOfEmailOption": "Deseo recibir notificaciones por correo electrónico",
-    "sshSettingsTitle": "Administra tus llaves personales SSH",
-    "sshKeyLabel": "Llave SSH Key",
-    "visibleProfile": "Visibilidad del Perfil",
+    "sshSettingsTitle": "Administrar claves personales SSH",
+    "sshKeyLabel": "Clave SSH",
+    "visibleProfile": "Visibilidad del perfil",
     "noPhone": "Sin teléfono",
-    "noTimezone": "Usando el tiempo del servidor GMT-0",
+    "noTimezone": "(GMT-0)",
     "visibility": {
       "visible": "La información de mi perfil es pública",
-      "restricted": "La información de mi está restringida del público"
+      "restricted": "Mi información de perfil es restringida al público"
     }
   },
   "errors": {
-    "generic": "¡Se ha producido un error! {errorMessage}",
-    "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a un inicio de sesión previo que expiró.",
-    "notFoundTitle": "No encontrado!",
-    "notFoundDescription": "Algo salió mal y no pudimos encontrar esta página o recursos!",
+    "generic": "¡Ha ocurrido un error! {errorMessage}",
+    "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
+    "notFoundTitle": "\n¡No encontrado!",
+    "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
     "groupRequired": "Debe ser un miembro de al menos un grupo.",
-    "userForbidden": "Ocurrió un error: Prohibido. Contácte con su administrador",
+    "userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",
     "notAMemberOfOrg": "No es un miembro de esa organización",
     "orgMembershipRequired": "Se requiere ser miembro de la organización",
-    "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Póngase en contacto con el administrador de la organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
-    "orgMustBeSelected": "Debe seleccionarse una organización para visualizar esta página"
+    "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
+    "orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página"
   },
   "tasks": {
     "title": "Mis tareas",
@@ -130,30 +130,30 @@
     "status": "Estado",
     "waitTime": "Tiempo de espera",
     "unclaimed": "[sin asignar]",
-    "noTasksTitle": "No hay tareas asignadas para ti.",
-    "noTasksDescription": "Las tareas que requieren tu atención aparecerán aqui.",
-    "reassign": "Asignar"
+    "noTasksTitle": "No tiene tareas asignadas.",
+    "noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
+    "reassign": "Reasignar"
   },
   "projects": {
     "switcher": {
-      "myProjects": "Mis Proyectos ({numProjects})",
+      "myProjects": "Mis proyectos ({numProjects})",
       "archived": "Archivados ({numProjects})",
       "dropdown": {
-        "orgProjects": "Projectos de organización",
-        "myProjects": "Mis Projectos",
+        "orgProjects": "Proyectos de organización",
+        "myProjects": "Mis Proyectos",
         "archived": "Proyectos archivados"
       }
     }
   },
   "project": {
     "title": "Proyecto",
-    "newProject": "Nuevo Proyecto",
-    "projectName": "Nombre de Proyecto",
-    "projectGroup": "Grupo del proyecto",
+    "newProject": "Nuevo proyecto",
+    "projectName": "Nombre de proyecto",
+    "projectGroup": "Grupo de proyecto",
     "languageCode": "Código de lenguaje",
     "type": "Tipo",
     "visibilityLabel": "Público",
-    "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesibles por otras organizaciones",
+    "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesible por otras organizaciones",
     "createdOn": "Creado",
     "overview": "Información",
     "dropdown": {
@@ -163,30 +163,30 @@
     },
     "details": {
       "title": "Detalles",
-      "language": "Lenguajes",
-      "type": "Tipo de Projecto"
+      "language": "Lenguaje",
+      "type": "Tipo de proyecto"
     },
     "products": {
       "title": "Productos",
-      "empty": "No tiene productos para este projecto.",
+      "empty": "No tiene productos para este proyecto.",
       "add": "agregar producto"
     },
     "settings": {
       "title": "Configuración",
       "automaticRebuild": {
-        "title": "Construcción automática",
-        "description": "Cuando esté activo, Scriptoria reconstruirá automáticamente tus productos cuando el código fuente se actualice."
+        "title": "Recompilaciones automáticas",
+        "description": "Cuando las recompilaciones automáticas están activadas, Scriptoria reconstruirá sus productos automáticamente cuando el código fuente se actualice"
       },
       "organizationDownloads": {
-        "title": "Permitir decargas",
-        "description": "Cuando está activo, cualquier usuario de Scriptoria que encuentre el proyecto podrá descargarlo junto con sus artefactos"
+        "title": "Permitir descargar a otras organizaciones",
+        "description": "Cuando está configuración está activa, cualquier usuario de Scriptoria que pueda ver su proyecto en el directorio, podrá descargarlo junto con sus artefactos"
       }
     },
     "side": {
-      "repositoryLocation": "Link al Repositorio",
+      "repositoryLocation": "Ubicación del repositorio",
       "organization": "Organización",
-      "projectOwner": "Dueño del projecto",
-      "projectGroup": "Grupo del projecto",
+      "projectOwner": "Propietario del proyecto",
+      "projectGroup": "Grupo de proyecto",
       "reviewers": {
         "title": "Revisores",
         "add": "Agregar revisor",
@@ -204,43 +204,55 @@
     "operations": {
       "archive": {
         "success": "Proyecto archivado",
-        "error": "Ocurrió un error al tratar de archivar un proyecto"
+        "error": "Ocurrió un error al intentar archivar el proyecto"
       },
       "reactivate": {
         "success": "Proyecto reactivado",
-        "error": "Hubo un error tratando de reactivar el proyecto"
+        "error": "Ocurrió un error al intentar reactivar el proyecto"
       },
       "automaticBuilds": {
-        "on": "Contrucción automática activa",
-        "off": "Contrucción automática desactivada",
-        "error": "Error: No pudimos cambiar el estado de \"construcción automática\""
+        "on": "Compilaciones automáticas está activada",
+        "off": "Compilaciones automáticas está desactivada",
+        "error": "Error: No pudimos cambiar el estado de \"compilación automática\""
       },
       "allowDownloads": {
-        "on": "Permitir descargar activa",
-        "off": "Permitir descargas desactivada",
+        "on": "Permitir descarga de proyecto está activada",
+        "off": "Permitir descarga de proyecto está desactivada",
         "error": "Error: No pudimos cambiar el estado de \"permitir descargas\""
       }
     }
   },
+  "projectTable": {
+    "columns": {
+      "owner": "Propietario",
+      "organization": "Organización",
+      "language": "Idioma",
+      "group": "Grupo",
+      "buildVersion": "Versión de compilación",
+      "buildDate": "Fecha de compilación",
+      "createdOn": "Fecha de creación",
+      "updatedOn": "Fecha de actualización"
+    }
+  },
   "users": {
-    "noneFound": "No pudimos encontrar ninún usuario usando esos criterios de búsqueda.",
-    "title": "Administración de usuarios",
+    "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
+    "title": "Administrar usuarios",
     "table": {
       "columns": {
         "name": "Nombre",
         "role": "Rol",
-        "groups": "Grupo",
+        "groups": "Grupos",
         "active": "Activo"
       }
     },
     "operations": {
       "lock": {
-        "success": "Usuario inactivo",
-        "error": "Hubo un error al desactivar al usuario"
+        "success": "Usuario bloqueado. Un usuario bloqueado no podrá iniciar sesión en Scriptoria.",
+        "error": "Ocurrió un error al bloquear el usuario"
       },
       "unlock": {
-        "success": "Usuario activo",
-        "error": "Hubo un error al activar al usuario"
+        "success": "Usuario activo. El usuario ahora podrá iniciar sesión en Scriptoria.",
+        "error": "ocurrió un error al activar el usuario"
       }
     }
   }

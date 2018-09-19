@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using JsonApiDotNetCore.Services;
 using JsonApiDotNetCore.Data;
-using Optimajet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.Data;
 using Xunit;
 using OptimaJet.DWKit.StarterApplication;
 using System.Net.Http.Headers;

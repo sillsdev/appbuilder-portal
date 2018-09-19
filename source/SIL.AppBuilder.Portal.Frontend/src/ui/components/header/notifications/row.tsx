@@ -1,22 +1,22 @@
 import * as React from 'react';
-import { InjectedTranslateProps as i18nProps } from 'react-i18next';
-
-
+import { compose } from 'recompose';
 import { Icon } from 'semantic-ui-react';
+
+import { attributesFor } from '@data/helpers';
+import { i18nProps } from '@lib/i18n';
 import { NotificationResource } from '@data';
 import { withDataActions, IProvidedProps as IDataProps } from '@data/containers/resources/notification/with-data-actions';
-import { compose } from 'recompose';
-import { withTimeAgo } from '@lib/with-time-ago';
+import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
 
 export interface IOwnProps {
-  timeAgo: any;
   notification: NotificationResource;
 }
 
 export type IProps =
   & IOwnProps
   & IDataProps
-  & i18nProps;
+  & i18nProps
+  & ITimeProps;
 
 class Row extends React.Component<IProps> {
   state = { visible: false };
@@ -48,10 +48,16 @@ class Row extends React.Component<IProps> {
   }
 
   render() {
-    const { timeAgo } = this.props;
-    const { notification } = this.props;
 
-    const { title, description, time, isViewed } = notification.attributes;
+    const { notification, moment, timezone } = this.props;
+
+    const {
+      title,
+      description,
+      time,
+      isViewed
+    } = attributesFor(notification);
+
     const viewState = isViewed ? 'seen' : 'not-seen';
 
     if (!notification.attributes.show) {
@@ -75,7 +81,7 @@ class Row extends React.Component<IProps> {
 
         <h4 className='title'>{title}</h4>
         <p className={!isViewed ? 'bold' : ''}>{description}</p>
-        <p className='time'>{timeAgo && timeAgo.format(time)}</p>
+        <p className='time'>{ moment.tz(time,timezone).fromNow() }</p>
       </div>
     );
 
@@ -83,6 +89,6 @@ class Row extends React.Component<IProps> {
 }
 
 export default compose(
-  withTimeAgo,
+  withMomentTimezone,
   withDataActions
 )(Row);

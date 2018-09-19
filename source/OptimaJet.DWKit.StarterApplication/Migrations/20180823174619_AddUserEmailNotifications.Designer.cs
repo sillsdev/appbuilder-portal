@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Optimajet.DWKit.StarterApplication.Data;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.Models;
 
-namespace Optimajet.DWKit.StarterApplication.Migrations
+namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20180823174619_AddUserEmailNotifications")]
@@ -22,7 +22,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                 .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.ApplicationType", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ApplicationType", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -34,7 +34,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("ApplicationTypes");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Email", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Email", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -59,7 +59,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("Emails");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Group", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Group", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -77,7 +77,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.GroupMembership", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.GroupMembership", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -95,7 +95,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("GroupMemberships");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Organization", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Organization", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -119,7 +119,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationInvite", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationInvite", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -135,7 +135,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("OrganizationInvites");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationInviteRequest", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationInviteRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -155,7 +155,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("OrganizationInviteRequests");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationMembership", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationMembership", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -173,7 +173,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("OrganizationMemberships");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationProductDefinition", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationProductDefinition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -191,7 +191,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("OrganizationProductDefinitions");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.ProductDefinition", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductDefinition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -213,7 +213,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("ProductDefinitions");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Project", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -251,7 +251,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Reviewer", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Reviewer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -269,7 +269,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("Reviewers");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.User", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -305,7 +305,7 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.WorkflowDefinition", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.WorkflowDefinition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -323,94 +323,94 @@ namespace Optimajet.DWKit.StarterApplication.Migrations
                     b.ToTable("WorkflowDefinitions");
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Group", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Group", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Owner")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Organization", "Owner")
                         .WithMany("Groups")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.GroupMembership", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.GroupMembership", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Group", "Group")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "User")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
                         .WithMany("GroupMemberships")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Organization", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Organization", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "Owner")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationMembership", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationMembership", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Organization")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Organization", "Organization")
                         .WithMany("OrganizationMemberships")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "User")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
                         .WithMany("OrganizationMemberships")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.OrganizationProductDefinition", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationProductDefinition", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Organization")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Organization", "Organization")
                         .WithMany("OrganizationProductDefinitions")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.ProductDefinition", "ProductDefinition")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ProductDefinition", "ProductDefinition")
                         .WithMany()
                         .HasForeignKey("ProductDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.ProductDefinition", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductDefinition", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.ApplicationType", "Type")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ApplicationType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId");
 
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.WorkflowDefinition", "Workflow")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.WorkflowDefinition", "Workflow")
                         .WithMany()
                         .HasForeignKey("WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Project", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Project", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Group", "Group")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Organization", "Organization")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Organization", "Organization")
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.User", "Owner")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Optimajet.DWKit.StarterApplication.Models.Reviewer", b =>
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Reviewer", b =>
                 {
-                    b.HasOne("Optimajet.DWKit.StarterApplication.Models.Project", "Project")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Project", "Project")
                         .WithMany("Reviewers")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade);

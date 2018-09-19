@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Optimajet.DWKit.StarterApplication.Models
+namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public enum ProfileVisibility
     {

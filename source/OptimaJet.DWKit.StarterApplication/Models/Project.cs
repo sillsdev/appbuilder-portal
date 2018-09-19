@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using JsonApiDotNetCore.Models;
 
-namespace Optimajet.DWKit.StarterApplication.Models
+namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class Project : Identifiable, ITrackDate
     {
@@ -54,6 +54,6 @@ namespace Optimajet.DWKit.StarterApplication.Models
         public bool AutomaticBuilds { get; set; } = true;
 
         [Attr("workflow-project-id")]
-        public string WorkflowProjectId { get; set; }
+        public int WorkflowProjectId { get; set; }
     }
 }

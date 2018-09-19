@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using Serilog;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Repositories;
-using Optimajet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.Data;
 using JsonApiDotNetCore.Data;
 using Microsoft.EntityFrameworkCore;
 

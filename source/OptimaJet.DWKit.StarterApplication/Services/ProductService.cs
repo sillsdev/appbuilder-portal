@@ -4,7 +4,7 @@ using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Forms.Products;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Internal;
 using OptimaJet.DWKit.StarterApplication.Repositories;

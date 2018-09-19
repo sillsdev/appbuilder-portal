@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using JsonApiDotNetCore.Models;
 
-namespace Optimajet.DWKit.StarterApplication.Models
+namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class OrganizationInviteRequest : Identifiable, ITrackDate
     {

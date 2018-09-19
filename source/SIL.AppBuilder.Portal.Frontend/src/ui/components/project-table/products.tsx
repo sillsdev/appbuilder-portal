@@ -8,11 +8,23 @@ import Column from './column';
 const products = [{
   id: '1',
   type: 'products',
-  attributes: { name: 'HTML' }
+  attributes: {
+    name: 'HTML',
+    buildVersion: '1.0.0',
+    buildDate: new Date(),
+    createdOn: new Date(),
+    updatedOn: new Date()
+  }
 },{
   id: '2',
   type: 'products',
-  attributes: { name: 'Android APK (Streaming Audio)' }
+    attributes: {
+      name: 'Android APK (Streaming Audio)',
+      buildVersion: '1.0.0',
+      buildDate: new Date(),
+      createdOn: new Date(),
+      updatedOn: new Date()
+    }
 }];
 
 class Products extends React.Component<IProvidedProps> {
@@ -29,7 +41,10 @@ class Products extends React.Component<IProvidedProps> {
       <div className='products-grid'>
         <div className='flex grid products-header'>
           <div className='flex justify-content-space-evenly flex-grow-xs'>
-            <div className='col flex-grow-xs product-xs-only' style={columnStyle}>
+            <div
+              className='col flex-grow-xs product-xs-only'
+              style={columnStyle}
+            >
               Products
             </div>
             <Column

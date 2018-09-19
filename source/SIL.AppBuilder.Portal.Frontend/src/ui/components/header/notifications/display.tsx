@@ -7,12 +7,7 @@ import { DataProps, ActionProps } from './data';
 
 import Row from './row';
 
-export interface Props {
-  timeAgo: any;
-}
-
 export type IProps =
-  & Props
   & DataProps
   & ActionProps
   & i18nProps;
@@ -43,8 +38,15 @@ class Notifications extends React.Component<IProps> {
 
   render() {
     const { t } = this.props;
-    const { notifications, haveAllNotificationsBeenSeen, isThereAtLeastOneNotificationToShow } = this.props;
-    const hasNotifications = notifications && notifications.length > 0 && isThereAtLeastOneNotificationToShow;
+
+    const {
+      notifications,
+      haveAllNotificationsBeenSeen,
+      isThereAtLeastOneNotificationToShow
+    } = this.props;
+
+    const hasNotifications = notifications &&
+      notifications.length > 0 && isThereAtLeastOneNotificationToShow;
 
     const isMenuVisible = this.state.visible ? 'visible' : '';
 

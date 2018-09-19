@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.Application;
 using React.AspNet;
-using Optimajet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.Data;
 using Bugsnag.AspNet.Core;
 using OptimaJet.DWKit.StarterApplication.Middleware;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;

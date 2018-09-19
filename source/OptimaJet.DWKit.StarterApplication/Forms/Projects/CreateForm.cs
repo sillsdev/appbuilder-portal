@@ -3,7 +3,7 @@ using System.Linq;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using Microsoft.EntityFrameworkCore;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
 using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;

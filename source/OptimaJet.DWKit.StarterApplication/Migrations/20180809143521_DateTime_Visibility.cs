@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Optimajet.DWKit.StarterApplication.Migrations
+namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     public partial class DateTime_Visibility : Migration
     {

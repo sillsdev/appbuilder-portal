@@ -3,7 +3,7 @@ using JsonApiDotNetCore.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Optimajet.DWKit.StarterApplication.Exceptions;
+using OptimaJet.DWKit.StarterApplication.Exceptions;
 using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Middleware

@@ -1,6 +1,6 @@
 ﻿using System;
-using Optimajet.DWKit.StarterApplication.Data;
-using Optimajet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.Models;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organizations
