@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Menu, Dropdown }  from 'semantic-ui-react';
-import { RouteComponentProps } from 'react-router';
 import { NavLink, withRouter } from 'react-router-dom';
-
+import { RouteComponentProps } from 'react-router';
 
 export interface IProps {
   items: Array<{ to: string, text: string }>;

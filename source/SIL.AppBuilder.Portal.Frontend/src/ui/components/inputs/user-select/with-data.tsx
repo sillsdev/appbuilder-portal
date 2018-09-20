@@ -3,12 +3,12 @@ import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
 
+import { GroupMembershipAttributes } from '@data/models/group-membership';
+import { PageLoader as Loader } from '@ui/components/loaders';
 import { query, defaultSourceOptions, relationshipFor, USERS_TYPE, GROUP_MEMBERSHIPS_TYPE, isRelatedRecord, isRelatedTo, idFromRecordIdentity, recordIdentityFrom } from '@data';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
-import { TYPE_NAME as GROUP_MEMBERSHIPS, GroupMembershipAttributes } from '@data/models/group-membership';
 import { withCurrentUser } from '@data/containers/with-current-user';
 
-import { PageLoader as Loader } from '@ui/components/loaders';
 
 export interface IProvidedProps {
   users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;

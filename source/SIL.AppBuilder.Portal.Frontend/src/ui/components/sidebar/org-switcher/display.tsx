@@ -5,10 +5,10 @@ import SearchIcon from '@material-ui/icons/Search';
 import { WithDataProps } from 'react-orbitjs';
 
 import { idFromRecordIdentity } from '@data';
+import { IGivenProps } from './types';
 import { IProvidedDataProps } from './with-data';
 import { IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-current-organization';
 import { IProvidedProps as IReduxProps } from './with-redux';
-import { IGivenProps } from './types';
 import Row from './row';
 
 export interface IOwnProps {

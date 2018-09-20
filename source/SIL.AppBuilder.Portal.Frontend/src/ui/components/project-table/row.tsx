@@ -1,21 +1,25 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
 import { ResourceObject } from 'jsonapi-typescript';
-import { compose } from 'recompose';
 
-import { attributesFor, PROJECTS_TYPE, ORGANIZATIONS_TYPE, USERS_TYPE, GROUPS_TYPE, idFromRecordIdentity } from '@data';
-import { ProjectAttributes } from '@data/models/project';
-import { OrganizationAttributes } from '@data/models/organization';
-import { UserAttributes } from '@data/models/user';
-import { GroupAttributes } from '@data/models/group';
-
-import { withRelationship } from './withRelationship';
-
-import RowActions from '@ui/components/project-table/row-actions';
-
-import { IProvidedProps } from './withTableColumns';
-import Products from './products';
+import {
+  attributesFor,
+  PROJECTS_TYPE,
+  ORGANIZATIONS_TYPE,
+  USERS_TYPE,
+  GROUPS_TYPE,
+  idFromRecordIdentity
+} from '@data';
 import Column from './column';
+import { IProvidedProps } from './withTableColumns';
+import { GroupAttributes } from '@data/models/group';
+import { OrganizationAttributes } from '@data/models/organization';
+import { ProjectAttributes } from '@data/models/project';
+import Products from './products';
+import RowActions from '@ui/components/project-table/row-actions';
+import { UserAttributes } from '@data/models/user';
+import { withRelationship } from './withRelationship';
 
 export interface IProps {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;

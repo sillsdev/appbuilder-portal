@@ -2,13 +2,12 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
-import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
+import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
+import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
 import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
 import { query, ORGANIZATION_MEMBERSHIPS_TYPE, GROUPS_TYPE, USERS_TYPE, withLoader, buildOptions, isRelatedTo, ORGANIZATIONS_TYPE } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
@@ -86,15 +85,10 @@ export function withData(WrappedComponent) {
         groups
       };
 
-      const actionProps = {
-        toggleLock: this.toggleLock
-      };
-
       return (
         <WrappedComponent
           { ...dataProps }
           { ...otherProps }
-          { ...actionProps }
         />
       );
     }

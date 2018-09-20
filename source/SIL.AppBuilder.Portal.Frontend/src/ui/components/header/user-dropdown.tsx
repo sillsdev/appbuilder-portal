@@ -1,19 +1,17 @@
 import * as React from 'react';
-import { withRouter, RouteComponentProps, NavLink  } from 'react-router-dom';
-import {
-  Dropdown
-} from 'semantic-ui-react';
 import { compose } from 'recompose';
-
-import { UserAttributes } from '@data/models/user';
-import { withCurrentUser } from '@data/containers/with-current-user';
-
-import { deleteToken, getPictureUrl } from '@lib/auth0';
-import './header.scss';
+import { Dropdown } from 'semantic-ui-react';
 import { ResourceObject } from 'jsonapi-typescript';
+import { withRouter, RouteComponentProps, NavLink  } from 'react-router-dom';
+
+import { getPictureUrl } from '@lib/auth0';
+import { UserAttributes } from '@data/models/user';
 import { USERS_TYPE, idFromRecordIdentity } from '@data';
-import { withLogout } from '@data/containers/with-logout';
+import { withCurrentUser } from '@data/containers/with-current-user';
+import { withLogout, ILogoutProps } from '@data/containers/with-logout';
 import { withTranslations, i18nProps } from '@lib/i18n';
+
+import './header.scss';
 
 interface IOwnProps {
   toggleSidebar: () => void;
@@ -23,7 +21,8 @@ interface IOwnProps {
 export type IProps =
   & IOwnProps
   & RouteComponentProps<{}>
-  & i18nProps;
+  & i18nProps
+  & ILogoutProps;
 
 class UserDropdown extends React.Component<IProps> {
   render() {

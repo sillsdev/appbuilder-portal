@@ -3,6 +3,10 @@ import { withRouter, RouteComponentProps } from 'react-router';
 
 import { deleteToken } from '@lib/auth0';
 
+export interface ILogoutProps {
+  logout: (e: any) => void;
+}
+
 export function withLogout<TWrappedProps>(WrappedComponent) {
   class LogoutProvider extends React.Component<RouteComponentProps<{}> & TWrappedProps> {
     logout = (e) => {

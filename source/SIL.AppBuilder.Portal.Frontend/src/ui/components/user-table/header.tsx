@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 class Header extends React.Component<i18nProps> {

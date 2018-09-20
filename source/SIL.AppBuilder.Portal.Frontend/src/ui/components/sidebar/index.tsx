@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { withTemplateHelpers, Toggle } from 'react-action-decorators';
-import './sidebar.scss';
 
 import Header from './header';
 import Navigation from './navigation';
 import OrgSwitcher from './org-switcher';
+
+import './sidebar.scss';
 
 export interface IProps {
   closeSidebar: () => void;

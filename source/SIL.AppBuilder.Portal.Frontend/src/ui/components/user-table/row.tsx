@@ -1,24 +1,22 @@
 import * as React from 'react';
-import { InjectedTranslateProps as i18nProps } from 'react-i18next';
+import * as toast from '@lib/toast';
+import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
 import { Radio } from 'semantic-ui-react';
 import { ResourceObject } from 'jsonapi-typescript';
-import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
-import { withTranslations } from '@lib/i18n';
-import * as toast from '@lib/toast';
 
 import { USERS_TYPE, GROUPS_TYPE, attributesFor, idFromRecordIdentity } from '@data';
 import { withDataActions, IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
 import { UserAttributes } from '@data/models/user';
 import { GroupAttributes } from '@data/models/group';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 
 export interface IOwnProps {
   user: ResourceObject<USERS_TYPE, UserAttributes>;
   groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
-  toggleLock: (user: ResourceObject<USERS_TYPE, UserAttributes>) => void;
 }
 
 export type IProps =

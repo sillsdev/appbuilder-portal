@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { InjectedTranslateProps as i18nProps } from 'react-i18next';
-import NotificationIcon from '@material-ui/icons/Notifications';
-import NotificationActiveIcon from '@material-ui/icons/NotificationsActive';
 
 import { DataProps, ActionProps } from './data';
-
+import NotificationIcon from '@material-ui/icons/Notifications';
+import NotificationActiveIcon from '@material-ui/icons/NotificationsActive';
 import Row from './row';
 
 export type IProps =

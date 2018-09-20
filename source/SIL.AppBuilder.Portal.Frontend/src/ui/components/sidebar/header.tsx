@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { compose } from 'recompose';
-import { ResourceObject } from 'jsonapi-typescript';
-import CloseIcon from '@material-ui/icons/Close';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
+import CloseIcon from '@material-ui/icons/Close';
+import { compose } from 'recompose';
+import { ResourceObject } from 'jsonapi-typescript';
 
 import { OrganizationAttributes } from '@data/models/organization';
 import { ORGANIZATIONS_TYPE } from '@data';
