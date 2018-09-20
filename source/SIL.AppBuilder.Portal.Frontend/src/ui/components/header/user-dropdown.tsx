@@ -8,7 +8,7 @@ import { getPictureUrl } from '@lib/auth0';
 import { UserAttributes } from '@data/models/user';
 import { USERS_TYPE, idFromRecordIdentity } from '@data';
 import { withCurrentUser } from '@data/containers/with-current-user';
-import { withLogout, IProvidedProps as logoutProps } from '@data/containers/with-logout';
+import { withLogout, ILogoutProps } from '@data/containers/with-logout';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './header.scss';
@@ -22,7 +22,7 @@ export type IProps =
   & IOwnProps
   & RouteComponentProps<{}>
   & i18nProps
-  & logoutProps;
+  & ILogoutProps;
 
 class UserDropdown extends React.Component<IProps> {
   render() {
