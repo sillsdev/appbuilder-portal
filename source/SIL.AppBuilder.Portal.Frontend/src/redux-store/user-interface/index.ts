@@ -1,15 +1,28 @@
 import { initialState } from './shared';
 
-import { ToggleSidebarAction, TOGGLE_SIDEBAR, reducer as toggleReducer } from './actions/toggle-sidebar';
+import {
+  ShowSidebarAction,
+  SHOW_SIDEBAR,
+  reducer as showReducer
+} from './actions/show-sidebar';
+
+import {
+  HideSidebarAction,
+  HIDE_SIDEBAR,
+  reducer as hideReducer
+} from './actions/hide-sidebar';
 
 export { State } from './shared';
-export { toggleSidebar } from './actions/toggle-sidebar';
+export { showSidebar } from './actions/show-sidebar';
+export { hideSidebar } from './actions/hide-sidebar';
 
 type ActionTypes =
-  | ToggleSidebarAction;
+  | ShowSidebarAction
+  | HideSidebarAction;
 
 const actionHandlers = {
-  [TOGGLE_SIDEBAR]: toggleReducer
+  [SHOW_SIDEBAR]: showReducer,
+  [HIDE_SIDEBAR]: hideReducer
 };
 
 export function reducer(state = initialState, action: ActionTypes) {

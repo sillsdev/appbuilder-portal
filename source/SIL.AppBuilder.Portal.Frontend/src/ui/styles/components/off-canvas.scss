@@ -1,5 +1,4 @@
-// This lives outside of the component folder so we can
-// make use of scss variables
+@import '../_base/variables.scss';
 
 $offcanvas-width: 300px;
 
@@ -26,7 +25,7 @@ $offcanvas-width: 300px;
   .sidebar-underlay {
     visibility: hidden;
     opacity: 0;
-    background: #4a4a4a;
+    background: $gray-dark;
     z-index: 29;
   }
 
@@ -35,6 +34,9 @@ $offcanvas-width: 300px;
   }
 
   .ui.secondary.pointing.menu {
+
+    padding-right: 2px !important;
+
     .item {
       color: $gray-dark;
       font-weight: normal;
@@ -42,10 +44,12 @@ $offcanvas-width: 300px;
       &.active {
         color: $blue-dark;
         font-weight: bold;
-
+        padding-left: 1em;
         border-left: 5px solid $blue-dark !important;
-        margin: 9px 0;
       }
+    }
+    .item:hover {
+      background-color: $lightest-gray;
     }
   }
 }

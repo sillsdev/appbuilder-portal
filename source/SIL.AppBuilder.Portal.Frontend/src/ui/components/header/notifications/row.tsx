@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Icon } from 'semantic-ui-react';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { attributesFor } from '@data/helpers';
 import { i18nProps } from '@lib/i18n';
@@ -68,15 +68,15 @@ class Row extends React.Component<IProps> {
       <div
         data-test-notification
         className={`notification-item ${viewState}`}
-        onClick={this.markAsSeen}>
-
+        onClick={this.markAsSeen}
+      >
         <a
           data-test-notification-close-one
           className='close'
           href='#'
-          onClick={this.clear}>
-
-          <Icon name='close' />
+          onClick={this.clear}
+        >
+          <CloseIcon />
         </a>
 
         <h4 className='title'>{title}</h4>

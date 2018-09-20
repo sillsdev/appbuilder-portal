@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
+import { compose } from 'recompose';
+import { Dropdown, Checkbox } from 'semantic-ui-react';
+
 import { IProvidedProps } from './withTableColumns';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { compose } from 'recompose';
 
 class ColumnSelector extends React.Component<IProvidedProps & i18nProps> {
 
@@ -20,11 +21,7 @@ class ColumnSelector extends React.Component<IProvidedProps & i18nProps> {
         data-test-project-table-columns-selector
         multiple
         className='columns-dropdown'
-        icon={null}
         direction='left'
-        trigger={
-          <Icon name='dropdown' size='large' />
-        }
       >
         <Dropdown.Menu className='columns'>
           {

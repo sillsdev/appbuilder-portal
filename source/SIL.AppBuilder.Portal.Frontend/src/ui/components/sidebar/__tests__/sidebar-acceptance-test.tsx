@@ -26,23 +26,14 @@ describe('Acceptance | Sidebar', () => {
       localStorage.clear();
     });
 
-    describe('Open sidebar',() => {
-      beforeEach(async () => {
-        await page.clickOpenSidebarButton();
+    describe('Close button',() => {
+
+      it('is no longer visible',() => {
+        expect(page.isCloseButtonVisible).to.be.true;
       });
 
-      it('Sidebar opened',() => {
-        expect(page.isSidebarVisible).to.be.true;
-      });
-
-      describe('Close open sidebar', () => {
-        beforeEach(async () => {
-          await page.clickCloseSidebarButton();
-        });
-
-        it('Sidebar closed',() => {
-          expect(page.isSidebarVisible).to.be.false;
-        });
+      it('is only visible in responsive view',() => {
+        expect(page.isCloseButtonVisibleInResponsive).to.be.true;
       });
     });
   });

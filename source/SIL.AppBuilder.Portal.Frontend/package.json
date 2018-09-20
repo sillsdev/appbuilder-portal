@@ -23,6 +23,8 @@
     "typecheck": "yarn tsc --noEmit"
   },
   "dependencies": {
+    "@material-ui/core": "^3.1.0",
+    "@material-ui/icons": "^3.0.1",
     "@orbit/coordinator": "^0.15.14",
     "@orbit/core": "^0.15.14",
     "@orbit/indexeddb": "^0.15.14",

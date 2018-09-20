@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
-import { Form, Divider, Checkbox, Button, Icon, Grid } from 'semantic-ui-react';
+import { Form, Divider, Checkbox, Button, Grid } from 'semantic-ui-react';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import TimezonePicker from 'react-timezone';
 
 import { UserAttributes } from '@data/models/user';
-import { idFor, USERS_TYPE } from '@data';
+import { USERS_TYPE } from '@data';
 import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
@@ -108,7 +108,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
               data-test-profile-timezone
               className='timezone-group'
             >
-              <Icon name='caret down'/>
+              <ArrowDropDownIcon/>
               <TimezonePicker
                 ref={input => this.timezoneInput = input}
                 className='timezone'

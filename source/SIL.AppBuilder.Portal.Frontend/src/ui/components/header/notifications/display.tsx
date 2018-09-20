@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { InjectedTranslateProps as i18nProps } from 'react-i18next';
+import NotificationIcon from '@material-ui/icons/Notifications';
+import NotificationActiveIcon from '@material-ui/icons/NotificationsActive';
 
 import { DataProps, ActionProps } from './data';
 
@@ -46,6 +48,8 @@ class Notifications extends React.Component<IProps> {
     const hasNotifications = notifications &&
       notifications.length > 0 && isThereAtLeastOneNotificationToShow;
 
+    const isMenuVisible = this.state.visible ? 'visible' : '';
+
     return (
       <div className='ui top right pointing dropdown' data-test-header-notification>
         <div
@@ -56,14 +60,12 @@ class Notifications extends React.Component<IProps> {
         <div
           data-test-notification-trigger
           style={{ position: 'relative' }}
-          onClick={this.toggle}>
-
-          {!haveAllNotificationsBeenSeen && <div className='red-dot' />}
-          <i className='alarm large circular icon no-shadows' />
-
+          onClick={this.toggle}
+        >
+          {haveAllNotificationsBeenSeen ? <NotificationIcon /> : <NotificationActiveIcon /> }
         </div>
 
-        <div className={`ui menu transition notifications ${this.state.visible ? 'visible' : ''}`}>
+        <div className={`ui menu transition notifications ${isMenuVisible}`}>
 
           { hasNotifications && (
             <>

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { Dropdown, Icon } from 'semantic-ui-react';
+import { Dropdown } from 'semantic-ui-react';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 
 import MomentLocaleUtils, {
@@ -120,7 +121,7 @@ class Filter extends React.Component<IProps, IState> {
         <div className='flex justify-content-end w-50'>
           <div className='input m-r-30'>
             <div className='dateRange'>{t('directory.filters.dateRange')}</div>
-            <Icon name='dropdown' />
+            <ArrowDropDownIcon/>
             <DayPickerInput
               locale='en'
               value={from}
@@ -135,7 +136,7 @@ class Filter extends React.Component<IProps, IState> {
             />
           </div>
           <div className='input'>
-            <Icon name='dropdown' />
+            <ArrowDropDownIcon />
             <DayPickerInput
               locale='en'
               dayPickerProps={{

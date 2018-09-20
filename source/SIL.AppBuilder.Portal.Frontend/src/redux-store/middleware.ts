@@ -10,5 +10,5 @@ export const setup = (store: Store<any>) => {
 };
 
 export const middleware: Middleware[] =  [
-  sagaMiddleware
+  sagaMiddleware,
 ];

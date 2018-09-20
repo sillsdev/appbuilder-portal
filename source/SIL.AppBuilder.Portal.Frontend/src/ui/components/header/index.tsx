@@ -4,7 +4,7 @@ import { compose } from 'recompose';
 import HeaderDisplay from './display';
 
 import {
-  toggleSidebar
+  showSidebar
 } from '@store/user-interface';
 
 const mapStateToProps = ({ ui }) => ({
@@ -12,7 +12,7 @@ const mapStateToProps = ({ ui }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  toggleSidebar: () => dispatch(toggleSidebar())
+  showSidebar: () => dispatch(showSidebar())
 });
 
 export default compose(
