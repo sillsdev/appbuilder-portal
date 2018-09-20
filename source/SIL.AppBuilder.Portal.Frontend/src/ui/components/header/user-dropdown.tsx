@@ -4,7 +4,6 @@ import {
   Dropdown
 } from 'semantic-ui-react';
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
 import { UserAttributes } from '@data/models/user';
 import { withCurrentUser } from '@data/containers/with-current-user';
@@ -14,6 +13,7 @@ import './header.scss';
 import { ResourceObject } from 'jsonapi-typescript';
 import { USERS_TYPE, idFromRecordIdentity } from '@data';
 import { withLogout } from '@data/containers/with-logout';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   toggleSidebar: () => void;
@@ -65,6 +65,6 @@ class UserDropdown extends React.Component<IProps> {
 export default compose(
   withRouter,
   withCurrentUser(),
-  translate('translations'),
+  withTranslations,
   withLogout
 )(UserDropdown);

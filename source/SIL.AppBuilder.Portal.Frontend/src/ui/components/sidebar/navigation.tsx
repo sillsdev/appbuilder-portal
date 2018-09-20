@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
-import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { getCurrentOrganizationId } from '@lib/current-organization';
 
@@ -126,5 +126,5 @@ class Navigation extends React.Component<IProps & i18nProps> {
 }
 
 export default compose(
-  translate('translations')
+  withTranslations
 )(Navigation);
