@@ -750,10 +750,6 @@ acorn@^5.0.0, acorn@^5.6.2:
   version "5.7.3"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.3.tgz#67aa231bf8812974b85235a96771eb6bd07ea279"
 
-add@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/add/-/add-2.0.6.tgz#248f0a9f6e5a528ef2295dbeec30532130ae2235"
-
 after@0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/after/-/after-0.8.2.tgz#fedb394f9f0e02aa9768e702bda23b505fae7e1f"
@@ -1023,7 +1019,7 @@ auth0-lock@^11.7.2:
     trim "0.0.1"
     url-join "^1.1.0"
 
-"auth0-password-policies@github:auth0/auth0-password-policies#v1.0.1":
+auth0-password-policies@auth0/auth0-password-policies#v1.0.1:
   version "1.0.1"
   resolved "https://codeload.github.com/auth0/auth0-password-policies/tar.gz/0b3da9b369b122a8b294d496143abfd33311e6b2"
   dependencies:
