@@ -23,15 +23,16 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
+// TODO: find a better way to implemented this using CSS
 const SM_BREAKPOINT = 768;
 
 class Layout extends React.Component<IOwnProps> {
 
   updateSidebar = () => {
 
-    const { showSidebar } = this.props;
+    const { showSidebar, isSidebarVisible } = this.props;
 
-    if (window.innerWidth > SM_BREAKPOINT) {
+    if (window.innerWidth > SM_BREAKPOINT && !isSidebarVisible) {
       showSidebar();
     }
   }
