@@ -21,6 +21,15 @@
 
     .item {
       margin-bottom: 10px;
+
+      a {
+        height: 14px;
+
+        svg {
+          font-size: 16px;
+        }
+      }
     }
+
   }
 }

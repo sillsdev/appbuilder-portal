@@ -1,15 +1,14 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { Icon } from 'semantic-ui-react';
 import { compose } from 'recompose';
-import { withData, WithDataProps } from 'react-orbitjs';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { ResourceObject } from 'jsonapi-typescript';
+import CloseIcon from '@material-ui/icons/Close';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 
 import { OrganizationAttributes } from '@data/models/organization';
-import { withCurrentOrganization } from '@data/containers/with-current-organization';
-import { ResourceObject } from 'jsonapi-typescript';
 import { ORGANIZATIONS_TYPE } from '@data';
-import { withTranslations } from '@lib/i18n';
+import { withCurrentOrganization } from '@data/containers/with-current-organization';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 export interface IProps {
   closeSidebar: () => void;
@@ -20,10 +19,6 @@ export interface IProps {
   currentOrganization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
-const mapStateToProps = ({ data }) => ({
-  currentOrganizationId: data.currentOrganizationId
-});
-
 class SidebarHeader extends React.Component<IProps & i18nProps> {
   render() {
     const {
@@ -33,7 +28,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
       t
     } = this.props;
 
-    const iconName = isOrgSwitcherActive ? 'caret up' : 'caret down';
+    const icon = isOrgSwitcherActive ? <ArrowDropUp /> : <ArrowDropDown/>;
     const orgAttributes = (org && org.attributes) || {};
     const orgName = orgAttributes.name || t('org.allOrganizations');
     const bgClass = isOrgSwitcherActive ? 'bg-white' : '';
@@ -42,29 +37,23 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
       <div className={`
         sidebar-title flex-row transition-all-fast
         align-items-center
-        justify-content-space-between ${bgClass} ${className}`}>
-
+        justify-content-space-between ${bgClass} ${className}`}
+      >
         <div
           data-test-org-switcher-toggler
           className='switcher p-l-md no-select flex-row align-items-center'
-          onClick={toggleOrgSwitcher}>
-
-          <span className='list-thumbnail m-r-md'>
-            &nbsp;
-          </span>
+          onClick={toggleOrgSwitcher}
+        >
+          <span className='list-thumbnail m-r-md'>&nbsp;</span>
           <span className='bold blue-highlight'>{orgName}</span>
-          <Icon name={iconName} size='large' />
-
+          { icon }
         </div>
-
-
         <button
           data-test-sidebar-close-button
           className='close d-sm-none'
-          onClick={closeSidebar}>
-
-          <Icon name='close' size='large' />
-
+          onClick={closeSidebar}
+        >
+          <CloseIcon />
         </button>
       </div>
     );

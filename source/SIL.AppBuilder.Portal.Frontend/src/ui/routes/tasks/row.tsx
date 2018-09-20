@@ -62,8 +62,10 @@ class TaskRow extends React.Component<IProps> {
           <Link to={`/projects/${project.id}`}>{projectAttrs.name}</Link>
         </td>
         <td className={cellSecondaryClasses}>
-          {productAttrs.name}
-          <ProductIcon product={product} />
+          <div className='flex align-items-center'>
+            <ProductIcon product={product} />
+            <span className='p-l-sm-xs'>{productAttrs.name}</span>
+          </div>
         </td>
         <td className={cellClasses}>{claimedBy}</td>
         <td className={cellClasses}>{status}</td>

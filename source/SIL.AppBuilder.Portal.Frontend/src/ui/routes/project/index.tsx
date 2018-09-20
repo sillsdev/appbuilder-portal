@@ -1,30 +1,27 @@
 import * as React from 'react';
-
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
+import MoreVerticalIcon from '@material-ui/icons/MoreVert';
+import { ResourceObject } from 'jsonapi-typescript';
+import { Tab, Dropdown } from 'semantic-ui-react';
 
-import { Tab, Dropdown, Icon } from 'semantic-ui-react';
-
-import { ProjectAttributes } from '@data/models/project';
-import { withCurrentUser, IProvidedProps } from '@data/containers/with-current-user';
-import { withLayout } from '@ui/components/layout';
-
+import { attributesFor } from '@data/helpers';
 import Details from './details';
 import Products from './products';
-import Settings from './settings';
+import { PROJECTS_TYPE } from '@data';
+import { ProjectAttributes } from '@data/models/project';
 import Owners from './owners';
 import Reviewers from './reviewers';
-import { withData } from './with-data';
-import { withProjectOperations } from './with-project-operations';
+import Settings from './settings';
 import { withAccessRestriction } from './with-access-restriction';
-
+import { withData } from './with-data';
+import { withLayout } from '@ui/components/layout';
+import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
+import { withProjectOperations } from './with-project-operations';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './project.scss';
-import { ResourceObject } from 'jsonapi-typescript';
-import { PROJECTS_TYPE } from '@data';
-import { withTranslations, i18nProps } from '@lib/i18n';
-import { attributesFor } from '@data/helpers';
-import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
+
 
 export const pathName = '/project/:id';
 
@@ -113,7 +110,7 @@ class Project extends React.Component<IProps> {
                 pointing='top right'
                 icon={null}
                 trigger={
-                  <Icon name='ellipsis vertical' size='large' />
+                  <MoreVerticalIcon />
                 }
               >
                 <Dropdown.Menu>
@@ -138,7 +135,6 @@ class Project extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
-  // requireAuth,
   withLayout,
   withMomentTimezone,
   withData,

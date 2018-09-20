@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
-import { Dropdown, Icon } from 'semantic-ui-react';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { Dropdown } from 'semantic-ui-react';
+import MoreVerticalIcon from '@material-ui/icons/MoreVert'
+import { ResourceObject } from 'jsonapi-typescript';
 
 import { attributesFor, PROJECTS_TYPE } from '@data';
 import { ProjectAttributes } from '@data/models/project';
-
 import { withProjectOperations } from '@ui/routes/project/with-project-operations';
-import { ResourceObject } from 'jsonapi-typescript';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 export interface IProps {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
@@ -37,7 +36,7 @@ class RowActions extends React.Component<IProps & i18nProps> {
         pointing='top right'
         icon={null}
         trigger={
-          <Icon name='ellipsis vertical' size='large' />
+          <MoreVerticalIcon />
         }
       >
         <Dropdown.Menu>

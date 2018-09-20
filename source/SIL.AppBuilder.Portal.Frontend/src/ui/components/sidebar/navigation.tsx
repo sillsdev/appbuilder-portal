@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menu, Icon, Image } from 'semantic-ui-react';
+import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';

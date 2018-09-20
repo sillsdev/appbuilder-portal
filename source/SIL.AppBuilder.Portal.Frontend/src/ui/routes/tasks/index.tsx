@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { compose } from 'recompose';
-import { Container, Icon, Button } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
-import { uuid } from '@orbit/utils';
 import { withData, WithDataProps } from 'react-orbitjs';
 
 import { query, TASKS_TYPE } from '@data';
@@ -46,10 +44,10 @@ class Tasks extends React.Component<IProps> {
     const { tasks, t } = this.props;
 
     const cellClasses = 'd-xs-none d-md-table-cell';
-    const cellSecondaryClasses = 'd-xs-none d-sm-table-cell';
+    const cellSecondaryClasses = 'd-xs-none d-sm-table-cell flex align-items-center';
 
     return (
-      <Container className='tasks'>
+      <div className='ui container tasks'>
         <h1 className='page-heading'>{t('tasks.title')}</h1>
 
         <table className='ui table unstackable'>
@@ -80,7 +78,7 @@ class Tasks extends React.Component<IProps> {
             ) }
           </tbody>
         </table>
-      </Container>
+      </div>
     );
   }
 }

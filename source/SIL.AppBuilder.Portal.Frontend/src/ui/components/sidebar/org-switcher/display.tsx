@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { Menu, Icon } from 'semantic-ui-react';
-import { WithDataProps } from 'react-orbitjs';
+import { Menu } from 'semantic-ui-react';
 import { InjectedTranslateProps as i18nProps } from 'react-i18next';
+import SearchIcon from '@material-ui/icons/Search';
+import { WithDataProps } from 'react-orbitjs';
 
 import { idFromRecordIdentity } from '@data';
-import { IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-current-organization';
-
 import { IProvidedDataProps } from './with-data';
-import Row from './row';
+import { IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-current-organization';
 import { IProvidedProps as IReduxProps } from './with-redux';
 import { IGivenProps } from './types';
+import Row from './row';
 
 export interface IOwnProps {
   searchByName: (name: string) => void;
@@ -55,7 +55,7 @@ class OrgSwitcherDisplay extends React.Component<IProps> {
             data-test-org-switcher-search
             className='flex-row align-items-center border-bottom'>
 
-            <Icon name='search' />
+            <SearchIcon />
             <div className='ui input'>
               <input
                 value={searchTerm}

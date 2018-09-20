@@ -2,9 +2,8 @@ import * as React from 'react';
 import { withRouter, RouteComponentProps  } from 'react-router-dom';
 import {
   Container, Menu, Button,
-  Icon
 } from 'semantic-ui-react';
-
+import MenuIcon from '@material-ui/icons/Menu';
 import { deleteToken } from '@lib/auth0';
 
 import UserDropdown from './user-dropdown';
@@ -42,7 +41,7 @@ class Header extends React.Component<IProps> {
               data-test-header-sidebar-button
               className='sidebar-button'
               onClick={showSidebar}>
-              <Icon name='bars' size='large' />
+              <MenuIcon />
             </Button>
           </Menu.Item>
 
