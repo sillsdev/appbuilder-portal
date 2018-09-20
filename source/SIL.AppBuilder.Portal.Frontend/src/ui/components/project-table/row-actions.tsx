@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
-import MoreVerticalIcon from '@material-ui/icons/MoreVert'
+import MoreVerticalIcon from '@material-ui/icons/MoreVert';
 import { ResourceObject } from 'jsonapi-typescript';
 
 import { attributesFor, PROJECTS_TYPE } from '@data';
