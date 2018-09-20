@@ -1,16 +1,15 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 
+import { attributesFor } from '@data/helpers';
+import Column from './column';
+import { IProvidedProps } from './withTableColumns';
 import ProductIcon from '@ui/components/product-icon';
-import { ResourceObject } from 'jsonapi-typescript';
 import { ProductAttributes } from '@data/models/product';
 import { PRODUCTS_TYPE } from '@data';
-import { attributesFor } from '@data/helpers';
-
-import { IProvidedProps } from './withTableColumns';
-import Column from './column';
-import { withTranslations } from '@lib/i18n';
+import { ResourceObject } from 'jsonapi-typescript';
 import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
+import { withTranslations } from '@lib/i18n';
 
 interface IOwnProps {
   product: ResourceObject<PRODUCTS_TYPE, ProductAttributes>;

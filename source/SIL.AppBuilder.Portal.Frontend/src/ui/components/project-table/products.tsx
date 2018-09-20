@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import ProductItem from './product-item';
-import { IProvidedProps } from './withTableColumns';
 import Column from './column';
+import { IProvidedProps } from './withTableColumns';
+import ProductItem from './product-item';
 
 // TODO: Remove this when we had products associated to projects
 const products = [{

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { compose } from 'recompose';
+import { connect } from 'react-redux';
 
 import { setColumnSelection as setColumnSelectionData, Column } from '@store/data';
 

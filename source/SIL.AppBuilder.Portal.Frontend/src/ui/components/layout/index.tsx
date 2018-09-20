@@ -4,7 +4,10 @@ import { connect } from 'react-redux';
 import Header from '@ui/components/header';
 import Sidebar from '@ui/components/sidebar';
 
-import { showSidebar as showSidebarInStore, hideSidebar as hideSidebarInStore } from '@store/user-interface';
+import {
+  showSidebar as showSidebarInStore,
+  hideSidebar as hideSidebarInStore
+} from '@store/user-interface';
 
 interface IOwnProps {
   isSidebarVisible: boolean;

@@ -3,16 +3,14 @@ import { compose, mapProps } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
 
-import { query, defaultOptions, ORGANIZATIONS_TYPE, withLoader, attributesFor } from '@data';
+import { defaultOptions, ORGANIZATIONS_TYPE, withLoader, attributesFor } from '@data';
 import { IProvidedProps as IFilterProps, withFiltering } from '@data/containers/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
-import { withCurrentUser, IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
+import { IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 import { debounce } from '@lib/debounce';
 
 import { IProvidedProps as IReduxProps } from './with-redux';
 import { IGivenProps } from './types';
-import { SearchResults } from 'semantic-ui-react';
-
 
 function mapNetworkToProps(passedProps) {
   const { applyFilter } = passedProps;

@@ -2,11 +2,10 @@ import * as React from 'react';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import FocusPanel from '@ui/components/focus-panel';
-import { Button } from 'semantic-ui-react';
 import { compose } from 'redux';
-import { withLogout } from '@data/containers/with-logout';
+import { withLogout, IProvidedProps } from '@data/containers/with-logout';
 
-class OrgMembershipRequired extends React.Component {
+class OrgMembershipRequired extends React.Component<IProvidedProps & i18nProps> {
   render() {
     const { t, logout } = this.props;
 
@@ -14,9 +13,9 @@ class OrgMembershipRequired extends React.Component {
       <FocusPanel title={t('errors.orgMembershipRequired')}>
         <div dangerouslySetInnerHTML={{ __html: t('errors.orgMembershipRequiredText') }} />
 
-          <Button className='m-t-lg' data-test-logout onClick={logout}>
+          <button className='ui button m-t-lg' data-test-logout onClick={logout}>
             {t('header.signOut')}
-          </Button>
+          </button>
       </FocusPanel>
     );
   }

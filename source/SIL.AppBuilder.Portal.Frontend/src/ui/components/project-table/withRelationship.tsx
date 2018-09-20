@@ -1,7 +1,5 @@
-import * as React from 'react';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { withData as withOrbit } from 'react-orbitjs';
 import { TYPE_NAME as PROJECT } from '@data/models/project';
-import { TYPE_NAME as ORGANITZATION } from '@data/models/organization';
 
 
 export function withRelationship(relationshipName: string) {

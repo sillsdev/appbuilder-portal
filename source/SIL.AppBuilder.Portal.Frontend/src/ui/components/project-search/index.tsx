@@ -1,11 +1,8 @@
 import * as React from 'react';
 import QueryAssist from 'react-query-assist';
-import { compose } from 'recompose';
 
-import { query, defaultOptions } from '@data';
 import { IFilter } from '@data/containers/with-filtering';
-import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
-import { TYPE_NAME as GROUP } from '@data/models/group';
+
 
 // For use after MVP and resolution of this issue:
 // https://github.com/timberio/react-query-assist/issues/25

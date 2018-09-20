@@ -1,27 +1,24 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import {
   GROUPS_TYPE, GROUP_MEMBERSHIPS_TYPE, USERS_TYPE,
   buildFindRelatedRecords,
-  isRelatedRecord,
   withLoader,
   idsForRelationship,
   recordsWithIdIn,
-  buildFindRelatedRecord,
-  PROJECTS_TYPE,
   ORGANIZATIONS_TYPE,
   isRelatedTo
 } from '@data';
 
-import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { GroupMembershipAttributes } from '@data/models/group-membership';
+import { OrganizationAttributes } from '@data/models/organization';
+import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { UserAttributes } from '@data/models/user';
 
-import { ResourceObject } from 'jsonapi-typescript';
-import { ProjectAttributes } from '@data/models/project';
-import { OrganizationAttributes } from '@data/models/organization';
+
 
 export interface IProvidedProps {
   groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;

@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 
 import Header from './header';
-import Row from './row';
-import { ProjectAttributes } from '@data/models/project';
-import { ResourceObject } from 'jsonapi-typescript';
-import { PROJECTS_TYPE } from '@data';
 import { IProvidedProps } from './withTableColumns';
+import { ProjectAttributes } from '@data/models/project';
+import { PROJECTS_TYPE } from '@data';
+import { ResourceObject } from 'jsonapi-typescript';
+import Row from './row';
 
 interface IOwnProps {
   projects: Array<ResourceObject<PROJECTS_TYPE, ProjectAttributes>>;

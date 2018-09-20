@@ -1,15 +1,11 @@
 import * as React from 'react';
-import { withRouter, RouteComponentProps  } from 'react-router-dom';
-import {
-  Container, Menu, Button,
-} from 'semantic-ui-react';
+import { compose } from 'recompose';
 import MenuIcon from '@material-ui/icons/Menu';
-import { deleteToken } from '@lib/auth0';
-
-import UserDropdown from './user-dropdown';
-import Notifications from './notifications';
+import { withRouter, RouteComponentProps  } from 'react-router-dom';
 
 import LocaleSelect from '@ui/components/inputs/locale-select';
+import Notifications from './notifications';
+import UserDropdown from './user-dropdown';
 
 import './header.scss';
 
@@ -23,60 +19,55 @@ export type IProps =
 
 class Header extends React.Component<IProps> {
 
-  handleSignOut = () => {
-    const { history } = this.props;
-
-    deleteToken();
-    history.push('/login');
-  }
-
   render() {
     const { history, showSidebar } = this.props;
 
     return (
-      <Menu data-test-header-menu className='menu-navbar'>
-        <Container>
-          <Menu.Item className='sidebar-button-item d-sm-none'>
-            <Button
+      <div data-test-header-menu className='ui menu menu-navbar'>
+        <div className='ui container'>
+          <div className='item sidebar-button-item d-sm-none'>
+            <button
               data-test-header-sidebar-button
-              className='sidebar-button'
+              className='ui button sidebar-button'
               onClick={showSidebar}>
               <MenuIcon />
-            </Button>
-          </Menu.Item>
+            </button>
+          </div>
 
-          <Menu.Item
-            data-test-header-appname header
-            className='logo'
+          <div
+            data-test-header-appname
+            className='item header logo'
             onClick={() => history.push('/')}>
             SCRIPTORIA
-          </Menu.Item>
+          </div>
 
-          <Menu.Menu position='right'>
-            <Menu.Item>
-              <Button
+          <div className='right menu'>
+            <div className='item'>
+              <button
                 data-test-header-addproject
-                className='add-project d-xs-none'>
+                className='ui button add-project d-xs-none'>
                 Add Project
-              </Button>
-            </Menu.Item>
+              </button>
+            </div>
 
-            <Menu.Item>
+            <div className='item'>
               <LocaleSelect/>
-            </Menu.Item>
+            </div>
 
-            <Menu.Item>
+            <div className='item'>
               <Notifications/>
-            </Menu.Item>
+            </div>
 
-            <Menu.Item>
+            <div className='item'>
               <UserDropdown/>
-            </Menu.Item>
-          </Menu.Menu>
-        </Container>
-      </Menu>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 }
 
-export default withRouter(Header);
+export default compose(
+  withRouter
+)(Header);

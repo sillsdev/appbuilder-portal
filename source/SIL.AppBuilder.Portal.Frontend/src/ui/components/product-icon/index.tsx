@@ -1,8 +1,8 @@
 import * as React from 'react';
 import AndriodIcon from '@material-ui/icons/Android';
+import { ResourceObject } from 'jsonapi-typescript';
 import WebIcon from '@material-ui/icons/Web';
 
-import { ResourceObject } from 'jsonapi-typescript';
 import { ProductAttributes } from '@data/models/product';
 import { PRODUCTS_TYPE, attributesFor } from '@data';
 

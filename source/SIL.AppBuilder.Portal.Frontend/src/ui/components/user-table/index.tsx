@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { compose } from 'recompose';
 
 // import { withSorting } from '@data/containers/sorting';

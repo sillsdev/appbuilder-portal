@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 
 import { attributesFor } from '@data';
-
 import { IProvidedProps as IDataProps } from './with-data';
 
 interface IOwnProps {

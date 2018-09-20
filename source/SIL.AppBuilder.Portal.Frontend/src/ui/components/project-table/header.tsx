@@ -2,9 +2,9 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import { IProvidedProps } from './withTableColumns';
 import Column from './column';
 import ColumnSelector from './column-selector';
+import { IProvidedProps } from './withTableColumns';
 
 interface IOwnProps {}
 

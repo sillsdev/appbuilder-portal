@@ -1,11 +1,9 @@
 import { compose } from 'recompose';
-import { InjectedTranslateProps as i18nProps } from 'react-i18next';
-
-import { withData, DataProps, ActionProps } from './data';
-
-import { withTranslations } from '@lib/i18n';
 
 import Display from './display';
+import { withData, DataProps, ActionProps } from './data';
+import { withTranslations, i18nProps } from '@lib/i18n';
+
 import './notification.scss';
 
 export interface Props {

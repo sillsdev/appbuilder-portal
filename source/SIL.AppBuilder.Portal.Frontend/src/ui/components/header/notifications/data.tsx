@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+
 import { TYPE_NAME as NOTIFICATION, NotificationAttributes } from '@data/models/notification';
 import { query, defaultOptions, NOTIFICATIONS_TYPE, withLoader } from '@data';
 import { withStubbedDevData } from '@data/with-stubbed-dev-data';
-import { ResourceObject } from 'jsonapi-typescript';
 import { withCollectionDataActions } from '@data/containers/resources/notification/with-collection-data-actions';
 
 const mapNetworkToProps = (passedProps) => {

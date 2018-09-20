@@ -1,10 +1,8 @@
-import * as React from 'react';
 import { compose } from 'recompose';
 
-import { withCurrentUser } from '@data/containers/with-current-user';
-
-import { withData } from './with-data';
 import Display from './display';
+import { withCurrentUser } from '@data/containers/with-current-user';
+import { withData } from './with-data';
 
 export default compose(
   withCurrentUser(),

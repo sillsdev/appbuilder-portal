@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Menu } from 'semantic-ui-react';
+import { ResourceObject } from 'jsonapi-typescript';
 
 import { attributesFor, ORGANIZATIONS_TYPE } from '@data';
 import { OrganizationAttributes } from '@data/models/organization';
-import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IProps {
   organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
