@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { compose } from 'recompose';
+import { ResourceObject } from 'jsonapi-typescript';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
-import { UserAttributes } from '@data/models/user';
 import { GroupAttributes } from '@data/models/group';
-import { isEmpty } from '@lib/collection';
-
 import Header from './header';
+import { isEmpty } from '@lib/collection';
 import Row from './row';
+import { UserAttributes } from '@data/models/user';
+import { USERS_TYPE, GROUPS_TYPE } from '@data';
 
 import './user-table.scss';
-import { ResourceObject } from 'jsonapi-typescript';
-import { USERS_TYPE, GROUPS_TYPE } from '@data';
 
 interface IOwnProps {
   users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
@@ -47,4 +47,6 @@ class Table extends React.Component<IProps> {
   }
 }
 
-export default translate('translations')(Table);
+export default compose(
+  withTranslations
+)(Table);

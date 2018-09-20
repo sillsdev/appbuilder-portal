@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 class Header extends React.Component<i18nProps> {
 
@@ -22,5 +22,5 @@ class Header extends React.Component<i18nProps> {
 }
 
 export default compose(
-  translate('translations'),
+  withTranslations
 )(Header);

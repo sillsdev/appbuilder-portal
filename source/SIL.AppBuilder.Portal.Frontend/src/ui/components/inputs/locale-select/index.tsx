@@ -1,8 +1,8 @@
 import * as React from "react";
 import { compose } from 'recompose';
-import { WithDataProps } from "react-orbitjs";
 import { Dropdown } from "semantic-ui-react";
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { WithDataProps } from "react-orbitjs";
+import { withTranslations, i18nProps } from "@lib/i18n";
 
 import { withCurrentUser } from "@data/containers/with-current-user";
 import { UserAttributes } from "@data/models/user";
@@ -63,6 +63,6 @@ class LocaleSelect extends React.Component<IProps> {
 }
 
 export default compose(
-  translate('translations'),
+  withTranslations,
   withCurrentUser(),
 )(LocaleSelect);
