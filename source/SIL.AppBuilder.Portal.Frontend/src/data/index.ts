@@ -1,5 +1,4 @@
 export { default as DataProvider } from './provider';
-import { USERS_TYPE, REVIEWERS_TYPE, PRODUCTS_TYPE, GROUP_MEMBERSHIPS_TYPE, ORGANIZATION_MEMBERSHIPS_TYPE } from '@data';
 
 export { defaultSourceOptions, defaultOptions } from './store';
 export {
