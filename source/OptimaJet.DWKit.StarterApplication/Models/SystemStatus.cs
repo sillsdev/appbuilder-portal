@@ -1,8 +1,7 @@
 ﻿using System;
 using JsonApiDotNetCore.Models;
-using OptimaJet.DWKit.StarterApplication.Models;
 
-namespace Optimajet.DWKit.StarterApplication.Models
+namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class SystemStatus : Identifiable, ITrackDate, IBuildEngineReference
     {

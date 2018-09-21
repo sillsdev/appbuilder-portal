@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using JsonApiDotNetCore.Data;
-using Optimajet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Models;
 using SIL.AppBuilder.BuildEngineApiClient;
 
