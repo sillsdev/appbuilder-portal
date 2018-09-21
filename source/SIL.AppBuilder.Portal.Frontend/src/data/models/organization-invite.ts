@@ -6,7 +6,7 @@ export interface OrganizationInviteAttributes extends AttributesObject {
   name?: string;
   ownerEmail?: string;
   url?: string;
-  expiresAt?: Date;
+  expiresAt?: string;
 }
 
 export interface RequestAccessForOrganizationAttributes extends AttributesObject {
