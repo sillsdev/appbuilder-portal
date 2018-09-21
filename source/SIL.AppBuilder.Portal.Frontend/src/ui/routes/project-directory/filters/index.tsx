@@ -10,9 +10,9 @@ import MomentLocaleUtils, {
   parseDate,
 } from 'react-day-picker/moment';
 
-import { attributesFor, ORGANIZATIONS_TYPE } from '@data';
-import { OrganizationAttributes } from '@data/models/organization';
-import { IFilter } from '@data/containers/with-filtering';
+import { attributesFor, ORGANIZATIONS_TYPE, idFromRecordIdentity } from '@data';
+import { OrganizationAttributes, TYPE_NAME as ORGANIZATION } from '@data/models/organization';
+import { IFilter } from '@data/containers/api/with-filtering';
 import {
   withCurrentOrganization,
   IProvidedProps as ICurrentOrgProps
@@ -33,7 +33,6 @@ interface IState {
 interface IOwnProps {
   updateFilter: (filter: IFilter) => void;
   organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
-  onOrganizationChange: (id: string | number) => void;
 }
 
 type IProps =
@@ -43,33 +42,53 @@ type IProps =
 
 class Filter extends React.Component<IProps, IState> {
   state = {
-    products: [{ text: 'All Products', value: 'all' }, { text: 'Android APK w/ Embedded Audio', value: 'android-apk' }, { text: 'HTML Website', value: 'website'}],
-    selectedProduct: null,
-    selectedOrganization: null,
+    products: [
+      { text: 'All Products', value: 'all' },
+      { text: 'Android APK w/ Embedded Audio', value: 'android-apk' },
+      { text: 'HTML Website', value: 'website'}],
+    selectedProduct: 'all',
+    selectedOrganization: 'all',
     from: '',
     to: ''
   };
 
   handleProductChange = (e, { value }) => {
-    this.props.updateFilter({ attribute: 'products.productDefinition.name', value });
+    const { updateFilter } = this.props;
+
+    updateFilter({ attribute: 'products.productDefinition.name', value });
 
     this.setState({ selectedProduct: value });
   }
 
-  handleOrganizationChange = (e, { value }) => {
-    const { onOrganizationChange } = this.props;
+  handleOrganizationChange = (e, dropdownEvent) => {
+    const { value } = dropdownEvent;
+    const { updateFilter } = this.props;
 
-    onOrganizationChange(value);
+    if (value === 'all') {
+      updateFilter({ attribute: 'organization-header', value });
+
+      return this.setState({ selectedOrganization: value });
+    }
+
+    const id = idFromRecordIdentity({ type: ORGANIZATION, id: value });
+
+    updateFilter({ attribute: 'organization-header', value: id });
+
+    this.setState({ selectedOrganization: value });
   }
 
   handleToChange = (to) => {
-    this.props.updateFilter({ attribute: 'products.dateUpdated', value: to });
+    const { updateFilter } = this.props;
+
+    updateFilter({ attribute: 'products.dateUpdated', value: `le:${to}` });
 
     this.setState({ to });
   }
 
   handleFromChange = (from) => {
-    this.props.updateFilter({ attribute: 'products.dateUpdated', value: from });
+    const { updateFilter } = this.props;
+
+    updateFilter({ attribute: 'products.dateUpdated', value: `ge:${from}` });
 
     this.setState({from});
   }
@@ -90,9 +109,9 @@ class Filter extends React.Component<IProps, IState> {
 
   render() {
 
-    const { t, organizations, currentOrganizationId } = this.props;
-    const { from, to } = this.state;
-    const organizationOptions = [{ text: 'All Organizations', value: ''}].concat(
+    const { t, organizations } = this.props;
+    const { from, to, products, selectedProduct, selectedOrganization } = this.state;
+    const organizationOptions = [{ text: 'All Organizations', value: 'all'}].concat(
       organizations.map(o => ({
         text: attributesFor(o).name || '',
         value: o.id
@@ -107,14 +126,14 @@ class Filter extends React.Component<IProps, IState> {
               className='w-100'
               options={this.state.products}
               onChange={this.handleProductChange}
-              defaultValue={this.state.products[0].value} />
+              defaultValue={selectedProduct} />
           </div>
           <div className='input'>
             <Dropdown
               className='w-100'
               onChange={this.handleOrganizationChange}
               options={organizationOptions}
-              defaultValue={currentOrganizationId} />
+              defaultValue={selectedOrganization} />
           </div>
         </div>
 

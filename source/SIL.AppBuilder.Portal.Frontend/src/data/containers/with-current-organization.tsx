@@ -11,7 +11,7 @@ import { ORGANIZATIONS_TYPE } from '@data';
 import { buildFindRecord } from '@data/store-helpers';
 import * as toast from '@lib/toast';
 import { withTranslations } from '@lib/i18n';
-import { i18nProps } from 'react-i18next/src/I18n';
+import { setCurrentOrganization } from '@store/data';
 
 export interface IProvidedProps {
   currentOrganizationId: string | number;
@@ -21,6 +21,7 @@ export interface IProvidedProps {
 export interface IProps {
   currentOrganizationId: string | number;
   organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
+  setCurrentOrganizationId: (id: string) => void;
 }
 
 function mapStateToProps({ data }) {
@@ -39,12 +40,22 @@ function mapRecordsToProps(passedProps) {
   };
 }
 
+function mapDispatchToProps(dispatch) {
+  return {
+    setCurrentOrganizationId: (id: string) => dispatch(setCurrentOrganization(id))
+  };
+}
+
 // all organizations the user can select have already been loaded from
 // the with-current-user HOC
 export function withCurrentOrganization(InnerComponent) {
   class WrapperClass extends React.Component<IProps> {
     render() {
-      const { currentOrganizationId, organization } = this.props;
+      const { currentOrganizationId, organization, setCurrentOrganizationId } = this.props;
+
+      if (!organization) {
+        setCurrentOrganizationId('');
+      }
 
       const dataProps = {
         currentOrganization: organization || null,
@@ -56,7 +67,7 @@ export function withCurrentOrganization(InnerComponent) {
   }
 
   return compose(
-    connect(mapStateToProps),
+    connect(mapStateToProps, mapDispatchToProps),
     branch(
       ({ currentOrganizationId: id }) => id && `${id}`.length > 0,
       withData(mapRecordsToProps)

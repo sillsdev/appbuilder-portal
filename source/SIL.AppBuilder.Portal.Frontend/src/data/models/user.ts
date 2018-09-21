@@ -1,7 +1,6 @@
 import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type USERS_TYPE = 'users';
-
 export const TYPE_NAME = 'user';
 export const PLURAL_NAME = 'users';
 

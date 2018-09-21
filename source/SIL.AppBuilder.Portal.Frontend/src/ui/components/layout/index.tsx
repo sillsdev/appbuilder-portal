@@ -6,7 +6,7 @@ import Sidebar from '@ui/components/sidebar';
 
 import {
   showSidebar as showSidebarInStore,
-  hideSidebar as hideSidebarInStore
+  hideSidebar as hideSidebarInStore,
 } from '@store/user-interface';
 
 interface IOwnProps {
@@ -37,6 +37,12 @@ class Layout extends React.Component<IOwnProps> {
 
     if (window.innerWidth > SM_BREAKPOINT && !isSidebarVisible) {
       showSidebar();
+    } else {
+      // intentionally do not save this state (by not using redux)
+      // this is more for dev purposes where we are constantly
+      // resizing the browser
+      // (not using dispatch makes this a one-off)
+      hideSidebarInStore();
     }
   }
 

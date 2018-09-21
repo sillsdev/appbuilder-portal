@@ -13,12 +13,11 @@ namespace OptimaJet.DWKit.StarterApplication.Middleware
 {
     public class DisabledUserFilter : IActionFilter
     {
-        private readonly ICurrentUserContext currentUserContext;
-        private readonly UserRepository userRepository;
-        public DisabledUserFilter(ICurrentUserContext currentUserContext, UserRepository userRepository)
+        private readonly CurrentUserRepository currentUserRepository;
+
+        public DisabledUserFilter(CurrentUserRepository currentUserRepository)
         {
-            this.currentUserContext = currentUserContext;
-            this.userRepository = userRepository;
+            this.currentUserRepository = currentUserRepository;
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -67,7 +66,7 @@ namespace OptimaJet.DWKit.StarterApplication.Middleware
 
         protected bool IsUserLocked(ActionExecutingContext context)
         {
-            var user = userRepository.GetByAuth0Id(currentUserContext.Auth0Id).Result;
+            var user = currentUserRepository.GetCurrentUser().Result;
             return user != null && user.IsLocked;
         }
 

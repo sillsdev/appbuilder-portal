@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FindRecordsTerm } from '@orbit/data';
 
 export enum SortDirection {
   Up = 0,
@@ -6,9 +7,13 @@ export enum SortDirection {
 }
 
 export interface ISortProps {
+  isDescending: boolean;
+  isAscending: boolean;
+  defaultSort: string;
   sortProperty: string;
   sortDirection: string;
   sort: (property: string, direction: SortDirection) => void;
+  applySort: (builder: FindRecordsTerm) => FindRecordsTerm;
 }
 
 export interface ISortOptions {
@@ -32,10 +37,21 @@ export function withSorting(options) {
         this.setState({ sortProperty });
       }
 
+      applySort = (builder: FindRecordsTerm) => {
+        const { sortProperty } = this.state;
+        const sorts = [ sortProperty ];
+
+        // builder.sort support multi-property sort
+        return builder.sort(...sorts);
+      }
+
       render() {
         const { sortProperty } = this.state;
+        const isDescending = sortProperty.includes('-');
 
         const sortProps = {
+          isDescending,
+          isAscending: !isDescending,
           sort: this.sort,
           sortProperty,
           defaultSort
