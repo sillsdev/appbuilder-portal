@@ -43,16 +43,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                    JsonApiContext);
 
         }
-        // public override async Task<User> GetAsync(int id)
-        // {
-        //     var currentUser = EntityRepository.GetByAuth0Id(CurrentUserContext.Auth0Id).Result;
-        //     if (currentUser.Id == id)
-        //     {
-        //         return await base.GetAsync(id);
-        //     }
-        //     var users = await GetAsync();
-        //     return users.SingleOrDefault(u => u.Id == id);
-        // }
+        public override async Task<User> GetAsync(int id)
+        {
+            var currentUser = await CurrentUserRepository.GetCurrentUser();
+            if (currentUser.Id == id)
+            {
+                return await base.GetAsync(id);
+            }
+
+            var users = await GetAsync();
+
+            return users.SingleOrDefault(u => u.Id == id);
+        }
+
         public override async Task<User> UpdateAsync(int id, User resource)
         {
             var user = await GetAsync(id);
