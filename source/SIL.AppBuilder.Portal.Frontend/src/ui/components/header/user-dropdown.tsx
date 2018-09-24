@@ -8,7 +8,7 @@ import { getPictureUrl } from '@lib/auth0';
 import { UserAttributes } from '@data/models/user';
 import { USERS_TYPE, idFromRecordIdentity } from '@data';
 import { withCurrentUser } from '@data/containers/with-current-user';
-import { withLogout, ILogoutProps } from '@data/containers/with-logout';
+import { withLogout, IProvidedProps as ILogoutProps } from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './header.scss';
