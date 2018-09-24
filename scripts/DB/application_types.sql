@@ -1,5 +1,5 @@
-INSERT INTO "ApplicationTypes" ("Id", "Name") VALUES
-('scriptureappbuilder',	'Scripture App Builder'),
-('readingappbuilder',	'Reading App Builder'),
-('dictionaryappbuilder',	'Dictionary App Builder');
+INSERT INTO "ApplicationTypes" ("Id", "Name", "Description") VALUES
+(1, 'scriptureappbuilder',	'Scripture App Builder'),
+(2, 'readingappbuilder',	'Reading App Builder'),
+(3, 'dictionaryappbuilder',	'Dictionary App Builder');
 

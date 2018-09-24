@@ -10,8 +10,11 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("name")]
         public string Name { get; set; }
 
-        [Attr("type")]
-        public string Type { get; set; }
+        [HasOne("type")]
+        public virtual ApplicationType Type { get; set; }
+
+        [Attr("type-id")]
+        public int TypeId { get; set; }
 
         [Attr("description")]
         public string Description { get; set; }
@@ -42,7 +45,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public DateTime? DateUpdated { get; set; }
 
         [Attr("date-archived")]
-        public DateTime? DataArchived { get; set; }
+        public DateTime? DateArchived { get; set; }
 
         [HasMany("reviewers", Link.None)]
         public virtual List<Reviewer> Reviewers { get; set; }
