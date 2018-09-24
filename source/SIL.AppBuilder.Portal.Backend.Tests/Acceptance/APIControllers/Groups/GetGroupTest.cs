@@ -119,7 +119,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Groups
         {
             BuildTestData();
             var url = "/api/groups/" + group1.Id.ToString();
-            var response = await Get(url, "", false);
+            var response = await Get(url, addOrgHeader: false);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -135,7 +135,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Groups
             // the current user down't belong to
             BuildTestData();
             var url = "/api/groups/" + group4.Id.ToString();
-            var response = await Get(url, "");
+            var response = await Get(url, allOrgs: true);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 

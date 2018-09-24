@@ -34,15 +34,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
         #region HTTP Request Helpers
 
-        public async Task<HttpResponseMessage> Get(string url, string organizationId = "", bool addOrgHeader = true)
+        public async Task<HttpResponseMessage> Get(string url, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
         {
             var httpMethod = new HttpMethod("GET");
             var request = new HttpRequestMessage(httpMethod, url);
 
-            return await MakeRequest(request, organizationId, addOrgHeader);
+            return await MakeRequest(request, organizationId, addOrgHeader, allOrgs);
         }
 
-        public async Task<HttpResponseMessage> Patch(string url, object content, string organizationId = "")
+        public async Task<HttpResponseMessage> Patch(string url, object content, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
         {
             var httpMethod = new HttpMethod("PATCH");
             var request = new HttpRequestMessage(httpMethod, url)
@@ -56,10 +56,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.api+json");
 
-            return await MakeRequest(request, organizationId);
+            return await MakeRequest(request, organizationId, addOrgHeader, allOrgs);
         }
 
-        public async Task<HttpResponseMessage> Post(string url, object content, string organizationId = "")
+        public async Task<HttpResponseMessage> Post(string url, object content, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
         {
             var httpMethod = new HttpMethod("POST");
             var serializedContent = JsonConvert.SerializeObject(content);
@@ -74,7 +74,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.api+json");
 
-            return await MakeRequest(request, organizationId, false);
+            return await MakeRequest(request, organizationId, false, allOrgs);
         }
 
         public object ResourcePatchPayload(
@@ -95,11 +95,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             };
         }
 
-        public async Task<HttpResponseMessage> MakeRequest(HttpRequestMessage request, string organizationId = "", bool addOrgHeader = true)
+        public async Task<HttpResponseMessage> MakeRequest(HttpRequestMessage request, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
         {
             if (addOrgHeader)
             {
-                request.Headers.Add("Organization", organizationId);
+                // NOTE: HttpRequestMessage omits headers if set to empty string...
+                request.Headers.Add("Organization", allOrgs ? "-" : organizationId);
             }
 
             var body = await _fixture.Client.SendAsync(request);

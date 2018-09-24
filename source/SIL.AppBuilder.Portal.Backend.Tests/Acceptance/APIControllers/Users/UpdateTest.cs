@@ -47,7 +47,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
         public async Task Patch_SomeUser()
         {
             var tuple = NeedsConfiguredCurrentUser();
-            var user = AddEntity<AppDbContext, User>(new User());
+            var user = AddEntity<AppDbContext, User>(new User { ExternalId = "n/a" });
 
             AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
             {

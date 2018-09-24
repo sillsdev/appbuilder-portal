@@ -9,69 +9,76 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI;
 using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
+using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI.FilterQueryExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
     public class ProjectRepository : ControllerRepository<Project>
     {
         public IOrganizationContext OrganizationContext { get; }
-        public ICurrentUserContext CurrentUserContext { get; }
-        public UserRepository UserRepository { get; set; }
-        public GroupRepository GroupRepository { get; set; }
-        public IEntityRepository<Organization> OrganizationRepository { get; set; }
+        public CurrentUserRepository CurrentUserRepository { get; }
 
-        public ProjectRepository(
+    public ProjectRepository(
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
-            ICurrentUserContext currentUserContext,
-            UserRepository userRepository,
-            GroupRepository groupRepository,
-            IEntityRepository<Organization> organizationRepository,
+            CurrentUserRepository currentUserRepository,
             IDbContextResolver contextResolver
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
             this.OrganizationContext = organizationContext;
-            this.CurrentUserContext = currentUserContext;
-            this.UserRepository = userRepository;
-            this.GroupRepository = groupRepository;
-            this.OrganizationRepository = organizationRepository;
+            this.CurrentUserRepository = currentUserRepository;
         }
+
         public override IQueryable<Project> Filter(IQueryable<Project> query, FilterQuery filterQuery)
         {
-            var attribute = filterQuery.Attribute;
-            var value = filterQuery.Value;
-            var isTargetParam = attribute.Equals("organization-header", StringComparison.OrdinalIgnoreCase);
+            var filterOnOrganizations = OrganizationContext.IsOrganizationHeaderPresent || filterQuery.Has(ORGANIZATION_HEADER);
+            
+            if (!filterOnOrganizations) 
+            {
+                return base.Filter(query, filterQuery);
+            }
 
-            return query.OptionallyFilterOnQueryParam(filterQuery,
-                                                      "organization-header",
-                                                      UserRepository,
-                                                      CurrentUserContext,
-                                                      GetWithFilter,
-                                                      base.Filter,
-                                                      GetWithOrganizationId,
-                                                      GetWithOrganizationContextAndOrgId);
+            var currentUser = CurrentUserRepository.GetCurrentUser().Result;
+            var orgIds = currentUser.OrganizationIds.OrEmpty();
+
+            int specifiedOrgId;
+            var hasSpecifiedOrgId = int.TryParse(filterQuery.Value, out specifiedOrgId);
+
+            if (hasSpecifiedOrgId) {
+                return query
+                    .GetAllInOrganizationIds(orgIds)
+                    .GetByOrganizationId(specifiedOrgId);
+            }
+            
+            return query.GetAllInOrganizationIds(orgIds);
         }
 
-        private IQueryable<Project> GetWithOrganizationId(IQueryable<Project> query,
-                                        IEnumerable<int> orgIds)
+        // This is the set of all projects that a user has access to.
+        // If a project would ever need to be accessed outside of this set of projects,
+        // this method should not be used.
+        public override IQueryable<Project> Get() 
         {
-            // Get all projects in the all the organizations that the current user is a member
+            var currentUser = CurrentUserRepository.GetCurrentUser().Result;
 
-            return query
-                .Where(p => orgIds.Contains(p.OrganizationId));
-        }
-        private IQueryable<Project> GetWithOrganizationContextAndOrgId(IQueryable<Project> query,
-                                        IEnumerable<int> orgIds)
-        {
-            // Get projects in the specified organization if that organization is accessible by the current user
-            return query
-                .Where(p => (p.OrganizationId == OrganizationContext.OrganizationId)
-                       && (orgIds.Contains(p.OrganizationId))
-                      );
-        }
+            if (null == currentUser) 
+            {
+                throw new Exception("Current User does not exist");
+            }
 
+            var orgIds = currentUser.OrganizationIds.OrEmpty();
+            var includePublicProjects = !OrganizationContext.IsOrganizationHeaderPresent;
+            
+            // - All public organizations
+            // - All private organizations the current user has access to
+            if (includePublicProjects) {
+                return base.Get().Where(p => (includePublicProjects && p.Private == false) || orgIds.Contains(p.OrganizationId));
+            }
+
+            return base.Get().Where(p => orgIds.Contains(p.OrganizationId));
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     {
         bool HasOrganization { get; }
         bool SpecifiedOrganizationDoesNotExist { get; }
+        bool IsOrganizationHeaderPresent { get; }
         int OrganizationId { get; }
     }
 }

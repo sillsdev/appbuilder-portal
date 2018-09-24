@@ -199,7 +199,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         {
             BuildTestData();
             var url = "/api/projects";
-            var response = await Get(url); // Empty string for org header
+            var response = await Get(url, allOrgs: true);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -235,7 +235,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         {
             BuildTestData();
  
-            var response = await Get("/api/projects?include=reviewers");
+            var response = await Get("/api/projects?include=reviewers", allOrgs: true);
             var responseString = response.Content.ToString();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -255,7 +255,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         {
             BuildTestData();
 
-            var response = await Get("/api/projects", "", addOrgHeader: false);
+            var response = await Get("/api/projects", addOrgHeader: false);
             
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -267,7 +267,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Contains(project2.Id, ids);
             Assert.Contains(project3.Id, ids);
             Assert.Contains(project4.Id, ids);
-
         }
     }
 }
