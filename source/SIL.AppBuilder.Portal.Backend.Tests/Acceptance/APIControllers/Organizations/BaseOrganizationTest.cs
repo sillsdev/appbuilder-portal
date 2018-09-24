@@ -66,7 +66,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
             });
             appType1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
             {
-                Name = "TestApp1"
+                Name = "TestApp1",
+                Description = "Test Application"
             });
             workflow1 = AddEntity<AppDbContext, WorkflowDefinition>(new WorkflowDefinition
             {

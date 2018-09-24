@@ -9,7 +9,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasOne("type")]
         public virtual ApplicationType Type { get; set; }
-        public string TypeId { get; set; }
+        public int TypeId { get; set; }
 
         [Attr("description")]
         public string Description { get; set; }

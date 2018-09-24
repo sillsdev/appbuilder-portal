@@ -180,7 +180,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<bool>("Private");
 
-                    b.Property<string>("Type");
+                    b.Property<int>("TypeId");
 
                     b.HasKey("Id");
 
@@ -189,6 +189,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.HasIndex("OwnerId");
+
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Projects");
                 });
@@ -279,6 +281,10 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ApplicationType", "Type")
+                       .WithMany()
+                       .HasForeignKey("TypeId");
                 });
 #pragma warning restore 612, 618
         }

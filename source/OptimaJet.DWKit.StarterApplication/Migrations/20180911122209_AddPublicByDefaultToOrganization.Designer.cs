@@ -24,8 +24,10 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ApplicationType", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
 
                     b.Property<string>("Name");
 
@@ -206,7 +208,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("TypeId");
+                    b.Property<int>("TypeId");
 
                     b.Property<int>("WorkflowId");
 
@@ -252,7 +254,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<bool>("Private");
 
-                    b.Property<string>("Type");
+                    b.Property<int>("TypeId");
 
                     b.HasKey("Id");
 
@@ -261,6 +263,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.HasIndex("OwnerId");
+
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Projects");
                 });
@@ -420,6 +424,10 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ApplicationType", "Type")
+                       .WithMany()
+                       .HasForeignKey("TypeId");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Reviewer", b =>
