@@ -1,10 +1,13 @@
 import * as React from 'react';
 
-import Header from './header';
-import { IProvidedProps } from './withTableColumns';
-import { ProjectAttributes } from '@data/models/project';
-import { PROJECTS_TYPE } from '@data';
 import { ResourceObject } from 'jsonapi-typescript';
+
+import { PROJECTS_TYPE } from '@data';
+import { ProjectAttributes } from '@data/models/project';
+import { ISortProps } from '@data/containers/api/sorting';
+
+import { IProvidedProps as ITableColumns } from './with-table-columns';
+import Header from './header';
 import Row from './row';
 
 interface IOwnProps {
@@ -13,8 +16,8 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
-  & IProvidedProps;
-
+  & ITableColumns
+  & ISortProps;
 
 class Table extends React.Component<IProps> {
 
@@ -22,32 +25,22 @@ class Table extends React.Component<IProps> {
 
     const {
       projects,
-      columns,
       selectedColumns,
-      updateColumnSelection,
-      isInSelectedColumns,
-      columnWidth
+      activeProjectColumns,
+      activeProductColumns
     } = this.props;
-
-    const headerProps = {
-      columns,
-      selectedColumns,
-      updateColumnSelection,
-      isInSelectedColumns,
-      columnWidth
-    };
 
     return (
       <div data-test-project-table className='project-table'>
-        <Header { ...headerProps} />
+        <Header { ...this.props } />
         {
           projects && projects.map((project, index) => {
 
             const rowProps = {
               project,
               selectedColumns,
-              isInSelectedColumns,
-              columnWidth
+              activeProjectColumns,
+              activeProductColumns
             };
 
             return <Row key={index} {...rowProps} />;

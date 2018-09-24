@@ -1,7 +1,7 @@
 import { compose } from 'recompose';
 
-// import { withSorting } from '@data/containers/sorting';
-// import { withPagination } from '@data/containers/pagination';
+// import { withSorting } from '@data/containers/api/sorting';
+// import { withPagination } from '@data/containers/api/pagination';
 // import { withFiltering } from './with-filtering';
 
 import Table from './table';

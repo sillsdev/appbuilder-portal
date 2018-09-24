@@ -2,16 +2,9 @@
 @import '../../styles/vendor/bootstrap4/breakpoints.scss';
 
 .project-table {
-
   color: $gray;
-  font-family: Montserrat;
-  font-size: 13px;
-  margin-bottom: 20px;
 
   a {
-    font-family: Montserrat;
-    font-size: 13px;
-    font-weight: bold;
     color: $blue-highlight;
   }
 
@@ -31,12 +24,12 @@
   }
 
   .grid {
-
     .col {
       padding: .92857143em .78571429em;
     }
+
     .action {
-      width: 40px;
+      width: 24px;
       padding: .92857143em 0 !important;
       text-align: center;
 
@@ -53,7 +46,6 @@
     border: solid 1px $lighterer-gray;
 
     .products-header {
-      font-family: Montserrat;
       font-size: 11px;
       color: $light-gray;
       padding: 2px;
@@ -88,7 +80,7 @@
     }
   }
 
-  @include media-breakpoint-only('xs',$grid-breakpoints) {
+  @include media-breakpoint-only('xs') {
     .product-xs-only {
       font-size: 14px;
       padding-left: 0px !important;

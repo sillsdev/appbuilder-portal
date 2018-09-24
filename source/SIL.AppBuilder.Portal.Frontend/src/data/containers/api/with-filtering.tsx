@@ -41,7 +41,8 @@ const defaultOptions = {
 //            .sort('name'),
 //   ]
 // });
-export function withFiltering(opts: IFilterOptions = {}) {
+export function withFiltering<TPassedProps>(
+  opts: FnOrObject<TPassedProps, IFilterOptions> = {}) {
   let optionsFunction;
 
   if (typeof opts !== 'function') {
@@ -119,8 +120,12 @@ export function withFiltering(opts: IFilterOptions = {}) {
         const attribute = camelize(filter.attribute);
 
         switch(filter.value) {
+          // TODO: need a mapping for dates, as Date.toString() is not
+          //       in an iso format.
           case 'isnull:': return { ...filter, attribute, value: null };
           case 'isnotnull:': return { ...filter, attribute, value: '', op: 'gt' };
+          case /ge:/.test(filter.value): return { ...filter, value: filter.value.split(':')[1], op: 'gte' };
+          case /le:/.test(filter.value): return { ...filter, value: filter.value.split(':')[1], op: 'lte' };
           // TODO: write a mapping for like for locale query
           // TODO: also consider a different scheme of mapping remote filtering
           //       with local filtering

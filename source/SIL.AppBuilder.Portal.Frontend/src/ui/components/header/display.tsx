@@ -25,7 +25,7 @@ class Header extends React.Component<IProps> {
     return (
       <div data-test-header-menu className='ui menu menu-navbar'>
         <div className='ui container'>
-          <div className='item sidebar-button-item d-sm-none'>
+          <div className='item sidebar-button-item d-lg-none'>
             <button
               data-test-header-sidebar-button
               className='ui button sidebar-button'

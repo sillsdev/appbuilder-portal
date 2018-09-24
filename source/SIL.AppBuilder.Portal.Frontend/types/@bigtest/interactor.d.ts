@@ -4,6 +4,8 @@ export function clickable(selector: string): () => Promise<void>;
 export function findAll(selector: string): Array<HTMLElement>;
 export function isPresent(selector: string): boolean;
 export function selectable(selector: string): (text: string) => Promise<void>;
+export function isHidden(selector: string): boolean;
+export function hasClass(selector: string, className: string): boolean;
 
 export class Interactor {
   constructor(selector?: string);

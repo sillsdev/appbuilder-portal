@@ -54,7 +54,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
         private async Task<User> FindOrCreateCurrentUser()
         {
-            var existing = await userService.EntityRepository.GetByAuth0Id(currentUserContext.Auth0Id);
+            var existing = await userService.GetCurrentUser();
 
             if (existing != null) return existing;
 

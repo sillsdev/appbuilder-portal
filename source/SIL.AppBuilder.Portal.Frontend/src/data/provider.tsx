@@ -6,13 +6,15 @@ import Coordinator from '@orbit/coordinator';
 import PageLoader from '@ui/components/loaders/page';
 
 import { createStore } from './store';
+import { Source } from '@orbit/data';
 
 interface IState {
   store: Store;
+  sources: { [sourceName: string]: Source };
 }
 
 export default class APIProvider extends React.Component<{}, IState> {
-  state = { store: undefined };
+  state = { store: undefined, sources: undefined };
   coordinator: Coordinator;
 
   constructor(props) {
@@ -22,18 +24,18 @@ export default class APIProvider extends React.Component<{}, IState> {
   }
 
   async initDataStore() {
-    const store = await createStore();
+    const { sources } = await createStore();
 
-    this.setState({ store });
+    this.setState({ store: sources.inMemory, sources });
   }
 
   render() {
-    const { store } = this.state;
+    const { store, sources } = this.state;
 
     if (!store) { return <PageLoader />; }
 
     return (
-      <DataProvider dataStore={store}>
+      <DataProvider dataStore={store} sources={sources}>
         {this.props.children}
       </DataProvider>
     );

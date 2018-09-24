@@ -1,4 +1,7 @@
-# AppBuilder Portal
+# AppBuilder Portal 
+[![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/scriptoria/localized.svg)](https://crowdin.com/project/scriptoria)
+
 ## Description
 The `appbuilder-portal` is the portal frontend/backend for the Scriptoria project.  This project provides software to automate the building and publishing of apps (and other related content) to App Stores and websites.
 
@@ -24,11 +27,6 @@ For email notification delivery:
 
 [<img src="readme_images/sparkpost-logo.png" width="200">](https://www.sparkpost.com/)
 
-## Status
-
-[![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
-
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/scriptoria/localized.svg)](https://crowdin.com/project/scriptoria)
 
 ## Deployment
 

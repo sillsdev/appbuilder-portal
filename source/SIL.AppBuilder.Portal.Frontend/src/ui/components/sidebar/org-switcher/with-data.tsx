@@ -4,7 +4,7 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
 
 import { query, defaultOptions, ORGANIZATIONS_TYPE, withLoader, attributesFor } from '@data';
-import { IProvidedProps as IFilterProps, withFiltering } from '@data/containers/with-filtering';
+import { IProvidedProps as IFilterProps, withFiltering } from '@data/containers/api/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
 import { withCurrentUser, IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 import { debounce } from '@lib/debounce';

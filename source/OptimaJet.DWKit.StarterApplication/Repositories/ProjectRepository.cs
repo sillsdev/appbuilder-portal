@@ -41,6 +41,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         }
         public override IQueryable<Project> Filter(IQueryable<Project> query, FilterQuery filterQuery)
         {
+            var attribute = filterQuery.Attribute;
+            var value = filterQuery.Value;
+            var isTargetParam = attribute.Equals("organization-header", StringComparison.OrdinalIgnoreCase);
+
             return query.OptionallyFilterOnQueryParam(filterQuery,
                                                       "organization-header",
                                                       UserRepository,

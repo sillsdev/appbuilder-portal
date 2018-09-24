@@ -17,6 +17,15 @@ export interface IQueryOptions {
   settings?: any;
 }
 
+
+type IResourceIdentity<TType extends string = '', TAttrs extends AttributesObject = {}> =
+| { type: TType, id: string }
+| ResourceObject<TType, TAttrs>;
+
+type RecordIdentity<TType extends string = '', TAttrs extends AttributesObject = {}> =
+& IOrbitTracking
+& IResourceIdentity<TType, TAttrs>;
+
 export function buildFindRelatedRecords(q: QueryBuilder, record: any, relationship: string) {
   return q.findRelatedRecords({ type: record.type, id: record.id }, relationship);
 }
@@ -137,7 +146,7 @@ export function buildNew<TAttrs, TRelationships>(type: string, options: IBuildNe
 }
 
 interface IOrbitTracking {
-  keys: { remoteId: string };
+  keys?: { remoteId: string };
 }
 
 export function localIdFromRecordIdentity(recordIdentity: any) {
@@ -150,9 +159,10 @@ export function localIdFromRecordIdentity(recordIdentity: any) {
   return keyMap.idFromKeys(type, { remoteId: maybeLocalId }) || recordIdentity.id;
 }
 
+
 // this should return the remoteId, always.
 export function idFromRecordIdentity<TType extends string = '', TAttrs extends AttributesObject = {}>(
-  recordIdentity: IOrbitTracking & ResourceObject<TType, TAttrs>
+  recordIdentity: RecordIdentity<TType, TAttrs>
 ): string {
   const keys = recordIdentity.keys;
 

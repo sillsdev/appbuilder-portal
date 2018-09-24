@@ -50,7 +50,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
         </div>
         <button
           data-test-sidebar-close-button
-          className='close d-sm-none'
+          className='close d-lg-none'
           onClick={closeSidebar}
         >
           <CloseIcon />

@@ -12,6 +12,7 @@ interface IState {
 
 export interface IQueryOptions {
   passthroughError?: boolean;
+  useRemoteDirectly?: boolean;
 }
 
 // Example Usage
@@ -43,8 +44,8 @@ export interface IQueryOptions {
 // TODO: what if we just use orbit directly? do we need react-orbitjs?
 export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
   let map;
-  const opts = options || { passthroughError: false };
-  const { passthroughError } = opts;
+  const opts = options || { passthroughError: false, useRemoteDirectly: false };
+  const { passthroughError, useRemoteDirectly } = opts;
 
 
   if (typeof mapRecordsToProps !== 'function') {
@@ -80,7 +81,8 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
         this.mapResult = result;
 
-        const { dataStore } = this.props;
+        const { dataStore, sources: { remote } } = this.props;
+        const querier = useRemoteDirectly ? remote : dataStore;
 
         const responses = {};
         const requestPromises = Object.keys(result).map(async (key: string) => {
@@ -89,7 +91,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
           const query = result[key];
           const args = typeof query === 'function' ? [query] : query;
 
-          const queryResult = await dataStore.query(...args);
+          const queryResult = await querier.query(...args);
 
           responses[key] = queryResult;
 
