@@ -1,7 +1,6 @@
 import { AttributesObject, ResourceObject } from "jsonapi-typescript";
 
 export type GROUPS_TYPE = 'groups';
-
 export const TYPE_NAME = 'group';
 export const PLURAL_NAME = 'groups';
 

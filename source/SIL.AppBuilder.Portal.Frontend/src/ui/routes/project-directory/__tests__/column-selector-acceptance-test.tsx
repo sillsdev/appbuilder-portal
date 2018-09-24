@@ -17,7 +17,7 @@ describe('Acceptance | Project Table | Column selector', () => {
 
   beforeEach(function () {
     this.mockGet(200, 'projects', {
-      data: {
+      data: [{
         type: 'projects',
         id: '1',
         attributes: {
@@ -30,7 +30,7 @@ describe('Acceptance | Project Table | Column selector', () => {
           group: { data: { id: 1, type: 'groups' } },
           owner: { data: { id: 1, type: 'users' } }
         }
-      },
+      }],
       included: [
         { type: 'organizations', id: 1, attributes: { name: 'Dummy organization'} },
         { type: 'groups', id: 1, attributes: { name: 'Some Group' } }

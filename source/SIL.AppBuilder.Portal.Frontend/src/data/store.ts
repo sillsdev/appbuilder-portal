@@ -172,5 +172,5 @@ export async function createStore() {
 
   await this.coordinator.activate();
 
-  return inMemory;
+  return { store: inMemory, sources: { remote, inMemory } };
 }
