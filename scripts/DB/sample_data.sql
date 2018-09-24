@@ -37,7 +37,7 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	5,	2),
 (	1,	3),
 (	6,	3),
-(   2,  3);
+( 2,  3);
 
 INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 (	1,	1),
@@ -45,3 +45,18 @@ INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 (	2,	2),
 (	2,	15),
 (	4,	14);
+
+INSERT INTO "Projects" ("Name", "Type", "Description", "OwnerId", "GroupId", "OrganizationId", "Language","Private", "DateCreated", "DateUpdated", "DataArchived", "AllowDownloads", "AutomaticBuilds") VALUES
+( 'Developer Town Project 1', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 5, 14, 2, 'English', false, now(), now(),null, true, true),
+( 'Developer Town Project 2', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 5, 14, 2, 'Sogdian', false, now(), now(),null, true, true),
+( 'Developer Town Project 3', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 5, 14, 2, 'Spanish', true, now(), now(),now(), false, true),
+( 'Developer Town Project 4', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 5, 14, 2, 'Spanish', true, now(), now(),now(), false, true),
+( 'Developer Town Project 5', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 4, 14, 2, 'English', false, now(), now(),null, true, true),
+( 'Developer Town Project 6', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 4, 14, 2, 'Spanish', true, now(), now(),null, true, true),
+( 'Developer Town Project 7', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 4, 14, 2, 'Sogdian', false, now(), now(),now(), true, false),
+( 'Developer Town Project 8', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 3, 14, 2, 'English', false, now(), now(),null, true, true),
+( 'Developer Town Project 9', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 3, 14, 2, 'Spanish', false, now(), now(),null, true, true),
+( 'Developer Town Project 10', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy.', 3, 14, 2, 'Sogdian', true, now(), now(),now(), true, true),
+( 'SIL International Public Domain 1', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy. ', 1, 1 , 1, 'English', false, now(), now(),null, true, true),
+( 'SIL International Public Domain 2', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy. ', 1, 1 , 1, 'English', false, now(), now(),null, true, true),
+( 'Kalaam Media', 'Scripture App Builder', 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986. The full New Testament translation was completed in 2018 and has been made open source for all to use and enjoy. ', 2, 2 , 3, 'English', false, now(), now(),null, true, true);
