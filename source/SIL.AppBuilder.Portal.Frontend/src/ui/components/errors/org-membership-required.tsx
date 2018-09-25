@@ -3,7 +3,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import FocusPanel from '@ui/components/focus-panel';
 import { compose } from 'redux';
-import { withLogout, ILogoutProps } from '@data/containers/with-logout';
+import { withLogout, IProvidedProps as ILogoutProps } from '@data';
 
 class OrgMembershipRequired extends React.Component<ILogoutProps & i18nProps> {
   render() {

@@ -147,7 +147,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: true),
-                    Type = table.Column<string>(nullable: true),
+                    TypeId = table.Column<int>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     OwnerId = table.Column<int>(nullable: false),
                     GroupId = table.Column<int>(nullable: false),

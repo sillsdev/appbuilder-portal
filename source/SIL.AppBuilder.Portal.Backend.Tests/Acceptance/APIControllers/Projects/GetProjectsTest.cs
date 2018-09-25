@@ -30,6 +30,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public Group group3 { get; set; }
         public Group group4 { get; set; }
         public GroupMembership groupMembership1 { get; set; }
+        public ApplicationType type1 { get; set; }
         public Project project1 { get; set; }
         public Project project2 { get; set; }
         public Project project3 { get; set; }
@@ -107,10 +108,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 UserId = CurrentUser.Id,
                 GroupId = group1.Id
             });
+            type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
+            {
+                Name = "scriptureappbuilder",
+                Description = "Scripture App Builder"
+            });
             project1 = AddEntity<AppDbContext, Project>(new Project
             {
                 Name = "Test Project1",
-                Type = "scriptureappbuilder",
+                TypeId = type1.Id,
                 Description = "Test Description",
                 OwnerId = CurrentUser.Id,
                 GroupId = group1.Id,
@@ -121,7 +127,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             project2 = AddEntity<AppDbContext, Project>(new Project
             {
                 Name = "Test Project2",
-                Type = "scriptureappbuilder",
+                TypeId = type1.Id,
                 Description = "Test Description",
                 OwnerId = CurrentUser.Id,
                 GroupId = group1.Id,
@@ -132,7 +138,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             project3 = AddEntity<AppDbContext, Project>(new Project
             {
                 Name = "Test Project3",
-                Type = "scriptureappbuilder",
+                TypeId = type1.Id,
                 Description = "Test Description",
                 OwnerId = CurrentUser.Id,
                 GroupId = group3.Id,
@@ -143,7 +149,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             project4 = AddEntity<AppDbContext, Project>(new Project
             {
                 Name = "Test Project4",
-                Type = "scriptureappbuilder",
+                TypeId = type1.Id,
                 Description = "Test Description",
                 OwnerId = CurrentUser.Id,
                 GroupId = group4.Id,

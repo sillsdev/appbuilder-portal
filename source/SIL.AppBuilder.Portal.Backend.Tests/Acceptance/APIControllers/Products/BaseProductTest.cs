@@ -26,11 +26,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public Group group3 { get; set; }
         public Group group4 { get; set; }
         public GroupMembership groupMembership1 { get; set; }
+        public ApplicationType type1 { get; set; }
         public Project project1 { get; set; }
         public Project project2 { get; set; }
         public Project project3 { get; set; }
         public Project project4 { get; set; }
-        public ApplicationType appType1 { get; set; }
         public WorkflowDefinition workflow1 { get; set; }
         public ProductDefinition productDefinition1 { get; set; }
         public ProductDefinition productDefinition2 { get; set; }
@@ -124,10 +124,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 UserId = CurrentUser.Id,
                 GroupId = group1.Id
             });
+            type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
+            {
+                Name = "scriptureappbuilder",
+                Description = "Scripture App Builder"
+            });
             project1 = AddEntity<AppDbContext, Project>(new Project
             {
                 Name = "Test Project1",
-                Type = "scriptureappbuilder",
+                TypeId = type1.Id,
                 Description = "Test Description",
                 OwnerId = CurrentUser.Id,
                 GroupId = group1.Id,
@@ -138,7 +143,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             project2 = AddEntity<AppDbContext, Project>(new Project
             {
                 Name = "Test Project2",
-                Type = "scriptureappbuilder",
+                TypeId = type1.Id,
                 Description = "Test Description",
                 OwnerId = CurrentUser.Id,
                 GroupId = group1.Id,
@@ -149,7 +154,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             project3 = AddEntity<AppDbContext, Project>(new Project
             {
                 Name = "Test Project3",
-                Type = "scriptureappbuilder",
+                TypeId = type1.Id,
                 Description = "Test Description",
                 OwnerId = CurrentUser.Id,
                 GroupId = group3.Id,
@@ -160,17 +165,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             project4 = AddEntity<AppDbContext, Project>(new Project
             {
                 Name = "Test Project4",
-                Type = "scriptureappbuilder",
+                TypeId = type1.Id,
                 Description = "Test Description",
                 OwnerId = user1.Id,
                 GroupId = group4.Id,
                 OrganizationId = org3.Id,
                 Language = "eng-US",
                 Private = false
-            });
-            appType1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
-            {
-                Name = "TestApp1"
             });
             workflow1 = AddEntity<AppDbContext, WorkflowDefinition>(new WorkflowDefinition
             {
@@ -182,14 +183,14 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             productDefinition1 = AddEntity<AppDbContext, ProductDefinition>(new ProductDefinition
             {
                 Name = "TestProd1",
-                TypeId = appType1.Id,
+                TypeId = type1.Id,
                 Description = "This is a test product",
                 WorkflowId = workflow1.Id
             });
             productDefinition2 = AddEntity<AppDbContext, ProductDefinition>(new ProductDefinition
             {
                 Name = "TestProd2",
-                TypeId = appType1.Id,
+                TypeId = type1.Id,
                 Description = "This is test product 2",
                 WorkflowId = workflow1.Id
 
@@ -197,7 +198,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             productDefinition3 = AddEntity<AppDbContext, ProductDefinition>(new ProductDefinition
             {
                 Name = "TestProd3",
-                TypeId = appType1.Id,
+                TypeId = type1.Id,
                 Description = "This is test product 3",
                 WorkflowId = workflow1.Id
 

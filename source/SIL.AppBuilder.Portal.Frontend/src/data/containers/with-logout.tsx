@@ -3,7 +3,7 @@ import { withRouter, RouteComponentProps } from 'react-router';
 
 import { deleteToken } from '@lib/auth0';
 
-export interface ILogoutProps {
+export interface IProvidedProps {
   logout: (e: any) => void;
 }
 
