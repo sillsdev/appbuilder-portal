@@ -48,7 +48,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             BuildTestData();
 
             var url = "/api/products/" + product2.Id.ToString();
-            var response = await Get(url, "");
+            var response = await Get(url, allOrgs: true);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }

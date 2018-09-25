@@ -13,11 +13,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         private bool parsed;
         private bool hasOrganization;
+        private bool isOrganizationHeaderPresent;
         private bool specifiedOrganizationDoesNotExist;
         private int organizationId;
 
-        public HttpOrganizationContext 
-        (
+        public HttpOrganizationContext(
             IHttpContextAccessor httpContextAccessor,
             ICurrentUserContext currentUserContext,
             OrganizationService organizationService
@@ -35,7 +35,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 parsed = true;
                 hasOrganization = false;
                 specifiedOrganizationDoesNotExist = false;
-                var orgId = HttpContext.Request.Headers[ORGANIZATION_HEADER].ToString();
+
+                var headers = HttpContext.Request.Headers;
+
+                isOrganizationHeaderPresent = headers.ContainsKey(ORGANIZATION_HEADER);
+
+                var orgId = headers[ORGANIZATION_HEADER].ToString();
 
                 int orgIdValue = 0;
                 if (int.TryParse(orgId, out orgIdValue))
@@ -71,6 +76,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             get {
                 Parse();
                 return organizationId;
+            }
+        }
+
+        public bool IsOrganizationHeaderPresent {
+            get {
+                Parse();
+                return isOrganizationHeaderPresent;
             }
         }
     }

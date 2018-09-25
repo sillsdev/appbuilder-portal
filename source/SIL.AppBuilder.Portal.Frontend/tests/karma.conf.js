@@ -15,9 +15,7 @@ module.exports = function(config) {
     concurrency: 1,
     basePath: '',
     frameworks: [
-      /* 'parallel', */
       'mocha',
-      // 'iframes'
      ],
     reporters: [ 'mocha' ],
     browsers: ['Chrome'],
@@ -39,8 +37,6 @@ module.exports = function(config) {
     preprocessors: {
       [`${root}/tests/index.ts`]: [
         'webpack',
-        // 'sourcemap',
-        // 'iframes'
       ],
     },
 
@@ -56,19 +52,12 @@ module.exports = function(config) {
     webpack: require(__dirname + '/webpack.config.js'),
     webpackMiddleware: { stats: 'minimal' },
     plugins: [
-      /* 'karma-parallel', */
       'karma-mocha',
-      // 'karma-sourcemap-loader',
       'karma-webpack',
       'karma-mocha-reporter',
       'karma-chrome-launcher',
       'karma-firefox-launcher',
-      // 'karma-iframes',
     ],
-    // parallelOptions: {
-      // default to # CPUs - 1
-      // executors: 4,
-    // }
   });
 
   if (process.env.DETACHED) {

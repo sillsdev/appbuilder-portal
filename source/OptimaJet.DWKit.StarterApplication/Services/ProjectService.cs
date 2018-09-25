@@ -21,6 +21,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public UserRepository UserRepository { get; }
         public GroupRepository GroupRepository { get; }
         public ProjectRepository ProjectRepository { get; }
+        public CurrentUserRepository CurrentUserRepository { get; }
         public IEntityRepository<Organization> OrganizationRepository { get; set; }
 
         public ProjectService(
@@ -29,6 +30,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ICurrentUserContext currentUserContext,
             UserRepository userRepository,
             IEntityRepository<Project> projectRepository,
+            CurrentUserRepository currentUserRepository,
             GroupRepository groupRepository,
             IEntityRepository<Organization> organizationRepository,
             ILoggerFactory loggerFactory) : base(jsonApiContext, projectRepository, loggerFactory)
@@ -40,18 +42,28 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             GroupRepository = groupRepository;
             OrganizationRepository = organizationRepository;
             ProjectRepository = (ProjectRepository)projectRepository;
+            CurrentUserRepository = currentUserRepository;
         }
         public override async Task<IEnumerable<Project>> GetAsync()
         {
-            return await GetScopedToOrganization<Project>(base.GetAsync,
-                                               OrganizationContext,
-                                               JsonApiContext);
+            if (OrganizationContext.IsOrganizationHeaderPresent) 
+            {
+                return await GetScopedToOrganization<Project>(
+                    base.GetAsync,
+                    OrganizationContext,
+                    JsonApiContext);
+            }
+
+            return await base.GetAsync();
         }
+
         public override async Task<Project> GetAsync(int id)
         {
             var projects = await GetAsync();
+
             return projects.SingleOrDefault(g => g.Id == id);
         }
+
         public override async Task<Project> UpdateAsync(int id, Project resource)
         {
             //If changing organization, validate the change

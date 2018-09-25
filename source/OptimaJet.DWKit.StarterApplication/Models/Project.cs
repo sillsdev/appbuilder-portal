@@ -5,7 +5,7 @@ using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class Project : Identifiable, ITrackDate
+    public class Project : Identifiable, ITrackDate, IBelongsToOrganization
     {
         [Attr("name")]
         public string Name { get; set; }

@@ -91,7 +91,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
         {
             BuildTestData();
 
-            var response = await Get("/api/users");
+            var response = await Get("/api/users", allOrgs: true);
             
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

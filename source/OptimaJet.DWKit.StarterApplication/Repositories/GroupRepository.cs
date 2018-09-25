@@ -12,7 +12,7 @@ using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class GroupRepository : ControllerRepository<Group>
+    public class GroupRepository : BaseRepository<Group>
     {
         public IOrganizationContext OrganizationContext { get; }
         public UserRepository UserRepository { get; }
@@ -24,9 +24,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
             UserRepository userRepository,
+            CurrentUserRepository currentUserRepository,
             ICurrentUserContext currentUserContext,
             IDbContextResolver contextResolver
-            ) : base(loggerFactory, jsonApiContext, contextResolver)
+            ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
         {
             this.OrganizationContext = organizationContext;
             this.UserRepository = userRepository;

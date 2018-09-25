@@ -130,7 +130,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Groups
             // is used as the value for the organization header field.
             // The test Get, called below, by default, inserts an empty string
             // into the organization header field, testing that case.
-            var response = await Get(url);
+            var response = await Get(url, allOrgs: true);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

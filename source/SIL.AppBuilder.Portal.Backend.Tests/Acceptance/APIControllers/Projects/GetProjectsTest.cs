@@ -177,6 +177,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             });
 
         }
+
         [Fact]
         public async Task Get_Projects_For_An_OrganizationHeader()
         {
@@ -198,12 +199,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.DoesNotContain(project3.Id, ids);
             Assert.DoesNotContain(project4.Id, ids);
         }
+
         [Fact]
         async Task Get_With_No_Organization()
         {
             BuildTestData();
             var url = "/api/projects";
-            var response = await Get(url); // Empty string for org header
+            var response = await Get(url, allOrgs: true);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -219,6 +221,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.DoesNotContain(project4.Id, ids);
 
         }
+
         [Fact]
         async Task Get_With_Invalid_Organization()
         {
@@ -232,12 +235,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 
             Assert.Empty(projects);
         }
+
         [Fact]
         public async Task GetProjects_IncludeReviewers()
         {
             BuildTestData();
  
-            var response = await Get("/api/projects?include=reviewers");
+            var response = await Get("/api/projects?include=reviewers", allOrgs: true);
             var responseString = response.Content.ToString();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -252,5 +256,23 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         }
 
 
+        [Fact]
+        public async Task GetProjects_ForDirectory()
+        {
+            BuildTestData();
+
+            var response = await Get("/api/projects", addOrgHeader: false);
+            
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            var ids = projects.Select(p => p.Id);
+
+            Assert.Contains(project1.Id, ids);
+            Assert.Contains(project2.Id, ids);
+            Assert.Contains(project3.Id, ids);
+            Assert.Contains(project4.Id, ids);
+        }
     }
 }

@@ -12,19 +12,15 @@ using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class OrganizationRepository : ControllerRepository<Organization>
+    public class OrganizationRepository : BaseRepository<Organization>
     {
-        public CurrentUserRepository CurrentUserRepository { get; }
-
-
         public OrganizationRepository(
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             CurrentUserRepository currentUserRepository,
             IDbContextResolver contextResolver
-            ) : base(loggerFactory, jsonApiContext, contextResolver)
+            ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
         {
-            this.CurrentUserRepository = currentUserRepository;
         }
         public override IQueryable<Organization> Filter(IQueryable<Organization> query, FilterQuery filterQuery)
         {
@@ -33,9 +29,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             var isScopeToUser = attribute.Equals("scope-to-current-user", StringComparison.OrdinalIgnoreCase);
 
             if (isScopeToUser) {
-                var currentUser = CurrentUserRepository.GetCurrentUser().Result;
-
-                var orgIds = currentUser.OrganizationIds.OrEmpty();
+                var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
                 var scopedToUser = query.Where(organization => orgIds.Contains(organization.Id));
 
