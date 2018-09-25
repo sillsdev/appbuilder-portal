@@ -10,7 +10,7 @@ using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class OrganizationInviteRequestRepository : ControllerRepository<OrganizationInviteRequest>
+    public class OrganizationInviteRequestRepository : BaseRepository<OrganizationInviteRequest>
     {
         private readonly IBackgroundJobClient backgroundJobClient;
 
@@ -18,8 +18,9 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             IDbContextResolver contextResolver,
+            CurrentUserRepository currentUserRepository,
             IBackgroundJobClient backgroundJobClient
-            ) : base(loggerFactory, jsonApiContext, contextResolver)
+            ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
         {
             this.backgroundJobClient = backgroundJobClient;
         }

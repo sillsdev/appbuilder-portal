@@ -17,8 +17,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         private bool specifiedOrganizationDoesNotExist;
         private int organizationId;
 
-        public HttpOrganizationContext 
-        (
+        public HttpOrganizationContext(
             IHttpContextAccessor httpContextAccessor,
             ICurrentUserContext currentUserContext,
             OrganizationService organizationService

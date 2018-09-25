@@ -21,13 +21,6 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             {
                 return Enumerable.Empty<T>().AsQueryable();
             }
-            else if (!organizationContext.IsOrganizationHeaderPresent) 
-            {
-                // Include:
-                // - All public organizations
-                // - All private organizations the current user has access to
-                return await baseQuery();
-            }
             else
             {
                 var query = jsonApiContext.QuerySet;

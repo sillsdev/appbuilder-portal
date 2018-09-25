@@ -16,7 +16,7 @@ using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI.Filte
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class ProjectRepository : ControllerRepository<Project>
+    public class ProjectRepository : BaseRepository<Project>
     {
         public IOrganizationContext OrganizationContext { get; }
         public CurrentUserRepository CurrentUserRepository { get; }
@@ -27,34 +27,28 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             IOrganizationContext organizationContext,
             CurrentUserRepository currentUserRepository,
             IDbContextResolver contextResolver
-            ) : base(loggerFactory, jsonApiContext, contextResolver)
+            ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
         {
             this.OrganizationContext = organizationContext;
-            this.CurrentUserRepository = currentUserRepository;
         }
 
         public override IQueryable<Project> Filter(IQueryable<Project> query, FilterQuery filterQuery)
         {
             var filterOnOrganizations = OrganizationContext.IsOrganizationHeaderPresent || filterQuery.Has(ORGANIZATION_HEADER);
             
+            // For when someone wants to view the directory
+            // Any other further filtering would excessively hide
+            // projects from the user.
+            //
+            // See: this.Get()
             if (!filterOnOrganizations) 
             {
                 return base.Filter(query, filterQuery);
             }
 
-            var currentUser = CurrentUserRepository.GetCurrentUser().Result;
-            var orgIds = currentUser.OrganizationIds.OrEmpty();
+            var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
-            int specifiedOrgId;
-            var hasSpecifiedOrgId = int.TryParse(filterQuery.Value, out specifiedOrgId);
-
-            if (hasSpecifiedOrgId) {
-                return query
-                    .GetAllInOrganizationIds(orgIds)
-                    .GetByOrganizationId(specifiedOrgId);
-            }
-            
-            return query.GetAllInOrganizationIds(orgIds);
+            return query.FilterByOrganization(filterQuery, allowedOrganizationIds: orgIds);
         }
 
         // This is the set of all projects that a user has access to.
@@ -62,14 +56,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         // this method should not be used.
         public override IQueryable<Project> Get() 
         {
-            var currentUser = CurrentUserRepository.GetCurrentUser().Result;
-
-            if (null == currentUser) 
-            {
-                throw new Exception("Current User does not exist");
-            }
-
-            var orgIds = currentUser.OrganizationIds.OrEmpty();
+            var orgIds = CurrentUser.OrganizationIds.OrEmpty();
             var includePublicProjects = !OrganizationContext.IsOrganizationHeaderPresent;
             
             // - All public organizations

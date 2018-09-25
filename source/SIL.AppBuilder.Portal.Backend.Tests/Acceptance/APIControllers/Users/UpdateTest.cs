@@ -75,7 +75,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
         public async Task Patch_SomeUser_FromTheWrongOrganization()
         {
             var tuple = NeedsConfiguredCurrentUser();
-            var user = AddEntity<AppDbContext, User>(new User());
+            var user = AddEntity<AppDbContext, User>(new User { ExternalId = "n/a" });
             var expectedGivenName = user.GivenName + "-updated!";
             var payload = ResourcePatchPayload(
                 "users", user.Id, new Dictionary<string, object>()
@@ -93,7 +93,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
         public async Task Patch_SomeUser_WhenAnOrganizationIsSpecified_AndTheUserIsInThatOrganizaiton()
         {
             var tuple = NeedsConfiguredCurrentUser();
-            var user = AddEntity<AppDbContext, User>(new User());
+            var user = AddEntity<AppDbContext, User>(new User { ExternalId = "n/a" });
 
             AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
             {
@@ -121,7 +121,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
         public async Task Patch_SomeUser_Different_Organization_NotFound()
         {
             NeedsConfiguredCurrentUser();
-            var user = AddEntity<AppDbContext, User>(new User());
+            var user = AddEntity<AppDbContext, User>(new User { ExternalId = "n/a" });
 
             var expectedGivenName = user.GivenName + "-updated!";
             var payload = ResourcePatchPayload(
@@ -130,7 +130,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
                     { "given-name", expectedGivenName }
                 });
 
-            var response = await Patch("/api/users/" + user.Id, payload);
+            var response = await Patch("/api/users/" + user.Id, payload, addOrgHeader: true);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }

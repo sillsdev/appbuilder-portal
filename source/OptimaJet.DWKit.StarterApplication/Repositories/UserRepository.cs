@@ -9,12 +9,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI;
 using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
+using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI.FilterQueryExtensions;
+
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class UserRepository : ControllerRepository<User>
+    public class UserRepository : BaseRepository<User>
     {
         public IOrganizationContext OrganizationContext { get; }
         public ICurrentUserContext CurrentUserContext { get; }
@@ -23,8 +26,9 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
             ICurrentUserContext currentUserContext,
+            CurrentUserRepository currentUserRepository,
             IDbContextResolver contextResolver
-            ) : base(loggerFactory, jsonApiContext, contextResolver)
+            ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
         {
             this.OrganizationContext = organizationContext;
             this.CurrentUserContext = currentUserContext;
