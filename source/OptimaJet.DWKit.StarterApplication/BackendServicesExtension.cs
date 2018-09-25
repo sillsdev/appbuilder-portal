@@ -17,7 +17,6 @@ using OptimaJet.DWKit.StarterApplication.Forms;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
-using SIL.AppBuilder.BuildEngineApiClient;
 using SparkPostDotNet;
 using SparkPostDotNet.Core;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
@@ -40,14 +39,14 @@ namespace OptimaJet.DWKit.StarterApplication
             // Add service / repository overrides
             services.AddScoped<IEntityRepository<User>, UserRepository>();
             services.AddScoped<IEntityRepository<Group>, GroupRepository>();
-            services.AddScoped<IEntityRepository<Models.Project>, ProjectRepository>();
+            services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
             services.AddScoped<IEntityRepository<Organization>, OrganizationRepository>();
             services.AddScoped<IEntityRepository<OrganizationInviteRequest>, OrganizationInviteRequestRepository>();
             services.AddScoped<IEntityRepository<Product>, ProductRepository>();
             services.AddScoped<IResourceService<User>, UserService>();
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
             services.AddScoped<IResourceService<Group>, GroupService>();
-            services.AddScoped<IResourceService<Models.Project>, ProjectService>();
+            services.AddScoped<IResourceService<Project>, ProjectService>();
             services.AddScoped<IResourceService<Product>, ProductService>();
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
 
@@ -96,7 +95,7 @@ namespace OptimaJet.DWKit.StarterApplication
             });
 
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
-            services.AddScoped(typeof(IBuildEngineApi), typeof(BuildEngineApi));
+            services.AddScoped(typeof(SIL.AppBuilder.BuildEngineApiClient.IBuildEngineApi), typeof(SIL.AppBuilder.BuildEngineApiClient.BuildEngineApi));
 
             return services;
         }
