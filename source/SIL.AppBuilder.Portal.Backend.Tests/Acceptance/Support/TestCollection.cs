@@ -10,4 +10,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
 
     [CollectionDefinition("HangfireCollection")]
     public class HangfireCollection : ICollectionFixture<TestFixture<HangfireStartup>> { }
+
+    [CollectionDefinition("BuildEngineCollection")]
+    public class BuildEngineCollection : ICollectionFixture<TestFixture<BuildEngineStartup>> {}
 }

@@ -5,18 +5,27 @@ using RestSharp.Validation;
 
 namespace SIL.AppBuilder.BuildEngineApiClient
 {
-    public class BuildEngineApi
+    public class BuildEngineApi : IBuildEngineApi
     {
-        readonly string baseUrl;
-        readonly string apiAccessKey;
-        readonly RestClient restClient;
+        protected string baseUrl;
+        protected string apiAccessKey;
+        protected RestClient restClient;
 
-        public BuildEngineApi(string baseUrl, string apiAccessKey)
+        public BuildEngineApi()
+        {
+            SimpleJson.SimpleJson.CurrentJsonSerializerStrategy = new SnakeJsonSerializerStrategy();
+        }
+        public BuildEngineApi(string baseUrl, string apiAccessKey) : this()
         {
             this.baseUrl = baseUrl;
             this.apiAccessKey = apiAccessKey;
             this.restClient = new RestClient(baseUrl);
-            SimpleJson.SimpleJson.CurrentJsonSerializerStrategy = new SnakeJsonSerializerStrategy();
+        }
+        public void SetEndpoint(string baseUrl, string apiAccessKey)
+        {
+            this.baseUrl = baseUrl;
+            this.apiAccessKey = apiAccessKey;
+            this.restClient = new RestClient(baseUrl);
         }
 
         private RestRequest CreateRequest(string resource, Method method = Method.GET)
@@ -27,7 +36,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient
             return request;
         }
 
-        public T Execute<T>(IRestRequest request) where T : new()
+        protected T Execute<T>(IRestRequest request) where T : new()
         {
             var response = restClient.Execute<T>(request);
             if (response.ErrorException != null)

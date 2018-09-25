@@ -122,5 +122,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<ApplicationType> ApplicationTypes { get; set; }
         public DbSet<Reviewer> Reviewers { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<SystemStatus> SystemStatuses { get; set; }
     }
 }

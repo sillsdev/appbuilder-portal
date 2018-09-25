@@ -2,10 +2,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using JsonApiDotNetCore.Models;
+using OptimaJet.DWKit.StarterApplication.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class Organization : Identifiable
+    public class Organization : Identifiable, IBuildEngineReference
     {
         [Attr("name")]
         public string Name { get; set; }
