@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OptimaJet.DWKit.StarterApplication.Data;
-using OptimaJet.DWKit.StarterApplication.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
@@ -313,26 +312,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Reviewers");
-                });
-
-            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.SystemStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("BuildEngineApiAccessToken");
-
-                    b.Property<string>("BuildEngineUrl");
-
-                    b.Property<DateTime?>("DateCreated");
-
-                    b.Property<DateTime?>("DateUpdated");
-
-                    b.Property<bool>("SystemAvailable");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SystemStatuses");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.User", b =>
