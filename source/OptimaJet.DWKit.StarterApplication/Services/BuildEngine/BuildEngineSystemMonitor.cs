@@ -10,13 +10,18 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
     {
         public IEntityRepository<Organization> OrganizationRepository;
         public IEntityRepository<SystemStatus> SystemStatusRepository;
+
+        public IBuildEngineApi BuildEngineApi { get; }
+
         public BuildEngineSystemMonitor(
             IEntityRepository<Organization> organizationRepository,
-            IEntityRepository<SystemStatus> systemStatusRepository
+            IEntityRepository<SystemStatus> systemStatusRepository,
+            IBuildEngineApi buildEngineApi
         )
         {
             OrganizationRepository = organizationRepository;
             SystemStatusRepository = systemStatusRepository;
+            BuildEngineApi = buildEngineApi;
         }
         public void CheckBuildEngineStatus()
         {
@@ -59,8 +64,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         private bool CheckConnection(SystemStatus systemEntry)
         {
-            var client = new BuildEngineApi(systemEntry.BuildEngineUrl, systemEntry.BuildEngineApiAccessToken);
-            var response = client.SystemCheck();
+            BuildEngineApi.SetEndpoint(systemEntry.BuildEngineUrl, systemEntry.BuildEngineApiAccessToken);
+            var response = BuildEngineApi.SystemCheck();
             if (response == System.Net.HttpStatusCode.OK)
             {
                 return true;
