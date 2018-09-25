@@ -53,7 +53,7 @@ function runstuff {
     restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
 
     db:update) ${COMPOSE} exec api bash -c "dotnet ef database update --msbuildprojectextensionspath ./out/OptimaJet.DWKit.StarterApplication-Intermediate/ "${arguments};;
-    db:migrations) ${COMPOSE} exec api bash -c "dotnet ef migrations ${arguments}";;
+    db:migrations) ${COMPOSE} exec api bash -c "dotnet ef migrations  --msbuildprojectextensionspath ./out/OptimaJet.DWKit.StarterApplication-Intermediate/ ${arguments}";;
 
     bootstrap)
       runstuff bootstrap:dwkit
