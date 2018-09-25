@@ -52,8 +52,8 @@ function runstuff {
     bash)     ${COMPOSE} run --rm $arguments bash;;
     restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
 
-    db:update) ${COMPOSE} exec api bash -c "dotnet ef database update ${arguments}";;
-    db:migrations) ${COMPOSE} exec api bash -c "dotnet ef migrations ${arguments}";;
+    db:update) ${COMPOSE} exec api bash -c "dotnet ef database update --msbuildprojectextensionspath ./out/OptimaJet.DWKit.StarterApplication-Intermediate/ "${arguments};;
+    db:migrations) ${COMPOSE} exec api bash -c "dotnet ef migrations  --msbuildprojectextensionspath ./out/OptimaJet.DWKit.StarterApplication-Intermediate/ ${arguments}";;
 
     bootstrap)
       runstuff bootstrap:dwkit
@@ -136,8 +136,9 @@ function runstuff {
 
     clean:api)
       shopt -s globstar
-      rm -rf **/bin && \
-      rm -rf **/obj
+      rm -rf **/out/
+      # rm -rf **/bin && \
+      # rm -rf **/obj
     ;;
 
     clean:frontend)

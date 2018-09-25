@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
    <PropertyGroup>
-      <BaseIntermediateOutputPath>$(SolutionDir)out\$(MSBuildProjectFile) Intermediate\</BaseIntermediateOutputPath>
-      <OutputPath>$(SolutionDir)out\$(MSBuildProjectFile) Output\$(Configuration)\</OutputPath>
+      <BaseIntermediateOutputPath>$(SolutionDir)out\$(MSBuildProjectName)-Intermediate\</BaseIntermediateOutputPath>
+      <OutputPath>$(SolutionDir)out\$(MSBuildProjectName)-Output\$(Configuration)\</OutputPath>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
    </PropertyGroup>
 </Project>
