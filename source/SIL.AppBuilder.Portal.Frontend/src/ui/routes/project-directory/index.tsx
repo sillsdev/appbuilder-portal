@@ -1,47 +1,49 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { connect } from 'react-redux';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { withData as withCache } from 'react-orbitjs';
 
 
-import { ProjectAttributes } from '@data/models/project';
-import { OrganizationAttributes } from '@data/models/organization';
-import { GroupAttributes } from '@data/models/group';
-import { withSorting } from '@data/containers/sorting';
-import { withPagination } from '@data/containers/pagination';
-
-import { query, defaultOptions, ORGANIZATIONS_TYPE, GROUPS_TYPE } from '@data';
-import { TYPE_NAME as PROJECT } from '@data/models/project';
+import { OrganizationResource, GroupResource } from '@data';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as GROUP } from '@data/models/group';
-
-import { requireAuth } from '@lib/auth';
-
+import { TYPE_NAME as PROJECT } from '@data/models/project';
 
 import { withCurrentUser } from '@data/containers/with-current-user';
 import { withLoader } from '@data/containers/with-loader';
 import { withNetwork as withProjects } from '@data/containers/resources/project/list';
-import { withFiltering, IProvidedProps as IFilterProps } from '@data/containers/with-filtering';
+import {
+  withPagination, withFiltering,
+  PaginationFooter,
+  IFilterProps
+} from '@data/containers/api';
+
+import { requireAuth } from '@lib/auth';
+
 import { setCurrentOrganization } from '@store/data';
 
 import { IDataProps } from '@ui/components/project-table';
-import Table from './table';
+
 import { withLayout } from '@ui/components/layout';
 import { ErrorMessage } from '@ui/components/errors';
 import ProjectSearch from '@ui/components/project-search';
 
 import '@ui/components/project-table/project-table.scss';
 
+import Table from './table';
 import Filters from './filters';
-import { ResourceObject } from 'jsonapi-typescript';
+import { withSorting } from '@data/containers/api/sorting';
+import { withTranslations } from '@lib/i18n';
+import { withError } from '@data/containers/with-error';
+import { withDebugger } from '@lib/debug';
 
 export const pathName = '/directory';
 
 export interface IOwnProps {
-  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  organizations: OrganizationResource[];
   setCurrentOrganizationId: (id: number | string) => void;
-  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
+  groups: GroupResource[];
 }
 
 export type IProps =
@@ -56,33 +58,34 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class ProjectDirectoryRoute extends React.Component<IProps> {
-
   render() {
     const {
       t,
-      projects, organizations, groups,
-      updateFilter, error,
-      setCurrentOrganizationId
+      projects, updateFilter, error,
     } = this.props;
 
     const numProjects = projects && projects.length;
 
+    // TODO: consider this for search instead of the existing
+    //       https://github.com/smclab/react-faceted-token-input
     return (
       <div className='ui container'>
         <div className='flex-row justify-content-space-between align-items-center'>
-          <h2 className='page-heading'>{t('directory.title', { numProjects })}</h2>
+          <h2 className='page-heading flex-50'>{t('directory.title', { numProjects })}</h2>
 
           <ProjectSearch updateFilter={updateFilter}
           />
         </div>
 
-        <Filters
-          organizations={organizations}
-          onOrganizationChange={setCurrentOrganizationId}
-          updateFilter={updateFilter} />
+        <Filters { ...this.props } />
 
         { error && <ErrorMessage error={error} /> }
-        { !error && <Table projects={projects} /> }
+        { !error && (
+          <>
+            <Table projects={projects} />
+            <PaginationFooter { ...this.props } />
+          </>
+        ) }
       </div>
     );
   }
@@ -91,25 +94,26 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
 
 
 export default compose (
-  translate('translations'),
+  withTranslations,
   requireAuth,
   withLayout,
   connect(null, mapDispatchToProps),
   withCurrentUser(),
-  withFiltering(({ currentUser }) => ({
+  withFiltering(() => ({
     requiredFilters: [
       { attribute: 'date-archived', value: 'isnull:' }
     ]
   })),
-  withProjects,
+  withSorting({ defaultSort: 'name' }),
+  withPagination(),
+  withProjects({ organizationHeader: '' }),
   withLoader(({ error, projects }) => !error && !projects),
-  withCache(({ applyFilter }) => ({
+  withError('error', ({ error }) => error !== undefined),
+  withProps(({ projects }) => ({
+    projects: projects.filter(resource => resource.type === PROJECT)
+  })),
+  withCache(() => ({
     organizations: q => q.findRecords(ORGANIZATION),
     groups: q => q.findRecords(GROUP),
-    projects: q => {
-      const result = applyFilter(q.findRecords(PROJECT), true);
-
-      return result;
-    }
   })),
 )(ProjectDirectoryRoute);

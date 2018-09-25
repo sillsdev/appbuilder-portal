@@ -2,6 +2,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRootPlugin = require('html-webpack-root-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 
@@ -79,6 +81,7 @@ let config = {
 if (isDevelopment) {
   config.plugins = config.plugins.concat([
     new ForkTsCheckerWebpackPlugin(),
+    // new BundleAnalyzerPlugin(),
     new webpack.HotModuleReplacementPlugin({
       // Options...
     }),

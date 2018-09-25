@@ -1,10 +1,11 @@
 INSERT INTO "Users" ("Name", "Email", "ExternalId", "FamilyName", "GivenName", "IsLocked", "Locale", "Phone", "Timezone") VALUES
 (	'Chris Hubbard',	'chris_hubbard@sil.org',	'google-oauth2|116747902156680384840',	'Hubbard',	'Chris',	'0',	NULL,	NULL,	NULL),
 (	'David Moore',	'david_moore1@sil.org',	'google-oauth2|114981819181509824425',	'Moore',	'David',	'0',	NULL,	NULL,	NULL),
-(	'Preston Sego',	'lt.sego@gmail.com',	'google-oauth2|106685378104908547147',	'Sego',	'Preston',	'0',	NULL,	NULL,	NULL),
+(	'Preston Sego (gmail)',	'lt.sego@gmail.com',	'google-oauth2|106685378104908547147',	'Sego (gmail)',	'Preston',	'0',	NULL,	NULL,	NULL),
 (	'Giancarlo Corzo',	'gian.corzo@gmail.com',	'google-oauth2|105409413471872324118',	'Corzo',	'Giancarlo',	'0',	NULL,	NULL,	NULL),
 (	'Liz Tabor',	'ltabor@developertown.com',	'google-oauth2|113420589826662049605',	'Tabor',	'Liz',	'0',	NULL,	NULL,	NULL),
-(	'Chris Hubbard (Kalaam)',	'chris.kalaam@gmail.com',	'auth0|5b578f6197af652b19f9bb41',	'Hubbard',	'Chris',	'0',	NULL,	NULL,	NULL);
+(	'Chris Hubbard (Kalaam)',	'chris.kalaam@gmail.com',	'auth0|5b578f6197af652b19f9bb41',	'Hubbard',	'Chris',	'0',	NULL,	NULL,	NULL),
+( 'Preston Sego (dt)', 'psego@developertown.com', 'google-oauth2|111802484969448690930', 'Sego (dt)', 'Preston', '0', NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId") VALUES
 (	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru',	'replace',	1),
@@ -37,11 +38,17 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	5,	2),
 (	1,	3),
 (	6,	3),
-(   2,  3);
+( 2,  3),
+( 7,  2),
+( 7,  1);
 
 INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 (	1,	1),
 (	2,	1),
 (	2,	2),
 (	2,	15),
-(	4,	14);
+(	4,	14),
+( 3,  14),
+( 7,  14),
+( 7,   1),
+( 5,  14);

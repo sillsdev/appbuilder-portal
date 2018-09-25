@@ -24,7 +24,7 @@ export {
 } from './helpers';
 
 export { withLoader } from './containers/with-loader';
-export { withLogout, IProvidedProps } from '@data/containers/with-logout';
+export { withLogout, ILogoutProps } from '@data/containers/with-logout';
 
 export { queryApi as query } from './query';
 
@@ -32,14 +32,11 @@ export { pushPayload } from './push-payload';
 
 export { TASKS_TYPE, TaskResource } from './models/task';
 export { NOTIFICATIONS_TYPE, NotificationResource } from './models/notification';
-
-// JSONAPI types
-export type ORGANIZATIONS_TYPE = 'organizations';
-export type GROUPS_TYPE = 'groups';
-export type PROJECTS_TYPE = 'projects';
-export type USERS_TYPE = 'users';
-export type PRODUCTS_TYPE = 'products';
-export type ORGANIZATION_MEMBERSHIPS_TYPE = 'organization-memberships';
-export type GROUP_MEMBERSHIPS_TYPE = 'group-memberships';
-
-export type REVIEWERS_TYPE = 'reviewers';
+export { ORGANIZATIONS_TYPE, OrganizationResource } from './models/organization';
+export { GROUPS_TYPE, GroupResource } from './models/group';
+export { PROJECTS_TYPE, ProjectResource } from './models/project';
+export { USERS_TYPE, UserResource } from './models/user';
+export { REVIEWERS_TYPE, ReviewerResource } from './models/reviewer';
+export { PRODUCTS_TYPE, ProductResource } from './models/product';
+export { GROUP_MEMBERSHIPS_TYPE, GroupMembershipResource } from './models/group-membership';
+export { ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipResource } from './models/organization-membership';

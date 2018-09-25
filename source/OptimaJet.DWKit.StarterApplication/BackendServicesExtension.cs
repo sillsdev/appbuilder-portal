@@ -32,6 +32,7 @@ namespace OptimaJet.DWKit.StarterApplication
             // - includes IHttpContextAccessor as a singleton
             services.AddJsonApi<AppDbContext>(options => {
                 options.Namespace = "api";
+                options.IncludeTotalRecordCount = true;
             });
 
             services.AddHttpContextAccessor();
@@ -48,6 +49,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<Group>, GroupService>();
             services.AddScoped<IResourceService<Models.Project>, ProjectService>();
             services.AddScoped<IResourceService<Product>, ProductService>();
+            services.AddScoped<IQueryParser, OrbitJSQueryParser>();
 
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();

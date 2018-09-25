@@ -28,3 +28,9 @@ interface Auth0JWT {
   gender: string;
   email: string;
 }
+
+type FnParams<TParams, TResult> = (passedProps: TParams) => TResult;
+
+type FnOrObject<TParams, TResult> = 
+  | TResult
+  | FnParams<TParams, TResult>

@@ -1,5 +1,6 @@
-import { AttributesObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from "jsonapi-typescript";
 
+export type ORGANIZATIONS_TYPE = 'organizations';
 export const TYPE_NAME = 'organization';
 
 export interface OrganizationAttributes extends AttributesObject {
@@ -22,3 +23,5 @@ export interface OrganizationAttributes extends AttributesObject {
   // TODO: find out if we can define custom getters and setters on 'Models'
   logoUrl?: string;
 }
+
+export type OrganizationResource = ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;

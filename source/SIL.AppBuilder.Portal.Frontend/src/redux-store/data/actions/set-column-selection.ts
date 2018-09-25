@@ -21,11 +21,12 @@ export const setColumnSelection = (tableName: string, columns: Column[]): SetCol
 
 // Reducer
 export const reducer = (state: State, action: SetColumnSelectionAction) => {
+  const { tableName, columns } = action.payload;
 
   return {
     ...state,
     columnSelections: {
-      [action.payload.tableName]: action.payload.columns
+      [tableName]: columns
     }
   };
 
