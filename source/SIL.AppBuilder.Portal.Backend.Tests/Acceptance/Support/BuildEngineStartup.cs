@@ -8,19 +8,19 @@ using SIL.AppBuilder.BuildEngineApiClient;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests
 {
-    public class BuildEngineStartup : NoAuthStartup
+    public class BuildEngineStartup : HangfireStartup
     {
-        protected Mock<IBuildEngineApi> clientMock { get; set; }
+        protected Mock<IBuildEngineApi> buildEngineMock { get; set; }
 
         public BuildEngineStartup(IHostingEnvironment env) : base(env)
         {
-            clientMock = new Mock<IBuildEngineApi>();
+            buildEngineMock = new Mock<IBuildEngineApi>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(IBuildEngineApi), clientMock.Object);
-            services.AddSingleton(typeof(Mock<IBuildEngineApi>), clientMock);
+            services.AddSingleton(typeof(IBuildEngineApi), buildEngineMock.Object);
+            services.AddSingleton(typeof(Mock<IBuildEngineApi>), buildEngineMock);
             services.AddScoped<BuildEngineSystemMonitor>();
             base.ConfigureServices(services);
         }
