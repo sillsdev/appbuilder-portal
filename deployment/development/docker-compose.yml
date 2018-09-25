@@ -12,9 +12,8 @@ volumes:
   ui-dist:
   ui-node_modules:
   ui-yarn-cache:
-  api-obj:
-  api-bin:
   postgres-data:
+  outdir:
 
 services:
   db:
@@ -57,8 +56,12 @@ services:
       - ${PWD}/source/OptimaJet.DWKit.StarterApplication/.env.dev
     volumes:
       - ./:/app
-      # - api-obj:/app/obj
-      # - api-bin:/app/bin
+      - "outdir:/app/out"
+      - "outdir:/app/OptimaJet.DWKit.StarterApplication/out"
+      - "outdir:/app/OptimaJet.DWKit.Application/out"
+      - "outdir:/app/SIL.AppBuilder.BuildEngineApiClient/out"
+      - "outdir:/app/SIL.AppBuilder.BuildEngineApiClient.Tests/out"
+      - "outdir:/app/SIL.AppBuilder.Portal.Backend.Tests/out"
 
   ui:
     build:
