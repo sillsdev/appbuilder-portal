@@ -47,11 +47,17 @@ jobs:
     - stage: "Deploy"
       name: "Build and Push Docker Images"
       if: branch = master
+      language: generic
+      sudo: required
+      services:
+        - docker
+      addons:
+        apt:
+          packages:
+            - docker-ce
       before_deploy:
         # must cleanup root owned files
         - time ( sudo ./run clean:api )
       deploy:
         provider: script
         script: time ./scripts/deploy-travis.sh $TRAVIS_COMMIT latest
-        on:
-          branch: master
