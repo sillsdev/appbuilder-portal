@@ -1,25 +1,36 @@
 import * as React from 'react';
-
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
-import { ProjectAttributes } from '@data/models/project';
-import { ResourceObject } from 'jsonapi-typescript';
-import { PROJECTS_TYPE } from '@data';
+import { withData as withOrbit } from 'react-orbitjs';
+
+import { ProjectResource, ApplicationTypeResource, attributesFor } from '@data';
+import { withTranslations, i18nProps } from '@lib/i18n';
+
 
 interface Params {
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  project: ProjectResource;
+  applicationType: ApplicationTypeResource;
 }
 
 type IProps =
   & Params
   & i18nProps;
 
+const mapRecordsToProps = (passedProps) => {
+  const { project } = passedProps;
+  const { type, id } = project;
+
+  return {
+    applicationType: q => q.findRelatedRecord({ type, id }, 'type')
+  };
+};
+
 class Details extends React.Component<IProps> {
 
   render() {
 
-    const { t, project } = this.props;
-    const { language, type, description } = project.attributes;
+    const { t, project, applicationType } = this.props;
+    const { language, description } = attributesFor(project);
+    const { description: type } = attributesFor(applicationType);
 
     return (
       <div className='details'>
@@ -43,5 +54,6 @@ class Details extends React.Component<IProps> {
 }
 
 export default compose(
-  translate('translations')
+  withTranslations,
+  withOrbit(mapRecordsToProps)
 )(Details);

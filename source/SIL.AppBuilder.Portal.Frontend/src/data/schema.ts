@@ -84,7 +84,18 @@ const schemaDefinition: SchemaSettings = {
         organization: { type: 'hasOne', model: 'organization', inverse: 'projects'},
         owner: { type: 'hasOne', model: 'user', inverse: 'projects' },
         group: { type: 'hasOne', model: 'group', inverse: 'projects' },
-        reviewers: { type: 'hasMany', model: 'reviewer', inverse: 'project' }
+        reviewers: { type: 'hasMany', model: 'reviewer', inverse: 'project' },
+        type: { type: 'hasOne', model: 'applicationType', inverse: 'projects'}
+      }
+    },
+    applicationType: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' },
+        description: { type: 'string' }
+      },
+      relationships: {
+        projects: { type: 'hasMany', model: 'project', inverse: 'type' }
       }
     },
     product: {
