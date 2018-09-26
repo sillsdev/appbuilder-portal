@@ -5,10 +5,10 @@
   </PropertyGroup>
   
   <PropertyGroup>
-      <BaseIntermediateOutputPath>$(SolutionDir)out\$(MSBuildProjectName)-obj\</BaseIntermediateOutputPath>
-      <MSBuildProjectExtensionsPath>$(SolutionDir)out\$(MSBuildProjectName)-obj\</MSBuildProjectExtensionsPath>
-      <OutputPath>$(SolutionDir)out\$(MSBuildProjectName)-bin\$(Configuration)\</OutputPath>
-      <OutDir>$(SolutionDir)out\$(MSBuildProjectName)-build\$(Configuration)\</OutDir>
+      <BaseIntermediateOutputPath>$(SolutionDir)out\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+      <MSBuildProjectExtensionsPath>$(SolutionDir)out\$(MSBuildProjectName)\obj\</MSBuildProjectExtensionsPath>
+      <BaseOutputPath>$(SolutionDir)out\$(MSBuildProjectName)\bin\</BaseOutputPath>
+      <RuntimeFrameworkVersion>2.1.4</RuntimeFrameworkVersion>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
       <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
   </PropertyGroup>

@@ -75,15 +75,7 @@ services:
       - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/.env.dev
 
     volumes:
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/src:/app/src
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tests:/app/tests
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/types:/app/types
-
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/.babelrc:/app/.babelrc
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/package.json:/app/package.json
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tsconfig.json:/app/tsconfig.json
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tslint.json:/app/tslint.json
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/yarn.lock:/app/yarn.lock
+      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend:/app
 
       - ui-tmp:/app/tmp
       - ui-dist:/app/dist
