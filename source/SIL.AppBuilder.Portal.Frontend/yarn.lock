@@ -1019,7 +1019,7 @@ auth0-lock@^11.7.2:
     trim "0.0.1"
     url-join "^1.1.0"
 
-"auth0-password-policies@github:auth0/auth0-password-policies#v1.0.1":
+auth0-password-policies@auth0/auth0-password-policies#v1.0.1:
   version "1.0.1"
   resolved "https://codeload.github.com/auth0/auth0-password-policies/tar.gz/0b3da9b369b122a8b294d496143abfd33311e6b2"
   dependencies:

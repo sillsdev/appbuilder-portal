@@ -57,11 +57,6 @@ services:
     volumes:
       - ./:/app
       - "outdir:/app/out"
-      - "outdir:/app/OptimaJet.DWKit.StarterApplication/out"
-      - "outdir:/app/OptimaJet.DWKit.Application/out"
-      - "outdir:/app/SIL.AppBuilder.BuildEngineApiClient/out"
-      - "outdir:/app/SIL.AppBuilder.BuildEngineApiClient.Tests/out"
-      - "outdir:/app/SIL.AppBuilder.Portal.Backend.Tests/out"
 
   ui:
     build:
