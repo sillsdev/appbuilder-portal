@@ -22,6 +22,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             services.AddSingleton(typeof(IBuildEngineApi), buildEngineMock.Object);
             services.AddSingleton(typeof(Mock<IBuildEngineApi>), buildEngineMock);
             services.AddScoped<BuildEngineSystemMonitor>();
+            services.AddScoped<BuildEngineProjectService>();
             base.ConfigureServices(services);
         }
     }
