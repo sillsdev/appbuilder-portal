@@ -2,11 +2,12 @@ env:
   - DOCKER_COMPOSE_VERSION=1.17.0 MOZ_HEADLESS=1
 
 
-matrix:
+jobs:
   include:
-    - env: PROJECT=source/SIL.AppBuilder.Portal.Frontend
+    - stage: "Tests"
+      name: "Frontend Tests"
       addons:
-        firefox: latest
+        chrome: stable
 
       language: node_js
       node_js: "8"
@@ -15,7 +16,10 @@ matrix:
         directories:
           - source/SIL.AppBuilder.Portal.Frontend/node_modules
 
-    - env: PROJECT=source/OptimaJet.DWKit.StarterApplication
+      script: ./run yarn && ./run yarn lint && ./run yarn test:ci
+
+    - stage: "Tests"
+      name: "Backend Tests"
       language: generic
       sudo: required
       services:
@@ -32,6 +36,17 @@ matrix:
             sudo pip install -U docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
           )
+
+      script: 
+        - echo "building docker containers..."
+        - time ( ./run ci:build > /dev/null 2>&1 )
+        - echo "docker containers built!"
+        - echo "Running the backend commands..."
+        - ( time ./run ci:api )
+
+    - stage: "Deploy"
+      name: "Build and Push Docker Images"
+      if: branch = master
       before_deploy:
         # must cleanup root owned files
         - time ( sudo ./run clean:api )
@@ -40,12 +55,3 @@ matrix:
         script: time ./scripts/deploy-travis.sh $TRAVIS_COMMIT latest
         on:
           branch: master
-#      deploy:
-#        provider: script
-#        script: time ./scripts/deploy-travis.sh $TRAVIS_COMMIT staging
-#        on:
-#          branch: develop
-
-    # - env: PROJECT=source/SIL.AppBuilder.Portal.Backend.Tests
-
-script: time ./scripts/ci-travis.sh
