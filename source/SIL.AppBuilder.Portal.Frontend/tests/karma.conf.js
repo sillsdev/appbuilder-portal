@@ -73,7 +73,8 @@ module.exports = function(config) {
           '--no-sandbox', // required to run without privileges in Docker
           '--disable-web-security',
           '--disable-gpu',
-          '--disable-extensions'
+          '--disable-extensions',
+          '--window-size=1280,720'
         ]
       },
       FirefoxHeadless: {
@@ -82,8 +83,8 @@ module.exports = function(config) {
       },
     };
 
-    // config.browsers = ['ChromeHeadlessNoSandbox'];
-    config.browsers = ['FirefoxHeadless'];
+    config.browsers = ['ChromeHeadlessNoSandbox'];
+    // config.browsers = ['FirefoxHeadless'];
     config.colors = true;
   }
 };
