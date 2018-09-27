@@ -16,7 +16,7 @@ describe('Acceptance | Project view | Application Type', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  describe('navigate to project page', () => {
+  describe('Use dictonary app Builder type', () => {
 
     beforeEach(function () {
       this.mockGet(200, '/users', { data: [] });
@@ -59,11 +59,51 @@ describe('Acceptance | Project view | Application Type', () => {
 
     describe('application type field is correctly displayed', () => {
 
-      it('application type display Dictonary App Builder', () => {
+      it('application type displays Dictonary App Builder name', () => {
         expect(page.detailsInteractor.isApplicationTypePresent).to.be.true;
         expect(page.detailsInteractor.applicationTypeText).to.equal('Dictionary App Builder');
       });
+    });
+  });
 
+  describe('Use Scripture App Builder type', () => {
+    beforeEach(function () {
+      this.mockGet(200, '/projects/2', {
+        data: {
+          type: 'projects',
+          id: '2',
+          attributes: {
+            name: 'Fake project',
+            'type-id': 1
+          },
+          relationships: {
+            organization: { data: { id: 1, type: 'organizations' } },
+            group: { data: { id: 1, type: 'groups' } },
+            owner: { data: { id: 2, type: 'users' } },
+            type: { data: { id: 1, type: 'application-types' } }
+          }
+        },
+        included: [
+          { type: 'organizations', id: 1, },
+          { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
+          { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
+          {
+            type: 'application-types', id: 1, attributes: {
+              name: 'scriptureappbuilder', description: "Scripture App Builder"
+            }
+          }
+        ]
+      });
+    });
+
+    beforeEach(async function () {
+      await visit('/project/2');
+    });
+
+
+    it('application type displays Scripture App Builder name', () => {
+      expect(page.detailsInteractor.isApplicationTypePresent).to.be.true;
+      expect(page.detailsInteractor.applicationTypeText).to.equal('Scripture App Builder');
     });
   });
 
