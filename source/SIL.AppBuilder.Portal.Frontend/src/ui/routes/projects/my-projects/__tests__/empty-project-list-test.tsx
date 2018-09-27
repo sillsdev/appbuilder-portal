@@ -10,19 +10,20 @@ import {
 
 import page from '@ui/components/project-table/__tests__/page';
 
-describe('Acceptance | Project Table | Column selector', () => {
+describe('Acceptance | Project Table | Empty list', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  beforeEach(function () {
-    this.mockGet(200, 'projects', {
-      data: [],
-      meta: { 'total-records': 0 }
-    });
-  });
-
   describe('navigates to my project page', () => {
+
+    beforeEach(function () {
+      this.mockGet(200, 'projects', {
+        data: [],
+        meta: { 'total-records': 0 }
+      });
+    });
+
     beforeEach(async function () {
       await visit('/projects/own');
     });
