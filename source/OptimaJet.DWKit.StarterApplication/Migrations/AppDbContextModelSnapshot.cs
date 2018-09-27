@@ -274,6 +274,10 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("GroupId");
 
+                    b.Property<bool>("IsPublic")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Language");
 
                     b.Property<string>("Name");
@@ -281,8 +285,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.Property<int>("OrganizationId");
 
                     b.Property<int>("OwnerId");
-
-                    b.Property<bool>("Private");
 
                     b.Property<int>("TypeId");
 
@@ -317,6 +319,26 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Reviewers");
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.SystemStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("BuildEngineApiAccessToken");
+
+                    b.Property<string>("BuildEngineUrl");
+
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<DateTime?>("DateUpdated");
+
+                    b.Property<bool>("SystemAvailable");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemStatuses");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.User", b =>

@@ -5,7 +5,7 @@ using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class Project : Identifiable, ITrackDate
+    public class Project : Identifiable, ITrackDate, IBelongsToOrganization
     {
         [Attr("name")]
         public string Name { get; set; }
@@ -35,8 +35,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("language")]
         public string Language { get; set; }
 
-        [Attr("private")]
-        public bool Private { get; set; }
+        [Attr("is-public")]
+        public bool IsPublic { get; set; } = true;
 
         [Attr("date-created")]
         public DateTime? DateCreated { get; set; }

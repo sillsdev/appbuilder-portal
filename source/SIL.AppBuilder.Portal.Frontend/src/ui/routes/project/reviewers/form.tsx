@@ -60,7 +60,9 @@ class AddReviewerForm extends React.Component<IProps> {
     return !isEmpty(name) && !isEmpty(email) && isValidEmail(email);
   }
 
-  addReviewer = () => {
+  addReviewer = (e) => {
+    e.preventDefault();
+
     const { name, email } = this.state;
     const { createRecord, project } = this.props;
 

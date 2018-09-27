@@ -138,7 +138,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group1.Id,
                 OrganizationId = org1.Id,
                 Language = "eng-US",
-                Private = false
+                IsPublic = true
             });
             project2 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -149,7 +149,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group1.Id,
                 OrganizationId = org1.Id,
                 Language = "eng-US",
-                Private = false
+                IsPublic = true
             });
             project3 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -160,7 +160,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group3.Id,
                 OrganizationId = org2.Id,
                 Language = "eng-US",
-                Private = false
+                IsPublic = true
             });
             project4 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -171,7 +171,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group4.Id,
                 OrganizationId = org3.Id,
                 Language = "eng-US",
-                Private = false
+                IsPublic = true
             });
             workflow1 = AddEntity<AppDbContext, WorkflowDefinition>(new WorkflowDefinition
             {

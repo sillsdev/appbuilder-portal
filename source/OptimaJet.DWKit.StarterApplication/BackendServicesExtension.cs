@@ -95,6 +95,7 @@ namespace OptimaJet.DWKit.StarterApplication
             });
 
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
+            services.AddScoped(typeof(SIL.AppBuilder.BuildEngineApiClient.IBuildEngineApi), typeof(SIL.AppBuilder.BuildEngineApiClient.BuildEngineApi));
 
             return services;
         }

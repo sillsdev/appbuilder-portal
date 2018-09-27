@@ -55,7 +55,7 @@
     "react-emotion": "^9.2.6",
     "react-i18next": "7.7.0",
     "react-notify-toast": "^0.5.0",
-    "react-orbitjs": "github:NullVoxPopuli/react-orbitjs#add-types-and-data-store",
+    "react-orbitjs": "github:developertown/react-orbitjs#f28784f4ca7fcb53540692c2e52496448428beb9",
     "react-query-assist": "^1.2.0",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",

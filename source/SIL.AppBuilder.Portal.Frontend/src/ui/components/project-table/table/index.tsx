@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 
 import { ResourceObject } from 'jsonapi-typescript';
 
@@ -9,6 +10,8 @@ import { ISortProps } from '@data/containers/api/sorting';
 import { IProvidedProps as ITableColumns } from './with-table-columns';
 import Header from './header';
 import Row from './row';
+import { isEmpty } from '@lib/collection';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   projects: Array<ResourceObject<PROJECTS_TYPE, ProjectAttributes>>;
@@ -17,7 +20,8 @@ interface IOwnProps {
 type IProps =
   & IOwnProps
   & ITableColumns
-  & ISortProps;
+  & ISortProps
+  & i18nProps;
 
 class Table extends React.Component<IProps> {
 
@@ -27,29 +31,49 @@ class Table extends React.Component<IProps> {
       projects,
       selectedColumns,
       activeProjectColumns,
-      activeProductColumns
+      activeProductColumns,
+      t
     } = this.props;
+
+    const isProjectListEmpty = isEmpty(projects);
+
+    let projectList;
+
+    if (isProjectListEmpty) {
+
+      projectList = <div data-test-project-list-empty>{t('projectTable.empty')}</div>;
+
+    } else {
+
+      projectList = (
+        <>
+          <Header {...this.props} />
+          {
+            projects.map((project, index) => {
+
+              const rowProps = {
+                project,
+                selectedColumns,
+                activeProjectColumns,
+                activeProductColumns
+              };
+
+              return <Row key={index} {...rowProps} />;
+            })
+          }
+        </>
+      );
+    }
 
     return (
       <div data-test-project-table className='project-table'>
-        <Header { ...this.props } />
-        {
-          projects && projects.map((project, index) => {
-
-            const rowProps = {
-              project,
-              selectedColumns,
-              activeProjectColumns,
-              activeProductColumns
-            };
-
-            return <Row key={index} {...rowProps} />;
-          })
-        }
+        {projectList}
       </div>
     );
   }
 
 }
 
-export default Table;
+export default compose(
+  withTranslations
+)(Table);

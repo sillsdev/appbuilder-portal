@@ -76,6 +76,10 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             orgEntity
                 .Property(o => o.PublicByDefault)
                 .HasDefaultValue(true);
+
+            projectEntity
+                .Property(p => p.IsPublic)
+                .HasDefaultValue(true);
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
@@ -122,5 +126,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<ApplicationType> ApplicationTypes { get; set; }
         public DbSet<Reviewer> Reviewers { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<SystemStatus> SystemStatuses { get; set; }
     }
 }

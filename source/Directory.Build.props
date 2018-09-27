@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup Label="BasePath">
+    <SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+      <BaseIntermediateOutputPath>$(SolutionDir)out\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+      <MSBuildProjectExtensionsPath>$(SolutionDir)out\$(MSBuildProjectName)\obj\</MSBuildProjectExtensionsPath>
+      <BaseOutputPath>$(SolutionDir)out\$(MSBuildProjectName)\bin\</BaseOutputPath>
+      <RuntimeFrameworkVersion>2.1.4</RuntimeFrameworkVersion>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+  </PropertyGroup>
+</Project>
