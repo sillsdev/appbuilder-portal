@@ -76,7 +76,6 @@ describe.only('Acceptance | Project Table | Empty list', () => {
 
       it('empty text is not displayed when project list exist',() => {
         expect(page.isEmptyTextPresent).to.be.false;
-        expect(page.emptyText).to.not.equal('No projects found');
       });
 
     });
