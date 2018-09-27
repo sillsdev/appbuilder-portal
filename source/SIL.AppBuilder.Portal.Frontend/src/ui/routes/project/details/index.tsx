@@ -16,11 +16,11 @@ type IProps =
   & i18nProps;
 
 const mapRecordsToProps = (passedProps) => {
+
   const { project } = passedProps;
-  const { type, id } = project;
 
   return {
-    applicationType: q => q.findRelatedRecord({ type, id }, 'type')
+    applicationType: q => q.findRelatedRecord(project, 'type')
   };
 };
 
