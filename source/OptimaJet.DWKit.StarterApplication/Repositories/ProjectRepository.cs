@@ -48,7 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         {
             var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
-            return base.Get().Where(p => p.Private == false || orgIds.Contains(p.OrganizationId));
+            return base.Get().Where(p => p.IsPublic == true || orgIds.Contains(p.OrganizationId));
         }
     }
 }
