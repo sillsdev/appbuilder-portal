@@ -232,7 +232,8 @@
       "buildDate": "Fecha de compilación",
       "createdOn": "Fecha de creación",
       "updatedOn": "Fecha de actualización"
-    }
+    },
+    "empty": "No projects found"
   },
   "users": {
     "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
