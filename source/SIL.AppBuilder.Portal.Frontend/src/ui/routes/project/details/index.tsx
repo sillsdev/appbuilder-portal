@@ -40,7 +40,7 @@ class Details extends React.Component<IProps> {
             <h4>{t('project.details.language')}</h4>
             <p
               data-test-project-detail-language
-              style={{marginRight: '39px'}}
+              className='m-r-lg'
             >
               {language}
             </p>
