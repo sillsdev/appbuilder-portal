@@ -10,7 +10,7 @@ import {
 
 import page from '@ui/components/project-table/__tests__/page';
 
-describe.only('Acceptance | Project Table | Empty list', () => {
+describe('Acceptance | Project Table | Empty list', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
