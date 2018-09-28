@@ -80,7 +80,8 @@ export async function createStore() {
         Accept: 'application/vnd.api+json',
         // these should be overwritten at runtime
         Authorization: 'Bearer not set',
-        Organization: 'Org Id not set'
+        // Do not have a default Organization header here.
+        // The Project directory needs this header to not be present
       }
     }
   });

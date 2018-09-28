@@ -108,7 +108,7 @@ export default compose (
   })),
   withSorting({ defaultSort: 'name' }),
   withPagination(),
-  withProjects({ organizationHeader: '' }),
+  withProjects({ all: true }),
   withLoader(({ error, projects }) => !error && !projects),
   withError('error', ({ error }) => error !== undefined),
   withProps(({ projects }) => ({
