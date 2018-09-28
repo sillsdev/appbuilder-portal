@@ -14,17 +14,7 @@ import { threeProjects, DTProjects } from './scenarios';
 
 describe('Acceptance | Project Directory | Filtering | By Organization', () => {
   setupApplicationTest();
-  setupRequestInterceptor({
-    matchRequestsBy: {
-      order: false,
-      headers: true,
-      url: {
-        pathname: true,
-        query: true,
-        hash: false
-      }
-    }
-  });
+  setupRequestInterceptor();
   useFakeAuthentication();
 
   beforeEach(function () {
@@ -37,9 +27,12 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
 
         if (!req.query['filter[organization-header]']) {
           res.json(threeProjects);
+
         } else {
           res.json(DTProjects);
         }
+
+        expect(req.headers.Organization).to.equal(undefined);
       });
     });
   });
