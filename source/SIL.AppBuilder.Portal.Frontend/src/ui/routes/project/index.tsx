@@ -88,6 +88,8 @@ class Project extends React.Component<IProps> {
       t('project.dropdown.archive') :
       t('project.dropdown.reactivate');
 
+    debugger;
+
     const visibility = isPublic ?
       t('project.public') :
       t('project.private');
