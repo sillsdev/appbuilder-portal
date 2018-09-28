@@ -16,7 +16,7 @@ describe('Acceptance | Project view | project visibility', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  describe('Private project', () => {
+  describe('Navigate to a project view with visibility set as Private', () => {
 
     beforeEach(function () {
       this.mockGet(200, '/users', { data: [] });
@@ -57,12 +57,12 @@ describe('Acceptance | Project view | project visibility', () => {
       expect(location().pathname).to.equal('/project/1');
     });
 
-    it('', () => {
+    it('Private label is rendered', () => {
       expect(page.publicText).to.equal('Private');
     });
   });
 
-  describe('Public project', () => {
+  describe('Navigate to a project view with visibility set as Public', () => {
 
     beforeEach(function () {
       this.mockGet(200, '/users', { data: [] });
@@ -104,7 +104,7 @@ describe('Acceptance | Project view | project visibility', () => {
     });
 
 
-    it('', () => {
+    it('Public label is rendered', () => {
       expect(page.publicText).to.equal('Public');
     });
   });
