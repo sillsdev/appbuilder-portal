@@ -186,33 +186,28 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                         description = "description",
                         language = "eng-US"
                     },
-                    relationships = new
-                    {
-                        owner = new
-                        {
-                            data = new
-                            {
-                                type = "users",
-                                id = CurrentUser.Id.ToString()
-                            }
-                        },
-                        organization = new
-                        {
-                            data = new
-                            {
-                                type = "organizations",
-                                id = org1.Id.ToString()
-                            }
-                        },
-                        group = new
-                        {
-                            data = new
-                            {
-                                type = "groups",
-                                id = group1.Id.ToString()
-                            }
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                        { "id", CurrentUser.Id.ToString() }
+                                }}}},
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organizations" },
+                                    { "id", org1.Id.ToString() }
+                            }}}},
+                            {"group", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "groups" },
+                                    { "id", group1.Id.ToString() }
+                            }}}},
+                            {"type", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "application-types" },
+                                    { "id", type1.Id.ToString() }
+                            }}}}
                         }
-                    }
                 }
             };
             var response = await Post("/api/projects/", content);
@@ -223,6 +218,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal(CurrentUser.Id, project.OwnerId );
             Assert.Equal(org1.Id, project.OrganizationId );
             Assert.Equal(group1.Id, project.GroupId);
+            Assert.Equal(type1.Id, project.TypeId);
             Assert.Equal("project5", project.Name);
             Assert.True(project.AllowDownloads);
             Assert.True(project.AutomaticBuilds);
@@ -240,37 +236,31 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                     attributes = new
                     {
                         name = "project5",
-                        type = "scriptureappbuilder",
                         description = "description",
                         language = "eng-US"
                     },
-                    relationships = new
-                    {
-                        owner = new
-                        {
-                            data = new
-                            {
-                                type = "users",
-                                id = CurrentUser.Id.ToString()
-                            }
-                        },
-                        organization = new
-                        {
-                            data = new
-                            {
-                                type = "organizations",
-                                id = org2.Id.ToString()
-                            }
-                        },
-                        group = new
-                        {
-                            data = new
-                            {
-                                type = "groups",
-                                id = group1.Id.ToString()
-                            }
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                        { "id", CurrentUser.Id.ToString() }
+                                }}}},
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organizations" },
+                                    { "id", org2.Id.ToString() }
+                            }}}},
+                            {"group", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "groups" },
+                                    { "id", group1.Id.ToString() }
+                            }}}},
+                            {"type", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "application-types" },
+                                    { "id", type1.Id.ToString() }
+                            }}}}
                         }
-                    }
                 }
             };
             var response = await Post("/api/projects/", content);
@@ -291,37 +281,31 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                     attributes = new
                     {
                         name = "project5",
-                        type = "scriptureappbuilder",
                         description = "description",
                         language = "eng-US"
                     },
-                    relationships = new
-                    {
-                        owner = new
-                        {
-                            data = new
-                            {
-                                type = "users",
-                                id = user1.Id.ToString()
-                            }
-                        },
-                        organization = new
-                        {
-                            data = new
-                            {
-                                type = "organizations",
-                                id = org1.Id.ToString()
-                            }
-                        },
-                        group = new
-                        {
-                            data = new
-                            {
-                                type = "groups",
-                                id = group1.Id.ToString()
-                            }
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                        { "id", user1.Id.ToString() }
+                                }}}},
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organizations" },
+                                    { "id", org1.Id.ToString() }
+                            }}}},
+                            {"group", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "groups" },
+                                    { "id", group1.Id.ToString() }
+                            }}}},
+                            {"type", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "application-types" },
+                                    { "id", type1.Id.ToString() }
+                            }}}}
                         }
-                    }
                 }
             };
             var response = await Post("/api/projects/", content);
@@ -342,37 +326,31 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                     attributes = new
                     {
                         name = "project5",
-                        type = "scriptureappbuilder",
                         description = "description",
                         language = "eng-US"
                     },
-                    relationships = new
-                    {
-                        owner = new
-                        {
-                            data = new
-                            {
-                                type = "users",
-                                id = user1.Id.ToString()
-                            }
-                        },
-                        organization = new
-                        {
-                            data = new
-                            {
-                                type = "organizations",
-                                id = org3.Id.ToString()
-                            }
-                        },
-                        group = new
-                        {
-                            data = new
-                            {
-                                type = "groups",
-                                id = group4.Id.ToString()
-                            }
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                        { "id", user1.Id.ToString() }
+                                }}}},
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organizations" },
+                                    { "id", org3.Id.ToString() }
+                            }}}},
+                            {"group", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "groups" },
+                                    { "id", group4.Id.ToString() }
+                            }}}},
+                            {"type", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "application-types" },
+                                    { "id", type1.Id.ToString() }
+                            }}}}
                         }
-                    }
                 }
             };
             var response = await Post("/api/projects/", content);
