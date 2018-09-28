@@ -232,7 +232,8 @@
       "buildDate": "Build Date",
       "createdOn": "Created On",
       "updatedOn": "Updated On"
-    }
+    },
+    "empty": "No projects found"
   },
   "users": {
     "noneFound": "No users matching the selected criteria were found.",
