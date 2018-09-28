@@ -16,7 +16,7 @@ export interface IOwnProps {
 }
 
 interface IOptions {
-  organizationHeader?: string;
+  all?: boolean;
 }
 
 type IProps =
@@ -25,13 +25,9 @@ type IProps =
 & ISortProps;
 
 export function withNetwork<TWrappedProps>(options: IOptions = {}) {
-  const { organizationHeader } = options;
+  const { all } = options;
 
-  const isUsingSpecifiedOrgHeader = (
-    organizationHeader !== null &&
-    organizationHeader !== undefined
-  );
-
+  const isWantingAllProjects = all === true;
 
   return WrappedComponent => {
     function mapNetworkToProps(passedProps: TWrappedProps & IProps) {
@@ -45,8 +41,8 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
         include: ['organization,group,owner']
       });
 
-      if (isUsingSpecifiedOrgHeader) {
-        requestOptions.sources.remote.settings.headers.Organization = organizationHeader;
+      if (isWantingAllProjects) {
+        delete requestOptions.sources.remote.settings.headers.Organization;
       }
 
       return {

@@ -68,7 +68,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
     const { name: projectName } = attributesFor(project);
 
     return (
-      <div>
+      <div data-test-project-row>
         <div className='flex row-header grid'>
           <div className='col flex-grow-xs flex-100'>
             <Link to={`/project/${projectId}`}>{projectName}</Link>

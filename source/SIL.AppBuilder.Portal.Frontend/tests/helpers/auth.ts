@@ -38,7 +38,7 @@ export function useFakeAuthentication(currentUser?: object) {
         {
           type: 'organizations',
           id: 1,
-          attributes: {}
+          attributes: { name: 'DeveloperTown' }
         },
         {
           id: 1,
