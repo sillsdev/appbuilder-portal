@@ -35,12 +35,10 @@ For email notification delivery:
 CURRENT_VERSION=$(git rev-parse HEAD)
 
 # nginx
-cd source && \
   docker build . -f Dockerfile.nginx \
     --tag "nginx-$CURRENT_VERSION" --target release
 
 # api
-cd source && \
   docker build . -f Dockerfile.backend \
     --tag "api-$CURRENT_VERSION" --target runtime-release
 

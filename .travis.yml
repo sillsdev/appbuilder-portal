@@ -1,6 +1,9 @@
 env:
   - DOCKER_COMPOSE_VERSION=1.17.0 MOZ_HEADLESS=1
 
+stages:
+  - "Tests"
+  - "Deploy"
 
 jobs:
   include:
@@ -46,7 +49,7 @@ jobs:
 
     - stage: "Deploy"
       name: "Build and Push Docker Images"
-      if: branch = master
+      if: branch IN (develop, master) OR (branch =~ /^deploy-.*$/)
       language: generic
       sudo: required
       services:
@@ -55,9 +58,7 @@ jobs:
         apt:
           packages:
             - docker-ce
-      before_deploy:
+      script:
         # must cleanup root owned files
         - time ( sudo ./run clean:api )
-      deploy:
-        provider: script
-        script: time ./scripts/deploy-travis.sh $TRAVIS_COMMIT latest
+        - time ./scripts/deploy-travis.sh $TRAVIS_COMMIT $TRAVIS_BRANCH
