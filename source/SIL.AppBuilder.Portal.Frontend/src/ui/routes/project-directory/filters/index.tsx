@@ -10,13 +10,15 @@ import MomentLocaleUtils, {
   parseDate,
 } from 'react-day-picker/moment';
 
-import { attributesFor, ORGANIZATIONS_TYPE, idFromRecordIdentity } from '@data';
+import { attributesFor, OrganizationResource, idFromRecordIdentity } from '@data';
 import { OrganizationAttributes, TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { IFilter } from '@data/containers/api/with-filtering';
 import {
   withCurrentOrganization,
   IProvidedProps as ICurrentOrgProps
 } from '@data/containers/with-current-organization';
+
+import OrganizationSelect from '@ui/components/inputs/organization-select/display';
 
 import 'react-day-picker/lib/style.css';
 import './filters.scss';
@@ -32,7 +34,7 @@ interface IState {
 
 interface IOwnProps {
   updateFilter: (filter: IFilter) => void;
-  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  organizations: OrganizationResource[];
 }
 
 type IProps =
@@ -60,8 +62,7 @@ class Filter extends React.Component<IProps, IState> {
     this.setState({ selectedProduct: value });
   }
 
-  handleOrganizationChange = (e, dropdownEvent) => {
-    const { value } = dropdownEvent;
+  handleOrganizationChange = (value) => {
     const { updateFilter } = this.props;
 
     if (value === 'all') {
@@ -108,15 +109,8 @@ class Filter extends React.Component<IProps, IState> {
   }
 
   render() {
-
     const { t, organizations } = this.props;
     const { from, to, products, selectedProduct, selectedOrganization } = this.state;
-    const organizationOptions = [{ text: 'All Organizations', value: 'all'}].concat(
-      organizations.map(o => ({
-        text: attributesFor(o).name || '',
-        value: o.id
-      }))
-    );
 
     return (
       <div className='flex filters'>
@@ -129,11 +123,12 @@ class Filter extends React.Component<IProps, IState> {
               defaultValue={selectedProduct} />
           </div>
           <div className='input'>
-            <Dropdown
+            <OrganizationSelect
               className='w-100'
               onChange={this.handleOrganizationChange}
-              options={organizationOptions}
-              defaultValue={selectedOrganization} />
+              organizations={organizations}
+              defaultValue={selectedOrganization}
+            />
           </div>
         </div>
 

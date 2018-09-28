@@ -69,9 +69,11 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
     // TODO: consider this for search instead of the existing
     //       https://github.com/smclab/react-faceted-token-input
     return (
-      <div className='ui container'>
+      <div data-test-project-directory className='ui container'>
         <div className='flex-row justify-content-space-between align-items-center'>
-          <h2 className='page-heading flex-50'>{t('directory.title', { numProjects })}</h2>
+          <h2 data-test-directory-header className='page-heading flex-50'>
+            {t('directory.title', { numProjects })}
+          </h2>
 
           <ProjectSearch updateFilter={updateFilter}
           />

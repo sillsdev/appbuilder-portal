@@ -18,6 +18,8 @@ export class ProjectTableInteractor {
   columns = collection('[data-test-project-table-column]');
   isEmptyTextPresent = isPresent('[data-test-project-list-empty]');
   emptyText = text('[data-test-project-list-empty]');
+
+  rows = collection('[data-test-project-row]');
 }
 
 export default new ProjectTableInteractor('[data-test-project-table]');
