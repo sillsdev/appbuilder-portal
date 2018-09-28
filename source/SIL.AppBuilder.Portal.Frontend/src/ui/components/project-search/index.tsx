@@ -31,7 +31,7 @@ const selectorProps = {
 
 interface IOwnProps {
   languages?: any;
-  updateFilter: (filter: IFilter) => void;
+  onSubmit: (results: any) => void;
 }
 
 type IProps =
@@ -59,12 +59,13 @@ class Search extends React.Component<IProps> {
   }
 
   render() {
+    const { onSubmit } = this.props;
     const completionData  = this.buildOptions();
 
     return (
       <QueryAssist
         data={completionData}
-        onSubmit={console.log}
+        onSubmit={onSubmit}
         inputProps={inputProps}
         dropdownProps={dropdownProps}
         selectorProps={selectorProps}

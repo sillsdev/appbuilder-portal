@@ -38,6 +38,8 @@ import { withTranslations } from '@lib/i18n';
 import { withError } from '@data/containers/with-error';
 import { withDebugger } from '@lib/debug';
 
+import { tokensToObject } from '@lib/string/utils';
+
 export const pathName = '/directory';
 
 export interface IOwnProps {
@@ -58,6 +60,13 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class ProjectDirectoryRoute extends React.Component<IProps> {
+  search = (searchData) => {
+    const { updateFilter } = this.props;
+
+    tokensToObject(searchData);
+    /* updateFilter(); */
+  }
+
   render() {
     const {
       t,
@@ -75,7 +84,7 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
             {t('directory.title', { numProjects })}
           </h2>
 
-          <ProjectSearch updateFilter={updateFilter}
+          <ProjectSearch onSubmit={this.search}
           />
         </div>
 
