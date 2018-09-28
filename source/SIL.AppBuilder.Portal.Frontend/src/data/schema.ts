@@ -75,6 +75,7 @@ const schemaDefinition: SchemaSettings = {
         automaticBuilds: { type: 'boolean' },
         allowDownloads: { type: 'boolean' },
         location: { type: 'string' },
+        isPublic: { type: 'string' },
         // filter keys
         ownerId: { type: 'string' }
       },
