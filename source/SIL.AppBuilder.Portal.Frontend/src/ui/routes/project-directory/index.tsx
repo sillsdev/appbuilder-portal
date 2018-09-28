@@ -85,7 +85,10 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
         { !error && (
           <>
             <Table projects={projects} />
-            <PaginationFooter { ...this.props } />
+
+            <div className='flex-row justify-content-end'>
+              <PaginationFooter className='m-t-lg' { ...this.props } />
+            </div>
           </>
         ) }
       </div>

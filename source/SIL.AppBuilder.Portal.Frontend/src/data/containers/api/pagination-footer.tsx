@@ -13,10 +13,12 @@ export class PaginationFooter extends React.Component<IPaginateProps> {
   render() {
     // TODO: figure out how to get total pages from the response
 
-    const { currentPageOffset } = this.props;
+    const { currentPageOffset, ...otherProps } = this.props;
+
 
     return (
       <Pagination
+        { ...otherProps }
         totalPages={10}
         activePage={currentPageOffset}
         onPageChange={this.onPageChange}
