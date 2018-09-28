@@ -61,13 +61,22 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       expect(page.header).to.include('(3)');
     });
 
+    it('shows all the projects', () => {
+      const rows = page.table.rows();
+      const text = rows.map(r => r.text).join();
+
+      expect(text).to.include('Dummy project');
+      expect(text).to.include('project 3');
+      expect(text).to.include('project 2');
+    });
+
     describe('selecting your own organization', () => {
       let rows;
 
       beforeEach(async function() {
         await page.orgSelect.choose('DeveloperTown');
         await wait(500);
-        rows = await page.table.rows();
+        rows = page.table.rows();
       });
 
       it('The selected organization is changed', () => {
