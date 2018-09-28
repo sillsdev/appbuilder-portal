@@ -9,10 +9,10 @@ using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 {
-    [Collection("WithoutAuthCollection")]
-    public class GetProjectTest : BaseTest<NoAuthStartup>
+    [Collection("HangfireCollection")]
+    public class GetProjectTest : BaseTest<HangfireStartup>
     {
-        public GetProjectTest(TestFixture<NoAuthStartup> fixture) : base(fixture)
+        public GetProjectTest(TestFixture<HangfireStartup> fixture) : base(fixture)
         {
         }
 

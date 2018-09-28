@@ -2,17 +2,22 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
+using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 {
-    [Collection("WithoutAuthCollection")]
-    public class CreateProjectTest : BaseTest<NoAuthStartup>
+    [Collection("HangfireCollection")]
+    public class CreateProjectTest : BaseTest<HangfireStartup>
     {
-        public CreateProjectTest(TestFixture<NoAuthStartup> fixture) : base(fixture)
+        public CreateProjectTest(TestFixture<HangfireStartup> fixture) : base(fixture)
         {
         }
 
@@ -210,6 +215,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                         }
                 }
             };
+            var backgroundClient = _fixture.GetService<Mock<IBackgroundJobClient>>();
+
             var response = await Post("/api/projects/", content);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -222,6 +229,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal("project5", project.Name);
             Assert.True(project.AllowDownloads);
             Assert.True(project.AutomaticBuilds);
+            backgroundClient.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "ManageProject" &&
+                           job.Type == typeof(BuildEngineProjectService)),
+                It.IsAny<EnqueuedState>()));
         }
         [Fact]
         public async Task Create_Project_GroupOwner_Organization_Mismatch()

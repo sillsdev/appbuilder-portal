@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Services;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Forms.Projects;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using static OptimaJet.DWKit.StarterApplication.Utility.ServiceExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
@@ -16,6 +18,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     public class ProjectService : EntityResourceService<Project>
     {
         public IOrganizationContext OrganizationContext { get; private set; }
+        public IBackgroundJobClient HangfireClient { get; }
         public IJsonApiContext JsonApiContext { get; }
         public ICurrentUserContext CurrentUserContext { get; }
         public UserRepository UserRepository { get; }
@@ -25,6 +28,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public IEntityRepository<Organization> OrganizationRepository { get; set; }
 
         public ProjectService(
+            IBackgroundJobClient hangfireClient,
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
             ICurrentUserContext currentUserContext,
@@ -36,6 +40,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ILoggerFactory loggerFactory) : base(jsonApiContext, projectRepository, loggerFactory)
         {
             OrganizationContext = organizationContext;
+            HangfireClient = hangfireClient;
             JsonApiContext = jsonApiContext;
             CurrentUserContext = currentUserContext;
             UserRepository = userRepository;
@@ -91,7 +96,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(createForm.Errors);
             }
-            return await base.CreateAsync(resource);
+            var project = await base.CreateAsync(resource);
+
+            if (project != null)
+            {
+                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.ManageProject(project.Id));
+            }
+            return project;
         }
     }
 
