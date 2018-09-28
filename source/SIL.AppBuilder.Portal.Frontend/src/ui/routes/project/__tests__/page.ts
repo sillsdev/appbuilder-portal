@@ -14,6 +14,7 @@ export class ProjectInteractor {
 
   clickArchiveLink = clickable('[data-test-archive]');
   archiveText = text('[data-test-archive] span');
+  publicText = text('[data-test-project-visibility-label]');
 
   isAutomaticRebuildChecked = isPresent('[data-test-project-settings-automatic-build].checked');
   isAllowDownloadChecked = isPresent('[data-test-project-settings-allow-download].checked');

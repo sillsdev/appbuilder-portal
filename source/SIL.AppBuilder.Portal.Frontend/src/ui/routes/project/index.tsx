@@ -2,14 +2,11 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
-import { ResourceObject } from 'jsonapi-typescript';
 import { Tab, Dropdown } from 'semantic-ui-react';
 
-import { attributesFor } from '@data/helpers';
+import { attributesFor, ProjectResource } from '@data';
 import Details from './details';
 import Products from './products';
-import { PROJECTS_TYPE } from '@data';
-import { ProjectAttributes } from '@data/models/project';
 import Owners from './owners';
 import Reviewers from './reviewers';
 import Settings from './settings';
@@ -22,7 +19,6 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './project.scss';
 
-
 export const pathName = '/project/:id';
 
 export interface Params {
@@ -31,11 +27,11 @@ export interface Params {
 
 interface PassedProps {
   match: Match<Params>;
-  toggleArchiveProject: (project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>) => void;
+  toggleArchiveProject: (project: ProjectResource) => void;
 }
 
 interface QueriedProps {
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  project: ProjectResource;
 }
 
 export type IProps =
@@ -86,11 +82,15 @@ class Project extends React.Component<IProps> {
       return null;
     }
 
-    const { name, dateCreated, dateArchived } = attributesFor(project);
+    const { name, dateCreated, dateArchived, isPublic } = attributesFor(project);
 
     const toggleText = !dateArchived ?
       t('project.dropdown.archive') :
       t('project.dropdown.reactivate');
+
+    const visibility = isPublic ?
+      t('project.public') :
+      t('project.private');
 
 
     return (
@@ -100,7 +100,7 @@ class Project extends React.Component<IProps> {
             <div className='flex-grow'>
               <h1 className='title'>{name}</h1>
               <div className='subtitle'>
-                <span>Public</span><span className='dot-space font-normal'>.</span>
+                <span data-test-project-visibility-label>{visibility}</span><span className='dot-space font-normal'>.</span>
                 <span className='font-normal'>{t('project.createdOn')} </span>
                 <span>{moment.tz(dateCreated, timezone).fromNow()}</span>
               </div>
