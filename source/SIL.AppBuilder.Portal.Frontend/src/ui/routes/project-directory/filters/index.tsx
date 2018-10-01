@@ -1,17 +1,10 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { withTranslations, i18nProps } from '@lib/i18n';
 import { Dropdown } from 'semantic-ui-react';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
 
-import MomentLocaleUtils, {
-  formatDate,
-  parseDate,
-} from 'react-day-picker/moment';
-
-import { attributesFor, OrganizationResource, idFromRecordIdentity } from '@data';
-import { OrganizationAttributes, TYPE_NAME as ORGANIZATION } from '@data/models/organization';
+import { OrganizationResource, idFromRecordIdentity } from '@data';
+import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { IFilter } from '@data/containers/api/with-filtering';
 import {
   withCurrentOrganization,
@@ -19,10 +12,10 @@ import {
 } from '@data/containers/with-current-organization';
 
 import OrganizationSelect from '@ui/components/inputs/organization-select/display';
+import DateRange from '@ui/components/inputs/date-range';
 
 import 'react-day-picker/lib/style.css';
 import './filters.scss';
-import { ResourceObject } from 'jsonapi-typescript';
 
 interface IState {
   products: any[];
@@ -78,39 +71,27 @@ class Filter extends React.Component<IProps, IState> {
     this.setState({ selectedOrganization: value });
   }
 
-  handleToChange = (to) => {
+  handleToChange = (to: Date) => {
     const { updateFilter } = this.props;
+    const normalizedTo = to.toISOString();
 
-    updateFilter({ attribute: 'products.dateUpdated', value: `le:${to}` });
+    updateFilter({ attribute: 'product-updated-date', value: `le:${normalizedTo}` });
 
     this.setState({ to });
   }
 
-  handleFromChange = (from) => {
+  handleFromChange = (from: Date) => {
     const { updateFilter } = this.props;
+    const normalizedFrom = from.toISOString();
 
-    updateFilter({ attribute: 'products.dateUpdated', value: `ge:${from}` });
+    updateFilter({ attribute: 'product-updated-date', value: `ge:${normalizedFrom}` });
 
     this.setState({from});
   }
 
-  disableFrom = (day) => {
-    const { to } = this.state;
-    const compare = (to && to !== '' && to) || new Date();
-
-    return day > compare;
-  }
-
-  disableTo = (day) => {
-    const { from } = this.state;
-    const compare = (from && from !== '' && from) || new Date();
-
-    return day < compare;
-  }
-
   render() {
-    const { t, organizations } = this.props;
-    const { from, to, products, selectedProduct, selectedOrganization } = this.state;
+    const { organizations } = this.props;
+    const { from, to, selectedProduct, selectedOrganization } = this.state;
 
     return (
       <div className='flex filters'>
@@ -133,38 +114,12 @@ class Filter extends React.Component<IProps, IState> {
         </div>
 
         <div className='flex justify-content-end w-50'>
-          <div className='input m-r-30'>
-            <div className='dateRange'>{t('directory.filters.dateRange')}</div>
-            <ArrowDropDownIcon/>
-            <DayPickerInput
-              locale='en'
-              value={from}
-              dayPickerProps={{
-                disabledDays: this.disableFrom,
-                showOutsideDays: true
-              }}
-              onDayChange={this.handleFromChange}
-              placeholder=''
-              formatDate={formatDate}
-              parseDate={parseDate}
-            />
-          </div>
-          <div className='input'>
-            <ArrowDropDownIcon />
-            <DayPickerInput
-              locale='en'
-              dayPickerProps={{
-                disabledDays: this.disableTo,
-                showOutsideDays: true
-              }}
-              onDayChange={this.handleToChange}
-              placeholder=''
-              formatDate={formatDate}
-              parseDate={parseDate}
-              value={to}
-
-            />
-          </div>
+          <DateRange
+            to={to}
+            from={from}
+            onToChange={this.handleToChange}
+            onFromChange={this.handleFromChange}
+          />
         </div>
       </div>
     );
@@ -172,7 +127,7 @@ class Filter extends React.Component<IProps, IState> {
 }
 
 export default compose(
-  translate('translations'),
+  withTranslations,
   withCurrentOrganization
 )(Filter);
 

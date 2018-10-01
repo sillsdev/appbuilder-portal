@@ -41,18 +41,18 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             var value = filterQuery.Value;
             var op = filterQuery.Operation.ToEnum<FilterOperations>(defaultValue: FilterOperations.eq);
 
-            if (filterQuery.Has(PROJECT_PRODUCT_BUILD_DATE)) {
+            if (filterQuery.Has(PROJECT_PRODUCT_UPDATED_DATE)) {
                 var date = DateTime.Parse(value);
 
                 switch(op) {
                     case FilterOperations.ge:
                         return query
                             .Include(p => p.Products)
-                            .Where(p => p.Products.Any(product => product.DateBuilt > date));
+                            .Where(p => p.Products.Any(product => product.DateUpdated > date));
                     case FilterOperations.le:
                         return query
                             .Include(p => p.Products)
-                            .Where(p => p.Products.Any(product => product.DateBuilt < date));
+                            .Where(p => p.Products.Any(product => product.DateUpdated < date));
                 }
             }
 
