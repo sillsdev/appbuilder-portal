@@ -123,7 +123,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 OwnerId = CurrentUser.Id,
                 GroupId = group1.Id,
                 OrganizationId = org1.Id,
-                Language = "eng-US",
+                Language = "eng-AUS",
                 IsPublic = true,
                 DateArchived = null
             });
@@ -300,9 +300,33 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             var url = "/api/projects" + 
                 "?filter%5Bproduct-updated-date%5D=le%3A" + aboutNowAsIso + 
                 "&filter%5Bdate-archived%5D=isnull%3A" + 
+                "&filter%5Blanguage%5D=like%3AAUS" + 
                 "&include=organization%2Cgroup%2Cowner%2cproducts" +
                 "&page%5Boffset%5D=0" +
                 "&page%5Blimit%5D=20";
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(1, projects.Count);
+
+            var ids = projects.Select(p => p.Id);
+
+            Assert.Contains(project1.Id, ids);
+        }
+
+        [Fact]
+        public async Task GetProjects_ForDirectory_QueryLanguage()
+        {
+            BuildTestData();
+
+            var now = DateTime.Now;
+            var anHourLater = now.AddHours(1);
+            var aboutNowAsIso = anHourLater.ToISO8601();
+
+            var url = "/api/projects?filter%5Blanguage%5D=like%3AAUS";
             var response = await Get(url, addOrgHeader: false);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -372,7 +396,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 "Test Project3",
                 "Test Project2",
                 "Test Project1",
-            }; 
+            };
+
             Assert.Equal(expected, names);
         }        
     }
