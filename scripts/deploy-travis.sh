@@ -6,17 +6,20 @@
 REPO_PORTAL_NGINX=appbuilder-portal-nginx
 REPO_PORTAL_API=appbuilder-portal-api
 CURRENT_VERSION=$1
-case "$2" in
-  master)  DEPLOY_LEVEL=production ;;
-  develop) DEPLOY_LEVEL=staging ;;
-  "")      DEPLOY_LEVEL=unknown ;;
-  *)       DEPLOY_LEVEL=$2 ;;
-esac 
 
-case "$2" in
-  master)  ECS_CLUSTER=aps-prd ;;
-  *)       ECS_CLUSTER=aps-stg ;;
-esac 
+DEPLOY_LEVEL=staging
+#case "$2" in
+#  master)  DEPLOY_LEVEL=production ;;
+#  develop) DEPLOY_LEVEL=staging ;;
+#  "")      DEPLOY_LEVEL=unknown ;;
+#  *)       DEPLOY_LEVEL=$2 ;;
+#esac 
+
+ECS_CLUSTER=aps-stg
+#case "$2" in
+#  master)  ECS_CLUSTER=aps-prd ;;
+#  *)       ECS_CLUSTER=aps-stg ;;
+#esac 
 
 
 docker --version # document the version travis is using
