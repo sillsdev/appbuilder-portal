@@ -57,7 +57,7 @@ class Filter extends React.Component<IProps, IState> {
   handleProductChange = (e, { value }) => {
     const { updateFilter } = this.props;
 
-    updateFilter({ attribute: 'products.productDefinition.name', value });
+    updateFilter({ attribute: 'any-product-name', value });
 
     this.setState({ selectedProduct: value });
   }
