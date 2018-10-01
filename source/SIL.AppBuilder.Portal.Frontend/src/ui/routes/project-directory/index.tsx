@@ -63,8 +63,13 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
   search = (searchData) => {
     const { updateFilter } = this.props;
 
-    tokensToObject(searchData);
-    /* updateFilter(); */
+    const tokens = tokensToObject(searchData);
+
+    Object.keys(tokens).forEach(token => {
+      const value = tokens[token];
+
+      updateFilter({ attribute: token, value: `like:${value}` });
+    });
   }
 
   render() {
