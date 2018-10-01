@@ -114,7 +114,7 @@ function runstuff {
 
     ci:api)
       ${CI_COMPOSE} run --rm api \
-        bash -c "dotnet test ../SIL.AppBuilder.Portal.Backend.Tests/SIL.AppBuilder.Portal.Backend.Tests.csproj"
+        bash -c "dotnet test /app/SIL.AppBuilder.Portal.Backend.Tests/"
     ;;
 
     ################

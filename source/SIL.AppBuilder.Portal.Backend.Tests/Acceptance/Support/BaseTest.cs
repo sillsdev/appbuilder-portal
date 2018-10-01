@@ -14,6 +14,7 @@ using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication;
 using Xunit;
+using System.Net;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 {
@@ -103,9 +104,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
                 request.Headers.Add("Organization", allOrgs ? "-" : organizationId);
             }
 
-            var body = await _fixture.Client.SendAsync(request);
+            var response = await _fixture.Client.SendAsync(request);
 
-            return body;
+            if (response.StatusCode == HttpStatusCode.InternalServerError) {
+                var body = await response.Content.ReadAsStringAsync();
+                Console.Write(body);
+
+                throw new Exception("500 errors must not exist");
+            }
+
+            return response;
         }
 
         #endregion
