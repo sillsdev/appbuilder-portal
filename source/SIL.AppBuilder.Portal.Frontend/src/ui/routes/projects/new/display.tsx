@@ -1,19 +1,21 @@
 import * as React from 'react';
 import { Card, Form, Checkbox } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 
 import { idFromRecordIdentity } from '@data';
 import { i18nProps } from '@lib/i18n';
 import * as toast from '@lib/toast';
 import { isEmpty } from '@lib/collection';
+import ApplicationTypeSelect from '@ui/components/inputs/application-type-select';
 import GroupSelect from '@ui/components/inputs/group-select';
 
 import { IProvidedProps as IDataProps } from './with-data';
 
 type IProps =
-& i18nProps
-& IDataProps;
+  & i18nProps
+  & IDataProps
+  & RouteComponentProps;
 
 interface IState {
   name?: string;
@@ -21,7 +23,7 @@ interface IState {
   language?: string;
   isPublic?: boolean;
   disableSubmit: boolean;
-  type?: string;
+  typeId?: string;
 }
 
 @withTemplateHelpers
@@ -32,13 +34,13 @@ export default class Display extends React.Component<IProps, IState> {
   state: IState = { disableSubmit: false, isPublic: true };
 
   areAllRequiredFieldsPresent = () => {
-    const { name, groupId, language, type } = this.state;
+    const { name, groupId, language, typeId } = this.state;
 
     return (
       !isEmpty(name)
       && !isEmpty(groupId)
       && !isEmpty(language)
-      && !isEmpty(type)
+      && !isEmpty(typeId)
     );
   }
 
@@ -53,14 +55,14 @@ export default class Display extends React.Component<IProps, IState> {
 
     this.setState({ disableSubmit: true });
 
-    const { name, groupId, language, isPublic, type } = this.state;
+    const { name, groupId, language, isPublic, typeId } = this.state;
 
     try {
-      const project = await create({ name, language, isPublic, type }, groupId);
+      const project = await create({ name, language, isPublic }, groupId, typeId);
 
       const id = idFromRecordIdentity(project);
-
       history.push(`/project/${id}`);
+
     } catch (e) {
       toast.error(t('errors.generic', { errorMessage: e.message }));
     }
@@ -72,7 +74,7 @@ export default class Display extends React.Component<IProps, IState> {
   render() {
     const { mut, toggle } = this;
     const { t, currentOrganization } = this.props;
-    const { name, groupId, language, isPublic, disableSubmit, type } = this.state;
+    const { name, groupId, language, isPublic, typeId } = this.state;
 
     const submitClasses = `
       ui button primary huge
@@ -123,10 +125,10 @@ export default class Display extends React.Component<IProps, IState> {
 
                 <Form.Field className='flex-50 m-l-md'>
                   <label>{t('project.type')}</label>
-                  <input required
-                    data-test-type
-                    value={type || ''}
-                    onChange={mut('type')} />
+                  <ApplicationTypeSelect
+                    selected={typeId}
+                    onChange={mut('typeId')}
+                  />
                 </Form.Field>
               </div>
 
