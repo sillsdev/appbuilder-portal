@@ -9,54 +9,42 @@ type IProps =
 & i18nProps
 & IColumnProps;
 
-
-// TODO: Remove this when we had products associated to projects
-const products = [{
-  id: '1',
-  type: 'products',
-  attributes: {
-    name: 'HTML',
-    buildVersion: '1.0.0',
-    buildDate: new Date(),
-    createdOn: new Date(),
-    updatedOn: new Date()
-  }
-},{
-  id: '2',
-  type: 'products',
-    attributes: {
-      name: 'Android APK (Streaming Audio)',
-      buildVersion: '1.0.0',
-      buildDate: new Date(),
-      createdOn: new Date(),
-      updatedOn: new Date()
-    }
-}];
-
 class Products extends React.Component<IProps> {
   render() {
-    const { activeProductColumns, t } = this.props;
+    const { activeProductColumns, t, products } = this.props;
+    const hasProducts = products && products.length > 0;
 
     return (
       <div className='products-grid'>
-        <div className='flex grid products-header flex-graw'>
-          <div className='col flex-grow-xs product-xs-only flex-100'>
-            Products
-          </div>
+        { hasProducts && (
+          <>
+            <div className='flex grid products-header flex-grow'>
+              <div className='col flex-grow-xs product-xs-only flex-100'>
+                {t('projectTable.products')}
+              </div>
 
-          { activeProductColumns.map((column, i) => (
-            <div key={i} data-test-project-table-column className={'col d-xs-only-none flex-100'}>
-              {t(column.i18nKey)}
+              { activeProductColumns.map((column, i) => (
+                <div key={i} data-test-project-table-column className={'col d-xs-only-none flex-100'}>
+                  {t(column.i18nKey)}
+                </div>
+              ))}
+
+              <div className='action d-xs-none d-md-block' />
             </div>
-          ))}
 
-          <div className='action d-xs-none d-md-block' />
-        </div>
-        {
-          products && products.map((product, index) => {
-            return <ProductItem key={index} { ...this.props } product={product} />;
-          })
-        }
+            { products.map((product, index) => (
+              <ProductItem key={index} { ...this.props } product={product} />
+            ))}
+          </>
+        ) }
+
+        { !hasProducts && (
+          <div className='flex grid products-header flex-grow'>
+            <div className='col flex-grow-xs product-xs-only flex-100'>
+              {t('projectTable.noProducts')}
+            </div>
+          </div>
+        ) }
       </div>
     );
 
