@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Utility.Extensions;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using Xunit;
 
@@ -122,7 +124,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 GroupId = group1.Id,
                 OrganizationId = org1.Id,
                 Language = "eng-US",
-                IsPublic = true
+                IsPublic = true,
+                DateArchived = null
             });
             project2 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -157,6 +160,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Language = "eng-US",
                 IsPublic = true
             });
+
+            var productDefinition1 = AddEntity<AppDbContext, ProductDefinition>(new ProductDefinition { 
+                Name = "First"
+            });
+
+            var product1 = AddEntity<AppDbContext, Product>(new Product {
+                ProjectId = project1.Id,
+                ProductDefinitionId = productDefinition1.Id
+            });
+
             reviewer1 = AddEntity<AppDbContext, Reviewer>(new Reviewer
             {
                 Name = "David Moore",
@@ -274,5 +287,93 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Contains(project3.Id, ids);
             Assert.Contains(project4.Id, ids);
         }
+
+        [Fact]
+        public async Task GetProjects_ForDirectory_QueryEverything()
+        {
+            BuildTestData();
+
+            var now = DateTime.Now;
+            var anHourLater = now.AddHours(1);
+            var aboutNowAsIso = anHourLater.ToISO8601();
+
+            var url = "/api/projects" + 
+                "?filter%5Bproduct-updated-date%5D=le%3A" + aboutNowAsIso + 
+                "&filter%5Bdate-archived%5D=isnull%3A" + 
+                "&include=organization%2Cgroup%2Cowner%2cproducts" +
+                "&page%5Boffset%5D=0" +
+                "&page%5Blimit%5D=20";
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(1, projects.Count);
+
+            var ids = projects.Select(p => p.Id);
+
+            Assert.Contains(project1.Id, ids);
+        }
+
+        [Fact]
+        public async Task GetProjects_ForDirectory_Sort_Asc()
+        {
+            BuildTestData();
+
+            var url = "/api/projects" + 
+                "?filter%5Bdate-archived%5D=isnull%3A" + 
+                "&include=organization%2Cgroup%2Cowner%2cproducts" +
+                "&page%5Boffset%5D=0" +
+                "&page%5Blimit%5D=20" +
+                "&sort=name";
+
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(4, projects.Count);
+
+            var names = projects.Select(p => p.Name);
+            var expected = new List<string> {
+                "Test Project1",
+                "Test Project2",
+                "Test Project3",
+                "Test Project4"
+            }; 
+            Assert.Equal(expected, names);
+        }
+
+        [Fact]
+        public async Task GetProjects_ForDirectory_Sort_Desc()
+        {
+            BuildTestData();
+
+            var url = "/api/projects" + 
+                "?filter%5Bdate-archived%5D=isnull%3A" + 
+                "&include=organization%2Cgroup%2Cowner%2cproducts" +
+                "&page%5Boffset%5D=0" +
+                "&page%5Blimit%5D=20" +
+                "&sort=-name";
+
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(4, projects.Count);
+
+            var names = projects.Select(p => p.Name);
+            var expected = new List<string> {
+                "Test Project4",
+                "Test Project3",
+                "Test Project2",
+                "Test Project1",
+            }; 
+            Assert.Equal(expected, names);
+        }        
     }
 }

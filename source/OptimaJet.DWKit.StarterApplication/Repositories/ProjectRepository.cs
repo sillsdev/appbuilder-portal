@@ -42,7 +42,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             var op = filterQuery.Operation.ToEnum<FilterOperations>(defaultValue: FilterOperations.eq);
 
             if (filterQuery.Has(PROJECT_PRODUCT_UPDATED_DATE)) {
-                var date = DateTime.Parse(value);
+                var date = value.DateTimeFromISO8601();
 
                 switch(op) {
                     case FilterOperations.ge:

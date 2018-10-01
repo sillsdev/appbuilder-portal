@@ -20,6 +20,11 @@ namespace OptimaJet.DWKit.StarterApplication.Utility.Extensions
 
             return (T) Enum.Parse(typeof(T), value, true);
         }
+
+        public static DateTime DateTimeFromISO8601(this string value)
+        {
+            return DateTime.Parse(value, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
+        }
     }
 }
 
