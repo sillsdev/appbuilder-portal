@@ -18,8 +18,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
     {
         protected BackgroundProjectRepository ProjectRepository;
 
-        public IRecurringJobManager RecurringJobManager { get; }
-        public IBuildEngineApi BuildEngineApi { get; }
+        public IRecurringJobManager RecurringJobManager { get; set; }
+        public IBuildEngineApi BuildEngineApi { get; set; }
         protected IEntityRepository<SystemStatus> SystemStatusRepository { get; }
 
         public BuildEngineProjectService(
@@ -162,7 +162,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             ClearAndExit(project.Id);
         }
-            // This method will kill the current recurring job if it exists
+        // This method will kill the current recurring job if it exists
         // and return normally so no retry is attempted.
         protected void ClearAndExit(int projectId)
         {

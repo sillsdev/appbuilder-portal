@@ -51,9 +51,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
                 {
                     Client.Dispose();
                     _server.Dispose();
-               }
+                    Context.Dispose();
+                    disposedValue = true;
+                }
 
-                disposedValue = true;
             }
         }
 
