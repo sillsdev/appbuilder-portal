@@ -2,23 +2,12 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
+import { formatDate, parseDate } from 'react-day-picker/moment';
 
+import { tomorrow } from '@lib/date';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import {
-  formatDate,
-  parseDate,
-} from 'react-day-picker/moment';
-
 import 'react-day-picker/lib/style.css';
-
-function tomorrow() {
-  const d = new Date();
-
-  d.setDate(d.getDate() + 1);
-
-  return d;
-}
 
 interface IOwnProps {
   onToChange: (value: Date) => void;
