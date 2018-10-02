@@ -1,15 +1,13 @@
 import {
   interactor,
   clickable,
-  text,
-  selectable,
   isPresent,
-  fillable,
-  is
+  fillable
 } from '@bigtest/interactor';
 
 
 import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
+import applicationTypeInteractor from '@ui/components/inputs/application-type-select/__tests__/page';
 
 @interactor
 export class CreateProjectInteractor {
@@ -19,12 +17,12 @@ export class CreateProjectInteractor {
 
   fillName = fillable('[data-test-name]');
   fillLanguage = fillable('[data-test-language]');
-  fillType = fillable('[data-test-type]');
   toggleVisibility = clickable('[data-test-visibility]');
 
   isVisibilityChecked = isPresent('[data-test-visibility].checked');
 
   groupSelect = groupInteractor;
+  applicationTypeSelect = applicationTypeInteractor;
 }
 
 export default new CreateProjectInteractor('[data-test-new-project-form]');
