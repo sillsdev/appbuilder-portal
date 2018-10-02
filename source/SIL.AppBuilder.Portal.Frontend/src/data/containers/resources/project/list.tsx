@@ -5,6 +5,7 @@ import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filter
 import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { IPaginateProps } from '@data/containers/api/pagination';
 import { ISortProps } from '@data/containers/api/sorting';
+import { IProvidedProps as IOrgProps } from '@data/containers/with-current-organization';
 
 import { query, PROJECTS_TYPE } from '@data';
 
@@ -22,6 +23,7 @@ interface IOptions {
 type IProps =
 & IFilterProps
 & IPaginateProps
+& IOrgProps
 & ISortProps;
 
 export function withNetwork<TWrappedProps>(options: IOptions = {}) {
@@ -33,7 +35,7 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
     function mapNetworkToProps(passedProps: TWrappedProps & IProps) {
       const {
         applyPagination, currentPageOffset, currentPageSize,
-        applyFilter, filters, sortProperty,
+        applyFilter, filters, sortProperty, currentOrganizationId,
         applySort,
       } = passedProps;
 
@@ -46,7 +48,11 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       }
 
       return {
-        cacheKey: [sortProperty, filters, currentPageOffset, currentPageSize],
+        cacheKey: [
+          currentOrganizationId,
+          sortProperty, filters,
+          currentPageOffset, currentPageSize
+        ],
         projects: [
           q => {
             let builder = q.findRecords(PROJECT);
