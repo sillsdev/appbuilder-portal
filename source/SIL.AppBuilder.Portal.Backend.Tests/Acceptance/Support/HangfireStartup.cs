@@ -8,23 +8,17 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
 {
     public class HangfireStartup : NoAuthStartup
     {
-        //protected Mock<IBackgroundJobClient> hangfireJobClient;
-        //protected Mock<IRecurringJobManager> hangfireRecurringJobManager;
+        protected Mock<IBackgroundJobClient> hangfireJobClient;
 
         public HangfireStartup(IHostingEnvironment env) : base(env)
         {
-            //hangfireJobClient = new Mock<IBackgroundJobClient>();
-            //hangfireRecurringJobManager = new Mock<IRecurringJobManager>();
+            hangfireJobClient = new Mock<IBackgroundJobClient>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            //services.AddSingleton(typeof(IBackgroundJobClient), hangfireJobClient.Object);
-            //services.AddSingleton(typeof(Mock<IBackgroundJobClient>), hangfireJobClient);
-            //services.AddSingleton(typeof(IRecurringJobManager), hangfireRecurringJobManager.Object);
-            //services.AddSingleton(typeof(Mock<IRecurringJobManager>), hangfireRecurringJobManager);
-            services.AddScoped(typeof(IBackgroundJobClient), typeof(Mock<IBackgroundJobClient>));
-            services.AddScoped(typeof(IRecurringJobManager), typeof(Mock<IRecurringJobManager>));
+            services.AddSingleton(typeof(IBackgroundJobClient), hangfireJobClient.Object);
+            services.AddSingleton(typeof(Mock<IBackgroundJobClient>), hangfireJobClient);
             base.ConfigureServices(services);
         }
     }

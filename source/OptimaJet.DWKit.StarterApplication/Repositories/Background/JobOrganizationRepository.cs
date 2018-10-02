@@ -6,13 +6,11 @@ using OptimaJet.DWKit.StarterApplication.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class BackgroundProjectRepository : BackgroundRepository<Project>
+    public class JobOrganizationRepository : JobRepository<Organization>
     {
-        public BackgroundProjectRepository(
-            ILoggerFactory loggerFactory,
-            IJsonApiContext jsonApiContext,
+        public JobOrganizationRepository(
             IDbContextResolver contextResolver
-        ) : base(loggerFactory, jsonApiContext, contextResolver)
+        ) : base(contextResolver)
         {
         }
     }

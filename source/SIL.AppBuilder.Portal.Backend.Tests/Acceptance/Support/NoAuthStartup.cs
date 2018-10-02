@@ -18,7 +18,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         {
             services.AddApiServices();
 
-            services.AddScoped<BackgroundProjectRepository>();
+            services.AddScoped<JobProjectRepository>();
+            services.AddScoped<JobOrganizationRepository>();
+            services.AddScoped<JobSystemStatusRepository>();
             services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
             services.AddScoped<ICurrentUserContext, TestCurrentUserContext>();
 

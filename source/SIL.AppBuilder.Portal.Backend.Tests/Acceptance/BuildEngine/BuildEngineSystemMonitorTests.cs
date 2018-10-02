@@ -1,7 +1,9 @@
 ﻿using System;
+using JsonApiDotNetCore.Data;
 using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.BuildEngineApiClient;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
@@ -86,8 +88,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             SetTestData();
 
-            var buildEngineService = _fixture.GetService<BuildEngineSystemMonitor>();
-            var mockClient = _fixture.GetService<Mock<IBuildEngineApi>>();
+            var organizationRepository = _fixture.GetService<JobOrganizationRepository>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
+            var mockClient = new Mock<IBuildEngineApi>();
+            var buildEngineService = new BuildEngineSystemMonitor(organizationRepository, systemStatusRepository, mockClient.Object);
             mockClient.Setup(x => x.SystemCheck()).Returns(System.Net.HttpStatusCode.OK);
             buildEngineService.CheckBuildEngineStatus();
 
@@ -102,8 +106,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             SetTestData();
 
-            var buildEngineService = _fixture.GetService<BuildEngineSystemMonitor>();
-            var mockClient = _fixture.GetService<Mock<IBuildEngineApi>>();
+            var organizationRepository = _fixture.GetService<JobOrganizationRepository>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
+            var mockClient = new Mock<IBuildEngineApi>();
+            var buildEngineService = new BuildEngineSystemMonitor(organizationRepository, systemStatusRepository, mockClient.Object);
             mockClient.Setup(x => x.SystemCheck()).Returns(System.Net.HttpStatusCode.NotFound);
             buildEngineService.CheckBuildEngineStatus();
 
