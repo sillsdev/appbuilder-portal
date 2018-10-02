@@ -49,7 +49,7 @@ jobs:
 
     - stage: "Deploy"
       name: "Build and Push Docker Images"
-      if: branch IN (develop, master) OR (branch =~ /^deploy-.*$/)
+      if: branch IN (develop, master)
       language: generic
       sudo: required
       services:
