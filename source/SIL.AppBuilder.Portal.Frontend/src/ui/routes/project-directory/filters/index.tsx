@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, mapProps } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { Dropdown } from 'semantic-ui-react';
 
 import { OrganizationResource, idFromRecordIdentity } from '@data';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
@@ -12,13 +11,13 @@ import {
 } from '@data/containers/with-current-organization';
 
 import OrganizationSelect from '@ui/components/inputs/organization-select/display';
+import ProductDefinitionSelect from '@ui/components/inputs/product-definition-select';
 import DateRange from '@ui/components/inputs/date-range';
 
 import 'react-day-picker/lib/style.css';
 import './filters.scss';
 
 interface IState {
-  products: any[];
   selectedProduct : string;
   selectedOrganization: string;
   from: any;
@@ -37,17 +36,13 @@ type IProps =
 
 class Filter extends React.Component<IProps, IState> {
   state = {
-    products: [
-      { text: 'All Products', value: 'all' },
-      { text: 'Android APK w/ Embedded Audio', value: 'android-apk' },
-      { text: 'HTML Website', value: 'website'}],
     selectedProduct: 'all',
     selectedOrganization: 'all',
     from: '',
     to: ''
   };
 
-  handleProductChange = (e, { value }) => {
+  handleProductChange = (value) => {
     const { updateFilter } = this.props;
 
     updateFilter({ attribute: 'any-product-name', value });
@@ -93,15 +88,16 @@ class Filter extends React.Component<IProps, IState> {
     const { organizations } = this.props;
     const { from, to, selectedProduct, selectedOrganization } = this.state;
 
+
     return (
       <div className='flex filters'>
         <div className='flex w-50'>
           <div className='input m-r-30'>
-            <Dropdown
+            <ProductDefinitionSelect
               className='w-100'
-              options={this.state.products}
               onChange={this.handleProductChange}
-              defaultValue={selectedProduct} />
+              defaultValue={selectedProduct}
+            />
           </div>
           <div className='input'>
             <OrganizationSelect
@@ -128,6 +124,6 @@ class Filter extends React.Component<IProps, IState> {
 
 export default compose(
   withTranslations,
-  withCurrentOrganization
+  withCurrentOrganization,
 )(Filter);
 
