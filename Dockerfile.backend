@@ -5,15 +5,15 @@
 FROM microsoft/dotnet:2.1.402-sdk-bionic as dependencies
 WORKDIR /app
 
-COPY OptimaJet.DWKit.Application/*.csproj /app/OptimaJet.DWKit.Application/
-COPY OptimaJet.DWKit.StarterApplication/*.csproj /app/OptimaJet.DWKit.StarterApplication/
+COPY source/OptimaJet.DWKit.Application/*.csproj /app/OptimaJet.DWKit.Application/
+COPY source/OptimaJet.DWKit.StarterApplication/*.csproj /app/OptimaJet.DWKit.StarterApplication/
 WORKDIR /app/OptimaJet.DWKit.StarterApplication/
 RUN dotnet restore
 
 ###############################
 # Development
 FROM dependencies as development
-COPY . /app
+COPY source /app
 COPY --from=dependencies /app /app
 WORKDIR /app/OptimaJet.DWKit.StarterApplication
 
@@ -22,21 +22,21 @@ WORKDIR /app/OptimaJet.DWKit.StarterApplication
 # Release
 FROM dependencies as build-release
 WORKDIR /app/
-COPY ./ /app/
+COPY source/ /app/
 COPY --from=dependencies /app /app
 WORKDIR /app/OptimaJet.DWKit.StarterApplication
-RUN dotnet publish -c Release -o out
-# Need dummy values for POSTGRES_* variables for migrations to run
-RUN POSTGRES_HOST=build \
+RUN dotnet publish -c Release -o out && \
+    POSTGRES_HOST=build \
     POSTGRES_DB=build \
     POSTGRES_USER=build \
     POSTGRES_PASSWORD=build \
-    dotnet ef migrations script --idempotent --output "out/migrations.sql"
+    dotnet ef migrations --msbuildprojectextensionspath /app/out/OptimaJet.DWKit.StarterApplication/obj/ script --idempotent --output "out/scripts/api_migrations.sql"
 
 FROM microsoft/dotnet:2.1.402-sdk-bionic AS runtime-release
 WORKDIR /app
 COPY --from=build-release /app/OptimaJet.DWKit.StarterApplication/out ./
 COPY --from=build-release /app/run-api.sh ./
+COPY scripts/DB/*.sql scripts/DB/PostgreSQL/*.sql /app/scripts/
 RUN curl -o /usr/local/bin/runny https://raw.githubusercontent.com/silinternational/runny/0.2/runny \
     && chmod a+x /usr/local/bin/runny
 RUN apt-get update && apt-get install -y \

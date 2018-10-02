@@ -1,8 +1,8 @@
 version: '3.4'
 
-# NOTE: that --project-directory ./source
+# NOTE: that --project-directory .
 # must be passed to every docker-compose command
-# ./source is the docker-compose context
+# . is the docker-compose context
 #
 # NOTE: environment vars are public, and should not contain secrets ^_~
 #       use `env_file: [.env]` for secret things.
@@ -27,26 +27,26 @@ services:
 
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ../scripts/DB:/scripts
+      - ./scripts/DB:/scripts
 
   api:
     build:
-      context: ./
+      context: .
       dockerfile: Dockerfile.backend
       target: development
     command: bash -c " dotnet watch run"
     links:
       - db:db.docker
     env_file:
-      - ${PWD}/source/OptimaJet.DWKit.StarterApplication/.env.dev
+      - ./source/OptimaJet.DWKit.StarterApplication/.env.dev
     volumes:
-      - ./:/app
+      - ./source/:/app
       # - api-obj:/app/obj
       # - api-bin:/app/bin
 
   ui:
     build:
-      context: ./SIL.AppBuilder.Portal.Frontend/
+      context: ./source/SIL.AppBuilder.Portal.Frontend/
       dockerfile: Dockerfile.ci
     command: bash -c "yarn && yarn start:dev"
 
@@ -54,18 +54,18 @@ services:
       API_HOST: api:7081
 
     env_file:
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/.env.dev
+      - ./source/SIL.AppBuilder.Portal.Frontend/.env.dev
 
     volumes:
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/src:/app/src
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tests:/app/tests
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/types:/app/types
+      - ./source/SIL.AppBuilder.Portal.Frontend/src:/app/src
+      - ./source/SIL.AppBuilder.Portal.Frontend/tests:/app/tests
+      - ./source/SIL.AppBuilder.Portal.Frontend/types:/app/types
 
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/.babelrc:/app/.babelrc
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/package.json:/app/package.json
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tsconfig.json:/app/tsconfig.json
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/tslint.json:/app/tslint.json
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/yarn.lock:/app/yarn.lock
+      - ./source/SIL.AppBuilder.Portal.Frontend/.babelrc:/app/.babelrc
+      - ./source/SIL.AppBuilder.Portal.Frontend/package.json:/app/package.json
+      - ./source/SIL.AppBuilder.Portal.Frontend/tsconfig.json:/app/tsconfig.json
+      - ./source/SIL.AppBuilder.Portal.Frontend/tslint.json:/app/tslint.json
+      - ./source/SIL.AppBuilder.Portal.Frontend/yarn.lock:/app/yarn.lock
 
       - ui-tmp:/app/tmp
       - ui-dist:/app/dist

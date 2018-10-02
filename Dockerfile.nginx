@@ -11,8 +11,8 @@ WORKDIR /src
 # ---- Dependencies ----
 FROM base AS dependencies
 COPY \
-  SIL.AppBuilder.Portal.Frontend/package.json \
-  SIL.AppBuilder.Portal.Frontend/yarn.lock \
+  source/SIL.AppBuilder.Portal.Frontend/package.json \
+  source/SIL.AppBuilder.Portal.Frontend/yarn.lock \
   /src/
 RUN yarn
 
@@ -26,13 +26,12 @@ ENV AUTH0_CONNECTION Username-Password-Authentication
 
 WORKDIR /src
 COPY --from=dependencies /src/node_modules ./node_modules
-COPY ./SIL.AppBuilder.Portal.Frontend /src
-COPY ./run-nginx.sh /src
+COPY source/SIL.AppBuilder.Portal.Frontend /src
 RUN yarn webpack:build --output-path /src/_html_tmp
 
 # ---- Release ----
 FROM nginx:stable-alpine AS release
 COPY --from=build /src/_html_tmp /usr/share/nginx/html
-COPY config/nginx.conf etc/nginx/conf.d/default.conf.template
-
-
+COPY source/run-nginx.sh /usr/local/bin
+COPY source/config/nginx.conf etc/nginx/conf.d/default.conf.template
+CMD ["/usr/local/bin/run-nginx.sh"]

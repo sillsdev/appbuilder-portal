@@ -30,7 +30,7 @@ services:
 
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ../scripts/DB:/scripts
+      - ./scripts/DB:/scripts
 
   # Debugging database
   adminer:
@@ -44,7 +44,7 @@ services:
 
   api:
     build:
-      context: ./
+      context: .
       dockerfile: Dockerfile.backend
       target: development
     command: bash -c " dotnet watch run"
@@ -53,14 +53,15 @@ services:
     links:
       - db:db.docker
     env_file:
-      - ${PWD}/source/OptimaJet.DWKit.StarterApplication/.env.dev
+      - ./source/OptimaJet.DWKit.StarterApplication/.env.dev
     volumes:
-      - ./:/app
+      - ./source/:/app
       - "outdir:/app/out"
+  
 
   ui:
     build:
-      context: ./SIL.AppBuilder.Portal.Frontend/
+      context: ./source/SIL.AppBuilder.Portal.Frontend/
       dockerfile: Dockerfile
     command: bash -c "yarn && yarn start:dev"
 
@@ -72,10 +73,10 @@ services:
       API_HOST: api:7081
 
     env_file:
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend/.env.dev
+      - ./source/SIL.AppBuilder.Portal.Frontend/.env.dev
 
     volumes:
-      - ${PWD}/source/SIL.AppBuilder.Portal.Frontend:/app
+      - ./source/SIL.AppBuilder.Portal.Frontend:/app
 
       - ui-tmp:/app/tmp
       - ui-dist:/app/dist
