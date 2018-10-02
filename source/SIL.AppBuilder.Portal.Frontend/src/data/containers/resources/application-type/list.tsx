@@ -6,7 +6,7 @@ import { TYPE_NAME as APPLICATION_TYPE } from '@data/models/application-type';
 import { query } from '@data';
 
 export interface IOwnProps {
-  applicationTypes: Array<ApplicationTypeResource>;
+  applicationTypes: ApplicationTypeResource[];
   error?: any;
 }
 

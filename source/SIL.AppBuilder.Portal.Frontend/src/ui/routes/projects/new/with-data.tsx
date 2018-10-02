@@ -7,7 +7,6 @@ import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as USER } from '@data/models/user';
 import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { TYPE_NAME as GROUP } from '@data/models/group';
-import { TYPE_NAME as APPLICATION_TYPE } from '@data/models/application-type';
 
 import {
   IProvidedProps as WithCurrentUserProps
@@ -20,7 +19,7 @@ import {
 import { recordIdentityFromKeys } from '@data/store-helpers';
 
 export interface IProvidedProps {
-  create: (attributes: ProjectAttributes, groupId: Id, typeId: Id) => ProjectResource;
+  create: (attributes: ProjectAttributes, groupId: string, typeId: string) => ProjectResource;
 }
 
 type IProps =
@@ -32,23 +31,24 @@ export function withData(WrappedComponent) {
 
   class DataWrapper extends React.Component<IProps> {
 
-    create = async (attributes: ProjectAttributes, groupId: Id, typeId: Id) => {
+    create = async (attributes: ProjectAttributes, groupId: string, typeId: string) => {
       const { dataStore, currentOrganizationId, currentUser } = this.props;
       const currentUserId = idFromRecordIdentity(currentUser);
       const groupIdentity = recordIdentityFromKeys({ type: 'group', id: groupId });
-      debugger;
       const applicationTypeIdentity = recordIdentityFromKeys({ type: 'applicationType', id: typeId});
 
 
-      return await create(dataStore, PROJECT, {
+      const project = await create(dataStore, PROJECT, {
         attributes,
         relationships: {
           owner: { id: currentUserId, type: USER },
           group: { id: groupIdentity.keys.remoteId, type: GROUP },
           organization: { id: currentOrganizationId, type: ORGANIZATION },
-          type: { id: applicationTypeIdentity.keys.remoteId, type: APPLICATION_TYPE}
+          type: { id: applicationTypeIdentity.keys.remoteId, type: 'applicationType'}
         }
       });
+
+      return project;
     }
 
     render() {

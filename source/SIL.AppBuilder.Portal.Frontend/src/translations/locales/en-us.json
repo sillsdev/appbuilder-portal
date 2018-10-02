@@ -147,6 +147,7 @@
     "title": "Project",
     "newProject": "New Project",
     "projectName": "Project Name",
+    "projectDescription": "Description",
     "projectGroup": "Project Group",
     "languageCode": "Language Code",
     "type": "Type",

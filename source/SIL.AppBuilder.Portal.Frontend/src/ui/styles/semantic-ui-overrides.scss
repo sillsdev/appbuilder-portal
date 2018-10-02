@@ -63,6 +63,17 @@ Inputs
     border-bottom: solid 1px $input-border-color;
     padding: 5px;
   }
+
+  textarea {
+    font-family: Montserrat;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: normal;
+    border-bottom: solid 1px $input-border-color;
+    padding: 5px;
+    color: $gray;
+
+  }
 }
 
 .ui.toggle.checkbox label:before {
