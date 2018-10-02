@@ -152,8 +152,8 @@
     "projectGroup": "Grupo de proyecto",
     "languageCode": "Código de lenguaje",
     "type": "Tipo",
-    "public": "Público",
-    "private": "Privado",
+    "public": "Public",
+    "private": "Private",
     "visibilityLabel": "Público",
     "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesible por otras organizaciones",
     "createdOn": "Creado",
@@ -235,7 +235,9 @@
       "createdOn": "Fecha de creación",
       "updatedOn": "Fecha de actualización"
     },
-    "empty": "No projects found"
+    "empty": "No projects found",
+    "products": "Products",
+    "noProducts": "This project has no configured products"
   },
   "users": {
     "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
