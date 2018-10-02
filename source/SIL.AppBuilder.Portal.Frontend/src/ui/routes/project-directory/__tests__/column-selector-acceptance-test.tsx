@@ -10,12 +10,13 @@ import {
 
 import page from '@ui/components/project-table/__tests__/page';
 
-describe('Acceptance | Project Table | Column selector', () => {
+describe('Acceptance | Project Directory | Column selector', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
   beforeEach(function () {
+    this.mockGet(200, 'product-definitions', { data: [] });
     this.mockGet(200, 'projects', {
       data: [{
         type: 'projects',
