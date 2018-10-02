@@ -22,7 +22,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
     {
         // Skipping tests because getting DbUpdateConcurreyExceptions after the first couple of tests for unknown reasons
         // Each test can be run individually successfully
-        const string skipAcceptanceTest = "Acceptance Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
+        const string skipAcceptanceTest = null; //"Acceptance Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public User CurrentUser { get; set; }
         public User user1 { get; set; }
         public OrganizationMembership CurrentUserMembership { get; set; }
@@ -103,7 +103,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var backgroundProjectRepository = _fixture.GetService<JobProjectRepository>();
-            var systemStatusRepository = _fixture.GetService<IEntityRepository<SystemStatus>>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
             var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
             var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
@@ -115,7 +115,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var backgroundProjectRepository = _fixture.GetService<JobProjectRepository>();
-            var systemStatusRepository = _fixture.GetService<IEntityRepository<SystemStatus>>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
             var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
             var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
@@ -129,7 +129,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var backgroundProjectRepository = _fixture.GetService<JobProjectRepository>();
-            var systemStatusRepository = _fixture.GetService<IEntityRepository<SystemStatus>>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
             var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
             var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
@@ -143,7 +143,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var backgroundProjectRepository = _fixture.GetService<JobProjectRepository>();
-            var systemStatusRepository = _fixture.GetService<IEntityRepository<SystemStatus>>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
             var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
             var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
@@ -184,7 +184,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var backgroundProjectRepository = _fixture.GetService<JobProjectRepository>();
-            var systemStatusRepository = _fixture.GetService<IEntityRepository<SystemStatus>>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
             var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
             var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
@@ -200,7 +200,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             BuildTestData();
             project1.WorkflowProjectId = 1;
             var backgroundProjectRepository = _fixture.GetService<JobProjectRepository>();
-            var systemStatusRepository = _fixture.GetService<IEntityRepository<SystemStatus>>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
             var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
             var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
@@ -233,7 +233,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             BuildTestData();
             project1.WorkflowProjectId = 1;
             var backgroundProjectRepository = _fixture.GetService<JobProjectRepository>();
-            var systemStatusRepository = _fixture.GetService<IEntityRepository<SystemStatus>>();
+            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
             var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
             var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);

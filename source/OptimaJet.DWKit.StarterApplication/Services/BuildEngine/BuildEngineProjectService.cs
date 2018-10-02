@@ -20,13 +20,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         public IRecurringJobManager RecurringJobManager { get; set; }
         public IBuildEngineApi BuildEngineApi { get; set; }
-        protected IEntityRepository<SystemStatus> SystemStatusRepository { get; }
+        protected JobSystemStatusRepository SystemStatusRepository { get; }
 
         public BuildEngineProjectService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
             JobProjectRepository projectRepository,
-            IEntityRepository<SystemStatus> systemStatusRepository
+            JobSystemStatusRepository systemStatusRepository
         )
         {
             RecurringJobManager = recurringJobManager;
