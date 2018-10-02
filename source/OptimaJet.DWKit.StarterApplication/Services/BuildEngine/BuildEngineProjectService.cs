@@ -8,12 +8,15 @@ using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
 using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
 using Hangfire;
 using Hangfire.Common;
+using OptimaJet.DWKit.StarterApplication.Repositories;
+using Hangfire.Server;
+using Hangfire.States;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineProjectService
     {
-        protected IEntityRepository<Project> ProjectRepository;
+        protected BackgroundProjectRepository ProjectRepository;
 
         public IRecurringJobManager RecurringJobManager { get; }
         public IBuildEngineApi BuildEngineApi { get; }
@@ -22,7 +25,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         public BuildEngineProjectService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
-            IEntityRepository<Project> projectRepository,
+            BackgroundProjectRepository projectRepository,
             IEntityRepository<SystemStatus> systemStatusRepository
         )
         {
@@ -52,23 +55,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 // TODO: Send notification record
                 // Don't send exception because there doesn't seem to be a point in retrying
                 ClearAndExit(projectId);
+                return;
             }
             if (!ProjectLinkAvailable(project))
             {
                 // If the build engine isn't available, there is no point in continuing
                 // Notifications for this are handled by the monitor
+                // Throw exception to retry
                 throw new Exception("Connection not available");
             }
-            if (project.WorkflowProjectId == 0)
+            if (!BuildEngineProjectCreated(project))
             {
-                // WorkflowProjectId not set
-                // Need to issue create project to build engine
                 await CreateBuildEngineProjectAsync(project);
                 return;
             }
             else
             {
-                CheckExistingProject(project);
+                await CheckExistingProjectAsync(project);
                 return;
             }
         }
@@ -81,7 +84,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 GroupId = project.Group.Abbreviation,
                 AppId = project.Type.Name,
                 LanguageCode = project.Language,
-                PublishingKey = project.Owner.PublishingKey
+                PublishingKey = project.Owner.PublishingKey,
+                ProjectName = project.Name
             };
             var organization = project.Organization;
             BuildEngineApi.SetEndpoint(organization.BuildEngineUrl, organization.BuildEngineApiAccessToken);
@@ -97,12 +101,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             else
             {
                 // TODO: Send Notification
+                // Throw Exception to force retry
                 throw new Exception("Create project failed");
             }
         }
-        protected void CheckExistingProject(Project project)
+        protected async System.Threading.Tasks.Task CheckExistingProjectAsync(Project project)
         {
-            ClearAndExit(project.Id);  // TODO: Remove when other methods are implemented
             var buildEngineProject = GetBuildEngineProject(project);
             if (buildEngineProject == null)
             {
@@ -112,17 +116,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             {
                 if (buildEngineProject.Result == "SUCCESS")
                 {
-                    ProjectCompleted(project, buildEngineProject);
+                    await ProjectCompletedAsync(project, buildEngineProject);
                 }
                 else
                 {
                     ProjectCreationFailed(project, buildEngineProject);
                 }
             }
-            else
-            {
-                CreationInProgress(project, buildEngineProject);
-            }
+            return;
         }
         protected bool ProjectLinkAvailable(Project project)
         {
@@ -131,31 +132,37 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                  .Where(ss => (ss.BuildEngineApiAccessToken == organization.BuildEngineApiAccessToken)
                         && (ss.BuildEngineUrl == organization.BuildEngineUrl))
                  .FirstOrDefaultAsync().Result;
+
             if (systemStatus == null)
             {
                 // TODO: Send Notification
-                throw new Exception("SystemStatus record for connection not found");
+                // Send notification but don't need to force retry if in recurring job
+                if (!BuildEngineProjectCreated(project))
+                {
+                    throw new Exception("SystemStatus record for connection not found");
+                }
             }
 
             return systemStatus.SystemAvailable;
         }
         protected ProjectResponse GetBuildEngineProject(Project project)
         {
-            return null;
+            var organization = project.Organization;
+            BuildEngineApi.SetEndpoint(organization.BuildEngineUrl, organization.BuildEngineApiAccessToken);
+            var projectResponse = BuildEngineApi.GetProject(project.WorkflowProjectId);
+            return projectResponse;
         }
-        protected void ProjectCompleted(Project project, ProjectResponse projectResponse)
+        protected async System.Threading.Tasks.Task ProjectCompletedAsync(Project project, ProjectResponse projectResponse)
         {
+            project.WorkflowProjectUrl = projectResponse.Url;
+            await ProjectRepository.UpdateAsync(project.Id, project);
             ClearAndExit(project.Id);
         }
         protected void ProjectCreationFailed(Project project, ProjectResponse projectResponse)
         {
             ClearAndExit(project.Id);
         }
-        protected void CreationInProgress(Project project, ProjectResponse projectResponse)
-        {
-
-        }
-        // This method will kill the current recurring job if it exists
+            // This method will kill the current recurring job if it exists
         // and return normally so no retry is attempted.
         protected void ClearAndExit(int projectId)
         {
@@ -166,6 +173,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected String GetHangfireToken(int projectId)
         {
             return "CreateProjectMonitor" + projectId.ToString();
+        }
+        protected bool BuildEngineProjectCreated(Project project)
+        {
+            return (project.WorkflowProjectId != 0);
         }
     }
 }

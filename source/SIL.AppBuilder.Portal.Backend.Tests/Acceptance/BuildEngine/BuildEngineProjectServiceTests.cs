@@ -150,6 +150,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockBuildEngine.Verify(x => x.CreateProject(
                 It.Is<BuildEngineProject>(b => b.AppId == type1.Name)
             ));
+            mockBuildEngine.Verify(x => x.CreateProject(
+                It.Is<BuildEngineProject>(b => b.ProjectName == project1.Name)
+            ));
             var projects = ReadTestData<AppDbContext, Project>();
             var modifiedProject = projects.First(p => p.Id == project1.Id);
             Assert.Equal(1, modifiedProject.WorkflowProjectId);
