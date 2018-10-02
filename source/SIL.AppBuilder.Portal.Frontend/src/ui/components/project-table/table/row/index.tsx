@@ -94,5 +94,6 @@ class Row extends React.Component<IProps & IProvidedProps> {
 export default compose(
   withRelationship('organization'),
   withRelationship('owner'),
-  withRelationship('group')
+  withRelationship('group'),
+  withRelationship('products')
 )(Row);

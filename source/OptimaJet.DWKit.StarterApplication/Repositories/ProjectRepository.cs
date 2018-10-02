@@ -13,6 +13,7 @@ using OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI;
 using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI.FilterQueryExtensions;
+using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.StringExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
@@ -35,6 +36,32 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                 var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
                 return query.FilterByOrganization(filterQuery, allowedOrganizationIds: orgIds);
+            }
+
+            var value = filterQuery.Value;
+            var op = filterQuery.Operation.ToEnum<FilterOperations>(defaultValue: FilterOperations.eq);
+
+            if (filterQuery.Has(PROJECT_PRODUCT_UPDATED_DATE)) {
+                var date = value.DateTimeFromISO8601();
+
+                switch(op) {
+                    case FilterOperations.ge:
+                        return query
+                            .Include(p => p.Products)
+                            .Where(p => p.Products.Any(product => product.DateUpdated > date));
+                    case FilterOperations.le:
+                        return query
+                            .Include(p => p.Products)
+                            .Where(p => p.Products.Any(product => product.DateUpdated < date));
+                }
+            }
+
+            if (filterQuery.Has(PROJECT_PRODUCT_NAME_ANY)) {
+                return query
+                    .Include(p => p.Products)
+                    .ThenInclude(product => product.ProductDefinition)
+                    .Where(p => p.Products
+                        .Any(product => product.ProductDefinition.Name.Contains(value)));
             }
 
             

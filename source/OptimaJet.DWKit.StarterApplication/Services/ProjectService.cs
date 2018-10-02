@@ -77,8 +77,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(updateForm.Errors);
             }
-             return await base.UpdateAsync(id, resource);
+            
+            return await base.UpdateAsync(id, resource);
         }
+
         public override async Task<Project> CreateAsync(Project resource)
         {
             var createForm = new CreateForm(UserRepository,

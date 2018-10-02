@@ -233,7 +233,9 @@
       "createdOn": "Created On",
       "updatedOn": "Updated On"
     },
-    "empty": "No projects found"
+    "empty": "No projects found",
+    "products": "Products",
+    "noProducts": "This project has no configured products"
   },
   "users": {
     "noneFound": "No users matching the selected criteria were found.",
