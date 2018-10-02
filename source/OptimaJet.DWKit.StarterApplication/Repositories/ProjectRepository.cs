@@ -68,6 +68,11 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             return base.Filter(query, filterQuery);
         }
 
+        public override IQueryable<Project> Sort(IQueryable<Project> entities, List<SortQuery> sortQueries)
+        {
+            return base.Sort(entities, sortQueries);
+        }
+
         // This is the set of all projects that a user has access to.
         // If a project would ever need to be accessed outside of this set of projects,
         // this method should not be used.

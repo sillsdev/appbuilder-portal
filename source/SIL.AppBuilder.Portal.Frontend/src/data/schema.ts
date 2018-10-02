@@ -102,21 +102,23 @@ const schemaDefinition: SchemaSettings = {
     product: {
       keys: { remoteId: {} },
       attributes: {
-        name: { type: 'string' },
         dateCreated: { type: 'date'},
         dateUpdated: { type: 'date'},
         datePublished: { type: 'date'},
       },
       relationships: {
         tasks: { type: 'hasMany', model: 'task', inverse: 'project' },
-        project: { type: 'hasMany', model: 'project', inverse: 'products' }
+        project: { type: 'hasOne', model: 'project', inverse: 'products' },
+        productDefinition: { type: 'hasOne', model: 'productDefinition', inverse: 'products' }
       }
     },
     productDefinition: {
       keys: { remoteId: {} },
-      attributes: {},
+      attributes: {
+        name: { type: 'string' },
+      },
       relationships: {
-
+        products: { type: 'hasMany', model: 'product', inverse: 'productDefinition' }
       }
     },
     task: {

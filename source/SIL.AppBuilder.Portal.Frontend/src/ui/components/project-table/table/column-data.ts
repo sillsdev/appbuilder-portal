@@ -16,7 +16,8 @@ export const possibleColumnsByType = {
     [COLUMN_KEY.PROJECT_OWNER]: {
       id: COLUMN_KEY.PROJECT_OWNER,
       i18nKey: 'projectTable.columns.owner',
-      propertyPath: 'owner.name'
+      propertyPath: 'owner.name',
+      // sortable: true
     },
     [COLUMN_KEY.PROJECT_ORGANIZATION]: {
       id: COLUMN_KEY.PROJECT_ORGANIZATION,

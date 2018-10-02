@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
 
 import { attributesFor } from '@data/helpers';
 
 import ProductIcon from '@ui/components/product-icon';
-import { ProductResource } from '@data/models/product';
+import { ProductResource, ProductDefinitionResource } from '@data/models/product';
 
 import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
 import { withTranslations } from '@lib/i18n';
@@ -14,6 +15,7 @@ import { COLUMN_KEY } from '../../column-data';
 
 interface IOwnProps {
   product: ProductResource;
+  productDefinition: ProductDefinitionResource;
 }
 
 type IProps =
@@ -23,15 +25,15 @@ type IProps =
 
 class ProductItem extends React.Component<IProps> {
   getActiveProductColumns = () => {
-    const { product, moment, timezone, activeProductColumns } = this.props;
+    const { product, moment, timezone, activeProductColumns, productDefinition } = this.props;
 
     const {
-      name,
       buildVersion,
       buildDate,
       createdOn,
       updatedOn
     } = attributesFor(product);
+    const { name } = attributesFor(productDefinition);
 
     return activeProductColumns.map((column) => {
       switch(column.id) {
@@ -56,14 +58,14 @@ class ProductItem extends React.Component<IProps> {
   }
 
   render() {
-    const { product } = this.props;
+    const { product, productDefinition } = this.props;
 
     const activeProductColumns = this.getActiveProductColumns();
 
     return (
       <div className='flex flex-column-xxs flex-row-xs grid product'>
         <div className='col flex align-items-center w-100-xs-only flex-100'>
-          <ProductIcon product={product} />
+          <ProductIcon product={productDefinition} />
           <span className='p-l-sm-xs'>{name}</span>
         </div>
 
@@ -82,5 +84,8 @@ class ProductItem extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
-  withMomentTimezone
+  withMomentTimezone,
+  withOrbit(({ product }) => ({
+    productDefinition: q => q.findRelatedRecord(product, 'productDefinition')
+  }))
 )(ProductItem);

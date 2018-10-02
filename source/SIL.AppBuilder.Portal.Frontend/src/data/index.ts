@@ -38,6 +38,7 @@ export { PROJECTS_TYPE, ProjectResource } from './models/project';
 export { USERS_TYPE, UserResource } from './models/user';
 export { REVIEWERS_TYPE, ReviewerResource } from './models/reviewer';
 export { PRODUCTS_TYPE, ProductResource } from './models/product';
+export { PRODUCT_DEFINITIONS_TYPE, ProductDefinitionResource } from './models/product-definition';
 export { GROUP_MEMBERSHIPS_TYPE, GroupMembershipResource } from './models/group-membership';
 export { ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipResource } from './models/organization-membership';
 export { APPLICATION_TYPES_TYPE, ApplicationTypeResource } from './models/application-type';

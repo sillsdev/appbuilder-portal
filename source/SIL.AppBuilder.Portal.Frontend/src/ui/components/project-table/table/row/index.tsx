@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
+import { withData as withOrbit } from 'react-orbitjs';
 
 import {
   attributesFor,
@@ -14,7 +15,6 @@ import {
 
 import RowActions from './row-actions';
 
-import { withRelationship } from './with-relationship';
 import { IProvidedProps } from '../with-table-columns';
 import { COLUMN_KEY } from '../column-data';
 
@@ -92,8 +92,10 @@ class Row extends React.Component<IProps & IProvidedProps> {
 }
 
 export default compose(
-  withRelationship('organization'),
-  withRelationship('owner'),
-  withRelationship('group'),
-  withRelationship('products')
+  withOrbit(({ project }) => ({
+    organization: q => q.findRelatedRecord(project, 'organization'),
+    owner: q => q.findRelatedRecord(project, 'owner'),
+    group: q => q.findRelatedRecord(project, 'group'),
+    products: q => q.findRelatedRecords(project, 'products'),
+  }))
 )(Row);
