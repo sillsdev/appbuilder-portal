@@ -224,6 +224,7 @@
   },
   "projectTable": {
     "columns": {
+      "project": "Project",
       "owner": "Owner",
       "organization": "Organization",
       "language": "Language",

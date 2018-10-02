@@ -26,7 +26,8 @@ export const possibleColumnsByType = {
     [COLUMN_KEY.PROJECT_LANGUAGE]: {
       id: COLUMN_KEY.PROJECT_LANGUAGE,
       i18nKey: 'projectTable.columns.language',
-      propertyPath: 'language'
+      propertyPath: 'language',
+      sortable: true
     },
     [COLUMN_KEY.PROJECT_GROUP]: {
       id: COLUMN_KEY.PROJECT_GROUP,

@@ -33,7 +33,7 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
     function mapNetworkToProps(passedProps: TWrappedProps & IProps) {
       const {
         applyPagination, currentPageOffset, currentPageSize,
-        applyFilter, filters,
+        applyFilter, filters, sortProperty,
         applySort,
       } = passedProps;
 
@@ -46,7 +46,7 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       }
 
       return {
-        cacheKey: [filters, currentPageOffset, currentPageSize],
+        cacheKey: [sortProperty, filters, currentPageOffset, currentPageSize],
         projects: [
           q => {
             let builder = q.findRecords(PROJECT);
