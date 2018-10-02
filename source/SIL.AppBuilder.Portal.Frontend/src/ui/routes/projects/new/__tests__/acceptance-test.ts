@@ -101,7 +101,7 @@ const scenarios = {
       meta: {
         'total-records': 2
       }
-    }
+    };
   }
 };
 
