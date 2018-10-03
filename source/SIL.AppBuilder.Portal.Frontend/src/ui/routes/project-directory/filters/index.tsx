@@ -4,7 +4,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { OrganizationResource, idFromRecordIdentity } from '@data';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
-import { IFilter } from '@data/containers/api/with-filtering';
+import { IFilter, IFilterProps } from '@data/containers/api/with-filtering';
 import {
   withCurrentOrganization,
   IProvidedProps as ICurrentOrgProps
@@ -25,13 +25,13 @@ interface IState {
 }
 
 interface IOwnProps {
-  updateFilter: (filter: IFilter) => void;
   organizations: OrganizationResource[];
 }
 
 type IProps =
 & ICurrentOrgProps
 & IOwnProps
+& IFilterProps
 & i18nProps;
 
 class Filter extends React.Component<IProps, IState> {
@@ -43,9 +43,16 @@ class Filter extends React.Component<IProps, IState> {
   };
 
   handleProductChange = (value) => {
-    const { updateFilter } = this.props;
+    const { updateFilter, removeFilter } = this.props;
 
-    updateFilter({ attribute: 'any-product-name', value });
+    if (value === 'all') {
+      removeFilter({ attribute: 'any-product-definition-id' });
+    } else {
+      const id = idFromRecordIdentity({ type: 'productDefinition', id: value });
+
+      updateFilter({ attribute: 'any-product-definition-id', value: id });
+    }
+
 
     this.setState({ selectedProduct: value });
   }

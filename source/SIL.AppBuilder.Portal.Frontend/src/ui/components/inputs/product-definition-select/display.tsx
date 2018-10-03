@@ -29,7 +29,7 @@ export class Display extends React.Component<IProps> {
     const options = [{ text: t('productDefinitions.all'), value: 'all' }].concat(
       productDefinitions.map(pd => ({
         text: attributesFor(pd).name || '',
-        value: attributesFor(pd).name
+        value: pd.id
       }))
     );
 
