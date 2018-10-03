@@ -82,6 +82,9 @@
   "products": {
 
   },
+  "productDefinitions": {
+    "all": "All Products"
+  },
   "profile": {
     "title": "Profile",
     "pictureTitle": "Profile Picture",
@@ -149,6 +152,7 @@
     "title": "Project",
     "newProject": "New Project",
     "projectName": "Project Name",
+    "projectDescription": "Description",
     "projectGroup": "Project Group",
     "languageCode": "Language Code",
     "type": "Type",
@@ -226,6 +230,7 @@
   },
   "projectTable": {
     "columns": {
+      "project": "Project",
       "owner": "Owner",
       "organization": "Organization",
       "language": "Language",
