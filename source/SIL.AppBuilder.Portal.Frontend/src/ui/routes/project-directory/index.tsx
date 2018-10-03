@@ -18,8 +18,13 @@ import {
   PaginationFooter,
   IFilterProps
 } from '@data/containers/api';
+import { IProvidedProps as IPaginateProps } from '@data/containers/api/with-filtering';
+import { withSorting, ISortProps } from '@data/containers/api/sorting';
+import { withError } from '@data/containers/with-error';
 
+import { withTranslations } from '@lib/i18n';
 import { requireAuth } from '@lib/auth';
+import { tokensToObject } from '@lib/string/utils';
 
 import { setCurrentOrganization } from '@store/data';
 
@@ -33,11 +38,7 @@ import '@ui/components/project-table/project-table.scss';
 
 import Table from './table';
 import Filters from './filters';
-import { withSorting } from '@data/containers/api/sorting';
-import { withTranslations } from '@lib/i18n';
-import { withError } from '@data/containers/with-error';
 
-import { tokensToObject } from '@lib/string/utils';
 
 export const pathName = '/directory';
 
@@ -49,8 +50,10 @@ export interface IOwnProps {
 
 export type IProps =
 & IOwnProps
+& ISortProps
 & IFilterProps
 & IDataProps
+& IPaginateProps
 & i18nProps;
 
 
@@ -78,6 +81,7 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
     } = this.props;
 
     const numProjects = projects && projects.length;
+    const isPaginationNeeded = numProjects > 19;
 
     const tableProps = {
       projects,
@@ -102,9 +106,11 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
           <>
             <Table { ...tableProps } />
 
-            <div className='flex-row justify-content-end'>
-              <PaginationFooter className='m-t-lg' { ...this.props } />
-            </div>
+            { isPaginationNeeded && (
+              <div className='flex-row justify-content-end'>
+                <PaginationFooter className='m-t-lg' { ...this.props } />
+              </div>
+            )}
           </>
         ) }
       </div>
