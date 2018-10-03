@@ -1,27 +1,32 @@
 import * as React from 'react';
 import { Card, Form, Checkbox } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 
 import { idFromRecordIdentity } from '@data';
 import { i18nProps } from '@lib/i18n';
 import * as toast from '@lib/toast';
 import { isEmpty } from '@lib/collection';
+import ApplicationTypeSelect from '@ui/components/inputs/application-type-select';
 import GroupSelect from '@ui/components/inputs/group-select';
 
 import { IProvidedProps as IDataProps } from './with-data';
+import { IProvidedProps as ICurrentOrganizationProps } from '@data/containers/with-current-organization';
 
 type IProps =
-& i18nProps
-& IDataProps;
+  & i18nProps
+  & IDataProps
+  & RouteComponentProps
+  & ICurrentOrganizationProps;
 
 interface IState {
   name?: string;
-  groupId?: Id;
+  groupId?: string;
   language?: string;
   isPublic?: boolean;
   disableSubmit: boolean;
-  type?: string;
+  typeId?: string;
+  description?: string;
 }
 
 @withTemplateHelpers
@@ -32,13 +37,13 @@ export default class Display extends React.Component<IProps, IState> {
   state: IState = { disableSubmit: false, isPublic: true };
 
   areAllRequiredFieldsPresent = () => {
-    const { name, groupId, language, type } = this.state;
+    const { name, groupId, language, typeId } = this.state;
 
     return (
       !isEmpty(name)
       && !isEmpty(groupId)
       && !isEmpty(language)
-      && !isEmpty(type)
+      && !isEmpty(typeId)
     );
   }
 
@@ -53,14 +58,14 @@ export default class Display extends React.Component<IProps, IState> {
 
     this.setState({ disableSubmit: true });
 
-    const { name, groupId, language, isPublic, type } = this.state;
+    const { name, groupId, language, isPublic, typeId, description } = this.state;
 
     try {
-      const project = await create({ name, language, isPublic, type }, groupId);
+      const project = await create({ name, language, isPublic, description }, groupId, typeId);
 
       const id = idFromRecordIdentity(project);
-
       history.push(`/project/${id}`);
+
     } catch (e) {
       toast.error(t('errors.generic', { errorMessage: e.message }));
     }
@@ -72,7 +77,7 @@ export default class Display extends React.Component<IProps, IState> {
   render() {
     const { mut, toggle } = this;
     const { t, currentOrganization } = this.props;
-    const { name, groupId, language, isPublic, disableSubmit, type } = this.state;
+    const { name, groupId, language, isPublic, typeId, description } = this.state;
 
     const submitClasses = `
       ui button primary huge
@@ -121,32 +126,38 @@ export default class Display extends React.Component<IProps, IState> {
                     onChange={mut('language')} />
                 </Form.Field>
 
-                <Form.Field className='flex-50 m-l-md'>
+                <Form.Field className='flex-50 m-l-md m-b-md'>
                   <label>{t('project.type')}</label>
-                  <input required
-                    data-test-type
-                    value={type || ''}
-                    onChange={mut('type')} />
+                  <ApplicationTypeSelect
+                    selected={typeId}
+                    onChange={mut('typeId')}
+                  />
                 </Form.Field>
               </div>
 
-              <Form.Field className='m-t-xl'>
-                <div className='flex-row'>
-                  <div className='toggle-selector flex-row flex-50-sm flex-25-lg  justify-content-space-between'>
-                    <span className='bold'>{t('project.visibilityLabel')}</span>
-                    <Checkbox
-                      toggle
-                      data-test-visibility
-                      checked={isPublic}
-                      onChange={toggle('isPublic')}
-                      />
+              <div className='flex justify-content-space-between'>
+                <Form.Field className='flex-50 m-r-md'>
+                  <label>{t('project.projectDescription')}</label>
+                  <textarea value={description || ''} onChange={mut('description')}/>
+                </Form.Field>
+                <Form.Field className='flex-50 m-l-md m-t-md p-t-sm'>
+                  <div className='flex-row'>
+                    <div className='toggle-selector flex-row flex-grow justify-content-space-between'>
+                      <span className='bold'>{t('project.visibilityLabel')}</span>
+                      <Checkbox
+                        toggle
+                        data-test-visibility
+                        checked={isPublic}
+                        onChange={toggle('isPublic')}
+                        />
+                    </div>
                   </div>
-                </div>
 
-                <div className='flex-row m-t-md'>
-                  <p className='flex-50-sm flex-25-lg'>{t('project.visibilityDescription')}</p>
-                </div>
-              </Form.Field>
+                  <div className='flex-row m-t-md'>
+                    <p>{t('project.visibilityDescription')}</p>
+                  </div>
+                </Form.Field>
+              </div>
 
             </Form>
           </Card.Content>

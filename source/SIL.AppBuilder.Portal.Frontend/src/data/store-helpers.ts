@@ -189,6 +189,7 @@ export interface IIdentityFromKeys {
 }
 
 export function recordIdentityFromKeys({ type, id, keys }: IIdentityFromKeys) {
+
   const recordIdentity = {
     type,
     keys: keys || { remoteId: keyMap.idToKey(type, 'remoteId', id) },

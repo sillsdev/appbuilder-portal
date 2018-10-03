@@ -80,14 +80,36 @@ const scenarios = {
         }
       ]
     });
+  },
+  applicationTypes() {
+    return {
+      data: [{
+        id: '1',
+        type: 'application-types',
+        attributes: {
+          name: 'readingappbuilder',
+          description: 'Scripture App Builder'
+        }
+      }, {
+        id: '2',
+        type: 'application-types',
+        attributes: {
+          name: 'scriptureappbuilder',
+          description: 'Reading App Builder'
+        }
+      }],
+      meta: {
+        'total-records': 2
+      }
+    };
   }
 };
 
 describe('Acceptance | New Project', () => {
+
   describe('the user has no groups', () => {
     scenarios.appWithSelectedOrg();
     scenarios.userHasNoGroups();
-
 
     describe('navigates to new project page', () => {
       beforeEach(async function() {
@@ -121,6 +143,10 @@ describe('Acceptance | New Project', () => {
       scenarios.appWithSelectedOrg('1');
       scenarios.userHasGroups();
 
+      beforeEach(function () {
+        this.mockGet(200, '/application-types', scenarios.applicationTypes());
+      });
+
       beforeEach(async function() {
         await visit('/projects/new');
 
@@ -134,8 +160,8 @@ describe('Acceptance | New Project', () => {
       describe('name is required', () => {
         beforeEach(() => {
           page.fillLanguage('english');
-          page.fillType('SAB');
           page.groupSelect.chooseGroup('Group 1');
+          page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
         });
 
 
@@ -148,7 +174,7 @@ describe('Acceptance | New Project', () => {
         beforeEach(async function() {
           await page.fillName('some name');
           await page.fillLanguage('english');
-          await page.fillType('SAB');
+          await page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
         });
 
         it('has a value', () => {
@@ -160,21 +186,29 @@ describe('Acceptance | New Project', () => {
         });
       });
 
-      describe('type is required', () => {
-        beforeEach(() => {
-          page.fillName('some name');
-          page.fillLanguage('english');
+      describe('type defaults to first option', () => {
+
+        beforeEach(async function() {
+          await page.fillName('some name');
+          await page.fillLanguage('english');
+          await page.groupSelect.chooseGroup('Group 1');
         });
 
-        it('has not enabled the save button', () => {
-          expect(page.isSaveDisabled).to.be.true;
+        it('has a value', () => {
+          expect(page.applicationTypeSelect.selectedApplicationType).to.equal('Scripture App Builder');
+        });
+
+        it('has enabled the save button', () => {
+          expect(page.isSaveDisabled).to.be.false;
         });
       });
 
       describe('language is required', () => {
-        beforeEach(() => {
-          page.fillName('some name');
-          page.fillType('SAB');
+
+        beforeEach(async function () {
+          await page.fillName('some name');
+          await page.groupSelect.chooseGroup('Group 1');
+          await page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
         });
 
         it('has not enabled the save button', () => {
