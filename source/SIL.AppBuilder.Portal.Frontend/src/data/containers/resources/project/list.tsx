@@ -40,7 +40,7 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       } = passedProps;
 
       const requestOptions = buildOptions({
-        include: ['organization,group,owner,products.product-definition']
+        include: ['organization,group,owner,products.product-definition.type']
       });
 
       if (isWantingAllProjects) {

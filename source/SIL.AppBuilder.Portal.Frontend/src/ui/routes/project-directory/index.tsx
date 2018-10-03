@@ -112,8 +112,6 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
   }
 }
 
-import { withDebugger } from '@lib/debug';
-
 export default compose (
   withTranslations,
   requireAuth,
@@ -128,7 +126,6 @@ export default compose (
   withSorting({ defaultSort: 'name' }),
   withPagination(),
   withProjects({ all: true }),
-    /* withDebugger, */
   withLoader(({ error, projects }) => !error && !projects),
   withError('error', ({ error }) => error !== undefined),
   withProps(({ projects }) => ({

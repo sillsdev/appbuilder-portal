@@ -96,7 +96,8 @@ const schemaDefinition: SchemaSettings = {
         description: { type: 'string' }
       },
       relationships: {
-        projects: { type: 'hasMany', model: 'project', inverse: 'type' }
+        projects: { type: 'hasMany', model: 'project', inverse: 'type' },
+        productDefinitions: { type: 'hasMany', model: 'productDefinition', inverse: 'type' }
       }
     },
     product: {
@@ -116,9 +117,11 @@ const schemaDefinition: SchemaSettings = {
       keys: { remoteId: {} },
       attributes: {
         name: { type: 'string' },
+        description: { type: 'string' },
       },
       relationships: {
-        products: { type: 'hasMany', model: 'product', inverse: 'productDefinition' }
+        products: { type: 'hasMany', model: 'product', inverse: 'productDefinition' },
+        type: { type: 'hasOne', model: 'applicationType', inverse: 'productDefinitions' }
       }
     },
     task: {
