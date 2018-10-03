@@ -61,5 +61,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasMany("products", Link.None)]
         public virtual List<Product> Products { get; set; }
+    
+        [Attr("workflow-project-url")]
+        public String WorkflowProjectUrl { get; set; }
     }
 }

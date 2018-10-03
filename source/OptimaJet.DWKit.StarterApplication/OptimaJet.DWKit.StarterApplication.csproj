@@ -82,6 +82,7 @@
     <Folder Include="Forms\Groups\" />
     <Folder Include="Forms\Products\" />
     <Folder Include="Services\BuildEngine\" />
+    <Folder Include="Repositories\Background\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services\CurrentUserMemberships.cs" />

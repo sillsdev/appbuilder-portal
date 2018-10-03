@@ -2,20 +2,21 @@
 using System.Linq;
 using JsonApiDotNetCore.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Repositories;
 using SIL.AppBuilder.BuildEngineApiClient;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineSystemMonitor
     {
-        public IEntityRepository<Organization> OrganizationRepository;
-        public IEntityRepository<SystemStatus> SystemStatusRepository;
+        public IJobRepository<Organization> OrganizationRepository;
+        public IJobRepository<SystemStatus> SystemStatusRepository;
 
         public IBuildEngineApi BuildEngineApi { get; }
 
         public BuildEngineSystemMonitor(
-            IEntityRepository<Organization> organizationRepository,
-            IEntityRepository<SystemStatus> systemStatusRepository,
+            IJobRepository<Organization> organizationRepository,
+            IJobRepository<SystemStatus> systemStatusRepository,
             IBuildEngineApi buildEngineApi
         )
         {
@@ -58,7 +59,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 if (available != systemEntry.SystemAvailable)
                 {
                     systemEntry.SystemAvailable = available;
-                    await SystemStatusRepository.UpdateAsync(systemEntry.Id, systemEntry);
+                    await SystemStatusRepository.UpdateAsync(systemEntry);
                 }
             }
         }

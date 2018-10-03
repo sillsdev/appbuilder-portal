@@ -2,6 +2,7 @@ using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.StarterApplication;
+using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 
@@ -17,6 +18,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         {
             services.AddApiServices();
 
+            services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
             services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
             services.AddScoped<ICurrentUserContext, TestCurrentUserContext>();
 
