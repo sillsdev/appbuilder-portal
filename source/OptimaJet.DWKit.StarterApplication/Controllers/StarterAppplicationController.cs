@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-
+    // Note: During DWKit upgrade, leave this as is (with Cookie Authentication)
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class StarterApplicationController : Controller
     {

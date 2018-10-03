@@ -17,6 +17,7 @@ using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
+    // Note: During DWKit upgrade, leave this as is (with Cookie Authentication)
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UserInterfaceController : Controller
     {

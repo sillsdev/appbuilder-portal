@@ -21,6 +21,7 @@ using OptimaJet.Workflow.Core.Runtime;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
+    // Note: During DWKit upgrade, leave this as is (with Cookie Authentication)
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class WorkflowController : Controller
     {

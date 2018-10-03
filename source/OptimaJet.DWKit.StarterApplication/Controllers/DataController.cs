@@ -14,6 +14,7 @@ using OptimaJet.DWKit.Core.View;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
+    // Note: During DWKit upgrade, leave this as is (with Cookie Authentication)
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class DataController : Controller
     {
@@ -152,7 +153,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         }
 
         [Route("data/dictionary")]
-        public async Task<ActionResult> GetDictionary(string name, string sort, string columns)
+        public async Task<ActionResult> GetDictionary(string name, string sort, string columns, string paging, string filter)
         {
             try
             {
@@ -161,18 +162,37 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                     throw new Exception("Access denied!");
                 }
 
-                var getRequest = new GetDictionaryRequest(name);
+                var filterItems = new List<ClientFilterItem>();
+
+                if (NotNullOrEmpty(filter))
+                {
+                    filterItems.AddRange(JsonConvert.DeserializeObject<List<ClientFilterItem>>(filter));                   
+                }
+
+                var getRequest = new GetDictionaryRequest(name)
+                {
+                    Filter = filterItems
+                };
+
                 if (NotNullOrEmpty(sort))
                 {
                     getRequest.Sort = JsonConvert.DeserializeObject<List<ClienSortItem>>(sort);
                 }
+
                 if (NotNullOrEmpty(columns))
                 {
                     getRequest.Columns = JsonConvert.DeserializeObject<List<string>>(columns);
                 }
 
+                if (NotNullOrEmpty(paging))
+                {
+                    getRequest.Paging = JsonConvert.DeserializeObject<ClientPaging>(paging);
+                }
+                
                 var data = await DataSource.GetDictionaryAsync(getRequest).ConfigureAwait(false);
-                return Json(new ItemSuccessResponse<List<KeyValuePair<object, string>>>(data.ToList()));
+                var res = new ItemSuccessResponse<List<KeyValuePair<object, string>>>(data.Item1.ToList());
+                res.Count = data.Item2;
+                return Json(res);
             }
             catch (Exception e)
             {
