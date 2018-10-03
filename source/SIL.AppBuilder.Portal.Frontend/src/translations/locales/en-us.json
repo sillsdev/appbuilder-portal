@@ -80,6 +80,9 @@
     "buildEngineApiAccessToken": "Build Engine API Access Token"
   },
   "products": {},
+  "productDefinitions": {
+    "all": "All Products"
+  },
   "profile": {
     "title": "Profile",
     "pictureTitle": "Profile Picture",
@@ -224,6 +227,7 @@
   },
   "projectTable": {
     "columns": {
+      "project": "Project",
       "owner": "Owner",
       "organization": "Organization",
       "language": "Language",

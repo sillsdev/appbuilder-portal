@@ -64,8 +64,20 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                         .Any(product => product.ProductDefinition.Name.Contains(value)));
             }
 
+            if (filterQuery.Has(PROJECT_PRODUCT_DEFINITION_ID_ANY)) {
+                return query
+                    .Include(p => p.Products)
+                    .Where(p => p.Products
+                        .Any(product => product.ProductDefinitionId.ToString() == value));
+            }
+
             
             return base.Filter(query, filterQuery);
+        }
+
+        public override IQueryable<Project> Sort(IQueryable<Project> entities, List<SortQuery> sortQueries)
+        {
+            return base.Sort(entities, sortQueries);
         }
 
         // This is the set of all projects that a user has access to.

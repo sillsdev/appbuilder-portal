@@ -40,11 +40,8 @@ class Table extends React.Component<IProps> {
     let projectList;
 
     if (isProjectListEmpty) {
-
       projectList = <div data-test-project-list-empty>{t('projectTable.empty')}</div>;
-
     } else {
-
       projectList = (
         <>
           <Header {...this.props} />

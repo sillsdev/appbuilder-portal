@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { withData as withCache } from 'react-orbitjs';
 
 import { withCurrentUser } from '@data/containers/with-current-user';
@@ -8,6 +8,7 @@ import { withPagination } from '@data/containers/api/pagination';
 import { withFiltering } from '@data/containers/api/with-filtering';
 import { withLoader } from '@data/containers/with-loader';
 import { withNetwork } from '@data/containers/resources/project/list';
+import { withCurrentOrganization } from '@data/containers/with-current-organization';
 
 import { TYPE_NAME as PROJECT } from '@data/models/project';
 
@@ -28,6 +29,7 @@ export default compose(
     ]
   }),
   withCurrentUser(),
+  withCurrentOrganization,
   withSorting({ defaultSort: 'name' }),
   withPagination(),
   withFiltering(({ currentUser }) => {
@@ -42,11 +44,7 @@ export default compose(
   }),
   withNetwork(),
   withLoader(({ error, projects }) => !error && !projects),
-  withCache(({ applyFilter }) => ({
-    projects: q => {
-      const result = applyFilter(q.findRecords(PROJECT), true);
-
-      return result;
-    }
+  withProps(({ projects }) => ({
+    projects: projects.filter(resource => resource.type === PROJECT)
   })),
 )(Table);

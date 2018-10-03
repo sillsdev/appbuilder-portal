@@ -79,10 +79,19 @@ footer {
   user-select: none;
 }
 
+
+a.clickable {
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .no-shadows {
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
 }
+
 
 
 //TODO: Move it to the component when we create one

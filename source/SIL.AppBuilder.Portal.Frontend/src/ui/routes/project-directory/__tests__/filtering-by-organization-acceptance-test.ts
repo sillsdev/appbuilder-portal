@@ -20,6 +20,8 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
   beforeEach(function () {
     const { server } = this.polly;
 
+    this.mockGet(200, 'product-definitions', { data: [] });
+
     server.namespace('/api', () => {
       server.get('/projects').intercept((req, res) => {
         res.status(200);

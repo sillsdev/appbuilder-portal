@@ -13,6 +13,7 @@ export interface ISortProps {
   sortProperty: string;
   sortDirection: string;
   sort: (property: string, direction: SortDirection) => void;
+  toggleSort: (property: string) => void;
   applySort: (builder: FindRecordsTerm) => FindRecordsTerm;
 }
 
@@ -28,6 +29,13 @@ export function withSorting(options) {
   return WrappedComponent => {
     class SortWrapper extends React.Component<any, { sortProperty: string }> {
       state = { sortProperty: '' };
+
+      toggleSort = (by: string) => {
+        const { sortProperty } = this.state;
+        const isDescending = sortProperty.startsWith('-');
+
+        this.sort(by, isDescending ? SortDirection.Up : SortDirection.Down);
+      }
 
       sort = (by: string, direction: SortDirection) => {
         const prefix = direction === SortDirection.Up ? '' : '-';
@@ -47,14 +55,16 @@ export function withSorting(options) {
 
       render() {
         const { sortProperty } = this.state;
-        const isDescending = sortProperty.includes('-');
+        const isDescending = sortProperty.startsWith('-');
 
         const sortProps = {
           isDescending,
           isAscending: !isDescending,
           sort: this.sort,
+          toggleSort: this.toggleSort,
           sortProperty,
-          defaultSort
+          defaultSort,
+          applySort: this.applySort
         };
 
         return (

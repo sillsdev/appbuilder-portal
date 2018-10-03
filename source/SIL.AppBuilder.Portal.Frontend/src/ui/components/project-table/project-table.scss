@@ -6,6 +6,10 @@
 
   a {
     color: $blue-highlight;
+
+    &.gray-text {
+      color: $gray;
+    }
   }
 
   .header {

@@ -8,6 +8,7 @@ import { possibleColumns, possibleColumnsByType, COLUMN_KEY } from './column-dat
 export interface IColumn {
   id: COLUMN_KEY;
   i18nKey: string;
+  sortable?: boolean;
   propertyPath: string;
   value?: any;
 }

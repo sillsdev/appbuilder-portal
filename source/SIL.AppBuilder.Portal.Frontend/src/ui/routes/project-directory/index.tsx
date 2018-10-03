@@ -36,7 +36,6 @@ import Filters from './filters';
 import { withSorting } from '@data/containers/api/sorting';
 import { withTranslations } from '@lib/i18n';
 import { withError } from '@data/containers/with-error';
-import { withDebugger } from '@lib/debug';
 
 import { tokensToObject } from '@lib/string/utils';
 
@@ -75,13 +74,16 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
   render() {
     const {
       t,
-      projects, updateFilter, error,
+      projects, updateFilter, error, toggleSort
     } = this.props;
 
     const numProjects = projects && projects.length;
 
-    // TODO: consider this for search instead of the existing
-    //       https://github.com/smclab/react-faceted-token-input
+    const tableProps = {
+      projects,
+      toggleSort
+    };
+
     return (
       <div data-test-project-directory className='ui container'>
         <div className='flex-row justify-content-space-between align-items-center'>
@@ -98,7 +100,7 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
         { error && <ErrorMessage error={error} /> }
         { !error && (
           <>
-            <Table projects={projects} />
+            <Table { ...tableProps } />
 
             <div className='flex-row justify-content-end'>
               <PaginationFooter className='m-t-lg' { ...this.props } />
@@ -109,8 +111,6 @@ class ProjectDirectoryRoute extends React.Component<IProps> {
     );
   }
 }
-
-
 
 export default compose (
   withTranslations,
