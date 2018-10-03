@@ -9,14 +9,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineSystemMonitor
     {
-        public JobOrganizationRepository OrganizationRepository;
-        public JobSystemStatusRepository SystemStatusRepository;
+        public IJobRepository<Organization> OrganizationRepository;
+        public IJobRepository<SystemStatus> SystemStatusRepository;
 
         public IBuildEngineApi BuildEngineApi { get; }
 
         public BuildEngineSystemMonitor(
-            JobOrganizationRepository organizationRepository,
-            JobSystemStatusRepository systemStatusRepository,
+            IJobRepository<Organization> organizationRepository,
+            IJobRepository<SystemStatus> systemStatusRepository,
             IBuildEngineApi buildEngineApi
         )
         {

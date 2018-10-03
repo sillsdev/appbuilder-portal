@@ -81,9 +81,6 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddFluentEmail(GetVarOrDefault("ADMIN_EMAIL", "noreply@scriptoria.io"), GetVarOrDefault("ADMIN_NAME", "Scriptoria Mailer"))
                     .AddRazorRenderer();
 
-            services.AddScoped<JobProjectRepository>();
-            services.AddScoped<JobOrganizationRepository>();
-            services.AddScoped<JobSystemStatusRepository>();
             services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
             services.AddScoped<IJobRepository<Email>, JobEmailRepository>();
 

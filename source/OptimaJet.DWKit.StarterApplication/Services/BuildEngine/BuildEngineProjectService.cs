@@ -16,17 +16,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineProjectService
     {
-        protected JobProjectRepository ProjectRepository;
+        protected IJobRepository<Project> ProjectRepository;
 
         public IRecurringJobManager RecurringJobManager { get; set; }
         public IBuildEngineApi BuildEngineApi { get; set; }
-        protected JobSystemStatusRepository SystemStatusRepository { get; }
+        protected IJobRepository<SystemStatus> SystemStatusRepository { get; }
 
         public BuildEngineProjectService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
-            JobProjectRepository projectRepository,
-            JobSystemStatusRepository systemStatusRepository
+            IJobRepository<Project> projectRepository,
+            IJobRepository<SystemStatus> systemStatusRepository
         )
         {
             RecurringJobManager = recurringJobManager;
@@ -94,7 +94,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             {
                 // Set state to active?
                 project.WorkflowProjectId = projectResponse.Id;
-   //             await ProjectRepository.UpdateAsync(project.Id, project);
                 await ProjectRepository.UpdateAsync(project);
                 var monitorJob = Job.FromExpression<BuildEngineProjectService>(service => service.ManageProject(project.Id));
                 RecurringJobManager.AddOrUpdate(GetHangfireToken(project.Id), monitorJob, "* * * * *");
@@ -156,7 +155,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected async System.Threading.Tasks.Task ProjectCompletedAsync(Project project, ProjectResponse projectResponse)
         {
             project.WorkflowProjectUrl = projectResponse.Url;
-//            await ProjectRepository.UpdateAsync(project.Id, project);
             await ProjectRepository.UpdateAsync(project);
             ClearAndExit(project.Id);
         }

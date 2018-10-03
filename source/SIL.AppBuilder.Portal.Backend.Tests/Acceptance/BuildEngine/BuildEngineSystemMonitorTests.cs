@@ -88,8 +88,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             SetTestData();
 
-            var organizationRepository = _fixture.GetService<JobOrganizationRepository>();
-            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
+            var organizationRepository = _fixture.GetService<IJobRepository<Organization>>();
+            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
             var mockClient = new Mock<IBuildEngineApi>();
             var buildEngineService = new BuildEngineSystemMonitor(organizationRepository, systemStatusRepository, mockClient.Object);
             mockClient.Setup(x => x.SystemCheck()).Returns(System.Net.HttpStatusCode.OK);
@@ -106,8 +106,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             SetTestData();
 
-            var organizationRepository = _fixture.GetService<JobOrganizationRepository>();
-            var systemStatusRepository = _fixture.GetService<JobSystemStatusRepository>();
+            var organizationRepository = _fixture.GetService<IJobRepository<Organization>>();
+            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
             var mockClient = new Mock<IBuildEngineApi>();
             var buildEngineService = new BuildEngineSystemMonitor(organizationRepository, systemStatusRepository, mockClient.Object);
             mockClient.Setup(x => x.SystemCheck()).Returns(System.Net.HttpStatusCode.NotFound);
