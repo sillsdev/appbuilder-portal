@@ -23,6 +23,7 @@ class App {
   selectedOrg = text('[data-test-org-switcher-toggler]');
 
   isOrgSwitcherVisible = isPresent('[data-test-org-switcher]');
+  isPaginationVisible = isPresent('[data-test-pagination-footer]');
 
   isLoaderVisible = isPresent('.spinner');
 

@@ -10,7 +10,11 @@ interface IOwnProps {
   filter: string;
 }
 
-class Header extends React.Component<IOwnProps & i18nProps> {
+type IProps =
+& IOwnProps
+& i18nProps;
+
+class Header extends React.Component<IProps> {
 
   render() {
 
@@ -48,6 +52,6 @@ class Header extends React.Component<IOwnProps & i18nProps> {
 
 }
 
-export default compose(
+export default compose<IOwnProps, {}>(
   translate('translations'),
 )(Header);

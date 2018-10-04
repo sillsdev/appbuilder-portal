@@ -117,7 +117,7 @@ describe('Acceptance | New Project', () => {
       });
 
       it('is redirected', () => {
-        expect(location().pathname).to.equal('/');
+        expect(location().pathname).to.equal('/tasks');
       });
     });
   });
@@ -134,7 +134,7 @@ describe('Acceptance | New Project', () => {
         });
 
         it('is redirected', () => {
-          expect(location().pathname).to.equal('/');
+          expect(location().pathname).to.equal('/tasks');
         });
       });
     });

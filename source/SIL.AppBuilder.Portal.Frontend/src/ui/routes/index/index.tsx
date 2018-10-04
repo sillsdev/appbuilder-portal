@@ -1,43 +1,18 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { translate } from 'react-i18next';
-// import { DWKitForm } from 'vendor/dwkit/optimajet-form';
-import { get } from '@lib/fetch';
+import { Redirect } from 'react-router-dom';
 import { withLayout } from '@ui/components/layout';
 import { requireAuth } from '@lib/auth';
 
 export const pathName = '/';
 
-class IndexRoute extends React.Component<any, any> {
-  state = { data: {}, errors: {} };
-
-  async componentDidMount() {
-    // const response = await get('/ui/login');
-    // console.log('data back from /ui/login', response);
-  }
-
+class IndexRoute extends React.Component {
   render() {
-    const { t } = this.props;
-
-    return (
-      <div>
-        <h2>{t('exampleForm')}</h2>
-
-        {t('exampleForm')}
-        {/* <DWKitForm
-          eventFunc={console.log}
-          formName='login'
-          modelurl='/ui/login'
-          data={this.state.data}
-          errors={this.state.errors}
-        /> */}
-      </div>
-    );
+    return <Redirect push={true} to={'/tasks'} />;
   }
 }
 
 export default compose (
-  translate('translations'),
   requireAuth,
   withLayout
 )(IndexRoute);

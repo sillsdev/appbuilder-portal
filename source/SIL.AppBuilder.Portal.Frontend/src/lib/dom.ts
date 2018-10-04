@@ -1,5 +1,9 @@
 import * as pick from 'lodash/pick';
 
+export interface IAttributeProps {
+  className: string;
+}
+
 export const GENERIC_ATTRIBUTES = [
   'className'
 ];
