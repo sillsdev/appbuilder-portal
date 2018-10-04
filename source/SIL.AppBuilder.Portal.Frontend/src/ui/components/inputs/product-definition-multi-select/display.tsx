@@ -10,6 +10,7 @@ import './styles.scss';
 interface IOwnProps {
   className?: string;
   productDefinitions: ProductDefinitionResource[];
+  selected: ProductDefinitionResource[];
   onChange: (pd: ProductDefinitionResource) => void;
   defaultValue: string;
 }

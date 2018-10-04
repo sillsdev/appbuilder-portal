@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import { Checkbox } from 'semantic-ui-react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
 
 import { OrganizationAttributes } from '@data/models/organization';
-import { OrganizationResource } from '@data';
+import { OrganizationResource, OrganizationProductDefinitionResource } from '@data';
 import ProductDefinitionMultiSelect from '@ui/components/inputs/product-definition-multi-select';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 export const pathName = '/organizations/:orgId/settings/products';
 
@@ -18,9 +19,22 @@ export interface IProps {
   match: Match<Params>;
   update: (payload: OrganizationAttributes) => void;
   organization: OrganizationResource;
+  organizationProductDefinitions: OrganizationProductDefinitionResource[];
 }
 
-class ProductsRoute extends React.Component<IProps & i18nProps> {
+type IOwnProps =
+  & IProps
+  & i18nProps
+
+const mapRecordsToProps = (passedProps) => {
+  const { organization } = passedProps;
+
+  return {
+    organizationProductDefinitions: q => q.findRelatedRecords(organization, 'organizationProductDefinitions')
+  };
+};
+
+class ProductsRoute extends React.Component<IOwnProps> {
 
   togglePrivacy = () => {
     const { update, organization } = this.props;
@@ -29,11 +43,20 @@ class ProductsRoute extends React.Component<IProps & i18nProps> {
     update({ makePrivateByDefault: !makePrivateByDefault });
   }
 
+  updateProductDefinitionList = () => {
+
+  }
+
   render() {
-    const { organization, t } = this.props;
+    const { organization, organizationProductDefinitions, t } = this.props;
     const { makePrivateByDefault } = organization.attributes;
 
     const makePublicByDefault = !makePrivateByDefault;
+
+    const multiSelectProps = {
+      selected: organizationProductDefinitions,
+      onChange: this.updateProductDefinitionList
+    }
 
     return (
       <div className='sub-page-content'>
@@ -53,12 +76,13 @@ class ProductsRoute extends React.Component<IProps & i18nProps> {
         <hr />
 
         <h3 className='p-b-md'>{t('org.productSelectTitle')}</h3>
-        <ProductDefinitionMultiSelect/>
+        <ProductDefinitionMultiSelect {...multiSelectProps} />
       </div>
     );
   }
 }
 
 export default compose(
-  translate('translations')
+  withTranslations,
+  withOrbit(mapRecordsToProps)
 )(ProductsRoute);
