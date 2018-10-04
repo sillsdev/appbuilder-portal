@@ -18,5 +18,5 @@ export function wait(ms: number): Promise<void> {
 export async function visitTheHomePage() {
   await visit('/');
 
-  expect(location().pathname).to.eq('/');
+  expect(location().pathname).to.eq('/tasks');
 }

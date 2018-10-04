@@ -26,6 +26,7 @@ export class PaginationFooter extends React.Component<IProps, {}> {
     return (
       <Pagination
         { ...attributeProps }
+        data-test-pagination-footer
         totalPages={10}
         activePage={currentPageOffset}
         onPageChange={this.onPageChange}

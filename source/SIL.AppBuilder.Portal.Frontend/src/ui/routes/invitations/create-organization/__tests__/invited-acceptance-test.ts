@@ -55,7 +55,7 @@ setupRequestInterceptor();
         });
 
         it('is redirected', () => {
-          expect(location().pathname).to.eq('/');
+          expect(location().pathname).to.eq('/tasks');
         });
       });
     });
