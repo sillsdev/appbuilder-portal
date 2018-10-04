@@ -90,6 +90,7 @@ function runstuff {
 
       runstuff db:update \
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/application_types.sql" \
+        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/stores.sql" \
         && echo "DB setup for json:api"
     ;;
 
