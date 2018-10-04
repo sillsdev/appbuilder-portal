@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { withData as withCache } from 'react-orbitjs';
 
-import { idFromRecordIdentity } from '@data';
+import { idFromRecordIdentity, TEMP_DEFAULT_PAGE_SIZE } from '@data';
 import { PaginationFooter } from '@data/containers/api';
 import { withCurrentUser } from '@data/containers/with-current-user';
 import { withSorting, ISortProps } from '@data/containers/api/sorting';
@@ -27,7 +27,7 @@ export type IProps =
 class MyProjects extends React.Component<IProps> {
   render() {
     const { projects, toggleSort } = this.props;
-    const isPaginationNeeded = projects.length > 19;
+    const isPaginationNeeded = projects.length > TEMP_DEFAULT_PAGE_SIZE;
     const tableProps = {
       projects,
       toggleSort

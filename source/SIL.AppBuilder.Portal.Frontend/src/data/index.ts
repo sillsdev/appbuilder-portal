@@ -24,7 +24,7 @@ export {
 } from './helpers';
 
 export { withLoader } from './containers/with-loader';
-export { withLogout, ILogoutProps } from '@data/containers/with-logout';
+export { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/with-logout';
 
 export { queryApi as query } from './query';
 
@@ -42,3 +42,10 @@ export { PRODUCT_DEFINITIONS_TYPE, ProductDefinitionResource } from './models/pr
 export { GROUP_MEMBERSHIPS_TYPE, GroupMembershipResource } from './models/group-membership';
 export { ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipResource } from './models/organization-membership';
 export { APPLICATION_TYPES_TYPE, ApplicationTypeResource } from './models/application-type';
+
+// TODO: change to 20, or remove.
+//       currently, we don't have a way to see what the total
+//       number of records or number of pages are in a request's payload.
+//       Once we can read the total-records from the payload, we can
+//       get rid of this entirely
+export const TEMP_DEFAULT_PAGE_SIZE = 19;
