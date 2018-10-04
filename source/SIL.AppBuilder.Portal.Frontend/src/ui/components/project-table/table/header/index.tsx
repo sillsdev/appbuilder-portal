@@ -1,5 +1,8 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import DownArrow from '@material-ui/icons/ArrowDownward';
+import UpArrow from '@material-ui/icons/ArrowUpward';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { ISortProps, SortDirection } from '@data/containers/api/sorting';
@@ -21,6 +24,14 @@ interface IColumnProps {
   onClick?: () => void;
 }
 
+const iconStyle = {
+  width: '14px',
+  height: '14px',
+  position: 'absolute',
+  marginLeft: '-14px',
+  marginTop: '2px'
+};
+
 class Header extends React.Component<IProps> {
 
   buildHeaderTitles = () => {
@@ -30,7 +41,10 @@ class Header extends React.Component<IProps> {
   }
 
   buildColumn = (column: IColumn, additionalProps = {}) => {
-    const { t, toggleSort } = this.props;
+    const { t, toggleSort, isAscending, sortProperty } = this.props;
+    const isSortable = column.sortable && toggleSort;
+    const isSortingByColumn = sortProperty && sortProperty.includes(column.propertyPath);
+    const isSorting = isSortable && isSortingByColumn;
     let Tag = 'div';
 
     const columnProps: IColumnProps = {
@@ -38,7 +52,7 @@ class Header extends React.Component<IProps> {
       ...additionalProps
     };
 
-    if (column.sortable && toggleSort) {
+    if (isSortable) {
       Tag = 'a';
       columnProps.onClick = () => toggleSort(column.propertyPath);
       columnProps.className = 'col flex-100 gray-text clickable';
@@ -46,6 +60,9 @@ class Header extends React.Component<IProps> {
 
     return (
       <Tag data-test-project-table-column { ...columnProps }>
+        { isSorting && (
+          isAscending ? <UpArrow style={iconStyle} /> : <DownArrow style={iconStyle} />
+        ) }
         {t(column.i18nKey)}
       </Tag>
     );
