@@ -8,6 +8,7 @@ using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
 using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
 using Hangfire;
 using Hangfire.Common;
+using Job = Hangfire.Common.Job;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using Hangfire.Server;
 using Hangfire.States;
