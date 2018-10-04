@@ -13,6 +13,14 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public virtual ProductDefinition ProductDefinition { get; set; }
         public int ProductDefinitionId { get; set; }
 
+        [HasOne("store")]
+        public virtual Store Store { get; set; }
+        public int StoreId { get; set; }
+
+        [HasOne("store-language")]
+        public virtual StoreLanguage StoreLanguage { get; set; }
+        public int StoreLanguageId { get; set; }
+
         [Attr("date-created")]
         public DateTime? DateCreated { get; set; }
 
