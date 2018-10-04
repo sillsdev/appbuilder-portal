@@ -3,6 +3,8 @@ import { Menu, Dropdown }  from 'semantic-ui-react';
 import { NavLink, withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 
+import './navigation.scss';
+
 export interface IProps {
   items: Array<{ to: string, text: string }>;
 }
@@ -37,7 +39,7 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
     ));
 
     return (
-      <>
+      <div className='responsive-sub-navigation'>
         {/* The mobile menu */}
         <Dropdown
           text={this.activeText()}
@@ -54,7 +56,7 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
         <Menu vertical className='d-xs-none d-sm-block'>
           {menuItems}
         </Menu>
-      </>
+      </div>
     );
   }
 }

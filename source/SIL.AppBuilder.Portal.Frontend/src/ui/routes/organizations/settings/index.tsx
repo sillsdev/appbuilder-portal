@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { match as Match, Redirect } from 'react-router';
-import { Switch, Route } from 'react-router-dom';
-import { Container } from 'semantic-ui-react';
-import { compose } from 'recompose';
-import { withData, WithDataProps } from 'react-orbitjs';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-
 import * as toast from '@lib/toast';
+import { compose } from 'recompose';
+import { match as Match } from 'react-router';
+import { Switch, Route } from 'react-router-dom';
+import { withData, WithDataProps } from 'react-orbitjs';
+
 import NotFound from '@ui/routes/errors/not-found';
-import { defaultOptions, ORGANIZATIONS_TYPE, query, withLoader, buildFindRecord, buildOptions } from '@data';
-import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
+import { defaultOptions, query, withLoader, buildFindRecord, buildOptions } from '@data';
+import { OrganizationAttributes, TYPE_NAME, OrganizationResource } from '@data/models/organization';
 
 
 import InfoRoute, { pathName as infoPath } from './basic-info';
@@ -18,8 +16,12 @@ import ProductsRoute, { pathName as productsPath } from './products';
 import GroupsRoute, { pathName as groupsPath } from './groups';
 import InfrastructureRoute, { pathName as infrastructurePath } from './infrastructure';
 import Navigation from './navigation';
-import { ResourceObject } from 'jsonapi-typescript';
-import { withTranslations } from '@lib/i18n';
+
+import { withTranslations, i18nProps } from '@lib/i18n';
+import {
+  withDataActions,
+  IProvidedProps as IDataActionsProps
+} from '@data/containers/resources/organization/with-data-actions';
 
 
 export const pathName = '/organizations/:orgId/settings';
@@ -33,14 +35,15 @@ interface PassedProps {
 }
 
 interface QueriedProps {
-  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
+  organization: OrganizationResource;
 }
 
 export type IProps =
   & PassedProps
   & QueriedProps
   & WithDataProps
-  & i18nProps;
+  & i18nProps
+  & IDataActionsProps;
 
 const mapRecordsToProps = (ownProps: PassedProps) => {
   const { match } = ownProps;
@@ -48,35 +51,41 @@ const mapRecordsToProps = (ownProps: PassedProps) => {
 
   return {
     cacheKey: [`org-${orgId}`],
-    organization: [q => buildFindRecord(q, TYPE_NAME, orgId), buildOptions()],
+    organization: [q => buildFindRecord(q, TYPE_NAME, orgId), buildOptions({
+      include: ['organization-product-definitions']
+    })],
   };
 };
 
 class SettingsRoute extends React.Component<IProps> {
-  updateOrganizaion = async (payload: OrganizationAttributes) => {
-    const { t } = this.props;
-    try {
-      await this.update(payload);
 
+  updateOrganization = async (payload: OrganizationAttributes) => {
+
+    const { t, updateAttributes } = this.props;
+
+    try {
+
+      await updateAttributes(payload);
       toast.success(t('updated'));
+
     } catch (e) {
       toast.error(e.message);
     }
   }
 
-  update = async (payload: OrganizationAttributes) => {
-    const { organization, match, updateStore: update } = this.props;
-    const { params: { orgId } } = match;
+  // update = async (payload: OrganizationAttributes, relationships?) => {
+  //   const { organization, match, updateStore: update } = this.props;
+  //   const { params: { orgId } } = match;
 
-    return await update(t => t.replaceRecord({
-      type: TYPE_NAME,
-      id: orgId,
-      attributes: {
-        ...organization.attributes,
-        ...payload
-      }
-    }), defaultOptions());
-  }
+  //   return await update(t => t.replaceRecord({
+  //     type: TYPE_NAME,
+  //     id: orgId,
+  //     attributes: {
+  //       ...organization.attributes,
+  //       ...payload
+  //     }
+  //   }), defaultOptions());
+  // }
 
   render() {
     const { organization, t } = this.props;
@@ -91,7 +100,7 @@ class SettingsRoute extends React.Component<IProps> {
 
     const settingsProps = {
       organization,
-      update: this.updateOrganizaion,
+      update: this.updateOrganization,
     };
 
     return (
@@ -100,7 +109,7 @@ class SettingsRoute extends React.Component<IProps> {
         <div className='flex-column-xs flex-row-sm align-items-start-sm'>
           <Navigation />
 
-          <div className='m-l-md-sm flex-grow'>
+          <div className='m-l-lg flex-grow'>
             <Switch>
               <Route exact path={infoPath} render={(routeProps) => (
                 <InfoRoute {...routeProps } {...settingsProps } />
@@ -133,5 +142,6 @@ class SettingsRoute extends React.Component<IProps> {
 export default compose(
   query(mapRecordsToProps),
   withLoader(({ organization }) => !organization),
-  withTranslations
+  withTranslations,
+  withDataActions
 )(SettingsRoute);

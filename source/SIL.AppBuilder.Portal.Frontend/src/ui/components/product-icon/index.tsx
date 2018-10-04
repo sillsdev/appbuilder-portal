@@ -13,6 +13,7 @@ const iconMap = {
   [undefined]: () => <MissingIcon />
 };
 
+// TODO: We need to change this to product definition
 export interface IProps {
   product: ResourceObject<PRODUCTS_TYPE, ProductAttributes>;
 }
