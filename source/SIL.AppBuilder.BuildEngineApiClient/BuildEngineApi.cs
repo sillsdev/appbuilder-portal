@@ -100,5 +100,36 @@ namespace SIL.AppBuilder.BuildEngineApiClient
             var response = restClient.Execute(request);
             return response.StatusCode;
         }
+
+        public JobResponse CreateJob(Job job)
+        {
+            Require.Argument("RequestId", job.RequestId);
+            Require.Argument("GitUrl", job.GitUrl);
+            Require.Argument("AppId", job.AppId);
+            Require.Argument("PublisherId", job.PublisherId);
+
+            var request = CreateRequest("job", Method.POST)
+                .AddJsonBody(job);
+            return Execute<JobResponse>(request);
+        }
+        public List<JobResponse> GetJobs()
+        {
+            var request = CreateRequest("job");
+            return Execute<List<JobResponse>>(request);
+        }
+        public JobResponse GetJob(int jobId)
+        {
+            var request = CreateRequest("job/{jobId}")
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment);
+            return Execute<JobResponse>(request);
+        }
+        public System.Net.HttpStatusCode DeleteJob(int jobId)
+        {
+            var request = CreateRequest("job/{jobId}", Method.DELETE)
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment);
+            var response = restClient.Execute(request);
+            return response.StatusCode;
+        }
+
     }
 }

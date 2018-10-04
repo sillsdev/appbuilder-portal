@@ -4,7 +4,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
 {
     public class SystemTests
     {
-        const string skipIntegrationTest = null;//"Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
+        const string skipIntegrationTest = "Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public string BaseUrl { get; set; } = "https://buildengine.gtis.guru";
         public string ApiAccessKey { get; set; } = "";
 

@@ -3,7 +3,7 @@ using Xunit;
 
 namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
 {
-    public class ProjectTests
+    public class JobTests
     {
         // Note: You should set these values to match your environment.  These
         // tests are not intended to be automated, just to interact with a real 
@@ -12,63 +12,61 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         const string skipIntegrationTest = "Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public string BaseUrl { get; set; } = "https://buildengine.gtis.guru:8443"; // This is our staging version of BuildEngine
         public string ApiAccessKey { get; set; } = "";
-        public string UserId { get; set; } = ""; // Email address
-        public string GroupId { get; set; } = ""; // Some shared group
-        public string PublishingKey { get; set; } = ""; // Get this from Scripture App Builder
+        public string GitUrl { get; set; } = ""; // Amazon Codecommit URL: Example ssh://APKAIKQTCJ3JIDKLHHDA@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-English-Greek
+        public string AppId { get; set; } = ""; // scriptureappbuilder
+        public string PublisherId { get; set; } = "";  // wycliffeusa
 
         [Theory(Skip = skipIntegrationTest)]
-        [InlineData(4)]
-        public void GetTestProject(int projectId)
+        [InlineData(1)]
+        public void GetTestJob(int jobId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
-            var response = client.GetProject(projectId);
+            var response = client.GetJob(jobId);
+            Assert.NotNull(response);
+            Assert.Equal(this.GitUrl, response.GitUrl);
+            Assert.Equal(this.AppId, response.AppId);
+            Assert.Equal(this.PublisherId, response.PublisherId);
+            Assert.Equal(jobId, response.Id);
+        }
+        [Fact(Skip = skipIntegrationTest)]
+        public void GetTestJobs()
+        {
+            var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
+            var response = client.GetJobs();
             Assert.NotNull(response);
         }
 
         [Fact(Skip = skipIntegrationTest)]
-        public void GetTestProjects()
+        public void CreateTestJob()
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
-            var response = client.GetProjects();
-            Assert.NotNull(response);
-        }
-
-
-        [Fact(Skip = skipIntegrationTest)]
-        public void CreateTestProject()
-        {
-            var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
-            var project = new Project
+            var job = new Job
             {
-                UserId = this.UserId,
-                GroupId = this.GroupId,
+                RequestId = Guid.NewGuid().ToString(),
+                GitUrl = this.GitUrl,
                 AppId = "scriptureappbuilder",
-                LanguageCode = "eng",
-                ProjectName = Guid.NewGuid().ToString(),
-                PublishingKey = this.PublishingKey
+                PublisherId = this.PublisherId
             };
 
-            var response = client.CreateProject(project);
+            var response = client.CreateJob(job);
             Assert.NotNull(response);
-            Assert.Equal(project.UserId, response.UserId);
-            Assert.Equal(project.GroupId, response.GroupId);
-            Assert.Equal(project.AppId, response.AppId);
-            Assert.Equal(project.LanguageCode, response.LanguageCode);
-            Assert.Equal("initialized", response.Status);
-            Assert.Null(response.Result);
-            Assert.Null(response.Error);
-            Assert.Null(response.Url);
+            Assert.Equal(job.RequestId, response.RequestId);
+            Assert.Equal(job.GitUrl, response.GitUrl);
+            Assert.Equal(job.AppId, response.AppId);
+            Assert.Equal(job.PublisherId, response.PublisherId);
+            Assert.NotEqual(0, response.Id);
             Assert.NotEqual(DateTime.MinValue, response.Created);
             Assert.NotEqual(DateTime.MinValue, response.Updated);
         }
 
-        [Theory(Skip = skipIntegrationTest)]
-        [InlineData(5)]
-        public void DeleteTestProject(int projectId)
+        [Theory (Skip = skipIntegrationTest)]
+        [InlineData(1)]
+        public void DeleteTestProject(int jobId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
-            var response = client.DeleteProject(projectId);
+            var response = client.DeleteJob(jobId);
             Assert.Equal(System.Net.HttpStatusCode.OK, response);
         }
+
     }
 }
