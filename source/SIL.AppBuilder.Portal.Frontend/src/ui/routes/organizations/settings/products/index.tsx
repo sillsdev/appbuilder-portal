@@ -5,7 +5,13 @@ import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import { OrganizationAttributes } from '@data/models/organization';
-import { OrganizationResource, OrganizationProductDefinitionResource } from '@data';
+import {
+  OrganizationResource,
+  OrganizationProductDefinitionResource,
+  ProductDefinitionResource,
+  withLoader
+} from '@data';
+
 import ProductDefinitionMultiSelect from '@ui/components/inputs/product-definition-multi-select';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
@@ -18,19 +24,21 @@ export interface Params {
 export interface IProps {
   match: Match<Params>;
   update: (payload: OrganizationAttributes) => void;
+  updateProductDefinition: (payload: ProductDefinitionResource) => void;
   organization: OrganizationResource;
   organizationProductDefinitions: OrganizationProductDefinitionResource[];
 }
 
 type IOwnProps =
   & IProps
-  & i18nProps
+  & i18nProps;
 
 const mapRecordsToProps = (passedProps) => {
   const { organization } = passedProps;
+  const { type, id } = organization;
 
   return {
-    organizationProductDefinitions: q => q.findRelatedRecords(organization, 'organizationProductDefinitions')
+    organizationProductDefinitions: q => q.findRelatedRecords({ type, id }, 'organizationProductDefinitions')
   };
 };
 
@@ -43,8 +51,11 @@ class ProductsRoute extends React.Component<IOwnProps> {
     update({ makePrivateByDefault: !makePrivateByDefault });
   }
 
-  updateProductDefinitionList = () => {
+  updateProductDefinitionList = (productDefinition) => {
 
+    const { updateProductDefinition } = this.props;
+
+    updateProductDefinition(productDefinition);
   }
 
   render() {
@@ -56,7 +67,7 @@ class ProductsRoute extends React.Component<IOwnProps> {
     const multiSelectProps = {
       selected: organizationProductDefinitions,
       onChange: this.updateProductDefinitionList
-    }
+    };
 
     return (
       <div className='sub-page-content'>
@@ -84,5 +95,6 @@ class ProductsRoute extends React.Component<IOwnProps> {
 
 export default compose(
   withTranslations,
-  withOrbit(mapRecordsToProps)
+  withOrbit(mapRecordsToProps),
+  withLoader(({ organizationProductDefinitions }) => !organizationProductDefinitions),
 )(ProductsRoute);

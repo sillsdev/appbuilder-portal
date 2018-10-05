@@ -52,7 +52,7 @@ const mapRecordsToProps = (ownProps: PassedProps) => {
   return {
     cacheKey: [`org-${orgId}`],
     organization: [q => buildFindRecord(q, TYPE_NAME, orgId), buildOptions({
-      include: ['organization-product-definitions']
+      include: ['organization-product-definitions.product-definition']
     })],
   };
 };
@@ -73,19 +73,17 @@ class SettingsRoute extends React.Component<IProps> {
     }
   }
 
-  // update = async (payload: OrganizationAttributes, relationships?) => {
-  //   const { organization, match, updateStore: update } = this.props;
-  //   const { params: { orgId } } = match;
+  updateOrganizationProductDefinitions = async (pd) => {
 
-  //   return await update(t => t.replaceRecord({
-  //     type: TYPE_NAME,
-  //     id: orgId,
-  //     attributes: {
-  //       ...organization.attributes,
-  //       ...payload
-  //     }
-  //   }), defaultOptions());
-  // }
+    const { t, updateProductDefinition } = this.props;
+
+    try {
+
+      await updateProductDefinition(pd);
+    } catch (e) {
+      toast.error(e.message);
+    }
+  }
 
   render() {
     const { organization, t } = this.props;
@@ -101,6 +99,7 @@ class SettingsRoute extends React.Component<IProps> {
     const settingsProps = {
       organization,
       update: this.updateOrganization,
+      updateProductDefinition: this.updateOrganizationProductDefinitions
     };
 
     return (

@@ -1,11 +1,19 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 
-import { defaultOptions, OrganizationResource, ProductDefinitionResource } from '@data';
+import {
+  defaultOptions,
+  OrganizationResource,
+  ProductDefinitionResource,
+  OrganizationProductDefinitionResource,
+  relationshipFor
+} from '@data';
+
 import { recordIdentityFromKeys } from '@data/store-helpers';
 import { requireProps } from '@lib/debug';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
+import {  } from '@data/models/organization-product-definition';
 
 export interface IProvidedProps {
   updateAttribute: (attribute: string, value: any) => Promise<any>;
@@ -15,12 +23,23 @@ export interface IProvidedProps {
 
 interface IOwnProps {
   organization: OrganizationResource;
+  organizationProductDefinitions: OrganizationProductDefinitionResource[];
 }
 
 
 type IProps =
   & IOwnProps
   & WithDataProps;
+
+const mapRecordsToProps = (passedProps) => {
+  const { organization } = passedProps;
+  const { type, id } = organization;
+
+  return {
+    organizationProductDefinitions: q =>
+      q.findRelatedRecords({ type, id }, 'organizationProductDefinitions')
+  };
+};
 
 export function withDataActions<T>(WrappedComponent) {
 
@@ -48,18 +67,38 @@ export function withDataActions<T>(WrappedComponent) {
 
     updateProductDefinition = (productDefinition) => {
 
-      const { organization, dataStore } = this.props;
-      const recordIdentity = recordIdentityFromKeys(organization);
+      const { organization, organizationProductDefinitions, dataStore } = this.props;
 
-      // TODO: Handle organizationRelationShip
+      const opdSelected = organizationProductDefinitions.find(opd => {
+        const { data } = relationshipFor(opd, 'productDefinition');
+        return data.id === productDefinition.id;
+      });
 
-      return null;
+      if (opdSelected) {
+
+        return dataStore.update(q => q.removeRecord({
+          type: 'organizationProductDefinition',
+          id: opdSelected.id
+        }), defaultOptions());
+
+      } else {
+
+        return dataStore.update(q => q.addRecord({
+          type: 'organizationProductDefinition',
+          attributes: {},
+          relationships: {
+            organization: { data: organization },
+            productDefinition: { data: productDefinition }
+          }
+        }), defaultOptions());
+      }
     }
 
     render() {
       const actionProps = {
         updateAttributes: this.updateAttributes,
         updateAttribute: this.updateAttribute,
+        updateProductDefinition: this.updateProductDefinition
       };
 
       return <WrappedComponent {...this.props} {...actionProps} />;
@@ -68,7 +107,7 @@ export function withDataActions<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit({}),
+    withOrbit(mapRecordsToProps),
     requireProps('organization')
   )(OrganizationDataActionWrapper);
 

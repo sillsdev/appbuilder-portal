@@ -67,8 +67,8 @@ const schemaDefinition: SchemaSettings = {
       keys: { remoteId: {} },
       attributes: {},
       relationships: {
+        organization: { type: 'hasOne', model: 'organization', inverse: 'organizationProductDefinitions'},
         productDefinition: { type: 'hasOne', model: 'productDefinition', inverse: 'organizationProductDefinitions'},
-        organization: { type: 'hasOne', model: 'organization', inverse: 'organizationProductDefinitions'}
       }
     },
     project: {
