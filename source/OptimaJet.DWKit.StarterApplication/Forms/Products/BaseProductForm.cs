@@ -13,7 +13,7 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
             ICurrentUserContext currentUserContext) : base(userRepository, currentUserContext)
         {
         }
-        protected void ValidateProduct(Project project, ProductDefinition productDefinition)
+        protected void ValidateProduct(Project project, ProductDefinition productDefinition, Store store, int storeLanguageId)
         {
             if ((project == null) || (productDefinition == null))
             {
@@ -21,7 +21,24 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
                 // foreign key failures
                 return;
             }
-
+            if (store != null)
+            {
+                if (!(store.StoreTypeId == productDefinition.Workflow.StoreTypeId))
+                {
+                    var message = "The store type values do not match for this product";
+                    AddError(message);
+                }
+                if (!project.Organization.StoreIds.Contains(store.Id))
+                {
+                    var message = "This store is not permitted for this product";
+                    AddError(message);
+                }
+                if (!store.StoreType.LanguageIds.Contains(storeLanguageId))
+                {
+                    var message = "Invalid store language for this product";
+                    AddError(message);
+                }
+            }
             if (!project.Organization.ProductDefinitionIds.Contains(productDefinition.Id))
             {
                 var message = $"This product is not permitted for the organization";

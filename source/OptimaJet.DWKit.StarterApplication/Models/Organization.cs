@@ -48,5 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [NotMapped]
         public IEnumerable<int> ProductDefinitionIds => OrganizationProductDefinitions?.Select(pd => pd.ProductDefinitionId);
 
+        [NotMapped]
+        public IEnumerable<int> StoreIds => OrganizationStores?.Select(s => s.StoreId);
     }
 }

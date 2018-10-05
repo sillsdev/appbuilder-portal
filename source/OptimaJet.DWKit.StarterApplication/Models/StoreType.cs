@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
@@ -14,5 +16,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasMany("languages")]
         public virtual List<StoreLanguage> Languages { get; set; }
+
+        [NotMapped]
+        public IEnumerable<int> LanguageIds => Languages?.Select(l => l.Id);
     }
 }
