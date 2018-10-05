@@ -1,0 +1,71 @@
+[
+  {
+    "key": "header_product_definition",
+    "data-buildertype": "header",
+    "content": "Product Definition",
+    "size": "medium"
+  },
+  {
+    "key": "container_1",
+    "data-buildertype": "container",
+    "children": [
+      {
+        "key": "form_1",
+        "data-buildertype": "form",
+        "children": [
+          {
+            "key": "input_product_name",
+            "data-buildertype": "input",
+            "label": "Name",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true
+          },
+          {
+            "key": "input_description",
+            "data-buildertype": "input",
+            "label": "Description",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true
+          },
+          {
+            "key": "input_type",
+            "data-buildertype": "input",
+            "label": "Type",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true
+          },
+          {
+            "key": "formgroup_1",
+            "data-buildertype": "formgroup",
+            "widths": "equal",
+            "children": [
+              {
+                "key": "dictionary_store",
+                "data-buildertype": "dictionary",
+                "label": "Store",
+                "fluid": true,
+                "selection": true,
+                "dataModel": "Stores",
+                "columns": "Id ASC, Description"
+              },
+              {
+                "key": "dictionary_language",
+                "data-buildertype": "dictionary",
+                "label": "Store Listing Language",
+                "fluid": true,
+                "selection": true,
+                "dataModel": "StoreLanguages",
+                "columns": "Id ASC, Description",
+                "events": {},
+                "other-required": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
