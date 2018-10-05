@@ -4,10 +4,10 @@ import {
   collection,
   text,
   isPresent,
+  Interactor
 } from '@bigtest/interactor';
 
-@interactor
-export class ProjectTableInteractor {
+class ProjectTable {
   constructor(selector?: string) { }
 
   clickColumnSelector = clickable('[data-test-project-table-columns-selector]');
@@ -20,6 +20,29 @@ export class ProjectTableInteractor {
   emptyText = text('[data-test-project-list-empty]');
 
   rows = collection('[data-test-project-row]');
+
+  isSortingUp = isPresent('[data-test-up-arrow]');
+  isSortingDown = isPresent('[data-test-down-arrow]');
+
+  clickColumn(this: Interactor, columnText: string) {
+    return this
+      .when(() => {
+        const el = this
+        .$$('[data-test-project-table-column]')
+        .find(item => item.innerText.includes(columnText));
+
+        if(!el) {
+          throw new Error(`cannot find column with text "${columnText}"`);
+        }
+
+        console.log(el);
+        return el;
+      }).do(el => el.click());
+  }
 }
 
-export default new ProjectTableInteractor('[data-test-project-table]');
+export const ProjectTableInteractor = interactor(ProjectTable);
+
+export type TInteractor = ProjectTable & Interactor;
+
+export default new (ProjectTableInteractor as any)('[data-test-project-table]') as TInteractor;

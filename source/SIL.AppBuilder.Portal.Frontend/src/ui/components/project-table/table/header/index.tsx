@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import DownArrow from '@material-ui/icons/ArrowDownward';
-import UpArrow from '@material-ui/icons/ArrowUpward';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { ISortProps, SortDirection } from '@data/containers/api/sorting';
 
+import { UpArrow, DownArrow } from './sort-arrows';
 import ColumnSelector from './column-selector';
 import { IProvidedProps, IColumn } from '../with-table-columns';
 
@@ -24,13 +23,6 @@ interface IColumnProps {
   onClick?: () => void;
 }
 
-const iconStyle = {
-  width: '14px',
-  height: '14px',
-  position: 'absolute',
-  marginLeft: '-14px',
-  marginTop: '2px'
-};
 
 class Header extends React.Component<IProps> {
 
@@ -47,6 +39,8 @@ class Header extends React.Component<IProps> {
     const isSorting = isSortable && isSortingByColumn;
     let Tag = 'div';
 
+    console.log(column, sortProperty, isAscending, toggleSort);
+
     const columnProps: IColumnProps = {
       className: 'col flex-100',
       ...additionalProps
@@ -61,7 +55,7 @@ class Header extends React.Component<IProps> {
     return (
       <Tag data-test-project-table-column { ...columnProps }>
         { isSorting && (
-          isAscending ? <UpArrow style={iconStyle} /> : <DownArrow style={iconStyle} />
+          isAscending ? <UpArrow /> : <DownArrow />
         ) }
         {t(column.i18nKey)}
       </Tag>
