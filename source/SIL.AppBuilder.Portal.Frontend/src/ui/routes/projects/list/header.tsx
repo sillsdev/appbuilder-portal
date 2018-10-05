@@ -24,7 +24,7 @@ class Header extends React.Component<IProps> {
     const { t, filter, onSearch } = this.props;
 
     const dropdownText = {
-      'own': t('projects.switcher.dropdown.myProjects'),
+      'my-projects': t('projects.switcher.dropdown.myProjects'),
       'organization': t('projects.switcher.dropdown.orgProjects'),
       'archived': t('projects.switcher.dropdown.archived')
     };
