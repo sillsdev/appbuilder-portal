@@ -10,7 +10,7 @@ import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filter
 import { i18nProps } from '@lib/i18n';
 import { IDataProps, IColumnProps } from '@ui/components/project-table';
 
-import { PaginationFooter } from '@data/containers/api/pagination-footer'
+import { PaginationFooter } from '@data/containers/api/pagination-footer';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import { ErrorMessage } from '@ui/components/errors';
 
