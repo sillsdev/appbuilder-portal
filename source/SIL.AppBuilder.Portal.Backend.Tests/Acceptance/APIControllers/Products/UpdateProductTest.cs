@@ -15,6 +15,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         [Fact]
         public async Task Patch_Project()
         {
+            // Besides checking for a valid update, this also verifies the case
+            // of where the store fields are not filled in.  It still passes because
+            // the checks are not made if the store field is not set
             BuildTestData();
             var content = new
             {
@@ -42,6 +45,69 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             var updatedProduct = await Deserialize<Product>(response);
 
             Assert.Equal(updatedProduct.ProjectId, project2.Id);
+        }
+        [Fact]
+        public async Task Patch_Project_With_Store()
+        {
+            // This test checks that if all the store related fields are filled in
+            // and a request is made that doesn't cause the checks to fail, the 
+            // update is successful
+            BuildTestData();
+            var content = new
+            {
+                data = new
+                {
+                    type = "products",
+                    id = product4.Id.ToString(),
+                    relationships = new
+                    {
+                        project = new
+                        {
+                            data = new
+                            {
+                                type = "projects",
+                                id = project6.Id.ToString()
+                            }
+                        }
+                    }
+                }
+            };
+            var response = await Patch("/api/products/" + product4.Id.ToString(), content);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var updatedProduct = await Deserialize<Product>(response);
+
+            Assert.Equal(updatedProduct.ProjectId, project6.Id);
+        }
+        [Fact]
+        public async Task Patch_To_Bad_Store()
+        {
+            // This test should create a failure because changing the store causes
+            // it to fail all three of the store related checks in the form
+            BuildTestData();
+            var content = new
+            {
+                data = new
+                {
+                    type = "products",
+                    id = product4.Id.ToString(),
+                    relationships = new
+                    {
+                        store = new
+                        {
+                            data = new
+                            {
+                                type = "stores",
+                                id = store2.Id.ToString()
+                            }
+                        }
+                    }
+                }
+            };
+            var response = await Patch("/api/products/" + product4.Id.ToString(), content);
+
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         }
         [Fact]
         public async Task Patch_To_Invalid_Project()
