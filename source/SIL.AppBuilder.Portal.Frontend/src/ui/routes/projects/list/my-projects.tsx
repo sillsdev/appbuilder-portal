@@ -5,48 +5,20 @@ import { withData as withCache } from 'react-orbitjs';
 import { idFromRecordIdentity, TEMP_DEFAULT_PAGE_SIZE } from '@data';
 import { PaginationFooter } from '@data/containers/api';
 import { withCurrentUser } from '@data/containers/with-current-user';
-import { withSorting, ISortProps } from '@data/containers/api/sorting';
-import { withPagination, IPaginateProps } from '@data/containers/api/pagination';
+import { withSorting } from '@data/containers/api/sorting';
+import { withPagination } from '@data/containers/api/pagination';
 import { withFiltering } from '@data/containers/api/with-filtering';
 import { withLoader } from '@data/containers/with-loader';
-import { withNetwork, IOwnProps as IProjectProps } from '@data/containers/resources/project/list';
+import { withNetwork } from '@data/containers/resources/project/list';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 
 import { TYPE_NAME as PROJECT } from '@data/models/project';
 
-import ProjectTable from './table';
-import Header from '../header';
+import { withTableColumns, COLUMN_KEY } from '@ui/components/project-table';
+
+import Display from './display';
 
 export const pathName = '/projects/own';
-
-export type IProps =
-& IPaginateProps
-& ISortProps
-& IProjectProps;
-
-class MyProjects extends React.Component<IProps> {
-  render() {
-    const { projects, toggleSort } = this.props;
-    const isPaginationNeeded = projects.length > TEMP_DEFAULT_PAGE_SIZE;
-    const tableProps = {
-      projects,
-      toggleSort
-    };
-
-    return (
-      <>
-        <Header filter='own' />
-        <ProjectTable { ...tableProps } />
-
-        { isPaginationNeeded && (
-          <div className='flex-row justify-content-end'>
-            <PaginationFooter className='m-t-lg' { ...this.props } />
-          </div>
-        )}
-      </>
-    );
-  }
-}
 
 export default compose(
   withCurrentUser(),
@@ -66,6 +38,16 @@ export default compose(
   withNetwork(),
   withLoader(({ error, projects }) => !error && !projects),
   withProps(({ projects }) => ({
-    projects: projects.filter(resource => resource.type === PROJECT)
+    projects: projects.filter(resource => resource.type === PROJECT),
+    tableName: 'my-projects'
   })),
-)(MyProjects);
+  withTableColumns({
+    tableName: 'my-projects',
+    defaultColumns: [
+      COLUMN_KEY.PROJECT_OWNER,
+      COLUMN_KEY.PROJECT_GROUP,
+      COLUMN_KEY.PRODUCT_BUILD_VERSION,
+      COLUMN_KEY.PRODUCT_UPDATED_ON
+    ]
+  }),
+)(Display);

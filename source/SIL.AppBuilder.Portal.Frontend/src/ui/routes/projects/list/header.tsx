@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
+
+import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './project-switcher.scss';
 import { NavLink } from 'react-router-dom';
 
 interface IOwnProps {
   filter: string;
+  onSearch: (term: string) => any;
 }
 
 type IProps =
@@ -18,7 +21,7 @@ class Header extends React.Component<IProps> {
 
   render() {
 
-    const { t, filter } = this.props;
+    const { t, filter, onSearch } = this.props;
 
     const dropdownText = {
       'own': t('projects.switcher.dropdown.myProjects'),
@@ -41,10 +44,11 @@ class Header extends React.Component<IProps> {
           </Dropdown.Menu>
         </Dropdown>
         <div className='flex align-items-center'>
-          <div className='ui left icon input search-component'>
-            <input type="text" placeholder={`${t('common.search')}...`} />
-            <i className='search icon' />
-          </div>
+          <DebouncedSearch
+            className='search-component'
+            placeholder={t('common.search')}
+            onSubmit={onSearch}
+          />
         </div>
       </div>
     );
@@ -52,6 +56,6 @@ class Header extends React.Component<IProps> {
 
 }
 
-export default compose<IOwnProps, {}>(
-  translate('translations'),
+export default compose<IOwnProps, IOwnProps>(
+  withTranslations
 )(Header);
