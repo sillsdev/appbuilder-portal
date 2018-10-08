@@ -32,9 +32,13 @@ const moduleRules = [
     ]
   },
   {
-    test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+    test: /\.(png|svg)$/,
     loader: 'url-loader?limit=100000'
-  }
+  },
+  { test: /\.ttf$/, loader: 'ignore-loader' },
+  { test: /\.woff$/, loader: 'ignore-loader' },
+  { test: /\.woff2$/, loader: 'ignore-loader' },
+  { test: /\.eot$/, loader: 'ignore-loader' }
 ];
 
 const resolver = {
