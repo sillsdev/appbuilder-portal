@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xunit;
 
 namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
@@ -23,6 +23,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
             var response = client.GetProject(projectId);
             Assert.NotNull(response);
+            Assert.NotEqual(0, response.Id);
         }
 
         [Fact(Skip = skipIntegrationTest)]
@@ -50,6 +51,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
 
             var response = client.CreateProject(project);
             Assert.NotNull(response);
+            Assert.NotEqual(0, response.Id);
             Assert.Equal(project.UserId, response.UserId);
             Assert.Equal(project.GroupId, response.GroupId);
             Assert.Equal(project.AppId, response.AppId);

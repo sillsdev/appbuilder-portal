@@ -10,10 +10,8 @@ using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading;
 using Hangfire;
 using OptimaJet.DWKit.StarterApplication.Repositories;
-using JsonApiDotNetCore.Data;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {
@@ -99,7 +97,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             });
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public void Project_Not_Found()
+        public async Task Project_Not_FoundAsync()
         {
             BuildTestData();
             var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
@@ -107,7 +105,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
             var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
-            buildProjectService.ManageProject(999);
+            await buildProjectService.ManageProjectAsync(999);
             // TODO: Verify notification
         }
         [Fact(Skip = skipAcceptanceTest)]
@@ -139,7 +137,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Equal("SystemStatus record for connection not found", ex.Message);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public void Project_Create_Project()
+        public async Task Project_Create_ProjectAsync()
         {
             BuildTestData();
             var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
@@ -158,7 +156,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             };
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns(projectResponse);
             systemStatus1.SystemAvailable = true;
-            buildProjectService.ManageProject(project1.Id);
+            await buildProjectService.ManageProjectAsync(project1.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
