@@ -18,7 +18,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<BuildEngineSystemMonitor>();
-            services.AddScoped<BuildEngineProjectService>();
             base.ConfigureServices(services);
         }
     }
