@@ -2,8 +2,9 @@ import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
-import { DataProvider } from '../data';
-import { ReduxProvider } from '../redux-store';
+import { DataProvider } from '@data';
+import { ReduxProvider } from '@store';
+import { ScrollToTop } from '@lib/routing';
 import RootRoute from './routes/root';
 
 import i18n from '../translations';
@@ -29,7 +30,9 @@ export default class Application extends React.Component<IProps> {
         <DataProvider>
           <ReduxProvider initialState={initialState || {}}>
             <BrowserRouter>
-              <RootRoute />
+              <ScrollToTop>
+                <RootRoute />
+              </ScrollToTop>
             </BrowserRouter>
           </ReduxProvider>
         </DataProvider>

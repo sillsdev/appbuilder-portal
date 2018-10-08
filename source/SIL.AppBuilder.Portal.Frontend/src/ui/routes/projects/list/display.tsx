@@ -43,7 +43,7 @@ export default class Display extends React.Component<IProps> {
       toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns
     } = this.props;
 
-    const isPaginationNeeded = projects.length > TEMP_DEFAULT_PAGE_SIZE;
+    /* TODO: figure out how to disable certain pagination buttons */
 
     const tableProps = {
       projects,
@@ -57,7 +57,7 @@ export default class Display extends React.Component<IProps> {
         <Header filter={tableName} onSearch={this.search} />
         <ProjectTable { ...tableProps } />
 
-        { isPaginationNeeded && (
+        {(
           <div className='flex-row justify-content-end'>
             <PaginationFooter className='m-t-lg' { ...this.props } />
           </div>

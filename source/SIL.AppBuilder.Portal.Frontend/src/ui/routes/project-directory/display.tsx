@@ -49,7 +49,7 @@ export default class DirectoryDisplay extends React.Component<IProps> {
     } = this.props;
 
     const numProjects = projects && projects.length;
-    const isPaginationNeeded = numProjects > TEMP_DEFAULT_PAGE_SIZE;
+    /* TODO: figure out how to disable certain pagination buttons */
 
     const tableProps = {
       projects,
@@ -77,7 +77,7 @@ export default class DirectoryDisplay extends React.Component<IProps> {
           <>
             <Table { ...tableProps } />
 
-            { isPaginationNeeded && (
+            {(
               <div className='flex-row justify-content-end'>
                 <PaginationFooter className='m-t-lg' { ...this.props } />
               </div>

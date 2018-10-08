@@ -4,14 +4,16 @@ import Pagination from 'semantic-ui-react/dist/commonjs/addons/Pagination';
 
 import { GENERIC_ATTRIBUTES, IAttributeProps } from '@lib/dom';
 
-import { IPaginateProps } from './pagination';
+import { IPaginateProps } from '../pagination';
 
 type IProps =
 & IPaginateProps
 & IAttributeProps;
 
 export class PaginationFooter extends React.Component<IProps, {}> {
-  onPageChange = (e, { activePage }) => {
+  onPageChange = (e, options) => {
+    const { activePage } = options;
+    console.log(options);
     const { setOffset } = this.props;
 
     setOffset(activePage);
@@ -27,7 +29,10 @@ export class PaginationFooter extends React.Component<IProps, {}> {
       <Pagination
         { ...attributeProps }
         data-test-pagination-footer
-        totalPages={0}
+        totalPages={1000}
+        boundaryRange={0}
+        siblingRange={0}
+        lastItem={null}
         activePage={currentPageOffset}
         onPageChange={this.onPageChange}
       />
