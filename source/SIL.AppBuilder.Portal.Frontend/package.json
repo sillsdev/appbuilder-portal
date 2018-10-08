@@ -12,7 +12,7 @@
     "tslint": "./node_modules/.bin/tslint -c ./tslint.json --project ./tsconfig.json",
     "start:dev": "yarn webpack-dev",
     "webpack:build": "NODE_ENV=production yarn webpack ",
-    "webpack:build:stats": "NODE_ENV=production yarn webpack --profile --json > stats.json && ./node_modules/.bin/webpack-bundle-analyzer stats.json",
+    "webpack:analyze": "./node_modules/.bin/webpack-bundle-analyzer dist/stats.json",
     "karma:start": "yarn karma start ./tests/karma.conf.js --fail-on-empty-test-suite",
     "test:watch": "yarn karma:start",
     "test:watch:headless": "CI=true yarn karma:start",

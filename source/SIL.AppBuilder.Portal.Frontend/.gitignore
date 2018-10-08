@@ -2,6 +2,7 @@
 /dist
 /node_modules
 tmp/
+stats.json
 
 tests/cypress/screenshots/
 tests/cypress/videos/
