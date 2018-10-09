@@ -69,8 +69,8 @@ export function withSorting(options) {
 
         return (
           <WrappedComponent
-            { ...sortProps }
             { ...this.props }
+            { ...sortProps }
           />
         );
       }

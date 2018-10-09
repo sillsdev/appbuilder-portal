@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { ISortProps, SortDirection } from '@data/containers/api/sorting';
 
+import { UpArrow, DownArrow } from './sort-arrows';
 import ColumnSelector from './column-selector';
 import { IProvidedProps, IColumn } from '../with-table-columns';
 
@@ -21,6 +23,7 @@ interface IColumnProps {
   onClick?: () => void;
 }
 
+
 class Header extends React.Component<IProps> {
 
   buildHeaderTitles = () => {
@@ -30,7 +33,10 @@ class Header extends React.Component<IProps> {
   }
 
   buildColumn = (column: IColumn, additionalProps = {}) => {
-    const { t, toggleSort } = this.props;
+    const { t, toggleSort, isAscending, sortProperty } = this.props;
+    const isSortable = column.sortable && toggleSort;
+    const isSortingByColumn = sortProperty && sortProperty.includes(column.propertyPath);
+    const isSorting = isSortable && isSortingByColumn;
     let Tag = 'div';
 
     const columnProps: IColumnProps = {
@@ -38,7 +44,7 @@ class Header extends React.Component<IProps> {
       ...additionalProps
     };
 
-    if (column.sortable && toggleSort) {
+    if (isSortable) {
       Tag = 'a';
       columnProps.onClick = () => toggleSort(column.propertyPath);
       columnProps.className = 'col flex-100 gray-text clickable';
@@ -46,6 +52,9 @@ class Header extends React.Component<IProps> {
 
     return (
       <Tag data-test-project-table-column { ...columnProps }>
+        { isSorting && (
+          isAscending ? <UpArrow /> : <DownArrow />
+        ) }
         {t(column.i18nKey)}
       </Tag>
     );
