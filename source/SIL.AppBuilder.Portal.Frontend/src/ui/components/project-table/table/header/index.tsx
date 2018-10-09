@@ -39,8 +39,6 @@ class Header extends React.Component<IProps> {
     const isSorting = isSortable && isSortingByColumn;
     let Tag = 'div';
 
-    console.log(column, sortProperty, isAscending, toggleSort);
-
     const columnProps: IColumnProps = {
       className: 'col flex-100',
       ...additionalProps
