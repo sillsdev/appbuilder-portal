@@ -71,6 +71,18 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                         .Any(product => product.ProductDefinitionId.ToString() == value));
             }
 
+            if (filterQuery.Has(PROJECT_SEARCH_TERM)) {
+                return query
+                    .Include(p => p.Owner)
+                    .Include(p => p.Organization)
+                    .Where(p => (
+                        p.Name.Contains(value) 
+                        || p.Language.Contains(value)
+                        || p.Organization.Name.Contains(value)
+                        || p.Owner.FullName.Contains(value)
+                    ));
+            }
+
             
             return base.Filter(query, filterQuery);
         }

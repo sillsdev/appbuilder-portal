@@ -1,5 +1,8 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import { FindRecordsTerm, OffsetLimitPageSpecifier } from '@orbit/data';
+
+import { withQueryParams, IProvidedQueryParams } from '@lib/query-string';
 
 export interface IPaginateProps {
   currentPageSize: number;
@@ -26,18 +29,42 @@ interface IState {
   pageOffset?: number;
 }
 
-export function withPagination(opts: IOptions = {}) {
+interface IQueryParams {
+  pageSize: string;
+  pageOffset: string;
+}
+
+type IProps =
+& RouteComponentProps
+& IProvidedQueryParams<IQueryParams>;
+
+export function withPagination<TPassedProps>(opts: IOptions = {}) {
   const options = {
     ...defaultOptions,
     ...opts
   };
 
   return WrappedComponent => {
-    class PaginationWrapper extends React.Component<{}, IState> {
+    class PaginationWrapper extends React.Component<IProps & TPassedProps, IState> {
       state: IState = {};
 
+      componentDidMount() {
+        const { queryParams } = this.props;
+        const { pageSize, pageOffset } = queryParams;
+
+        const fromQueryParams = {
+          pageSize: parseInt(pageSize || `${defaultOptions.pageSize}`, 10),
+          pageOffset: parseInt(pageOffset || `${defaultOptions.pageOffset}`, 10)
+        };
+
+        this.setState(fromQueryParams);
+      }
+
       setPageSize = (pageSize: number) => {
+        const { updateQueryParams } = this.props;
+
         this.setState({ pageSize });
+        updateQueryParams({ pageSize });
       }
 
       nextPage = () => {
@@ -57,7 +84,10 @@ export function withPagination(opts: IOptions = {}) {
       }
 
       setOffset = (pageOffset: number) => {
+        const { updateQueryParams } = this.props;
+
         this.setState({ pageOffset });
+        updateQueryParams({ pageOffset });
       }
 
       applyPagination = (builder: FindRecordsTerm): FindRecordsTerm => {
@@ -85,6 +115,6 @@ export function withPagination(opts: IOptions = {}) {
       }
     }
 
-    return PaginationWrapper;
+    return withQueryParams(PaginationWrapper);
   };
 }

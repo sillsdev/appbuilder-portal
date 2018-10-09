@@ -54,5 +54,12 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [NotMapped]
         public IEnumerable<int> OrganizationIds => OrganizationMemberships?.Select(o => o.OrganizationId);
+
+        [NotMapped]
+        public string FullName {
+            get {
+                return this.GivenName + " " + this.FamilyName;
+            }
+        }
     }
 }

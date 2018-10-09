@@ -8,19 +8,15 @@ import { requireAuth } from '@lib/auth';
 import { NotFound } from '@ui/routes/errors';
 import { withLayout } from '@ui/components/layout';
 
-import MyProjectsRoute, { pathName as myProjectPath } from './my-projects';
-import OrganizationProjectsRoute, { pathName as organizationProjectPath } from './organization-projects';
-import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './archived-projects';
+import MyProjectsRoute, { pathName as myProjectPath } from './list/my-projects';
+import OrganizationProjectsRoute, { pathName as organizationProjectPath } from './list/organization-projects';
+import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './list/archived-projects';
 import NewProjectRoute, { pathName as newProjectPath } from './new';
-
-import Header from './header';
 
 export const pathName = '/projects';
 
 class ProjectsRoot extends React.Component {
-
   render() {
-
     return (
       <div className='ui container'>
         <Switch>
