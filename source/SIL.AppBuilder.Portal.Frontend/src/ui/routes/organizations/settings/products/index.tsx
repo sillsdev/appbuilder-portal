@@ -70,7 +70,7 @@ class ProductsRoute extends React.Component<IOwnProps> {
     };
 
     return (
-      <div className='sub-page-content'>
+      <div className='sub-page-content' data-test-org-settings-products>
         <h2 className='bold m-b-md'>{t('org.productsTitle')}</h2>
 
         <div className='flex-row align-items-center p-l-sm p-r-sm m-b-lg'>

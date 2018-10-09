@@ -64,6 +64,7 @@
     "makePrivateTitle": "Make Projects Public by Default",
     "makePrivateDescription": "\n      When a new project is created, it will be defaulted to Public.\n      (Private projects cannot be viewed by anyone outside of your organization)",
     "productSelectTitle": "Select all the products you would like to make available to your organization",
+    "noproducts": "No products available",
     "navBasic": "Basic Info",
     "navProducts": "Products & Publishing",
     "navGroups": "Groups",

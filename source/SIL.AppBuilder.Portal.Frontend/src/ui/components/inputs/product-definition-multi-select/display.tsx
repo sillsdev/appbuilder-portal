@@ -6,6 +6,7 @@ import { Checkbox } from 'semantic-ui-react';
 import ProductIcon from '@ui/components/product-icon';
 
 import './styles.scss';
+import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {
   className?: string;
@@ -40,17 +41,26 @@ export class Display extends React.Component<IProps> {
 
   render() {
 
-    const { productDefinitions } = this.props;
+    const { productDefinitions, t } = this.props;
+
+    if (isEmpty(productDefinitions)) {
+      return (
+        <div data-test-empty-products className='no-product-definitions'>
+          {t('org.noproducts')}
+        </div>
+      );
+    }
 
     return (
       productDefinitions.map((pd, index) => (
         <div
           key={index}
           className='col flex align-items-center w-100-xs-only flex-100 m-b-sm product-definition-item'
+          data-test-product-definition
           onClick={this.onChange(pd)}
         >
           <Checkbox
-            data-test-multi-group-checkbox
+            data-test-product-definition-checkbox
             className='m-r-md'
             value={pd.id}
             checked={this.inSelectedList(pd)}

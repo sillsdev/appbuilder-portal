@@ -80,6 +80,7 @@ class SettingsRoute extends React.Component<IProps> {
     try {
 
       await updateProductDefinition(pd);
+      toast.success(t('updated'));
     } catch (e) {
       toast.error(e.message);
     }
