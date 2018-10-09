@@ -28,8 +28,6 @@ export function withQueryParams(InnerComponent) {
         ...changedQPs
       };
 
-      console.log(newQueryParams, changedQPs);
-
       history.push({
         pathname: location.pathname,
         search: qs.stringify(newQueryParams)
