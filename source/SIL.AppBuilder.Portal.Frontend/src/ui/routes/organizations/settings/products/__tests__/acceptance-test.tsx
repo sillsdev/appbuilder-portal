@@ -87,12 +87,13 @@ describe('Acceptance | Organization Settings | Product view', () => {
       describe('check first product definition',() => {
 
         beforeEach(async function() {
-          const productList = page.products();
-          await productList[0].click();
+          await page.products(0).click();
         });
 
+
         it('first product definition is selected', () => {
-          expect(page.isFirstProductChecked).to.be.true;
+          expect(page.products(0).isChecked).to.be.true;
+          expect(page.products(1).isChecked).to.be.false;
         });
 
         describe('uncheck it', () => {
@@ -107,7 +108,9 @@ describe('Acceptance | Organization Settings | Product view', () => {
           });
 
           it('first product definition is un selected', () => {
-            expect(page.isFirstProductChecked).to.be.false;
+            expect(true).to.be.true;
+            expect(page.products(0).isChecked).to.be.false;
+            expect(page.products(1).isChecked).to.be.false;
           });
 
         });
