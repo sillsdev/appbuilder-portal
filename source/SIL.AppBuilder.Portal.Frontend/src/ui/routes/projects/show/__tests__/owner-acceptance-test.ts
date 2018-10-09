@@ -108,7 +108,7 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
     userInSameOrgDifferentGroup(1, 2);
 
     beforeEach(async function() {
-      await visit('/project/1');
+      await visit('/projects/1');
     });
 
     it('defaults to the project owner', () => {
@@ -124,7 +124,7 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
     userInSameOrgAndGroup(1, 1);
 
     beforeEach(async function() {
-      await visit('/project/1');
+      await visit('/projects/1');
     });
 
     it('defaults to the project owner', () => {

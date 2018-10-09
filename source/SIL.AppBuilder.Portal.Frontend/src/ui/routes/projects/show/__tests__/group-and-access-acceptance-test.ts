@@ -49,11 +49,11 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
     userInDifferentOrganization(2);
 
     beforeEach(async function() {
-      await visit('/project/1');
+      await visit('/projects/1');
     });
 
     it('redirects them away from the project', () => {
-      expect(location().pathname).to.not.eq('/project/1');
+      expect(location().pathname).to.not.eq('/projects/1');
       expect(location().pathname).to.eq('/tasks');
     });
   });
@@ -62,11 +62,11 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
     userInSameOrgDifferentGroup(1, 2);
 
     beforeEach(async function() {
-      await visit('/project/1');
+      await visit('/projects/1');
     });
 
     it('does not redirect', () => {
-      expect(location().pathname).to.eq('/project/1');
+      expect(location().pathname).to.eq('/projects/1');
     });
 
     it('shows the group the project is in', () => {
@@ -145,11 +145,11 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
     });
 
     beforeEach(async function() {
-      await visit('/project/1');
+      await visit('/projects/1');
     });
 
     it('does not redirect', () => {
-      expect(location().pathname).to.eq('/project/1');
+      expect(location().pathname).to.eq('/projects/1');
     });
 
     it('defaults to the project group', () => {

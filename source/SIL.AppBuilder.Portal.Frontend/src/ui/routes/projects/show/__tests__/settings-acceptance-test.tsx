@@ -40,11 +40,11 @@ describe('Acceptance | Project View | Settings toggles', () => {
     });
 
     beforeEach(async function () {
-      await visit('/project/1');
+      await visit('/projects/1');
     });
 
     it('Toggles are on', () => {
-      expect(location().pathname).to.equal('/project/1');
+      expect(location().pathname).to.equal('/projects/1');
       expect(page.isAutomaticRebuildChecked).to.be.true;
       expect(page.isAllowDownloadChecked).to.be.true;
     });

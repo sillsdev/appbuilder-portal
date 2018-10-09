@@ -64,7 +64,7 @@ export default class Display extends React.Component<IProps, IState> {
       const project = await create({ name, language, isPublic, description }, groupId, typeId);
 
       const id = idFromRecordIdentity(project);
-      history.push(`/project/${id}`);
+      history.push(`/projects/${id}`);
 
     } catch (e) {
       toast.error(t('errors.generic', { errorMessage: e.message }));

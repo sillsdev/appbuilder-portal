@@ -19,7 +19,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './project.scss';
 
-export const pathName = '/project/:id';
+export const pathName = '/projects/:id';
 
 export interface Params {
   id: string;
@@ -135,7 +135,6 @@ class Project extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
-  withLayout,
   withMomentTimezone,
   withData,
   withProjectOperations,

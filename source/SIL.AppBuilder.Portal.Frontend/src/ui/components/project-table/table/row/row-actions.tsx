@@ -6,7 +6,7 @@ import { ResourceObject } from 'jsonapi-typescript';
 
 import { attributesFor, PROJECTS_TYPE } from '@data';
 import { ProjectAttributes } from '@data/models/project';
-import { withProjectOperations } from '@ui/routes/project/with-project-operations';
+import { withProjectOperations } from '@ui/routes/projects/show/with-project-operations';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 export interface IProps {

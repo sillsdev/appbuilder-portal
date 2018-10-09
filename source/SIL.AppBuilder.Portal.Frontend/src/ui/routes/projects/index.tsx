@@ -12,6 +12,7 @@ import MyProjectsRoute, { pathName as myProjectPath } from './list/my-projects';
 import OrganizationProjectsRoute, { pathName as organizationProjectPath } from './list/organization-projects';
 import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './list/archived-projects';
 import NewProjectRoute, { pathName as newProjectPath } from './new';
+import ProjectDetailRoute, { pathName as projectDetailPath } from './show';
 
 export const pathName = '/projects';
 
@@ -24,6 +25,9 @@ class ProjectsRoot extends React.Component {
           <Route exact path={organizationProjectPath} component={OrganizationProjectsRoute} />
           <Route exact path={archivedProjectPath} component={ArchivedProjectsRoute} />
           <Route exact path={newProjectPath} component={NewProjectRoute} />
+
+          <Route path={projectDetailPath} component={ProjectDetailRoute} />
+
 
           <Route component={NotFound} />
         </Switch>
