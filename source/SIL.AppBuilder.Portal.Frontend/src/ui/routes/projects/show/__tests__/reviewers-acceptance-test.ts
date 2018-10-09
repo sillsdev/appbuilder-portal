@@ -50,13 +50,13 @@ describe('Acceptance | Project View | Reviewers', () => {
   });
 
   beforeEach(async function () {
-    await visit('/project/1');
+    await visit('/projects/1');
   });
 
   describe('with project reviewers', () => {
 
     it('show the list of reviewers', () => {
-      expect(location().pathname).to.equal('/project/1');
+      expect(location().pathname).to.equal('/projects/1');
 
       const list = page.reviewers.list();
       const listText = list.map(item => item.text);

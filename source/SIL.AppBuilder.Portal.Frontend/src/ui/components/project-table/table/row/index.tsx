@@ -71,7 +71,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
       <div data-test-project-row>
         <div className='flex row-header grid'>
           <div className='col flex-grow-xs flex-100'>
-            <Link to={`/project/${projectId}`}>{projectName}</Link>
+            <Link to={`/projects/${projectId}`}>{projectName}</Link>
           </div>
 
           { activeProjectColumns.map((column, i) => (

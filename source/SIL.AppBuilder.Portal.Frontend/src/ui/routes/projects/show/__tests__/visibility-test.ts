@@ -10,13 +10,13 @@ import {
 
 import page from './page';
 
-describe('Acceptance | Project view | Application Type', () => {
+describe('Acceptance | Project view | project visibility', () => {
 
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  describe('Use dictonary app Builder type', () => {
+  describe('Navigate to a project view with visibility set as Private', () => {
 
     beforeEach(function () {
       this.mockGet(200, '/users', { data: [] });
@@ -27,7 +27,7 @@ describe('Acceptance | Project view | Application Type', () => {
           id: '1',
           attributes: {
             name: 'Fake project',
-            'type-id': 1
+            isPublic: false
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
@@ -50,31 +50,30 @@ describe('Acceptance | Project view | Application Type', () => {
     });
 
     beforeEach(async function () {
-      await visit('/project/1');
+      await visit('/projects/1');
     });
 
     it('is in project page', () => {
-      expect(location().pathname).to.equal('/project/1');
+      expect(location().pathname).to.equal('/projects/1');
     });
 
-    describe('application type field is correctly displayed', () => {
-
-      it('application type displays Dictonary App Builder name', () => {
-        expect(page.detailsInteractor.isApplicationTypePresent).to.be.true;
-        expect(page.detailsInteractor.applicationTypeText).to.equal('Dictionary App Builder');
-      });
+    it('Private label is rendered', () => {
+      expect(page.publicText).to.equal('Private');
     });
   });
 
-  describe('Use Scripture App Builder type', () => {
+  describe('Navigate to a project view with visibility set as Public', () => {
+
     beforeEach(function () {
+      this.mockGet(200, '/users', { data: [] });
+      this.mockGet(200, '/groups', { data: [] });
       this.mockGet(200, '/projects/2', {
         data: {
           type: 'projects',
           id: '2',
           attributes: {
             name: 'Fake project',
-            'type-id': 1
+            isPublic: true
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
@@ -89,7 +88,7 @@ describe('Acceptance | Project view | Application Type', () => {
           { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
           {
             type: 'application-types', id: 1, attributes: {
-              name: 'scriptureappbuilder', description: "Scripture App Builder"
+              name: 'dictionaryappbuilder', description: "Dictionary App Builder"
             }
           }
         ]
@@ -97,13 +96,16 @@ describe('Acceptance | Project view | Application Type', () => {
     });
 
     beforeEach(async function () {
-      await visit('/project/2');
+      await visit('/projects/2');
+    });
+
+    it('is in project page', () => {
+      expect(location().pathname).to.equal('/projects/2');
     });
 
 
-    it('application type displays Scripture App Builder name', () => {
-      expect(page.detailsInteractor.isApplicationTypePresent).to.be.true;
-      expect(page.detailsInteractor.applicationTypeText).to.equal('Scripture App Builder');
+    it('Public label is rendered', () => {
+      expect(page.publicText).to.equal('Public');
     });
   });
 

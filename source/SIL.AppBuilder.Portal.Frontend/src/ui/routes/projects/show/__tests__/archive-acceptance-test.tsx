@@ -13,10 +13,10 @@ describe('Acceptance | Project Edit | Archive Project', () => {
 
   describe('navigates to project details page', () => {
     beforeEach(async function () {
-      await visit('/project/1');
+      await visit('/projects/1');
     });
     it('is in detail page', () => {
-      expect(location().pathname).to.equal('/project/1');
+      expect(location().pathname).to.equal('/projects/1');
     });
   });
 
@@ -58,7 +58,7 @@ describe('Acceptance | Project Edit | Archive Project', () => {
       });
       describe('the archive button is clicked', () => {
         beforeEach(async () => {
-          await visit('/project/1');
+          await visit('/projects/1');
           await page.clickArchiveLink();
         });
         it("changes the button text", () => {
@@ -106,7 +106,7 @@ describe('Acceptance | Project Edit | Archive Project', () => {
       });
       describe('the reactivate button is clicked', () => {
         beforeEach(async function () {
-          await visit('/project/1');
+          await visit('/projects/1');
           await page.clickArchiveLink();
         });
         it("changes the button text", () => {
