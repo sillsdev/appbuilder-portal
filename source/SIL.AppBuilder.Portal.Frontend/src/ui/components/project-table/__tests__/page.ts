@@ -35,7 +35,6 @@ class ProjectTable {
           throw new Error(`cannot find column with text "${columnText}"`);
         }
 
-        console.log(el);
         return el;
       }).do(el => el.click());
   }
