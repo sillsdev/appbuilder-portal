@@ -92,7 +92,7 @@ class Filter extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { organizations } = this.props;
+    const { organizations, t } = this.props;
     const { from, to, selectedProduct, selectedOrganization } = this.state;
 
 
@@ -118,6 +118,7 @@ class Filter extends React.Component<IProps, IState> {
 
         <div className='flex justify-content-end w-50'>
           <DateRange
+            label={t('directory.filters.dateRange')}
             to={to}
             from={from}
             onToChange={this.handleToChange}

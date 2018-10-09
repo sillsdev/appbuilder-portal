@@ -27,7 +27,7 @@
   "directory": {
     "title": "Project Directory ({numProjects})",
     "filters": {
-      "dateRange": "Date Range Between"
+      "dateRange": "Product Updated Date Between"
     }
   },
   "header": {

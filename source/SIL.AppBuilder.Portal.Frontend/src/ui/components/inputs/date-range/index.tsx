@@ -10,6 +10,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import 'react-day-picker/lib/style.css';
 
 interface IOwnProps {
+  label: string;
   onToChange: (value: Date) => void;
   onFromChange: (value: Date) => void;
   to: Date | string;
@@ -33,12 +34,12 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
   }
 
   render() {
-    const { t, to, from, onToChange, onFromChange } = this.props;
+    const { t, to, from, onToChange, onFromChange, label } = this.props;
 
     return (
       <>
         <div className='input m-r-30'>
-          <div className='dateRange'>{t('directory.filters.dateRange')}</div>
+          <div className='dateRange'>{label}</div>
           <ArrowDropDownIcon/>
           <DayPickerInput
             locale='en'
