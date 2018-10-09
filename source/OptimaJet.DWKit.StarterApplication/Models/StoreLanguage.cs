@@ -1,20 +1,14 @@
-﻿using JsonApiDotNetCore.Models;
-
+﻿using System.Collections.Generic;
+using JsonApiDotNetCore.Models;
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class WorkflowDefinition : Identifiable
+    public class StoreLanguage : Identifiable
     {
         [Attr("name")]
         public string Name { get; set; }
 
-        [Attr("enabled")]
-        public bool Enabled { get; set; }
-
         [Attr("description")]
         public string Description { get; set; }
-
-        [Attr("workflow-scheme")]
-        public string WorkflowScheme { get; set; }
 
         [HasOne("store-type")]
         public virtual StoreType StoreType { get; set; }

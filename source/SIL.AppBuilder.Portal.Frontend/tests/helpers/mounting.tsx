@@ -10,6 +10,7 @@ import createHistory from 'history/createMemoryHistory';
 import rootApplication from '@ui/routes/root';
 import { ReduxProvider } from '@store/index';
 import { DataProvider } from '@data/index';
+import { ScrollToTop } from '@lib/routing';
 
 
 import 'semantic-ui-css/semantic.min.css';
@@ -46,7 +47,9 @@ class TestWrapper extends React.Component<any, any> {
           <DataProvider>
             <ReduxProvider initialState={initialState || {}}>
               <Router history={history}>
-                <WithRouteDebugging />
+                <ScrollToTop>
+                  <WithRouteDebugging />
+                </ScrollToTop>
               </Router>
             </ReduxProvider>
           </DataProvider>

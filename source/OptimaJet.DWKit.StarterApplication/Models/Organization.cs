@@ -20,6 +20,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("build-engine-api-access-token")]
         public string BuildEngineApiAccessToken { get; set; }
 
+        [Attr("logo-url")]
+        public string LogoUrl { get; set; }
+
         [Attr("use-sil-build-infrastructure")]
         public bool UseSilBuildInfrastructure { get; set; } = true;
 
@@ -39,8 +42,13 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("organization-product-definitions", Link.None)]
         public virtual List<OrganizationProductDefinition> OrganizationProductDefinitions { get; set;}
 
+        [HasMany("organization-stores", Link.None)]
+        public virtual List<OrganizationStore> OrganizationStores { get; set; }
+
         [NotMapped]
         public IEnumerable<int> ProductDefinitionIds => OrganizationProductDefinitions?.Select(pd => pd.ProductDefinitionId);
 
+        [NotMapped]
+        public IEnumerable<int> StoreIds => OrganizationStores?.Select(s => s.StoreId);
     }
 }

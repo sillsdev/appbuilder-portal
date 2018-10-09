@@ -58,9 +58,9 @@ let config = {
     }),
     new ReactRootPlugin(),
     // source maps!
-    new webpack.SourceMapDevToolPlugin({
+    // new webpack.SourceMapDevToolPlugin({
 
-    }),
+    // }),
     ...plugins
   ],
   optimization: {

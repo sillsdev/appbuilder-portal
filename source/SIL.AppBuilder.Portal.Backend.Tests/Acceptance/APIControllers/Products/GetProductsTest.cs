@@ -46,13 +46,14 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
 
             var products = await DeserializeList<Product>(response);
 
-            Assert.Equal(2, products.Count);
+            Assert.Equal(3, products.Count);
 
             var ids = products.Select(p => p.Id);
 
             // Should return both of the products accessible by current user
             Assert.Contains(product1.Id, ids);
             Assert.Contains(product3.Id, ids);
+            Assert.Contains(product4.Id, ids);
             Assert.DoesNotContain(product2.Id, ids);
         }
         [Fact]

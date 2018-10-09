@@ -54,7 +54,7 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
 
     it('redirects them away from the project', () => {
       expect(location().pathname).to.not.eq('/project/1');
-      expect(location().pathname).to.eq('/');
+      expect(location().pathname).to.eq('/tasks');
     });
   });
 

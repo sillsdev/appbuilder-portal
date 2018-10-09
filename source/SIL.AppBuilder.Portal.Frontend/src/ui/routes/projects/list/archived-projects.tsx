@@ -8,24 +8,15 @@ import { withFiltering } from '@data/containers/api/with-filtering';
 import { withLoader } from '@data/containers/with-loader';
 import { withNetwork } from '@data/containers/resources/project/list';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
-
 import { TYPE_NAME as PROJECT } from '@data/models/project';
 
-import Table from '@ui/components/project-table/table';
 import { withTableColumns, COLUMN_KEY } from '@ui/components/project-table';
 
-import '@ui/components/project-table/project-table.scss';
+import Display from './display';
+
+export const pathName = '/projects/archived';
 
 export default compose(
-  withTableColumns({
-    tableName: 'my-projects',
-    defaultColumns: [
-      COLUMN_KEY.PROJECT_OWNER,
-      COLUMN_KEY.PROJECT_GROUP,
-      COLUMN_KEY.PRODUCT_BUILD_VERSION,
-      COLUMN_KEY.PRODUCT_UPDATED_ON
-    ]
-  }),
   withCurrentOrganization,
   withSorting({ defaultSort: 'name' }),
   withPagination(),
@@ -37,6 +28,16 @@ export default compose(
   withNetwork(),
   withLoader(({ error, projects }) => !error && !projects),
   withProps(({ projects }) => ({
-    projects: projects.filter(resource => resource.type === PROJECT)
+    projects: projects.filter(resource => resource.type === PROJECT),
+    tableName: 'archived'
   })),
-)(Table);
+  withTableColumns({
+    tableName: 'archived',
+    defaultColumns: [
+      COLUMN_KEY.PROJECT_OWNER,
+      COLUMN_KEY.PROJECT_GROUP,
+      COLUMN_KEY.PRODUCT_BUILD_VERSION,
+      COLUMN_KEY.PRODUCT_UPDATED_ON
+    ]
+  }),
+)(Display);
