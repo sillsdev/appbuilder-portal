@@ -13,7 +13,6 @@ type IProps =
 export class PaginationFooter extends React.Component<IProps, {}> {
   onPageChange = (e, options) => {
     const { activePage } = options;
-    console.log(options);
     const { setOffset } = this.props;
 
     setOffset(activePage);
