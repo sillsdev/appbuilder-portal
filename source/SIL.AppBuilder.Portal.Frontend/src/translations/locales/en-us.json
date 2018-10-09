@@ -25,7 +25,7 @@
     "login": "Log In"
   },
   "directory": {
-    "title": "Project Directory ({numProjects})",
+    "title": "Project Directory {numProjects, plural, =0 {} other {({ numProjects })}}",
     "filters": {
       "dateRange": "Date Range Between"
     }
