@@ -67,8 +67,8 @@ describe('Acceptance | Sorting', () => {
 
         navigateTo(screen.path);
 
-        it('No sorting is displayed', () => {
-          expect(page.isSortingUp).to.equal(false);
+        it('default sort is displayed', () => {
+          expect(page.isSortingUp).to.equal(true);
           expect(page.isSortingDown).to.equal(false);
         });
 

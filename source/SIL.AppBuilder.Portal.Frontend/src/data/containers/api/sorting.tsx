@@ -28,7 +28,7 @@ export function withSorting(options) {
 
   return WrappedComponent => {
     class SortWrapper extends React.Component<any, { sortProperty: string }> {
-      state = { sortProperty: '' };
+      state = { sortProperty: defaultSort || '' };
 
       toggleSort = (by: string) => {
         const { sortProperty } = this.state;
