@@ -1,7 +1,10 @@
 import * as React from 'react';
+import SearchIcon from '@material-ui/icons/Search';
 
 import { debounce } from '@lib/debounce';
 import { filterForValidAttributes, IAttributeProps } from '@lib/dom';
+
+import './styles.scss';
 
 export interface IProps {
   onSubmit: (term: string) => void;
@@ -40,7 +43,7 @@ export default class DebouncedSearch extends React.Component<IProps & IAttribute
           placeholder={placeholder}
           value={searchTerm}
           onChange={this.didType} />
-        <i className='search icon' />
+        <SearchIcon className='material-search-icon-in-field' />
       </div>
     );
   }
