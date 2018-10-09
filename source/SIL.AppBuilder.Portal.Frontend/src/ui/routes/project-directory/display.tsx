@@ -62,7 +62,7 @@ export default class DirectoryDisplay extends React.Component<IProps> {
       <div data-test-project-directory className='ui container'>
         <div className='flex-row justify-content-space-between align-items-center'>
           <h2 data-test-directory-header className='page-heading flex-50'>
-            {t('directory.title', { numProjects })}
+            {t('directory.title', { numProjects: 0 })}
           </h2>
 
           <DebouncedSearch
