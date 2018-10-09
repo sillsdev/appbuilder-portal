@@ -36,6 +36,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             return dbSet;
         }
 
+        public virtual Task<List<TEntity>> GetListAsync()
+        {
+            return dbSet.ToListAsync();
+        }
         public virtual async Task<TEntity> GetAsync(int id)
         {
             return await Get().SingleOrDefaultAsync(e => e.Id.Equals(id));

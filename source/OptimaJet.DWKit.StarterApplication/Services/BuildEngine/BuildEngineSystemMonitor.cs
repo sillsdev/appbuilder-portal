@@ -32,8 +32,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
          private async System.Threading.Tasks.Task SyncDatabaseTablesAsync()
         {
-            var organizations = OrganizationRepository.Get().AsEnumerable();
-            var statuses = SystemStatusRepository.Get().AsEnumerable();
+            var organizations = await OrganizationRepository.GetListAsync();
+            var statuses = await SystemStatusRepository.GetListAsync();
             var removeList = statuses.Except(organizations, new BuildEngineReferenceComparer()).ToList();
             var addList = organizations.Except(statuses, new BuildEngineReferenceComparer()).ToList();
             foreach (SystemStatus removeEntry in removeList)
@@ -52,7 +52,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         private async System.Threading.Tasks.Task CheckSystemStatusesAsync()
         {
-            var systems = SystemStatusRepository.Get().AsEnumerable();
+            var systems = await SystemStatusRepository.GetListAsync();
             foreach (SystemStatus systemEntry in systems)
             {
                 var available = CheckConnection(systemEntry);
