@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import { compose } from 'recompose';
+import CaretDown from '@material-ui/icons/KeyboardArrowDown';
 
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import './project-switcher.scss';
+import './styles.scss';
 import { NavLink } from 'react-router-dom';
 
 interface IOwnProps {
@@ -33,7 +34,7 @@ class Header extends React.Component<IProps> {
       <div className='flex justify-content-space-between p-t-md-xs p-b-md-xs'>
         <Dropdown
           className='project-switcher'
-          icon='chevron down'
+          icon={() => <CaretDown />}
           inline
           text={dropdownText[filter]}
         >
