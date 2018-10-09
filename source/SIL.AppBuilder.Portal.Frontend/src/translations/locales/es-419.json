@@ -25,9 +25,9 @@
     "login": "Ingresar"
   },
   "directory": {
-    "title": "Directorio de proyectos ({numProjects})",
+    "title": "Project Directory {numProjects, plural, =0 {} other {({ numProjects })}}",
     "filters": {
-      "dateRange": "Rango de Fechas"
+      "dateRange": "Product Updated Date Between"
     }
   },
   "header": {
