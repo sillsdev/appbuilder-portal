@@ -32,12 +32,12 @@ type IProps =
   & WithDataProps;
 
 const mapRecordsToProps = (passedProps) => {
+
   const { organization } = passedProps;
-  const { type, id } = organization;
 
   return {
     organizationProductDefinitions: q =>
-      q.findRelatedRecords({ type, id }, 'organizationProductDefinitions')
+      q.findRelatedRecords(organization, 'organizationProductDefinitions')
   };
 };
 
@@ -81,17 +81,17 @@ export function withDataActions<T>(WrappedComponent) {
           id: opdSelected.id
         }), defaultOptions());
 
-      } else {
-
-        return dataStore.update(q => q.addRecord({
-          type: 'organizationProductDefinition',
-          attributes: {},
-          relationships: {
-            organization: { data: organization },
-            productDefinition: { data: productDefinition }
-          }
-        }), defaultOptions());
       }
+
+      return dataStore.update(q => q.addRecord({
+        type: 'organizationProductDefinition',
+        attributes: {},
+        relationships: {
+          organization: { data: organization },
+          productDefinition: { data: productDefinition }
+        }
+      }), defaultOptions());
+
     }
 
     render() {

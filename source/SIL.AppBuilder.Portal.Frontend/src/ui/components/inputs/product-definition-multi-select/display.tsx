@@ -5,7 +5,6 @@ import { i18nProps } from '@lib/i18n';
 import { Checkbox } from 'semantic-ui-react';
 import ProductIcon from '@ui/components/product-icon';
 
-import './styles.scss';
 import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {
@@ -55,7 +54,7 @@ export class Display extends React.Component<IProps> {
       productDefinitions.map((pd, index) => (
         <div
           key={index}
-          className='col flex align-items-center w-100-xs-only flex-100 m-b-sm product-definition-item'
+          className='col flex align-items-center w-100-xs-only flex-100 m-b-sm multi-select-item'
           data-test-product-definition
           onClick={this.onChange(pd)}
         >
@@ -66,7 +65,12 @@ export class Display extends React.Component<IProps> {
             checked={this.inSelectedList(pd)}
           />
           <ProductIcon product={pd} />
-          <span className='p-l-sm-xs'>{attributesFor(pd).name}</span>
+          <span
+            data-test-product-definition-text
+            className='p-l-sm-xs'
+          >
+            {attributesFor(pd).name}
+          </span>
         </div>
       ))
     );

@@ -8,6 +8,7 @@ export class ProductDefinitionInteractor {
   constructor(selector?: string) { }
 
   products = collection('[data-test-product-definition-checkbox]');
+  productsText = collection('[data-test-product-definition-text]');
   isFirstProductChecked = hasClass('[data-test-product-definition-checkbox]:first-child','checked');
   isProductListEmpty = isPresent('[data-test-empty-products]');
 }

@@ -51,7 +51,7 @@ class ProductsRoute extends React.Component<IOwnProps> {
     update({ makePrivateByDefault: !makePrivateByDefault });
   }
 
-  updateProductDefinitionList = (productDefinition) => {
+  updateProductDefinition = (productDefinition) => {
 
     const { updateProductDefinition } = this.props;
 
@@ -66,7 +66,7 @@ class ProductsRoute extends React.Component<IOwnProps> {
 
     const multiSelectProps = {
       selected: organizationProductDefinitions,
-      onChange: this.updateProductDefinitionList
+      onChange: this.updateProductDefinition
     };
 
     return (
@@ -96,5 +96,4 @@ class ProductsRoute extends React.Component<IOwnProps> {
 export default compose(
   withTranslations,
   withOrbit(mapRecordsToProps),
-  withLoader(({ organizationProductDefinitions }) => !organizationProductDefinitions),
 )(ProductsRoute);

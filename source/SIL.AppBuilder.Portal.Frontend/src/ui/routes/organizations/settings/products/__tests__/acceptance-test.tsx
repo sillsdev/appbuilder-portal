@@ -38,16 +38,16 @@ describe('Acceptance | Organization Settings | Product view', () => {
           id: 2,
           type: 'product-definitions',
           attributes: {
-            name: 'Test product definition'
+            name: 'first fake product definition'
           }
         },{
           id: 3,
           type: 'product-definitions',
           attributes: {
-            name: 'Test product definition 2'
+            name: 'Fake product definition'
           }
         }],
-        meta: { 'total-records': 2}
+        meta: { 'total-records': 2 }
       });
 
     });
@@ -56,8 +56,16 @@ describe('Acceptance | Organization Settings | Product view', () => {
       await visit('/organizations/1/settings/products');
     });
 
-    it('is in project page', () => {
+    it('is in product organization settings page', () => {
       expect(location().pathname).to.equal('/organizations/1/settings/products');
+    });
+
+    it('show product definition list', () => {
+      const productList = page.productsText();
+      const productDefinitionText = productList.map(item => item.text);
+
+      expect(productDefinitionText).to.contain('first fake product definition');
+      expect(productDefinitionText).to.contain('Fake product definition');
     });
 
     describe('with product definition list',() => {
