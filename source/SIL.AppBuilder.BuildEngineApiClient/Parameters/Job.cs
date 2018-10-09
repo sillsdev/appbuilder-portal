@@ -1,6 +1,4 @@
-﻿using System;
-using RestSharp.Deserializers;
-namespace SIL.AppBuilder.BuildEngineApiClient
+﻿namespace SIL.AppBuilder.BuildEngineApiClient
 {
     public class Job
     {

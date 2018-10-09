@@ -130,6 +130,25 @@ namespace SIL.AppBuilder.BuildEngineApiClient
             var response = restClient.Execute(request);
             return response.StatusCode;
         }
+        public BuildResponse CreateBuild(int jobId)
+        {
+            var request = CreateRequest("job/{jobId}/build", Method.POST)
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment);
+            return Execute<BuildResponse>(request);
+        }
+        public BuildResponse GetBuild(int jobId, int buildId)
+        {
+            var request = CreateRequest("job/{jobId}/build/{buildId}")
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment)
+                .AddParameter("buildId", buildId, ParameterType.UrlSegment);
+            return Execute<BuildResponse>(request);
+        }
+        public List<BuildResponse> GetBuilds(int jobId)
+        {
+            var request = CreateRequest("job/{jobId}/build")
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment);
+            return Execute<List<BuildResponse>>(request);
+        }
 
     }
 }
