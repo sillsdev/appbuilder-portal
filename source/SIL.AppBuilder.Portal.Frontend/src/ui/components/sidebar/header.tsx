@@ -6,7 +6,7 @@ import { compose } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 
 import { OrganizationAttributes } from '@data/models/organization';
-import { ORGANIZATIONS_TYPE } from '@data';
+import { ORGANIZATIONS_TYPE, attributesFor } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
@@ -29,9 +29,12 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
     } = this.props;
 
     const icon = isOrgSwitcherActive ? <ArrowDropUp /> : <ArrowDropDown/>;
-    const orgAttributes = (org && org.attributes) || {};
+    const orgAttributes = attributesFor(org);
     const orgName = orgAttributes.name || t('org.allOrganizations');
     const bgClass = isOrgSwitcherActive ? 'bg-white' : '';
+
+    const logoUrl = orgAttributes.logoUrl ?
+      <img src={orgAttributes.logoUrl} width='32' /> : '\u00A0';
 
     return (
       <div className={`
@@ -44,7 +47,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
           className='switcher p-l-md no-select flex-row align-items-center'
           onClick={toggleOrgSwitcher}
         >
-          <span className='list-thumbnail m-r-md'>&nbsp;</span>
+          <span className='list-thumbnail m-r-md'>{logoUrl}</span>
           <span className='bold blue-highlight'>{orgName}</span>
           { icon }
         </div>

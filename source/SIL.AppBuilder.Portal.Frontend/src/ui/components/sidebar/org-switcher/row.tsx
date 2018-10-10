@@ -15,11 +15,13 @@ class Row extends React.Component<IProps> {
   render() {
     const { isActive, organization, onClick } = this.props;
     const attributes = attributesFor(organization);
-    const { name } = attributes;
+    const { name, logoUrl } = attributes;
 
     const className = `
           flex-row align-items-center
           ${isActive ? 'active' : ''}`;
+
+    const logo = logoUrl ? <img src={logoUrl} width='32' /> : '\u00A0';
 
     return (
       <Menu.Item
@@ -29,7 +31,7 @@ class Row extends React.Component<IProps> {
         onClick={onClick}>
 
         <span className='list-thumbnail m-r-md'>
-          &nbsp;
+          {logo}
         </span>
 
         <span>{name}</span>
