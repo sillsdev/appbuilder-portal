@@ -76,6 +76,16 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
               />
             </div>
           </div>
+          <div className='m-l-md-sm m-b-md'>
+            <div className='flex-column'>
+              <div className='m-b-md image-fill-container' style={{ width: '200px', height: '136px' }}>
+                {!logoUrl && <div className='w-100 h-100 bg-lightest-gray' />}
+                {logoUrl && (
+                  <img src={logoUrl} width='200' height='136' />
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         <button
