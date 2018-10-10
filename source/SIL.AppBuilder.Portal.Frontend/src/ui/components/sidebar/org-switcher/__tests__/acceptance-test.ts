@@ -232,7 +232,7 @@ describe('Acceptance | Organization Switcher', () => {
       expect(text).to.include('Kalaam Media');
     });
 
-    describe('Selecting an orgaization', () => {
+    describe('Selecting an organization', () => {
       beforeEach(async () => {
         await switcher.selectOrg();
       });
