@@ -5,7 +5,6 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { TYPE_NAME as NOTIFICATION, NotificationAttributes } from '@data/models/notification';
 import { query, defaultOptions, NOTIFICATIONS_TYPE, withLoader } from '@data';
-import { withStubbedDevData } from '@data/with-stubbed-dev-data';
 import { withCollectionDataActions } from '@data/containers/resources/notification/with-collection-data-actions';
 
 const mapNetworkToProps = (passedProps) => {
@@ -67,22 +66,6 @@ export function withData(WrappedComponent) {
   }
 
   return compose(
-    withStubbedDevData('notification', 1, {
-      title: 'New Task',
-      description: 'Chris Hubbard has requested approval for Sogdian Bible Public Domain.',
-      time: new Date(Date.now() - 15000 * 60),
-      link: '/tasks/1',
-      isViewed: false,
-      show: true
-    }),
-    withStubbedDevData('notification', 2, {
-      title: 'Viewed Task',
-      description: 'Chris Hubbard approved your request.',
-      time: new Date(Date.now() - 80000 * 60),
-      link: '/tasks/2',
-      isViewed: true,
-      show: true
-    }),
     query(mapNetworkToProps),
     withLoader(({ notifications }) => !notifications),
     withCollectionDataActions,

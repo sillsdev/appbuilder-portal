@@ -1,12 +1,19 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import { Checkbox } from 'semantic-ui-react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
 
-import { TYPE_NAME, OrganizationAttributes } from '@data/models/organization';
-import { ORGANIZATIONS_TYPE } from '@data';
-import { ResourceObject } from 'jsonapi-typescript';
+import { OrganizationAttributes } from '@data/models/organization';
+import {
+  OrganizationResource,
+  OrganizationProductDefinitionResource,
+  ProductDefinitionResource,
+  withLoader
+} from '@data';
+
+import ProductDefinitionMultiSelect from '@ui/components/inputs/product-definition-multi-select';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 export const pathName = '/organizations/:orgId/settings/products';
 
@@ -17,10 +24,26 @@ export interface Params {
 export interface IProps {
   match: Match<Params>;
   update: (payload: OrganizationAttributes) => void;
-  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
+  updateProductDefinition: (payload: ProductDefinitionResource) => void;
+  organization: OrganizationResource;
+  organizationProductDefinitions: OrganizationProductDefinitionResource[];
 }
 
-class ProductsRoute extends React.Component<IProps & i18nProps> {
+type IOwnProps =
+  & IProps
+  & i18nProps;
+
+const mapRecordsToProps = (passedProps) => {
+  const { organization } = passedProps;
+  const { type, id } = organization;
+
+  return {
+    organizationProductDefinitions: q => q.findRelatedRecords({ type, id }, 'organizationProductDefinitions')
+  };
+};
+
+class ProductsRoute extends React.Component<IOwnProps> {
+
   togglePrivacy = () => {
     const { update, organization } = this.props;
     const { makePrivateByDefault } = organization.attributes;
@@ -28,17 +51,29 @@ class ProductsRoute extends React.Component<IProps & i18nProps> {
     update({ makePrivateByDefault: !makePrivateByDefault });
   }
 
+  updateProductDefinition = (productDefinition) => {
+
+    const { updateProductDefinition } = this.props;
+
+    updateProductDefinition(productDefinition);
+  }
+
   render() {
-    const { organization, t } = this.props;
+    const { organization, organizationProductDefinitions, t } = this.props;
     const { makePrivateByDefault } = organization.attributes;
 
     const makePublicByDefault = !makePrivateByDefault;
 
-    return (
-      <div className='sub-page-content'>
-        <h2 className='bold m-b-xl'>{t('org.productsTitle')}</h2>
+    const multiSelectProps = {
+      selected: organizationProductDefinitions,
+      onChange: this.updateProductDefinition
+    };
 
-        <div className='flex-row align-items-center p-l-lg p-r-lg m-b-lg'>
+    return (
+      <div className='sub-page-content' data-test-org-settings-products>
+        <h2 className='bold m-b-md'>{t('org.productsTitle')}</h2>
+
+        <div className='flex-row align-items-center p-l-sm p-r-sm m-b-lg'>
           <div>
             <h3>{t('org.makePrivateTitle')}</h3>
             <p className='input-info'>{t('org.makePrivateDescription')}</p>
@@ -51,17 +86,14 @@ class ProductsRoute extends React.Component<IProps & i18nProps> {
 
         <hr />
 
-        <h3 className='p-b-lg'>{t('org.productSelectTitle')}</h3>
-
-        <p style={{ width: '200px', overflow: 'auto'}}>
-          TODO: render available products from DWKit as demonstrated
-          https://app.zeplin.io/project/5b3b85b95b0fc79a4b3c40c9/screen/5b3b8d851853ea0a2edf9ce0
-        </p>
+        <h3 className='p-b-md'>{t('org.productSelectTitle')}</h3>
+        <ProductDefinitionMultiSelect {...multiSelectProps} />
       </div>
     );
   }
 }
 
 export default compose(
-  translate('translations')
+  withTranslations,
+  withOrbit(mapRecordsToProps),
 )(ProductsRoute);

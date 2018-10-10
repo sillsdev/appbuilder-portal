@@ -42,6 +42,7 @@ export { PRODUCT_DEFINITIONS_TYPE, ProductDefinitionResource } from './models/pr
 export { GROUP_MEMBERSHIPS_TYPE, GroupMembershipResource } from './models/group-membership';
 export { ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipResource } from './models/organization-membership';
 export { APPLICATION_TYPES_TYPE, ApplicationTypeResource } from './models/application-type';
+export { ORGANIZATION_PRODUCT_DEFINITIONS_TYPE, OrganizationProductDefinitionResource } from './models/organization-product-definition';
 
 // TODO: change to 20, or remove.
 //       currently, we don't have a way to see what the total
