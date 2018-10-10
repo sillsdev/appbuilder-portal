@@ -5,6 +5,8 @@ import { tomorrow } from '@lib/date';
 
 import { OrganizationInviteAttributes } from '@data/models/organization-invite';
 
+import './styles.scss';
+
 export interface IProps {
   onSubmit: (data: OrganizationInviteAttributes) => Promise<void>;
   name?: string;
@@ -18,6 +20,7 @@ export interface IState {
   expiresAt?: Date;
   url?: string;
 }
+
 
 @withTemplateHelpers
 export default class InviteOrganizationDisplay extends React.Component<IProps, IState> {
@@ -49,10 +52,9 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
     const { name, ownerEmail, url } = this.state;
 
     return (
-      <div>
-        <form data-test-form className='ui form'>
-
-          <div className='field'>
+      <div className='flex invite-organization'>
+        <form data-test-form className='ui form flex-grow'>
+          <div className='field m-b-xl'>
             <label>Organization Owner Email</label>
             <input
               data-test-owner-email
@@ -61,7 +63,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
               onChange={mut('ownerEmail')} />
           </div>
 
-          <div className='field'>
+          <div className='field m-b-xl'>
             <label>Organization Name</label>
             <input
               data-test-org-name
@@ -71,7 +73,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
           </div>
 
 
-          <div className='field'>
+          <div className='field m-b-xl'>
             <label>Organization Website URL</label>
             <input
               data-test-org-url
@@ -82,7 +84,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
 
           <button
             data-test-submit
-            className='ui primary button'
+            className='ui button p-t-md p-b-md p-l-lg p-r-lg'
             onClick={this.submit}>
             Add Organization
           </button>
