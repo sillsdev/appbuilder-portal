@@ -17,7 +17,8 @@
     "cancel": "Cancel",
     "save": "Save",
     "name": "Name",
-    "abbreviation": "Abbreviation"
+    "abbreviation": "Abbreviation",
+    "general": "General Information"
   },
   "auth": {
     "title": "Scriptoria",
@@ -54,6 +55,9 @@
     "orgName": "Organization Name",
     "orgUrl": "Organization Website URL",
     "orgSubmit": "Add Organization"
+  },
+  "newOrganization": {
+    "title": "Add organization"
   },
   "org": {
     "allOrganizations": "All Organizations",
