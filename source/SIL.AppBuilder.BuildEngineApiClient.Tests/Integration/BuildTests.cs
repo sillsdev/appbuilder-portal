@@ -9,9 +9,9 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         // tests are not intended to be automated, just to interact with a real 
         // system and show how the API is used.
         //
-        const string skipIntegrationTest = null; //"Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
+        const string skipIntegrationTest = "Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public string BaseUrl { get; set; } = "https://buildengine.gtis.guru:8443"; // This is our staging version of BuildEngine
-        public string ApiAccessKey { get; set; } = "9389043";
+        public string ApiAccessKey { get; set; } = "";
 
         // This test assumes that the job exists and that the build ID being passed has
         // completed successfully
@@ -78,6 +78,15 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.Equal(7, response.Artifacts.Count);
         }
 
+        // This test assumes that the job and build exist
+        [Theory(Skip = skipIntegrationTest)]
+        [InlineData(2,2)]
+        public void DeleteTestBuild(int jobId, int buildId)
+        {
+            var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
+            var response = client.DeleteBuild(jobId, buildId);
+            Assert.Equal(System.Net.HttpStatusCode.OK, response);
+        }
 
     }
 }

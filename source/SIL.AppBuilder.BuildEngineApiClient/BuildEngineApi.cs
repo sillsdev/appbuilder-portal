@@ -149,6 +149,13 @@ namespace SIL.AppBuilder.BuildEngineApiClient
                 .AddParameter("jobId", jobId, ParameterType.UrlSegment);
             return Execute<List<BuildResponse>>(request);
         }
-
+        public System.Net.HttpStatusCode DeleteBuild(int jobId, int buildId)
+        {
+            var request = CreateRequest("job/{jobId}/build/{buildId}", Method.DELETE)
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment)
+                .AddParameter("buildId", buildId, ParameterType.UrlSegment);
+            var response = restClient.Execute(request);
+            return response.StatusCode;
+        }
     }
 }
