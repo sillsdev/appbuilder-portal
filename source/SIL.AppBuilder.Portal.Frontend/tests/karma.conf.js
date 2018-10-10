@@ -10,6 +10,9 @@ const TEST_PORT = 9876;
 
 module.exports = function(config) {
   config.set({
+    port: TEST_PORT,
+    colors: true,
+    logLevel: 'DEBUG',
     singleRun: false,
     retryLimit: 20, // hack around concurrency issues....
     concurrency: 1,
@@ -17,13 +20,16 @@ module.exports = function(config) {
     frameworks: [
       'mocha',
      ],
-    reporters: [ 'mocha' ],
+    reporters: [
+      'mocha',
+      'coverage'
+    ],
     browsers: ['Chrome'],
     mime: { 'text/x-typescript': ['ts','tsx'] },
-
-    port: TEST_PORT,
-    colors: true,
-    logLevel: 'DEBUG',
+    coverageReporter: {
+      type : 'html',
+      dir : 'coverage/'
+    },
 
     files: [
       { pattern: path.resolve(root, 'tests/index.ts'), watched: false }
@@ -37,6 +43,7 @@ module.exports = function(config) {
     preprocessors: {
       [`${root}/tests/index.ts`]: [
         'webpack',
+        'coverage'
       ],
     },
 
@@ -54,6 +61,7 @@ module.exports = function(config) {
     plugins: [
       'karma-mocha',
       'karma-webpack',
+      'karma-coverage',
       'karma-mocha-reporter',
       'karma-chrome-launcher',
       'karma-firefox-launcher',

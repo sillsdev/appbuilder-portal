@@ -4092,7 +4092,7 @@ karma-chrome-launcher@^2.2.0:
     fs-access "^1.0.0"
     which "^1.2.1"
 
-karma-coverage@^1.1.1:
+karma-coverage@^1.1.1, karma-coverage@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/karma-coverage/-/karma-coverage-1.1.2.tgz#cc09dceb589a83101aca5fe70c287645ef387689"
   dependencies:
@@ -5714,12 +5714,9 @@ react-notify-toast@^0.5.0:
     object-assign "^4.0.0"
     prop-types "^15.5.8"
 
-"react-orbitjs@github:NullVoxPopuli/react-orbitjs#345eba3b5578b7fc88c755fa3a8678773e09ff9f":
-  version "0.1.8"
-  resolved "https://codeload.github.com/NullVoxPopuli/react-orbitjs/tar.gz/345eba3b5578b7fc88c755fa3a8678773e09ff9f"
-  dependencies:
-    hoist-non-react-statics "^2.3.1"
-    prop-types "^15.6.0"
+"react-orbitjs@github:DeveloperTown/react-orbitjs#738883cba30cd4bd6b8414acfcd468de782de975":
+  version "0.1.10"
+  resolved "https://codeload.github.com/DeveloperTown/react-orbitjs/tar.gz/738883cba30cd4bd6b8414acfcd468de782de975"
 
 react-page-click@^4.0.2:
   version "4.0.2"

@@ -21,6 +21,13 @@ const moduleRules = [
       }
     }],
     exclude: [/node_modules/, /dist/, /\.cache/],
+    // include: [
+    //   // project files
+    //   locate('src'),
+    //   locate('tests'),
+    //   // packages that are bundled properly
+    //   locate('node_modules/react-orbitjs/dist')
+    // ],
   },
   {
     test: /\.s?css$/,
