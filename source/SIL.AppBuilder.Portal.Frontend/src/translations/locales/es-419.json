@@ -63,7 +63,7 @@
     "allOrganizations": "Todas las organizaciones",
     "createSuccess": "¡Organización creada exitosamente!",
     "settingsTitle": "Configuración de organización",
-    "selectLogo": "Seleccionar logo",
+    "logoUrl": "Logo URL",
     "productsTitle": "Productos y Publicaciones",
     "makePrivateTitle": "Hacer Proyectos públicos por defecto",
     "makePrivateDescription": "\n      Cuando un proyecto es creado, será Público por defecto.\n      (Los proyectos privados no pueden ser visto por nadie fuera de su organización)",
