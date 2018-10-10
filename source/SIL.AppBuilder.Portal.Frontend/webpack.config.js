@@ -48,6 +48,10 @@ let config = {
     filename: '[name]-[hash].js',
     chunkFilename: '[name]-[hash].js'
   },
+  optimization: {
+    usedExports: true,
+    sideEffects: false
+  },
 
   plugins: [
     new HtmlWebpackPlugin({

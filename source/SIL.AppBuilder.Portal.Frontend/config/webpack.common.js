@@ -7,20 +7,34 @@ function locate(path) {
   return process.cwd() + '/' + path;
 }
 
+const babelConfig = require('../babelrc.config.js');
+
 const environment = process.env.NODE_ENV || 'development';
 const isProduction = environment === 'production';
 const isDevelopment = environment === 'development';
 
 const moduleRules = [
   {
-    test: /\.(t|j)sx?$/,
-    use: [{
-      loader: 'ts-loader',
-      options: {
-        transpileOnly: true
-      }
-    }],
-    exclude: [/node_modules/, /dist/, /\.cache/],
+    test: /\.(j|t)sx?$/,
+    // use: [{
+    //   loader: 'ts-loader',
+    //   options: {
+    //     transpileOnly: true
+    //   }
+    // }],
+    loader: 'babel-loader',
+    options: babelConfig,
+    // exclude: [/node_modules/, /\.cache/],
+    include: [
+      locate('src'),
+      locate('tests'),
+      locate('node_modules/react-orbitjs/src')
+    ],
+  },
+  {
+    test: /\.js$/,
+    use: ['source-map-loader'],
+    enforce: 'pre'
   },
   {
     test: /\.s?css$/,

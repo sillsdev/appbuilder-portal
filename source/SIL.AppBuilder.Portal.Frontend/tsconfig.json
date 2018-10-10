@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "outDir": "./dist/",
+    "module": "commonjs",
     "jsx": "react",
-    "target": "es5",
+    "target": "es2015",
     "baseUrl": ".",
     "allowJs": true,
     "moduleResolution": "node",
@@ -21,6 +23,7 @@
       "@env": ["src/env.ts"],
       "tests/*": [ "tests/*" ],
       "vendor/*": [ "src/vendor/*" ],
+      "react-orbitjs": ["node_modules/react-orbitjs/src/index.js"],
       "*": ["types/*"],
       "semantic-ui-react": ["node_modules/semantic-ui-react/index.d.ts"]
     }

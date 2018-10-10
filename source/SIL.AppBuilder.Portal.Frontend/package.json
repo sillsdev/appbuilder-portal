@@ -1,6 +1,9 @@
 {
   "name": "app-builder-portal-frontend",
   "version": "1.0.0",
+  "sideEffects": [
+    "*.css"
+  ],
   "license": "MIT",
   "scripts": {
     "ts-node": "./node_modules/.bin/ts-node",
@@ -56,7 +59,7 @@
     "react-emotion": "^9.2.6",
     "react-i18next": "7.7.0",
     "react-notify-toast": "^0.5.0",
-    "react-orbitjs": "github:NullVoxPopuli/react-orbitjs#345eba3b5578b7fc88c755fa3a8678773e09ff9f",
+    "react-orbitjs": "github:DeveloperTown/react-orbitjs#215037462acda78840c418b0e60b0c2043aa4b64",
     "react-query-assist": "^1.2.0",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
@@ -72,6 +75,14 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-proposal-decorators": "^7.1.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.1.0",
     "@bigtest/interactor": "^0.7.0",
     "@bigtest/mirage": "^0.0.1",
     "@bigtest/mocha": "^0.5.0",
@@ -110,6 +121,7 @@
     "@types/sinon-chai": "^3.2.0",
     "@types/webpack": "^4.4.0",
     "@types/webpack-env": "^1.13.6",
+    "babel-loader": "^8.0.4",
     "chai": "^4.1.2",
     "chai-dom": "^1.8.0",
     "chai-subset": "^1.6.0",
@@ -146,6 +158,7 @@
     "serve-static": "^1.13.2",
     "sinon": "^6.0.0",
     "sinon-chai": "^3.2.0",
+    "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.0",
     "ts-loader": "^5.2.1",
     "ts-node": "^7.0.0",
