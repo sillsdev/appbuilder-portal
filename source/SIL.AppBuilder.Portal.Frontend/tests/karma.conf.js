@@ -22,14 +22,18 @@ module.exports = function(config) {
      ],
     reporters: [
       'mocha',
-      'coverage'
+      'coverage-istanbul',
+      // 'coverage',
+      // 'remap-coverage'
     ],
     browsers: ['Chrome'],
     mime: { 'text/x-typescript': ['ts','tsx'] },
-    coverageReporter: {
-      type : 'html',
-      dir : 'coverage/'
-    },
+    // coverageReporter: {
+    //   type : 'in-memory',
+    // },
+    // remapCoverageReporter: {
+    //   html: path.resolve(root, './coverage')
+    // },
 
     files: [
       { pattern: path.resolve(root, 'tests/index.ts'), watched: false }
@@ -43,7 +47,8 @@ module.exports = function(config) {
     preprocessors: {
       [`${root}/tests/index.ts`]: [
         'webpack',
-        'coverage'
+        // 'sourcemap',
+        // 'coverage'
       ],
     },
 
@@ -56,12 +61,35 @@ module.exports = function(config) {
       },
     },
 
-    webpack: require(__dirname + '/webpack.config.js'),
+    coverageIstanbulReporter: {
+      reports: ['html', 'lcov', 'text-summary'],
+      dir: path.join(root, './coverage'),
+      combineBrowserReports: true,
+      fixWebpackSourcePaths: true,
+      skipFilesWithNoCoverage: false,
+      'report-config': {
+        html: { subdir: 'html' }
+      },
+      thresholds: {
+        emitWarning: true,
+        global: {
+          statements: 85,
+          lines: 85,
+          branches: 75,
+          functions: 85
+        }
+      }
+    },
+
+    webpack: require(path.join(root, './tests/webpack.config.js')),
     webpackMiddleware: { stats: 'minimal' },
     plugins: [
       'karma-mocha',
       'karma-webpack',
-      'karma-coverage',
+      // 'karma-coverage',
+      // 'karma-sourcemap-loader',
+      'karma-coverage-istanbul-reporter',
+      // 'karma-remap-coverage',
       'karma-mocha-reporter',
       'karma-chrome-launcher',
       'karma-firefox-launcher',
