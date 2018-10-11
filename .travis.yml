@@ -22,7 +22,7 @@ jobs:
     - stage: "Quality"
       name: "Frontend Typechecking"
       language: node_js
-      allow_failure: true
+      allow_failures: true
       node_js: "8"
       cache:
         yarn: true
