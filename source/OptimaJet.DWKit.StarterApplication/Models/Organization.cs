@@ -24,10 +24,10 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public string LogoUrl { get; set; }
 
         [Attr("use-sil-build-infrastructure")]
-        public bool UseSilBuildInfrastructure { get; set; } = true;
+        public bool? UseSilBuildInfrastructure { get; set; } = true;
 
         [Attr("public-by-default")]
-        public bool PublicByDefault { get; set; } = true;
+        public bool? PublicByDefault { get; set; } = true;
 
         [HasOne("owner")]
         public virtual User Owner { get; set; }
