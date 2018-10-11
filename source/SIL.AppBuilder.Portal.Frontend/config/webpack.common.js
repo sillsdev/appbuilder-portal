@@ -20,7 +20,14 @@ const moduleRules = [
         transpileOnly: true
       }
     }],
-    exclude: [/node_modules/, /dist/, /\.cache/],
+    exclude: [/node_modules/, /\.cache/],
+    // include: [
+    //   // project files
+    //   locate('src'),
+    //   locate('tests'),
+    //   // packages that are bundled properly
+    //   locate('node_modules/react-orbitjs/dist')
+    // ],
   },
   {
     test: /\.s?css$/,

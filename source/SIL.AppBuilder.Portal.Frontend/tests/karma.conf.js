@@ -10,6 +10,9 @@ const TEST_PORT = 9876;
 
 module.exports = function(config) {
   config.set({
+    port: TEST_PORT,
+    colors: true,
+    logLevel: 'DEBUG',
     singleRun: false,
     retryLimit: 20, // hack around concurrency issues....
     concurrency: 1,
@@ -17,13 +20,11 @@ module.exports = function(config) {
     frameworks: [
       'mocha',
      ],
-    reporters: [ 'mocha' ],
+    reporters: [
+      'mocha',
+    ],
     browsers: ['Chrome'],
     mime: { 'text/x-typescript': ['ts','tsx'] },
-
-    port: TEST_PORT,
-    colors: true,
-    logLevel: 'DEBUG',
 
     files: [
       { pattern: path.resolve(root, 'tests/index.ts'), watched: false }
@@ -49,7 +50,27 @@ module.exports = function(config) {
       },
     },
 
-    webpack: require(__dirname + '/webpack.config.js'),
+    coverageIstanbulReporter: {
+      reports: ['html', 'lcov', 'text-summary'],
+      dir: path.join(root, './coverage'),
+      combineBrowserReports: true,
+      fixWebpackSourcePaths: true,
+      skipFilesWithNoCoverage: false,
+      'report-config': {
+        html: { subdir: 'html' }
+      },
+      thresholds: {
+        emitWarning: true,
+        global: {
+          statements: 85,
+          lines: 85,
+          branches: 75,
+          functions: 85
+        }
+      }
+    },
+
+    webpack: require(path.join(root, './tests/webpack.config.js')),
     webpackMiddleware: { stats: 'minimal' },
     plugins: [
       'karma-mocha',
@@ -63,6 +84,11 @@ module.exports = function(config) {
   if (process.env.DETACHED) {
     config.customLaunchers = {};
     config.browsers = [];
+  }
+
+  if (process.env.COVERAGE) {
+    config.reporters.push('coverage-istanbul');
+    config.plugins.push('karma-coverage-istanbul-reporter');
   }
 
   if (process.env.CI) {

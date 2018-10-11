@@ -4,5 +4,7 @@
 tmp/
 stats.json
 
+/coverage
+tests/coverage/
 tests/cypress/screenshots/
 tests/cypress/videos/

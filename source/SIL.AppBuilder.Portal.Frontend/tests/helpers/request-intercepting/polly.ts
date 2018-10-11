@@ -106,7 +106,7 @@ const setup = function(config) {
     const originalFetch = window.fetch;
     const fakeFetch = (...args) => {
       // debugger;
-      originalFetch(...args);
+      return originalFetch(...args);
     };
 
     window.fetch = fakeFetch.bind(window);

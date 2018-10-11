@@ -37,7 +37,7 @@ const screens = [{
 
 describe('Acceptance | Pagination', () => {
   setupApplicationTest();
-  setupRequestInterceptor();
+  setupRequestInterceptor({ matchRequestby: { order: false, headers: false } });
   useFakeAuthentication();
 
   beforeEach(function () {

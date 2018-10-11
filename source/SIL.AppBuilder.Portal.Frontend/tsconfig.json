@@ -4,9 +4,9 @@
     "target": "es5",
     "baseUrl": ".",
     "allowJs": true,
-    "moduleResolution": "node",
     "sourceMap": true,
     "experimentalDecorators": true,
+    "moduleResolution": "node",
     "lib": ["ESNext", "dom"],
     "paths": {
       "@data/*": ["src/data/*"],
@@ -33,7 +33,6 @@
   "exclude": [
     "node_modules",
     "build",
-    "dist",
     "src/vendor",
     "tests/webpack.config.js",
     "tests/karma.conf.js"

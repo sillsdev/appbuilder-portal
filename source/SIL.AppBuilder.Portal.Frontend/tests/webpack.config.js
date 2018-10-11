@@ -13,8 +13,20 @@ if (isDevelopment) {
   if(result.error) throw result.error;
 }
 
+if (process.env.COVERAGE) {
+  moduleRules.push({
+    enforce: 'post',
+    test: /\.(t|j)sx?$/,
+    use: [{
+      loader: 'istanbul-instrumenter-loader'
+    }],
+    exclude: [/node_modules/],
+  });
+}
+
 module.exports = {
   mode: environment,
+  devtool: 'inline-source-map',
   context: process.cwd(),
   entry: locate('tests/index.ts'),
   module: {

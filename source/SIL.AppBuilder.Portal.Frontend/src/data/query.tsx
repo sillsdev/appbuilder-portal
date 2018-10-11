@@ -101,7 +101,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         try {
           await Promise.all(requestPromises);
         } catch (e) {
-          console.error(responses, e);
+          console.error('responses:', responses, 'error:', e);
           this.setState({ error: e });
         }
 
