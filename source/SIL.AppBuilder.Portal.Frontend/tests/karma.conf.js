@@ -22,18 +22,9 @@ module.exports = function(config) {
      ],
     reporters: [
       'mocha',
-      'coverage-istanbul',
-      // 'coverage',
-      // 'remap-coverage'
     ],
     browsers: ['Chrome'],
     mime: { 'text/x-typescript': ['ts','tsx'] },
-    // coverageReporter: {
-    //   type : 'in-memory',
-    // },
-    // remapCoverageReporter: {
-    //   html: path.resolve(root, './coverage')
-    // },
 
     files: [
       { pattern: path.resolve(root, 'tests/index.ts'), watched: false }
@@ -47,8 +38,6 @@ module.exports = function(config) {
     preprocessors: {
       [`${root}/tests/index.ts`]: [
         'webpack',
-        // 'sourcemap',
-        // 'coverage'
       ],
     },
 
@@ -86,10 +75,6 @@ module.exports = function(config) {
     plugins: [
       'karma-mocha',
       'karma-webpack',
-      // 'karma-coverage',
-      // 'karma-sourcemap-loader',
-      'karma-coverage-istanbul-reporter',
-      // 'karma-remap-coverage',
       'karma-mocha-reporter',
       'karma-chrome-launcher',
       'karma-firefox-launcher',
@@ -99,6 +84,11 @@ module.exports = function(config) {
   if (process.env.DETACHED) {
     config.customLaunchers = {};
     config.browsers = [];
+  }
+
+  if (process.env.COVERAGE) {
+    config.reporters.push('coverage-istanbul');
+    config.plugins.push('karma-coverage-istanbul-reporter');
   }
 
   if (process.env.CI) {

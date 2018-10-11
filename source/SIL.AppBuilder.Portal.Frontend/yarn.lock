@@ -4296,7 +4296,7 @@ karma-coverage-istanbul-reporter@^2.0.4:
     istanbul-api "^2.0.5"
     minimatch "^3.0.4"
 
-karma-coverage@^1.1.1, karma-coverage@^1.1.2:
+karma-coverage@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/karma-coverage/-/karma-coverage-1.1.2.tgz#cc09dceb589a83101aca5fe70c287645ef387689"
   dependencies:
@@ -4337,18 +4337,6 @@ karma-parallel@^0.3.0:
   dependencies:
     istanbul "^0.4.5"
     lodash "^4.17.11"
-
-"karma-remap-coverage@github:cexbrayat/karma-remap-coverage#chore/bump-remap-istanbul":
-  version "0.1.5"
-  resolved "https://codeload.github.com/cexbrayat/karma-remap-coverage/tar.gz/650a583c5c92f9862dc03ba691714b0e34b8960c"
-  dependencies:
-    remap-istanbul "^0.12"
-
-karma-sourcemap-loader@^0.3.7:
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/karma-sourcemap-loader/-/karma-sourcemap-loader-0.3.7.tgz#91322c77f8f13d46fed062b042e1009d4c4505d8"
-  dependencies:
-    graceful-fs "^4.1.2"
 
 karma-typescript@^3.0.12:
   version "3.0.13"
@@ -6194,17 +6182,6 @@ relateurl@0.2.x:
 remap-istanbul@^0.10.1:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/remap-istanbul/-/remap-istanbul-0.10.1.tgz#3aa58dd5021d499f336d3ba5bf3bbb91c1b88e37"
-  dependencies:
-    amdefine "^1.0.0"
-    istanbul "0.4.5"
-    minimatch "^3.0.3"
-    plugin-error "^0.1.2"
-    source-map "^0.6.1"
-    through2 "2.0.1"
-
-remap-istanbul@^0.12:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/remap-istanbul/-/remap-istanbul-0.12.0.tgz#7215642017d01a8c4a51bdb41be35297ec71fc4e"
   dependencies:
     amdefine "^1.0.0"
     istanbul "0.4.5"
