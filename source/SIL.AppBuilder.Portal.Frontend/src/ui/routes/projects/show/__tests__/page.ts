@@ -18,6 +18,7 @@ export class ProjectInteractor {
 
   isAutomaticRebuildChecked = isPresent('[data-test-project-settings-automatic-build].checked');
   isAllowDownloadChecked = isPresent('[data-test-project-settings-allow-download].checked');
+  isPublic = isPresent('[data-test-project-settings-project-visibility].checked');
 
   groupSelect = groupInteractor;
   userSelect = userInteractor;

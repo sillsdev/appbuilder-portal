@@ -189,6 +189,10 @@
       "organizationDownloads": {
         "title": "Allow Other Organizations to download",
         "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products and their Artifacts"
+      },
+      "visibility": {
+        "title": "Projectc visibility",
+        "description": "Public Projects allow any Scriptoria User to view your project in the Directory."
       }
     },
     "side": {
@@ -228,6 +232,11 @@
         "on": "Allow project download is ON",
         "off": "Allow project download is OFF",
         "error": "Error: We could not change Allow Download status"
+      },
+      "isPublic": {
+        "on": "Project visibility is set to Public",
+        "off": "Project visibility is set to Private",
+        "error": "Error: We could not change Project visibility"
       }
     }
   },
