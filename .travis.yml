@@ -29,7 +29,7 @@ jobs:
         directories:
           - source/SIL.AppBuilder.Portal.Frontend/node_modules
 
-      script: ./run yarn && ./run yarn tsc
+      script: ./run yarn && ./run yarn tsc --noEmit
 
     - stage: "Tests"
       name: "Frontend Tests"
