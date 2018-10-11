@@ -132,10 +132,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Product_Not_FoundAsync()
         {
             BuildTestData();
-            var mockBuildEngine = new Mock<IBuildEngineApi>();
-            var backgroundProductRepository = _fixture.GetService<IJobRepository<Product>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var buildProductService = new BuildEngineProductService(mockBuildEngine.Object, backgroundProductRepository, systemStatusRepository);
+            var buildProductService = _fixture.GetService<BuildEngineProductService>();
             await buildProductService.ManageProductAsync(999);
             // TODO: Verify notification
         }
@@ -143,10 +140,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Create_ProductAsync()
         {
             BuildTestData();
-            var mockBuildEngine = new Mock<IBuildEngineApi>();
-            var backgroundProductRepository = _fixture.GetService<IJobRepository<Product>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var buildProductService = new BuildEngineProductService(mockBuildEngine.Object, backgroundProductRepository, systemStatusRepository);
+            var buildProductService = _fixture.GetService<BuildEngineProductService>();
+            var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
 
             var jobResponse = new JobResponse
             {
@@ -166,10 +161,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Product_Connection_UnavailableAsync()
         {
             BuildTestData();
-            var mockBuildEngine = new Mock<IBuildEngineApi>();
-            var backgroundProductRepository = _fixture.GetService<IJobRepository<Product>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var buildProductService = new BuildEngineProductService(mockBuildEngine.Object, backgroundProductRepository, systemStatusRepository);
+            var buildProductService = _fixture.GetService<BuildEngineProductService>();
+            var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
             systemStatus1.SystemAvailable = false;
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProductService.ManageProductAsync(product1.Id));
             Assert.Equal("Connection not available", ex.Message);

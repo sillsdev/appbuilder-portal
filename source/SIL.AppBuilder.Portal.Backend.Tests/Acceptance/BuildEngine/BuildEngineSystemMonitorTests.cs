@@ -25,7 +25,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public BuildEngineSystemMonitorTests(TestFixture<BuildEngineStartup> fixture) : base(fixture)
         {
         }
-        public void SetTestData()
+        private void SetTestData()
         {
             CurrentUser = NeedsCurrentUser();
             user1 = AddEntity<AppDbContext, User>(new User
@@ -88,10 +88,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             SetTestData();
 
-            var organizationRepository = _fixture.GetService<IJobRepository<Organization>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockClient = new Mock<IBuildEngineApi>();
-            var buildEngineService = new BuildEngineSystemMonitor(organizationRepository, systemStatusRepository, mockClient.Object);
+            var buildEngineService = _fixture.GetService<BuildEngineSystemMonitor>();
+            var mockClient = Mock.Get(buildEngineService.BuildEngineApi);
             mockClient.Setup(x => x.SystemCheck()).Returns(System.Net.HttpStatusCode.OK);
             buildEngineService.CheckBuildEngineStatus();
 
@@ -106,10 +104,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             SetTestData();
 
-            var organizationRepository = _fixture.GetService<IJobRepository<Organization>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockClient = new Mock<IBuildEngineApi>();
-            var buildEngineService = new BuildEngineSystemMonitor(organizationRepository, systemStatusRepository, mockClient.Object);
+            var buildEngineService = _fixture.GetService<BuildEngineSystemMonitor>();
+            var mockClient = Mock.Get(buildEngineService.BuildEngineApi);
             mockClient.Setup(x => x.SystemCheck()).Returns(System.Net.HttpStatusCode.NotFound);
             buildEngineService.CheckBuildEngineStatus();
 

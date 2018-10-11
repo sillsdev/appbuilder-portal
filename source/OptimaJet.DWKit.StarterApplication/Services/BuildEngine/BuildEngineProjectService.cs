@@ -8,10 +8,11 @@ using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
 using Hangfire;
 using Job = Hangfire.Common.Job;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using System.Threading.Tasks;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
-    public class BuildEngineProjectService: BuildEngineServiceBase
+    public class BuildEngineProjectService : BuildEngineServiceBase
     {
         protected IJobRepository<Project> ProjectRepository;
 
@@ -27,12 +28,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             RecurringJobManager = recurringJobManager;
             ProjectRepository = projectRepository;
         }
+        public static void CreateBuildEngineProject(int projectId)
+        {
+            BackgroundJob.Enqueue<BuildEngineProjectService>(service => service.ManageProject(projectId));
+        }
         public void ManageProject(int projectId)
         {
             // Hangfire methods cannot be async, hence the Wait
             ManageProjectAsync(projectId).Wait();
         }
-        public async System.Threading.Tasks.Task ManageProjectAsync(int projectId)
+        public async Task ManageProjectAsync(int projectId)
         {
             var project = await ProjectRepository.Get()
                 .Where(p => p.Id == projectId)
@@ -74,7 +79,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             }
         }
 
-        protected async System.Threading.Tasks.Task CreateBuildEngineProjectAsync(Project project)
+        protected async Task CreateBuildEngineProjectAsync(Project project)
         {
             var buildEngineProject = new BuildEngineProject
             {
@@ -102,7 +107,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 throw new Exception("Create project failed");
             }
         }
-        protected async System.Threading.Tasks.Task CheckExistingProjectAsync(Project project)
+        protected async Task CheckExistingProjectAsync(Project project)
         {
             var buildEngineProject = GetBuildEngineProject(project);
             if ((buildEngineProject == null) || (buildEngineProject.Id == 0))
@@ -129,7 +134,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             var projectResponse = BuildEngineApi.GetProject(project.WorkflowProjectId);
             return projectResponse;
         }
-        protected async System.Threading.Tasks.Task ProjectCompletedAsync(Project project, ProjectResponse projectResponse)
+        protected async Task ProjectCompletedAsync(Project project, ProjectResponse projectResponse)
         {
             project.WorkflowProjectUrl = projectResponse.Url;
             await ProjectRepository.UpdateAsync(project);
@@ -154,6 +159,36 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected bool BuildEngineProjectCreated(Project project)
         {
             return (project.WorkflowProjectId != 0);
+        }
+        public async Task<BuildEngineStatus> GetStatusAsync(int projectId)
+        {
+            var project = await ProjectRepository.Get()
+                .Where(p => p.Id == projectId)
+                .Include(p => p.Organization)
+                .FirstOrDefaultAsync();
+            if (project == null)
+            {
+                return BuildEngineStatus.Unavailable;
+            }
+            if (!BuildEngineLinkAvailable(project.Organization))
+            {
+                return BuildEngineStatus.Unavailable;
+            }
+            var buildEngineProject = GetBuildEngineProject(project);
+            if ((buildEngineProject == null) || (buildEngineProject.Id == 0))
+            {
+                return BuildEngineStatus.Unavailable;
+            }
+            switch (buildEngineProject.Status)
+            {
+                case "initialized":
+                case "active":
+                    return BuildEngineStatus.InProgress;
+                case "completed":
+                    return (buildEngineProject.Result == "SUCCESS") ? BuildEngineStatus.Success : BuildEngineStatus.Failure;
+                default:
+                    return BuildEngineStatus.Unavailable;
+            }
         }
     }
 }
