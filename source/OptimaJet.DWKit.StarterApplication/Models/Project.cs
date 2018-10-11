@@ -35,7 +35,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public string Language { get; set; }
 
         [Attr("is-public")]
-        public bool IsPublic { get; set; } = true;
+        public bool? IsPublic { get; set; } = true;
 
         [Attr("date-created")]
         public DateTime? DateCreated { get; set; }
@@ -50,10 +50,10 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public virtual List<Reviewer> Reviewers { get; set; }
 
         [Attr("allow-downloads")]
-        public bool AllowDownloads { get; set; } = true;
+        public bool? AllowDownloads { get; set; } = true;
 
         [Attr("automatic-builds")]
-        public bool AutomaticBuilds { get; set; } = true;
+        public bool? AutomaticBuilds { get; set; } = true;
 
         [Attr("workflow-project-id")]
         public int WorkflowProjectId { get; set; }

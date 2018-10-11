@@ -38,7 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public ProfileVisibility ProfileVisibility { get; set; } = ProfileVisibility.Public;
 
         [Attr("email-notification")]
-        public bool EmailNotification { get; set; } = true;
+        public bool? EmailNotification { get; set; } = true;
 
         [Attr("publishing-key")]
         public string PublishingKey { get; set; }
