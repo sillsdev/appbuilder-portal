@@ -191,6 +191,10 @@
       "organizationDownloads": {
         "title": "Permitir descargar a otras organizaciones",
         "description": "Cuando está configuración está activa, cualquier usuario de Scriptoria que pueda ver su proyecto en el directorio, podrá descargarlo junto con sus artefactos"
+      },
+      "visibility": {
+        "title": "Projectc visibility",
+        "description": "Public Projects allow any Scriptoria User to view your project in the Directory."
       }
     },
     "side": {
@@ -230,6 +234,11 @@
         "on": "Permitir descarga de proyecto está activada",
         "off": "Permitir descarga de proyecto está desactivada",
         "error": "Error: No pudimos cambiar el estado de \"permitir descargas\""
+      },
+      "isPublic": {
+        "on": "Project visibility is set to Public",
+        "off": "Project visibility is set to Private",
+        "error": "Error: We could not change Project visibility"
       }
     }
   },
