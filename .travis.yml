@@ -2,11 +2,35 @@ env:
   - DOCKER_COMPOSE_VERSION=1.17.0 MOZ_HEADLESS=1
 
 stages:
+  - "Quality"
   - "Tests"
   - "Deploy"
 
 jobs:
   include:
+    - stage: "Quality"
+      name: "Frontend Linting"
+      language: node_js
+      node_js: "8"
+      cache:
+        yarn: true
+        directories:
+          - source/SIL.AppBuilder.Portal.Frontend/node_modules
+
+      script: ./run yarn && ./run yarn lint
+
+    - stage: "Quality"
+      name: "Frontend Typechecking"
+      language: node_js
+      allow_failure: true
+      node_js: "8"
+      cache:
+        yarn: true
+        directories:
+          - source/SIL.AppBuilder.Portal.Frontend/node_modules
+
+      script: ./run yarn && ./run yarn tsc
+
     - stage: "Tests"
       name: "Frontend Tests"
       addons:
@@ -19,7 +43,8 @@ jobs:
         directories:
           - source/SIL.AppBuilder.Portal.Frontend/node_modules
 
-      script: ./run yarn && ./run yarn lint && ./run yarn test:ci
+      # TODO: upload coverage to somewhere
+      script: COVERAGE=true ./run yarn && ./run yarn test:ci
 
     - stage: "Tests"
       name: "Backend Tests"
@@ -40,7 +65,7 @@ jobs:
             sudo chmod +x /usr/local/bin/docker-compose
           )
 
-      script: 
+      script:
         - echo "building docker containers..."
         - time ( ./run ci:build > /dev/null 2>&1 )
         - echo "docker containers built!"
