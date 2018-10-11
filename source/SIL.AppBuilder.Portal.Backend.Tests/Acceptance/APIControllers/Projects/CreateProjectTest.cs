@@ -184,12 +184,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 data = new
                 {
                     type = "projects",
-                    attributes = new
+                    attributes = new Dictionary<string, string>()
                     {
-                        name = "project5",
-                        type = "scriptureappbuilder",
-                        description = "description",
-                        language = "eng-US"
+                        { "name" , "project5" },
+                        { "description", "description"},
+                        { "language","eng-US"},
+                        { "is-public", "false"}
                     },
                     relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
                             {"owner", new Dictionary<string, Dictionary<string, string>>() {
@@ -229,6 +229,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal("project5", project.Name);
             Assert.True(project.AllowDownloads);
             Assert.True(project.AutomaticBuilds);
+            Assert.False(project.IsPublic);
             backgroundClient.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "ManageProject" &&
