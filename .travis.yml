@@ -6,6 +6,10 @@ stages:
   - "Tests"
   - "Deploy"
 
+matrix:
+  allow_failures:
+    - name: "Frontend Typechecking"
+
 jobs:
   include:
     - stage: "Quality"
