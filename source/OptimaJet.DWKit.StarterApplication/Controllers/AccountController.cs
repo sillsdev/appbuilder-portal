@@ -13,6 +13,7 @@ using User = OptimaJet.DWKit.Core.Security.User;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
+    // Note: During DWKit upgrade, leave this as is (with Cookie Authentication)
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AccountController : Controller
     {

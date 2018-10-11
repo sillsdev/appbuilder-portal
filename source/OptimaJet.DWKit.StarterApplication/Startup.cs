@@ -4,6 +4,7 @@ using JsonApiDotNetCore.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ using Hangfire;
 using System;
 using Bugsnag;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.Core;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -83,6 +85,9 @@ namespace OptimaJet.DWKit.StarterApplication
                 // or the jwt token scheme
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
+
+            services.AddSignalR(o => { o.EnableDetailedErrors = true; });
+            services.AddSingleton<IUserIdProvider, SignalRIdProvider>();
 
             services.AddApiServices();
             services.AddBackgroundServices(Configuration);
@@ -163,6 +168,10 @@ namespace OptimaJet.DWKit.StarterApplication
                     template: "{controller=StarterApplication}/{action=Index}/");
             });
 
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ClientNotificationHub>("hubs/notifications");
+            });
 
             app.UseJsonApi();
 
@@ -171,6 +180,7 @@ namespace OptimaJet.DWKit.StarterApplication
             //DWKIT Init
             Configurator.Configure(
                 (IHttpContextAccessor)app.ApplicationServices.GetService(typeof(IHttpContextAccessor)),
+                (IHubContext<ClientNotificationHub>)app.ApplicationServices.GetService(typeof(IHubContext<ClientNotificationHub>)),
                 Configuration);
         }
     }
