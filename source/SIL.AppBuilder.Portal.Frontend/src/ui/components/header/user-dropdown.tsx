@@ -48,7 +48,13 @@ class UserDropdown extends React.Component<IProps> {
             as={NavLink}
             to={`/users/${currentUserId}/edit`}
           />
-          <Dropdown.Item text={t('header.help')} />
+
+          <a
+            className='item'
+            target='_blank'
+            href='http://software.sil.org/scriptureappbuilder/service/help/'>
+            {t('header.help')}
+          </a>
 
           <Dropdown.Item
             data-test-logout
