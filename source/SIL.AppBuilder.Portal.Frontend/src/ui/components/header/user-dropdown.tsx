@@ -34,7 +34,6 @@ class UserDropdown extends React.Component<IProps> {
       <Dropdown
         data-test-header-avatar
         pointing='top right'
-        icon={null}
         trigger={
           <span data-test-user-dropdown-trigger className='image-fill-container'>
             <img className='round header-icon' src={getPictureUrl()} />

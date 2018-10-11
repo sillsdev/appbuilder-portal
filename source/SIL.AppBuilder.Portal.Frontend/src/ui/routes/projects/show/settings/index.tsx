@@ -1,15 +1,13 @@
 import * as React from 'react';
-
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
-import { ProjectAttributes } from '@data/models/project';
 import { Checkbox } from 'semantic-ui-react';
-import { ResourceObject } from 'jsonapi-typescript';
-import { PROJECTS_TYPE } from '@data';
+
+import {  attributesFor, ProjectResource } from '@data';
 import { withSettings } from './with-settings';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface Params {
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  project: ProjectResource;
   toggleField: (fieldName: string, newToggleState: boolean) => void;
 }
 
@@ -32,7 +30,7 @@ class Settings extends React.Component<IProps> {
   render() {
 
     const { t, project } = this.props;
-    const { automaticBuilds, allowDownloads } = project.attributes;
+    const { automaticBuilds, allowDownloads, isPublic } = attributesFor(project);
 
     return (
       <div className='settings'>
@@ -67,12 +65,27 @@ class Settings extends React.Component<IProps> {
             />
           </div>
         </div>
+        <div className='flex justify-content-space-around setting no-border'>
+          <div className='flex-grow'>
+            <h4>{t('project.settings.visibility.title')}</h4>
+            <p>{t('project.settings.visibility.description')}</p>
+          </div>
+          <div className='flex-shrink'>
+            <Checkbox
+              data-test-project-settings-project-visibility
+              toggle
+              name='isPublic'
+              defaultChecked={isPublic}
+              onChange={this.toggle}
+            />
+          </div>
+        </div>
       </div>
     );
   }
 }
 
 export default compose(
-  translate('translations'),
+  withTranslations,
   withSettings
 )(Settings);

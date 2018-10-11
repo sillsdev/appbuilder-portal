@@ -23,7 +23,8 @@ describe('Acceptance | Project View | Settings toggles', () => {
           id: '1',
           attributes: {
             'automaticBuilds': true,
-            'allowDownloads': true
+            'allowDownloads': true,
+            'isPublic': true
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
@@ -47,6 +48,7 @@ describe('Acceptance | Project View | Settings toggles', () => {
       expect(location().pathname).to.equal('/projects/1');
       expect(page.isAutomaticRebuildChecked).to.be.true;
       expect(page.isAllowDownloadChecked).to.be.true;
+      expect(page.isPublic).to.be.true;
     });
   });
 });
