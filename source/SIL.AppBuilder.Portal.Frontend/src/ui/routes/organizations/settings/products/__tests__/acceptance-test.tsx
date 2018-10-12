@@ -86,7 +86,7 @@ describe('Acceptance | Organization Settings | Product view', () => {
         });
       });
 
-      describe('check first product definition',() => {
+      describe('select first product definition',() => {
 
         beforeEach(async function() {
           await page.products(0).click();
@@ -109,8 +109,7 @@ describe('Acceptance | Organization Settings | Product view', () => {
             await productList[0].click();
           });
 
-          it('first product definition is un selected', () => {
-            expect(true).to.be.true;
+          it('no product is selected', () => {
             expect(page.products(0).isChecked).to.be.false;
             expect(page.products(1).isChecked).to.be.false;
           });

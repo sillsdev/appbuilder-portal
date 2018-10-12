@@ -65,7 +65,6 @@ class SettingsRoute extends React.Component<IProps> {
     const { t, updateAttributes } = this.props;
 
     try {
-
       await updateAttributes(payload);
       toast.success(t('updated'));
 
@@ -79,7 +78,6 @@ class SettingsRoute extends React.Component<IProps> {
     const { t, updateProductDefinition } = this.props;
 
     try {
-
       await updateProductDefinition(pd);
       toast.success(t('updated'));
     } catch (e) {
@@ -92,7 +90,6 @@ class SettingsRoute extends React.Component<IProps> {
     const { t, updateStore } = this.props;
 
     try {
-
       await updateStore(st);
       toast.success(t('updated'));
     } catch (e) {

@@ -84,7 +84,7 @@ describe('Acceptance | Organization Settings | Store view', () => {
         });
       });
 
-      describe('check first store', () => {
+      describe('select first store', () => {
 
         beforeEach(async function () {
           await page.stores(0).click();
@@ -96,7 +96,7 @@ describe('Acceptance | Organization Settings | Store view', () => {
           expect(page.stores(1).isChecked).to.be.false;
         });
 
-        describe('uncheck it', () => {
+        describe('unselect it', () => {
 
           beforeEach(function () {
             this.mockDelete(204, 'organization-stores/1');
@@ -107,7 +107,7 @@ describe('Acceptance | Organization Settings | Store view', () => {
             await storeList[0].click();
           });
 
-          it('first store is un selected', () => {
+          it('no store is selected', () => {
             expect(true).to.be.true;
             expect(page.stores(0).isChecked).to.be.false;
             expect(page.stores(1).isChecked).to.be.false;

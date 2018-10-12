@@ -33,10 +33,9 @@ type IOwnProps =
 
 const mapRecordsToProps = (passedProps) => {
   const { organization } = passedProps;
-  const { type, id } = organization;
 
   return {
-    organizationStores: q => q.findRelatedRecords({ type, id }, 'organizationStores')
+    organizationStores: q => q.findRelatedRecords(organization, 'organizationStores')
   };
 };
 
