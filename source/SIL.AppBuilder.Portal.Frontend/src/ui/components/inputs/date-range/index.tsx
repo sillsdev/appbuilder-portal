@@ -37,11 +37,6 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
     return day < compare || day > maxDate;
   }
 
-  handleWith = (handler) => (...eh) => {
-    console.log('handle', eh);
-    /* handler(eh); */
-  }
-
   // NOTE: the onDayChange handler only gets invoked with a valid date
   // TODO: figure out how to have the internal validation
   //       trigger a visual error state / color
