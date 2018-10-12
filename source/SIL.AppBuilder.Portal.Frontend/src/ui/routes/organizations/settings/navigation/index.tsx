@@ -8,7 +8,7 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import ResponsiveNav from '@ui/components/semantic-extensions/responsive-sub-navigation';
 
 import {
-  infoPath, userPath, productsPath, groupsPath, infrastructurePath
+  infoPath, userPath, productsPath, storesPath , groupsPath, infrastructurePath
 } from '../routes';
 
 export interface Params {
@@ -31,6 +31,7 @@ class Navigation extends React.Component<IProps> {
         items={[
           { to: infoPath.replace(/:orgId/, orgId), text: t('org.navBasic') },
           { to: productsPath.replace(/:orgId/, orgId), text: t('org.navProducts') },
+          { to: storesPath.replace(/:orgId/, orgId), text: t('org.navStores') },
           { to: groupsPath.replace(/:orgId/, orgId), text: t('org.navGroups') },
           { to: infrastructurePath.replace(/:orgId/, orgId), text: t('org.navInfrastructure') },
         ]}
