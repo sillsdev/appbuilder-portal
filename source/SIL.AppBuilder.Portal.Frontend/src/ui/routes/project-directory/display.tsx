@@ -1,6 +1,5 @@
 import * as React from 'react';
-
-import Table from '@ui/components/project-table/table';
+import { Popup } from 'semantic-ui-react';
 
 import { OrganizationResource, GroupResource, TEMP_DEFAULT_PAGE_SIZE } from '@data';
 
@@ -13,6 +12,7 @@ import { IDataProps, IColumnProps } from '@ui/components/project-table';
 import { PaginationFooter } from '@data/containers/api/pagination-footer';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import { ErrorMessage } from '@ui/components/errors';
+import Table from '@ui/components/project-table/table';
 
 import Filters from './filters';
 
@@ -65,9 +65,19 @@ export default class DirectoryDisplay extends React.Component<IProps> {
             {t('directory.title', { numProjects: 0 })}
           </h2>
 
-          <DebouncedSearch
-            placeholder={t('common.search')}
-            onSubmit={this.search} />
+          <Popup
+            basic
+            hoverable
+            trigger={<div>
+              <DebouncedSearch
+                placeholder={t('common.search')}
+                onSubmit={this.search} />
+            </div>}
+            position='bottom center'>
+
+            <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
+
+          </Popup>
         </div>
 
         <Filters { ...this.props } />
