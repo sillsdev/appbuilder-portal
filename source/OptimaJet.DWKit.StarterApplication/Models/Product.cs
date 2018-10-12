@@ -42,5 +42,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("date-published")]
         public DateTime? DatePublished { get; set; }
 
+        [Attr("workflow-process-Id")]
+        public Guid WorkflowProcessId { get; set; }
+
     }
 }

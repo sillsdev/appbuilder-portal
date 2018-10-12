@@ -1,4 +1,116 @@
 {
-  "lastUpdate": "2018-09-13T19:39:29.3080482+00:00",
-  "isTemplate": false
+  "name": "SIL_AppBuilders_Project_Approval",
+  "lastUpdate": "2018-10-05T15:06:58.2772295+00:00",
+  "entityId": "5d8aafda-47af-4f0c-a296-4bbf20289147",
+  "isTemplate": false,
+  "triggers": [],
+  "dataMap": [
+    {
+      "id": "b3e6d075-c794-3eb4-9646-6e9855aa59be",
+      "attributeId": "307a21a1-15b6-4c8d-8dfa-2a846e63ed06",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "a9a63871-58e4-b467-dfb1-465ce62da02a",
+      "attributeId": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
+      "control": "input_application_type",
+      "parentId": "b3e6d075-c794-3eb4-9646-6e9855aa59be",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "08bc0995-34f6-ab94-e85c-e422ae7163ac",
+      "attributeId": "5f3c671c-ba68-4b81-b4c9-057a33170c7e",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "c0ab7769-ac2b-eb4a-d71f-374a439c2769",
+      "attributeId": "395c266e-d92c-4af2-88f9-b88af74e8d81",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "65478f91-4f76-b119-a5c1-6fa3f3d14011",
+      "attributeId": "87423d9c-0ac8-43af-8f6a-8589b05aeb33",
+      "control": "input_language_code",
+      "parentId": "c0ab7769-ac2b-eb4a-d71f-374a439c2769",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "613a5afc-d461-97cc-ee3f-ec2c98e5abdd",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "c0ab7769-ac2b-eb4a-d71f-374a439c2769",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "8875ac81-1473-7252-2c1d-90291518a671",
+      "attributeId": "72fdb4f4-3d74-438a-a5e6-0ef62a779485",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "36a7bb8c-7b2a-db82-c534-8105a47132d6",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_app_store_account",
+      "parentId": "8875ac81-1473-7252-2c1d-90291518a671",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "e1518ed5-a2ee-4eb8-8b9d-f3f9fca60b07",
+      "attributeId": "668e224f-8a45-4ac7-abef-a865adb707e2",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "2d913eb2-9c63-22f2-8f40-3e277f30ac6b",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_default_language",
+      "parentId": "e1518ed5-a2ee-4eb8-8b9d-f3f9fca60b07",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "cae2de9e-130b-e3fb-b515-d78c51b695b6",
+      "attributeId": "ecad7845-104f-4749-95c8-93a3d6c60e13",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "4c4598d1-6495-33a6-c7b3-1a74bf5a54cf",
+      "attributeId": "df55b534-5efe-49c3-8ebb-798db97d306c",
+      "control": "input_email",
+      "parentId": "cae2de9e-130b-e3fb-b515-d78c51b695b6",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "5c5eb2ab-7bb7-1c48-2221-90fa7bcd40fd",
+      "attributeId": "abc789e2-4347-4a67-868f-74bcf3ee3bd4",
+      "control": "input_UserName",
+      "parentId": "cae2de9e-130b-e3fb-b515-d78c51b695b6",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "ba8bc2c3-8aec-ae15-babd-6a042f2f5783",
+      "attributeId": "acc75408-9a2c-4156-9819-12da71c9c299",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "5ced6867-c274-a6f5-9a1d-50e26b01f938",
+      "attributeId": "4fa02def-abc9-4abf-9cf2-795dcbee93cc",
+      "control": "input_product",
+      "parentId": "ba8bc2c3-8aec-ae15-babd-6a042f2f5783",
+      "isEditable": false,
+      "isLoadable": true
+    }
+  ],
+  "dataColl": []
 }

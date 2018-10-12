@@ -11,6 +11,8 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Collections.Generic;
 using static OptimaJet.DWKit.StarterApplication.Utility.ServiceExtensions;
 using JsonApiDotNetCore.Internal.Query;
+using Hangfire;
+using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
@@ -19,11 +21,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         IEntityRepository<Product> ProductRepository { get; set; }
         IEntityRepository<ProductDefinition> ProductDefinitionRepository { get; set; }
         IEntityRepository<Store> StoreRepository { get; }
+        IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
         ICurrentUserContext CurrentUserContext { get; set; }
         IJsonApiContext JsonApiContext { get; }
-        public IOrganizationContext OrganizationContext { get; private set; }
+        IOrganizationContext OrganizationContext { get; set; }
 
         public ProductService(
             IJsonApiContext jsonApiContext,
@@ -34,12 +37,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ICurrentUserContext currentUserContext,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
             IEntityRepository<Store>storeRepository,
-            ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
+            IBackgroundJobClient hangfireClient,
+         ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
 
         {
             ProductRepository = productRepository;
             ProductDefinitionRepository = productDefinitionRepository;
             StoreRepository = storeRepository;
+            HangfireClient = hangfireClient;
             UserRepository = userRepository;
             ProjectRepository = projectRepository;
             CurrentUserContext = currentUserContext;
@@ -86,7 +91,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(createForm.Errors);
             }
-            return await base.CreateAsync(resource);
+            var product = await base.CreateAsync(resource);
+
+            if (product != null)
+            {
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageProduct(product.Id));
+            }
+            return product;
         }
 
     }

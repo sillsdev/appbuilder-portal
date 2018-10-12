@@ -12,6 +12,9 @@ INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngin
 (	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru',	'replace',	3),
 (	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru',	'replace',	1);
 
+INSERT INTO "OrganizationStores" ("Id", "OrganizationId", "StoreId") VALUES
+(	1,	1,	1);
+
 INSERT INTO "Groups" ("Name", "Abbreviation", "OwnerId") VALUES
 (	'Language Software Development',	'LSDEV',	1),
 (	'Chad Branch',	'CHB',	1),
