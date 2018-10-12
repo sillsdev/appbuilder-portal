@@ -38,13 +38,15 @@ describe('Acceptance | Organization Settings | Product view', () => {
           id: 2,
           type: 'product-definitions',
           attributes: {
-            name: 'first fake product definition'
+            name: 'first fake product definition',
+            description: 'first fake product description'
           }
         },{
           id: 3,
           type: 'product-definitions',
           attributes: {
-            name: 'Fake product definition'
+            name: 'Fake product definition',
+            description: 'fake product description'
           }
         }],
         meta: { 'total-records': 2 }
@@ -64,8 +66,8 @@ describe('Acceptance | Organization Settings | Product view', () => {
       const productList = page.productsText();
       const productDefinitionText = productList.map(item => item.text);
 
-      expect(productDefinitionText).to.contain('first fake product definition');
-      expect(productDefinitionText).to.contain('Fake product definition');
+      expect(productDefinitionText).to.contain('first fake product description');
+      expect(productDefinitionText).to.contain('fake product description');
     });
 
     describe('with product definition list',() => {

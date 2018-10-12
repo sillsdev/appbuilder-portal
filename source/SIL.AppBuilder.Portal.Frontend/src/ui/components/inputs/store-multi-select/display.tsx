@@ -43,7 +43,7 @@ export class Display extends React.Component<IProps> {
 
     if (isEmpty(stores)) {
       return (
-        <div data-test-empty-products className='no-stores'>
+        <div data-test-empty-stores className='no-stores'>
           {t('org.nostores')}
         </div>
       );

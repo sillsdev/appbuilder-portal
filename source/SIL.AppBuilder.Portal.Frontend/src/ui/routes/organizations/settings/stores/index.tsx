@@ -65,7 +65,7 @@ class StoresRoute extends React.Component<IOwnProps> {
     };
 
     return (
-      <div className='sub-page-content' data-test-org-settings-products>
+      <div className='sub-page-content' data-test-org-settings-stores>
         <h2 className='bold m-b-md'>{t('org.storesTitle')}</h2>
         <h3 className='p-b-md'>{t('org.storeSelectTitle')}</h3>
         <StoreMultiSelect {...multiSelectProps} />
