@@ -73,8 +73,14 @@ class Filter extends React.Component<IProps, IState> {
     this.setState({ selectedOrganization: value });
   }
 
-  handleToChange = (to: Date) => {
-    const { updateFilter } = this.props;
+  handleToChange = (to?: Date) => {
+    const { updateFilter, removeFilter } = this.props;
+
+    if (!to) {
+      removeFilter({ attribute: 'product-updated-date' });
+      return this.setState({ to: undefined });
+    }
+
     const normalizedTo = to.toISOString();
 
     updateFilter({ attribute: 'product-updated-date', value: `le:${normalizedTo}` });
@@ -82,8 +88,14 @@ class Filter extends React.Component<IProps, IState> {
     this.setState({ to });
   }
 
-  handleFromChange = (from: Date) => {
-    const { updateFilter } = this.props;
+  handleFromChange = (from?: Date) => {
+    const { updateFilter, removeFilter } = this.props;
+
+    if (!from) {
+      removeFilter({ attribute: 'product-updated-date' });
+      return this.setState({ from: undefined });
+    }
+
     const normalizedFrom = from.toISOString();
 
     updateFilter({ attribute: 'product-updated-date', value: `ge:${normalizedFrom}` });
@@ -97,7 +109,7 @@ class Filter extends React.Component<IProps, IState> {
 
 
     return (
-      <div className='flex filters'>
+      <div className='flex-column-xs justify-content-space-around flex-row-lg filters'>
         <div className='flex w-50'>
           <div className='input m-r-30'>
             <ProductDefinitionSelect
@@ -116,7 +128,7 @@ class Filter extends React.Component<IProps, IState> {
           </div>
         </div>
 
-        <div className='flex justify-content-end w-50'>
+        <div className='flex w-50'>
           <DateRange
             label={t('directory.filters.dateRange')}
             to={to}
