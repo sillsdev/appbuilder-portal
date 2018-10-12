@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import CloseIcon from '@material-ui/icons/Close';
 
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { formatDate, parseDate } from 'react-day-picker/moment';
 
 import { tomorrow } from '@lib/date';
 import { withTranslations, i18nProps } from '@lib/i18n';
+
+import Cancel from './close-icon';
 
 import 'react-day-picker/lib/style.css';
 import './styles.scss';
@@ -36,36 +37,46 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
     return day < compare || day > maxDate;
   }
 
+  handleWith = (handler) => (...eh) => {
+    console.log('handle', eh);
+    /* handler(eh); */
+  }
+
+  // NOTE: the onDayChange handler only gets invoked with a valid date
+  // TODO: figure out how to have the internal validation
+  //       trigger a visual error state / color
   render() {
     const { t, to, from, onToChange, onFromChange, label } = this.props;
 
     return (
-      <div className='flex-column'>
+      <div
+        data-test-range-input
+        className='flex-column'>
         <div className='dateRange'>{label}</div>
         <div className='flex-row'>
-          <div className='input flex-row m-r-md'>
+          <div data-test-range-from className='input flex-row m-r-md'>
             <DayPickerInput
               locale='en'
               value={from}
               dayPickerProps={{
                 disabledDays: this.disableFrom,
-                showOutsideDays: true
+                showOutsideDays: true,
               }}
               onDayChange={onFromChange}
               placeholder=''
               formatDate={formatDate}
               parseDate={parseDate}
             />
-            {from && <CloseIcon onClick={() => onFromChange()} /> }
+            {from && <Cancel data-test-clear-from onClick={() => onFromChange()} /> }
             {!from && <ArrowDropDownIcon /> }
           </div>
 
-          <div className='input flex-row m-l-md'>
+          <div data-test-range-to className='input flex-row m-l-md'>
             <DayPickerInput
               locale='en'
               dayPickerProps={{
                 disabledDays: this.disableTo,
-                showOutsideDays: true
+                showOutsideDays: true,
               }}
               onDayChange={onToChange}
               placeholder=''
@@ -73,7 +84,7 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
               parseDate={parseDate}
               value={to}
             />
-            {to && <CloseIcon onClick={() => onToChange()} /> }
+            {to && <Cancel data-test-clear-to onClick={() => onToChange()} /> }
             {!to && <ArrowDropDownIcon /> }
           </div>
         </div>
