@@ -11,6 +11,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineProductService: BuildEngineServiceBase
     {
+        IJobRepository<Product> ProductRepository { get; set; }
+
         public BuildEngineProductService(
             IBuildEngineApi buildEngineApi,
             IJobRepository<Product> productRepository,
@@ -19,8 +21,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             ProductRepository = productRepository;
         }
-
-        public IJobRepository<Product> ProductRepository { get; }
 
         public void ManageProduct(int productId)
         {

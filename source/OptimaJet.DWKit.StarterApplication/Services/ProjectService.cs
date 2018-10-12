@@ -17,15 +17,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 {
     public class ProjectService : EntityResourceService<Project>
     {
-        public IOrganizationContext OrganizationContext { get; private set; }
-        public IBackgroundJobClient HangfireClient { get; }
-        public IJsonApiContext JsonApiContext { get; }
-        public ICurrentUserContext CurrentUserContext { get; }
-        public UserRepository UserRepository { get; }
-        public GroupRepository GroupRepository { get; }
-        public ProjectRepository ProjectRepository { get; }
-        public CurrentUserRepository CurrentUserRepository { get; }
-        public IEntityRepository<Organization> OrganizationRepository { get; set; }
+        IOrganizationContext OrganizationContext { get; set; }
+        IBackgroundJobClient HangfireClient { get; }
+        IJsonApiContext JsonApiContext { get; }
+        ICurrentUserContext CurrentUserContext { get; }
+        UserRepository UserRepository { get; }
+        GroupRepository GroupRepository { get; }
+        ProjectRepository ProjectRepository { get; }
+        CurrentUserRepository CurrentUserRepository { get; }
+        IEntityRepository<Organization> OrganizationRepository { get; set; }
 
         public ProjectService(
             IBackgroundJobClient hangfireClient,

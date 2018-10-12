@@ -19,6 +19,9 @@ INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "Workfl
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
 ('SIL_Default_AppBuilders_Android_GooglePlay',	'<Process>
   <Designer />
+  <Commands>
+    <Command Name="next" />
+  </Commands>
   <Activities>
     <Activity Name="Draft" State="Draft" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Designer X="60" Y="100" />
@@ -39,7 +42,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   <Transitions>
     <Transition Name="Draft_Activity_1_1" To="Definition" From="Draft" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
-        <Trigger Type="Auto" />
+        <Trigger Type="Command" NameRef="next" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />
@@ -48,7 +51,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     </Transition>
     <Transition Name="Job Creation_Activity_1_1" To="Check Job Creation" From="Job Creation" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
-        <Trigger Type="Auto" />
+        <Trigger Type="Command" NameRef="next" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />
@@ -57,7 +60,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     </Transition>
     <Transition Name="Definition_Activity_1_1" To="Approval" From="Definition" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
-        <Trigger Type="Auto" />
+        <Trigger Type="Command" NameRef="next" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />
