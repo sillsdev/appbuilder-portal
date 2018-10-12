@@ -109,16 +109,16 @@ class Filter extends React.Component<IProps, IState> {
 
 
     return (
-      <div className='flex-column-xs justify-content-space-around flex-row-lg filters'>
-        <div className='flex w-50'>
-          <div className='input m-r-30'>
+      <div className='flex-column-xs align-items-end justify-content-space-around flex-row-xl filters'>
+        <div className='flex w-100-xs w-50-xl justify-content-center'>
+          <div className='input flex-row align-items-center m-l-md m-r-md'>
             <ProductDefinitionSelect
               className='w-100'
               onChange={this.handleProductChange}
               defaultValue={selectedProduct}
             />
           </div>
-          <div className='input'>
+          <div className='input flex-row align-items-center m-l-md m-r-md'>
             <OrganizationSelect
               className='w-100'
               onChange={this.handleOrganizationChange}
@@ -128,7 +128,10 @@ class Filter extends React.Component<IProps, IState> {
           </div>
         </div>
 
-        <div className='flex w-50'>
+        <div className='
+          flex justify-content-center
+          w-100-xs w-50-xl p-l-md p-r-md m-t-lg-xs m-t-none-xl
+        '>
           <DateRange
             label={t('directory.filters.dateRange')}
             to={to}

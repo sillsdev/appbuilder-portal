@@ -1,7 +1,5 @@
 .dateRange {
-  // font-family: Montserrat;
-  position: absolute;
-  top: -20px;
+  position: relative;
   font-size: 11px;
   color: #0c3855;
   font-weight: bold;
@@ -24,9 +22,7 @@
 
   input {
     cursor: pointer;
-    // font-family: Montserrat;
     color: #515151;
-    // width: 90%;
     padding: 7px;
     border: 0;
   }

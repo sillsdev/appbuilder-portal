@@ -43,7 +43,7 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
       <div className='flex-column'>
         <div className='dateRange'>{label}</div>
         <div className='flex-row'>
-          <div className='input flex-row'>
+          <div className='input flex-row m-r-md'>
             <DayPickerInput
               locale='en'
               value={from}
@@ -60,7 +60,7 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
             {!from && <ArrowDropDownIcon /> }
           </div>
 
-          <div className='input flex-row'>
+          <div className='input flex-row m-l-md'>
             <DayPickerInput
               locale='en'
               dayPickerProps={{
