@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, Popup } from 'semantic-ui-react';
 import { compose } from 'recompose';
 import CaretDown from '@material-ui/icons/KeyboardArrowDown';
 
@@ -45,11 +45,22 @@ class Header extends React.Component<IProps> {
           </Dropdown.Menu>
         </Dropdown>
         <div className='flex align-items-center'>
-          <DebouncedSearch
-            className='search-component'
-            placeholder={t('common.search')}
-            onSubmit={onSearch}
-          />
+
+          <Popup
+            basic
+            hoverable
+            trigger={<div>
+              <DebouncedSearch
+                className='search-component'
+                placeholder={t('common.search')}
+                onSubmit={onSearch}
+              />
+            </div>}
+            position='bottom center'>
+
+            <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
+
+          </Popup>
         </div>
       </div>
     );
