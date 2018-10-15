@@ -1,13 +1,18 @@
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 
 import { withTranslations } from '@lib/i18n';
 import { withNetwork as withStores } from '@data/containers/resources/store/list';
 import { withLoader } from '@data/containers/with-loader';
 
-import { Display } from './display';
+import { MultiSelect } from '@ui/components/inputs/multi-select';
 
 export default compose(
+  withTranslations,
   withStores(),
   withLoader(({ error, stores }) => !error && !stores),
-  withTranslations,
-)(Display);
+  withProps(({ stores, t }) => ({
+    list: stores,
+    relationshipName: 'store',
+    emptyListLabel: t('org.nostores')
+  })),
+)(MultiSelect);

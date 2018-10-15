@@ -2,7 +2,6 @@ import * as React from 'react';
 import { ResourceObject } from 'jsonapi-typescript';
 
 import { attributesFor, relationshipFor } from '@data';
-import { i18nProps } from '@lib/i18n';
 import { Checkbox } from 'semantic-ui-react';
 import ProductIcon from '@ui/components/product-icon';
 
@@ -10,17 +9,14 @@ import { isEmpty } from '@lib/collection';
 
 interface IOwnProps<T> {
   className?: string;
-  name: string;
+  relationshipName: string;
   list: T[];
   selected: T[];
   onChange: (el: T) => void;
+  emptyListLabel: string;
 }
 
-export type IProps<T extends ResourceObject> =
-  & IOwnProps<T>
-  & i18nProps;
-
-export class MultiSelect extends React.Component<IProps<ResourceObject>> {
+export class MultiSelect<T extends ResourceObject> extends React.Component<IOwnProps<T>> {
 
   onChange = (element) => (e) => {
     e.preventDefault();
@@ -29,10 +25,10 @@ export class MultiSelect extends React.Component<IProps<ResourceObject>> {
 
   inSelectedList = (element) => {
 
-    const { selected, name } = this.props;
+    const { selected, relationshipName } = this.props;
 
     const el = selected.find(selectedItem => {
-      const { data } = relationshipFor(selectedItem, name);
+      const { data } = relationshipFor(selectedItem, relationshipName);
       return data.id === element.id;
     });
 
@@ -41,12 +37,12 @@ export class MultiSelect extends React.Component<IProps<ResourceObject>> {
 
   render() {
 
-    const { list, t } = this.props;
+    const { list, emptyListLabel } = this.props;
 
     if (isEmpty(list)) {
       return (
-        <div data-test-empty-products className='no-product-definitions'>
-          {t('org.noproducts')}
+        <div data-test-empty-products className='empty-list'>
+          {emptyListLabel}
         </div>
       );
     }
