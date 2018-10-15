@@ -12,7 +12,7 @@ export default compose(
   withLoader(({ error, stores }) => !error && !stores),
   withProps(({ stores, t }) => ({
     list: stores,
-    relationshipName: 'store',
+    selectedItemJoinsWith: 'store',
     emptyListLabel: t('org.nostores')
   })),
 )(MultiSelect);

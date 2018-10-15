@@ -6,17 +6,22 @@ import { Checkbox } from 'semantic-ui-react';
 import ProductIcon from '@ui/components/product-icon';
 import { i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
+import { IAttributeProps } from '@lib/dom';
 
 interface IOwnProps<T> {
-  className?: string;
-  relationshipName: string;
+  selectedItemJoinsWith: string;
   list: T[];
   selected: T[];
   onChange: (el: T) => void;
   emptyListLabel?: string;
 }
 
-export class MultiSelect<T extends ResourceObject> extends React.Component<IOwnProps<T> & i18nProps> {
+type IProps<T> =
+  & IOwnProps<T>
+  & i18nProps
+  & IAttributeProps
+
+export class MultiSelect<T extends ResourceObject> extends React.Component<IProps<T>> {
 
   onChange = (element) => (e) => {
     e.preventDefault();
@@ -25,10 +30,10 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IOwnP
 
   inSelectedList = (element) => {
 
-    const { selected, relationshipName } = this.props;
+    const { selected, selectedItemJoinsWith } = this.props;
 
     const el = selected.find(selectedItem => {
-      const { data } = relationshipFor(selectedItem, relationshipName);
+      const { data } = relationshipFor(selectedItem, selectedItemJoinsWith);
       return data.id === element.id;
     });
 
