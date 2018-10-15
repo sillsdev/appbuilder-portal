@@ -65,6 +65,7 @@
     "createSuccess": "¡Organización creada exitosamente!",
     "settingsTitle": "Configuración de organización",
     "logoUrl": "Logo URL",
+    "noteLogUrl": "Note: For optimal quality use a square image",
     "productsTitle": "Productos y Publicaciones",
     "makePrivateTitle": "Hacer Proyectos públicos por defecto",
     "makePrivateDescription": "\n      Cuando un proyecto es creado, será Público por defecto.\n      (Los proyectos privados no pueden ser visto por nadie fuera de su organización)",
