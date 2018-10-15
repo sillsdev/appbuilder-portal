@@ -16,8 +16,11 @@
     height: 100vh;
   }
 
-  .w-100#{$modifier} {
-    width: 100% !important;
+
+  @for $i from 1 through 20 {
+    .w-#{$i * 5}#{$modifier} {
+      width: 5% * $i !important;
+    }
   }
 }
 

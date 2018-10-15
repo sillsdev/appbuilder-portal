@@ -7,14 +7,6 @@
   margin-bottom: 40px;
   margin-top: 20px;
 
-  .w-50 {
-    width: 50%;
-  }
-
-  .m-r-30 {
-    margin-right: 30px;
-  }
-
   .input {
     width: 250px;
     border-bottom: solid 1px rgba(0, 0, 0, 0.12);
@@ -27,29 +19,5 @@
     }
   }
 
-  .DayPickerInput {
-    width: 100%;
-    text-align: right;
-
-
-    input {
-      cursor: pointer;
-      font-family: Montserrat;
-      color: #515151;
-      width: 90%;
-      padding: 7px;
-      border: 0;
-    }
-  }
-
-  .dateRange {
-    font-family: Montserrat;
-    position: absolute;
-    top: -20px;
-    font-size: 11px;
-    color: #0c3855;
-    font-weight: bold;
-    opacity: 0.8;
-  }
 
 }
