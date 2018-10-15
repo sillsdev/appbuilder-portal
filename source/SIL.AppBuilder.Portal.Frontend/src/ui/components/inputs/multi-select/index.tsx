@@ -41,35 +41,41 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IOwnP
 
     if (isEmpty(list)) {
       return (
-        <div data-test-empty-products className='empty-list'>
-          {emptyListLabel}
+        <div data-test-multi-select>
+          <div data-test-empty-list className='empty-list'>
+            {emptyListLabel}
+          </div>
         </div>
       );
     }
 
     return (
-      list.map((element, index) => (
-        <div
-          key={index}
-          className='col flex align-items-center w-100-xs-only flex-100 m-b-sm multi-select-item'
-          data-test-product-definition
-          onClick={this.onChange(element)}
-        >
-          <Checkbox
-            data-test-product-definition-checkbox
-            className='m-r-md'
-            value={element.id}
-            checked={this.inSelectedList(element)}
-          />
-          <ProductIcon product={element} />
-          <span
-            data-test-product-definition-text
-            className='p-l-sm-xs'
+      <div data-test-multi-select>
+      {
+        list.map((element, index) => (
+          <div
+            key={index}
+            className='col flex align-items-center w-100-xs-only flex-100 m-b-sm multi-select-item'
+            data-test-item
+            onClick={this.onChange(element)}
           >
-            {attributesFor(element).description}
-          </span>
-        </div>
-      ))
+            <Checkbox
+              data-test-item-checkbox
+              className='m-r-md'
+              value={element.id}
+              checked={this.inSelectedList(element)}
+            />
+            <ProductIcon product={element} />
+            <span
+              data-test-item-text
+              className='p-l-sm-xs'
+            >
+              {attributesFor(element).description}
+            </span>
+          </div>
+        ))
+      }
+      </div>
     );
   }
 }

@@ -8,7 +8,7 @@ import {
   useFakeAuthentication
 } from 'tests/helpers/index';
 
-import page from './page';
+import multiSelect from '@ui/components/inputs/multi-select/-page';
 
 describe('Acceptance | Organization Settings | Product view', () => {
 
@@ -63,7 +63,7 @@ describe('Acceptance | Organization Settings | Product view', () => {
     });
 
     it('show product definition list', () => {
-      const productList = page.productsText();
+      const productList = multiSelect.itemsText();
       const productDefinitionText = productList.map(item => item.text);
 
       expect(productDefinitionText).to.contain('first fake product description');
@@ -89,13 +89,13 @@ describe('Acceptance | Organization Settings | Product view', () => {
       describe('select first product definition',() => {
 
         beforeEach(async function() {
-          await page.products(0).click();
+          await multiSelect.items(0).click();
         });
 
 
         it('first product definition is selected', () => {
-          expect(page.products(0).isChecked).to.be.true;
-          expect(page.products(1).isChecked).to.be.false;
+          expect(multiSelect.items(0).isChecked).to.be.true;
+          expect(multiSelect.items(1).isChecked).to.be.false;
         });
 
         describe('uncheck it', () => {
@@ -105,13 +105,13 @@ describe('Acceptance | Organization Settings | Product view', () => {
           });
 
           beforeEach(async function() {
-            const productList = page.products();
+            const productList = multiSelect.items();
             await productList[0].click();
           });
 
           it('no product is selected', () => {
-            expect(page.products(0).isChecked).to.be.false;
-            expect(page.products(1).isChecked).to.be.false;
+            expect(multiSelect.items(0).isChecked).to.be.false;
+            expect(multiSelect.items(1).isChecked).to.be.false;
           });
 
         });
@@ -151,7 +151,7 @@ describe('Acceptance | Organization Settings | Product view', () => {
 
     it('displays empty product label', () => {
       expect(location().pathname).to.equal('/organizations/1/settings/products');
-      expect(page.isProductListEmpty).to.be.true;
+      expect(multiSelect.isListEmpty).to.be.true;
     });
 
   });
