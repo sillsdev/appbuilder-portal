@@ -8,7 +8,7 @@ import {
   useFakeAuthentication
 } from 'tests/helpers/index';
 
-import page from './page';
+import multiSelect from '@ui/components/inputs/multi-select/-page';
 
 describe('Acceptance | Organization Settings | Store view', () => {
 
@@ -61,7 +61,7 @@ describe('Acceptance | Organization Settings | Store view', () => {
     });
 
     it('show store list', () => {
-      const storeList = page.storesText();
+      const storeList = multiSelect.itemsText();
       const storeText = storeList.map(item => item.text);
 
       expect(storeText).to.contain('Store description 1');
@@ -87,13 +87,13 @@ describe('Acceptance | Organization Settings | Store view', () => {
       describe('select first store', () => {
 
         beforeEach(async function () {
-          await page.stores(0).click();
+          await multiSelect.items(0).click();
         });
 
 
         it('first store is selected', () => {
-          expect(page.stores(0).isChecked).to.be.true;
-          expect(page.stores(1).isChecked).to.be.false;
+          expect(multiSelect.items(0).isChecked).to.be.true;
+          expect(multiSelect.items(1).isChecked).to.be.false;
         });
 
         describe('unselect it', () => {
@@ -103,14 +103,14 @@ describe('Acceptance | Organization Settings | Store view', () => {
           });
 
           beforeEach(async function () {
-            const storeList = page.stores();
+            const storeList = multiSelect.items();
             await storeList[0].click();
           });
 
           it('no store is selected', () => {
             expect(true).to.be.true;
-            expect(page.stores(0).isChecked).to.be.false;
-            expect(page.stores(1).isChecked).to.be.false;
+            expect(multiSelect.items(0).isChecked).to.be.false;
+            expect(multiSelect.items(1).isChecked).to.be.false;
           });
 
         });
@@ -148,11 +148,7 @@ describe('Acceptance | Organization Settings | Store view', () => {
 
     it('displays empty store label', () => {
       expect(location().pathname).to.equal('/organizations/1/settings/stores');
-      expect(page.isStoreListEmpty).to.be.true;
+      expect(multiSelect.isListEmpty).to.be.true;
     });
-
   });
-
-
-
 });
