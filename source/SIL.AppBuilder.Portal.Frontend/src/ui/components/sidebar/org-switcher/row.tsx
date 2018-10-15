@@ -21,7 +21,9 @@ class Row extends React.Component<IProps> {
           flex-row align-items-center
           ${isActive ? 'active' : ''}`;
 
-    const logo = logoUrl ? <img src={logoUrl} width='32' height='32' /> : '\u00A0';
+    const logo = logoUrl ?
+      <img src={logoUrl} width='32' height='32' style={{background: 'white'}} /> :
+      '\u00A0';
 
     return (
       <Menu.Item
