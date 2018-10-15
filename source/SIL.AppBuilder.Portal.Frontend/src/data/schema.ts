@@ -45,6 +45,7 @@ const schemaDefinition: SchemaSettings = {
         userMemberships: { type: 'hasMany', model: 'organization-membership', inverse: 'organization' },
         groups: { type: 'hasMany', model: 'group', inverse: 'owner' },
         organizationProductDefinitions: { type: 'hasMany', model: 'organizationProductDefinition', inverse: 'organization'},
+        organizationStores: { type: 'hasMany', model: 'organizationStore', inverse: 'organization' }
       }
     },
     organizationMembership: {
@@ -69,6 +70,14 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         organization: { type: 'hasOne', model: 'organization', inverse: 'organizationProductDefinitions'},
         productDefinition: { type: 'hasOne', model: 'productDefinition', inverse: 'organizationProductDefinitions'},
+      }
+    },
+    organizationStore: {
+      keys: { remoteId: {} },
+      attributes: {},
+      relationships: {
+        organization: { type: 'hasOne', model: 'organization', inverse: 'organizationStores' },
+        store: { type: 'hasOne', model: 'store', inverse: 'organizationStores'}
       }
     },
     project: {
@@ -132,6 +141,27 @@ const schemaDefinition: SchemaSettings = {
         products: { type: 'hasMany', model: 'product', inverse: 'productDefinition' },
         organizationProductDefinitions: { type: 'hasMany', model: 'organizationProductDefinition', inverse: 'productDefinition'},
         type: { type: 'hasOne', model: 'applicationType', inverse: 'productDefinitions' }
+      }
+    },
+    store: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' },
+        description: { type: 'string' }
+      },
+      relationships: {
+        organizationStores: { type: 'hasMany', model: 'organizationStore', inverse: 'store' },
+        storeType: { type: 'hasOne', model: 'storeType', inverse: 'stores'}
+      }
+    },
+    storeType: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' },
+        description: { type: 'string' }
+      },
+      relationships: {
+        stores: { type: 'hasMany', model: 'store', inverse: 'storeType'}
       }
     },
     task: {

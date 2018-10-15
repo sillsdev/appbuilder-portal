@@ -1,17 +1,16 @@
 import * as React from 'react';
 
-import { attributesFor, ProductDefinitionResource, relationshipFor } from '@data';
+import { attributesFor, StoreResource, relationshipFor } from '@data';
 import { i18nProps } from '@lib/i18n';
 import { Checkbox } from 'semantic-ui-react';
-import ProductIcon from '@ui/components/product-icon';
 
 import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {
   className?: string;
-  productDefinitions: ProductDefinitionResource[];
-  selected: ProductDefinitionResource[];
-  onChange: (pd: ProductDefinitionResource) => void;
+  stores: StoreResource[];
+  selected: StoreResource[];
+  onChange: (pd: StoreResource) => void;
   defaultValue: string;
 }
 
@@ -21,18 +20,18 @@ export type IProps =
 
 export class Display extends React.Component<IProps> {
 
-  onChange = (productDefinition) => (e) => {
+  onChange = (store) => (e) => {
     e.preventDefault();
-    this.props.onChange(productDefinition);
+    this.props.onChange(store);
   }
 
-  inSelectedList = (productDefinition: ProductDefinitionResource) => {
+  inSelectedList = (store: StoreResource) => {
 
     const { selected } = this.props;
 
     const el = selected.find(opd => {
-      const { data } = relationshipFor(opd,'productDefinition');
-      return data.id === productDefinition.id;
+      const { data } = relationshipFor(opd,'store');
+      return data.id === store.id;
     });
 
     return el !== undefined;
@@ -40,33 +39,32 @@ export class Display extends React.Component<IProps> {
 
   render() {
 
-    const { productDefinitions, t } = this.props;
+    const { stores, t } = this.props;
 
-    if (isEmpty(productDefinitions)) {
+    if (isEmpty(stores)) {
       return (
-        <div data-test-empty-products className='no-product-definitions'>
-          {t('org.noproducts')}
+        <div data-test-empty-stores className='no-stores'>
+          {t('org.nostores')}
         </div>
       );
     }
 
     return (
-      productDefinitions.map((pd, index) => (
+      stores.map((pd, index) => (
         <div
           key={index}
           className='col flex align-items-center w-100-xs-only flex-100 m-b-sm multi-select-item'
-          data-test-product-definition
+          data-test-store
           onClick={this.onChange(pd)}
         >
           <Checkbox
-            data-test-product-definition-checkbox
+            data-test-store-checkbox
             className='m-r-md'
             value={pd.id}
             checked={this.inSelectedList(pd)}
           />
-          <ProductIcon product={pd} />
           <span
-            data-test-product-definition-text
+            data-test-store-text
             className='p-l-sm-xs'
           >
             {attributesFor(pd).description}

@@ -6,14 +6,13 @@ import {
   OrganizationResource,
   ProductDefinitionResource,
   OrganizationProductDefinitionResource,
+  OrganizationStoreResource,
   relationshipFor
 } from '@data';
 
-import { recordIdentityFromKeys } from '@data/store-helpers';
 import { requireProps } from '@lib/debug';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
-import {  } from '@data/models/organization-product-definition';
 
 export interface IProvidedProps {
   updateAttribute: (attribute: string, value: any) => Promise<any>;
@@ -24,6 +23,7 @@ export interface IProvidedProps {
 interface IOwnProps {
   organization: OrganizationResource;
   organizationProductDefinitions: OrganizationProductDefinitionResource[];
+  organizationStores: OrganizationStoreResource[];
 }
 
 
@@ -37,7 +37,9 @@ const mapRecordsToProps = (passedProps) => {
 
   return {
     organizationProductDefinitions: q =>
-      q.findRelatedRecords(organization, 'organizationProductDefinitions')
+      q.findRelatedRecords(organization, 'organizationProductDefinitions'),
+    organizationStores: q =>
+      q.findRelatedRecords(organization, 'organizationStores')
   };
 };
 
@@ -94,11 +96,41 @@ export function withDataActions<T>(WrappedComponent) {
 
     }
 
+    updateStore = (store) => {
+
+      const { organization, organizationStores, dataStore } = this.props;
+
+      const storeSelected = organizationStores.find(opd => {
+        const { data } = relationshipFor(opd, 'store');
+        return data.id === store.id;
+      });
+
+      if (storeSelected) {
+
+        return dataStore.update(q => q.removeRecord({
+          type: 'organizationStore',
+          id: storeSelected.id
+        }), defaultOptions());
+
+      }
+
+      return dataStore.update(q => q.addRecord({
+        type: 'organizationStore',
+        attributes: {},
+        relationships: {
+          organization: { data: organization },
+          store: { data: store }
+        }
+      }), defaultOptions());
+
+    }
+
     render() {
       const actionProps = {
         updateAttributes: this.updateAttributes,
         updateAttribute: this.updateAttribute,
-        updateProductDefinition: this.updateProductDefinition
+        updateProductDefinition: this.updateProductDefinition,
+        updateStore: this.updateStore
       };
 
       return <WrappedComponent {...this.props} {...actionProps} />;

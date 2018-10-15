@@ -38,13 +38,15 @@ describe('Acceptance | Organization Settings | Product view', () => {
           id: 2,
           type: 'product-definitions',
           attributes: {
-            name: 'first fake product definition'
+            name: 'first fake product definition',
+            description: 'first fake product description'
           }
         },{
           id: 3,
           type: 'product-definitions',
           attributes: {
-            name: 'Fake product definition'
+            name: 'Fake product definition',
+            description: 'fake product description'
           }
         }],
         meta: { 'total-records': 2 }
@@ -64,8 +66,8 @@ describe('Acceptance | Organization Settings | Product view', () => {
       const productList = page.productsText();
       const productDefinitionText = productList.map(item => item.text);
 
-      expect(productDefinitionText).to.contain('first fake product definition');
-      expect(productDefinitionText).to.contain('Fake product definition');
+      expect(productDefinitionText).to.contain('first fake product description');
+      expect(productDefinitionText).to.contain('fake product description');
     });
 
     describe('with product definition list',() => {
@@ -84,7 +86,7 @@ describe('Acceptance | Organization Settings | Product view', () => {
         });
       });
 
-      describe('check first product definition',() => {
+      describe('select first product definition',() => {
 
         beforeEach(async function() {
           await page.products(0).click();
@@ -107,8 +109,7 @@ describe('Acceptance | Organization Settings | Product view', () => {
             await productList[0].click();
           });
 
-          it('first product definition is un selected', () => {
-            expect(true).to.be.true;
+          it('no product is selected', () => {
             expect(page.products(0).isChecked).to.be.false;
             expect(page.products(1).isChecked).to.be.false;
           });

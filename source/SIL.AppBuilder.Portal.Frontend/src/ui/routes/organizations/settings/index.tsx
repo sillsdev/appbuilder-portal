@@ -3,10 +3,10 @@ import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
-import { withData, WithDataProps } from 'react-orbitjs';
+import { WithDataProps } from 'react-orbitjs';
 
 import NotFound from '@ui/routes/errors/not-found';
-import { defaultOptions, query, withLoader, buildFindRecord, buildOptions } from '@data';
+import { query, withLoader, buildFindRecord, buildOptions } from '@data';
 import { OrganizationAttributes, TYPE_NAME, OrganizationResource } from '@data/models/organization';
 
 
@@ -14,6 +14,7 @@ import InfoRoute, { pathName as infoPath } from './basic-info';
 import UserSetupRoute, { pathName as userPath } from './user-setup';
 import ProductsRoute, { pathName as productsPath } from './products';
 import GroupsRoute, { pathName as groupsPath } from './groups';
+import StoresRoute, { pathName as storesPath } from './stores';
 import InfrastructureRoute, { pathName as infrastructurePath } from './infrastructure';
 import Navigation from './navigation';
 
@@ -64,7 +65,6 @@ class SettingsRoute extends React.Component<IProps> {
     const { t, updateAttributes } = this.props;
 
     try {
-
       await updateAttributes(payload);
       toast.success(t('updated'));
 
@@ -78,8 +78,19 @@ class SettingsRoute extends React.Component<IProps> {
     const { t, updateProductDefinition } = this.props;
 
     try {
-
       await updateProductDefinition(pd);
+      toast.success(t('updated'));
+    } catch (e) {
+      toast.error(e.message);
+    }
+  }
+
+  updateOrganizationStore = async (st) => {
+
+    const { t, updateStore } = this.props;
+
+    try {
+      await updateStore(st);
       toast.success(t('updated'));
     } catch (e) {
       toast.error(e.message);
@@ -100,7 +111,8 @@ class SettingsRoute extends React.Component<IProps> {
     const settingsProps = {
       organization,
       update: this.updateOrganization,
-      updateProductDefinition: this.updateOrganizationProductDefinitions
+      updateProductDefinition: this.updateOrganizationProductDefinitions,
+      updateOrganizationStore: this.updateOrganizationStore
     };
 
     return (
@@ -121,6 +133,10 @@ class SettingsRoute extends React.Component<IProps> {
 
               <Route path={productsPath} render={(routeProps) => (
                 <ProductsRoute {...routeProps } {...settingsProps} />
+              )} />
+
+              <Route path={storesPath} render={(routeProps) => (
+                <StoresRoute {...routeProps} {...settingsProps} />
               )} />
 
               <Route path={groupsPath} render={(routeProps) => (
