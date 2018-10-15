@@ -19,7 +19,7 @@ interface IOwnProps<T> {
 type IProps<T> =
   & IOwnProps<T>
   & i18nProps
-  & IAttributeProps
+  & IAttributeProps;
 
 export class MultiSelect<T extends ResourceObject> extends React.Component<IProps<T>> {
 
