@@ -74,6 +74,7 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
                 onChange={mut('logoUrl')}
                 placeholder={t('org.logoUrl')}
               />
+              <span>{t('org.noteLogUrl')}</span>
             </div>
           </div>
           <div className='m-l-md-sm m-b-md'>

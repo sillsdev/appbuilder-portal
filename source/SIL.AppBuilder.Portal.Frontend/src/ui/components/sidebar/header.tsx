@@ -34,7 +34,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
     const bgClass = isOrgSwitcherActive ? 'bg-white' : '';
 
     const logoUrl = orgAttributes.logoUrl ?
-      <img src={orgAttributes.logoUrl} width='32' /> : '\u00A0';
+      <img src={orgAttributes.logoUrl} width='32' height='32' /> : '\u00A0';
 
     return (
       <div className={`
