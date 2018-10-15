@@ -4,7 +4,7 @@ import { ResourceObject } from 'jsonapi-typescript';
 import { attributesFor, relationshipFor } from '@data';
 import { Checkbox } from 'semantic-ui-react';
 import ProductIcon from '@ui/components/product-icon';
-
+import { i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 
 interface IOwnProps<T> {
@@ -13,10 +13,10 @@ interface IOwnProps<T> {
   list: T[];
   selected: T[];
   onChange: (el: T) => void;
-  emptyListLabel: string;
+  emptyListLabel?: string;
 }
 
-export class MultiSelect<T extends ResourceObject> extends React.Component<IOwnProps<T>> {
+export class MultiSelect<T extends ResourceObject> extends React.Component<IOwnProps<T> & i18nProps> {
 
   onChange = (element) => (e) => {
     e.preventDefault();
@@ -37,13 +37,14 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IOwnP
 
   render() {
 
-    const { list, emptyListLabel } = this.props;
+    const { list, emptyListLabel, t } = this.props;
+    const emptyLabel = emptyListLabel || t('common.noResults');
 
     if (isEmpty(list)) {
       return (
         <div data-test-multi-select>
           <div data-test-empty-list className='empty-list'>
-            {emptyListLabel}
+            {emptyLabel}
           </div>
         </div>
       );
