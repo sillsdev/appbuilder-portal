@@ -184,7 +184,11 @@
     "products": {
       "title": "Products",
       "empty": "You have no products for this project.",
-      "add": "add product"
+      "add": "add product",
+      "popup": {
+        "title": "Select Products",
+        "done": "Done"
+      }
     },
     "settings": {
       "title": "Settings",
