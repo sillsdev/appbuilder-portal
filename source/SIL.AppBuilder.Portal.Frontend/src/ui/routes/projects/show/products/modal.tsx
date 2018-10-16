@@ -6,28 +6,41 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 class ProductModal extends React.Component<i18nProps> {
 
+  state = {
+    isModalOpen: false
+  }
+
   render() {
 
     const { t } = this.props;
+    const { isModalOpen } = this.state;
 
     const trigger = (
-      <button className='ui button'>
+      <button
+        className='ui button'
+        onClick={() => this.setState({ isModalOpen: true })}
+      >
         {t('project.products.add')}
       </button>
     );
 
     return (
       <Modal
+        open={isModalOpen}
         trigger={trigger}
         className='medium products-modal'
         closeIcon={<CloseIcon className='close-modal' />}
+        onClose={() => this.setState({ isModalOpen: false })}
       >
         <Modal.Header>{t('project.products.popup.title')}</Modal.Header>
         <Modal.Content>
           Products
         </Modal.Content>
         <Modal.Actions>
-          <button className='ui button huge'>
+          <button
+            className='ui button huge'
+            onClick={() => this.setState({ isModalOpen: false })}
+          >
             {t('project.products.popup.done')}
           </button>
         </Modal.Actions>
