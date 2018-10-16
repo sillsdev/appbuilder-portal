@@ -12,20 +12,20 @@ $grid-breakpoints: (
 ) !default;
 
 $sizes: (
-    ('none', 0),
-    ('xxs', 0.125),
-    ('xs', 0.25),
-    ('sm', 0.5),
-    ('md', 1),
-    ('lg', 2),
-    ('xl', 4),
-    ('xxl', 8),
+  ('none', 0),
+  ('xxs', 0.125),
+  ('xs', 0.25),
+  ('sm', 0.5),
+  ('md', 1),
+  ('lg', 2),
+  ('xl', 4),
+  ('xxl', 8),
 );
 $positions: (
-    ('t', 'top'),
-    ('r', 'right'),
-    ('b', 'bottom'),
-    ('l', 'left')
+  ('t', 'top'),
+  ('r', 'right'),
+  ('b', 'bottom'),
+  ('l', 'left')
 );
 
 $blue: #0068a6;
@@ -57,6 +57,7 @@ $error-text: $white;
 $button-background-color: $blue-dark;
 $input-border-color: rgba(0, 0, 0, 0.12);
 $checkbox-background-color: rgba(0,0,0,0.26);
+$dimmer-background-color: rgba(74, 74, 74, 0.33);
 $input-border-width: 2px;
 $input-placeholder-color: $gray;
 

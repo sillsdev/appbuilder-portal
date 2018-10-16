@@ -1,0 +1,14 @@
+@import '../../../../styles/_base/variables.scss';
+
+.ui.modal.products-modal > .header {
+  font-family: Montserrat;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1.53;
+  text-align: center;
+  color: $gray;
+}
+
+.ui.modal.products-modal > .actions {
+  text-align: center;
+}
