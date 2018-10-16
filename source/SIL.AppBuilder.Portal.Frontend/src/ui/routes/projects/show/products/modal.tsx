@@ -4,6 +4,9 @@ import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
+import ProductDefinitionMultiSelect
+ from '@ui/components/inputs/product-definition-multi-select';
+
 class ProductModal extends React.Component<i18nProps> {
 
   state = {
@@ -14,6 +17,11 @@ class ProductModal extends React.Component<i18nProps> {
 
     const { t } = this.props;
     const { isModalOpen } = this.state;
+
+    const multiSelectProps = {
+      selected: [],
+      onChange: () => null
+    };
 
     const trigger = (
       <button
@@ -34,7 +42,7 @@ class ProductModal extends React.Component<i18nProps> {
       >
         <Modal.Header>{t('project.products.popup.title')}</Modal.Header>
         <Modal.Content>
-          Products
+          <ProductDefinitionMultiSelect {...multiSelectProps} />
         </Modal.Content>
         <Modal.Actions>
           <button

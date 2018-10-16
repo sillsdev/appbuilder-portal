@@ -183,13 +183,18 @@ Modal
   background-color: $dimmer-background-color;
 }
 
-.ui.modals svg {
+.ui.modal {
+  margin-top: 0px !important;
+}
+
+.ui.modal > .close-modal {
   position: absolute;
   right: 16px;
   top: 23px;
   width: 34px;
   height: 34px;
   color: $dimmer-background-color;
+  cursor: pointer;
 }
 
 @include media-breakpoint-up('sm') {
