@@ -91,6 +91,7 @@ function runstuff {
       runstuff db:update \
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/application_types.sql" \
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/stores.sql" \
+        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_workflow.sql" \
         && echo "DB setup for json:api"
     ;;
 
@@ -167,6 +168,9 @@ function print_help {
   echo "restart        : restart a specific docker-compose service"
   echo ""
   echo "bootstrap      : runs initial scripts for project setup"
+  echo "bootstrap:dwkit"
+  echo "bootstrap:api"
+  echo "bootstrap:sample"
   echo "db:migrations  : run Entity Framework migrations command"
   echo "db:update      : run Entity Framework database command"
   echo ""

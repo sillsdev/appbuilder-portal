@@ -38,6 +38,14 @@
             "readOnly": true
           },
           {
+            "key": "input_product",
+            "data-buildertype": "input",
+            "label": "Product",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true
+          },
+          {
             "key": "input_application_type",
             "data-buildertype": "input",
             "label": "Application Type",
