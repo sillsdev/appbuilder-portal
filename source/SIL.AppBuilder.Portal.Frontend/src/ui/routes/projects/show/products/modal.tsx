@@ -2,12 +2,16 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 
+import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductDefinitionMultiSelect
  from '@ui/components/inputs/product-definition-multi-select';
 
+ @withTemplateHelpers
 class ProductModal extends React.Component<i18nProps> {
+
+  toggle: Toggle;
 
   state = {
     isModalOpen: false
@@ -17,6 +21,7 @@ class ProductModal extends React.Component<i18nProps> {
 
     const { t } = this.props;
     const { isModalOpen } = this.state;
+    const toggleModal = this.toggle('isModalOpen');
 
     const multiSelectProps = {
       selected: [],
@@ -26,7 +31,7 @@ class ProductModal extends React.Component<i18nProps> {
     const trigger = (
       <button
         className='ui button'
-        onClick={() => this.setState({ isModalOpen: true })}
+        onClick={toggleModal}
       >
         {t('project.products.add')}
       </button>
@@ -38,7 +43,7 @@ class ProductModal extends React.Component<i18nProps> {
         trigger={trigger}
         className='medium products-modal'
         closeIcon={<CloseIcon className='close-modal' />}
-        onClose={() => this.setState({ isModalOpen: false })}
+        onClose={toggleModal}
       >
         <Modal.Header>{t('project.products.popup.title')}</Modal.Header>
         <Modal.Content>
@@ -47,7 +52,7 @@ class ProductModal extends React.Component<i18nProps> {
         <Modal.Actions>
           <button
             className='ui button huge'
-            onClick={() => this.setState({ isModalOpen: false })}
+            onClick={toggleModal}
           >
             {t('project.products.popup.done')}
           </button>

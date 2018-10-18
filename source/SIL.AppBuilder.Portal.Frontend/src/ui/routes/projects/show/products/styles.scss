@@ -12,3 +12,23 @@
 .ui.modal.products-modal > .actions {
   text-align: center;
 }
+
+.product-item {
+  border-radius: 4px;
+  border: 1px solid $light-gray;
+  font-size: 13px;
+  color: $light-gray;
+  padding: 10px  5px 10px 22px;
+  background-color: $ultra-ligthest-gray;
+
+  .item-title {
+    font-family: Montserrat;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.54;
+    color: $gray;
+    top: -55px;
+    position: absolute;
+  }
+
+}

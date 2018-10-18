@@ -23,7 +23,7 @@ export function withMomentTimezone(WrappedComponent) {
       moment.locale(i18n.default.language);
 
       const timeProps = {
-        moment,
+        moment: moment.tz(timezone),
         timezone
       };
 
