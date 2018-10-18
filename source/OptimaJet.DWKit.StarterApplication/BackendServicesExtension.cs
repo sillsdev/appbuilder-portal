@@ -17,6 +17,8 @@ using OptimaJet.DWKit.StarterApplication.Forms;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.StarterApplication.Utility;
 using SparkPostDotNet;
 using SparkPostDotNet.Core;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
@@ -81,8 +83,12 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddFluentEmail(GetVarOrDefault("ADMIN_EMAIL", "noreply@scriptoria.io"), GetVarOrDefault("ADMIN_NAME", "Scriptoria Mailer"))
                     .AddRazorRenderer();
 
+            services.AddScoped<WebRequestWrapper>();
             services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
             services.AddScoped<IJobRepository<Email>, JobEmailRepository>();
+            services.AddScoped<BuildEngineSystemMonitor>();
+            services.AddScoped<BuildEngineProjectService>();
+            services.AddScoped<BuildEngineProductService>();
 
             services.AddHangfire(config =>
                                  config.UsePostgreSqlStorage(configuration["ConnectionStrings:default"]));

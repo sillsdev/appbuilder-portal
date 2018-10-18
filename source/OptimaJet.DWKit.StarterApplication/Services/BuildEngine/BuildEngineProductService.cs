@@ -6,6 +6,7 @@ using SIL.AppBuilder.BuildEngineApiClient;
 using BuildEngineJob = SIL.AppBuilder.BuildEngineApiClient.Job;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Threading.Tasks;
+using Hangfire;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -22,6 +23,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         public IJobRepository<Product> ProductRepository { get; }
 
+        public static void CreateBuildEngineProduct(int productId)
+        {
+            BackgroundJob.Enqueue<BuildEngineProductService>(service => service.ManageProduct(productId));
+        }
         public void ManageProduct(int productId)
         {
             ManageProductAsync(productId).Wait();

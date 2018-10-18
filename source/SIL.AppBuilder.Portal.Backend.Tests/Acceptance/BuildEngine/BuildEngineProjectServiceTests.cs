@@ -34,7 +34,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public BuildEngineProjectServiceTests(TestFixture<BuildEngineStartup> fixture) : base(fixture)
         {
         }
-        private void BuildTestData()
+        private void BuildTestData(bool available = true, string token = "replace")
         {
             CurrentUser = NeedsCurrentUser();
             user1 = AddEntity<AppDbContext, User>(new User
@@ -93,31 +93,23 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             systemStatus1 = AddEntity<AppDbContext, SystemStatus>(new SystemStatus
             {
                 BuildEngineUrl = "https://buildengine.testorg1",
-                BuildEngineApiAccessToken = "replace"
+                BuildEngineApiAccessToken = token,
+                SystemAvailable = available
             });
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_Not_FoundAsync()
         {
-            BuildTestData();
-            var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
-            var mockRecurringJobManager = new Mock<IRecurringJobManager>();
-            var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
+            BuildTestData(false);
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
             await buildProjectService.ManageProjectAsync(999);
             // TODO: Verify notification
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_Connection_UnavailableAsync()
         {
-            BuildTestData();
-            var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
-            var mockRecurringJobManager = new Mock<IRecurringJobManager>();
-            var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
-            systemStatus1.SystemAvailable = false;
+            BuildTestData(false);
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id));
             Assert.Equal("Connection not available", ex.Message);
 
@@ -125,26 +117,17 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_Connection_Not_Found()
         {
-            BuildTestData();
-            var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
-            var mockRecurringJobManager = new Mock<IRecurringJobManager>();
-            var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
-            systemStatus1.SystemAvailable = true;
-            org1.BuildEngineApiAccessToken = "4323864";
+            BuildTestData(true, "4323864");
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id));
-            Assert.Equal("SystemStatus record for connection not found", ex.Message);
+            Assert.Equal("Connection not available", ex.Message);
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_Create_ProjectAsync()
         {
             BuildTestData();
-            var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
-            var mockRecurringJobManager = new Mock<IRecurringJobManager>();
-            var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             var projectResponse = new ProjectResponse
             {
@@ -155,7 +138,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Url = ""
             };
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns(projectResponse);
-            systemStatus1.SystemAvailable = true;
             await buildProjectService.ManageProjectAsync(project1.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
@@ -181,27 +163,20 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Project_Create_Project_FailedAsync()
         {
             BuildTestData();
-            var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
-            var mockRecurringJobManager = new Mock<IRecurringJobManager>();
-            var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns((ProjectResponse)null);
-            systemStatus1.SystemAvailable = true;
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id));
             Assert.Equal("Create project failed", ex.Message);
          }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Project_Project_Completed()
+        public async Task Project_Completed()
         {
             BuildTestData();
             project1.WorkflowProjectId = 1;
-            var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
-            var mockRecurringJobManager = new Mock<IRecurringJobManager>();
-            var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             var projectResponse = new ProjectResponse
             {
@@ -212,7 +187,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
             };
             mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
-            systemStatus1.SystemAvailable = true;
             await buildProjectService.ManageProjectAsync(project1.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
@@ -226,15 +200,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Equal(projectResponse.Url, modifiedProject.WorkflowProjectUrl);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Project_Project_Failed()
+        public async Task Project_Failed()
         {
             BuildTestData();
             project1.WorkflowProjectId = 1;
-            var backgroundProjectRepository = _fixture.GetService<IJobRepository<Project>>();
-            var systemStatusRepository = _fixture.GetService<IJobRepository<SystemStatus>>();
-            var mockBuildEngine = new Mock<IBuildEngineApi>(); // _fixture.GetService<Mock<IBuildEngineApi>>();
-            var mockRecurringJobManager = new Mock<IRecurringJobManager>();
-            var buildProjectService = new BuildEngineProjectService(mockRecurringJobManager.Object, mockBuildEngine.Object, backgroundProjectRepository, systemStatusRepository);
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             var projectResponse = new ProjectResponse
             {
@@ -245,7 +216,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
             };
             mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
-            systemStatus1.SystemAvailable = true;
             await buildProjectService.ManageProjectAsync(project1.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
@@ -259,5 +229,44 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Null(modifiedProject.WorkflowProjectUrl);
         }
 
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task Get_Project_Status_Success()
+        {
+            BuildTestData();
+            project1.WorkflowProjectId = 1;
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
+            mockBuildEngine.Reset();
+            var projectResponse = new ProjectResponse
+            {
+                Id = 1,
+                Status = "completed",
+                Result = "SUCCESS",
+                Error = "",
+                Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
+            };
+            mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
+            var status = await buildProjectService.GetStatusAsync(project1.Id);
+            Assert.Equal(BuildEngineStatus.Success, status);
+        }
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task Get_Project_Status_Failure()
+        {
+            BuildTestData();
+            project1.WorkflowProjectId = 1;
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
+            mockBuildEngine.Reset();
+            var projectResponse = new ProjectResponse
+            {
+                Id = 1,
+                Status = "completed",
+                Result = "FAILURE",
+                Error = "Error"
+            };
+            mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
+            var status = await buildProjectService.GetStatusAsync(project1.Id);
+            Assert.Equal(BuildEngineStatus.Failure, status);
+        }
     }
 }

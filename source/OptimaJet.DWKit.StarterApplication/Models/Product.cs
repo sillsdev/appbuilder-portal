@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
@@ -41,6 +42,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("date-published")]
         public DateTime? DatePublished { get; set; }
+
+        [HasMany("product-artifacts", Link.None)]
+        public virtual List<ProductArtifact> ProductArtifacts { get; set; }
 
     }
 }
