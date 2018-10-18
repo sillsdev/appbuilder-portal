@@ -11,13 +11,11 @@ using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.OrganizationInviteRequests
 {
-    [Collection("HangfireCollection")]
-    public class CreateOrganizationInviteRequestTests : BaseTest<HangfireStartup>
+    [Collection("WithoutAuthCollection")]
+    public class CreateOrganizationInviteRequestTests : BaseTest<NoAuthStartup>
     {
-        protected Mock<IBackgroundJobClient> clientMock;
-        public CreateOrganizationInviteRequestTests(TestFixture<HangfireStartup> fixture) : base(fixture)
+        public CreateOrganizationInviteRequestTests(TestFixture<NoAuthStartup> fixture) : base(fixture)
         {
-            clientMock = fixture.GetService<Mock<IBackgroundJobClient>>();
         }
 
 
@@ -37,6 +35,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
                     }
                 }
             };
+
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var clientMock = Mock.Get(backgroundJobClient);
 
             var response = await Post("/api/organization-invite-requests", content);
 

@@ -10,9 +10,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class JobRepository<TEntity> 
-        : IJobRepository<TEntity>
+    public class JobRepository<TEntity>
+        : JobRepository<TEntity, int>,
+        IJobRepository<TEntity>
         where TEntity : class, IIdentifiable<int>
+    {
+        public JobRepository(IDbContextResolver contextResolver)
+            : base(contextResolver)
+        {}
+    }
+
+    public class JobRepository<TEntity, TId> 
+        : IJobRepository<TEntity, TId>
+        where TEntity : class, IIdentifiable<TId>
     {
         protected readonly DbSet<TEntity> dbSet;
         protected readonly DbContext dbContext;
@@ -40,7 +50,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         {
             return dbSet.ToListAsync();
         }
-        public virtual async Task<TEntity> GetAsync(int id)
+        public virtual async Task<TEntity> GetAsync(TId id)
         {
             return await Get().SingleOrDefaultAsync(e => e.Id.Equals(id));
         }
@@ -53,7 +63,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             await dbContext.SaveChangesAsync();
             return entity;
         }
-        public virtual async Task<bool> DeleteAsync(int id)
+        public virtual async Task<bool> DeleteAsync(TId id)
         {
             var entity = await GetAsync(id);
             if (entity == null) return false;

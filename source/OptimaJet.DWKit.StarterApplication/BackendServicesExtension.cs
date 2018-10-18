@@ -92,6 +92,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddScoped<WebRequestWrapper>();
             services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
+            services.AddScoped(typeof(IJobRepository<,>), typeof(JobRepository<,>));
             services.AddScoped<IJobRepository<Email>, JobEmailRepository>();
             services.AddScoped<BuildEngineSystemMonitor>();
             services.AddScoped<BuildEngineProjectService>();

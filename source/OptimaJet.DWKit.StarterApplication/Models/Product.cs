@@ -46,5 +46,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("product-artifacts", Link.None)]
         public virtual List<ProductArtifact> ProductArtifacts { get; set; }
 
+        [Attr("workflow-process-Id")]
+        public Guid? WorkflowProcessId { get; set; }
     }
 }

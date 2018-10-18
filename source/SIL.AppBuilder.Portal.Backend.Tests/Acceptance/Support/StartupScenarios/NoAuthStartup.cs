@@ -13,14 +13,20 @@ using System.Security.Claims;
 using OptimaJet.DWKit.StarterApplication.Policies;
 using OptimaJet.DWKit.StarterApplication.Models;
 using System.Collections.Generic;
+using Hangfire;
+using Moq;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
 
     public class NoAuthStartup : BaseTestStartup
     {
+        private Mock<IBackgroundJobClient> backgroundJobClient;
+
         public NoAuthStartup(IHostingEnvironment env) : base(env)
-        {}
+        {
+            backgroundJobClient = new Mock<IBackgroundJobClient>();
+        }
 
         public IServiceCollection ConfiguredServices { get; private set; }
 
@@ -59,6 +65,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
                 services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
 
+
+                services.AddScoped<IBackgroundJobClient>(s => backgroundJobClient.Object);
 
                 base.ConfigureDatabase(services);
 

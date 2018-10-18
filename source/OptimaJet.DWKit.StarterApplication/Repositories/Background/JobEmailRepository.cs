@@ -9,19 +9,19 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
     public class JobEmailRepository : JobRepository<Email>
     {
-        private readonly IBackgroundJobClient backgroundJobClient;
+        public IBackgroundJobClient BackgroundJobClient { get; }
 
         public JobEmailRepository(IDbContextResolver contextResolver,
                                   IBackgroundJobClient backgroundJobClient) : base(contextResolver)
         {
-            this.backgroundJobClient = backgroundJobClient;
+            BackgroundJobClient = backgroundJobClient;
         }
 
         public override async Task<Email> CreateAsync(Email entity)
         {
             var result = await base.CreateAsync(entity);
             var data = new EmailServiceData { Id = result.Id };
-            backgroundJobClient.Enqueue<IEmailService>(service => service.Process(data));
+            BackgroundJobClient.Enqueue<IEmailService>(service => service.Process(data));
 
             return result;
         }
