@@ -46,7 +46,7 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
     return (
       <div
         data-test-range-input
-        className='flex-column'>
+        className='flex-column date-range-input-with-label'>
         <div className='dateRange'>{label}</div>
         <div className='flex-row'>
           <div data-test-range-from className='input flex-row m-r-md'>
