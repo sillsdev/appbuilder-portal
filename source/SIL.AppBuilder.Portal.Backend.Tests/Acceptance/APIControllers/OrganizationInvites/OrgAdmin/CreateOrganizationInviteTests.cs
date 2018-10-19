@@ -44,7 +44,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
         }
 
         // TODO: fix
-        // [Fact]
+        [Fact]
         public async Task Create_Fails_for_OrgAdmin()
         {
             var content = new

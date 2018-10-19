@@ -13,6 +13,9 @@ using System.Security.Claims;
 using OptimaJet.DWKit.StarterApplication.Policies;
 using OptimaJet.DWKit.StarterApplication.Models;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using OptimaJet.DWKit.StarterApplication.Middleware;
+using Microsoft.AspNetCore.Authentication;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
@@ -26,12 +29,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 
         public override void ConfigureServices(IServiceCollection services)
             {
-                // services.AddAuthentication(options =>
-                // {
-                //     options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                //     options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                //     options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                // }).AddFakeJwtBearer().AddJwtBearer();
+                services.AddAuthentication(options =>
+                {
+                    // options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                    // options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                    // options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                }).AddFakeJwtBearer();//.AddJwtBearer();
                 
                 // services.AddAuthorization(options =>
                 // {
@@ -48,13 +51,22 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 //     );
 
                 // });
-                // services.AddMvc();
+
+
+                services.AddMvc(options => {
+                    options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigins"));
+                    // options.Filters.Add(typeof(ErrorHandlingFilter));
+                    options.Filters.Add(typeof(DisabledUserFilter));
+                });
+
+
                 services.AddApiServices();
 
                 services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
                 services.AddScoped<ICurrentUserContext, TestCurrentUserContext>();
 
-                // services.AddAppAuthorization();
+                services.AddAppAuthorization();
+                // services.AddOptions();
 
                 services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
                 services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
