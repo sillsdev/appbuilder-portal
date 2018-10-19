@@ -102,7 +102,7 @@ class Project extends React.Component<IProps> {
               <div className='subtitle'>
                 <span data-test-project-visibility-label>{visibility}</span><span className='dot-space font-normal'>.</span>
                 <span className='font-normal'>{t('project.createdOn')} </span>
-                <span>{moment.tz(dateCreated, timezone).fromNow()}</span>
+                <span>{moment(dateCreated+"Z").tz(timezone).fromNow()}</span>
               </div>
             </div>
             <div className='flex-shrink' style={{ paddingTop: '20px'}}>

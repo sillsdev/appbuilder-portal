@@ -1,14 +1,24 @@
 import * as React from 'react';
+import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
-import { ProjectResource, ProductResource, withLoader } from '@data';
+import { isEmpty } from '@lib/collection';
+import {
+  ProjectResource,
+  ProductResource,
+  withLoader,
+  ProductDefinitionResource
+} from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductModal from './modal';
 import ProductItem from './item';
+import {
+  withDataActions,
+  IProvidedProps as IDataActionsProps
+} from '@data/containers/resources/project/with-data-actions';
 
 import './styles.scss';
-import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {
   project: ProjectResource;
@@ -17,7 +27,8 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
-  & i18nProps;
+  & i18nProps
+  & IDataActionsProps;
 
 const mapRecordsToProps = (passedProps) => {
   const { project } = passedProps;
@@ -29,9 +40,25 @@ const mapRecordsToProps = (passedProps) => {
 
 class Products extends React.Component<IProps> {
 
+  onSelectionChange = async (item: ProductDefinitionResource) => {
+
+    const { t, updateProduct } = this.props;
+    try {
+      await updateProduct(item);
+      toast.success(t('updated'));
+    } catch (e) {
+      toast.error(e.message);
+    }
+  }
+
   render() {
 
     const { t, products } = this.props;
+
+    const productModalProps = {
+      selected: products,
+      onSelectionChange: this.onSelectionChange
+    };
 
     let productList;
 
@@ -53,7 +80,7 @@ class Products extends React.Component<IProps> {
         <div className='m-b-lg'>
           {productList}
         </div>
-        <ProductModal />
+        <ProductModal {...productModalProps} />
       </div>
     );
 
@@ -64,5 +91,6 @@ class Products extends React.Component<IProps> {
 export default compose(
   withTranslations,
   withOrbit(mapRecordsToProps),
-  withLoader(({products}) => !products)
+  withLoader(({products}) => !products),
+  withDataActions
 )(Products);

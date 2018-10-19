@@ -6,10 +6,20 @@ import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductDefinitionMultiSelect
- from '@ui/components/inputs/product-definition-multi-select';
+ from '@ui/components/inputs/organization-product-definition-multi-select';
+import { ProductResource, ProductDefinitionResource } from '@data';
+
+interface IOwnProps {
+  selected: ProductResource[],
+  onSelectionChange: (item: ProductDefinitionResource) => void;
+}
+
+type IProps =
+  & IOwnProps
+  & i18nProps
 
  @withTemplateHelpers
-class ProductModal extends React.Component<i18nProps> {
+ class ProductModal extends React.Component<IProps> {
 
   toggle: Toggle;
 
@@ -19,13 +29,13 @@ class ProductModal extends React.Component<i18nProps> {
 
   render() {
 
-    const { t } = this.props;
+    const { t, selected, onSelectionChange } = this.props;
     const { isModalOpen } = this.state;
     const toggleModal = this.toggle('isModalOpen');
 
     const multiSelectProps = {
-      selected: [],
-      onChange: () => null
+      selected: selected,
+      onChange: onSelectionChange
     };
 
     const trigger = (

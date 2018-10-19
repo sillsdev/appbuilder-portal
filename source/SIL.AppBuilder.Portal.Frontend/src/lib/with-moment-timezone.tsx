@@ -7,7 +7,7 @@ import { withTranslations } from './i18n';
 import { attributesFor } from '../data/helpers';
 
 export interface IProvidedProps {
-  moment: moment.Moment;
+  moment: moment.MomentTimezone;
   timezone: string;
 }
 
@@ -23,7 +23,7 @@ export function withMomentTimezone(WrappedComponent) {
       moment.locale(i18n.default.language);
 
       const timeProps = {
-        moment: moment.tz(timezone),
+        moment,
         timezone
       };
 
