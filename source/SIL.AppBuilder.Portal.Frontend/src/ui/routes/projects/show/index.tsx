@@ -92,6 +92,9 @@ class Project extends React.Component<IProps> {
       t('project.public') :
       t('project.private');
 
+    const createdFromNow = timezone ?
+      moment(dateCreated + "Z").tz(timezone).fromNow() :
+      moment(dateCreated).fromNow()
 
     return (
       <div className='ui container project-details' data-test-project>
@@ -102,7 +105,7 @@ class Project extends React.Component<IProps> {
               <div className='subtitle'>
                 <span data-test-project-visibility-label>{visibility}</span><span className='dot-space font-normal'>.</span>
                 <span className='font-normal'>{t('project.createdOn')} </span>
-                <span>{moment(dateCreated+"Z").tz(timezone).fromNow()}</span>
+                <span>{createdFromNow}</span>
               </div>
             </div>
             <div className='flex-shrink' style={{ paddingTop: '20px'}}>

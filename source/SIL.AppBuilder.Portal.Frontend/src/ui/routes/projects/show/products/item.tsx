@@ -39,8 +39,13 @@ class ProductItem extends React.Component<IProps> {
     const { description } = attributesFor(productDefinition);
     const { dateUpdated, datePublished } = attributesFor(product);
 
-    const dateUpdatedTZ = moment(dateUpdated + "Z").tz(timezone);
-    const datePublishedTZ = moment(datePublished + "Z").tz(timezone);
+    const dateUpdatedTZ = timezone ?
+      moment(dateUpdated + "Z").tz(timezone) :
+      moment(dateUpdated);
+
+    const datePublishedTZ = timezone ?
+      moment(datePublished + "Z").tz(timezone) :
+      moment(datePublished);
 
     return (
       <div
@@ -59,13 +64,13 @@ class ProductItem extends React.Component<IProps> {
               {dateUpdatedTZ.fromNow(true)}
             </span>
           </div>
-          <div className='position-relative m-l-lg w-30'>
+          <div className='position-relative m-l-md w-30'>
             {includeHeader ? <div className='item-title'>Published</div> : ''}
             <span title={datePublishedTZ.format('MMMM Do YYYY, h:mm:ss')}>
-              {datePublishedTZ.fromNow(true)}
+              {datePublished ? datePublishedTZ.fromNow(true) : 'unpublished'}
             </span>
           </div>
-          <div className='m-l-lg w-30'>
+          <div className='m-l-md w-30'>
             <button className='ui button'>REBUILD</button>
           </div>
           <div className='flex w-10 m-l-md'>
