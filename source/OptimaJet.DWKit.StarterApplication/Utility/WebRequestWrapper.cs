@@ -20,6 +20,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
                 using (HttpWebResponse resp = (HttpWebResponse)(request.GetResponse()))
                 {
                     modifiedArtifact.ContentType = resp.ContentType;
+                    modifiedArtifact.LastModified = resp.LastModified.ToUniversalTime();
                     if (resp.ContentType != "text/html")
                     {
                         modifiedArtifact.FileSize = resp.ContentLength;
