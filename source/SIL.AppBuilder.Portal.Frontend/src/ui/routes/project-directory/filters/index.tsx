@@ -77,13 +77,13 @@ class Filter extends React.Component<IProps, IState> {
     const { updateFilter, removeFilter } = this.props;
 
     if (!to) {
-      removeFilter({ attribute: 'product-updated-date' });
+      removeFilter({ attribute: 'product-updated-date', key: 'lt' });
       return this.setState({ to: undefined });
     }
 
     const normalizedTo = to.toISOString();
 
-    updateFilter({ attribute: 'product-updated-date', value: `le:${normalizedTo}` });
+    updateFilter({ attribute: 'product-updated-date', key: 'lt', value: `le:${normalizedTo}` });
 
     this.setState({ to });
   }
@@ -92,13 +92,13 @@ class Filter extends React.Component<IProps, IState> {
     const { updateFilter, removeFilter } = this.props;
 
     if (!from) {
-      removeFilter({ attribute: 'product-updated-date' });
+      removeFilter({ attribute: 'product-updated-date', key: 'gt' });
       return this.setState({ from: undefined });
     }
 
     const normalizedFrom = from.toISOString();
 
-    updateFilter({ attribute: 'product-updated-date', value: `ge:${normalizedFrom}` });
+    updateFilter({ attribute: 'product-updated-date', key: 'gt', value: `ge:${normalizedFrom}` });
 
     this.setState({from});
   }

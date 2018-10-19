@@ -32,6 +32,23 @@ const defaultOptions = {
   requiredFilters: [],
 };
 
+
+const validKeys = ['op', 'attribute', 'value'];
+
+function withoutFilter(filters: Filter[], filter: Filter) {
+  const result = filters.filter(currentFilter => {
+    const keys = Object.keys(filter);
+    // ignore the value key, and make sure we only pull out
+    // the existing filter(s) that are the same as the target filter
+    const doesNotMatch = !keys.every(key => key === 'value' || currentFilter[key] !== filter[key]);
+
+    return doesNotMatch;
+  });
+  console.log(filters, filter, Object.keys(filter), filters[0] && Object.keys(filter).every(key => key === 'value' || filters[0][key] !== filter[key]));
+
+  return result;
+}
+
 // example hookup
 //
 //
@@ -68,16 +85,16 @@ export function withFiltering<TPassedProps>(
         this.state = { filters, options };
       }
 
-      // TODO: currently this only sets a filter.
-      //       this should find and replace via attribute.
       updateFilter = (filter: IFilter) => {
         const { filters } = this.state;
 
-        const newFilters = filters.filter(currentFilter => {
-          return currentFilter.attribute !== filter.attribute;
-        });
+        const newFilters = withoutFilter(filters, filter);
+
+        console.log('newFilters, before:', newFilters);
 
         newFilters.push(filter);
+
+        console.log('newFilters:', newFilters);
 
         this.setState({ filters: newFilters });
       }
@@ -86,11 +103,9 @@ export function withFiltering<TPassedProps>(
         const { filters } = this.state;
         const attrToRemove = (filter as IFilter).attribute || filter;
 
-        const newFiletrs = filters.filter(currentFilter => {
-          return currentFilter.attribute !== attrToRemove;
-        });
+        const newFilters = withoutFilter(filters, filter);
 
-        this.setState({ filters: newFiletrs });
+        this.setState({ filters: newFilters });
       }
 
       // NOTE: onCache signifies that that the filtering will only happen on the cache store.
@@ -113,7 +128,18 @@ export function withFiltering<TPassedProps>(
         const allFilters = [ ...filters, ...required ];
         const filtersToApply = onCache ? allFilters.map(this._filterOperationMap) : allFilters;
 
-        return builder.filter(...filtersToApply);
+        const withMetaRemoved = filtersToApply.map(filter => {
+          const scrubbed = {};
+          validKeys.forEach(key => {
+            if(filter[key]) {
+              scrubbed[key] = filter[key];
+            }
+          });
+
+          return scrubbed;
+        });
+
+        return builder.filter(...withMetaRemoved);
       }
 
       _filterOperationMap(filter: IFilter): IFilter {
