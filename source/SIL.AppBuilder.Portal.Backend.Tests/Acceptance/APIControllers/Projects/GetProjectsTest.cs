@@ -341,6 +341,52 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         }
 
         [Fact]
+        public async Task GetProjects_ForDirectory_Search_WrongCase()
+        {
+            BuildTestData();
+
+            var now = DateTime.Now;
+            var anHourLater = now.AddHours(1);
+            var aboutNowAsIso = anHourLater.ToISO8601();
+
+            var url = "/api/projects?filter%5Bsearch-term%5D=like%3Aaus";
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(1, projects.Count);
+
+            var ids = projects.Select(p => p.Id);
+
+            Assert.Contains(project1.Id, ids);
+        }
+
+          [Fact]
+        public async Task GetProjects_ForDirectory_Search_CapCase()
+        {
+            BuildTestData();
+
+            var now = DateTime.Now;
+            var anHourLater = now.AddHours(1);
+            var aboutNowAsIso = anHourLater.ToISO8601();
+
+            var url = "/api/projects?filter%5Bsearch-term%5D=like%3AAUS";
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(1, projects.Count);
+
+            var ids = projects.Select(p => p.Id);
+
+            Assert.Contains(project1.Id, ids);
+        }        
+
+        [Fact]
         public async Task GetProjects_ForDirectory_Sort_Asc()
         {
             BuildTestData();
