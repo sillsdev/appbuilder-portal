@@ -184,10 +184,11 @@
     "products": {
       "title": "Products",
       "empty": "You have no products for this project.",
-      "add": "add product",
+      "manage": "manage products",
       "popup": {
         "title": "Select Products",
-        "done": "Done"
+        "done": "Done",
+        "empty": "No products available"
       }
     },
     "settings": {

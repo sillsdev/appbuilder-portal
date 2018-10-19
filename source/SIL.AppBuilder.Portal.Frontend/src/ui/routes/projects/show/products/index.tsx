@@ -8,7 +8,8 @@ import {
   ProjectResource,
   ProductResource,
   withLoader,
-  ProductDefinitionResource
+  ProductDefinitionResource,
+  OrganizationResource
 } from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductModal from './modal';
@@ -23,6 +24,7 @@ import './styles.scss';
 interface IOwnProps {
   project: ProjectResource;
   products: ProductResource[];
+  organization: OrganizationResource;
 }
 
 type IProps =
@@ -34,6 +36,7 @@ const mapRecordsToProps = (passedProps) => {
   const { project } = passedProps;
 
   return {
+    organization: q => q.findRelatedRecord(project, 'organization'),
     products: q => q.findRelatedRecords(project, 'products')
   };
 };
@@ -53,9 +56,10 @@ class Products extends React.Component<IProps> {
 
   render() {
 
-    const { t, products } = this.props;
+    const { t, products, organization } = this.props;
 
     const productModalProps = {
+      organization,
       selected: products,
       onSelectionChange: this.onSelectionChange
     };

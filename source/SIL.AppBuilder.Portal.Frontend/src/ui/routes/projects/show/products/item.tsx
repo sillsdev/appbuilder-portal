@@ -36,7 +36,7 @@ class ProductItem extends React.Component<IProps> {
   render() {
 
     const { product, productDefinition, timezone, includeHeader } = this.props;
-    const { name } = attributesFor(productDefinition);
+    const { description } = attributesFor(productDefinition);
     const { dateUpdated, datePublished } = attributesFor(product);
 
     const dateUpdatedTZ = moment(dateUpdated + "Z").tz(timezone);
@@ -50,7 +50,7 @@ class ProductItem extends React.Component<IProps> {
       >
         <div className='flex align-items-center w-50'>
           <ProductIcon product={productDefinition} />
-          <div className='m-l-md'>{name}</div>
+          <div className='m-l-md'>{description}</div>
         </div>
         <div className='flex align-items-center  w-50'>
           <div className='position-relative w-30'>

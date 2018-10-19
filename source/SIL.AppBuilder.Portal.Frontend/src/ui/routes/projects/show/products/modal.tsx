@@ -5,11 +5,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
-import ProductDefinitionMultiSelect
- from '@ui/components/inputs/organization-product-definition-multi-select';
-import { ProductResource, ProductDefinitionResource } from '@data';
+import ProductDefinitionMultiSelect from './multi-select';
+import { ProductResource, ProductDefinitionResource, OrganizationResource } from '@data';
 
 interface IOwnProps {
+  organization: OrganizationResource;
   selected: ProductResource[],
   onSelectionChange: (item: ProductDefinitionResource) => void;
 }
@@ -29,11 +29,12 @@ type IProps =
 
   render() {
 
-    const { t, selected, onSelectionChange } = this.props;
+    const { t, selected, onSelectionChange, organization } = this.props;
     const { isModalOpen } = this.state;
     const toggleModal = this.toggle('isModalOpen');
 
     const multiSelectProps = {
+      organization,
       selected: selected,
       onChange: onSelectionChange
     };
@@ -43,7 +44,7 @@ type IProps =
         className='ui button'
         onClick={toggleModal}
       >
-        {t('project.products.add')}
+        {t('project.products.manage')}
       </button>
     );
 

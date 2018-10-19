@@ -5,7 +5,7 @@ import { query, buildOptions, ProductDefinitionResource } from '@data';
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';
 import { IPaginateProps } from '@data/containers/api/pagination';
 import { ISortProps } from '@data/containers/api/sorting';
-import { IProvidedProps as IOrgProps, withCurrentOrganization } from '@data/containers/with-current-organization';
+import { IProvidedProps as IOrgProps } from '@data/containers/with-current-organization';
 
 export interface IOwnProps {
   productDefinitions: ProductDefinitionResource;
@@ -52,7 +52,6 @@ export function withNetwork<TWrappedProps>(options = {}) {
     }
 
     return compose(
-      withCurrentOrganization,
       query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }),
     )(WrappedComponent);
   };
