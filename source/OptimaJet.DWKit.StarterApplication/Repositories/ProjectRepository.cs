@@ -61,7 +61,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                     .Include(p => p.Products)
                     .ThenInclude(product => product.ProductDefinition)
                     .Where(p => p.Products
-                        .Any(product => product.ProductDefinition.Name.Contains(value)));
+                        .Any(product => Like(product.ProductDefinition.Name, value)));
             }
 
             if (filterQuery.Has(PROJECT_PRODUCT_DEFINITION_ID_ANY)) {
@@ -76,10 +76,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                     .Include(p => p.Owner)
                     .Include(p => p.Organization)
                     .Where(p => (
-                        p.Name.Contains(value) 
-                        || p.Language.Contains(value)
-                        || p.Organization.Name.Contains(value)
-                        || p.Owner.FullName.Contains(value)
+                        Like(p.Name, value) 
+                        || Like(p.Language, value)
+                        || Like(p.Organization.Name, value)
+                        || Like(p.Owner.FullName, value)
                     ));
             }
 
@@ -100,6 +100,11 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
             return base.Get().Where(p => p.IsPublic == true || orgIds.Contains(p.OrganizationId));
+        }
+
+        private bool Like(string value, string search) 
+        {
+            return EF.Functions.Like(value, $"%{search}%");
         }
     }
 }
