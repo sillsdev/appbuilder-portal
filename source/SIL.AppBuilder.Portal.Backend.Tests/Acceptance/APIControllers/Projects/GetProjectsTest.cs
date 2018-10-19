@@ -354,6 +354,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 "&sort=name";
 
             var response = await Get(url, addOrgHeader: false);
+            var body = await response.Content.ReadAsStringAsync();
+            Console.Write(body);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

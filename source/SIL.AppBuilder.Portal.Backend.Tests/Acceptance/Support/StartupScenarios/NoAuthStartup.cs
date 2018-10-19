@@ -26,35 +26,35 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 
         public override void ConfigureServices(IServiceCollection services)
             {
-                services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                }).AddFakeJwtBearer().AddJwtBearer();
+                // services.AddAuthentication(options =>
+                // {
+                //     options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                //     options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                //     options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                // }).AddFakeJwtBearer().AddJwtBearer();
                 
-                services.AddAuthorization(options =>
-                {
-                    options.AddPolicy("Authenticated",
-                        policy => {
-                            policy.AuthenticationSchemes = new List<string> {
-                                FakeJwtBearerDefaults.AuthenticationScheme.ToString()
-                            };
+                // services.AddAuthorization(options =>
+                // {
+                //     options.AddPolicy("Authenticated",
+                //         policy => {
+                //             policy.AuthenticationSchemes = new List<string> {
+                //                 FakeJwtBearerDefaults.AuthenticationScheme.ToString()
+                //             };
 
-                            policy.Combine(options.DefaultPolicy);
-                        }
+                //             policy.Combine(options.DefaultPolicy);
+                //         }
                                 
                          
-                    );
+                //     );
 
-                });
-                services.AddMvc();
+                // });
+                // services.AddMvc();
                 services.AddApiServices();
 
                 services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
                 services.AddScoped<ICurrentUserContext, TestCurrentUserContext>();
 
-                services.AddAppAuthorization();
+                // services.AddAppAuthorization();
 
                 services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
                 services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
