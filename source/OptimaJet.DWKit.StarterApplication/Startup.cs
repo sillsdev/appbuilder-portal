@@ -85,7 +85,9 @@ namespace OptimaJet.DWKit.StarterApplication
             });
 
             services.AddApiServices();
+            services.AddContextServices();
             services.AddBackgroundServices(Configuration);
+            services.AddAppAuthorization();
 
             services.AddRouteAnalyzer();
 

@@ -22,6 +22,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         {
         }
+
         [HttpPost]
         public override async Task<IActionResult> PostAsync([FromBody] User entity)
         {

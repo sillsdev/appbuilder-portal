@@ -11,15 +11,17 @@ using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication;
 using Serilog;
 using Serilog.Events;
+using OptimaJet.DWKit.StarterApplication.Services;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios.ServiceOverrides;
 
-namespace SIL.AppBuilder.Portal.Backend.Tests
+namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
 
-    public class TestStartup : Startup
+    public class BaseTestStartup : Startup
     {
         protected static int _initCounter = 0;
 
-        public TestStartup(IHostingEnvironment env) : base(env)
+        public BaseTestStartup(IHostingEnvironment env) : base(env)
         {
             dotenv.net.DotEnv.Config(true, ".env.dev");
 

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using JsonApiDotNetCore.Controllers;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
+using Microsoft.AspNetCore.Authorization;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 
@@ -14,9 +15,10 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         protected UserService userService;
         protected OrganizationService organizationService;
         protected ICurrentUserContext currentUserContext;
+        // protected IAuthorizationService authorizationService;
 
-
-        public BaseController(
+    public BaseController(
+            // IAuthorizationService authorizationService,
             IJsonApiContext jsonApiContext,
             IResourceService<T, int> resourceService,
             ICurrentUserContext currentUserContext,
@@ -28,6 +30,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             this.userService = userService;
             this.organizationService = organizationService;
             this.currentUserContext = currentUserContext;
+            // this.authorizationService = authorizationService;
         }
 
         private static string CURRENT_USER_KEY = "CurrentUser";

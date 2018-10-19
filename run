@@ -126,7 +126,16 @@ function runstuff {
     yarn) ( cd $UI_PATH && yarn $arguments );;
 
     # backend / api things
-    dotnet) ( cd $API_PATH && dotnet $arguments );;
+    dotnet:api) ( cd $API_PATH && dotnet $arguments );;
+
+    dotnet) ( cd source && dotnet ${arguments} );;
+    dotnet:ef)
+      runstuff dotnet ef \
+        ${arguments} \
+        --startup-project ./OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
+        --project ./OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
+        --msbuildprojectextensionspath ./out/OptimaJet.DWKit.StarterApplication/obj/
+    ;;
     # dotnet:api)
 
     # Don't name any folders bin, obj, tmp, dist, or node_modules

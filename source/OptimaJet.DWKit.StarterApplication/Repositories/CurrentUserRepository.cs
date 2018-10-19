@@ -46,6 +46,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             var currentUser = await base.Get()
                 .Where(user => user.ExternalId.Equals(auth0Id))
                 .Include(user => user.OrganizationMemberships)
+                .Include(user => user.UserRoles)
                 .FirstOrDefaultAsync();
 
             return currentUser;

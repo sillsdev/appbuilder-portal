@@ -11,6 +11,7 @@ using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {

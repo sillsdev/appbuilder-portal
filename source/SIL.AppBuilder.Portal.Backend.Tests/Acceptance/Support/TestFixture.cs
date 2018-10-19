@@ -9,6 +9,7 @@ using OptimaJet.DWKit.StarterApplication.Data;
 using Xunit;
 using OptimaJet.DWKit.StarterApplication;
 using System.Net.Http.Headers;
+using GST.Fake.Authentication.JwtBearer;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests
 {
@@ -33,6 +34,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             Client.DefaultRequestHeaders
                 .Accept
                 .Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
+            
+            dynamic data = new System.Dynamic.ExpandoObject();
+            data.sub = "test-auth0-id";
+            Client.SetFakeBearerToken("fake-user-name", new[] { "Some Role" }, (object)data);
         }
 
         public HttpClient Client { get; set; }
@@ -40,6 +45,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
         public IJsonApiDeSerializer DeSerializer { get; private set; }
         public IJsonApiContext JsonApiContext { get; private set; }
         public T GetService<T>() => (T)_services.GetService(typeof(T));
+
+        public IServiceProvider Services => this._services;
 
         private bool disposedValue = false;
         protected virtual void Dispose(bool disposing)
