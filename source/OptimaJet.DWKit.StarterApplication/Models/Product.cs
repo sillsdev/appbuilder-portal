@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
@@ -15,11 +16,11 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasOne("store")]
         public virtual Store Store { get; set; }
-        public int StoreId { get; set; }
+        public int? StoreId { get; set; }
 
         [HasOne("store-language")]
         public virtual StoreLanguage StoreLanguage { get; set; }
-        public int StoreLanguageId { get; set; }
+        public int? StoreLanguageId { get; set; }
 
         [Attr("date-created")]
         public DateTime? DateCreated { get; set; }
@@ -41,6 +42,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("date-published")]
         public DateTime? DatePublished { get; set; }
+
+        [HasMany("product-artifacts", Link.None)]
+        public virtual List<ProductArtifact> ProductArtifacts { get; set; }
 
     }
 }

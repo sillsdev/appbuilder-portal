@@ -7,6 +7,7 @@ WORKDIR /app
 
 COPY source/OptimaJet.DWKit.Application/*.csproj /app/OptimaJet.DWKit.Application/
 COPY source/OptimaJet.DWKit.StarterApplication/*.csproj /app/OptimaJet.DWKit.StarterApplication/
+COPY source/SIL.AppBuilder.BuildEngineApiClient/*.csproj /app/SIL.AppBuilder.BuildEngineApiClient/
 WORKDIR /app/OptimaJet.DWKit.StarterApplication/
 RUN dotnet restore
 
