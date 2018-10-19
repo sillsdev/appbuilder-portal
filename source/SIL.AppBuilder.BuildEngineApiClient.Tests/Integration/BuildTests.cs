@@ -17,7 +17,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         // completed successfully
         [Theory(Skip = skipIntegrationTest)]
         [InlineData(2, 1)]
-        public void GetTestJob(int jobId, int buildId)
+        public void GetTestBuild(int jobId, int buildId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
             var response = client.GetBuild(jobId, buildId);
@@ -43,7 +43,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         // This test assumes that the job exists and that one or more builds have been run
         [Theory(Skip = skipIntegrationTest)]
         [InlineData(2)]
-        public void GetTestJobs(int jobId)
+        public void GetTestBuilds(int jobId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
             var responses = client.GetBuilds(jobId);
@@ -75,7 +75,6 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.Equal("initialized", response.Status);
             Assert.NotEqual(0, response.Id);
             Assert.Equal(2, response.JobId);
-            Assert.Equal(7, response.Artifacts.Count);
         }
 
         // This test assumes that the job and build exist

@@ -3,8 +3,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
 using SIL.AppBuilder.BuildEngineApiClient;
-using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
-using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
 using Hangfire;
 using Job = Hangfire.Common.Job;
 using OptimaJet.DWKit.StarterApplication.Repositories;
