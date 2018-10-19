@@ -12,6 +12,7 @@ using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
 using Job = Hangfire.Common.Job;
 using Hangfire;
 using System.Collections.Generic;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {

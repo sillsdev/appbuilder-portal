@@ -9,21 +9,21 @@ namespace OptimaJet.DWKit.StarterApplication
   {
     public static IServiceCollection AddAppAuthorization(this IServiceCollection services)
     {
-      services.AddAuthorization(options => 
-      {
-        options.AddPolicy(
-          "AppBuilder",
-          policy => policy.Requirements.Add(new RoleRequirement(RoleName.AppBuilder)));
+      // services.AddAuthorization(options => 
+      // {
+      //   options.AddPolicy(
+      //     "AppBuilder",
+      //     policy => policy.Requirements.Add(new RoleRequirement(RoleName.AppBuilder)));
 
-        options.AddPolicy("SuperAdmin", policy => {
-          policy.Requirements.Add(new RoleRequirement(RoleName.SuperAdmin));
-        });
+      //   options.AddPolicy("SuperAdmin", policy => {
+      //     policy.Requirements.Add(new RoleRequirement(RoleName.SuperAdmin));
+      //   });
 
-        options.AddPolicy(
-          "OrganizationAdmin",
-          policy => policy.Requirements.Add(new RoleRequirement(RoleName.OrganizationAdmin)));
+      //   options.AddPolicy(
+      //     "OrganizationAdmin",
+      //     policy => policy.Requirements.Add(new RoleRequirement(RoleName.OrganizationAdmin)));
 
-      });
+      // });
 
       // services.AddScoped<IAuthorizationHandler, PermissionHandler>();
 
