@@ -45,7 +45,7 @@ class Owners extends React.Component<IProps> {
 
     try {
       await updateGroup(groupId);
-      toast.success('updated');
+      toast.success(t('updated'));
     } catch (e) {
       toast.error(t('errors.generic', { errorMessage: e.message }));
     }
@@ -56,7 +56,7 @@ class Owners extends React.Component<IProps> {
 
     try {
       await updateOwner(userId);
-      toast.success('updated');
+      toast.success(t('updated'));
     } catch (e) {
       toast.error(t('errors.generic', { errorMessage: e.message }));
     }
