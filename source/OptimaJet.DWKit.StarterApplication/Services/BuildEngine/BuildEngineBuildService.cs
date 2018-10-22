@@ -82,7 +82,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 // Exception will trigger retry
                 // TODO: Send notification record
                 // Don't send exception because there doesn't seem to be a point in retrying
-                ClearAndExit(productId);
+                ClearRecurringJob(productId);
                 return;
 
             }
@@ -102,7 +102,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         /// <param name="product">Product.</param>
         protected async Task ResetPreviousBuildAsync(Product product)
         {
-            ClearAndExit(product.Id);
+            ClearRecurringJob(product.Id);
             if (product.WorkflowBuildId != 0)
             {
                 product.WorkflowBuildId = 0;
@@ -162,14 +162,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             var buildResponse = BuildEngineApi.GetBuild(product.WorkflowJobId, product.WorkflowBuildId);
             return buildResponse;
         }
-        protected bool BuildEngineBuildCreated(Product product)
-        {
-            return (product.WorkflowBuildId != 0);
-        }
         protected async Task BuildCompletedAsync(Product product, BuildResponse buildEngineBuild)
         {
             DateTime? mostRecentArtifactDate = new DateTime(2018, 10, 1);
-            ClearAndExit(product.Id);
+            ClearRecurringJob(product.Id);
             if (buildEngineBuild.Artifacts != null)
             {
                 foreach(KeyValuePair<string, string> entry in buildEngineBuild.Artifacts)
@@ -186,9 +182,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected void BuildCreationFailed(Product product, BuildResponse buildEngineBuild)
         {
-            ClearAndExit(product.Id);
+            ClearRecurringJob(product.Id);
         }
-        protected void ClearAndExit(int productId)
+        protected void ClearRecurringJob(int productId)
         {
             var jobToken = GetHangfireToken(productId);
             RecurringJobManager.RemoveIfExists(jobToken);

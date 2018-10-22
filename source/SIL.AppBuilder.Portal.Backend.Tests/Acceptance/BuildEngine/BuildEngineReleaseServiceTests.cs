@@ -16,9 +16,9 @@ using System.Collections.Generic;
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {
     [Collection("BuildEngineCollection")]
-    public class BuildEngineBuildServiceTests : BaseTest<BuildEngineStartup>
+    public class BuildEngineReleaseServiceTests : BaseTest<BuildEngineStartup>
     {
-        public BuildEngineBuildServiceTests(TestFixture<BuildEngineStartup> fixture) : base(fixture)
+        public BuildEngineReleaseServiceTests(TestFixture<BuildEngineStartup> fixture) : base(fixture)
         {
         }
         const string skipAcceptanceTest = null; //"Acceptance Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
@@ -128,7 +128,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 ProjectId = project1.Id,
                 ProductDefinitionId = productDefinition1.Id,
                 StoreId = store1.Id,
-                WorkflowJobId = 1
+                WorkflowJobId = 1,
+                WorkflowBuildId = 2
             });
             product2 = AddEntity<AppDbContext, Product>(new Product
             {
@@ -136,203 +137,166 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 ProductDefinitionId = productDefinition1.Id,
                 StoreId = store1.Id,
                 WorkflowJobId = 1,
-                WorkflowBuildId = 2
+                WorkflowBuildId = 2,
+                WorkflowPublishId = 3
             });
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Product_Not_FoundAsync()
-        {
-            BuildTestData();
-            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            await buildBuildService.CreateBuildAsync(999);
-            // TODO: Verify notification
-        }
-        [Fact(Skip = skipAcceptanceTest)]
-        public async Task Build_Connection_UnavailableAsync()
+        public async Task Release_Connection_UnavailableAsync()
         {
             BuildTestData(false);
-            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id));
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildReleaseService.CreateReleaseAsync(product1.Id, "production"));
             Assert.Equal("Connection not available", ex.Message);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Build_CreateAsync()
+        public async Task Release_CreateAsync()
         {
             BuildTestData();
-            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
-            var mockRecurringTaskManager = Mock.Get(buildBuildService.RecurringJobManager);
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
+            var mockRecurringTaskManager = Mock.Get(buildReleaseService.RecurringJobManager);
             mockRecurringTaskManager.Reset();
             mockBuildEngine.Reset();
-            var buildResponse = new BuildResponse
+            var releaseResponse = new ReleaseResponse
             {
-                Id = 2,
-                JobId = 1,
+                Id = 3,
+                BuildId = 2,
                 Status = "initialized",
                 Result = "",
                 Error = ""
             };
-            mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>())).Returns(buildResponse);
-            await buildBuildService.CreateBuildAsync(product1.Id);
+            mockBuildEngine.Setup(x => x.CreateRelease(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Release>())).Returns(releaseResponse);
+            var release = new Release
+            {
+                Channel = "production"
+            };
+            await buildReleaseService.CreateReleaseAsync(product1.Id, "production");
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
-            mockBuildEngine.Verify(x => x.CreateBuild(It.Is<int>(b => b == product1.WorkflowJobId)));
-            var token = "CreateBuildMonitor" + product1.Id.ToString();
+            mockBuildEngine.Verify(x => x.CreateRelease(It.Is<int>(b => b == product1.WorkflowJobId),
+                                                        It.Is<int>(b => b == product1.WorkflowBuildId),
+                                                        It.Is<Release>(b => b.Channel == "production")));
+            var token = "CreateReleaseMonitor" + product1.Id.ToString();
             mockRecurringTaskManager.Verify(x => x.AddOrUpdate(
                 It.Is<string>(t => t == token),
                 It.Is<Job>(job =>
-                           job.Method.Name == "CheckBuild" &&
-                           job.Type == typeof(BuildEngineBuildService)),
+                           job.Method.Name == "CheckRelease" &&
+                           job.Type == typeof(BuildEngineReleaseService)),
                 It.Is<string>(c => c == "* * * * *"),
                 It.IsAny<RecurringJobOptions>()
             ));
             var products = ReadTestData<AppDbContext, Product>();
             var modifiedProduct = products.First(p => p.Id == product1.Id);
-            Assert.Equal(2, modifiedProduct.WorkflowBuildId);
+            Assert.Equal(3, modifiedProduct.WorkflowPublishId);
+            Assert.Null(modifiedProduct.DatePublished);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Build_Check_BuildAsync()
+        public async Task Release_Check_ReleaseAsync()
         {
             BuildTestData();
-            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
-            var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
-            mockWebRequestWrapper.Reset();
-            var modifiedArtifact1 = new ProductArtifact
+            var releaseResponse = new ReleaseResponse
             {
-                ProductId = product1.Id,
-                ArtifactType = "apk",
-                Url = "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7.apk",
-                ContentType = "application/octet-stream",
-                FileSize = 8684905,
-                LastModified = DateTime.UtcNow
-            };
-            var modifiedArtifact2 = new ProductArtifact
-            {
-                ProductId = product1.Id,
-                ArtifactType = "about",
-                Url = "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt",
-                ContentType = "text/plain",
-                FileSize = 1831,
-                LastModified = DateTime.UtcNow
-            };
-            var artifacts = new Dictionary<string, string>()
-            {
-                {"apk", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7.apk"},
-                {"about", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt"}
-            };
-            var buildResponse = new BuildResponse
-            {
-                Id = 2,
-                JobId = 1,
+                Id = 3,
+                BuildId = 2,
                 Status = "completed",
                 Result = "SUCCESS",
-                Error = "",
-                Artifacts = artifacts
+                Error = ""
             };
-            mockBuildEngine.Setup(x => x.GetBuild(It.Is<int>(i => i == product2.WorkflowJobId),
-                                                  It.Is<int>(b => b == product2.WorkflowBuildId)))
-                           .Returns(buildResponse);
-            mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
-                                                                                  a.ArtifactType == "apk")))
-                                 .Returns(modifiedArtifact1);
-            mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
-                                                                                  a.ArtifactType == "about")))
-                                 .Returns(modifiedArtifact2);
-            await buildBuildService.CheckBuildAsync(product2.Id);
+            mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(),
+                                                    It.IsAny<int>(),
+                                                    It.IsAny<int>()))
+                           .Returns(releaseResponse);
+            await buildReleaseService.CheckReleaseAsync(product2.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
-            var modifiedArtifacts = ReadTestData<AppDbContext, ProductArtifact>();
-            Assert.Equal(2, modifiedArtifacts.Count);
-            var modifiedApk = modifiedArtifacts.First(a => a.ArtifactType == modifiedArtifact1.ArtifactType);
-            Assert.Equal(modifiedArtifact1.Url, modifiedApk.Url);
-            Assert.Equal(modifiedArtifact1.ContentType, modifiedApk.ContentType);
-            Assert.Equal(modifiedArtifact1.FileSize, modifiedApk.FileSize);
+            mockBuildEngine.Verify(x => x.GetRelease(It.Is<int>(i => i == product2.WorkflowJobId),
+                                                     It.Is<int>(b => b == product2.WorkflowBuildId),
+                                                     It.Is<int>(r => r == product2.WorkflowPublishId)));
+            var products = ReadTestData<AppDbContext, Product>();
+            var modifiedProduct = products.First(p => p.Id == product2.Id);
+            Assert.NotNull(modifiedProduct.DatePublished);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Get_Build_Status_Unavailable()
+        public async Task Get_Release_Status_Unavailable()
         {
             BuildTestData();
-            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
 
-            var status = await buildBuildService.GetStatusAsync(product1.Id);
+            var status = await buildReleaseService.GetStatusAsync(product1.Id);
             Assert.Equal(BuildEngineStatus.Unavailable, status);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Get_Build_Status_Success()
+        public async Task Get_Release_Status_Success()
         {
             BuildTestData();
-            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
-            var artifacts = new Dictionary<string, string>()
+            var releaseResponse = new ReleaseResponse
             {
-                {"apk", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7.apk"},
-                {"about", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt"}
-            };
-
-            var buildResponse = new BuildResponse
-            {
-                Id = 2,
-                JobId = 1,
+                Id = 3,
+                BuildId = 2,
                 Status = "completed",
                 Result = "SUCCESS",
                 Error = "",
-                Artifacts = artifacts
             };
 
-            mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
-            var status = await buildBuildService.GetStatusAsync(product2.Id);
+            mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(releaseResponse);
+            var status = await buildReleaseService.GetStatusAsync(product2.Id);
             Assert.Equal(BuildEngineStatus.Success, status);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Get_Build_Status_In_Progress()
+        public async Task Get_Release_Status_In_Progress()
         {
             BuildTestData();
-            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
 
-            var buildResponse = new BuildResponse
+            var releaseResponse = new ReleaseResponse
             {
-                Id = 2,
-                JobId = 1,
+                Id = 3,
+                BuildId = 2,
                 Status = "active",
                 Result = "",
                 Error = ""
             };
 
-            mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
-            var status = await buildBuildService.GetStatusAsync(product2.Id);
+            mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(releaseResponse);
+            var status = await buildReleaseService.GetStatusAsync(product2.Id);
             Assert.Equal(BuildEngineStatus.InProgress, status);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Get_Build_Status_Failure()
+        public async Task Get_Release_Status_Failure()
         {
             BuildTestData();
-            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
 
-            var buildResponse = new BuildResponse
+            var releaseResponse = new ReleaseResponse
             {
-                Id = 2,
-                JobId = 1,
+                Id = 3,
+                BuildId = 2,
                 Status = "completed",
                 Result = "FAILURE",
                 Error = "Error"
             };
 
-            mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
-            var status = await buildBuildService.GetStatusAsync(product2.Id);
+            mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(releaseResponse);
+            var status = await buildReleaseService.GetStatusAsync(product2.Id);
             Assert.Equal(BuildEngineStatus.Failure, status);
         }
+
     }
 }
