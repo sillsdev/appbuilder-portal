@@ -88,5 +88,8 @@ jobs:
             - docker-ce
       script:
         # must cleanup root owned files
+        - sudo add-apt-repository ppa:deadsnakes/ppa
+        - sudo apt-get update
+        - sudo apt-get install python2.7
         - time ( sudo ./run clean:api )
         - time ./scripts/deploy-travis.sh $TRAVIS_COMMIT $TRAVIS_BRANCH
