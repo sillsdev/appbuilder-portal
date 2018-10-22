@@ -49,11 +49,16 @@ class ProductItem extends React.Component<IProps> {
       <div
         className='col flex w-100-xs-only
         flex-100 m-b-sm justify-content-space-between product-item'
-        data-test-product-item
+        data-test-project-product-item
       >
         <div className='flex align-items-center w-50'>
           <ProductIcon product={productDefinition} />
-          <div className='m-l-md'>{description}</div>
+          <div
+            data-test-project-product-name
+            className='m-l-md'
+          >
+            {description}
+          </div>
         </div>
         <div className='flex align-items-center  w-50'>
           <div className='position-relative w-30'>
