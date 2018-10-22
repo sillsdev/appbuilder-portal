@@ -18,7 +18,8 @@
     "save": "Save",
     "name": "Name",
     "abbreviation": "Abbreviation",
-    "general": "General Information"
+    "general": "General Information",
+    "notAvailable": "Not Available"
   },
   "auth": {
     "title": "Scriptoria",
@@ -155,6 +156,13 @@
         "myProjects": "My Projects",
         "archived": "Archived Projects"
       }
+    }
+  },
+  "productDefinitions": {
+    "name": {
+      "android_rab_s3": "Android RAB S3",
+      "android_dab_s3": "Android DAB S3",
+      "android_google_play": "Android Google Play"
     }
   },
   "project": {
