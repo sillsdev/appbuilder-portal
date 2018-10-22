@@ -158,6 +158,13 @@
       }
     }
   },
+  "productDefinitions": {
+    "name": {
+      "android_rab_s3": "Android RAB S3",
+      "android_dab_s3": "Android DAB S3",
+      "android_google_play": "Android Google Play"
+    }
+  },
   "project": {
     "title": "Project",
     "newProject": "New Project",

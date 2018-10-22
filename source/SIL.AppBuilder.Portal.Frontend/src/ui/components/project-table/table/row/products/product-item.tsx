@@ -58,19 +58,26 @@ class ProductItem extends React.Component<IProps> {
     });
   }
 
+  humanReadableName = () => {
+    const { t, productDefinition } = this.props;
+    const { name } = attributesFor(productDefinition);
+
+    const readableName = name && t(`productDefinitions.name.${name}`);
+
+    return readableName;
+  }
+
   render() {
     const { product, productDefinition } = this.props;
-    const { name } = attributesFor(productDefinition);
 
     const activeProductColumns = this.getActiveProductColumns();
 
-    const readableName = name && name.replace(/_/g, ' ');
 
     return (
       <div className='flex flex-column-xxs flex-row-xs grid product'>
         <div className='col flex align-items-center w-100-xs-only flex-100'>
           <ProductIcon product={productDefinition} />
-          <span className='p-l-sm-xs'>{readableName}</span>
+          <span className='p-l-sm-xs'>{this.humanReadableName()}</span>
         </div>
 
         { activeProductColumns.map((column, i) => (
