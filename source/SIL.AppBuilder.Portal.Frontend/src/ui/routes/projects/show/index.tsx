@@ -92,9 +92,7 @@ class Project extends React.Component<IProps> {
       t('project.public') :
       t('project.private');
 
-    const createdFromNow = timezone ?
-      moment(dateCreated + "Z").tz(timezone).fromNow() :
-      moment(dateCreated).fromNow()
+    const createdFromNow = moment(dateCreated + "Z").tz(timezone).fromNow();
 
     return (
       <div className='ui container project-details' data-test-project>

@@ -10,13 +10,13 @@ import { ProductResource, ProductDefinitionResource, OrganizationResource } from
 
 interface IOwnProps {
   organization: OrganizationResource;
-  selected: ProductResource[],
+  selected: ProductResource[];
   onSelectionChange: (item: ProductDefinitionResource) => void;
 }
 
 type IProps =
   & IOwnProps
-  & i18nProps
+  & i18nProps;
 
  @withTemplateHelpers
  class ProductModal extends React.Component<IProps> {
@@ -25,7 +25,7 @@ type IProps =
 
   state = {
     isModalOpen: false
-  }
+  };
 
   render() {
 
@@ -35,12 +35,13 @@ type IProps =
 
     const multiSelectProps = {
       organization,
-      selected: selected,
+      selected,
       onChange: onSelectionChange
     };
 
     const trigger = (
       <button
+        data-test-project-products-manage-button
         className='ui button'
         onClick={toggleModal}
       >

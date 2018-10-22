@@ -75,11 +75,11 @@ class Products extends React.Component<IProps> {
     } else {
       productList = products.map((product, i) =>
         <ProductItem key={i} product={product} includeHeader={i === 0} />
-      )
+      );
     }
 
     return (
-      <div className='product'>
+      <div data-test-project-products className='product'>
         <h3 className='m-b-md'>{t('project.products.title')}</h3>
         <div className='m-b-lg'>
           {productList}

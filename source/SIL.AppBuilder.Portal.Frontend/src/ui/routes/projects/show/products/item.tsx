@@ -12,7 +12,10 @@ import {
 
 import ItemActions from './item-actions';
 import ProductIcon from '@ui/components/product-icon';
-import { withMomentTimezone, IProvidedProps as TimezoneProps } from '@lib/with-moment-timezone';
+import {
+  withMomentTimezone,
+  IProvidedProps as TimezoneProps
+} from '@lib/with-moment-timezone';
 
 interface IOwnProps {
   includeHeader?: boolean;
@@ -22,7 +25,7 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
-  & TimezoneProps
+  & TimezoneProps;
 
 const mapRecordsToProps = (passedProps) => {
   const { product } = passedProps;
@@ -39,13 +42,8 @@ class ProductItem extends React.Component<IProps> {
     const { description } = attributesFor(productDefinition);
     const { dateUpdated, datePublished } = attributesFor(product);
 
-    const dateUpdatedTZ = timezone ?
-      moment(dateUpdated + "Z").tz(timezone) :
-      moment(dateUpdated);
-
-    const datePublishedTZ = timezone ?
-      moment(datePublished + "Z").tz(timezone) :
-      moment(datePublished);
+    const dateUpdatedTZ = moment(dateUpdated + "Z").tz(timezone);
+    const datePublishedTZ = moment(datePublished + "Z").tz(timezone);
 
     return (
       <div
@@ -64,13 +62,13 @@ class ProductItem extends React.Component<IProps> {
               {dateUpdatedTZ.fromNow(true)}
             </span>
           </div>
-          <div className='position-relative m-l-md w-30'>
+          <div className='position-relative m-l-sm w-30'>
             {includeHeader ? <div className='item-title'>Published</div> : ''}
             <span title={datePublishedTZ.format('MMMM Do YYYY, h:mm:ss')}>
               {datePublished ? datePublishedTZ.fromNow(true) : 'unpublished'}
             </span>
           </div>
-          <div className='m-l-md w-30'>
+          <div className='m-l-sm w-30'>
             <button className='ui button'>REBUILD</button>
           </div>
           <div className='flex w-10 m-l-md'>

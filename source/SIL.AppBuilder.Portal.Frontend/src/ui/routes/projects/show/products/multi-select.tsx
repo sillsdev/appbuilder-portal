@@ -22,7 +22,7 @@ function withData(WrapperComponent) {
 
     state = {
       list: null
-    }
+    };
 
     loadData = async () => {
 
@@ -53,7 +53,7 @@ function withData(WrapperComponent) {
         emptyListLabel: t('project.products.popup.empty'),
         onChange,
         ...this.props
-      }
+      };
 
       return <WrapperComponent {...componentProps}/>;
     }

@@ -55,8 +55,6 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
       );
     }
 
-    debugger;
-
     return (
       <div data-test-multi-select>
       {

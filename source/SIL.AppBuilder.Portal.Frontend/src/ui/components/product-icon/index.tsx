@@ -9,7 +9,7 @@ import { ProductDefinitionResource, ProductResource } from '@data';
 const colorStyles = {
   android: { color: '#a4c639' },
   html: { color: '#f5a623' }
-}
+};
 
 const iconMap = {
   android: () => <AndriodIcon style={colorStyles.android} />,

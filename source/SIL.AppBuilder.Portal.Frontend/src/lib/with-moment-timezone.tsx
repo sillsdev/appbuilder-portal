@@ -24,7 +24,7 @@ export function withMomentTimezone(WrappedComponent) {
 
       const timeProps = {
         moment,
-        timezone
+        timezone: timezone || moment.tz.guess()
       };
 
       return <WrappedComponent {...this.props} {...timeProps} />;
