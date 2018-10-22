@@ -31,8 +31,9 @@ class Reviewers extends React.Component<IProps> {
     isAddFormVisible: false
   };
 
-  toggleAddForm = () => {
-   this.setState({ isAddFormVisible: !this.state.isAddFormVisible });
+  toggleAddForm = (e) => {
+    e.preventDefault();
+    this.setState({ isAddFormVisible: !this.state.isAddFormVisible });
   }
 
   render() {
