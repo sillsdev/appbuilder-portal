@@ -51,6 +51,7 @@ type IProps =
 
     return (
       <Modal
+        data-test-project-product-popup
         open={isModalOpen}
         trigger={trigger}
         className='medium products-modal'
@@ -63,6 +64,7 @@ type IProps =
         </Modal.Content>
         <Modal.Actions>
           <button
+            data-test-project-product-close-button
             className='ui button huge'
             onClick={toggleModal}
           >
