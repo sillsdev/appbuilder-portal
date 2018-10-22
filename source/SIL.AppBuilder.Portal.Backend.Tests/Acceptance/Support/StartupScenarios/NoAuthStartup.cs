@@ -31,9 +31,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
             {
                 services.AddAuthentication(options =>
                 {
-                    // options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                    // options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                    // options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
                 }).AddFakeJwtBearer();//.AddJwtBearer();
                 
                 // services.AddAuthorization(options =>
