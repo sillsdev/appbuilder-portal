@@ -168,7 +168,7 @@
     "public": "Public",
     "private": "Private",
     "visibilityLabel": "Public",
-    "visibilityDescription": "If you make your project Private, it will not be viewable in the directory or accessible by other organizations",
+    "visibilityDescription": "If you make your project Private, it will not be visible in the directory or accessible by other organizations",
     "createdOn": "Created",
     "overview": "Overview",
     "dropdown": {
