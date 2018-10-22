@@ -89,12 +89,9 @@ export function withDataActions<T>(WrappedComponent) {
       });
 
       if (productSelected) {
-
-        return dataStore.update(q => q.removeRecord({
-          type: 'product',
-          id: productSelected.id
-        }), defaultOptions());
-
+        return dataStore.update(q =>
+          q.removeRecord(productSelected), defaultOptions()
+        );
       }
 
       return dataStore.update(q => q.addRecord({
