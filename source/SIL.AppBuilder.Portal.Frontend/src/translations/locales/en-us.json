@@ -189,7 +189,11 @@
         "title": "Select Products",
         "done": "Done",
         "empty": "No products available"
-      }
+      },
+      "updated": "Updated",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "rebuild": "REBUILD"
     },
     "settings": {
       "title": "Settings",

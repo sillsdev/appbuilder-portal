@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-import * as moment from 'moment-timezone';
 
 import {
   ProductResource,
@@ -16,6 +15,8 @@ import {
   withMomentTimezone,
   IProvidedProps as TimezoneProps
 } from '@lib/with-moment-timezone';
+import TimezoneLabel from '@ui/components/timezone-label';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   includeHeader?: boolean;
@@ -25,7 +26,8 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
-  & TimezoneProps;
+  & TimezoneProps
+  & i18nProps;
 
 const mapRecordsToProps = (passedProps) => {
   const { product } = passedProps;
@@ -38,12 +40,9 @@ class ProductItem extends React.Component<IProps> {
 
   render() {
 
-    const { product, productDefinition, timezone, includeHeader } = this.props;
+    const { product, productDefinition, t, includeHeader } = this.props;
     const { description } = attributesFor(productDefinition);
     const { dateUpdated, datePublished } = attributesFor(product);
-
-    const dateUpdatedTZ = moment(dateUpdated + "Z").tz(timezone);
-    const datePublishedTZ = moment(datePublished + "Z").tz(timezone);
 
     return (
       <div
@@ -62,19 +61,15 @@ class ProductItem extends React.Component<IProps> {
         </div>
         <div className='flex align-items-center  w-50'>
           <div className='position-relative w-30'>
-            {includeHeader ? <div className='item-title'>Updated</div> : ''}
-            <span title={dateUpdatedTZ.format('MMMM Do YYYY, h:mm:ss')}>
-              {dateUpdatedTZ.fromNow(true)}
-            </span>
+            {includeHeader ? <div className='item-title'>{t('project.products.updated')}</div> : ''}
+            <TimezoneLabel dateTime={dateUpdated}/>
           </div>
           <div className='position-relative m-l-sm w-30'>
-            {includeHeader ? <div className='item-title'>Published</div> : ''}
-            <span title={datePublishedTZ.format('MMMM Do YYYY, h:mm:ss')}>
-              {datePublished ? datePublishedTZ.fromNow(true) : 'unpublished'}
-            </span>
+            {includeHeader ? <div className='item-title'>{t('project.products.published')}</div> : ''}
+            <TimezoneLabel dateTime={datePublished} emptyLabel={t('project.products.unpublished')} />
           </div>
           <div className='m-l-sm w-30'>
-            <button className='ui button'>REBUILD</button>
+            <button className='ui button'>{t('project.products.rebuild')}</button>
           </div>
           <div className='flex w-10 m-l-md'>
             <ItemActions />
@@ -88,7 +83,7 @@ class ProductItem extends React.Component<IProps> {
 }
 
 export default compose(
+  withTranslations,
   withOrbit(mapRecordsToProps),
-  withLoader(({productDefinition}) => !productDefinition),
-  withMomentTimezone
+  withLoader(({productDefinition}) => !productDefinition)
 )(ProductItem);
