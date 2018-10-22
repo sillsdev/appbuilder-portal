@@ -23,6 +23,7 @@
   background: transparent;
   opacity: 1;
 }
+.p-relative { position: relative !important; }
 
 @each $breakpoint in map-keys($grid-breakpoints) {
   @include media-breakpoint-only($breakpoint) {

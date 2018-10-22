@@ -18,7 +18,8 @@
     "save": "Save",
     "name": "Name",
     "abbreviation": "Abbreviation",
-    "general": "General Information"
+    "general": "General Information",
+    "notAvailable": "Not Available"
   },
   "auth": {
     "title": "Scriptoria",
