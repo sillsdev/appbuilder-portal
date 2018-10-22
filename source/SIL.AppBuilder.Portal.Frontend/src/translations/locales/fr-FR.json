@@ -18,7 +18,8 @@
     "save": "Save",
     "name": "Name",
     "abbreviation": "Abbreviation",
-    "general": "General Information"
+    "general": "General Information",
+    "notAvailable": "Not Available"
   },
   "auth": {
     "title": "Scriptoria",
@@ -94,7 +95,11 @@
 
   },
   "productDefinitions": {
-    "all": "All Products"
+    "name": {
+      "android_rab_s3": "Android RAB S3",
+      "android_dab_s3": "Android DAB S3",
+      "android_google_play": "Android Google Play"
+    }
   },
   "profile": {
     "title": "Profile",
@@ -170,7 +175,7 @@
     "public": "Public",
     "private": "Private",
     "visibilityLabel": "Public",
-    "visibilityDescription": "If you make your project Private, it will not be viewable in the directory or accessible by other organizations",
+    "visibilityDescription": "If you make your project Private, it will not be visible in the directory or accessible by other organizations",
     "createdOn": "Created",
     "overview": "Overview",
     "dropdown": {
@@ -199,8 +204,8 @@
         "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products and their Artifacts"
       },
       "visibility": {
-        "title": "Projectc visibility",
-        "description": "Public Projects allow any Scriptoria User to view your project in the Directory."
+        "title": "Project visibility",
+        "description": "Allows any Scriptoria user to view your project in the Directory"
       }
     },
     "side": {
