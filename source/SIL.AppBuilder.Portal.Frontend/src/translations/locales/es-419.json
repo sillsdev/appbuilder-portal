@@ -177,7 +177,8 @@
     "dropdown": {
       "transfer": "Transferir propiedad",
       "archive": "Archivar",
-      "reactivate": "Reactivar"
+      "reactivate": "Reactivar",
+      "build": "Build"
     },
     "details": {
       "title": "Detalles",
