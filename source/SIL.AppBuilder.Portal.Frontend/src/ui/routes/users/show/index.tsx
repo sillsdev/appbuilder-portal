@@ -28,7 +28,7 @@ class User extends React.Component<IProps> {
     const { t, user: userData } = this.props;
     const user = userData.attributes;
 
-    const fullname = `${user.givenName || ''} ${user.familyName || ''}`;
+    const fullname = user.name;
     const phone = user.phone ? user.phone : t('profile.noPhone');
     const timezone = user.timezone ? `(${user.timezone})` : t('profile.noTimezone');
 

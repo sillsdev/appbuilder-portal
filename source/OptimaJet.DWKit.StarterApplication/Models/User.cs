@@ -8,6 +8,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class User : Identifiable, ITrackDate
     {
+        // Full Name of User
+        // Comes from Auth0 (trusting that they handle correct order)
         [Attr("name")]
         public string Name { get; set; }
 
@@ -67,13 +69,6 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [NotMapped]
         public IEnumerable<int> OrganizationIds => OrganizationMemberships?.Select(o => o.OrganizationId);
-
-        [NotMapped]
-        public string FullName {
-            get {
-                return this.GivenName + " " + this.FamilyName;
-            }
-        }
 
         public bool HasRole(RoleName role) {
             var userRole = this
