@@ -177,7 +177,8 @@
     "dropdown": {
       "transfer": "Transfer Ownership",
       "archive": "Archive",
-      "reactivate": "Reactivate"
+      "reactivate": "Reactivate",
+      "build": "Build"
     },
     "details": {
       "title": "Details",
