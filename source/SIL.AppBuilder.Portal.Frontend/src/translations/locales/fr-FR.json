@@ -191,7 +191,16 @@
     "products": {
       "title": "Products",
       "empty": "You have no products for this project.",
-      "add": "add product"
+      "manage": "manage products",
+      "popup": {
+        "title": "Select Products",
+        "done": "Done",
+        "empty": "No products available"
+      },
+      "updated": "Updated",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "rebuild": "REBUILD"
     },
     "settings": {
       "title": "Settings",
