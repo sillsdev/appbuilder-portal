@@ -226,6 +226,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             return obj;
         }
 
+        protected DbSet<TEntity> GetDbSet<TEntity>() 
+            where TEntity : class
+        {
+            var context = _fixture.GetService<AppDbContext>();
+            var dbSet = context.Set<TEntity>();
+
+            return dbSet;
+        }
+
         protected void NeedsRoles()
         {
             NeedsTestData<AppDbContext, Role>(new List<Role> {
