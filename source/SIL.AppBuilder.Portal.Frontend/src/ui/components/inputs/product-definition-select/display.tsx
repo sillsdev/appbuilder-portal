@@ -26,11 +26,13 @@ export class Display extends React.Component<IProps> {
   render() {
     const { productDefinitions, defaultValue, t, ...otherProps } = this.props;
 
-    const options = [{ text: t('productDefinitions.all'), value: 'all' }].concat(
-      productDefinitions.map(pd => ({
-        text: attributesFor(pd).name || '',
-        value: pd.id
-      }))
+    const options = [{ text: t('productDefinitions.filterAllProjects'), value: 'all' }]
+    .concat(productDefinitions.map(pd => {
+        const name = attributesFor(pd).name;
+        const text = t(`productDefinitions.name.${name}`);
+
+        return { text, value: pd.id };
+      })
     );
 
     const dropdownProps = {

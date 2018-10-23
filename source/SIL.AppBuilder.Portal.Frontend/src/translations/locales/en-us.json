@@ -92,9 +92,6 @@
     "buildEngineApiAccessToken": "Build Engine API Access Token"
   },
   "products": {},
-  "productDefinitions": {
-    "all": "All Products"
-  },
   "profile": {
     "title": "Profile",
     "pictureTitle": "Profile Picture",
@@ -159,10 +156,15 @@
     }
   },
   "productDefinitions": {
+    "filterAllProjects": "All Projects",
     "name": {
       "android_rab_s3": "Android RAB S3",
       "android_dab_s3": "Android DAB S3",
-      "android_google_play": "Android Google Play"
+      "android_google_play": "Android Google Play",
+      "android_amazon_app": "Android Amazon App",
+      "android_scripture_earth": "Android Scripture Earth",
+      "android_s3": "Android S3",
+      "android_kalaam_site": "Android Kalaam Site"
     }
   },
   "project": {
