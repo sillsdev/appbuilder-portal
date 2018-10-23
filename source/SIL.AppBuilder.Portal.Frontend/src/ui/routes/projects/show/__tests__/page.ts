@@ -7,6 +7,7 @@ import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
 import userInteractor from '@ui/components/inputs/user-select/__tests__/page';
 import reviewerInteractor from '@ui/routes/projects/show/reviewers/__tests__/page';
 import detailsInteratctor from '@ui/routes/projects/show/details/__tests__/page';
+import productsInteractor from '../products/-page';
 
 @interactor
 export class ProjectInteractor {
@@ -24,6 +25,7 @@ export class ProjectInteractor {
   userSelect = userInteractor;
   reviewers = reviewerInteractor;
   detailsInteractor = detailsInteratctor;
+  productsInteractor = productsInteractor;
 }
 
 export default new ProjectInteractor('[data-test-project]');

@@ -121,14 +121,16 @@ const schemaDefinition: SchemaSettings = {
     product: {
       keys: { remoteId: {} },
       attributes: {
-        dateCreated: { type: 'date'},
-        dateUpdated: { type: 'date'},
-        datePublished: { type: 'date'},
+        dateCreated: { type: 'string'},
+        dateUpdated: { type: 'string'},
+        datePublished: { type: 'string'},
       },
       relationships: {
-        tasks: { type: 'hasMany', model: 'task', inverse: 'project' },
         project: { type: 'hasOne', model: 'project', inverse: 'products' },
-        productDefinition: { type: 'hasOne', model: 'productDefinition', inverse: 'products' }
+        productDefinition: { type: 'hasOne', model: 'productDefinition', inverse: 'products' },
+        store: { type: 'hasOne', model: 'store', inverse: 'products' },
+        storeLanguage: { type: 'hasOne', model: 'storeLanguage', inverse: 'products' },
+        tasks: { type: 'hasMany', model: 'task', inverse: 'project' }, // TODO: doesn't exist in DB
       }
     },
     productDefinition: {
@@ -151,7 +153,19 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         organizationStores: { type: 'hasMany', model: 'organizationStore', inverse: 'store' },
-        storeType: { type: 'hasOne', model: 'storeType', inverse: 'stores'}
+        storeType: { type: 'hasOne', model: 'storeType', inverse: 'stores' },
+        products: { type: 'hasMany', model: 'product', inverse: 'store'}
+      }
+    },
+    storeLanguage: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' },
+        description: { type: 'string' }
+      },
+      relationships: {
+        storeType: { type: 'hasOne', model: 'storeType', inverse: 'storeTypes' },
+        products: { type: 'hasMany', model: 'product', inverse: 'storeLanguage' },
       }
     },
     storeType: {
@@ -161,7 +175,9 @@ const schemaDefinition: SchemaSettings = {
         description: { type: 'string' }
       },
       relationships: {
-        stores: { type: 'hasMany', model: 'store', inverse: 'storeType'}
+        stores: { type: 'hasMany', model: 'store', inverse: 'storeType'},
+        storeLanguages: { type: 'hasMany', model: 'storeLanguage', inverse: 'storeType' },
+
       }
     },
     task: {

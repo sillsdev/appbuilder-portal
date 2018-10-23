@@ -6,9 +6,14 @@ import MissingIcon from '@material-ui/icons/ErrorOutline';
 import { attributesFor } from '@data';
 import { ProductDefinitionResource, ProductResource } from '@data';
 
+const colorStyles = {
+  android: { color: '#a4c639' },
+  html: { color: '#f5a623' }
+};
+
 const iconMap = {
-  android: () => <AndriodIcon />,
-  html: () => <WebIcon />,
+  android: () => <AndriodIcon style={colorStyles.android} />,
+  html: () => <WebIcon style={colorStyles.html} />,
   [undefined]: () => <MissingIcon />
 };
 

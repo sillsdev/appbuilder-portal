@@ -1,31 +1,44 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { defaultOptions, PROJECTS_TYPE } from '@data';
+import { defaultOptions, ProjectResource, ProductResource, relationshipFor } from '@data';
 import { ProjectAttributes } from '@data/models/project';
-import { ResourceObject } from 'jsonapi-typescript';
 import { recordIdentityFromKeys } from '@data/store-helpers';
-import { compose } from 'recompose';
 import { requireProps } from '@lib/debug';
-
+import { ProductDefinitionResource } from '@data/models/product-definition';
 
 export interface IProvidedProps {
   updateAttribute: (attribute: string, value: any) => Promise<any>;
   updateAttributes: (attrs: ProjectAttributes) => any;
   updateGroup: (groupId: Id) => any;
   updateOwner: (userId: Id) => any;
+  updateProduct: (productDefinition: ProductDefinitionResource) => any;
 }
 
 interface IOwnProps {
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  project: ProjectResource;
+  products: ProductResource[];
 }
 
 type IProps =
   & IOwnProps
   & WithDataProps;
 
+const mapRecordsToProps = (passedProps) => {
+
+  const { project } = passedProps;
+
+  return {
+    products: q =>
+      q.findRelatedRecords(project, 'products')
+  };
+};
+
 export function withDataActions<T>(WrappedComponent) {
+
   class ProjectDataActionWrapper extends React.Component<IProps & T> {
+
     updateAttribute = async (attribute: string, value: any) => {
       const { project, dataStore } = this.props;
 
@@ -66,13 +79,40 @@ export function withDataActions<T>(WrappedComponent) {
       ), defaultOptions());
     }
 
+    updateProduct = (productDefinition) => {
+
+      const { project, products, dataStore } = this.props;
+
+      const productSelected = products.find(product => {
+        const { data } = relationshipFor(product, 'productDefinition');
+        return data.id === productDefinition.id;
+      });
+
+      if (productSelected) {
+        return dataStore.update(q =>
+          q.removeRecord(productSelected), defaultOptions()
+        );
+      }
+
+      return dataStore.update(q => q.addRecord({
+        type: 'product',
+        attributes: {},
+        relationships: {
+          project: { data: project },
+          productDefinition: { data: productDefinition }
+        }
+      }), defaultOptions());
+
+    }
+
     render() {
       const props = {
         ...this.props,
         updateAttributes: this.updateAttributes,
         updateAttribute: this.updateAttribute,
         updateGroup: this.updateGroup,
-        updateOwner: this.updateOwner
+        updateOwner: this.updateOwner,
+        updateProduct: this.updateProduct
       };
 
       return <WrappedComponent { ...props } />;
@@ -80,7 +120,7 @@ export function withDataActions<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit({}),
+    withOrbit(mapRecordsToProps),
     requireProps('project')
   )(ProjectDataActionWrapper);
 }

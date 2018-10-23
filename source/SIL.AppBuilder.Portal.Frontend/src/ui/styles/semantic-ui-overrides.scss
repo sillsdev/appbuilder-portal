@@ -174,3 +174,44 @@ Card
   font-weight: bold;
   color: $gray;
 }
+
+/***********************************
+Modal
+************************************/
+.ui.modals.dimmer {
+  display: flex !important;
+  background-color: $dimmer-background-color;
+}
+
+.ui.modal {
+  margin-top: 0px !important;
+}
+
+.ui.modal > .close-modal {
+  position: absolute;
+  right: 16px;
+  top: 23px;
+  width: 34px;
+  height: 34px;
+  color: $dimmer-background-color;
+  cursor: pointer;
+}
+
+@include media-breakpoint-up('sm') {
+  .ui.medium.modal {
+    width: 88%;
+  }
+}
+
+@include media-breakpoint-up('md') {
+  .ui.medium.modal {
+    width: 580px;
+  }
+}
+
+@include media-breakpoint-up('xl') {
+  .ui.medium.modal {
+    width: 604px;
+  }
+}
+
