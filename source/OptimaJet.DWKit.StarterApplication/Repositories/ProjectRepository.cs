@@ -100,10 +100,6 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             return base.Get().Where(p => p.IsPublic == true || orgIds.Contains(p.OrganizationId));
         }
 
-        public override Task<Project> UpdateAsync(int id, Project entity) {
-            return base.UpdateAsync(id, entity);
-        }
-
         private bool Like(string value, string search) 
         {
             return EF.Functions.Like(value, $"%{search}%");

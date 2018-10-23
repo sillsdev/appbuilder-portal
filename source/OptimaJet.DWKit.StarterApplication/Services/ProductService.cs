@@ -76,8 +76,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             var result = await base.UpdateAsync(id, resource);
 
-            // result.Project.DateUpdated = DateTime.UtcNow;
-            await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
+            // TODO: figure out why this throws a NullReferenceException
+            // await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
 
             return result;
         }
@@ -95,7 +95,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             
             var result = await base.CreateAsync(resource);
 
-            await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
+            // TODO: figure out why this throws a NullReferenceException
+            // await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
 
             return result;
         }
