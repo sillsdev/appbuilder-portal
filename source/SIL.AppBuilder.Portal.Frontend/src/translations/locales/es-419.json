@@ -210,8 +210,8 @@
         "description": "Cuando está configuración está activa, cualquier usuario de Scriptoria que pueda ver su proyecto en el directorio, podrá descargarlo junto con sus artefactos"
       },
       "visibility": {
-        "title": "Project visibility",
-        "description": "Allows any Scriptoria user to view your project in the Directory"
+        "title": "Public Visibility",
+        "description": "Public Projects allow any Scriptoria User to view your project in the Directory"
       }
     },
     "side": {
