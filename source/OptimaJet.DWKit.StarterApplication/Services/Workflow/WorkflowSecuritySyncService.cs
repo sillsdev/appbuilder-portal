@@ -111,7 +111,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         private String DwUserName(User user)
         {
             if (!String.IsNullOrWhiteSpace(user.Name)) return user.Name;
-            if (!String.IsNullOrWhiteSpace(user.FullName)) return user.FullName;
             if (!String.IsNullOrEmpty(user.FamilyName)) return user.FamilyName;
             if (!String.IsNullOrEmpty(user.GivenName)) return user.GivenName;
             return user.Id.ToString();

@@ -77,7 +77,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                         Like(p.Name, value) 
                         || Like(p.Language, value)
                         || Like(p.Organization.Name, value)
-                        || Like(p.Owner.FullName, value)
+                        || Like(p.Owner.Name, value)
                     ));
             }
 
