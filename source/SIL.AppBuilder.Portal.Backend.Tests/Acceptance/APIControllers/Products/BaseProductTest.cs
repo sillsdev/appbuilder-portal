@@ -2,6 +2,7 @@
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
 {

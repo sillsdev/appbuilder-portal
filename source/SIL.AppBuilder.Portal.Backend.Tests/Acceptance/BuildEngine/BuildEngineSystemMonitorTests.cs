@@ -7,6 +7,7 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.BuildEngineApiClient;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine

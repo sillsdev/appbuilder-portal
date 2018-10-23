@@ -15,6 +15,8 @@ using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication;
 using Xunit;
 using System.Net;
+using OptimaJet.DWKit.StarterApplication.Services;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios.ServiceOverrides;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 {
@@ -222,6 +224,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             context.SaveChanges();
 
             return obj;
+        }
+
+        protected void NeedsRoles()
+        {
+            NeedsTestData<AppDbContext, Role>(new List<Role> {
+                new Role { RoleName = RoleName.SuperAdmin },
+                new Role { RoleName = RoleName.OrganizationAdmin },
+                new Role { RoleName = RoleName.AppBuilder }
+            });
         }
 
 

@@ -3,7 +3,7 @@ using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
-namespace SIL.AppBuilder.Portal.Backend.Tests
+namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios.ServiceOverrides
 {
 
     public class TestScopedServiceProvider : IScopedServiceProvider
