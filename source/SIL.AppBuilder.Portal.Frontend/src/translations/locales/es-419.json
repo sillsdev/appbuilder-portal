@@ -27,10 +27,10 @@
     "login": "Ingresar"
   },
   "directory": {
-    "title": "Project Directory {numProjects, plural, =0 {} other {({ numProjects })}}",
+    "title": "Directorio de proyectos ({ numProjects })",
     "search-help": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name",
     "filters": {
-      "dateRange": "Project Updated Date Between"
+      "dateRange": "Rango de Fechas"
     }
   },
   "header": {
@@ -65,7 +65,7 @@
     "allOrganizations": "Todas las organizaciones",
     "createSuccess": "¡Organización creada exitosamente!",
     "settingsTitle": "Configuración de organización",
-    "logoUrl": "Logo URL",
+    "logoUrl": "Seleccionar logo",
     "noteLogUrl": "Note: For optimal quality use a square image",
     "productsTitle": "Productos y Publicaciones",
     "makePrivateTitle": "Hacer Proyectos públicos por defecto",
@@ -76,7 +76,7 @@
     "storeSelectTitle": "Select all the stores you would like to make available to your organization",
     "nostores": "No stores available",
     "navBasic": "Información básica",
-    "navProducts": "Products & Publishing",
+    "navProducts": "Productos",
     "navStores": "Stores",
     "navGroups": "Grupos",
     "navInfrastructure": "Infraestructura",
@@ -171,7 +171,7 @@
     "public": "Público",
     "private": "Privado",
     "visibilityLabel": "Público",
-    "visibilityDescription": "If you make your project Private, it will not be visible in the directory or accessible by other organizations",
+    "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesible por otras organizaciones",
     "createdOn": "Creado",
     "overview": "Información",
     "dropdown": {
@@ -188,7 +188,7 @@
     "products": {
       "title": "Productos",
       "empty": "No tiene productos para este proyecto.",
-      "manage": "manage products",
+      "manage": "agregar producto",
       "popup": {
         "title": "Select Products",
         "done": "Done",
