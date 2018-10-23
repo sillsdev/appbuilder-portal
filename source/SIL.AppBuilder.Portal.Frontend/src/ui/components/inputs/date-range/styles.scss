@@ -15,6 +15,12 @@
   }
 }
 
+.date-range-input-with-label {
+  svg {
+    pointer-events: none;
+  }
+}
+
 .DayPickerInput {
   width: 100%;
   text-align: right;
@@ -25,5 +31,6 @@
     color: #515151;
     padding: 7px;
     border: 0;
+    width: 100%;
   }
 }

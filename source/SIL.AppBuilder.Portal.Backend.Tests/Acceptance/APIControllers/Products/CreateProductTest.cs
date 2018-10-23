@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using OptimaJet.DWKit.StarterApplication.Models;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
@@ -44,6 +45,45 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             Assert.Equal(project1.Id, product.ProjectId);
             Assert.Equal(productDefinition1.Id, product.ProductDefinitionId);
         }
+
+        [Fact (Skip = "Enabling the updating of a Project in the Product service throws a NullReferenceException. Reason unknown. Unable to debug libraries with VS Code - Preston")]
+        public async Task Create_Product_Updates_Project()
+        {
+            BuildTestData();
+
+            var originalUpdated = project1.DateUpdated;
+
+            var content = new
+            {
+                data = new
+                {
+                    type = "products",
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"project", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "projects" },
+                                    { "id", project1.Id.ToString() }
+                                }}}},
+                            {"product-definition", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "product-definitions" },
+                                    { "id", productDefinition1.Id.ToString() }
+                            }}}}
+                        }
+                }
+            };
+            var response = await Post("/api/products/", content);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            var project = GetDbSet<Project>().Find(project1.Id);
+
+            var updated = project.DateUpdated;
+
+            Assert.NotEqual(originalUpdated, updated);
+        }
+
+
         [Fact]
         public async Task Create_Product_With_Store()
         {

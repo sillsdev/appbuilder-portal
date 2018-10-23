@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
+import { titleize } from 'inflected';
 
 import { attributesFor } from '@data/helpers';
 
@@ -8,7 +9,7 @@ import ProductIcon from '@ui/components/product-icon';
 import { ProductResource, ProductDefinitionResource } from '@data/models/product';
 
 import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
-import { withTranslations } from '@lib/i18n';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { IProvidedProps as IColumnProps } from '../../with-table-columns';
 import { COLUMN_KEY } from '../../column-data';
@@ -21,11 +22,12 @@ interface IOwnProps {
 type IProps =
   & IOwnProps
   & IColumnProps
+  & i18nProps
   & TimeProps;
 
 class ProductItem extends React.Component<IProps> {
   getActiveProductColumns = () => {
-    const { product, moment, timezone, activeProductColumns, productDefinition } = this.props;
+    const { t, product, moment, timezone, activeProductColumns, productDefinition } = this.props;
 
     const {
       buildVersion,
@@ -41,7 +43,7 @@ class ProductItem extends React.Component<IProps> {
           column.value = moment.tz(buildDate, timezone).format('L');
           break;
         case COLUMN_KEY.PRODUCT_BUILD_VERSION:
-          column.value = buildVersion;
+          column.value = buildVersion || t('common.notAvailable');
           break;
         case COLUMN_KEY.PRODUCT_CREATED_ON:
           column.value = moment.tz(createdOn, timezone).format('L');
@@ -57,16 +59,26 @@ class ProductItem extends React.Component<IProps> {
     });
   }
 
+  humanReadableName = () => {
+    const { t, productDefinition } = this.props;
+    const { name } = attributesFor(productDefinition);
+
+    const readableName = titleize(name);
+
+    return readableName;
+  }
+
   render() {
     const { product, productDefinition } = this.props;
 
     const activeProductColumns = this.getActiveProductColumns();
 
+
     return (
       <div className='flex flex-column-xxs flex-row-xs grid product'>
         <div className='col flex align-items-center w-100-xs-only flex-100'>
           <ProductIcon product={productDefinition} />
-          <span className='p-l-sm-xs'>{name}</span>
+          <span className='p-l-sm-xs'>{this.humanReadableName()}</span>
         </div>
 
         { activeProductColumns.map((column, i) => (

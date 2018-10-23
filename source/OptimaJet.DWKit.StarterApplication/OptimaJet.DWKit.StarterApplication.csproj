@@ -57,7 +57,7 @@
     <PackageReference Include="SparkPostDotNet" Version="0.3.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.6.20" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.4.8.2" />
-    <PackageReference Include="JsonApiDotNetCore" Version="3.0.0-beta4" />
+    <PackageReference Include="JsonApiDotNetCore" Version="3.0.0-beta7" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
@@ -88,6 +88,5 @@
     <Compile Remove="Services\CurrentUserMemberships.cs" />
     <Compile Remove="Services\Contracts\ICurrentUserOrganizationsContext.cs" />
     <Compile Remove="Services\Contracts\ICurrentUserMembershipsContext.cs" />
-    <Compile Remove="Services\CurrentUserMemberships.cs" />
   </ItemGroup>
 </Project>

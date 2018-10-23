@@ -1,3 +1,4 @@
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests

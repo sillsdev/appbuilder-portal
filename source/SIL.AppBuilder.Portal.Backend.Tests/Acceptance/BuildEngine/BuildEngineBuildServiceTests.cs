@@ -12,6 +12,7 @@ using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
 using Job = Hangfire.Common.Job;
 using Hangfire;
 using System.Collections.Generic;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {
@@ -21,8 +22,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public BuildEngineBuildServiceTests(TestFixture<BuildEngineStartup> fixture) : base(fixture)
         {
         }
-        // Skipping tests because getting DbUpdateConcurreyExceptions after the first couple of tests for unknown reasons
-        // Each test can be run individually successfully
         const string skipAcceptanceTest = null; //"Acceptance Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public User CurrentUser { get; set; }
         public User user1 { get; set; }
@@ -140,14 +139,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WorkflowJobId = 1,
                 WorkflowBuildId = 2
             });
-            //artifact1 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
-            //{
-            //    ProductId = product1.Id,
-            //    ArtifactType = "about",
-            //    Url = "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/1/about.txt",
-            //    ContentType = "text/plain",
-            //    FileSize = 1831
-            //});
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Product_Not_FoundAsync()

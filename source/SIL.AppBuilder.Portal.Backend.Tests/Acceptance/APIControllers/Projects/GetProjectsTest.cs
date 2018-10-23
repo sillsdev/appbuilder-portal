@@ -7,6 +7,7 @@ using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Utility.Extensions;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
@@ -298,7 +299,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             var aboutNowAsIso = anHourLater.ToISO8601();
 
             var url = "/api/projects" + 
-                "?filter%5Bproduct-updated-date%5D=le%3A" + aboutNowAsIso + 
+                "?filter%5Bproject-updated-date%5D=le%3A" + aboutNowAsIso + 
                 "&filter%5Bdate-archived%5D=isnull%3A" + 
                 "&filter%5Blanguage%5D=like%3AAUS" + 
                 "&include=organization%2Cgroup%2Cowner%2cproducts" +
@@ -341,6 +342,52 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         }
 
         [Fact]
+        public async Task GetProjects_ForDirectory_Search_WrongCase()
+        {
+            BuildTestData();
+
+            var now = DateTime.Now;
+            var anHourLater = now.AddHours(1);
+            var aboutNowAsIso = anHourLater.ToISO8601();
+
+            var url = "/api/projects?filter%5Bsearch-term%5D=like%3Aaus";
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(1, projects.Count);
+
+            var ids = projects.Select(p => p.Id);
+
+            Assert.Contains(project1.Id, ids);
+        }
+
+          [Fact]
+        public async Task GetProjects_ForDirectory_Search_CapCase()
+        {
+            BuildTestData();
+
+            var now = DateTime.Now;
+            var anHourLater = now.AddHours(1);
+            var aboutNowAsIso = anHourLater.ToISO8601();
+
+            var url = "/api/projects?filter%5Bsearch-term%5D=like%3AAUS";
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(1, projects.Count);
+
+            var ids = projects.Select(p => p.Id);
+
+            Assert.Contains(project1.Id, ids);
+        }        
+
+        [Fact]
         public async Task GetProjects_ForDirectory_Sort_Asc()
         {
             BuildTestData();
@@ -353,6 +400,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 "&sort=name";
 
             var response = await Get(url, addOrgHeader: false);
+            var body = await response.Content.ReadAsStringAsync();
+            Console.Write(body);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

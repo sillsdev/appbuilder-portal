@@ -377,6 +377,17 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.ToTable("Reviewers");
                 });
 
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Role", b =>
+                {
+                    b.Property<int>("RoleName");
+
+                    b.Property<int>("Id");
+
+                    b.HasKey("RoleName");
+
+                    b.ToTable("Role");
+                });
+
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Store", b =>
                 {
                     b.Property<int>("Id")
@@ -483,6 +494,24 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.UserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("RoleName");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleName");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.WorkflowDefinition", b =>
@@ -661,6 +690,19 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.StoreType", "StoreType")
                         .WithMany("Languages")
                         .HasForeignKey("StoreTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.UserRole", b =>
+                {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleName")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -18,7 +18,8 @@
     "save": "Save",
     "name": "Name",
     "abbreviation": "Abbreviation",
-    "general": "General Information"
+    "general": "General Information",
+    "notAvailable": "Not Available"
   },
   "auth": {
     "title": "Scriptoria",
@@ -91,9 +92,6 @@
     "buildEngineApiAccessToken": "Build Engine API Access Token"
   },
   "products": {},
-  "productDefinitions": {
-    "all": "All Products"
-  },
   "profile": {
     "title": "Profile",
     "pictureTitle": "Profile Picture",
@@ -157,6 +155,9 @@
       }
     }
   },
+  "productDefinitions": {
+    "filterAllProjects": "All Projects"
+  },
   "project": {
     "title": "Project",
     "newProject": "New Project",
@@ -168,7 +169,7 @@
     "public": "Public",
     "private": "Private",
     "visibilityLabel": "Public",
-    "visibilityDescription": "If you make your project Private, it will not be viewable in the directory or accessible by other organizations",
+    "visibilityDescription": "If you make your project Private, it will not be visible in the directory or accessible by other organizations",
     "createdOn": "Created",
     "overview": "Overview",
     "dropdown": {
@@ -184,7 +185,16 @@
     "products": {
       "title": "Products",
       "empty": "You have no products for this project.",
-      "add": "add product"
+      "manage": "manage products",
+      "popup": {
+        "title": "Select Products",
+        "done": "Done",
+        "empty": "No products available"
+      },
+      "updated": "Updated",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "rebuild": "REBUILD"
     },
     "settings": {
       "title": "Settings",
@@ -197,8 +207,8 @@
         "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products and their Artifacts"
       },
       "visibility": {
-        "title": "Projectc visibility",
-        "description": "Public Projects allow any Scriptoria User to view your project in the Directory."
+        "title": "Project visibility",
+        "description": "Allows any Scriptoria user to view your project in the Directory"
       }
     },
     "side": {

@@ -16,7 +16,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI
         public static string PROJECT_PRODUCT_DEFINITION_ID_ANY = "any-product-definition-id";
         public static string PROJECT_PRODUCT_BUILD_DATE = "product-build-date";
         public static string PROJECT_PRODUCT_CREATED_DATE = "product-created-date";
-        public static string PROJECT_PRODUCT_UPDATED_DATE = "product-updated-date";
+        public static string PROJECT_UPDATED_DATE = "project-updated-date";
 
 
         public static bool Has(this FilterQuery filterQuery, string param)

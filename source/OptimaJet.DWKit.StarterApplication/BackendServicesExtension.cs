@@ -45,6 +45,8 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<Organization>, OrganizationRepository>();
             services.AddScoped<IEntityRepository<OrganizationInviteRequest>, OrganizationInviteRequestRepository>();
             services.AddScoped<IEntityRepository<Product>, ProductRepository>();
+
+            // services
             services.AddScoped<IResourceService<User>, UserService>();
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
             services.AddScoped<IResourceService<Group>, GroupService>();
@@ -63,6 +65,11 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<GroupService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
 
+            return services;
+        }
+
+        public static IServiceCollection AddContextServices(this IServiceCollection services)
+        {
             services.AddScoped<IOrganizationContext, HttpOrganizationContext>();
             services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
 

@@ -47,7 +47,7 @@ class Header extends React.Component<IProps> {
     if (isSortable) {
       Tag = 'a';
       columnProps.onClick = () => toggleSort(column.propertyPath);
-      columnProps.className = 'col flex-100 gray-text clickable';
+      columnProps.className = 'col flex-100 gray-text clickable p-relative';
     }
 
     return (

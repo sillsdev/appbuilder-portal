@@ -33,7 +33,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ProjectRepository projectRepository,
             ICurrentUserContext currentUserContext,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
-            IEntityRepository<Store>storeRepository,
+            IEntityRepository<Store> storeRepository,
             ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
 
         {
@@ -73,7 +73,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(updateForm.Errors);
             }
-            return await base.UpdateAsync(id, resource);
+
+            var result = await base.UpdateAsync(id, resource);
+
+            // TODO: figure out why this throws a NullReferenceException
+            // await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
+
+            return result;
         }
         public override async Task<Product> CreateAsync(Product resource)
         {
@@ -86,7 +92,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(createForm.Errors);
             }
-            return await base.CreateAsync(resource);
+            
+            var result = await base.CreateAsync(resource);
+
+            // TODO: figure out why this throws a NullReferenceException
+            // await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
+
+            return result;
         }
 
     }
