@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using JsonApiDotNetCore.Controllers;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
+using Microsoft.AspNetCore.Authorization;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 
@@ -14,7 +15,6 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         protected UserService userService;
         protected OrganizationService organizationService;
         protected ICurrentUserContext currentUserContext;
-
 
         public BaseController(
             IJsonApiContext jsonApiContext,

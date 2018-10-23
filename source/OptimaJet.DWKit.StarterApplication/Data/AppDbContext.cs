@@ -18,6 +18,8 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var userEntity = modelBuilder.Entity<User>();
+            var roleEntity = modelBuilder.Entity<Role>();
+            var userRoleEntity = modelBuilder.Entity<UserRole>();
             var orgEntity = modelBuilder.Entity<Organization>();
             var orgMemberEntity = modelBuilder.Entity<OrganizationMembership>();
             var projectEntity = modelBuilder.Entity<Project>();
@@ -35,6 +37,17 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasMany(u => u.GroupMemberships)
                 .WithOne(gm => gm.User)
                 .HasForeignKey(gm => gm.UserId);
+
+            userEntity
+                .HasMany(u => u.UserRoles)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserId);
+
+            roleEntity
+                .HasMany(r => r.UserRoles)
+                .WithOne(ur => ur.Role)
+                .HasForeignKey(ur => ur.RoleName);
+
 
             orgEntity
                 .HasMany(o => o.OrganizationMemberships)
@@ -123,6 +136,8 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationInvite> OrganizationInvites { get; set; }
         public DbSet<OrganizationMembership> OrganizationMemberships { get; set; }

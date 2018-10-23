@@ -7,7 +7,7 @@ using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using SIL.AppBuilder.BuildEngineApiClient;
 
-namespace SIL.AppBuilder.Portal.Backend.Tests
+namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
     public class BuildEngineStartup : NoAuthStartup
     {

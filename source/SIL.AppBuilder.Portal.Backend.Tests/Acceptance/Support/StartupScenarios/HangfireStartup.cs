@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
-namespace SIL.AppBuilder.Portal.Backend.Tests
+namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
     public class HangfireStartup : NoAuthStartup
     {

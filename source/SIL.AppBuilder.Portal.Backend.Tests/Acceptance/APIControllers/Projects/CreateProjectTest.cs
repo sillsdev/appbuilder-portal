@@ -10,6 +10,7 @@ using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using OptimaJet.DWKit.StarterApplication.Models;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products

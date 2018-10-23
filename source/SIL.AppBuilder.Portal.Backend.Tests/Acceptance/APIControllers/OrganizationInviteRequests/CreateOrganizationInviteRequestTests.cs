@@ -7,6 +7,7 @@ using Hangfire.States;
 using Moq;
 using OptimaJet.DWKit.StarterApplication.Services;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
+using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.OrganizationInviteRequests
 {

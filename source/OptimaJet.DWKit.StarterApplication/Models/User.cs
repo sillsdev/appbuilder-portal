@@ -52,6 +52,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("group-memberships", Link.None)]
         public virtual List<GroupMembership> GroupMemberships { get; set; }
 
+        [HasMany("user-roles", Link.None)]
+        public virtual List<UserRole> UserRoles { get; set; }
+
         [NotMapped]
         public IEnumerable<int> OrganizationIds => OrganizationMemberships?.Select(o => o.OrganizationId);
 
@@ -60,6 +63,15 @@ namespace OptimaJet.DWKit.StarterApplication.Models
             get {
                 return this.GivenName + " " + this.FamilyName;
             }
+        }
+
+        public bool HasRole(RoleName role) {
+            var userRole = this
+                .UserRoles
+                .Where(r => r.RoleName == role)
+                .FirstOrDefault();
+
+            return userRole != null;
         }
     }
 }
