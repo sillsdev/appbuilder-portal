@@ -1,5 +1,4 @@
 import {
-  isVisible,
   interactor,
   Interactor,
   clickable,
@@ -9,7 +8,6 @@ import MultiSelectInteractor from '@ui/components/inputs/multi-select/-page';
 
 class ProductModal {
 
-  isVisible = isVisible('[data-test-project-product-popup]');
   closePopup = clickable('[data-test-project-product-close-button]');
   multiSelectInteractor = MultiSelectInteractor;
 
@@ -18,4 +16,4 @@ class ProductModal {
 export const ProductModalInteractor = interactor(ProductModal);
 export type TInteractor = ProductModal & Interactor;
 
-export default new (ProductModalInteractor as any)('.ui.page.modals') as TInteractor;
+export default new (ProductModalInteractor as any)('[data-test-project-product-popup]') as TInteractor;

@@ -116,7 +116,10 @@ describe('Acceptance | Project View | Reviewers', () => {
       });
 
       it('popup is visible', () => {
-        expect(page.productsInteractor.modalInteractor.isVisible).to.be.true;
+        const interactor = page.productsInteractor.modalInteractor;
+        expect(
+          interactor.$root.classList.contains('visible')
+        ).to.be.true;
       });
 
       it('has render product definitions',() => {
