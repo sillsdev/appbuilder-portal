@@ -299,7 +299,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             var aboutNowAsIso = anHourLater.ToISO8601();
 
             var url = "/api/projects" + 
-                "?filter%5Bproduct-updated-date%5D=le%3A" + aboutNowAsIso + 
+                "?filter%5Bproject-updated-date%5D=le%3A" + aboutNowAsIso + 
                 "&filter%5Bdate-archived%5D=isnull%3A" + 
                 "&filter%5Blanguage%5D=like%3AAUS" + 
                 "&include=organization%2Cgroup%2Cowner%2cproducts" +
