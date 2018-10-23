@@ -20,5 +20,8 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         BuildResponse GetBuild(int jobId, int buildId);
         List<BuildResponse> GetBuilds(int jobId);
         HttpStatusCode DeleteBuild(int jobId, int buildId);
+        ReleaseResponse CreateRelease(int jobId, int buildId, Release release);
+        ReleaseResponse GetRelease(int jobId, int buildId, int releaseId);
+        HttpStatusCode DeleteRelease(int jobId, int buildId, int releaseId);
     }
 }

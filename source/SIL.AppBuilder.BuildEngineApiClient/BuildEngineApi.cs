@@ -157,5 +157,31 @@ namespace SIL.AppBuilder.BuildEngineApiClient
             var response = restClient.Execute(request);
             return response.StatusCode;
         }
+        public ReleaseResponse CreateRelease(int jobId, int buildId, Release release)
+        {
+            Require.Argument("Channel", release.Channel);
+            var request = CreateRequest("job/{jobId}/build/{buildId}", Method.PUT)
+                .AddJsonBody(release)
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment)
+                .AddParameter("buildId", buildId, ParameterType.UrlSegment);
+            return Execute<ReleaseResponse>(request);
+        }
+        public ReleaseResponse GetRelease(int jobId, int buildId, int releaseId)
+        {
+            var request = CreateRequest("job/{jobId}/build/{buildId}/release/{releaseId}")
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment)
+                .AddParameter("buildId", buildId, ParameterType.UrlSegment)
+                .AddParameter("releaseId", releaseId, ParameterType.UrlSegment);
+            return Execute<ReleaseResponse>(request);
+        }
+        public System.Net.HttpStatusCode DeleteRelease(int jobId, int buildId, int releaseId)
+        {
+            var request = CreateRequest("job/{jobId}/build/{buildId}/release/{releaseId}", Method.DELETE)
+                .AddParameter("jobId", jobId, ParameterType.UrlSegment)
+                .AddParameter("buildId", buildId, ParameterType.UrlSegment)
+                .AddParameter("releaseId", releaseId, ParameterType.UrlSegment);
+            var response = restClient.Execute(request);
+            return response.StatusCode;
+        }
     }
 }

@@ -31,6 +31,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
             services.AddScoped<BuildEngineProjectService>();
             services.AddScoped<BuildEngineProductService>();
             services.AddScoped<BuildEngineBuildService>();
+            services.AddScoped<BuildEngineReleaseService>();
             base.ConfigureServices(services);
         }
     }
