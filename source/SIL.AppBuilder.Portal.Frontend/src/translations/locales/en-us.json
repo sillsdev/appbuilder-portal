@@ -208,8 +208,8 @@
         "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products and their Artifacts"
       },
       "visibility": {
-        "title": "Project visibility",
-        "description": "Allows any Scriptoria user to view your project in the Directory"
+        "title": "Public Visibility",
+        "description": "Public Projects allow any Scriptoria User to view your project in the Directory"
       }
     },
     "side": {
