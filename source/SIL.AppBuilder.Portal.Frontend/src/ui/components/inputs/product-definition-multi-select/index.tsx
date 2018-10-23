@@ -13,6 +13,7 @@ export default compose(
   withProps(({ productDefinitions, t }) => ({
     list: productDefinitions,
     selectedItemJoinsWith: 'productDefinition',
-    emptyListLabel: t('org.noproducts')
+    emptyListLabel: t('org.noproducts'),
+    displayProductIcon: true
   })),
 )(MultiSelect);
