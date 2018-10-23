@@ -92,9 +92,6 @@
     "buildEngineApiAccessToken": "Build Engine API Access Token"
   },
   "products": {},
-  "productDefinitions": {
-    "all": "All Products"
-  },
   "profile": {
     "title": "Profile",
     "pictureTitle": "Profile Picture",
@@ -159,11 +156,7 @@
     }
   },
   "productDefinitions": {
-    "name": {
-      "android_rab_s3": "Android RAB S3",
-      "android_dab_s3": "Android DAB S3",
-      "android_google_play": "Android Google Play"
-    }
+    "filterAllProjects": "All Projects"
   },
   "project": {
     "title": "Project",
