@@ -89,6 +89,10 @@ a.clickable {
   }
 }
 
+.with-shadow {
+  box-shadow: 0 0.1rem 0.2rem -0.1rem rgba(0, 0, 0, 0.3);
+}
+
 .no-shadows {
   -webkit-box-shadow: none !important;
   box-shadow: none !important;

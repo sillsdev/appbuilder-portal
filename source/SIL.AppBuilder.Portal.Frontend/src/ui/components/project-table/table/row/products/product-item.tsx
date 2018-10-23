@@ -10,6 +10,7 @@ import { ProductResource, ProductDefinitionResource } from '@data/models/product
 
 import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { applyNumberOfTimes } from '@lib/collection';
 
 import { IProvidedProps as IColumnProps } from '../../with-table-columns';
 import { COLUMN_KEY } from '../../column-data';
@@ -24,6 +25,7 @@ type IProps =
   & IColumnProps
   & i18nProps
   & TimeProps;
+
 
 class ProductItem extends React.Component<IProps> {
   getActiveProductColumns = () => {
@@ -43,7 +45,7 @@ class ProductItem extends React.Component<IProps> {
           column.value = moment.tz(buildDate, timezone).format('L');
           break;
         case COLUMN_KEY.PRODUCT_BUILD_VERSION:
-          column.value = buildVersion || t('common.notAvailable');
+          column.value = buildVersion || '-';
           break;
         case COLUMN_KEY.PRODUCT_CREATED_ON:
           column.value = moment.tz(createdOn, timezone).format('L');
@@ -69,25 +71,32 @@ class ProductItem extends React.Component<IProps> {
   }
 
   render() {
-    const { product, productDefinition } = this.props;
+    const { product, productDefinition, activeProjectColumns } = this.props;
 
     const activeProductColumns = this.getActiveProductColumns();
 
+    let padding = activeProjectColumns.length - activeProductColumns.length;
+    padding = Math.max(0, padding);
 
     return (
       <div className='flex flex-column-xxs flex-row-xs grid product'>
-        <div className='col flex align-items-center w-100-xs-only flex-100'>
+        <div className='col flex align-items-center w-100-xs-only flex-100 p-l-md p-r-md'>
           <ProductIcon product={productDefinition} />
           <span className='p-l-sm-xs'>{this.humanReadableName()}</span>
         </div>
 
         { activeProductColumns.map((column, i) => (
-          <div key={i} data-test-project-table-column className={'col bold flex-100'}>
+          <div key={i} data-test-project-table-column className={'col bold flex-100 p-l-md p-r-md'}>
             {column.value}
           </div>
         ))}
 
-        <div className='action' />
+        { applyNumberOfTimes(padding, (i) => (
+          <div key={i} data-test-project-table-column className={'col bold flex-100 p-l-md p-r-md'}>&nbsp;
+          </div>
+        ))}
+
+        <div className='action d-xs-none d-md-block' />
       </div>
     );
   }

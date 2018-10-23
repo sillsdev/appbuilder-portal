@@ -5,3 +5,14 @@ export function isEmpty(data) {
       || (typeof(data) === 'string' && data.length === 0)
   );
 }
+
+
+export const applyNumberOfTimes = (x, f) => {
+  let result: any[] = [];
+
+  for (let i = 0; i < x; i++) {
+    result.push(f(i));
+  }
+
+  return result;
+};
