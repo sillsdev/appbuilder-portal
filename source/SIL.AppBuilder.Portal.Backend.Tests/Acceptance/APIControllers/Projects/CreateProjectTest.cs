@@ -8,6 +8,7 @@ using Hangfire.States;
 using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
@@ -15,10 +16,10 @@ using Xunit;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 {
-    [Collection("HangfireCollection")]
-    public class CreateProjectTest : BaseTest<HangfireStartup>
+    [Collection("WithoutAuthCollection")]
+    public class CreateProjectTest : BaseTest<NoAuthStartup>
     {
-        public CreateProjectTest(TestFixture<HangfireStartup> fixture) : base(fixture)
+        public CreateProjectTest(TestFixture<NoAuthStartup> fixture) : base(fixture)
         {
         }
 
@@ -216,7 +217,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                         }
                 }
             };
-            var backgroundClient = _fixture.GetService<Mock<IBackgroundJobClient>>();
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
 
             var response = await Post("/api/projects/", content);
 
@@ -230,7 +232,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal("project5", project.Name);
             Assert.True(project.AllowDownloads);
             Assert.True(project.AutomaticBuilds);
-            backgroundClient.Verify(x => x.Create(
+            backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "ManageProject" &&
                            job.Type == typeof(BuildEngineProjectService)),

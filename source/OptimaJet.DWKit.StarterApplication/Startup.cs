@@ -18,6 +18,7 @@ using Hangfire;
 using System;
 using Bugsnag;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -168,12 +169,8 @@ namespace OptimaJet.DWKit.StarterApplication
 
             app.UseJsonApi();
 
-            RecurringJob.AddOrUpdate<BuildEngineSystemMonitor>("BuildEngineMonitor", service => service.CheckBuildEngineStatus(), "*/5 * * * *" );
-
-            //DWKIT Init
-            Configurator.Configure(
-                (IHttpContextAccessor)app.ApplicationServices.GetService(typeof(IHttpContextAccessor)),
-                Configuration);
+            app.UseBuildEngine(Configuration);
+            app.UseWorkflow(Configuration);
         }
     }
 }

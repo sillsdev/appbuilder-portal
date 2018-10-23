@@ -1,11 +1,12 @@
-﻿    using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class User : Identifiable
+    public class User : Identifiable, ITrackDate
     {
         [Attr("name")]
         public string Name { get; set; }
@@ -42,6 +43,15 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("publishing-key")]
         public string PublishingKey { get; set; }
+
+        [Attr("workflow-user-id")]
+        public Guid? WorkflowUserId { get; set; }
+
+        [Attr("date-created")]
+        public DateTime? DateCreated { get; set; }
+
+        [Attr("date-updated")]
+        public DateTime? DateUpdated { get; set; }
 
         //[HasMany("ownedOrganizations")]
         //public virtual List<Organization> OwnedOrganizations { get; set; }

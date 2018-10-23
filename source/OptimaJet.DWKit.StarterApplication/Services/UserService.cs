@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Models;
@@ -9,6 +10,7 @@ using JsonApiDotNetCore.Services;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using static OptimaJet.DWKit.StarterApplication.Utility.ServiceExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
@@ -16,12 +18,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     public class UserService : EntityResourceService<User>
     {
         public UserRepository EntityRepository { get; }
+        public IBackgroundJobClient HangfireClient { get; }
         public IJsonApiContext JsonApiContext { get; }
         public IOrganizationContext OrganizationContext { get; }
         public ICurrentUserContext CurrentUserContext { get; }
         public CurrentUserRepository CurrentUserRepository { get; }
 
         public UserService(
+            IBackgroundJobClient hangfireClient,
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
             ICurrentUserContext currentUserContext,
@@ -30,10 +34,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ILoggerFactory loggerFactory) : base(jsonApiContext, entityRepository, loggerFactory)
         {
             this.EntityRepository = (UserRepository)entityRepository;
+            HangfireClient = hangfireClient;
             JsonApiContext = jsonApiContext;
             OrganizationContext = organizationContext;
             CurrentUserContext = currentUserContext;
             CurrentUserRepository = currentUserRepository;
+        }
+
+        public override async Task<User> CreateAsync(User resource)
+        {
+            User user = await base.CreateAsync(resource);
+            if (user != null)
+            {
+                HangfireClient.Enqueue<WorkflowSecuritySyncService>(service => service.SyncNewUser(user.Id));
+            }
+            return user;
         }
 
         public override async Task<IEnumerable<User>> GetAsync()

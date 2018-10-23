@@ -11,6 +11,8 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Collections.Generic;
 using static OptimaJet.DWKit.StarterApplication.Utility.ServiceExtensions;
 using JsonApiDotNetCore.Internal.Query;
+using Hangfire;
+using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
@@ -19,6 +21,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         IEntityRepository<Product> ProductRepository { get; set; }
         IEntityRepository<ProductDefinition> ProductDefinitionRepository { get; set; }
         IEntityRepository<Store> StoreRepository { get; }
+        IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
         ICurrentUserContext CurrentUserContext { get; set; }
@@ -34,12 +37,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ICurrentUserContext currentUserContext,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
             IEntityRepository<Store> storeRepository,
+            IBackgroundJobClient hangfireClient,
             ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
-
         {
             ProductRepository = productRepository;
             ProductDefinitionRepository = productDefinitionRepository;
             StoreRepository = storeRepository;
+            HangfireClient = hangfireClient;
             UserRepository = userRepository;
             ProjectRepository = projectRepository;
             CurrentUserContext = currentUserContext;
@@ -93,12 +97,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 throw new JsonApiException(createForm.Errors);
             }
             
-            var result = await base.CreateAsync(resource);
+            var product = await base.CreateAsync(resource);
 
             // TODO: figure out why this throws a NullReferenceException
             // await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
 
-            return result;
+
+            /* TODO: Enable in next iteration
+            if (product != null)
+            {
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageNewProduct(product.Id));
+            }
+            */
+            return product;
         }
 
     }

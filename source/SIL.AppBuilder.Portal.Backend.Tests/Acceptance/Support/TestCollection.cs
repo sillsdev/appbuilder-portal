@@ -9,9 +9,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests
     [CollectionDefinition("WithoutAuthCollection")]
     public class WithoutAuthCollection : ICollectionFixture<TestFixture<NoAuthStartup>> {}
 
-    [CollectionDefinition("HangfireCollection")]
-    public class HangfireCollection : ICollectionFixture<TestFixture<HangfireStartup>> { }
-
     [CollectionDefinition("BuildEngineCollection")]
     public class BuildEngineCollection : ICollectionFixture<TestFixture<BuildEngineStartup>> {}
 }
