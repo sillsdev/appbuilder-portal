@@ -51,6 +51,7 @@ function withData(WrapperComponent) {
         list,
         selectedItemJoinsWith: 'productDefinition',
         emptyListLabel: t('project.products.popup.empty'),
+        displayProductIcon: true,
         onChange,
         ...this.props
       };

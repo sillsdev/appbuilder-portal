@@ -14,6 +14,7 @@ interface IOwnProps<T> {
   selected: T[];
   onChange: (el: T) => void;
   emptyListLabel?: string;
+  displayProductIcon?: boolean;
 }
 
 type IProps<T> =
@@ -42,7 +43,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
 
   render() {
 
-    const { list, emptyListLabel, t } = this.props;
+    const { list, emptyListLabel, displayProductIcon, t } = this.props;
     const emptyLabel = emptyListLabel || t('common.noResults');
 
     if (isEmpty(list)) {
@@ -71,7 +72,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
               value={element.id}
               checked={this.inSelectedList(element)}
             />
-            <ProductIcon product={element} />
+            { displayProductIcon ? <ProductIcon product={element} /> : null }
             <span
               data-test-item-text
               className='p-l-sm-xs'
