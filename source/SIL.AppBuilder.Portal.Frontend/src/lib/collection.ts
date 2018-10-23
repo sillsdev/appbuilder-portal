@@ -8,7 +8,7 @@ export function isEmpty(data) {
 
 
 export const applyNumberOfTimes = (x, f) => {
-  let result: any[] = [];
+  const result: any[] = [];
 
   for (let i = 0; i < x; i++) {
     result.push(f(i));
