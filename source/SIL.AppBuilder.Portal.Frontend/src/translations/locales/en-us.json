@@ -30,7 +30,7 @@
     "title": "Project Directory {numProjects, plural, =0 {} other {({ numProjects })}}",
     "search-help": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name",
     "filters": {
-      "dateRange": "Product Updated Date Between"
+      "dateRange": "Project Updated Date Between"
     }
   },
   "header": {
