@@ -88,6 +88,5 @@
     <Compile Remove="Services\CurrentUserMemberships.cs" />
     <Compile Remove="Services\Contracts\ICurrentUserOrganizationsContext.cs" />
     <Compile Remove="Services\Contracts\ICurrentUserMembershipsContext.cs" />
-    <Compile Remove="Services\CurrentUserMemberships.cs" />
   </ItemGroup>
 </Project>
