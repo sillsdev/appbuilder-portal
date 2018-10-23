@@ -40,7 +40,9 @@ class RowActions extends React.Component<IProps & i18nProps> {
         }
       >
         <Dropdown.Menu>
-          <Dropdown.Item text={t('project.dropdown.transfer')} />
+          <Dropdown.Item
+            text={t('project.dropdown.build')}
+          />
           <Dropdown.Item
             text={dropdownItemText}
             onClick={this.toggleArchivedProject}
