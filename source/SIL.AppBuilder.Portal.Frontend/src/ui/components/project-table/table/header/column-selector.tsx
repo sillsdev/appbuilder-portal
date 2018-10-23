@@ -34,15 +34,15 @@ class ColumnSelector extends React.Component<IColumnProps & i18nProps> {
               const columnData = possibleColumns[column];
 
               return (
-                <div key={index} className='item'>
-                  <Checkbox
-                    data-test-project-table-columns-selector-item
-                    value={column}
-                    label={t(columnData.i18nKey)}
-                    checked={selectedColumns.includes(column)}
-                    onClick={this.onColumnClick(column)}
-                  />
-                </div>
+                <Checkbox
+                  key={index}
+                  className='w-100 item'
+                  data-test-project-table-columns-selector-item
+                  value={column}
+                  label={t(columnData.i18nKey)}
+                  checked={selectedColumns.includes(column)}
+                  onClick={this.onColumnClick(column)}
+                />
               );
             })
           }
