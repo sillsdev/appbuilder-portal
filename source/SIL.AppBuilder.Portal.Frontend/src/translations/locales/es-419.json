@@ -94,13 +94,6 @@
   "products": {
 
   },
-  "productDefinitions": {
-    "name": {
-      "android_rab_s3": "Android RAB S3",
-      "android_dab_s3": "Android DAB S3",
-      "android_google_play": "Android Google Play"
-    }
-  },
   "profile": {
     "title": "Perfil",
     "pictureTitle": "Imagen de perfil",
@@ -163,6 +156,9 @@
         "archived": "Proyectos archivados"
       }
     }
+  },
+  "productDefinitions": {
+    "filterAllProjects": "All Projects"
   },
   "project": {
     "title": "Proyecto",
