@@ -1,0 +1,17 @@
+@import '../../../../styles/_base/variables.scss';
+
+.product-artifact {
+  border: 1px solid $lighter-gray;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  color: $gray;
+
+  .header {
+    background-color: $ultra-ligthest-gray;
+    padding: 17px 22px;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: Montserrat;
+    border-bottom: 1px solid $lighter-gray;
+  }
+}

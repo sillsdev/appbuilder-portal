@@ -172,6 +172,7 @@
     "visibilityDescription": "If you make your project Private, it will not be visible in the directory or accessible by other organizations",
     "createdOn": "Created",
     "overview": "Overview",
+    "productFiles": "Product files",
     "dropdown": {
       "transfer": "Transfer Ownership",
       "archive": "Archive",

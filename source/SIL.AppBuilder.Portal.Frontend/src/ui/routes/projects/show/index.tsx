@@ -10,9 +10,9 @@ import Products from './products';
 import Owners from './owners';
 import Reviewers from './reviewers';
 import Settings from './settings';
+import Files from './files';
 import { withAccessRestriction } from './with-access-restriction';
 import { withData } from './with-data';
-import { withLayout } from '@ui/components/layout';
 import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
 import { withProjectOperations } from './with-project-operations';
 import { withTranslations, i18nProps } from '@lib/i18n';
@@ -62,6 +62,14 @@ class Project extends React.Component<IProps> {
           </div>
         </Tab.Pane>
 
+    },{
+      menuItem: t('project.productFiles'),
+      render: () =>
+        <Tab.Pane attached={false}>
+          <div className='flex'>
+            <Files project={project} />
+          </div>
+        </Tab.Pane>
     }];
 
     return tabPanes;

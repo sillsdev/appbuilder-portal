@@ -21,14 +21,17 @@
       border-bottom: 1px solid #d8d8d8;
       margin: 1em 0;
 
-      .item.active {
+      .item {
         font-size: 13px;
         font-weight: bold;
         line-height: 1.92;
-        color: #0c3855;
         text-transform: uppercase;
         padding-left: 1em;
         padding-right: 1em;
+      }
+
+      .item.active {
+        color: #0c3855;
         border-bottom: 4px solid #4a90e2;
       }
     }

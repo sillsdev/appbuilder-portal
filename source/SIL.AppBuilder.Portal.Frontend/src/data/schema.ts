@@ -130,7 +130,20 @@ const schemaDefinition: SchemaSettings = {
         productDefinition: { type: 'hasOne', model: 'productDefinition', inverse: 'products' },
         store: { type: 'hasOne', model: 'store', inverse: 'products' },
         storeLanguage: { type: 'hasOne', model: 'storeLanguage', inverse: 'products' },
+        artifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'product' },
         tasks: { type: 'hasMany', model: 'task', inverse: 'project' }, // TODO: doesn't exist in DB
+      }
+    },
+    productArtifact: {
+      keys: { remoteId: {} },
+      attributes: {
+        artifactType: { type: 'string' },
+        url: { type: 'string' },
+        fileSize: { type: 'number' },
+        contentType: { type: 'string' }
+      },
+      relationships: {
+        product: { type: 'hasOne', model: 'product', inverse: 'artifacts' }
       }
     },
     productDefinition: {
