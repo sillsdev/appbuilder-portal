@@ -47,7 +47,7 @@ class Header extends React.Component<IProps> {
     if (isSortable) {
       Tag = 'a';
       columnProps.onClick = () => toggleSort(column.propertyPath);
-      columnProps.className = 'col flex-100 gray-text clickable p-relative';
+      columnProps.className = 'flex-100 gray-text clickable p-relative p-l-md p-r-md';
     }
 
     return (
@@ -76,7 +76,7 @@ class Header extends React.Component<IProps> {
 
     return (
       <div className='flex header grid'>
-        <div className='flex justify-content-space-evenly flex-grow-xs'>
+        <div className='flex align-items-center justify-content-space-evenly flex-grow-xs'>
           { nameColumn }
           { this.buildHeaderTitles() }
 

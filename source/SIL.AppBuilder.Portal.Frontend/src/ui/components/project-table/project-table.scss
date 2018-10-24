@@ -21,17 +21,12 @@
   .row-header {
     background-color: $lighterer-gray;
     border: solid 1px $lighter-gray;
-    margin-top: 6px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     font-weight: bold;
   }
 
   .grid {
-    .col {
-      padding: .92857143em .78571429em;
-    }
-
     .action {
       width: 24px;
       padding: .92857143em 0 !important;

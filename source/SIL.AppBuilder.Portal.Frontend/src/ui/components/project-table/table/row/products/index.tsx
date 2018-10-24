@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { i18nProps, withTranslations } from '@lib/i18n';
+import { applyNumberOfTimes } from '@lib/collection';
 
 import { IProvidedProps as IColumnProps } from '../../with-table-columns';
 import ProductItem from './product-item';
@@ -11,21 +12,29 @@ type IProps =
 
 class Products extends React.Component<IProps> {
   render() {
-    const { activeProductColumns, t, products } = this.props;
+    const { activeProductColumns, activeProjectColumns, t, products } = this.props;
     const hasProducts = products && products.length > 0;
 
+    let padding = activeProjectColumns.length - activeProductColumns.length;
+    padding = Math.max(0, padding);
+
     return (
-      <div className='products-grid'>
+      <div className='products-grid p-t-sm p-b-md'>
         { hasProducts && (
           <>
             <div className='flex grid products-header flex-grow'>
-              <div className='col flex-grow-xs product-xs-only flex-100'>
+              <div className='flex-grow-xs product-xs-only flex-100 p-l-md p-r-md'>
                 {t('projectTable.products')}
               </div>
 
               { activeProductColumns.map((column, i) => (
-                <div key={i} data-test-project-table-column className={'col d-xs-only-none flex-100'}>
+                <div key={i} data-test-project-table-column className={'d-xs-only-none flex-100 p-l-md p-r-md'}>
                   {t(column.i18nKey)}
+                </div>
+              ))}
+
+              { applyNumberOfTimes(padding, (i) => (
+                <div key={i} data-test-project-table-column className={'col bold flex-100 p-l-md p-r-md'}>&nbsp;
                 </div>
               ))}
 
