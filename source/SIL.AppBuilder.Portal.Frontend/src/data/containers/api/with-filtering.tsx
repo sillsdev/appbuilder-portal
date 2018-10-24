@@ -8,6 +8,7 @@ export interface IFilter {
   attribute: string;
   value: string | number;
   op?: string;
+  key?: string;
 }
 
 export interface IProvidedProps {
@@ -31,6 +32,22 @@ const defaultOptions = {
   defaultFilters: [],
   requiredFilters: [],
 };
+
+
+const validKeys = ['op', 'attribute', 'value'];
+
+export function withoutFilter(filters: IFilter[], filter: IFilter) {
+  const result = filters.filter(currentFilter => {
+    const keys = Object.keys(filter);
+    // ignore the value key, and make sure we only pull out
+    // the existing filter(s) that are the same as the target filter
+    const doesNotMatch = keys.every(key => key === 'value' || currentFilter[key] !== filter[key]);
+
+    return doesNotMatch;
+  });
+
+  return result;
+}
 
 // example hookup
 //
@@ -68,14 +85,10 @@ export function withFiltering<TPassedProps>(
         this.state = { filters, options };
       }
 
-      // TODO: currently this only sets a filter.
-      //       this should find and replace via attribute.
       updateFilter = (filter: IFilter) => {
         const { filters } = this.state;
 
-        const newFilters = filters.filter(currentFilter => {
-          return currentFilter.attribute !== filter.attribute;
-        });
+        const newFilters = withoutFilter(filters, filter);
 
         newFilters.push(filter);
 
@@ -86,11 +99,9 @@ export function withFiltering<TPassedProps>(
         const { filters } = this.state;
         const attrToRemove = (filter as IFilter).attribute || filter;
 
-        const newFiletrs = filters.filter(currentFilter => {
-          return currentFilter.attribute !== attrToRemove;
-        });
+        const newFilters = withoutFilter(filters, filter);
 
-        this.setState({ filters: newFiletrs });
+        this.setState({ filters: newFilters });
       }
 
       // NOTE: onCache signifies that that the filtering will only happen on the cache store.
@@ -113,7 +124,18 @@ export function withFiltering<TPassedProps>(
         const allFilters = [ ...filters, ...required ];
         const filtersToApply = onCache ? allFilters.map(this._filterOperationMap) : allFilters;
 
-        return builder.filter(...filtersToApply);
+        const withMetaRemoved = filtersToApply.map(filter => {
+          const scrubbed = {};
+          validKeys.forEach(key => {
+            if(filter[key]) {
+              scrubbed[key] = filter[key];
+            }
+          });
+
+          return scrubbed;
+        });
+
+        return builder.filter(...withMetaRemoved);
       }
 
       _filterOperationMap(filter: IFilter): IFilter {
