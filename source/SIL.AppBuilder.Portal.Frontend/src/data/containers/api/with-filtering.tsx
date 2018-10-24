@@ -8,6 +8,7 @@ export interface IFilter {
   attribute: string;
   value: string | number;
   op?: string;
+  key?: string;
 }
 
 export interface IProvidedProps {
@@ -35,16 +36,15 @@ const defaultOptions = {
 
 const validKeys = ['op', 'attribute', 'value'];
 
-function withoutFilter(filters: Filter[], filter: Filter) {
+export function withoutFilter(filters: IFilter[], filter: IFilter) {
   const result = filters.filter(currentFilter => {
     const keys = Object.keys(filter);
     // ignore the value key, and make sure we only pull out
     // the existing filter(s) that are the same as the target filter
-    const doesNotMatch = !keys.every(key => key === 'value' || currentFilter[key] !== filter[key]);
+    const doesNotMatch = keys.every(key => key === 'value' || currentFilter[key] !== filter[key]);
 
     return doesNotMatch;
   });
-  console.log(filters, filter, Object.keys(filter), filters[0] && Object.keys(filter).every(key => key === 'value' || filters[0][key] !== filter[key]));
 
   return result;
 }
@@ -90,11 +90,7 @@ export function withFiltering<TPassedProps>(
 
         const newFilters = withoutFilter(filters, filter);
 
-        console.log('newFilters, before:', newFilters);
-
         newFilters.push(filter);
-
-        console.log('newFilters:', newFilters);
 
         this.setState({ filters: newFilters });
       }
