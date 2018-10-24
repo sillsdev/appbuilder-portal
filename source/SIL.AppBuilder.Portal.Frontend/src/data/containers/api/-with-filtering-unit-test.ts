@@ -42,6 +42,30 @@ describe('Unit | withFiltering', () => {
 
         expect(result).to.deep.equal([]);
       });
+
+      it('returns the original', () => {
+        const newFilter = { attribute: 'something', key: 'gt', value: 'gt:0' };
+        const result = withoutFilter(existing, newFilter);
+
+        expect(result).to.deep.equal(existing);
+      });
+    });
+
+    describe('there are two matching filters', () => {
+      const existing: IFilter[] = [
+        { attribute: 'something', key: 'lt', value: 'lt:0' },
+        { attribute: 'something', key: 'gt', value: 'gt:-1' }
+      ];
+
+      it('returns without the matching key', () => {
+        const newFilter = { attribute: 'something', key: 'gt', value: 'gt:0' };
+        const result = withoutFilter(existing, newFilter);
+        const expected = [
+          { attribute: 'something', key: 'lt', value: 'lt:0' },
+        ];
+
+        expect(result).to.deep.equal(expected);
+      });
     });
   });
 });

@@ -41,9 +41,13 @@ export function withoutFilter(filters: IFilter[], filter: IFilter) {
     const keys = Object.keys(filter);
     // ignore the value key, and make sure we only pull out
     // the existing filter(s) that are the same as the target filter
-    const doesNotMatch = keys.every(key => key === 'value' || currentFilter[key] !== filter[key]);
+    const matches = keys.map(key => {
+      if (key === 'value') return true;
 
-    return doesNotMatch;
+      return currentFilter[key] === filter[key];
+    }).every(b => b);
+
+    return !matches;
   });
 
   return result;
