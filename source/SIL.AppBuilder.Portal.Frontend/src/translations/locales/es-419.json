@@ -17,7 +17,9 @@
     "cancel": "Cancelar",
     "save": "Guardar",
     "name": "Nombre",
-    "abbreviation": "Abreviatura"
+    "abbreviation": "Abreviatura",
+    "general": "General Information",
+    "notAvailable": "Not Available"
   },
   "auth": {
     "title": "Scriptoria",
@@ -25,7 +27,8 @@
     "login": "Ingresar"
   },
   "directory": {
-    "title": "Directorio de proyectos ({numProjects})",
+    "title": "Directorio de proyectos ({ numProjects })",
+    "search-help": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name",
     "filters": {
       "dateRange": "Rango de Fechas"
     }
@@ -55,17 +58,26 @@
     "orgUrl": "Dirección Web de la organización",
     "orgSubmit": "Agregar organización"
   },
+  "newOrganization": {
+    "title": "Add organization"
+  },
   "org": {
     "allOrganizations": "Todas las organizaciones",
     "createSuccess": "¡Organización creada exitosamente!",
     "settingsTitle": "Configuración de organización",
-    "selectLogo": "Seleccionar logo",
+    "logoUrl": "Seleccionar logo",
+    "noteLogUrl": "Note: For optimal quality use a square image",
     "productsTitle": "Productos y Publicaciones",
     "makePrivateTitle": "Hacer Proyectos públicos por defecto",
     "makePrivateDescription": "\n      Cuando un proyecto es creado, será Público por defecto.\n      (Los proyectos privados no pueden ser visto por nadie fuera de su organización)",
     "productSelectTitle": "Selecciona todos los productos que quisieras estén disponibles para su organización",
+    "noproducts": "No products available",
+    "storesTitle": "Stores",
+    "storeSelectTitle": "Select all the stores you would like to make available to your organization",
+    "nostores": "No stores available",
     "navBasic": "Información básica",
     "navProducts": "Productos",
+    "navStores": "Stores",
     "navGroups": "Grupos",
     "navInfrastructure": "Infraestructura",
     "infrastructureTitle": "Infraestructura",
@@ -81,9 +93,6 @@
   },
   "products": {
 
-  },
-  "productDefinitions": {
-    "all": "All Products"
   },
   "profile": {
     "title": "Perfil",
@@ -148,6 +157,9 @@
       }
     }
   },
+  "productDefinitions": {
+    "filterAllProjects": "All Projects"
+  },
   "project": {
     "title": "Proyecto",
     "newProject": "Nuevo proyecto",
@@ -165,7 +177,8 @@
     "dropdown": {
       "transfer": "Transferir propiedad",
       "archive": "Archivar",
-      "reactivate": "Reactivar"
+      "reactivate": "Reactivar",
+      "build": "Build"
     },
     "details": {
       "title": "Detalles",
@@ -175,7 +188,16 @@
     "products": {
       "title": "Productos",
       "empty": "No tiene productos para este proyecto.",
-      "add": "agregar producto"
+      "manage": "agregar producto",
+      "popup": {
+        "title": "Select Products",
+        "done": "Done",
+        "empty": "No products available"
+      },
+      "updated": "Updated",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "rebuild": "REBUILD"
     },
     "settings": {
       "title": "Configuración",
@@ -186,6 +208,10 @@
       "organizationDownloads": {
         "title": "Permitir descargar a otras organizaciones",
         "description": "Cuando está configuración está activa, cualquier usuario de Scriptoria que pueda ver su proyecto en el directorio, podrá descargarlo junto con sus artefactos"
+      },
+      "visibility": {
+        "title": "Public Visibility",
+        "description": "Public Projects allow any Scriptoria User to view your project in the Directory"
       }
     },
     "side": {
@@ -225,6 +251,11 @@
         "on": "Permitir descarga de proyecto está activada",
         "off": "Permitir descarga de proyecto está desactivada",
         "error": "Error: No pudimos cambiar el estado de \"permitir descargas\""
+      },
+      "isPublic": {
+        "on": "Project visibility is set to Public",
+        "off": "Project visibility is set to Private",
+        "error": "Error: We could not change Project visibility"
       }
     }
   },

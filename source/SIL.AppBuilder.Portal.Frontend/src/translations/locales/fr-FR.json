@@ -17,7 +17,9 @@
     "cancel": "Cancel",
     "save": "Save",
     "name": "Name",
-    "abbreviation": "Abbreviation"
+    "abbreviation": "Abbreviation",
+    "general": "General Information",
+    "notAvailable": "Not Available"
   },
   "auth": {
     "title": "Scriptoria",
@@ -25,9 +27,10 @@
     "login": "Log In"
   },
   "directory": {
-    "title": "Project Directory ({numProjects})",
+    "title": "Project Directory {numProjects, plural, =0 {} other {({ numProjects })}}",
+    "search-help": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name",
     "filters": {
-      "dateRange": "Date Range Between"
+      "dateRange": "Project Updated Date Between"
     }
   },
   "header": {
@@ -55,17 +58,26 @@
     "orgUrl": "Organization Website URL",
     "orgSubmit": "Add Organization"
   },
+  "newOrganization": {
+    "title": "Add organization"
+  },
   "org": {
     "allOrganizations": "All Organizations",
     "createSuccess": "Organization created successfully!",
     "settingsTitle": "Organization Settings",
-    "selectLogo": "Select Logo",
+    "logoUrl": "Logo URL",
+    "noteLogUrl": "Note: For optimal quality use a square image",
     "productsTitle": "Products and Publishing",
     "makePrivateTitle": "Make Projects Public by Default",
     "makePrivateDescription": "\n      When a new project is created, it will be defaulted to Public.\n      (Private projects cannot be viewed by anyone outside of your organization)",
     "productSelectTitle": "Select all the products you would like to make available to your organization",
+    "noproducts": "No products available",
+    "storesTitle": "Stores",
+    "storeSelectTitle": "Select all the stores you would like to make available to your organization",
+    "nostores": "No stores available",
     "navBasic": "Basic Info",
-    "navProducts": "Products",
+    "navProducts": "Products & Publishing",
+    "navStores": "Stores",
     "navGroups": "Groups",
     "navInfrastructure": "Infrastructure",
     "infrastructureTitle": "Infrastructure",
@@ -81,9 +93,6 @@
   },
   "products": {
 
-  },
-  "productDefinitions": {
-    "all": "All Products"
   },
   "profile": {
     "title": "Profile",
@@ -148,6 +157,9 @@
       }
     }
   },
+  "productDefinitions": {
+    "filterAllProjects": "All Projects"
+  },
   "project": {
     "title": "Project",
     "newProject": "New Project",
@@ -159,13 +171,14 @@
     "public": "Public",
     "private": "Private",
     "visibilityLabel": "Public",
-    "visibilityDescription": "If you make your project Private, it will not be viewable in the directory or accessible by other organizations",
+    "visibilityDescription": "If you make your project Private, it will not be visible in the directory or accessible by other organizations",
     "createdOn": "Created",
     "overview": "Overview",
     "dropdown": {
       "transfer": "Transfer Ownership",
       "archive": "Archive",
-      "reactivate": "Reactivate"
+      "reactivate": "Reactivate",
+      "build": "Build"
     },
     "details": {
       "title": "Details",
@@ -175,7 +188,16 @@
     "products": {
       "title": "Products",
       "empty": "You have no products for this project.",
-      "add": "add product"
+      "manage": "manage products",
+      "popup": {
+        "title": "Select Products",
+        "done": "Done",
+        "empty": "No products available"
+      },
+      "updated": "Updated",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "rebuild": "REBUILD"
     },
     "settings": {
       "title": "Settings",
@@ -186,6 +208,10 @@
       "organizationDownloads": {
         "title": "Allow Other Organizations to download",
         "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products and their Artifacts"
+      },
+      "visibility": {
+        "title": "Public Visibility",
+        "description": "Public Projects allow any Scriptoria User to view your project in the Directory"
       }
     },
     "side": {
@@ -225,6 +251,11 @@
         "on": "Allow project download is ON",
         "off": "Allow project download is OFF",
         "error": "Error: We could not change Allow Download status"
+      },
+      "isPublic": {
+        "on": "Project visibility is set to Public",
+        "off": "Project visibility is set to Private",
+        "error": "Error: We could not change Project visibility"
       }
     }
   },
