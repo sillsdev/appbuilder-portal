@@ -17,8 +17,6 @@ class Products extends React.Component<IProps> {
 
     let padding = activeProjectColumns.length - activeProductColumns.length;
     padding = Math.max(0, padding);
-    console.log(padding);
-
 
     return (
       <div className='products-grid p-t-sm p-b-md'>
