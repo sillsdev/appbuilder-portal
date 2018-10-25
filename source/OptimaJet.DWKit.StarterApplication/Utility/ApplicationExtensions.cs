@@ -17,7 +17,8 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
                 (IHttpContextAccessor)app.ApplicationServices.GetService(typeof(IHttpContextAccessor)),
                 configuration);
 
-            WorkflowActivityMonitorService.RegisterEventHandlers(WorkflowInit.Runtime);
+            var workflowService = app.ApplicationServices.GetService(typeof(WorkflowActivityMonitorService)) as WorkflowActivityMonitorService;
+            workflowService.RegisterEventHandlers(WorkflowInit.Runtime);
             RecurringJob.AddOrUpdate<WorkflowActivityMonitorService>("WorkflowActivityMonitor", service => service.CheckActivityStatus(), Cron.MinuteInterval(5));
             RecurringJob.AddOrUpdate<WorkflowSecuritySyncService>("WorkflowSecuritySync", service => service.SyncWorkflowSecurity(), Cron.MinuteInterval(5));
             return app;

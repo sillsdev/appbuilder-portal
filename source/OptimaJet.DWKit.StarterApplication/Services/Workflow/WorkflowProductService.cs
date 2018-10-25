@@ -1,23 +1,33 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
-using System.Threading.Tasks;
-using OptimaJet.DWKit.Application;
 using OptimaJet.Workflow.Core.Runtime;
-using System;
+using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowProductService
     {
         IJobRepository<Product> ProductRepository { get; set; }
+        public IJobRepository<UserTask> TaskRepository { get; }
+        public IJobRepository<User> UserRepository { get; }
+        public WorkflowRuntime Runtime { get; }
 
         public WorkflowProductService(
-            IJobRepository<Product> productRepository
+            IJobRepository<Product> productRepository,
+            IJobRepository<UserTask> taskRepository,
+            IJobRepository<User> userRepository,
+            WorkflowRuntime runtime
         )
         {
             ProductRepository = productRepository;
+            TaskRepository = taskRepository;
+            UserRepository = userRepository;
+            Runtime = runtime;
         }
 
 
@@ -25,6 +35,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
             ManageNewProductAsync(productId).Wait();
         }
+
+        public void ProductProcessChanged(Guid workflowProcessId, string activityName, string currentState)
+        {
+            ProductProcessChangedAsync(workflowProcessId, activityName, currentState).Wait();
+        }
+
+
 
         public async Task ManageNewProductAsync(int productId)
         {
@@ -59,7 +76,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
 
             var processId = Guid.NewGuid();
-            await WorkflowInit.Runtime.CreateInstanceAsync(
+            Task createInstance = WorkflowInit.Runtime.CreateInstanceAsync(
                 new CreateInstanceParams(
                     product.ProductDefinition.Workflow.WorkflowScheme,
                     processId)
@@ -71,6 +88,41 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             product.WorkflowProcessId = processId;
             await ProductRepository.UpdateAsync(product);
         }
+
+        public async Task ProductProcessChangedAsync(Guid workflowProcessId, string activityName, string currentState)
+        {
+            // Find the Product assoicated with the ProcessId
+            var product = await ProductRepository.Get().Where(p => p.WorkflowProcessId == workflowProcessId).FirstOrDefaultAsync();
+            if (product == null)
+            {
+                Log.Error($"Could find Product for ProcessId={workflowProcessId}");
+                return;
+            }
+
+            // Remove all the current tasks associated with the Product
+            var tasks = TaskRepository.Get().Where(t => t.ProductId == product.Id);
+            foreach (var task in tasks)
+            {
+                await TaskRepository.DeleteAsync(task.Id);
+            }
+
+            // Find all users who could perform the current activity and create tasks for them
+            var workflowUserIds = Runtime.GetAllActorsForDirectCommandTransitions(workflowProcessId, activityName: activityName).ToList();
+            var users = UserRepository.Get().Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()));
+            foreach (var user in users)
+            {
+                var task = new UserTask
+                {
+                    UserId = user.Id,
+                    ProductId = product.Id,
+                    ActivityName = activityName,
+                    Status = currentState
+                };
+                task = await TaskRepository.CreateAsync(task);
+            }
+
+        }
+
     }
 }
     
