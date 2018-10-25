@@ -14,4 +14,18 @@
     font-family: Montserrat;
     border-bottom: 1px solid $lighter-gray;
   }
+
+  .list {
+    padding-top: 32px;
+
+    .artifact-item {
+      padding: 5px 22px;
+      border-top: 1px solid $lighter-gray;
+
+      .download {
+        color: black;
+        opacity: 0.33;
+      }
+    }
+  }
 }

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
@@ -30,9 +29,13 @@ class Files extends React.Component<IProps> {
     const { products } = this.props;
 
     return (
-      products.map((product, i) =>
-        <ProductArtifact key={i} product={product} />
-      )
+      <div data-test-project-files className='flex flex-column'>
+      {
+        products.map((product, i) =>
+          <ProductArtifact key={i} product={product} />
+        )
+      }
+      </div>
     );
   }
 }

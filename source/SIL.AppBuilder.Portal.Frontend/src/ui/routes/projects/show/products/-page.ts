@@ -1,7 +1,6 @@
 import {
   clickable,
   text,
-  fillable,
   collection,
   interactor,
   Interactor,

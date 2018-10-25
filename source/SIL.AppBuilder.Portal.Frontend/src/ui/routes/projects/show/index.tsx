@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
-import { Tab, Dropdown } from 'semantic-ui-react';
+import { Tab, Dropdown, Menu } from 'semantic-ui-react';
 
 import { attributesFor, ProjectResource } from '@data';
 import Details from './details';
@@ -46,7 +46,7 @@ class Project extends React.Component<IProps> {
     const { t, project } = this.props;
 
     const tabPanes = [{
-      menuItem: t('project.overview'),
+      menuItem: <Menu.Item key={1} data-test-project-files-tab name={t('project.overview')} />,
       render: () =>
         <Tab.Pane attached={false}>
           <div className='flex'>
@@ -63,12 +63,10 @@ class Project extends React.Component<IProps> {
         </Tab.Pane>
 
     },{
-      menuItem: t('project.productFiles'),
+      menuItem: <Menu.Item key={2} data-test-project-files-tab name={t('project.productFiles')} />,
       render: () =>
         <Tab.Pane attached={false}>
-          <div className='flex'>
-            <Files project={project} />
-          </div>
+          <Files project={project} />
         </Tab.Pane>
     }];
 
