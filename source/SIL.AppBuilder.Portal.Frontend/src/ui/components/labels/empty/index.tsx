@@ -16,7 +16,7 @@ class EmptyLabel extends React.Component<IProps> {
     const { children, condition, label, className } = this.props;
 
     if (!condition) {
-      return <div className={className}>{label}</div>
+      return <div className={className}>{label}</div>;
     }
 
     return children;

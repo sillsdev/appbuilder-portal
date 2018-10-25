@@ -12,7 +12,7 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
-  & ICurrentUserProps
+  & ICurrentUserProps;
 
 class FileSize extends React.Component<IProps> {
 
