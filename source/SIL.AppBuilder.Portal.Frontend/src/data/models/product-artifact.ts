@@ -7,6 +7,8 @@ export interface ProductArtifactAttributes extends AttributesObject {
   url: string;
   fileSize: number;
   contentType: string;
+  dateCreated: string;
+  dateUpdated: string;
 }
 
 export type ProductArtifactResource = ResourceObject<PRODUCT_ARTIFACTS_TYPE, ProductArtifactAttributes>;

@@ -140,7 +140,9 @@ const schemaDefinition: SchemaSettings = {
         artifactType: { type: 'string' },
         url: { type: 'string' },
         fileSize: { type: 'number' },
-        contentType: { type: 'string' }
+        contentType: { type: 'string' },
+        dateCreated: { type: 'string' },
+        dateUpdated: { type: 'string' }
       },
       relationships: {
         product: { type: 'hasOne', model: 'product', inverse: 'artifacts' }

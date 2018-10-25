@@ -64,7 +64,7 @@ class ProductArtifact extends React.Component<IProps> {
           >
             {
               artifacts.map((artifact, i) =>
-                <Artifact key={i} artifact={artifact}/>
+                <Artifact key={i} artifact={artifact} includeHeader={i === 0}/>
               )
             }
           </EmptyLabel>
