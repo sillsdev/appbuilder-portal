@@ -193,6 +193,10 @@
         "done": "Done",
         "empty": "No products available"
       },
+      "options": {
+        "update": "update",
+        "publish": "publish"
+      },
       "updated": "Updated",
       "size": "Size",
       "filename": "Filename",
