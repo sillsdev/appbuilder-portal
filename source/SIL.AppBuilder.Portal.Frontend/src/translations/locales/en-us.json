@@ -187,7 +187,7 @@
     "products": {
       "title": "Products",
       "empty": "You have no products for this project.",
-      "add": "Add Products",
+      "addRemove": "Add or Remove Products",
       "popup": {
         "title": "Select Products",
         "done": "Done",
