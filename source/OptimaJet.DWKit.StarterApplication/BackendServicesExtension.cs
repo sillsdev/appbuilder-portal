@@ -115,7 +115,11 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped(typeof(SIL.AppBuilder.BuildEngineApiClient.IBuildEngineApi), typeof(SIL.AppBuilder.BuildEngineApiClient.BuildEngineApi));
 
             services.AddSingleton<WorkflowActivityMonitorService>();
-            services.AddScoped<WorkflowRuntime>(s => WorkflowInit.Runtime);
+            services.AddTransient<IWorkflowRuleProvider, WorkflowProductRuleProvider>();
+            services.AddTransient<WorkflowRuntime>(s => {
+                WorkflowInit.RuleProvider = s.GetRequiredService<IWorkflowRuleProvider>();
+                return WorkflowInit.Runtime;
+            });
 
             return services;
         }

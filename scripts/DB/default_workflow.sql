@@ -21,6 +21,10 @@ INSERT INTO "dwSecurityRole" ("Id", "Code", "Name", "Comment", "DomainGroup") VA
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
 ('SIL_Default_AppBuilders_Android_GooglePlay',	'<Process>
   <Designer />
+  <Actors>
+    <Actor Name="Owner" Rule="IsProjectOwner" Value="" />
+    <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
+  </Actors>
   <Commands>
     <Command Name="next" />
   </Commands>
@@ -49,6 +53,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer />
     </Transition>
     <Transition Name="Definition_Approval_1" To="Approval" From="Definition" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="next" />
       </Triggers>
