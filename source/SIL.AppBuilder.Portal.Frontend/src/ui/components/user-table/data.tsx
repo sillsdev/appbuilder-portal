@@ -4,39 +4,36 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
+import { withNetwork as withUserList } from '@data/containers/resources/user/list';
+
 import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
 import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
+import { TYPE_NAME as ROLE } from '@data/models/role';
 import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
 import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
-import { query, ORGANIZATION_MEMBERSHIPS_TYPE, GROUPS_TYPE, USERS_TYPE, withLoader, buildOptions, isRelatedTo, ORGANIZATIONS_TYPE } from '@data';
+
+import {
+  withLoader,
+  buildOptions, isRelatedTo,
+  UserResource, GroupResource, OrganizationResource, OrganizationMembershipResource
+} from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
-
-function mapNetworkToProps() {
-  return {
-    users: [
-      q => q.findRecords(USER),
-      buildOptions({
-        include: [`${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}`, `${GROUP_MEMBERSHIPS}.${GROUP}`]
-      })
-    ],
-  };
-}
 
 function mapRecordsToProps() {
   return {
     organizationMemberships: q => q.findRecords('organizationMembership'),
-    groups: q => q.findRecords(GROUP)
+    groups: q => q.findRecords(GROUP),
+    roles: q => q.findRecords(ROLE),
   };
 }
 
 interface IOwnProps {
-  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
-  usersFromCache: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
-  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
-  currentOrganization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
-  organizationMemberships: Array<ResourceObject<ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipAttributes>>;
+  users: UserResource[];
+  groups: GroupResource[];
+  currentOrganization: OrganizationResource;
+  organizationMemberships: OrganizationMembershipResource[];
 }
 
 type IProps =
@@ -96,11 +93,12 @@ export function withData(WrappedComponent) {
 
   return compose(
     withCurrentOrganization,
-    query(mapNetworkToProps),
+    withUserList({ include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION},${GROUP_MEMBERSHIPS}.${GROUP}` }),
+    withLoader(({ users }) => !users),
     withOrbit(mapRecordsToProps),
-    withLoader(({ users, groups, organizationMemberships }) =>
-        !users || !groups || !organizationMemberships
-    ),
+    withLoader(({ roles, groups, organizationMemberships }) =>
+               !roles || !groups || !organizationMemberships
+              ),
     withTranslations,
   )(DataWrapper);
 }

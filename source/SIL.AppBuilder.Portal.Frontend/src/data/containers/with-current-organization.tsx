@@ -6,7 +6,7 @@ import { ResourceObject } from 'jsonapi-typescript';
 import { Redirect } from 'react-router';
 
 import { OrganizationAttributes, TYPE_NAME } from '../models/organization';
-import { ORGANIZATIONS_TYPE } from '@data';
+import { ORGANIZATIONS_TYPE, query } from '@data';
 
 import { buildFindRecord } from '@data/store-helpers';
 import * as toast from '@lib/toast';
@@ -36,7 +36,7 @@ function mapRecordsToProps(passedProps) {
   if (!id || id === '') { return {}; }
 
   return {
-    organization: q => buildFindRecord(q, TYPE_NAME, id)
+    organization: q => buildFindRecord(q, TYPE_NAME, id),
   };
 }
 

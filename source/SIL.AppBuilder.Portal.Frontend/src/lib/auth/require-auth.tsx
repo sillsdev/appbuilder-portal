@@ -15,8 +15,6 @@ export function requireAuth(Component) {
     const authenticated = isLoggedIn();
 
     if (authenticated) {
-      console.debug('The user is authenticated');
-
       const WithUser = withCurrentUser()(Component);
 
       return <WithUser { ...propsWithRouting } />;

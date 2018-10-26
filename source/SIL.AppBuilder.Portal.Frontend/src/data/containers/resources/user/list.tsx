@@ -1,23 +1,18 @@
 import { compose } from 'recompose';
 
-import { buildOptions, ProjectResource } from '@data';
+import { query, buildOptions, UserResource } from '@data';
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';
-import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 import { IPaginateProps } from '@data/containers/api/pagination';
 import { ISortProps } from '@data/containers/api/sorting';
 import { IProvidedProps as IOrgProps } from '@data/containers/with-current-organization';
 
-import { query, PROJECTS_TYPE } from '@data';
-
-import { ResourceObject } from 'jsonapi-typescript';
-
-export interface IOwnProps {
-  projects: ProjectResource[];
+export interface IProvidedProps {
+  users: UserResource[];
   error?: any;
 }
 
 interface IOptions {
-  all?: boolean;
+  include?: string;
 }
 
 type IProps =
@@ -27,9 +22,7 @@ type IProps =
 & ISortProps;
 
 export function withNetwork<TWrappedProps>(options: IOptions = {}) {
-  const { all } = options;
-
-  const isWantingAllProjects = all === true;
+  const { include } = options;
 
   return WrappedComponent => {
     function mapNetworkToProps(passedProps: TWrappedProps & IProps) {
@@ -40,12 +33,8 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       } = passedProps;
 
       const requestOptions = buildOptions({
-        include: ['organization,group,owner,products.product-definition.type']
+        include: [include]
       });
-
-      if (isWantingAllProjects) {
-        delete requestOptions.sources.remote.settings.headers.Organization;
-      }
 
       return {
         cacheKey: [
@@ -53,9 +42,9 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
           sortProperty, filters,
           currentPageOffset, currentPageSize
         ],
-        projects: [
+        users: [
           q => {
-            let builder = q.findRecords(PROJECT);
+            let builder = q.findRecords('user');
 
             if (applyFilter) { builder = applyFilter(builder); }
             if (applyPagination) { builder = applyPagination(builder); }

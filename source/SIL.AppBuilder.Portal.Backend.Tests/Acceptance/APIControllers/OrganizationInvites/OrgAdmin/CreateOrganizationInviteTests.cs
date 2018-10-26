@@ -38,7 +38,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
             NeedsRoles();
 
             NeedsTestData<AppDbContext, UserRole>(new List<UserRole> {
-                new UserRole { User = OrgAdmin, RoleName = RoleName.OrganizationAdmin },
+                new UserRole { User = OrgAdmin, RoleId = int.Parse(RoleName.OrganizationAdmin.ToString()) },
             });
        
         }

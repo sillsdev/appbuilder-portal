@@ -45,6 +45,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("organization-stores", Link.None)]
         public virtual List<OrganizationStore> OrganizationStores { get; set; }
 
+        [HasMany("user-roles", Link.None)]
+        public virtual List<UserRole> UserRoles { get; set; }
+
         [NotMapped]
         public IEnumerable<int> ProductDefinitionIds => OrganizationProductDefinitions?.Select(pd => pd.ProductDefinitionId);
 
