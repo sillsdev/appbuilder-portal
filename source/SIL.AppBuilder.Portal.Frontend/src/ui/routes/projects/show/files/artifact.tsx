@@ -25,14 +25,19 @@ class Artifact extends React.Component<IProps> {
     const { artifactType, url, fileSize, dateUpdated } = attributesFor(artifact);
 
     return (
-      <div className='artifact-item flex'>
+      <div className='artifact-item flex p-l-md p-t-sm p-b-sm p-r-md'>
         <div className='flex-70 flex align-items-center'>
           <InsertDriveFileIcon className='m-r-sm' />
           <span data-test-project-files-artifact-name>{artifactType}</span>
         </div>
         <div className='flex-30 flex align-items-center justify-content-end'>
           <div className='position-relative w-40'>
-            {includeHeader ? <div className='column-header'>{t('project.products.updated')}</div> : ''}
+            {
+              includeHeader ?
+                <div className='column-header bold fs-13'>
+                  {t('project.products.updated')}
+                </div> : null
+            }
             <TimezoneLabel dateTime={dateUpdated} className='m-r-md'/>
           </div>
           <FileSize size={fileSize} className='m-r-md w-30 text-align-right' />

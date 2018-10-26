@@ -47,7 +47,7 @@ class ProductArtifact extends React.Component<IProps> {
 
     return (
       <div className='product-artifact w-100 m-b-lg'>
-        <div className='header flex align-items-center p-t-sm p-b-sm p-l-md p-r-md'>
+        <div className='header flex align-items-center p-md bold'>
           <ProductIcon product={productDefinition}/>
           <span
             data-test-project-files-product-name

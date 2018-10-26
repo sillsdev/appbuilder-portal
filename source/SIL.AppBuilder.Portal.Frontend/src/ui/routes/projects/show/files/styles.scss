@@ -8,16 +8,14 @@
 
   .header {
     background-color: $ultra-ligthest-gray;
-    font-weight: bold;
-    font-family: Montserrat;
     border-bottom: 1px solid $lighter-gray;
   }
 
   .list {
+
     padding-top: 32px;
 
     .artifact-item {
-      padding: 5px 22px;
       border-top: 1px solid $lighter-gray;
 
       .download {
@@ -26,12 +24,9 @@
       }
 
       .column-header {
-        font-family: Montserrat;
-        font-size: 13px;
-        font-weight: bold;
         line-height: 1.54;
         color: $gray;
-        top: -35px;
+        top: -38px;
         position: absolute;
       }
     }
