@@ -75,9 +75,8 @@ class ProductArtifact extends React.Component<IProps> {
                 <div className='flex-30 text-align-right'>
                   <span className='m-r-md'>{t('project.products.size')}</span>
                 </div>
-                <div className='flex-10'></div>
+                <div className='flex-10'/>
               </div>
-
             </div>
             {
               artifacts.map((artifact, i) =>
