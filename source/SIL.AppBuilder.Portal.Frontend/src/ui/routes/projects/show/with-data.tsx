@@ -6,7 +6,6 @@ import {
 } from '@data';
 
 import { TYPE_NAME as PROJECT } from '@data/models/project';
-import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as GROUP } from '@data/models/group';
 import { PLURAL_NAME as REVIEWERS } from '@data/models/reviewer';
 
@@ -20,7 +19,7 @@ const mapNetworkToProps = (passedProps) => {
   return {
     cacheKey: `project-${id}`,
     project: [q => buildFindRecord(q, PROJECT, id), buildOptions({
-      include: ['products', 'organization.organization-product-definitions.product-definition', GROUP, 'owner', REVIEWERS, 'type']
+      include: ['products.product-artifacts', 'organization.organization-product-definitions.product-definition', GROUP, 'owner', REVIEWERS, 'type']
     })]
   };
 };

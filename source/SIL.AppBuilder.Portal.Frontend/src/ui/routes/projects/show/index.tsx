@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
-import { Tab, Dropdown } from 'semantic-ui-react';
+import { Tab, Dropdown, Menu } from 'semantic-ui-react';
 
 import { attributesFor, ProjectResource } from '@data';
 import Details from './details';
@@ -10,9 +10,9 @@ import Products from './products';
 import Owners from './owners';
 import Reviewers from './reviewers';
 import Settings from './settings';
+import Files from './files';
 import { withAccessRestriction } from './with-access-restriction';
 import { withData } from './with-data';
-import { withLayout } from '@ui/components/layout';
 import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
 import { withProjectOperations } from './with-project-operations';
 import { withTranslations, i18nProps } from '@lib/i18n';
@@ -46,7 +46,7 @@ class Project extends React.Component<IProps> {
     const { t, project } = this.props;
 
     const tabPanes = [{
-      menuItem: t('project.overview'),
+      menuItem: <Menu.Item key={1} data-test-project-files-tab name={t('project.overview')} />,
       render: () =>
         <Tab.Pane attached={false}>
           <div className='flex'>
@@ -62,6 +62,12 @@ class Project extends React.Component<IProps> {
           </div>
         </Tab.Pane>
 
+    },{
+      menuItem: <Menu.Item key={2} data-test-project-files-tab name={t('project.productFiles')} />,
+      render: () =>
+        <Tab.Pane attached={false}>
+          <Files project={project} />
+        </Tab.Pane>
     }];
 
     return tabPanes;

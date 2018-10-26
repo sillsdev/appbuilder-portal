@@ -10,6 +10,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 interface IOwnProps {
   dateTime: string;
   emptyLabel?: string;
+  className?: string;
 }
 
 type IProps =
@@ -21,7 +22,7 @@ class TimezoneLabel extends React.Component<IProps> {
 
   render() {
 
-    const { dateTime, emptyLabel, moment, timezone, t } = this.props;
+    const { dateTime, emptyLabel, moment, timezone, className } = this.props;
     let dateTimeZ = dateTime;
 
     if (!dateTime) {
@@ -34,7 +35,7 @@ class TimezoneLabel extends React.Component<IProps> {
     const dateTimeTZ = moment(dateTimeZ).tz(timezone);
 
     return (
-      <span title={dateTimeTZ.format('MMMM Do YYYY, h:mm:ss')}>
+      <span className={className} title={dateTimeTZ.format('MMMM Do YYYY, h:mm:ss')}>
         {dateTimeTZ.fromNow(true)}
       </span>
     );

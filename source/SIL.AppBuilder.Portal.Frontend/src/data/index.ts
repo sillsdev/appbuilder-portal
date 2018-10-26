@@ -46,6 +46,7 @@ export { ORGANIZATION_PRODUCT_DEFINITIONS_TYPE, OrganizationProductDefinitionRes
 export { STORES_TYPE, StoreResource } from './models/store';
 export { ORGANIZATION_STORES_TYPE, OrganizationStoreResource } from './models/organization-store';
 export { STORE_TYPES_TYPE, StoreTypeResource } from './models/store-type';
+export { PRODUCT_ARTIFACTS_TYPE, ProductArtifactResource } from './models/product-artifact';
 
 // TODO: change to 20, or remove.
 //       currently, we don't have a way to see what the total

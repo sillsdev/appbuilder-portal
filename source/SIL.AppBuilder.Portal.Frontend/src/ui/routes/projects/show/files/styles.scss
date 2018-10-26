@@ -1,0 +1,22 @@
+@import '../../../../styles/_base/variables.scss';
+
+.product-artifact {
+  border: 1px solid $lighter-gray;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  color: $gray;
+
+  .header {
+    background-color: $ultra-ligthest-gray;
+    border-bottom: 1px solid $lighter-gray;
+  }
+
+  .artifact-item {
+    border-top: 1px solid $lighter-gray;
+
+    .download {
+      color: black;
+      opacity: 0.33;
+    }
+  }
+}
