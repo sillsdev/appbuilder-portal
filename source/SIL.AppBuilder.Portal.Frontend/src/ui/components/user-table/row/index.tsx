@@ -67,7 +67,7 @@ class Row extends React.Component<IProps> {
             {firstName} {lastName}
           </Link>
         </td>
-        <td></td>
+        <td />
         <td>
           Groups Here
           {/* <GroupDropdown
