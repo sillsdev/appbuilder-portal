@@ -6,11 +6,9 @@ import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 import { ProductArtifactResource, attributesFor } from '@data';
 import FileSize from '@ui/components/labels/file-size';
 import TimezoneLabel from '@ui/components/timezone-label';
-import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   artifact: ProductArtifactResource;
-  includeHeader: boolean;
 }
 
 type IProps =
@@ -21,7 +19,7 @@ class Artifact extends React.Component<IProps> {
 
   render() {
 
-    const { artifact, includeHeader, t } = this.props;
+    const { artifact } = this.props;
     const { artifactType, url, fileSize, dateUpdated } = attributesFor(artifact);
 
     return (
@@ -31,17 +29,11 @@ class Artifact extends React.Component<IProps> {
           <span data-test-project-files-artifact-name>{artifactType}</span>
         </div>
         <div className='flex-30 flex align-items-center justify-content-end'>
-          <div className='position-relative w-40'>
-            {
-              includeHeader ?
-                <div className='column-header bold fs-13'>
-                  {t('project.products.updated')}
-                </div> : null
-            }
+          <div className='flex-grow'>
             <TimezoneLabel dateTime={dateUpdated} className='m-r-md'/>
           </div>
-          <FileSize size={fileSize} className='m-r-md w-30 text-align-right' />
-          <a href={url} download className='download'>
+          <FileSize size={fileSize} className='flex-30 text-align-right p-r-md' />
+          <a href={url} download className='download flex-10'>
             <VerticalAlignBottomIcon />
           </a>
         </div>
@@ -52,6 +44,4 @@ class Artifact extends React.Component<IProps> {
 
 }
 
-export default compose(
-  withTranslations
-)(Artifact);
+export default Artifact;

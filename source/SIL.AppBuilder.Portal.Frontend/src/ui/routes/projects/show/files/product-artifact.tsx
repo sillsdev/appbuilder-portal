@@ -12,6 +12,7 @@ import {
 import Artifact from './artifact';
 import EmptyLabel from '@ui/components/labels/empty';
 import { isEmpty } from '@lib/collection';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   productDefinition: ProductDefinitionResource;
@@ -19,7 +20,8 @@ interface IOwnProps {
 }
 
 type IProps =
-  & IOwnProps;
+  & IOwnProps
+  & i18nProps;
 
 const mapRecordsToProps = (passedProps) => {
   const { product } = passedProps;
@@ -43,7 +45,7 @@ class ProductArtifact extends React.Component<IProps> {
 
   render() {
 
-    const { productDefinition, artifacts } = this.props;
+    const { productDefinition, artifacts, t } = this.props;
 
     return (
       <div className='product-artifact w-100 m-b-lg'>
@@ -56,15 +58,30 @@ class ProductArtifact extends React.Component<IProps> {
             {this.humanReadableName()}
           </span>
         </div>
-        <div className='list'>
+        <div>
           <EmptyLabel
-            className='m-l-lg m-b-lg'
+            className='m-t-lg m-l-lg m-b-lg'
             condition={!isEmpty(artifacts)}
-            label={'No artifacts'}
+            label={t('project.products.noArtifacts')}
           >
+            <div className='flex p-l-md p-t-sm p-b-sm p-r-md gray-text bold'>
+              <div className='flex-70'>
+                <span>{t('project.products.filename')}</span>
+              </div>
+              <div className='flex flex-30'>
+                <div className='flex-grow'>
+                  <span>{t('project.products.updated')}</span>
+                </div>
+                <div className='flex-30 text-align-right'>
+                  <span className='m-r-md'>{t('project.products.size')}</span>
+                </div>
+                <div className='flex-10'></div>
+              </div>
+
+            </div>
             {
               artifacts.map((artifact, i) =>
-                <Artifact key={i} artifact={artifact} includeHeader={i === 0}/>
+                <Artifact key={i} artifact={artifact}/>
               )
             }
           </EmptyLabel>
@@ -77,5 +94,6 @@ class ProductArtifact extends React.Component<IProps> {
 }
 
 export default compose(
+  withTranslations,
   withOrbit(mapRecordsToProps)
 )(ProductArtifact);

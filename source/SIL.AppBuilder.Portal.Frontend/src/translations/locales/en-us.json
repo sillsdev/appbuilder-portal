@@ -194,8 +194,11 @@
         "empty": "No products available"
       },
       "updated": "Updated",
+      "size": "Size",
+      "filename": "Filename",
       "published": "Published",
       "unpublished": "Unpublished",
+      "noArtifacts": "No artifacts",
       "rebuild": "REBUILD"
     },
     "settings": {
