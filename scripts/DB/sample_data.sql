@@ -4859,14 +4859,3 @@ INSERT INTO "ProductArtifacts" ("ProductId", "ArtifactType", "Url", "FileSize", 
   ( 678, 'version_code', 'https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_39/2237/version_code.txt', 3, 'text/plain', now(), now() ),
   ( 678, 'package_name', 'https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_39/2237/package_name.txt', 30, 'text/plain', now(), now() ),
   ( 678, 'consoleText', 'https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_39/2237/aca_Achagua_Biblia-4.7-output.log', 13997, 'text/plain', now(), now() );
-
-
-
-
-
-
-
-  INSERT INTO "Roles" ("Id", "RoleName") VALUES
-    (1, 1), /* super admin */
-    (2, 2), /* org admin */
-    (3, 3); /* app builder */

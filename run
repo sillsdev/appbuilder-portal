@@ -89,8 +89,7 @@ function runstuff {
       echo "Running migrations..."
 
       runstuff db:update \
-        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/application_types.sql" \
-        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/stores.sql" \
+        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/bootstrap.sql" \
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_workflow.sql" \
         && echo "DB setup for json:api"
     ;;
