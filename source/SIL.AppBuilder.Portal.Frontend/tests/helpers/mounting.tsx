@@ -48,7 +48,8 @@ class TestWrapper extends React.Component<any, any> {
             <ReduxProvider initialState={initialState || {}}>
               <Router history={history}>
                 <ScrollToTop>
-                  <WithRouteDebugging />
+                  { /* <WithRouteDebugging /> */ }
+                  <ComponentToTest { ...componentProps } />
                 </ScrollToTop>
               </Router>
             </ReduxProvider>

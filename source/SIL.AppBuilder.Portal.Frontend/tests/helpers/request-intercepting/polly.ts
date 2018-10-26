@@ -119,7 +119,7 @@ const setup = function(config) {
     req.headers.Allow = 'OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE';
   });
 
-  this.mockGet('roles', {
+  this.mockGet(200, '/roles', {
     "data":[{
       "attributes":{"role-name":"SuperAdmin"},
       "relationships":{
