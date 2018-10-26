@@ -11,10 +11,6 @@ import {
 
 import ItemActions from './item-actions';
 import ProductIcon from '@ui/components/product-icon';
-import {
-  withMomentTimezone,
-  IProvidedProps as TimezoneProps
-} from '@lib/with-moment-timezone';
 import TimezoneLabel from '@ui/components/timezone-label';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
@@ -26,7 +22,6 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
-  & TimezoneProps
   & i18nProps;
 
 const mapRecordsToProps = (passedProps) => {
