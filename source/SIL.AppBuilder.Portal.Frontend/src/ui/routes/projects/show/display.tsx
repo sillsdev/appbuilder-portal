@@ -2,7 +2,8 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
-import { Tab, Dropdown } from 'semantic-ui-react';
+import { Tab, Dropdown, Menu } from 'semantic-ui-react';
+
 
 import { attributesFor, ProjectResource } from '@data';
 import Details from './details';
