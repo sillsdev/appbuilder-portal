@@ -12,6 +12,7 @@ export {
   buildFindRelatedRecords,
   buildFindRelatedRecord,
   localIdFromRecordIdentity,
+  recordIdentityFromKeys,
 } from './store-helpers';
 
 export {
@@ -31,6 +32,8 @@ export { queryApi as query } from './query';
 export { pushPayload } from './push-payload';
 
 export { TASKS_TYPE, TaskResource } from './models/task';
+export { ROLE_TYPE, RoleResource } from './models/role';
+export { USER_ROLE_TYPE, UserRoleResource } from './models/user-role';
 export { NOTIFICATIONS_TYPE, NotificationResource } from './models/notification';
 export { ORGANIZATIONS_TYPE, OrganizationResource } from './models/organization';
 export { GROUPS_TYPE, GroupResource } from './models/group';

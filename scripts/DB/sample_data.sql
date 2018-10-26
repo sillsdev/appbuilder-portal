@@ -136,8 +136,8 @@ VALUES
   ( 'Developer Town Project 30', 1, 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986.', 3, 14, 2, 'Sogdian', now(), now(), null, true, true),
   ( 'Developer Town Project 31', 1, 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986.', 3, 14, 2, 'Sogdian', now(), now(), null, true, true);
 
-INSERT INTO "Products" 
-  ("ProjectId", "ProductDefinitionId", "DateCreated", "DateUpdated", "DatePublished", "DateBuilt", "WorkflowBuildId", "WorkflowJobId", "WorkflowPublishId", "StoreId", "StoreLanguageId") 
+INSERT INTO "Products"
+  ("ProjectId", "ProductDefinitionId", "DateCreated", "DateUpdated", "DatePublished", "DateBuilt", "WorkflowBuildId", "WorkflowJobId", "WorkflowPublishId", "StoreId", "StoreLanguageId")
 VALUES
   (1,	1,	now(),	now(),	NULL,	NULL,	'0',	'0',	'0',	1,	20),
   (2,	6,	now(),	now(),	NULL,	NULL,	'0',	'0',	'0',	NULL,	NULL),
@@ -823,8 +823,8 @@ VALUES
   ( 'acaPNT Achagua', 1, 'scriptureappbuilder-AMA-aca-acaPNT-Achagua', 8, 5, 1, 'aca', now(), now(), null, true, true),
   ( 'Kalaam Media 1', 1, 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986.', 2, 2 , 3, 'English', now(), now(), null, true, true);
 
-INSERT INTO "Products" 
-  ("ProjectId", "ProductDefinitionId", "DateCreated", "DateUpdated", "DatePublished", "DateBuilt", "WorkflowBuildId", "WorkflowJobId", "WorkflowPublishId", "StoreId", "StoreLanguageId") 
+INSERT INTO "Products"
+  ("ProjectId", "ProductDefinitionId", "DateCreated", "DateUpdated", "DatePublished", "DateBuilt", "WorkflowBuildId", "WorkflowJobId", "WorkflowPublishId", "StoreId", "StoreLanguageId")
 VALUES
   ( 32,	1,	now(),	now(),	null,	null,	'0',	'0',	'0',	1,	20),
   ( 33,	1,	now(),	now(),	null,	null,	'0',	'0',	'0',	1,	20),
@@ -4859,3 +4859,14 @@ INSERT INTO "ProductArtifacts" ("ProductId", "ArtifactType", "Url", "FileSize", 
   ( 678, 'version_code', 'https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_39/2237/version_code.txt', 3, 'text/plain', now(), now() ),
   ( 678, 'package_name', 'https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_39/2237/package_name.txt', 30, 'text/plain', now(), now() ),
   ( 678, 'consoleText', 'https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_39/2237/aca_Achagua_Biblia-4.7-output.log', 13997, 'text/plain', now(), now() );
+
+
+
+
+
+
+
+  INSERT INTO "Roles" ("Id", "RoleName") VALUES
+    (1, 1), /* super admin */
+    (2, 2), /* org admin */
+    (3, 3); /* app builder */

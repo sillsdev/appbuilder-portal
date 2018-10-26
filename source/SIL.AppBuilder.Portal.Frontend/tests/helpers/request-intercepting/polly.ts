@@ -119,6 +119,36 @@ const setup = function(config) {
     req.headers.Allow = 'OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE';
   });
 
+  this.mockGet('roles', {
+    "data":[{
+      "attributes":{"role-name":"SuperAdmin"},
+      "relationships":{
+        "user-roles":{}
+      },
+      "type":"roles",
+      "id":"1"
+    },{
+      "attributes":{
+        "role-name":"OrganizationAdmin"
+      },
+      "relationships":{
+        "user-roles":{}
+      },
+      "type":"roles",
+      "id":"2"
+    },{
+      "attributes":{
+        "role-name":"AppBuilder"
+      },
+      "relationships":{
+        "user-roles":{}
+      },
+      "type":"roles",
+      "id":"3"
+    }],
+    "meta":{"total-records":3}
+  });
+
   // This won't work unless we create a polly adapter for
   // https://github.com/auth0/auth0.js/blob/fb53e8c318416ab1b29c99907a9e3cf63fe25164/src/helper/request-builder.js
   // server.host('https://cdn.auth0.com', () => {

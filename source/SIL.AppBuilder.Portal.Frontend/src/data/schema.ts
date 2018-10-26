@@ -45,7 +45,8 @@ const schemaDefinition: SchemaSettings = {
         userMemberships: { type: 'hasMany', model: 'organization-membership', inverse: 'organization' },
         groups: { type: 'hasMany', model: 'group', inverse: 'owner' },
         organizationProductDefinitions: { type: 'hasMany', model: 'organizationProductDefinition', inverse: 'organization'},
-        organizationStores: { type: 'hasMany', model: 'organizationStore', inverse: 'organization' }
+        organizationStores: { type: 'hasMany', model: 'organizationStore', inverse: 'organization' },
+        userRoles: { type: 'hasMany', model: 'userRole', inverse: 'organization' },
       }
     },
     organizationMembership: {
@@ -221,10 +222,21 @@ const schemaDefinition: SchemaSettings = {
     role: {
       keys: { remoteId: {} },
       attributes: {
-        name: { type: 'string'}
+        roleName: { type: 'string'}
       },
       relationships: {
-        users: { type: 'hasMany', model: 'user', inverse: 'role'}
+        userRoles: { type: 'hasMany', model: 'userRole', inverse: 'role' }
+      }
+    },
+    userRole: {
+      keys: { remoteId: {} },
+      attributes: {
+        roleName: { type: 'string' },
+      },
+      relationships: {
+        user: { type: 'hasOne', model: 'user', inverse: 'userRoles' },
+        role: { type: 'hasOne', model: 'role', inverse: 'userRoles' },
+        organization: { type: 'hasOne', model: 'organization', inverse: 'userRoles' }
       }
     },
     group: {
@@ -271,7 +283,7 @@ const schemaDefinition: SchemaSettings = {
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
         assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' },
         projects: { type: 'hasMany', model: 'project', inverse: 'owner' },
-        role: { type: 'hasOne', model: 'role', inverse: 'users'},
+        userRoles: { type: 'hasMany', model: 'userRole', inverse: 'user'},
         groups: { type: 'hasMany', model: 'group', inverse: 'users'}
       }
     }
