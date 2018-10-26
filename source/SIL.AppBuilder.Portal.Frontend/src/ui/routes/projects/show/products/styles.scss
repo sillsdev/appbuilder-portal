@@ -1,7 +1,6 @@
 @import '../../../../styles/_base/variables.scss';
 
 .ui.modal.products-modal > .header {
-  font-family: Montserrat;
   font-size: 28px;
   font-weight: bold;
   line-height: 1.53;
@@ -18,11 +17,9 @@
   border: 1px solid $light-gray;
   font-size: 13px;
   color: $light-gray;
-  padding: 10px  5px 10px 22px;
   background-color: $ultra-ligthest-gray;
 
   .item-title {
-    font-family: Montserrat;
     font-size: 13px;
     font-weight: bold;
     line-height: 1.54;
