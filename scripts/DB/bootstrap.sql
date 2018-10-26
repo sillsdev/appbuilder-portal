@@ -1,3 +1,13 @@
+INSERT INTO "Roles" ("Id", "RoleName") VALUES
+(1, 1), /* super admin */
+(2, 2), /* org admin */
+(3, 3); /* app builder */
+
+INSERT INTO "ApplicationTypes" ("Id", "Name", "Description") VALUES
+(1, 'scriptureappbuilder',	'Scripture App Builder'),
+(2, 'readingappbuilder',	'Reading App Builder'),
+(3, 'dictionaryappbuilder',	'Dictionary App Builder');
+
 INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
 (1, 'google_play_store',	'Google Play Store');
 
