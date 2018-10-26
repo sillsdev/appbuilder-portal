@@ -129,6 +129,8 @@
     "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
     "groupRequired": "Debe ser un miembro de al menos un grupo.",
     "userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",
+    "friendlyForbidden": "You are not allowed to do that. Please contact your organization administrator",
+    "forbiddenForAllOrgs": "You are not allowed to do that. Please select an organization",
     "notAMemberOfOrg": "No es un miembro de esa organización",
     "orgMembershipRequired": "Se requiere ser miembro de la organización",
     "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
@@ -189,11 +191,15 @@
     "products": {
       "title": "Productos",
       "empty": "No tiene productos para este proyecto.",
-      "add": "Add Products",
+      "addRemove": "Add or Remove Products",
       "popup": {
         "title": "Select Products",
         "done": "Done",
         "empty": "No products available"
+      },
+      "options": {
+        "update": "update",
+        "publish": "publish"
       },
       "updated": "Updated",
       "size": "Size",
