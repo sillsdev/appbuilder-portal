@@ -45,7 +45,7 @@ type IProps =
         className='ui button'
         onClick={toggleModal}
       >
-        {t('project.products.manage')}
+        {t('project.products.add')}
       </button>
     );
 
