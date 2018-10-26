@@ -189,7 +189,7 @@
     "products": {
       "title": "Productos",
       "empty": "No tiene productos para este proyecto.",
-      "manage": "agregar producto",
+      "add": "Add Products",
       "popup": {
         "title": "Select Products",
         "done": "Done",
