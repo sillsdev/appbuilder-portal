@@ -26,11 +26,11 @@ class Artifact extends React.Component<IProps> {
 
     return (
       <div className='artifact-item flex'>
-        <div className='w-70 flex align-items-center'>
+        <div className='flex-70 flex align-items-center'>
           <InsertDriveFileIcon className='m-r-sm' />
           <span data-test-project-files-artifact-name>{artifactType}</span>
         </div>
-        <div className='w-30 flex align-items-center justify-content-end'>
+        <div className='flex-30 flex align-items-center justify-content-end'>
           <div className='position-relative w-40'>
             {includeHeader ? <div className='column-header'>{t('project.products.updated')}</div> : ''}
             <TimezoneLabel dateTime={dateUpdated} className='m-r-md'/>
