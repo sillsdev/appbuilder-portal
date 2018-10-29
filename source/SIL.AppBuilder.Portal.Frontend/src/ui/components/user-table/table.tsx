@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { ResourceObject } from 'jsonapi-typescript';
 
 import {
-  UserResource, GroupResource, RoleResource,
+  UserResource,
+  GroupResource,
+  RoleResource,
 } from '@data';
+
 import { withRoles } from '@data/containers/resources/role';
 
 import { isEmpty } from '@lib/collection';
@@ -17,7 +19,6 @@ import './user-table.scss';
 
 interface IOwnProps {
   users: UserResource[];
-  groups: GroupResource[];
   roles: RoleResource[];
 }
 

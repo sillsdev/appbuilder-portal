@@ -3,7 +3,6 @@ import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
 import { Radio } from 'semantic-ui-react';
-import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import {
@@ -15,10 +14,11 @@ import { withDataActions, IProvidedProps as IActionProps } from '@data/container
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import RoleSelect from './role-select';
+import GroupSelect from './group-select';
 
 
 export interface IOwnProps {
-  user: UserResource[];
+  user: UserResource;
   groups: GroupResource[];
   roles: RoleResource[];
 }
@@ -52,13 +52,13 @@ class Row extends React.Component<IProps> {
   }
 
   render() {
-    const { user: userData, t, roles } = this.props;
-    const user = attributesFor(userData) as UserAttributes;
-    const userId = idFromRecordIdentity(userData as any);
+    const { user, t, roles } = this.props;
+    const { givenName, familyName, isLocked } = attributesFor(user);
+    const userId = idFromRecordIdentity(user);
 
-    const firstName = user.givenName || `(${t('profile.firstName')})`;
-    const lastName = user.familyName || `(${t('profile.lastName')})`;
-    const isActive = !user.isLocked;
+    const firstName = givenName || `(${t('profile.firstName')})`;
+    const lastName = familyName || `(${t('profile.lastName')})`;
+    const isActive = !isLocked;
 
     return (
       <tr>
@@ -69,12 +69,7 @@ class Row extends React.Component<IProps> {
         </td>
         <td />
         <td>
-          Groups Here
-          {/* <GroupDropdown
-            items={groups.map(g => ({ id: g.id, value: g.attributes.name }))}
-            selected={user.groups.map(g => ({ id: g.id, value: g.name }))}
-          />
-          */}
+          <GroupSelect user={user} />
         </td >
         <td>
           <Radio
