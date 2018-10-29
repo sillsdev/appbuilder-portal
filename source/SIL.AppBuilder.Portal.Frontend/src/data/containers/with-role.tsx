@@ -19,6 +19,7 @@ export interface IOptions<TWrappedProps> {
   redirectTo?: string;
   componentOnForbidden?: any;
   checkOrganizationOf?: (props: TWrappedProps) => ResourceObject;
+  overrideIf?: (props: TWrappedProps) => boolean;
 }
 
 export interface IOwnProps {
@@ -54,6 +55,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
     errorOnForbidden,
     redirectTo,
     checkOrganizationOf,
+    overrideIf,
     componentOnForbidden: OnForbidden
   } = options;
 
@@ -62,6 +64,10 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
       state = { roleEvaluated: false, accessGranted: false, error: '' };
 
       doesUserHaveAccess = async () => {
+        if (overrideIf && overrideIf(this.props)) {
+          return true;
+        }
+
         const { currentUser, dataStore, currentOrganization } = this.props;
         const organization = forOrganization || currentOrganization;
 
@@ -81,12 +87,14 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
         return resultOfOrganization || resultOfResource;
       }
 
-      componentDidMount() {
-        this.doesUserHaveAccess().then(( result ) => {
+      async componentDidMount() {
+        try {
+          const result = await this.doesUserHaveAccess();
+
           this.setState({ accessGranted: result, roleEvaluated: true });
-        }).catch((error: string) => {
+        } catch(error: string) {
           this.setState({ accessGranted: false, roleEvaluated: true, error });
-        });
+        }
       }
 
       render() {
@@ -119,7 +127,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 
 
         const props: TWrappedProps & IProvidedProps = {
-          ...this.props,
+          ...(this.props as object),
           accessGranted,
           isForbidden: !accessGranted,
         };
@@ -143,6 +151,15 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 export async function roleInOrganization(currentUser, dataStore, organization, role: ROLE): Promise<boolean> {
   const userRoles = await dataStore.cache.query(q => q.findRelatedRecords(currentUser, 'userRoles'));
 
+  // NOTE: SuperAdmins are cross-organization
+  //       the organization relationship doesn't matter.
+  const allRoleNames = userRoles.map(r => attributesFor(r).roleName);
+  const isSuperAdmin = allRoleNames.includes(ROLE.SuperAdmin);
+
+  if (isSuperAdmin) {
+    return true;
+  }
+
   const userRolesMatchingOrganization = userRoles.filter(userRole => {
     return isRelatedTo(userRole, 'organization', organization.id);
   });
@@ -155,15 +172,13 @@ export async function roleInOrganization(currentUser, dataStore, organization, r
   const roleNames = rolesForOrganization.map(r => attributesFor(r).roleName);
 
   const result = roleNames.includes(role);
-  const isSuperAdmin = roleNames.includes(ROLE.SuperAdmin);
 
-  return result || isSuperAdmin;
+  return result;
 }
 
 export async function roleInOrganizationOfResource(currentUser, dataStore, resource, role): Promise<boolean> {
   const organization = await dataStore.cache.query(q => q.findRelatedRecord(resource, 'organization'));
 
-  debugger;
   return roleInOrganization(currentUser, dataStore, organization, role);
 }
 

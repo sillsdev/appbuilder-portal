@@ -57,7 +57,7 @@ export function withUserRoles<T>(WrappedComponent) {
     get userRolesForOrganization(): UserRoleResource[] {
       const { userRoles } = this.props;
 
-      if (!this.organization) return [];
+      if (!this.organization) { return []; }
 
       const userRolesForOrganization = userRoles.filter(userRole => {
         return isRelatedRecord(userRole, this.organization);

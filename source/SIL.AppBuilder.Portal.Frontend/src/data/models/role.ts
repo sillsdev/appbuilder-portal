@@ -10,7 +10,7 @@ export enum ROLE {
 }
 
 export interface RoleAttributes extends AttributesObject {
-  roleName: string;
+  roleName: string | ROLE;
 }
 
-export type RoleResource = ResourceObject<ROLE_TYPE, RoleAttributes>;
+export type RoleResource = ResourceObject<ROLE_TYPE | string, RoleAttributes>;

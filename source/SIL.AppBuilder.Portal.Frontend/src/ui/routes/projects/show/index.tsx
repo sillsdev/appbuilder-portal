@@ -1,7 +1,7 @@
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
 
-import { ProjectResource } from '@data';
+import { ProjectResource, isRelatedTo } from '@data';
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 
@@ -46,6 +46,7 @@ export default compose(
   withAccessRestriction,
   withRole(ROLE.OrganizationAdmin, {
     redirectTo: '/',
-    checkOrganizationOf: ({ project }) => project
+    checkOrganizationOf: ({ project }) => (project),
+    overrideIf: ({ project, currentUser }) => isRelatedTo(project, 'owner', currentUser.id)
   }),
 )(Display);

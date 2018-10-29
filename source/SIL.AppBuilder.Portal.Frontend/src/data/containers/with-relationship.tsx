@@ -1,4 +1,8 @@
 import * as React from 'react';
+import Store from '@orbit/store';
+import { compose, withProps } from 'recompose';
+import { ResourceObject } from 'jsonapi-typescript';
+import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { relationshipFor } from '@data/helpers';
 
@@ -6,40 +10,139 @@ interface MapFnResult {
   [propKey: string]: [any, string, string];
 }
 
+interface IState {
+  isLoading: boolean;
+  error?: any;
+  result: object;
+}
 
+// NOTE: all relationships should already be fetched / in the cache
+//
 // example:
 //
 // withRelationships((props) => {
-//   const { currentUser } = props;
+//   const { currentUser, currentOrganization } = props;
 //
 //   return {
+//     // many-to-many
 //     organizations: [currentUser, 'organizationMemberships', 'organizations'],
-//     groups: [currentUser, GROUP_MEMBERSHIPS, GROUPS]
+//     groups: [currentUser, GROUP_MEMBERSHIPS, GROUPS],
+//
+//     // has-many
+//     ownedProjects: [currentUser, 'projects'],
+//
+//     // has-one / belongs-to
+//     organizationOwner: [currentOrganization, 'owner']
+//
 //   }
 // })
 export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
   return WrappedComponent => {
-    return props => {
-      const mapResult = mappingFn(props);
+    class WithRelationship extends React.PureComponent<T & MapFnResult & WithDataProps, IState> {
+      state = { isLoading: false, error: undefined, result: {} };
 
-      const resultingRelationshipProps = {};
+      fetchRelationships = async (): Promise<object> => {
+        const { dataStore, relationshipsToFind } = this.props;
 
-      Object.keys(mapResult).forEach(resultKey => {
+        const resultingRelationshipProps = {};
 
-      });
+        const promises = Object.keys(relationshipsToFind).map(async resultKey => {
+          const relationshipArgs = relationshipsToFind[resultKey];
 
-      const nextProps = {
-        ...props,
-        [propertyName || relationshipName]: relationship
-      };
+          const relation = await retrieveRelation(dataStore, relationshipArgs);
 
-      return <WrappedComponent { ...nextProps } />;
-    };
+          resultingRelationshipProps[resultKey] = relation;
+        });
+
+        try {
+          await Promise.all(promises);
+        } catch (e) {
+          this.setState({ error: e });
+        }
+
+        return resultingRelationshipProps;
+      }
+
+      asyncStarter = async () => {
+        if (this.state.isLoading) { return; }
+
+        this.setState({ isLoading: true, error: false }, () => {
+          this.fetchRelationships()
+            .then(( result: object ) => {
+              this.setState({ result, isLoading: false, error: undefined });
+            })
+            .catch(error => {
+              this.setState({ isLoading: false, error });
+            });
+        });
+      }
+
+      render() {
+        this.asyncStarter();
+
+        const { result, isLoading, error } = this.state;
+
+        const nextProps = {
+          ...(this.props as object),
+          ...( result || {} ),
+          isLoading,
+          error
+        };
+
+        return <WrappedComponent { ...nextProps } />;
+      }
+    }
+
+    return compose(
+      withProps((props: T) => {
+        const mapResult = mappingFn(props);
+
+        return {
+          relationshipsToFind: mapResult,
+        };
+      }),
+      withOrbit({}),
+    )(WithRelationship);
   };
 }
 
-export function withRelationshipData(targetProperty: string, relationshipName: string, propertyName?: string) {
-  // TODO: implement this
+
+type RelationshipArgs =
+| [ResourceObject, string, string]
+| [ResourceObject, string];
+
+async function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs): any {
+  const sourceModel = relationshipArgs[0];
+  const relationshipPath = relationshipArgs.slice(1) as [string, string] | [string];
+
+  if (relationshipPath.length === 2) {
+    return await retrieveManyToMany(dataStore, sourceModel, relationshipPath);
+  }
+
+  return await retriveDirectRelationship(dataStore, sourceModel, relationshipPath[0]);
+}
+
+async function retrieveManyToMany(dataStore: Store, sourceModel: ResourceObject, relationshipPath: [string, string]) {
+  const [joinRelationship, targetRelationship] = relationshipPath;
+
+  const joins = dataStore.cache.query(q => q.findRelatedRecords(sourceModel, joinRelationship));
+
+  // for each join record....
+  const targets = [];
+  const promises = joins.map(async (joinRecord) => {
+    const target = await dataStore.cache.query(q => q.findRelatedRecord(joinRecord, targetRelationship));
+
+    targets.push(target);
+  });
+
+  await Promise.all(promises);
+
+  return targets;
+}
+
+async function retriveDirectRelationship(dataStore: Store, sourceModel: ResourceObject, relationshipName: string) {
+  // TODO: add detection for hasOne vs hasMany, via lookup of the schema from dataStore
+  throw new Error('not implemented');
 
 }
 

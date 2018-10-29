@@ -13,6 +13,7 @@ import productsInteractor from '../products/-page';
 export class ProjectInteractor {
   constructor(selector?: string) { }
 
+  projectName = text('[data-test-project-name]');
   clickArchiveLink = clickable('[data-test-archive]');
   archiveText = text('[data-test-archive] span');
   publicText = text('[data-test-project-visibility-label]');

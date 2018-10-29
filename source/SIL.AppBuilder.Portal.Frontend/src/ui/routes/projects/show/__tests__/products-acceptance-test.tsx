@@ -6,7 +6,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe('Acceptance | Project View | Reviewers', () => {
+describe('Acceptance | Project View | Products', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
