@@ -46,13 +46,17 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             roleEntity
                 .HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
-                .HasForeignKey(ur => ur.RoleName);
-
+                .HasForeignKey(ur => ur.RoleId);
 
             orgEntity
                 .HasMany(o => o.OrganizationMemberships)
                 .WithOne(om => om.Organization)
                 .HasForeignKey(om => om.OrganizationId);
+
+            orgEntity
+                .HasMany(o => o.UserRoles)
+                .WithOne(r => r.Organization)
+                .HasForeignKey(r => r.OrganizationId);
 
             orgEntity
                 .HasMany(o => o.Groups)

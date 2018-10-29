@@ -2,9 +2,6 @@ import * as React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 import Notifications from 'react-notify-toast';
 
-
-import { withAuthLayout as withLayout } from '@lib/routing';
-
 import IndexRoute, { pathName as rootPath } from '@ui/routes/index';
 import LoginRoute, { pathName as loginPath } from '@ui/routes/login';
 import TasksRoute, { pathName as tasksPath} from '@ui/routes/tasks';
@@ -43,7 +40,7 @@ export default class RootPage extends React.Component {
             <Route exact path={requestOrgAccessPath} component={RequestOrgAccessRoute} />
             <Route path={requestOrgAccessSuccessPath} component={RequestOrgAccessSuccessRoute} />
 
-            <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
+            <Route path={organizationsPath} component={OrganizationsRoute} />
 
             <Route path={directoryPath} component={DirectoryRoute} />
             <Route path={projectsPath} component={ProjectsRoute} />

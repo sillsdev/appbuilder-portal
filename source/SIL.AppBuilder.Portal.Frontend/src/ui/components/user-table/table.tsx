@@ -2,19 +2,23 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 
-import { GroupAttributes } from '@data/models/group';
-import Header from './header';
+import {
+  UserResource, GroupResource, RoleResource,
+} from '@data';
+import { withRoles } from '@data/containers/resources/role';
+
 import { isEmpty } from '@lib/collection';
-import Row from './row';
-import { UserAttributes } from '@data/models/user';
-import { USERS_TYPE, GROUPS_TYPE } from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
+
+import Header from './header';
+import Row from './row';
 
 import './user-table.scss';
 
 interface IOwnProps {
-  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
-  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
+  users: UserResource[];
+  groups: GroupResource[];
+  roles: RoleResource[];
 }
 
 type IProps =
@@ -23,7 +27,7 @@ type IProps =
 
 class Table extends React.Component<IProps> {
   render() {
-    const { users, groups, t } = this.props;
+    const { users, groups, roles, t } = this.props;
 
     return (
       <table data-test-users className= 'ui table user-table' >
@@ -31,7 +35,11 @@ class Table extends React.Component<IProps> {
         <tbody>
 
           { users && users.map((user,index) => (
-            <Row key={index} user={user} groups={groups} />
+            <Row
+              key={index}
+              user={user}
+              groups={groups}
+              roles={roles} />
           ))}
 
           { isEmpty(users) && (
@@ -47,5 +55,6 @@ class Table extends React.Component<IProps> {
 }
 
 export default compose(
-  withTranslations
+  withTranslations,
+  withRoles(),
 )(Table);

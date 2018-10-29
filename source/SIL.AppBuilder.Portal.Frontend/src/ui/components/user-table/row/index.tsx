@@ -6,17 +6,21 @@ import { Radio } from 'semantic-ui-react';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit } from 'react-orbitjs';
 
-
-import { USERS_TYPE, GROUPS_TYPE, attributesFor, idFromRecordIdentity } from '@data';
+import {
+  UserResource, GroupResource, RoleResource,
+  attributesFor, idFromRecordIdentity
+} from '@data';
 import { withDataActions, IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
-import { UserAttributes } from '@data/models/user';
-import { GroupAttributes } from '@data/models/group';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
+
+import RoleSelect from './role-select';
 
 
 export interface IOwnProps {
-  user: ResourceObject<USERS_TYPE, UserAttributes>;
-  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
+  user: UserResource[];
+  groups: GroupResource[];
+  roles: RoleResource[];
 }
 
 export type IProps =
@@ -34,7 +38,7 @@ class Row extends React.Component<IProps> {
   toggleLock = async () => {
     const { updateAttribute, user } = this.props;
 
-    const currentLockedState = user.attributes.isLocked;
+    const currentLockedState = attributesFor(user).isLocked;
     const nextLockedState = !currentLockedState;
 
     try {
@@ -48,7 +52,7 @@ class Row extends React.Component<IProps> {
   }
 
   render() {
-    const { user: userData, t } = this.props;
+    const { user: userData, t, roles } = this.props;
     const user = attributesFor(userData) as UserAttributes;
     const userId = idFromRecordIdentity(userData as any);
 
@@ -63,7 +67,7 @@ class Row extends React.Component<IProps> {
             {firstName} {lastName}
           </Link>
         </td>
-        <td>Roles listed here</td>
+        <td />
         <td>
           Groups Here
           {/* <GroupDropdown

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OptimaJet.DWKit.StarterApplication.Data;
@@ -10,9 +11,10 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181024191411_AddOrganizationToUserRoles")]
+    partial class AddOrganizationToUserRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -381,12 +383,11 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Role", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
                     b.Property<int>("RoleName");
 
-                    b.HasKey("Id");
+                    b.Property<int>("Id");
+
+                    b.HasKey("RoleName");
 
                     b.ToTable("Roles");
                 });
@@ -514,7 +515,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<int>("RoleId");
+                    b.Property<int>("RoleName");
 
                     b.Property<int>("UserId");
 
@@ -522,7 +523,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleName");
 
                     b.HasIndex("UserId");
 
@@ -717,7 +718,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Role", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
+                        .HasForeignKey("RoleName")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")

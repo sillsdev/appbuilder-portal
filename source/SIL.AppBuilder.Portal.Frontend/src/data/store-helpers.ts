@@ -99,6 +99,7 @@ export async function update<TAttrs, TRelationships>(
   );
 }
 
+// TODO: iterate over the relationships, and ensure that the remote id is used
 export async function create<TAttrs, TRelationships>(
   store: Store,
   type: string,

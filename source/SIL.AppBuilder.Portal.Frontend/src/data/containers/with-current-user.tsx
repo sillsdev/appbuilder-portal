@@ -114,7 +114,7 @@ export function withCurrentUser(opts = {}) {
 
           const response = await authenticatedGet([
             '/api/users/current-user',
-            '?include=organization-memberships.organization,group-memberships.group'
+            '?include=organization-memberships.organization,group-memberships.group,user-roles.role'
           ].join(''));
 
           const status = response.status;

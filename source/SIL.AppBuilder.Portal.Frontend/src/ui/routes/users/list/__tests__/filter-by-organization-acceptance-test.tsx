@@ -85,6 +85,13 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         if (allOrganizations) {
           res.json({
             data: [{
+              id: 1,
+              type: 'users',
+              attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+              relationships: {
+                ['organization-memberships']: { data: [ { id: 1, type: 'organization-memberships' }]}
+              }
+            }, {
               type: 'users',
               id: 2,
               attributes: { familyName: 'fake', givenName: 'One' },
@@ -102,6 +109,15 @@ describe('Acceptance | User list | Filtering users by organization', () => {
               },
             }],
             included: [
+              {
+                id: 1,
+                type: 'organization-memberships',
+                attributes: {},
+                relationships: {
+                  user: { data: { id: 1, type: 'users' } },
+                  organization: { data: { id: 1, type: 'organizations' } }
+                }
+              },
               {
                 id: 2, type: 'organization-memberships',
                 attributes: {},
@@ -134,6 +150,13 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         } else if (selectedOrganization) {
           res.json({
             data: [{
+              id: 1,
+              type: 'users',
+              attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+              relationships: {
+                ['organization-memberships']: { data: [ { id: 1, type: 'organization-memberships' }]}
+              }
+            }, {
               type: 'users',
               id: 2,
               attributes: { familyName: 'fake', givenName: 'One' },
@@ -143,6 +166,15 @@ describe('Acceptance | User list | Filtering users by organization', () => {
               }
             }],
             included: [
+              {
+                id: 1,
+                type: 'organization-memberships',
+                attributes: {},
+                relationships: {
+                  user: { data: { id: 1, type: 'users' } },
+                  organization: { data: { id: 1, type: 'organizations' } }
+                }
+              },
               {
                 id: 2, type: 'organization-memberships',
                 attributes: {},
