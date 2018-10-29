@@ -21,12 +21,12 @@ INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "Work
 (5,	'kalaam_android_website',	'1',	'Kalaam Default Workflow for Publishing to a Kalaam Website', 'Kalaam_Default_AppBuilders_Android_Site', NULL);
 
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
-(2,     'android_amazon_app',  1,      'Publish Android App to Google Play',   2),
-(3,     'android_scripture_earth',  1,      'Publish Android App to Scripture Earth',   3),
-(4,	'android_s3', 1,	'Publish Android App to S3', 4),
-(5,	'android_kalaam_site', 1, 'Publish Android App to Kalaam Site', 5),
-(6,	'android_rab_s3', 1,	'Publish Android Reading App to S3', 4),
-(7,	'android_dab_s3', 1,	'Publish Android Dictionary App to S3', 4);
+(2,     'android_amazon_app',  1,      'Android App in Amazon App Store',   2),
+(3,     'android_scripture_earth',  1,      'Android App in Scripture Earth',   3),
+(4,	'android_s3', 1,	'Android App uploaded to S3', 4),
+(5,	'android_kalaam_site', 1, 'Android App uploaded to Kalaam Site', 5),
+(6,	'android_rab_s3', 2,	'Android Reading App uploaded to S3', 4),
+(7,	'android_dab_s3', 3,	'Android Dictionary App uploaded to S3', 4);
 
 
 INSERT INTO "OrganizationProductDefinitions" ("OrganizationId", "ProductDefinitionId") VALUES
