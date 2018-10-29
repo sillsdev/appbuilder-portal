@@ -82,8 +82,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(updateForm.Errors);
             }
-            
-            return await base.UpdateAsync(id, resource);
+
+            var project = await base.UpdateAsync(id, resource);
+            // If the owner is changing, call the build engine to update the project iam permissions
+            if (resource.OwnerId != 0)
+            {
+                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.UpdateProject(project.Id));
+            }
+            return project;
         }
 
         public override async Task<Project> CreateAsync(Project resource)

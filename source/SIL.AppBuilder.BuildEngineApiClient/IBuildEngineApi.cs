@@ -9,6 +9,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         void SetEndpoint(string baseUrl, string apiAccessKey);
         HttpStatusCode SystemCheck();
         ProjectResponse CreateProject(Project project);
+        ProjectResponse UpdateProject(int projectId, Project project);
         ProjectResponse GetProject(int projectId);
         List<ProjectResponse> GetProjects();
         HttpStatusCode DeleteProject(int projectId);
