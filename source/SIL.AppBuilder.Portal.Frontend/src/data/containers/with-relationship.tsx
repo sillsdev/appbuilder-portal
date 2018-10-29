@@ -65,21 +65,23 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
 
       asyncStarter = async () => {
         if (this.state.isLoading) { return; }
+        console.log('starting async starter...');
 
-        this.setState({ isLoading: true, error: false }, () => {
-          this.fetchRelationships()
-            .then(( result: object ) => {
-              this.setState({ result, isLoading: false, error: undefined });
-            })
-            .catch(error => {
-              this.setState({ isLoading: false, error });
-            });
-        });
+        try {
+          this.setState({ isLoading: true, error: undefined });
+          const result = await this.fetchRelationships();
+
+          this.setState({ result, isLoading: false, error: undefined });
+        } catch (error: any) {
+          this.setState({ isLoading: false, error });
+        }
+      }
+
+      componentDidMount() {
+        this.asyncStarter();
       }
 
       render() {
-        this.asyncStarter();
-
         const { result, isLoading, error } = this.state;
 
         const nextProps = {
