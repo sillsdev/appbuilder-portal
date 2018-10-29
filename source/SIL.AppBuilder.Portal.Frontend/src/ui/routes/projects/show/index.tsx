@@ -13,11 +13,12 @@ import Settings from './settings';
 import Files from './files';
 import { withAccessRestriction } from './with-access-restriction';
 import { withData } from './with-data';
-import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
 import { withProjectOperations } from './with-project-operations';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import TimezoneLabel from '@ui/components/timezone-label';
 
 import './project.scss';
+import { withCurrentUser } from '@data/with-current-user';
 
 export const pathName = '/projects/:id';
 
@@ -37,8 +38,7 @@ interface QueriedProps {
 export type IProps =
   & PassedProps
   & QueriedProps
-  & i18nProps
-  & ITimeProps;
+  & i18nProps;
 
 class Project extends React.Component<IProps> {
 
@@ -82,7 +82,7 @@ class Project extends React.Component<IProps> {
   }
 
   render() {
-    const { project, t, moment, timezone } = this.props;
+    const { project, t } = this.props;
 
     if (!project || !project.attributes) {
       return null;
@@ -98,8 +98,6 @@ class Project extends React.Component<IProps> {
       t('project.public') :
       t('project.private');
 
-    const createdFromNow = moment(dateCreated + "Z").tz(timezone).fromNow();
-
     return (
       <div className='ui container project-details' data-test-project>
         <div className='page-heading page-heading-border-sm'>
@@ -109,7 +107,7 @@ class Project extends React.Component<IProps> {
               <div className='subtitle'>
                 <span data-test-project-visibility-label>{visibility}</span><span className='dot-space font-normal'>.</span>
                 <span className='font-normal'>{t('project.createdOn')} </span>
-                <span>{createdFromNow}</span>
+                <TimezoneLabel dateTime={dateCreated} />
               </div>
             </div>
             <div className='flex-shrink' style={{ paddingTop: '20px'}}>
@@ -142,7 +140,7 @@ class Project extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
-  withMomentTimezone,
+  withCurrentUser(),
   withData,
   withProjectOperations,
   withAccessRestriction

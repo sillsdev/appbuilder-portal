@@ -30,13 +30,20 @@ class Header extends React.Component<IProps> {
       'archived': t('projects.switcher.dropdown.archived')
     };
 
+    const trigger = (
+      <>
+        <div className='text'>{dropdownText[filter]}</div>
+        <CaretDown />
+      </>
+    );
+
     return (
       <div className='flex justify-content-space-between p-t-md-xs p-b-md-xs'>
         <Dropdown
           className='project-switcher'
-          icon={() => <CaretDown />}
+          trigger={trigger}
+          icon={null}
           inline
-          text={dropdownText[filter]}
         >
           <Dropdown.Menu>
             <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} as={NavLink} to='/projects/own'/>
