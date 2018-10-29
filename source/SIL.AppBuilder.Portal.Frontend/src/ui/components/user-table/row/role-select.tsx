@@ -16,7 +16,7 @@ import {
   IUserRoleProps
 } from '@data/containers/resources/user';
 
-import { withCurrentOrganization } from '@data/containers/with-current-organization';
+import { withCurrentOrganization, ICurrentOrganizationProps } from '@data/containers/with-current-organization';
 import { withCurrentUser, IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 
 interface IProps {
@@ -71,7 +71,7 @@ class RoleSelect extends React.Component<IProps & IUserRoleProps> {
 export default compose(
   withCurrentOrganization,
   withCurrentUser(),
-  withProps((props) => {
+  withProps((props: ICurrentUserProps & ICurrentOrganizationProps) => {
     const { currentUser, currentOrganization } = props;
 
     return {

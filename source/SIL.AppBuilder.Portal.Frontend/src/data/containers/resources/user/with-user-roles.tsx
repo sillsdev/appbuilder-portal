@@ -54,6 +54,18 @@ export function withUserRoles<T>(WrappedComponent) {
       return propsforUserRoles && propsforUserRoles.organization || forOrganization;
     }
 
+    get userRolesForOrganization(): UserRoleResource[] {
+      const { userRoles } = this.props;
+
+      if (!this.organization) return [];
+
+      const userRolesForOrganization = userRoles.filter(userRole => {
+        return isRelatedRecord(userRole, this.organization);
+      });
+
+      return userRolesForOrganization;
+    }
+
     toggleRole = async (roleName: string) => {
       const { dataStore } = this.props;
 
@@ -95,16 +107,6 @@ export function withUserRoles<T>(WrappedComponent) {
 
       toast.success(`${this.userName} removed from role`);
 
-    }
-
-    get userRolesForOrganization(): UserRoleResource[] {
-      const { userRoles } = this.props;
-
-      const userRolesForOrganization = userRoles.filter(userRole => {
-        return isRelatedRecord(userRole, this.organization);
-      });
-
-      return userRolesForOrganization;
     }
 
     roleForName = (roleName: string): RoleResource => {

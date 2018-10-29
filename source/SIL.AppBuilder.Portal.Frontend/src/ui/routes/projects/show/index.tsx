@@ -2,7 +2,8 @@ import { compose } from 'recompose';
 import { match as Match } from 'react-router';
 
 import { ProjectResource } from '@data';
-import { ROLE, withRole } from '@data/containers/with-role';
+import { withRole } from '@data/containers/with-role';
+import { ROLE } from '@data/models/role';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
@@ -43,8 +44,8 @@ export default compose(
   withProjectOperations,
   // todo - extract this to a more general thing?
   withAccessRestriction,
-  /* withRole(ROLE.OrgAdmin, { */
-  /*   redirectTo: '/', */
-  /*   checkOrganizationOf: ({ project }) => project */
-  /* }), */
+  withRole(ROLE.OrgAdmin, {
+    redirectTo: '/',
+    checkOrganizationOf: ({ project }) => project
+  }),
 )(Display);
