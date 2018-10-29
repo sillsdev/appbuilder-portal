@@ -44,7 +44,7 @@ export default compose(
   withProjectOperations,
   // todo - extract this to a more general thing?
   withAccessRestriction,
-  withRole(ROLE.OrgAdmin, {
+  withRole(ROLE.OrganizationAdmin, {
     redirectTo: '/',
     checkOrganizationOf: ({ project }) => project
   }),

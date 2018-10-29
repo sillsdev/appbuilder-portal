@@ -90,7 +90,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
       }
 
       render() {
-        const { t, ...otherProps } = this.props;
+        const { t } = this.props;
         const { accessGranted, roleEvaluated, error } = this.state;
 
         // not sure if this could cause a flicker or not, all the async
@@ -119,7 +119,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 
 
         const props: TWrappedProps & IProvidedProps = {
-          ...otherProps,
+          ...this.props,
           accessGranted,
           isForbidden: !accessGranted,
         };
