@@ -102,13 +102,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // TODO: figure out why this throws a NullReferenceException
             // await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
 
-
-            /* TODO: Enable in next iteration
             if (product != null)
             {
                 HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageNewProduct(product.Id));
             }
-            */
             return product;
         }
 
