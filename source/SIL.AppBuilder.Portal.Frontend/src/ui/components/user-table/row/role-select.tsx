@@ -16,18 +16,21 @@ import {
   IUserRoleProps
 } from '@data/containers/resources/user';
 
-import { withCurrentOrganization, ICurrentOrganizationProps } from '@data/containers/with-current-organization';
-import { withCurrentUser, IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
+import { compareVia } from '@lib/collection';
 
-interface IProps {
+interface IOwnProps {
   roles: RoleResource[];
   user: UserResource;
   userRoles: UserRoleResource[];
-  forOrganization: OrganizationResource;
+  organization: OrganizationResource;
 }
 
+type IProps =
+& IOwnProps
+& IUserRoleProps;
 
-class RoleSelect extends React.Component<IProps & IUserRoleProps> {
+
+class RoleSelect extends React.Component<IProps> {
   toggleRole = (e, semanticUIEvent) => {
     const { checked, value: roleName } = semanticUIEvent;
     const { user, roles, toggleRole } = this.props;
@@ -36,13 +39,14 @@ class RoleSelect extends React.Component<IProps & IUserRoleProps> {
   }
 
   render() {
-    const { roles, forOrganization, userHasRole } = this.props;
-    const orgAttrs = attributesFor(forOrganization);
+    const { roles, organization, userHasRole } = this.props;
+    const orgAttrs = attributesFor(organization);
+
+    const sorted = roles.sort(compareVia(r => attributesFor(r).name));
 
     return (
       <>
-        <em>Current Organization: { orgAttrs.name }</em>
-        {roles.map(( role, i ) => {
+        {sorted.map(( role, i ) => {
           const attributes = attributesFor(role);
 
           if (attributes.roleName === ROLE.SuperAdmin) { return; }
@@ -69,16 +73,13 @@ class RoleSelect extends React.Component<IProps & IUserRoleProps> {
 }
 
 export default compose(
-  withCurrentOrganization,
-  withCurrentUser(),
-  withProps((props: ICurrentUserProps & ICurrentOrganizationProps) => {
-    const { currentUser, currentOrganization } = props;
+  withProps((props: IOwnProps) => {
+    const { user, organization } = props;
 
     return {
-      forOrganization: currentOrganization,
       propsforUserRoles: {
-        user: currentUser,
-        organization: currentOrganization
+        user,
+        organization
       }
     };
   }),

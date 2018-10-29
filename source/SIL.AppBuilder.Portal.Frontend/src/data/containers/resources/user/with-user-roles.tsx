@@ -16,6 +16,7 @@ export interface IProvidedProps {
   userHasRole: (role: RoleResource) => boolean;
   userRoleForRole: (role: RoleResource) => UserRoleResource;
   roleForName: (roleName: string) => RoleResource;
+  toggleRole: (roleName: string) => Promise<void>;
 }
 
 
@@ -25,6 +26,7 @@ export interface IOwnProps {
   userRoles?: UserRoleResource[];
 
   // overrides the above
+  // having the default be the currentUser maybe good?
   propsforUserRoles?: {
     user: UserResource;
     organization: OrganizationResource;
@@ -97,6 +99,8 @@ export function withUserRoles<T>(WrappedComponent) {
       });
 
       toast.success(`${this.userName} added to role`);
+
+      this.forceUpdate();
     }
 
     removeFromRole = async (role: RoleResource) => {
@@ -106,7 +110,6 @@ export function withUserRoles<T>(WrappedComponent) {
       await dataStore.update(t => t.removeRecord(userRole), buildOptions());
 
       toast.success(`${this.userName} removed from role`);
-
     }
 
     roleForName = (roleName: string): RoleResource => {
