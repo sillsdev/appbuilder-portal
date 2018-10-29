@@ -13,8 +13,6 @@ import Owners from './owners';
 import Reviewers from './reviewers';
 import Settings from './settings';
 import Files from './files';
-import { IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
-import { i18nProps } from '@lib/i18n';
 
 import './project.scss';
 
