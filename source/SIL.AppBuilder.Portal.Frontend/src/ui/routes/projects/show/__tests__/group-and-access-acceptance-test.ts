@@ -7,6 +7,7 @@ import {
   setupApplicationTest, setupRequestInterceptor, useFakeAuthentication,
   fakeAuth0Id
 } from 'tests/helpers/index';
+import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 
 import {
   userInDifferentOrganization,
@@ -99,7 +100,8 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
               { id: 1, type: 'group-memberships' },
               { id: 2, type: 'group-memberships' },
             ]
-          }
+          },
+          ['user-roles']: { data: [{  id: 1, type: 'user-roles' } ] },
         }
       },
       included: [
@@ -141,6 +143,8 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
             owner: { data: { id: 1, type: 'organizations' } }
           }
         },
+        userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 1 }),
+        roles.superAdmin
       ]
     });
 

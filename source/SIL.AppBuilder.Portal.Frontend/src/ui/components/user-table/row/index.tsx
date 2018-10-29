@@ -86,5 +86,6 @@ class Row extends React.Component<IProps> {
 export default compose(
   withTranslations,
   withDataActions,
-  withOrbit(({ user }) => ({ user: q => q.findRecord(user) }))
+  withOrbit(({ user }) => ({ user: q => q.findRecord(user) })),
+  // TODO: use with relationships here to get the users organizations
 )(Row);

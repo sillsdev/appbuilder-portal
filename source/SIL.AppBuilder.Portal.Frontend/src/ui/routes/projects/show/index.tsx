@@ -1,6 +1,8 @@
 import { compose } from 'recompose';
 
-import { ROLE, withRole } from '@data/containers/with-role';
+import { ProjectResource, isRelatedTo } from '@data';
+import { withRole } from '@data/containers/with-role';
+import { ROLE } from '@data/models/role';
 
 import Display from './display';
 
@@ -21,8 +23,9 @@ export default compose(
   withProjectOperations,
   // todo - extract this to a more general thing?
   withAccessRestriction,
-  /* withRole(ROLE.OrgAdmin, { */
-  /*   redirectTo: '/', */
-  /*   checkOrganizationOf: ({ project }) => project */
-  /* }), */
+  withRole(ROLE.OrganizationAdmin, {
+    redirectTo: '/',
+    checkOrganizationOf: ({ project }) => project,
+    overrideIf: ({ project, currentUser }) => isRelatedTo(project, 'owner', currentUser.id)
+  }),
 )(Display);

@@ -99,7 +99,7 @@ class Display extends React.Component<IProps> {
         <div className='page-heading page-heading-border-sm'>
           <div className='flex justify-content-space-around'>
             <div className='flex-grow'>
-              <h1 className='title'>{name}</h1>
+              <h1 data-test-project-name className='title'>{name}</h1>
               <div className='subtitle'>
                 <span data-test-project-visibility-label>{visibility}</span><span className='dot-space font-normal'>.</span>
                 <span className='font-normal'>{t('project.createdOn')} </span>
