@@ -6,7 +6,7 @@ import { attributesFor } from '@data/helpers';
 import { i18nProps } from '@lib/i18n';
 import { NotificationResource } from '@data';
 import { withDataActions, IProvidedProps as IDataProps } from '@data/containers/resources/notification/with-data-actions';
-import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
+import TimezoneLabel from '@ui/components/timezone-label';
 
 export interface IOwnProps {
   notification: NotificationResource;
@@ -15,8 +15,7 @@ export interface IOwnProps {
 export type IProps =
   & IOwnProps
   & IDataProps
-  & i18nProps
-  & ITimeProps;
+  & i18nProps;
 
 class Row extends React.Component<IProps> {
   state = { visible: false };
@@ -49,7 +48,7 @@ class Row extends React.Component<IProps> {
 
   render() {
 
-    const { notification, moment, timezone } = this.props;
+    const { notification } = this.props;
 
     const {
       title,
@@ -81,7 +80,9 @@ class Row extends React.Component<IProps> {
 
         <h4 className='title'>{title}</h4>
         <p className={!isViewed ? 'bold' : ''}>{description}</p>
-        <p className='time'>{ moment.tz(time,timezone).fromNow() }</p>
+        <p className='time'>
+          <TimezoneLabel dateTime={time} />
+        </p>
       </div>
     );
 
@@ -89,6 +90,5 @@ class Row extends React.Component<IProps> {
 }
 
 export default compose(
-  withMomentTimezone,
   withDataActions
 )(Row);
