@@ -65,7 +65,6 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
 
       asyncStarter = async () => {
         if (this.state.isLoading) { return; }
-        console.log('starting async starter...');
 
         try {
           this.setState({ isLoading: true, error: undefined });
