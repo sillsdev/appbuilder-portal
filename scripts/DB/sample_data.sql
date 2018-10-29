@@ -7,7 +7,7 @@ INSERT INTO "Users" ("Name", "Email", "ExternalId", "FamilyName", "GivenName", "
 (	'Chris Hubbard (Kalaam)',	'chris.kalaam@gmail.com',	'auth0|5b578f6197af652b19f9bb41',	'Hubbard',	'Chris',	'0',	NULL,	NULL,	NULL),
 ( 	'Preston Sego (dt)', 'psego@developertown.com', 'google-oauth2|111802484969448690930', 'Sego (dt)', 'Preston', '0', NULL, NULL, NULL),
 (	'Bill Dyck', 'bill_dyck@sil.org',	'google-oauth2|102643649500459434996', 'Dyck',	'Bill',	'0',	NULL, NULL, NULL),
-(	'Loren Hawthorne', 'loren_hawthrone@sil.org',	'auth0|5bc5dd01a5db4c5caeb19493', 'Loren',	'Hawthorne',	'0',	NULL, NULL, NULL);
+(	'Loren Hawthorne', 'loren_hawthrone@sil.org',	'google-oauth2|116603781884964961816', 'Loren',	'Hawthorne',	'0',	NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId") VALUES
 (	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru',	'replace',	1),
@@ -21,12 +21,12 @@ INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "Work
 (5,	'kalaam_android_website',	'1',	'Kalaam Default Workflow for Publishing to a Kalaam Website', 'Kalaam_Default_AppBuilders_Android_Site', NULL);
 
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
-(2,     'android_amazon_app',  1,      'Publish Android App to Google Play',   2),
-(3,     'android_scripture_earth',  1,      'Publish Android App to Scripture Earth',   3),
-(4,	'android_s3', 1,	'Publish Android App to S3', 4),
-(5,	'android_kalaam_site', 1, 'Publish Android App to Kalaam Site', 5),
-(6,	'android_rab_s3', 1,	'Publish Android Reading App to S3', 4),
-(7,	'android_dab_s3', 1,	'Publish Android Dictionary App to S3', 4);
+(2,     'android_amazon_app',  1,      'Android App in Amazon App Store',   2),
+(3,     'android_scripture_earth',  1,      'Android App in Scripture Earth',   3),
+(4,	'android_s3', 1,	'Android App uploaded to S3', 4),
+(5,	'android_kalaam_site', 1, 'Android App uploaded to Kalaam Site', 5),
+(6,	'android_rab_s3', 2,	'Android Reading App uploaded to S3', 4),
+(7,	'android_dab_s3', 3,	'Android Dictionary App uploaded to S3', 4);
 
 
 INSERT INTO "OrganizationProductDefinitions" ("OrganizationId", "ProductDefinitionId") VALUES
@@ -79,16 +79,22 @@ INSERT INTO "Groups" ("Name", "Abbreviation", "OwnerId") VALUES
 (	'KAL Asia',	'KAL_AS',	3);
 
 INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
-(	1,	1),
-(	2,	1),
-(	3,	2),
-(	4,	2),
-(	5,	2),
-(	1,	3),
-(	6,	3),
-( 2,  3),
-( 7,  2),
-( 7,  1);
+(	1,	1), -- chris_hubbard@sil.org - SIL
+(	1,	2), -- chris_hubbard@sil.org - DT
+(	1,	3), -- chris_hubbard@sil.org - Kalaam
+(	2,	1), -- david_moore1@sil.org - SIL
+(	2,  3), -- david_moore1@sil.org - Kalaam
+(	3,	2), -- lt.sego@gmail.com - DT
+(	4,	2), -- gian.corzo@gmail.com - DT
+(	5,	2), -- ltabor@developertown.com - DT
+(	6,	3), -- chris.kalaam@gmail.com - Kalaam
+(	7,  1), -- psego@developertown.com - SIL
+(	7,  2), -- psego@developertown.com - DT
+(	8,  1), -- bill_dyck@sil.org - SIL
+(	8,  3), -- bill_dyck@sil.org - Kalaam
+(	9,  1); -- loren_hawthorne@sil.org - SIL
+
+
 
 INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 (	1,	1),
@@ -100,6 +106,23 @@ INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 ( 7,  14),
 ( 7,   1),
 ( 5,  14);
+
+INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
+(	1,	1,	1), -- chris_hubbard@sil.org - SuperAdmin - SIL
+(	8,	2,	1), -- bill_dyck@sil.org - OrgAdmin - SIL
+(	2,	3,	1), -- david_moore1@sil.org - AppBuilder - SIL
+(	7,	1,	1), -- psego@developertown.com - AppBuilder - SIL
+(	9,	3,	1), -- loren_hawthorne@sil.org - AppBuilder - SIL
+(	7,	1,	2), -- psego@developertown.com - SuperAdmin - DT
+(	5,	2,	2), -- ltabor@developertown.com - OrgAdmin - DT
+(	1,	2,	2), -- chris_hubbard@sil.org - OrgAdmin - DT
+(	3,	3,	2), -- lt.sego@gmail.com - AppBuilder - DT
+(	4,	3,	2), -- gian.corzo@gmail.com - AppBuilder - DT
+(	1,	1,	3), -- chris_hubbard@sil.org - SuperAdmin - Kalaam
+(	8,	2,	3), -- bill_dyck@sil.org - OrgAdmin - Kalaam
+(	2,	2,	3), -- david_moore1@sil.org - OrgAdmin - Kalaam
+(	6,	3,	3); -- chris.kalaam@gmail.com - AppBuilder - Kalaam
+
 
 INSERT INTO "Projects"
   ("Name", "TypeId", "Description", "OwnerId", "GroupId", "OrganizationId", "Language", "DateCreated", "DateUpdated", "DateArchived", "AllowDownloads", "AutomaticBuilds")

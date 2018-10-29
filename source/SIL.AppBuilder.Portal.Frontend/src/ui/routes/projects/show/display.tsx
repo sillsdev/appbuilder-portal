@@ -1,18 +1,18 @@
-
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
 import { Tab, Dropdown, Menu } from 'semantic-ui-react';
 
-
 import { attributesFor, ProjectResource } from '@data';
+import { i18nProps } from '@lib/i18n';
+import TimezoneLabel from '@ui/components/timezone-label';
+
 import Details from './details';
 import Products from './products';
 import Owners from './owners';
 import Reviewers from './reviewers';
 import Settings from './settings';
-import { IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
-import { i18nProps } from '@lib/i18n';
+import Files from './files';
 
 import './project.scss';
 
@@ -31,11 +31,10 @@ interface QueriedProps {
   project: ProjectResource;
 }
 
-export type IProps =
+type IProps =
   & PassedProps
   & QueriedProps
-  & i18nProps
-  & ITimeProps;
+  & i18nProps;
 
 class Display extends React.Component<IProps> {
 
@@ -47,7 +46,7 @@ class Display extends React.Component<IProps> {
       render: () =>
         <Tab.Pane attached={false}>
           <div className='flex'>
-            <div className='flex-grow' style={{marginRight: '33px'}}>
+            <div className='flex-grow' style={{ marginRight: '33px' }}>
               <Details project={project} />
               <Products project={project} />
               <Settings project={project} />
@@ -59,7 +58,7 @@ class Display extends React.Component<IProps> {
           </div>
         </Tab.Pane>
 
-    },{
+    }, {
       menuItem: <Menu.Item key={2} data-test-project-files-tab name={t('project.productFiles')} />,
       render: () =>
         <Tab.Pane attached={false}>
@@ -79,7 +78,7 @@ class Display extends React.Component<IProps> {
   }
 
   render() {
-    const { project, t, moment, timezone } = this.props;
+    const { project, t } = this.props;
 
     if (!project || !project.attributes) {
       return null;
@@ -95,8 +94,6 @@ class Display extends React.Component<IProps> {
       t('project.public') :
       t('project.private');
 
-    const createdFromNow = moment(dateCreated + "Z").tz(timezone).fromNow();
-
     return (
       <div className='ui container project-details' data-test-project>
         <div className='page-heading page-heading-border-sm'>
@@ -106,10 +103,10 @@ class Display extends React.Component<IProps> {
               <div className='subtitle'>
                 <span data-test-project-visibility-label>{visibility}</span><span className='dot-space font-normal'>.</span>
                 <span className='font-normal'>{t('project.createdOn')} </span>
-                <span>{createdFromNow}</span>
+                <TimezoneLabel dateTime={dateCreated} />
               </div>
             </div>
-            <div className='flex-shrink' style={{ paddingTop: '20px'}}>
+            <div className='flex-shrink' style={{ paddingTop: '20px' }}>
               <Dropdown
                 pointing='top right'
                 icon={null}
