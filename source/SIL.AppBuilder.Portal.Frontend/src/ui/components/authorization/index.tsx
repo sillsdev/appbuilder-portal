@@ -4,7 +4,7 @@ import { ROLE } from '@data/models/role';
 import { withRole, IOptions } from '@data/containers/with-role';
 
 interface IRequireRoleProps {
-  roleName: ROLE,
+  roleName: ROLE;
   render?: any;
   children?: any;
 }

@@ -53,6 +53,6 @@ export default compose(
 
     return {
       userRoles: q => q.findRelatedRecords(user, 'userRoles'),
-    }
+    };
   })
 )(MultiRoleSelect);
