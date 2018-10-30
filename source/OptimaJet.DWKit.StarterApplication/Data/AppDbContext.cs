@@ -165,5 +165,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<StoreType> StoreTypes { get; set; }
         public DbSet<OrganizationStore> OrganizationStores { get; set; }
         public DbSet<ProductArtifact> ProductArtifacts { get; set; }
+        public DbSet<UserTask> UserTasks { get; set; }
     }
 }
