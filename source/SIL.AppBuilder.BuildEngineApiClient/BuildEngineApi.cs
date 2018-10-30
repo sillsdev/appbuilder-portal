@@ -69,7 +69,15 @@ namespace SIL.AppBuilder.BuildEngineApiClient
                 .AddJsonBody(project);
             return Execute<ProjectResponse>(request);
         }
-
+        public ProjectResponse UpdateProject(int projectId, Project project)
+        {
+            Require.Argument("UserId", project.UserId);
+            Require.Argument("PublishingKey", project.PublishingKey);
+            var request = CreateRequest("project/{projectId}", Method.PUT)
+                .AddParameter("projectId", projectId, ParameterType.UrlSegment)
+                .AddJsonBody(project);
+            return Execute<ProjectResponse>(request);
+        }
         public List<ProjectResponse> GetProjects()
         {
             var request = CreateRequest("project");
@@ -82,16 +90,6 @@ namespace SIL.AppBuilder.BuildEngineApiClient
                 .AddParameter("projectId", projectId, ParameterType.UrlSegment);
             return Execute<ProjectResponse>(request);
         }
-
-        /// Note: This is not implemented in BuildEngine ... yet
-        ///
-        //public ProjectResponse UpdateProject(int projectId, object projectProperties)
-        //{
-        //    var request = new RestRequest("project/{projectId}", Method.PUT)
-        //        .AddParameter("projectId", projectId, ParameterType.UrlSegment)
-        //        .AddJsonBody(projectProperties);
-        //    return Execute<ProjectResponse>(request);
-        //}
 
         public System.Net.HttpStatusCode DeleteProject(int projectId)
         {
