@@ -2871,24 +2871,6 @@
     }
   ],
   "codeActions": [],
-  "businessFlow": [
-    {
-      "id": "a4ff7d0a-1400-df5c-2068-8e4f2b886ad0",
-      "name": "SIL_Default_AppBuilders_Android_GooglePlay",
-      "scheme": "SIL_Default_AppBuilders_Android_GooglePlay",
-      "defaultForm": "SIL_AppBuilders_Product_Definition",
-      "map": [
-        {
-          "states": [
-            "Approval"
-          ],
-          "roles": [
-            "OrgAdmins"
-          ],
-          "form": "SIL_AppBuilders_Project_Approval"
-        }
-      ]
-    }
-  ],
+  "businessFlow": [],
   "modules": []
 }
