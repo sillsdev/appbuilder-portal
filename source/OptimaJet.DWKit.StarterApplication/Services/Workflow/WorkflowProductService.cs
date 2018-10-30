@@ -36,6 +36,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             ManageNewProductAsync(productId).Wait();
         }
 
+        public void ManageDeletedProduct(Guid workflowProcessId)
+        {
+            DeleteWorkflowProcessInstance(workflowProcessId);
+        }
+
         public void ProductProcessChanged(Guid workflowProcessId, string activityName, string currentState)
         {
             ProductProcessChangedAsync(workflowProcessId, activityName, currentState).Wait();
@@ -72,6 +77,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             await CreateWorkflowProcessInstance(product);
         }
 
+        protected void DeleteWorkflowProcessInstance(Guid processId)
+        {
+            WorkflowInit.Runtime.DeleteInstance(processId);
+        }
+
         protected async Task CreateWorkflowProcessInstance(Product product)
         {
 
@@ -99,16 +109,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
             }
 
-            // Remove all the current tasks associated with the Product
-            var tasks = TaskRepository.Get().Where(t => t.ProductId == product.Id);
-            foreach (var task in tasks)
-            {
-                await TaskRepository.DeleteAsync(task.Id);
-            }
+            await RemoveTasksByProductId(product.Id);
 
             // Find all users who could perform the current activity and create tasks for them
             var workflowUserIds = Runtime.GetAllActorsForDirectCommandTransitions(workflowProcessId, activityName: activityName).ToList();
-            var users = UserRepository.Get().Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()));
+            var users = UserRepository.Get().Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString())).ToList();
             foreach (var user in users)
             {
                 var task = new UserTask
@@ -123,6 +128,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         }
 
+        private async Task RemoveTasksByProductId(int productId)
+        {
+            // Remove all the current tasks associated with the Product
+            var tasks = TaskRepository.Get().Where(t => t.ProductId == productId);
+            foreach (var task in tasks)
+            {
+                await TaskRepository.DeleteAsync(task.Id);
+            }
+        }
     }
 }
     

@@ -28,8 +28,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public WorkflowProductRuleProvider(IServiceProvider serviceProvider)
         {
             //Register your rules in the _rules Dictionary
-            //_rules.Add("CheckRole", new RuleFunction { CheckFunction = RoleCheck, GetFunction = RoleGet });
-            _rules.Add("IsProjectOwner", new RuleFunction { CheckFunction = ProjectOwnerCheck, GetFunction = ProjectOwnerGet });
+            _rules.Add("IsOwner", new RuleFunction { CheckFunction = ProjectOwnerCheck, GetFunction = ProjectOwnerGet });
             _rules.Add("IsOrgAdmin", new RuleFunction { CheckFunction = OrgAdminCheck, GetFunction = OrgAdminGet });
             ServiceProvider = serviceProvider;
         }
@@ -38,21 +37,51 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
             using (var scope = ServiceProvider.CreateScope()) {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product>>();
-                var product = productRepository.Get().Where(p => p.WorkflowProcessId == processInstance.ProcessId).FirstOrDefault();
-                if (product != null) {
-
+                var userRolesRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<UserRole>>();
+                var product = productRepository.Get()
+                    .Where(p => p.WorkflowProcessId == processInstance.ProcessId)
+                    .Include(p => p.Project)
+                        .ThenInclude(p => p.Organization)
+                    .FirstOrDefault();
+                if (product == null)
+                {
+                    return new List<string>();
                 }
+
+                var organization = product.Project.Organization;
+                var orgAdmins = userRolesRepository.Get()
+                    .Include(ur => ur.User)
+                    .Include(ur => ur.Role)
+                    .Where(ur => ur.OrganizationId == organization.Id && ur.Role.RoleName == RoleName.OrganizationAdmin && ur.User.WorkflowUserId.HasValue)
+                    .Select(r => r.User.WorkflowUserId.Value.ToString())
+                    .ToList();
+                return orgAdmins;
             }
-            var documentModel = MetadataToModelConverter.GetEntityModelByModelAsync("Product").Result;
-            var managerId = documentModel.GetAsync(Filter.And.Equal(processInstance.ProcessId, "Id")).Result.FirstOrDefault()?["ManagerId"];
-            return managerId != null ? new List<string> { managerId.ToString() } : new List<string>();
         }
 
         public bool OrgAdminCheck(ProcessInstance processInstance, WorkflowRuntime runtime, string identityId, string parameter)
         {
-            var documentModel = MetadataToModelConverter.GetEntityModelByModelAsync("Document").Result;
-            var managerId = documentModel.GetAsync(Filter.And.Equal(processInstance.ProcessId, "Id")).Result.FirstOrDefault()?["ManagerId"];
-            return managerId != null && identityId == managerId.ToString();
+            var workflowUserId = new Guid(identityId);
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product>>();
+                var userRolesRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<UserRole>>();
+                var product = productRepository.Get()
+                    .Where(p => p.WorkflowProcessId == processInstance.ProcessId)
+                    .Include(p => p.Project)
+                        .ThenInclude(p => p.Organization)
+                    .FirstOrDefault();
+                if (product == null)
+                {
+                    return false;
+                }
+
+                var userRole = userRolesRepository.Get()
+                    .Include(ur => ur.User)
+                    .Where(ur => ur.OrganizationId == product.Project.OrganizationId && ur.User.WorkflowUserId.HasValue && ur.User.WorkflowUserId.Value == workflowUserId)
+                    .FirstOrDefault();
+                return userRole != null;
+            }
         }
 
         public IEnumerable<string> ProjectOwnerGet(ProcessInstance processInstance, WorkflowRuntime runtime, string parameter)
@@ -68,10 +97,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 var workflowUserId = product?.Project.Owner.WorkflowUserId;
                 return workflowUserId.HasValue ? new List<string> { workflowUserId.Value.ToString() } : new List<string>();
             }
-
-            //var documentModel = MetadataToModelConverter.GetEntityModelByModelAsync("Document").Result;
-            //var authorId = documentModel.GetAsync(Filter.And.Equal(processInstance.ProcessId, "Id")).Result.FirstOrDefault()?["AuthorId"];
-            //return authorId != null ? new List<string> { authorId.ToString() } : new List<string>();
         }
 
         public bool ProjectOwnerCheck(ProcessInstance processInstance, WorkflowRuntime runtime, string identityId, string parameter)
@@ -87,31 +112,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 var workflowUserId = product?.Project.Owner.WorkflowUserId;
                 return workflowUserId.HasValue && workflowUserId.Value == new Guid(identityId);
             }
-
-            //var documentModel = MetadataToModelConverter.GetEntityModelByModelAsync("Document").Result;
-            //var authorId = documentModel.GetAsync(Filter.And.Equal(processInstance.ProcessId, "Id")).Result.FirstOrDefault()?["AuthorId"].ToString();
-            //return identityId == authorId;
         }
-
-        //public IEnumerable<string> RoleGet(ProcessInstance processInstance, WorkflowRuntime runtime, string parameter)
-        //{
-        //    var rolesModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwSecurityRole").Result;
-        //    var role = rolesModel.GetAsync(Filter.And.Equal(parameter, "Name")).Result.FirstOrDefault();
-        //    if (role == null)
-        //        return new List<string>();
-        //    var roleUserModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwV_Security_UserRole").Result;
-        //    return roleUserModel.GetAsync(Filter.And.Equal(role.GetId(), "RoleId")).Result.Select(r => r["UserId"].ToString()).Distinct();
-        //}
-
-        //public bool RoleCheck(ProcessInstance processInstance, WorkflowRuntime runtime, string identityId, string parameter)
-        //{
-        //    var rolesModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwSecurityRole").Result;
-        //    var role = rolesModel.GetAsync(Filter.And.Equal(parameter, "Name")).Result.FirstOrDefault();
-        //    if (role == null)
-        //        return false;
-        //    var roleUserModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwV_Security_UserRole").Result;
-        //    return roleUserModel.GetCountAsync(Filter.And.Equal(role.GetId(), "RoleId").Equal(Guid.Parse(identityId), "UserId")).Result > 0;
-        //}
 
         #region Implementation of IWorkflowRuleProvider
 

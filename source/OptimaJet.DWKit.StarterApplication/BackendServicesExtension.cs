@@ -116,7 +116,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddSingleton<WorkflowActivityMonitorService>();
             services.AddTransient<IWorkflowRuleProvider, WorkflowProductRuleProvider>();
-            services.AddTransient<WorkflowRuntime>(s => {
+            services.AddSingleton<WorkflowRuntime>(s => {
                 WorkflowInit.RuleProvider = s.GetRequiredService<IWorkflowRuleProvider>();
                 return WorkflowInit.Runtime;
             });
