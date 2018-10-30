@@ -14,7 +14,7 @@ import { withDataActions, IProvidedProps as IActionProps } from '@data/container
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import RoleSelect from './role-select';
-import GroupSelect from './group-select';
+import GroupSelect from './group-multi-select';
 
 
 export interface IOwnProps {
