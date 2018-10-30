@@ -6,7 +6,7 @@ import * as toast from '@lib/toast';
 
 import {
   attributesFor, create, recordIdentityFromKeys,
-  buildOptions, isRelatedRecord, buildNew,
+  buildOptions, isRelatedRecord,
   UserResource, OrganizationResource, RoleResource, UserRoleResource,
 } from '@data';
 import { TYPE_NAME as USER_ROLE } from '@data/models/user-role';
