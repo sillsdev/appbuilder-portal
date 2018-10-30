@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { compose } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
 
 import {
   OrganizationResource, UserResource, RoleResource,
@@ -17,7 +19,7 @@ interface IProps {
 
 class MultiRoleSelect extends React.Component<IProps & i18nProps> {
   render() {
-    const { roles, organizations, user, t } = this.props;
+    const { roles, userRoles, organizations, user, t } = this.props;
 
     if (isEmpty(organizations)) {
       return t('errors.orgMembershipRequired');
@@ -27,7 +29,8 @@ class MultiRoleSelect extends React.Component<IProps & i18nProps> {
       const roleProps = {
         organization,
         user,
-        roles
+        roles,
+        userRoles
       };
 
       return (
@@ -40,4 +43,16 @@ class MultiRoleSelect extends React.Component<IProps & i18nProps> {
   }
 }
 
-export default withTranslations(MultiRoleSelect);
+export default compose(
+  withTranslations,
+  // share one set of userRoles for the entire list.
+  // otherwise the RoleSelect's own withUserRoles will
+  // make a call to get the userRoles as a convient default
+  withOrbit((props) => {
+    const { user } = props;
+
+    return {
+      userRoles: q => q.findRelatedRecords(user, 'userRoles'),
+    }
+  })
+)(MultiRoleSelect);

@@ -6,7 +6,7 @@ import * as toast from '@lib/toast';
 
 import {
   attributesFor, create, recordIdentityFromKeys,
-  buildOptions, isRelatedRecord,
+  buildOptions, isRelatedRecord, buildNew,
   UserResource, OrganizationResource, RoleResource, UserRoleResource,
 } from '@data';
 import { TYPE_NAME as USER_ROLE } from '@data/models/user-role';
@@ -88,9 +88,7 @@ export function withUserRoles<T>(WrappedComponent) {
     addToRole = async (role: RoleResource) => {
       const { dataStore } = this.props;
 
-      await create(dataStore, USER_ROLE, {
-        type: 'userRole',
-        attributes: {},
+      await create(dataStore, 'userRole', {
         relationships: {
           role: { ...role, id: role.keys.remoteId },
           user: { ...this.user, id: this.user.keys.remoteId },
@@ -99,8 +97,6 @@ export function withUserRoles<T>(WrappedComponent) {
       });
 
       toast.success(`${this.userName} added to role`);
-
-      this.forceUpdate();
     }
 
     removeFromRole = async (role: RoleResource) => {
@@ -148,12 +144,15 @@ export function withUserRoles<T>(WrappedComponent) {
 
   return compose(
     withOrbit((props: ICurrentUserProps) => {
-      const { currentUser, propsforUserRoles } = props;
+      const { currentUser, propsforUserRoles, userRoles } = props;
+
+      // userRoles already present.
+      if (userRoles) { return {}; }
 
       const user = propsforUserRoles && propsforUserRoles.user || currentUser;
 
       return {
-        userRoles: q => q.findRelatedRecords(user, 'userRoles')
+        userRoles: q => q.findRelatedRecords(user, 'userRoles'),
       };
     })
   )( UserRoleWrapper );
