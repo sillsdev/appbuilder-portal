@@ -29,7 +29,9 @@ export default class ProductIcon extends React.Component<IProps> {
     const { product } = this.props;
 
     const { name } = attributesFor(product);
-    const closestKey = Object.keys(iconMap).find(key => name.toLowerCase().includes(key));
+    const lowerName = name && name.toLowerCase();
+    const closestKey = Object.keys(iconMap)
+      .find(key => lowerName && lowerName.includes(key));
 
     return iconMap[closestKey]() || <WebIcon />;
   }

@@ -19,7 +19,7 @@ class Products extends React.Component<IProps> {
     padding = Math.max(0, padding);
 
     return (
-      <div className='products-grid p-t-sm p-b-md'>
+      <div className='products-grid p-t-sm'>
         { hasProducts && (
           <>
             <div className='flex grid products-header flex-grow'>
