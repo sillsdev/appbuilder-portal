@@ -42,7 +42,7 @@ class RoleSelect extends React.Component<IProps> {
     const { roles, organization, userHasRole } = this.props;
     const orgAttrs = attributesFor(organization);
 
-    const sorted = roles.sort(compareVia(r => attributesFor(r).name));
+    const sorted = roles.sort(compareVia(r => attributesFor(r).roleName));
 
     return (
       <>

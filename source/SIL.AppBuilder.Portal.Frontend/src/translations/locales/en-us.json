@@ -285,6 +285,7 @@
   },
   "users": {
     "noneFound": "No users matching the selected criteria were found.",
+    "noRoles": "No roles assigned.",
     "title": "Manage Users",
     "table": {
       "columns": {
