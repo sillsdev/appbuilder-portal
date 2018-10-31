@@ -45,7 +45,7 @@ class MultiRoleSelect extends React.Component<IProps & i18nProps> {
           </label>
 
           <RequireRole
-            role={ROLE.OrganizationAdmin}
+            roleName={ROLE.OrganizationAdmin}
             forOrganization={organization}
             componentOnForbidden={() => {
               return (
