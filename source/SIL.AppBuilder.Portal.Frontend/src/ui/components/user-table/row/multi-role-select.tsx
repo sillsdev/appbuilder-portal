@@ -1,20 +1,25 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import {
   OrganizationResource, UserResource, RoleResource,
+  UserRoleResource,
   attributesFor
 } from '@data';
+import { ROLE } from '@data/models/role';
 import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { RequireRole } from '@ui/components/authorization';
 
 import RoleSelect from './role-select';
+import ActiveRolesDisplay from './active-roles-display';
 
 interface IProps {
   organizations: OrganizationResource[];
   user: UserResource;
   roles: RoleResource[];
+  userRoles: UserRoleResource[];
 }
 
 class MultiRoleSelect extends React.Component<IProps & i18nProps> {
@@ -35,8 +40,23 @@ class MultiRoleSelect extends React.Component<IProps & i18nProps> {
 
       return (
         <div key={i}>
-          <label className='bold m-b-sm'>{attributesFor(organization).name}</label>
-          <RoleSelect { ...roleProps } />
+          <label className='bold m-b-sm'>
+            {attributesFor(organization).name}
+          </label>
+
+          <RequireRole
+            role={ROLE.OrganizationAdmin}
+            forOrganization={organization}
+            componentOnForbidden={() => {
+              return (
+                <>
+                  <br />
+                  <ActiveRolesDisplay { ...roleProps } />
+                </>
+              );
+            }}>
+            <RoleSelect { ...roleProps } />
+          </RequireRole>
         </div>
       );
     });
@@ -54,5 +74,5 @@ export default compose(
     return {
       userRoles: q => q.findRelatedRecords(user, 'userRoles'),
     };
-  })
+  }),
 )(MultiRoleSelect);
