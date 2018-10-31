@@ -2791,7 +2791,7 @@
       "triggers": [],
       "attributes": [
         {
-          "id": "307a21a1-15b6-4c8d-8dfa-2a846e63ed06",
+          "id": "b1364e53-be1c-4a4c-8721-d39a6c8c06b4",
           "referenceEntityId": "e87c8d0b-de5b-4497-87ef-e4657e3add7c",
           "name": "ApplicationTypeId",
           "type": "String",
@@ -2802,7 +2802,7 @@
           "isExtension": false
         },
         {
-          "id": "5f3c671c-ba68-4b81-b4c9-057a33170c7e",
+          "id": "dc49e4e7-17a6-4bd8-ada9-0598ac215a66",
           "referenceEntityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
           "name": "ProductId",
           "type": "String",
@@ -2813,7 +2813,7 @@
           "isExtension": false
         },
         {
-          "id": "395c266e-d92c-4af2-88f9-b88af74e8d81",
+          "id": "20f8880c-ed7b-463c-9c87-4dd4257b47e9",
           "referenceEntityId": "5be7fd6a-7a27-4471-b32b-5f157be7b73d",
           "name": "ProjectId",
           "type": "String",
@@ -2824,7 +2824,7 @@
           "isExtension": false
         },
         {
-          "id": "72fdb4f4-3d74-438a-a5e6-0ef62a779485",
+          "id": "c5a42dcc-92b9-4fd5-a924-7d9e482155bd",
           "referenceEntityId": "0fe78fa7-0012-4177-8612-9e20f130efb7",
           "name": "StoreId",
           "type": "String",
@@ -2835,7 +2835,7 @@
           "isExtension": false
         },
         {
-          "id": "668e224f-8a45-4ac7-abef-a865adb707e2",
+          "id": "e11d277e-7e14-4a12-8093-2112c44c3904",
           "referenceEntityId": "4be1566b-a42a-4904-9431-6f9d3de1e118",
           "name": "StoreLanguageId",
           "type": "String",
@@ -2846,7 +2846,7 @@
           "isExtension": false
         },
         {
-          "id": "ecad7845-104f-4749-95c8-93a3d6c60e13",
+          "id": "0f9d3552-fe3d-486a-9ff1-ab730f85a55a",
           "referenceEntityId": "11d7f256-9501-4dd1-98bc-1eca487b7c72",
           "name": "UserId",
           "type": "String",
@@ -2857,7 +2857,17 @@
           "isExtension": false
         },
         {
-          "id": "acc75408-9a2c-4156-9819-12da71c9c299",
+          "id": "751b58a3-d65b-4929-ac0d-f827acaedbe7",
+          "name": "Id",
+          "type": "Guid",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "a637ebbc-85ff-4003-8b20-aad2d4ad1eae",
           "referenceEntityId": "33d6c539-4ad5-4138-b4db-f6afb6f83a50",
           "name": "ProductDefinitionId",
           "type": "String",
@@ -2871,6 +2881,33 @@
     }
   ],
   "codeActions": [],
-  "businessFlow": [],
+  "businessFlow": [
+    {
+      "id": "f57d6c03-490c-6534-55e9-fa1d8708c699",
+      "name": "SIL_Default_AppBuilders_Android_GooglePlay",
+      "scheme": "SIL_Default_AppBuilders_Android_GooglePlay",
+      "defaultForm": "SIL_AppBuilders_Product_Definition",
+      "map": [
+        {
+          "states": [
+            "Definition"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Product_Definition"
+        },
+        {
+          "states": [
+            "Approval"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Project_Approval"
+        }
+      ]
+    }
+  ],
   "modules": []
 }

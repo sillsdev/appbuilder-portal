@@ -14,11 +14,11 @@ INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngin
 (	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru',	'replace',	3),
 (	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru',	'replace',	1);
 
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "StoreTypeId") VALUES
-(2,     'sil_android_amazon_store',      '1',    'SIL Default Workflow for Publishing to Amazon App Store',   'SIL_Default_AppBuilders_Android_AmazonAppStore',   1),
-(3,     'sil_android_scripture_earth',      '1',    'SIL Default Workflow for Publishing to Scripture Earth',   'SIL_Default_AppBuilders_Android_ScriptureEarth',   NULL),
-(4,	'sil_android_s3',	'1',	'SIL Default Workflow for Publishing to S3', 'SIL_Default_AppBuilders_Android_S3', NULL),
-(5,	'kalaam_android_website',	'1',	'Kalaam Default Workflow for Publishing to a Kalaam Website', 'Kalaam_Default_AppBuilders_Android_Site', NULL);
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
+(2,     'sil_android_amazon_store',      '1',    'SIL Default Workflow for Publishing to Amazon App Store',   'SIL_Default_AppBuilders_Android_AmazonAppStore',	'SIL_Default_AppBuilders_Android_AmazonAppStore',   1),
+(3,     'sil_android_scripture_earth',      '1',    'SIL Default Workflow for Publishing to Scripture Earth',   'SIL_Default_AppBuilders_Android_ScriptureEarth',	'SIL_Default_AppBuilders_Android_ScriptureEarth',   NULL),
+(4,	'sil_android_s3',	'1',	'SIL Default Workflow for Publishing to S3', 'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_S3', NULL),
+(5,	'kalaam_android_website',	'1',	'Kalaam Default Workflow for Publishing to a Kalaam Website', 'Kalaam_Default_AppBuilders_Android_Site',	'Kalaam_Default_AppBuilders_Android_Site', NULL);
 
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
 (2,     'android_amazon_app',  1,      'Android App in Amazon App Store',   2),
