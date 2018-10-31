@@ -99,7 +99,8 @@ class Row extends React.Component<IProps> {
 export default compose(
   withTranslations,
   withDataActions,
-  /* withOrbit(({ user }) => ({ user: q => q.findRecord(user) })), */
+  // read from cache for active/lock toggle
+  withOrbit(({ user }) => ({ user: q => q.findRecord(user) })),
   withRelationships(({ user }) => {
     return {
       organizations: [user, 'organizationMemberships', 'organization']
