@@ -287,6 +287,7 @@
   },
   "users": {
     "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
+    "noRoles": "No roles assigned.",
     "title": "Administrar usuarios",
     "table": {
       "columns": {
