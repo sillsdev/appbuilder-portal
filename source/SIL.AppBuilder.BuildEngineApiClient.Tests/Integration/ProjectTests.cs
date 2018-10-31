@@ -63,6 +63,20 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.NotEqual(DateTime.MinValue, response.Created);
             Assert.NotEqual(DateTime.MinValue, response.Updated);
         }
+        [Theory(Skip = skipIntegrationTest)]
+        [InlineData(1, "new_user")]
+        public void ModifyTestProject(int projectId, string newUserId)
+        {
+            var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
+            var project = new Project
+            {
+                UserId = newUserId,
+                PublishingKey = this.PublishingKey
+            };
+            var response = client.UpdateProject(projectId, project);
+            Assert.NotNull(response);
+            Assert.Equal(response.Id, projectId);
+        }
 
         [Theory(Skip = skipIntegrationTest)]
         [InlineData(5)]

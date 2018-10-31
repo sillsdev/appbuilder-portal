@@ -37,6 +37,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             // Hangfire methods cannot be async, hence the Wait
             ManageProjectAsync(projectId).Wait();
         }
+        public void UpdateProject(int projectId)
+        {
+            UpdateProjectAsync(projectId).Wait();
+        }
         public async Task ManageProjectAsync(int projectId)
         {
             var project = await ProjectRepository.Get()
@@ -189,6 +193,31 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 default:
                     return BuildEngineStatus.Unavailable;
             }
+        }
+        public async Task UpdateProjectAsync(int projectId)
+        {
+            var project = await ProjectRepository.Get()
+                .Where(p => p.Id == projectId)
+                .Include(p => p.Organization)
+                .Include(p => p.Owner)
+                .FirstOrDefaultAsync();
+            if (project == null)
+            {
+                // Can't find the project record whose creation should have
+                // triggered this process.  Exception will trigger retry
+                // TODO: Send notification record
+                // Don't send exception because there doesn't seem to be a point in retrying
+                ClearAndExit(projectId);
+                return;
+            }
+            var buildEngineProject = new BuildEngineProject
+            {
+                UserId = project.Owner.Email,
+                PublishingKey = project.Owner.PublishingKey,
+            };
+            SetBuildEngineEndpoint(project.Organization);
+            var projectResponse = BuildEngineApi.UpdateProject(project.WorkflowProjectId, buildEngineProject);
+
         }
     }
 }

@@ -16,6 +16,7 @@ export interface IProvidedProps {
   userHasRole: (role: RoleResource) => boolean;
   userRoleForRole: (role: RoleResource) => UserRoleResource;
   roleForName: (roleName: string) => RoleResource;
+  toggleRole: (roleName: string) => Promise<void>;
 }
 
 
@@ -25,6 +26,7 @@ export interface IOwnProps {
   userRoles?: UserRoleResource[];
 
   // overrides the above
+  // having the default be the currentUser maybe good?
   propsforUserRoles?: {
     user: UserResource;
     organization: OrganizationResource;
@@ -86,9 +88,7 @@ export function withUserRoles<T>(WrappedComponent) {
     addToRole = async (role: RoleResource) => {
       const { dataStore } = this.props;
 
-      await create(dataStore, USER_ROLE, {
-        type: 'userRole',
-        attributes: {},
+      await create(dataStore, 'userRole', {
         relationships: {
           role: { ...role, id: role.keys.remoteId },
           user: { ...this.user, id: this.user.keys.remoteId },
@@ -106,7 +106,6 @@ export function withUserRoles<T>(WrappedComponent) {
       await dataStore.update(t => t.removeRecord(userRole), buildOptions());
 
       toast.success(`${this.userName} removed from role`);
-
     }
 
     roleForName = (roleName: string): RoleResource => {
@@ -145,12 +144,15 @@ export function withUserRoles<T>(WrappedComponent) {
 
   return compose(
     withOrbit((props: ICurrentUserProps) => {
-      const { currentUser, propsforUserRoles } = props;
+      const { currentUser, propsforUserRoles, userRoles } = props;
+
+      // userRoles already present.
+      if (userRoles) { return {}; }
 
       const user = propsforUserRoles && propsforUserRoles.user || currentUser;
 
       return {
-        userRoles: q => q.findRelatedRecords(user, 'userRoles')
+        userRoles: q => q.findRelatedRecords(user, 'userRoles'),
       };
     })
   )( UserRoleWrapper );

@@ -16,3 +16,14 @@ export const applyNumberOfTimes = (x, f) => {
 
   return result;
 };
+
+export function compareVia(accessor: any) {
+  return (a,b) => {
+    const aV = accessor(a);
+    const bV = accessor(b);
+
+    if (aV < bV) { return -1; }
+    if (aV > bV) { return 1; }
+    return 0;
+  };
+}

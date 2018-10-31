@@ -93,7 +93,7 @@ export function withData(WrappedComponent) {
 
   return compose(
     withCurrentOrganization,
-    withUserList({ include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION},${GROUP_MEMBERSHIPS}.${GROUP}` }),
+    withUserList({ include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION},${GROUP_MEMBERSHIPS}.${GROUP},user-roles` }),
     withLoader(({ users }) => !users),
     withOrbit(mapRecordsToProps),
     withLoader(({ roles, groups, organizationMemberships }) =>

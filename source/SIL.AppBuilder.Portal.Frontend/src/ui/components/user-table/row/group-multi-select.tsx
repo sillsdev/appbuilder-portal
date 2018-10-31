@@ -76,6 +76,7 @@ class GroupSelect extends React.Component<IProps> {
 
 export default compose(
   withCurrentUser(),
+  withOrbit(({ user }) => ({ user: q => q.findRecord(user) })),
   withRelationships(({ currentUser, user }) => {
     return {
       currentUserOrganizations: [currentUser, 'organizationMemberships','organization'],
@@ -83,8 +84,6 @@ export default compose(
       userGroups: [user, 'groupMemberships','group']
     }
   }),
-  withOrbit(({ user }) => ({ user: q => q.findRecord(user) })),
-  withLoader(({ organizations, userGroups }) => !organizations && !userGroups),
   withProps(({ currentUserOrganizations, userOrganizations, ...otherProps}) => {
 
     if (isEmpty(userOrganizations)) {
@@ -102,5 +101,6 @@ export default compose(
       ),
       ...otherProps
     }
-  })
+  }),
+  withLoader(({ organizations, userGroups }) => !organizations && !userGroups),
 )(GroupSelect);

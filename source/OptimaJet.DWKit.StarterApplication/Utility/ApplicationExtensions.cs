@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
+using OptimaJet.Workflow.Core.Runtime;
 
 namespace OptimaJet.DWKit.StarterApplication.Utility
 {
@@ -17,7 +18,10 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
                 (IHttpContextAccessor)app.ApplicationServices.GetService(typeof(IHttpContextAccessor)),
                 configuration);
 
-            WorkflowActivityMonitorService.RegisterEventHandlers(WorkflowInit.Runtime);
+            WorkflowRuntime runtime = app.ApplicationServices.GetService(typeof(WorkflowRuntime)) as WorkflowRuntime;
+            var workflowService = app.ApplicationServices.GetService(typeof(WorkflowActivityMonitorService)) as WorkflowActivityMonitorService;
+            workflowService.RegisterEventHandlers(runtime);
+
             RecurringJob.AddOrUpdate<WorkflowActivityMonitorService>("WorkflowActivityMonitor", service => service.CheckActivityStatus(), Cron.MinuteInterval(5));
             RecurringJob.AddOrUpdate<WorkflowSecuritySyncService>("WorkflowSecuritySync", service => service.SyncWorkflowSecurity(), Cron.MinuteInterval(5));
             return app;

@@ -4,8 +4,6 @@ import { compose, withProps } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { relationshipFor } from '@data/helpers';
-
 interface MapFnResult {
   [propKey: string]: [any, string, string];
 }

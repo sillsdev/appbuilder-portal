@@ -2,8 +2,13 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
+using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
@@ -21,6 +26,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public OrganizationMembership CurrentUserMembership { get; set; }
         public OrganizationMembership CurrentUserMembership2 { get; set; }
         public OrganizationMembership CurrentUserMembership3 { get; set; }
+        public OrganizationMembership CurrentUserMembership4 { get; set; }
         public User user1 { get; private set; }
         public User user2 { get; private set; }
         public User user3 { get; private set; }
@@ -32,6 +38,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public Group group3 { get; set; }
         public Group group4 { get; set; }
         public GroupMembership groupMembership1 { get; set; }
+        public GroupMembership groupMembership2 { get; set; }
         public ApplicationType type1 { get; set; }
         public Project project1 { get; set; }
         public Project project2 { get; set; }
@@ -48,6 +55,14 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Name = "Test Testenson1",
                 GivenName = "Test1",
                 FamilyName = "Testenson1"
+            });
+            user2 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id2",
+                Email = "test-email2@test.test",
+                Name = "Test Testenson2",
+                GivenName = "Test2",
+                FamilyName = "Testenson2"
             });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {
@@ -91,6 +106,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 UserId = user1.Id,
                 OrganizationId = org3.Id
             });
+            CurrentUserMembership4 = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user2.Id,
+                OrganizationId = org1.Id
+            });
+
             group1 = AddEntity<AppDbContext, Group>(new Group
             {
                 Name = "TestGroup1",
@@ -120,6 +141,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 UserId = CurrentUser.Id,
                 GroupId = group1.Id
             });
+            groupMembership2 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user2.Id,
+                GroupId = group1.Id
+            });
             type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
             {
                 Name = "scriptureappbuilder",
@@ -134,6 +160,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 GroupId = group1.Id,
                 OrganizationId = org1.Id,
                 Language = "eng-US",
+                WorkflowProjectId = 1,
+                WorkflowProjectUrl = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8",
                 IsPublic = true
             });
             project2 = AddEntity<AppDbContext, Project>(new Project
@@ -388,6 +416,44 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
 
         }
+        [Fact]
+        public async Task Patch_Owner()
+        {
+            BuildTestData();
+            var content = new
+            {
+                data = new
+                {
+                    type = "projects",
+                    id = project1.Id.ToString(),
+                    relationships = new
+                    {
+                        owner = new
+                        {
+                            data = new
+                            {
+                                type = "users",
+                                id = user2.Id.ToString()
+                            }
+                        }
+                    }
+                }
+            };
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+
+            var response = await Patch("/api/projects/" + project1.Id.ToString(), content);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "UpdateProject" &&
+                           job.Type == typeof(BuildEngineProjectService) &&
+                           job.Args.Count == 1),
+                It.IsAny<EnqueuedState>()));
+
+        }
+
     }
 }
 

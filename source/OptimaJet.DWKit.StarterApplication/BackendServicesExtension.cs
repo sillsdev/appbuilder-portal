@@ -12,13 +12,16 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Forms;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using OptimaJet.Workflow.Core.Runtime;
 using SparkPostDotNet;
 using SparkPostDotNet.Core;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
@@ -110,6 +113,13 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
             services.AddScoped(typeof(SIL.AppBuilder.BuildEngineApiClient.IBuildEngineApi), typeof(SIL.AppBuilder.BuildEngineApiClient.BuildEngineApi));
+
+            services.AddSingleton<WorkflowActivityMonitorService>();
+            services.AddTransient<IWorkflowRuleProvider, WorkflowProductRuleProvider>();
+            services.AddSingleton<WorkflowRuntime>(s => {
+                WorkflowInit.RuleProvider = s.GetRequiredService<IWorkflowRuleProvider>();
+                return WorkflowInit.Runtime;
+            });
 
             return services;
         }
