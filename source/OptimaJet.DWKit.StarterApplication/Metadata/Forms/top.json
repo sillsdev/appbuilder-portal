@@ -4,5 +4,30 @@
     "data-buildertype": "container",
     "style-source": "clear:both;",
     "style-customcss": "dwkit-application-top"
+  },
+  {
+    "key": "menu_1",
+    "data-buildertype": "menu",
+    "items": [
+      {
+        "target": "/",
+        "title": "All products"
+      }
+    ],
+    "link": true,
+    "events": {
+      "onItemClick": {
+        "actions": [
+          "redirect"
+        ],
+        "active": true,
+        "targets": [],
+        "parameters": []
+      }
+    }
+  },
+  {
+    "key": "container_1",
+    "data-buildertype": "container"
   }
 ]

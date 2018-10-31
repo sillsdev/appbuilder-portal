@@ -16,6 +16,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("workflow-scheme")]
         public string WorkflowScheme { get; set; }
 
+        [Attr("workflow-business-flow")]
+        public string WorkflowBusinessFlow { get; set; }
+
         [HasOne("store-type")]
         public virtual StoreType StoreType { get; set; }
         public int? StoreTypeId { get; set; }
