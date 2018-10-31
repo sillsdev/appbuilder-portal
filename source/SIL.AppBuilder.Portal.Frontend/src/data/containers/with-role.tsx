@@ -92,7 +92,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
           const result = await this.doesUserHaveAccess();
 
           this.setState({ accessGranted: result, roleEvaluated: true });
-        } catch(error: string) {
+        } catch(error) {
           this.setState({ accessGranted: false, roleEvaluated: true, error });
         }
       }
