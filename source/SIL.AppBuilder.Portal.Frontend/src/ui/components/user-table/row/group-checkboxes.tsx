@@ -26,14 +26,9 @@ type IProps =
 
 class GroupCheckboxes extends React.Component<IProps> {
 
-  toggleGroup = group => {
-
-    const { toggleGroup } = this.props;
-
-    return (e) => {
-      e.preventDefault();
-      toggleGroup(group);
-    }
+  toggleGroup = group => e => {
+    e.preventDefault();
+    this.props.toggleGroup(group);
   }
 
   render() {

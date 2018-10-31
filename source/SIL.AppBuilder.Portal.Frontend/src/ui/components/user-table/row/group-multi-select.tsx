@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
 import { Dropdown } from 'semantic-ui-react';
 
 import { attributesFor, GroupResource, UserResource } from '@data';
@@ -82,6 +83,7 @@ export default compose(
       userGroups: [user, 'groupMemberships','group']
     }
   }),
+  withOrbit(({ user }) => ({ user: q => q.findRecord(user) })),
   withLoader(({ organizations, userGroups }) => !organizations && !userGroups),
   withProps(({ currentUserOrganizations, userOrganizations, ...otherProps}) => {
 

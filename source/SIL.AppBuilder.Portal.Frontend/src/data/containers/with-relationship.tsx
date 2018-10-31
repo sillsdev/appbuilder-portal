@@ -69,7 +69,7 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
         try {
           this.setState({ isLoading: true, error: undefined });
           const result = await this.fetchRelationships();
-
+          debugger;
           this.setState({ result, isLoading: false, error: undefined });
         } catch (error: any) {
           this.setState({ isLoading: false, error });

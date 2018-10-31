@@ -28,7 +28,7 @@ type IProps =
 
 class Table extends React.Component<IProps> {
   render() {
-    const { users, groups, roles, t } = this.props;
+    const { users, roles, t } = this.props;
 
     return (
       <table data-test-users className= 'ui table user-table' >
@@ -39,7 +39,6 @@ class Table extends React.Component<IProps> {
             <Row
               key={index}
               user={user}
-              groups={groups}
               roles={roles} />
           ))}
 

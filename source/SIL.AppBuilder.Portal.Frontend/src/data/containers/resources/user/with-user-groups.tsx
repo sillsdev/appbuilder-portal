@@ -41,25 +41,30 @@ export function withUserGroups<T>(WrappedComponent) {
 
     toggleGroup = async (group: GroupResource) => {
 
+      const { user } = this.props;
+      const { name } = attributesFor(user);
+
       const userHasGroup = this.userHasGroup(group);
 
       try {
         if (userHasGroup) {
           await this.removeFromGroup(group);
+          toast.success(`${name} removed from group`);
         } else {
           await this.addToGroup(group);
+          toast.success(`${name} added to group`);
         }
       } catch (e) {
         toast.error(e);
       }
     }
 
-    addToGroup = async (group: GroupResource) => {
+    addToGroup = (group: GroupResource) => {
 
       const { dataStore, user } = this.props;
       const { name } = attributesFor(user);
 
-      await dataStore.update(q => q.addRecord({
+      return dataStore.update(q => q.addRecord({
         type: 'groupMembership',
         attributes: {},
         relationships: {
@@ -68,20 +73,18 @@ export function withUserGroups<T>(WrappedComponent) {
         }
       }), defaultOptions());
 
-      toast.success(`${name} added to group`);
+
     }
 
-    removeFromGroup = async (group: GroupResource) => {
+    removeFromGroup = (group: GroupResource) => {
 
       const { dataStore, user } = this.props;
       const { name } = attributesFor(user);
 
       const groupMembership = this.groupMembershipForGroup(group);
-      await dataStore.update(q =>
+      return dataStore.update(q =>
         q.removeRecord(groupMembership), defaultOptions()
       );
-
-      toast.success(`${name} removed from group`);
     }
 
     render() {
