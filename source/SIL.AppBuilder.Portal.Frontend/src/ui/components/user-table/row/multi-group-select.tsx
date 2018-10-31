@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
+import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { attributesFor, GroupResource, UserResource } from '@data';
+import { attributesFor, GroupResource, UserResource, relationshipFor, idFor, recordsWithIdIn } from '@data';
 import { isEmpty } from '@lib/collection';
 import { OrganizationResource } from '@data';
 import { withRelationships } from '@data/containers/with-relationship';
-import GroupCheckboxes from './group-checkboxes';
+import GroupSelect from './group-select';
 
 interface IOwnProps {
   organizations: OrganizationResource[];
@@ -18,7 +19,7 @@ interface IOwnProps {
 type IProps =
   & IOwnProps;
 
-class GroupSelect extends React.Component<IProps> {
+class MultiGroupSelect extends React.Component<IProps> {
 
   userGroupNames = () => {
     const { userGroups } = this.props;
@@ -46,22 +47,22 @@ class GroupSelect extends React.Component<IProps> {
         >
           <Dropdown.Menu className='groups' data-test-group-menu>
           {
-            organizations && organizations.map((org, index) => {
+            organizations.map((org, index) => {
 
-                const { name } = attributesFor(org);
+              const { name } = attributesFor(org);
 
-                const groupCheckboxesProps = {
-                  organization: org,
-                  userGroups,
-                  user
-                }
+              const groupCheckboxesProps = {
+                organization: org,
+                userGroups,
+                user
+              }
 
-                return (
-                  <React.Fragment key={index} >
-                    <Dropdown.Header content={name} />
-                    <GroupCheckboxes {...groupCheckboxesProps}/>
-                  </React.Fragment>
-                );
+              return (
+                <React.Fragment key={index} >
+                  <Dropdown.Header content={name} />
+                  <GroupSelect {...groupCheckboxesProps}/>
+                </React.Fragment>
+              );
             })
           }
           </Dropdown.Menu>
@@ -73,10 +74,23 @@ class GroupSelect extends React.Component<IProps> {
 }
 
 export default compose(
+  withOrbit(({user}) => {
+    return {
+      groupMemberships: q => q.findRelatedRecords(user, 'groupMemberships')
+    }
+  }),
   withRelationships(({ user }) => ({
-    userGroups: [user, 'groupMemberships','group']
+    allUserGroups: [user, 'groupMemberships','group']
   })),
-  withProps(({ userGroups }) => {
-    return userGroups || [];
+  withProps(({ allUserGroups, organizations }) => {
+
+    let userGroups = [];
+
+    userGroups = allUserGroups && allUserGroups.filter(group => {
+      const orgId = idFor(relationshipFor(group,'owner'));
+      return recordsWithIdIn(organizations,orgId).length > 0;
+    })
+
+    return { userGroups };
   })
-)(GroupSelect);
+)(MultiGroupSelect);

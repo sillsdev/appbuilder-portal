@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose, withProps } from 'recompose';
+import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import * as toast from '@lib/toast';
@@ -25,7 +25,7 @@ type IProps =
 
 export function withUserGroups<T>(WrappedComponent) {
 
-  class UserRoleWrapper extends React.PureComponent<T & IProps> {
+  class UserGroupWrapper extends React.PureComponent<T & IProps> {
 
     userHasGroup = (group: GroupResource) => {
       const { userGroups } = this.props;
@@ -105,10 +105,13 @@ export function withUserGroups<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit(({user}) => {
+    withOrbit(({user, groupMemberships }) => {
+
+      if (groupMemberships) { return {}; }
+
       return {
         groupMemberships: q => q.findRelatedRecords(user,'groupMemberships')
       }
     })
-  )(UserRoleWrapper);
+  )(UserGroupWrapper);
 }

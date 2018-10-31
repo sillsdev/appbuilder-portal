@@ -24,7 +24,7 @@ type IProps =
   & IOwnProps
   & IUserGroupProps;
 
-class GroupCheckboxes extends React.Component<IProps> {
+class GroupSelect extends React.Component<IProps> {
 
   toggleGroup = group => e => {
     e.preventDefault();
@@ -61,4 +61,4 @@ export default compose(
   withOrbit(mapRecordsToProps),
   withLoader(({groups}) => !groups),
   withUserGroups
-)(GroupCheckboxes);
+)(GroupSelect);
