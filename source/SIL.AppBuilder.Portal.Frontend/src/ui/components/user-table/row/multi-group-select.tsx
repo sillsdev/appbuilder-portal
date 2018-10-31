@@ -46,25 +46,25 @@ class MultiGroupSelect extends React.Component<IProps> {
           className='w-100 groupDropdown'
         >
           <Dropdown.Menu className='groups' data-test-group-menu>
-          {
-            organizations.map((org, index) => {
+            {
+              organizations.map((org, index) => {
 
-              const { name } = attributesFor(org);
+                const { name } = attributesFor(org);
 
-              const groupCheckboxesProps = {
-                organization: org,
-                userGroups,
-                user
-              }
+                const groupCheckboxesProps = {
+                  organization: org,
+                  userGroups,
+                  user
+                }
 
-              return (
-                <React.Fragment key={index} >
-                  <Dropdown.Header content={name} />
-                  <GroupSelect {...groupCheckboxesProps}/>
-                </React.Fragment>
-              );
-            })
-          }
+                return (
+                  <React.Fragment key={index} >
+                    <Dropdown.Header content={name} />
+                    <GroupSelect {...groupCheckboxesProps} />
+                  </React.Fragment>
+                );
+              })
+            }
           </Dropdown.Menu>
         </Dropdown>
       </>
@@ -79,9 +79,12 @@ export default compose(
       groupMemberships: q => q.findRelatedRecords(user, 'groupMemberships')
     }
   }),
-  withRelationships(({ user }) => ({
-    allUserGroups: [user, 'groupMemberships','group']
-  })),
+  withRelationships(({ user }) => {
+    return {
+      allUserGroups: [user, 'groupMemberships','group']
+    }
+  }),
+  //Filter groups that are visible for the current user
   withProps(({ allUserGroups, organizations }) => {
 
     let userGroups = [];
