@@ -4,6 +4,7 @@ import { withData as withOrbit } from 'react-orbitjs';
 
 import { GroupResource, withLoader, attributesFor, OrganizationResource } from '@data';
 import { Checkbox } from 'semantic-ui-react';
+import { withUserGroups, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
 
 const mapRecordsToProps = ({organization}) => {
 
@@ -19,26 +20,39 @@ interface IOwnProps {
   userGroups: GroupResource[];
 }
 
-class GroupCheckboxes extends React.Component<IOwnProps> {
+type IProps =
+  & IOwnProps
+  & IUserGroupProps;
 
-  isSelected = (groupId) => {
-    const { userGroups } = this.props;
-    return userGroups.map(group => group.id).includes(groupId);
+class GroupCheckboxes extends React.Component<IProps> {
+
+  toggleGroup = group => {
+
+    const { toggleGroup } = this.props;
+
+    return (e) => {
+      e.preventDefault();
+      toggleGroup(group);
+    }
   }
 
   render() {
 
-    const { groups } = this.props;
+    const { groups, userHasGroup } = this.props;
 
     return groups.map((group, index) => {
       const { name } = attributesFor(group);
       return (
-        <div key={index} className="item">
+        <div
+          key={index}
+          className="item"
+          onClick={this.toggleGroup(group)}
+        >
           <Checkbox
             data-test-multi-group-checkbox
             value={group.id}
             label={name}
-            checked={this.isSelected(group.id)}
+            checked={userHasGroup(group)}
           />
         </div>
       );
@@ -50,5 +64,6 @@ class GroupCheckboxes extends React.Component<IOwnProps> {
 
 export default compose(
   withOrbit(mapRecordsToProps),
-  withLoader(({groups}) => !groups)
+  withLoader(({groups}) => !groups),
+  withUserGroups
 )(GroupCheckboxes);

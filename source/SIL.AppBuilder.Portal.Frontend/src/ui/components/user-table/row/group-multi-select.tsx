@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
 
-import { attributesFor, GroupResource } from '@data';
+import { attributesFor, GroupResource, UserResource } from '@data';
 import { isEmpty } from '@lib/collection';
 import { withCurrentUser } from '@data/containers/with-current-user';
 import { withLoader, OrganizationResource } from '@data';
@@ -12,6 +12,8 @@ import GroupCheckboxes from './group-checkboxes';
 interface IOwnProps {
   organizations: OrganizationResource[];
   userGroups: GroupResource[];
+  user: UserResource;
+  currentUser: UserResource;
 }
 
 type IProps =
@@ -19,16 +21,28 @@ type IProps =
 
 class GroupSelect extends React.Component<IProps> {
 
+  userGroupNames = () => {
+    const { userGroups } = this.props;
+
+    if (isEmpty(userGroups)) {
+      return "None";
+    }
+
+    return userGroups.map(group =>
+      attributesFor(group).abbreviation
+    ).join(', ');
+  }
+
   render() {
 
-    const { organizations, userGroups } = this.props;
+    const { organizations, userGroups, user } = this.props;
 
     return (
       <>
         <Dropdown
           data-test-group-multi-select
           multiple
-          text="all"
+          text={this.userGroupNames()}
           className='w-100 groupDropdown'
         >
           <Dropdown.Menu className='groups' data-test-group-menu>
@@ -37,10 +51,16 @@ class GroupSelect extends React.Component<IProps> {
 
                 const { name } = attributesFor(org);
 
+                const groupCheckboxesProps = {
+                  organization: org,
+                  userGroups,
+                  user
+                }
+
                 return (
                   <React.Fragment key={index} >
                     <Dropdown.Header content={name} />
-                    <GroupCheckboxes organization={org} userGroups={userGroups}/>
+                    <GroupCheckboxes {...groupCheckboxesProps}/>
                   </React.Fragment>
                 );
             })
@@ -62,6 +82,7 @@ export default compose(
       userGroups: [user, 'groupMemberships','group']
     }
   }),
+  withLoader(({ organizations, userGroups }) => !organizations && !userGroups),
   withProps(({ currentUserOrganizations, userOrganizations, ...otherProps}) => {
 
     if (isEmpty(userOrganizations)) {
@@ -79,6 +100,5 @@ export default compose(
       ),
       ...otherProps
     }
-  }),
-  withLoader(({organizations, userGroups}) => !organizations && !userGroups)
+  })
 )(GroupSelect);
