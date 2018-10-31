@@ -109,7 +109,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 
         if (!accessGranted) {
           if (OnForbidden) {
-            return <OnForbidden error={error} />;
+            return <OnForbidden { ...this.props } error={error} />;
           }
 
           if (redirectTo) {

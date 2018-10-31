@@ -1,21 +1,20 @@
 import * as React from 'react';
 import * as toast from '@lib/toast';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { Link } from 'react-router-dom';
 import { Radio } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import {
   UserResource, GroupResource, RoleResource, OrganizationResource,
-  attributesFor, idFromRecordIdentity
-} from '@data';
+  attributesFor, idFromRecordIdentity, withLoader} from '@data';
 import { UserAttributes } from '@data/models/user';
 import { withDataActions, IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
 import { withRelationships } from '@data/containers/with-relationship';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import GroupSelect from './group-multi-select';
+import MultiGroupSelect from './multi-group-select';
 import MultiRoleSelect from './multi-role-select';
 
 
@@ -24,6 +23,7 @@ export interface IOwnProps {
   groups: GroupResource[];
   roles: RoleResource[];
   organizations: OrganizationResource[];
+  currentUser: UserResource;
 }
 
 export type IProps =
@@ -77,7 +77,9 @@ class Row extends React.Component<IProps> {
             organizations={organizations} />
         </td>
         <td>
-          <GroupSelect user={user} />
+          <MultiGroupSelect
+            user={user}
+            organizations={organizations} />
         </td >
         <td>
           <Radio
@@ -96,9 +98,25 @@ export default compose(
   withDataActions,
   // read from cache for active/lock toggle
   withOrbit(({ user }) => ({ user: q => q.findRecord(user) })),
-  withRelationships(({ user }) => {
+  withRelationships(({ user, currentUser }) => {
     return {
-      organizations: [user, 'organizationMemberships', 'organization']
+      userOrganizations: [user, 'organizationMemberships', 'organization'],
+      currentUserOrganizations: [currentUser, 'organizationMemberships', 'organization'],
     };
+  }),
+  // filter out the organizations that the currentUser doesn't have access to
+  // the organizations a user is a member of is not private knowledge,
+  // but it doesn't make sense to display roles for organizations the current
+  // user doesn't care about / isn't a member of
+  withProps(({ currentUserOrganizations, userOrganizations }) => {
+    let organizations = [];
+
+    if (userOrganizations && userOrganizations.length > 0) {
+      organizations = userOrganizations.filter(
+        org => currentUserOrganizations.some(o => o.id === org.id)
+      );
+    }
+
+    return { organizations };
   })
 )(Row);

@@ -3,7 +3,6 @@ import { compose } from 'recompose';
 
 import {
   UserResource,
-  GroupResource,
   RoleResource,
 } from '@data';
 
@@ -16,9 +15,11 @@ import Header from './header';
 import Row from './row';
 
 import './user-table.scss';
+import { withCurrentUser } from '@data/containers/with-current-user';
 
 interface IOwnProps {
   users: UserResource[];
+  currentUser: UserResource;
   roles: RoleResource[];
 }
 
@@ -28,7 +29,8 @@ type IProps =
 
 class Table extends React.Component<IProps> {
   render() {
-    const { users, roles, t } = this.props;
+
+    const { users, roles, currentUser, t } = this.props;
 
     return (
       <table data-test-users className= 'ui table user-table' >
@@ -38,6 +40,7 @@ class Table extends React.Component<IProps> {
           { users && users.map((user,index) => (
             <Row
               key={index}
+              currentUser={currentUser}
               user={user}
               roles={roles} />
           ))}
@@ -56,5 +59,6 @@ class Table extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
+  withCurrentUser(),
   withRoles(),
 )(Table);
