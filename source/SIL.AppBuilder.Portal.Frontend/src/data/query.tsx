@@ -8,6 +8,7 @@ import { isEmpty } from '@lib/collection';
 interface IState {
   result: object;
   error: any;
+  isLoading: boolean;
 }
 
 export interface IQueryOptions {
@@ -59,7 +60,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
   return InnerComponent => {
     class DataWrapper extends React.Component<T & WithDataProps, IState> {
-      state = { result: {}, error: undefined };
+      state = { result: {}, error: undefined, isLoading: false };
 
       mapResult: any = {};
 
@@ -84,6 +85,8 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         const { dataStore, sources: { remote } } = this.props;
         const querier = useRemoteDirectly ? remote : dataStore;
 
+        this.setState({ isLoading: true });
+
         const responses = {};
         const requestPromises = Object.keys(result).map(async (key: string) => {
           if (key === 'cacheKey') { return; }
@@ -105,16 +108,17 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
           this.setState({ error: e });
         }
 
-        this.setState({ result: responses });
+        this.setState({ result: responses, isLoading: false });
       }
 
       render() {
         this.fetchData();
 
-        const { result, error } = this.state;
+        const { result, error, isLoading } = this.state;
         const dataProps = {
           ...result,
-          error
+          error,
+          isLoading
         };
 
         if (!passthroughError && error) {
