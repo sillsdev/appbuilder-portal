@@ -32,7 +32,11 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
   disableTo = (day: Date) => {
     const { from } = this.props;
     const maxDate = tomorrow();
-    const compare = (from && from !== '' && from) || maxDate;
+    const compare = (from && from !== '' && from);
+
+    if (!compare) {
+      return day > maxDate;
+    }
 
     return day < compare || day > maxDate;
   }
