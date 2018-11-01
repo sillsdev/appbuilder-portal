@@ -43,6 +43,7 @@
     <Folder Include="Acceptance\APIControllers\Organizations\" />
     <Folder Include="Acceptance\APIControllers\OrganizationInviteRequests\" />
     <Folder Include="Acceptance\BuildEngine\" />
+    <Folder Include="Acceptance\APIControllers\GroupMemberships\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Acceptance\APIControllers\ProjectsTest.cs" />

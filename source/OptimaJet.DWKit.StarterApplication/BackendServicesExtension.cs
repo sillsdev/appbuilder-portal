@@ -55,6 +55,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<Group>, GroupService>();
             services.AddScoped<IResourceService<Project>, ProjectService>();
             services.AddScoped<IResourceService<Product>, ProductService>();
+            services.AddScoped<IResourceService<GroupMembership>, GroupMembershipService>();
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
 
             services.AddScoped<UserRepository>();
