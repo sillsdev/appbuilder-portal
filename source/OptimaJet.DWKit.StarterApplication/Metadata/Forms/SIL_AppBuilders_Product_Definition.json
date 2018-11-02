@@ -6,6 +6,30 @@
     "size": "medium"
   },
   {
+    "key": "workflow",
+    "data-buildertype": "workflowbar",
+    "events": {
+      "onCommandClick": {
+        "active": true,
+        "actions": [
+          "workflowCommand"
+        ],
+        "targets": [],
+        "parameters": []
+      },
+      "onSetStateClick": {
+        "active": true,
+        "actions": [
+          "workflowSetState"
+        ],
+        "targets": [],
+        "parameters": []
+      }
+    },
+    "style-source": "float:left",
+    "blockSetState": true
+  },
+  {
     "key": "container_1",
     "data-buildertype": "container",
     "children": [

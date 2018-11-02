@@ -5,15 +5,14 @@ import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 
 import { ProductArtifactResource, attributesFor } from '@data';
 import FileSize from '@ui/components/labels/file-size';
-import TimezoneLabel from '@ui/components/timezone-label';
+import TimezoneLabel from '@ui/components/labels/timezone';
 
 interface IOwnProps {
   artifact: ProductArtifactResource;
 }
 
 type IProps =
-  & IOwnProps
-  & i18nProps;
+  & IOwnProps;
 
 class Artifact extends React.Component<IProps> {
 

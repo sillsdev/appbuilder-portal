@@ -6,7 +6,7 @@
       {
         "key": "staticcontent_1",
         "data-buildertype": "staticcontent",
-        "content": "<b>Only non-commercial use. For commercial use, please contact <a href=\"mailto:sales@optimajet.com\">sales@optimajet.com</a>.</b>\nOfficial site - <a href=\"https://dwkit.com\">https://dwkit.com</a>",
+        "content": "<b><a href=\"https://scriptoria.io\">https://scriptoria.io</a>",
         "isHtml": true,
         "style-source": "paddingTop: 20px;",
         "style-marginTop": "",

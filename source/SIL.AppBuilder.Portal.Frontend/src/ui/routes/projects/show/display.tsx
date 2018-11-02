@@ -5,7 +5,7 @@ import { Tab, Dropdown, Menu } from 'semantic-ui-react';
 
 import { attributesFor, ProjectResource } from '@data';
 import { i18nProps } from '@lib/i18n';
-import TimezoneLabel from '@ui/components/timezone-label';
+import TimezoneLabel from '@ui/components/labels/timezone';
 
 import Details from './details';
 import Products from './products';

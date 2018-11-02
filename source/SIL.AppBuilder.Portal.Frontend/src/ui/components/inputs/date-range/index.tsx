@@ -32,7 +32,11 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
   disableTo = (day: Date) => {
     const { from } = this.props;
     const maxDate = tomorrow();
-    const compare = (from && from !== '' && from) || maxDate;
+    const compare = (from && from !== '' && from);
+
+    if (!compare) {
+      return day > maxDate;
+    }
 
     return day < compare || day > maxDate;
   }
@@ -62,7 +66,7 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
               formatDate={formatDate}
               parseDate={parseDate}
             />
-            {from && <Cancel data-test-clear-from onClick={() => onFromChange()} /> }
+            {from && <Cancel className='w-lg' data-test-clear-from onClick={() => onFromChange()} /> }
             {!from && <ArrowDropDownIcon /> }
           </div>
 
@@ -79,7 +83,7 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
               parseDate={parseDate}
               value={to}
             />
-            {to && <Cancel data-test-clear-to onClick={() => onToChange()} /> }
+            {to && <Cancel className='w-lg' data-test-clear-to onClick={() => onToChange()} /> }
             {!to && <ArrowDropDownIcon /> }
           </div>
         </div>

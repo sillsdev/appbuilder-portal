@@ -92,7 +92,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
           const result = await this.doesUserHaveAccess();
 
           this.setState({ accessGranted: result, roleEvaluated: true });
-        } catch(error: string) {
+        } catch(error) {
           this.setState({ accessGranted: false, roleEvaluated: true, error });
         }
       }
@@ -147,16 +147,26 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 
 }
 
+async function isSuperAdmin(dataStore, userRoles): Promise<boolean> {
+  // NOTE: SuperAdmins are cross-organization
+  //       the organization relationship doesn't matter.
+  const allAssignedRolesPromises = userRoles.map((userRole) => {
+    return dataStore.cache.query(q => q.findRelatedRecord(userRole, 'role'));
+  });
+
+  const allAssignedRoles: RoleResource[] = await Promise.all(allAssignedRolesPromises) as unknown as RoleResource[];
+  const allAssignmentNames = allAssignedRoles.map(r => attributesFor(r).roleName);
+  const result = allAssignmentNames.includes(ROLE.SuperAdmin);
+
+  return result;
+}
 
 export async function roleInOrganization(currentUser, dataStore, organization, role: ROLE): Promise<boolean> {
   const userRoles = await dataStore.cache.query(q => q.findRelatedRecords(currentUser, 'userRoles'));
 
-  // NOTE: SuperAdmins are cross-organization
-  //       the organization relationship doesn't matter.
-  const allRoleNames = userRoles.map(r => attributesFor(r).roleName);
-  const isSuperAdmin = allRoleNames.includes(ROLE.SuperAdmin);
+  const canDoEverything = await isSuperAdmin(dataStore, userRoles);
 
-  if (isSuperAdmin) {
+  if (canDoEverything) {
     return true;
   }
 

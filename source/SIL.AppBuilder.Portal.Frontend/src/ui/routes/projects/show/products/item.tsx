@@ -11,7 +11,7 @@ import {
 
 import ItemActions from './item-actions';
 import ProductIcon from '@ui/components/product-icon';
-import TimezoneLabel from '@ui/components/timezone-label';
+import TimezoneLabel from '@ui/components/labels/timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
