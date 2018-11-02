@@ -1,16 +1,15 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import { GroupResource, withLoader, attributesFor, OrganizationResource } from '@data';
 import { Checkbox } from 'semantic-ui-react';
-import { withUserGroups, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
+import { withGroupMemberships, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
 import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {
   organization: OrganizationResource;
   groups: GroupResource[];
-  userGroups: GroupResource[];
 }
 
 type IProps =
@@ -34,6 +33,7 @@ class GroupSelect extends React.Component<IProps> {
 
     return groups.map((group, index) => {
       const { name } = attributesFor(group);
+
       return (
         <div
           key={index}
@@ -42,6 +42,7 @@ class GroupSelect extends React.Component<IProps> {
         >
           <Checkbox
             data-test-multi-group-checkbox
+            toggle
             value={group.id}
             label={name}
             checked={userHasGroup(group)}
@@ -58,5 +59,14 @@ export default compose(
   withOrbit(({ organization }) => ({
     groups: q => q.findRelatedRecords(organization, 'groups')
   })),
-  withUserGroups
+  withProps((props: IOwnProps) => {
+    const { user } = props;
+
+    return {
+      propsForGroupMemberships: {
+        user,
+      }
+    };
+  }),
+  withGroupMemberships
 )(GroupSelect);

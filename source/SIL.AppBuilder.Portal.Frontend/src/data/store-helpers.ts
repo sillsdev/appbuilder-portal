@@ -129,8 +129,8 @@ export function buildNew<TAttrs, TRelationships>(type: string, options: IBuildNe
     const relationInfo = relationMap[relationName];
     const relationData =
       Array.isArray(relationInfo)
-        ? relationInfo.map(info => recordIdentityFrom(info.id, info.type))
-        : recordIdentityFrom(relationInfo.id, relationInfo.type);
+        ? relationInfo.map(info => remoteIdentityFrom(info))
+        : remoteIdentityFrom(relationInfo);
 
     result[relationName] = {
       data:relationData
@@ -181,6 +181,16 @@ export function idFromRecordIdentity<TType extends string = '', TAttrs extends A
 
 export function recordIdentityFrom(id: string, type: string) {
   return recordIdentityFromKeys({ keys: { remoteId: id }, type });
+}
+
+export function remoteIdentityFrom(resource: any) {
+  if (!resource.keys) {
+    // the returned id is a local id
+    // resource id becomes the keys.remoteId
+    return recordIdentityFrom(resource.id, resource.type);
+  }
+
+  return resource;
 }
 
 export interface IIdentityFromKeys {

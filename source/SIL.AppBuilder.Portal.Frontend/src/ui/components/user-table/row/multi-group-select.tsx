@@ -7,55 +7,58 @@ import { attributesFor, GroupResource, UserResource, relationshipFor, idFor, rec
 import { isEmpty } from '@lib/collection';
 import { OrganizationResource } from '@data';
 import { withRelationships } from '@data/containers/with-relationship';
+import { withGroupMemberships, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
+
 import GroupSelect from './group-select';
 
 interface IOwnProps {
   organizations: OrganizationResource[];
-  userGroups: GroupResource[];
+  groups: GroupResource[];
   user: UserResource;
   currentUser: UserResource;
 }
 
 type IProps =
+  & IUserGroupProps
   & IOwnProps;
 
 class MultiGroupSelect extends React.Component<IProps> {
 
-  userGroupNames = () => {
-    const { userGroups } = this.props;
+  groupNames = () => {
+    const { groups, userHasGroup } = this.props;
+    const groupsForMemberships = groups.filter(group => {
+      return userHasGroup(group);
+    });
 
-    if (isEmpty(userGroups)) {
+    if (isEmpty(groupsForMemberships)) {
       return "None";
     }
 
-    return userGroups.map(group =>
-      attributesFor(group).name
-    ).join(', ');
+    return groupsForMemberships.map(group => {
+      return attributesFor(group).name;
+    }).join(', ');
   }
 
   render() {
-
-    const { organizations, userGroups, user } = this.props;
+    const { organizations, groups, user } = this.props;
 
     return (
       <>
         <Dropdown
           data-test-group-multi-select
           multiple
-          text={this.userGroupNames()}
+          text={this.groupNames()}
           className='w-100 groupDropdown'
         >
           <Dropdown.Menu className='groups' data-test-group-menu>
             {
-              organizations.map((org, index) => {
-
-                const { name } = attributesFor(org);
+              organizations.map((organization, index) => {
+                const { name } = attributesFor(organization);
 
                 const groupCheckboxesProps = {
-                  organization: org,
-                  userGroups,
+                  organization,
                   user
-                }
+                };
 
                 return (
                   <React.Fragment key={index} >
@@ -74,26 +77,31 @@ class MultiGroupSelect extends React.Component<IProps> {
 }
 
 export default compose(
-  withOrbit(({user}) => {
+  withProps(({ user }) => {
     return {
-      groupMemberships: q => q.findRelatedRecords(user, 'groupMemberships')
-    }
+      propsForGroupMemberships: {
+        user
+      }
+    };
   }),
+  withGroupMemberships,
   withRelationships(({ user }) => {
     return {
       allUserGroups: [user, 'groupMemberships','group']
-    }
+    };
   }),
-  //Filter groups that are visible for the current user
+  // Filter groups that are visible for the current user
   withProps(({ allUserGroups, organizations }) => {
 
-    let userGroups = [];
+    let groups = [];
 
-    userGroups = allUserGroups && allUserGroups.filter(group => {
-      const orgId = idFor(relationshipFor(group,'owner'));
-      return recordsWithIdIn(organizations,orgId).length > 0;
-    })
+    if (allUserGroups) {
+      groups = allUserGroups.filter(group => {
+        const orgId = idFor(relationshipFor(group, 'owner'));
+        return recordsWithIdIn(organizations, orgId).length > 0;
+      });
+    }
 
-    return { userGroups };
-  })
+    return { groups };
+  }),
 )(MultiGroupSelect);
