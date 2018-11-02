@@ -44,7 +44,7 @@ export default class DirectoryDisplay extends React.Component<IProps> {
       t,
       projects, updateFilter, error, toggleSort,
       isAscending, sortProperty,
-      columns, selectedColumns,
+      columns, selectedColumns, isLoading,
       toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns
     } = this.props;
 
@@ -52,7 +52,7 @@ export default class DirectoryDisplay extends React.Component<IProps> {
     /* TODO: figure out how to disable certain pagination buttons */
 
     const tableProps = {
-      projects,
+      projects, isLoading,
       toggleSort, isAscending, sortProperty,
       columns, selectedColumns,
       toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns

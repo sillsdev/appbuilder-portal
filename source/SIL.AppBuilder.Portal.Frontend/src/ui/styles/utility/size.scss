@@ -6,6 +6,10 @@
     .font-#{$name}#{$modifier} {
       font-size: sizeValue($name, $amount);
     }
+
+    .w-#{$name}#{$modifier} {
+      width: sizeValue($name, $amount);
+    }
   }
 
   .h-100#{$modifier} {

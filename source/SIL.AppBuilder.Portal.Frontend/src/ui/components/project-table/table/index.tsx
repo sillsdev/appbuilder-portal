@@ -15,6 +15,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   projects: Array<ResourceObject<PROJECTS_TYPE, ProjectAttributes>>;
+  isLoading?: boolean;
 }
 
 type IProps =
@@ -32,7 +33,8 @@ class Table extends React.Component<IProps> {
       selectedColumns,
       activeProjectColumns,
       activeProductColumns,
-      t
+      t,
+      isLoading
     } = this.props;
 
     const isProjectListEmpty = isEmpty(projects);
@@ -65,6 +67,7 @@ class Table extends React.Component<IProps> {
     return (
       <div data-test-project-table className='project-table'>
         {projectList}
+        { isLoading && <div className='loading-overlay' /> }
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose, mapProps } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import * as moment from 'moment';
 
 import { OrganizationResource, idFromRecordIdentity } from '@data';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
@@ -81,9 +82,9 @@ class Filter extends React.Component<IProps, IState> {
       return this.setState({ to: undefined });
     }
 
-    const normalizedTo = to.toISOString();
+    const endOfDay = moment(to).endOf('day').utc().format();
 
-    updateFilter({ attribute: 'project-updated-date', key: 'lt', value: `le:${normalizedTo}` });
+    updateFilter({ attribute: 'project-updated-date', key: 'lt', value: `le:${endOfDay}` });
 
     this.setState({ to });
   }
@@ -96,9 +97,9 @@ class Filter extends React.Component<IProps, IState> {
       return this.setState({ from: undefined });
     }
 
-    const normalizedFrom = from.toISOString();
+    const beginningOfDay = moment(from).startOf('day').utc().format();
 
-    updateFilter({ attribute: 'project-updated-date', key: 'gt', value: `ge:${normalizedFrom}` });
+    updateFilter({ attribute: 'project-updated-date', key: 'gt', value: `ge:${beginningOfDay}` });
 
     this.setState({from});
   }
