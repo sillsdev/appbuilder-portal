@@ -122,7 +122,7 @@ export function withGroupMemberships<T>(WrappedComponent) {
 
       return {
         groupMemberships: q => q.findRelatedRecords(user, 'groupMemberships')
-      }
+      };
     })
   )(UserGroupWrapper);
 }

@@ -58,7 +58,7 @@ class MultiGroupSelect extends React.Component<IProps> {
                 const groupCheckboxesProps = {
                   organization,
                   user
-                }
+                };
 
                 return (
                   <React.Fragment key={index} >
@@ -88,9 +88,9 @@ export default compose(
   withRelationships(({ user }) => {
     return {
       allUserGroups: [user, 'groupMemberships','group']
-    }
+    };
   }),
-  //Filter groups that are visible for the current user
+  // Filter groups that are visible for the current user
   withProps(({ allUserGroups, organizations }) => {
 
     let groups = [];
