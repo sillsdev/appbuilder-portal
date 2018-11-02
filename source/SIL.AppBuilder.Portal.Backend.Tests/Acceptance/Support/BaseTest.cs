@@ -62,6 +62,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             return await MakeRequest(request, organizationId, addOrgHeader, allOrgs);
         }
 
+        public async Task<HttpResponseMessage> Delete(string url)
+        {
+            var httpMethod = new HttpMethod("DELETE");
+            var request = new HttpRequestMessage(httpMethod, url);
+            return await MakeRequest(request, "", false);
+        }
+
         public async Task<HttpResponseMessage> Post(string url, object content, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
         {
             var httpMethod = new HttpMethod("POST");
