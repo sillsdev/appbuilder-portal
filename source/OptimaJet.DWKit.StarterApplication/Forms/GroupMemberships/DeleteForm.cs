@@ -36,10 +36,10 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.GroupMemberships
             }
             else
             {
-                var projects = ProjectRepository.Get()
+                var projectsExist = ProjectRepository.Get()
                                                 .Where(p => p.GroupId == groupMembership.GroupId && p.OwnerId == groupMembership.UserId)
-                                                .AsEnumerable();
-                if (projects.Count() > 0)
+                                                .Any();
+                if (projectsExist)
                 {
                     var message = "Project exists for this group membership";
                     AddError(message);
