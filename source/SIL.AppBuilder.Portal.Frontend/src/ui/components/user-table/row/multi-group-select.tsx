@@ -7,7 +7,7 @@ import { attributesFor, GroupResource, UserResource, relationshipFor, idFor, rec
 import { isEmpty } from '@lib/collection';
 import { OrganizationResource } from '@data';
 import { withRelationships } from '@data/containers/with-relationship';
-import { withUserGroups, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
+import { withGroupMemberships, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
 
 import GroupSelect from './group-select';
 
@@ -19,20 +19,24 @@ interface IOwnProps {
 }
 
 type IProps =
+  & IUserGroupProps
   & IOwnProps;
 
 class MultiGroupSelect extends React.Component<IProps> {
 
   groupNames = () => {
-    const { groups } = this.props;
+    const { groups, userHasGroup } = this.props;
+    const groupsForMemberships = groups.filter(group => {
+      return userHasGroup(group);
+    });
 
-    if (isEmpty(groups)) {
+    if (isEmpty(groupsForMemberships)) {
       return "None";
     }
 
-    return groups.map(group =>
-      attributesFor(group).name
-    ).join(', ');
+    return groupsForMemberships.map(group => {
+      return attributesFor(group).name;
+    }).join(', ');
   }
 
   render() {
@@ -73,11 +77,14 @@ class MultiGroupSelect extends React.Component<IProps> {
 }
 
 export default compose(
-  withOrbit(({user}) => {
+  withProps(({ user }) => {
     return {
-      groupMemberships: q => q.findRelatedRecords(user, 'groupMemberships')
-    }
+      propsForGroupMemberships: {
+        user
+      }
+    };
   }),
+  withGroupMemberships,
   withRelationships(({ user }) => {
     return {
       allUserGroups: [user, 'groupMemberships','group']
@@ -96,5 +103,5 @@ export default compose(
     }
 
     return { groups };
-  })
+  }),
 )(MultiGroupSelect);

@@ -121,7 +121,7 @@ export function withGroupMemberships<T>(WrappedComponent) {
       const user = propsForGroupMemberships && propsForGroupMemberships.user || currentUser;
 
       return {
-        groupMemberships: q => q.findRelatedRecords(user,'groupMemberships')
+        groupMemberships: q => q.findRelatedRecords(user, 'groupMemberships')
       }
     })
   )(UserGroupWrapper);
