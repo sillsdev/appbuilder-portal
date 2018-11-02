@@ -40,7 +40,7 @@ class MultiGroupSelect extends React.Component<IProps> {
   }
 
   render() {
-    const { organizations, groups, user } = this.props;
+    const { organizations, user } = this.props;
 
     return (
       <>
@@ -62,7 +62,7 @@ class MultiGroupSelect extends React.Component<IProps> {
 
                 return (
                   <React.Fragment key={index} >
-                    <Dropdown.Header content={name} />
+                    <Dropdown.Header data-test-group-multi-organization-name content={name} />
                     <GroupSelect {...groupCheckboxesProps} />
                   </React.Fragment>
                 );
