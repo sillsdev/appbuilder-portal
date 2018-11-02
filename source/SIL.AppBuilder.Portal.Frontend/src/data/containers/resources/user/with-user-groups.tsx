@@ -4,8 +4,9 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import * as toast from '@lib/toast';
 import { GroupResource, UserResource, GroupMembershipResource } from '@data';
-import { defaultOptions, } from '@data';
+import { buildOptions, create } from '@data';
 import { attributesFor , isRelatedRecord } from '@data/helpers';
+import { IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 
 export interface IProvidedProps {
   userHasGroup: (group: GroupResource) => boolean;
@@ -13,82 +14,89 @@ export interface IProvidedProps {
 }
 
 interface IOwnProps {
-  user: UserResource;
   groups: GroupResource[];
-  userGroups: GroupResource[];
   groupMemberships: GroupMembershipResource[];
+
+  propsForGroupMemberships?: {
+    user: UserResource;
+  };
 }
 
 type IProps =
   & IOwnProps
+  & ICurrentUserProps
   & WithDataProps;
 
-export function withUserGroups<T>(WrappedComponent) {
+export function withGroupMemberships<T>(WrappedComponent) {
 
   class UserGroupWrapper extends React.PureComponent<T & IProps> {
+    get user() {
+      const { currentUser, propsForGroupMemberships } = this.props;
+
+      return propsForGroupMemberships && propsForGroupMemberships.user || currentUser;
+    }
+
+    get userName() {
+      return attributesFor(this.user).name;
+    }
 
     userHasGroup = (group: GroupResource) => {
-      const { userGroups } = this.props;
-      return userGroups.map(uGroup => uGroup.id).includes(group.id);
+      return !!this.groupMembershipForGroup(group);
     }
 
     groupMembershipForGroup = (group: GroupResource) => {
       const { groupMemberships } = this.props;
-      return groupMemberships.find(groupMembership =>
-        isRelatedRecord(groupMembership, group)
-      )
+
+      return groupMemberships.find(groupMembership => {
+        return isRelatedRecord(groupMembership, group);
+      });
     }
 
     toggleGroup = async (group: GroupResource) => {
-
-      const { user } = this.props;
-      const { name } = attributesFor(user);
-
       const userHasGroup = this.userHasGroup(group);
 
       try {
         if (userHasGroup) {
           await this.removeFromGroup(group);
-          toast.success(`${name} removed from group`);
         } else {
           await this.addToGroup(group);
-          toast.success(`${name} added to group`);
         }
       } catch (e) {
         toast.error(e);
       }
     }
 
-    addToGroup = (group: GroupResource) => {
+    addToGroup = async (group: GroupResource) => {
+      const { dataStore } = this.props;
 
-      const { dataStore, user } = this.props;
-      const { name } = attributesFor(user);
-
-      return dataStore.update(q => q.addRecord({
-        type: 'groupMembership',
-        attributes: {},
+      await create(dataStore, 'groupMembership', {
         relationships: {
-          user: { data: user },
-          group: { data: group }
+          user: this.user,
+          group,
         }
-      }), defaultOptions());
+      });
 
-
+      toast.success(`${this.userName} added to group`);
     }
 
-    removeFromGroup = (group: GroupResource) => {
-
-      const { dataStore, user } = this.props;
-      const { name } = attributesFor(user);
+    removeFromGroup = async (group: GroupResource) => {
+      const { dataStore } = this.props;
+      const groupName = attributesFor(group);
 
       const groupMembership = this.groupMembershipForGroup(group);
-      return dataStore.update(q =>
-        q.removeRecord(groupMembership), defaultOptions()
-      );
+
+      if (groupMembership) {
+        await dataStore.update(q =>
+          q.removeRecord(groupMembership), buildOptions()
+        );
+
+        toast.success(`${this.userName} removed from group`);
+      } else {
+        toast.warning(`${this.userName} is not in ${groupName}`);
+      }
     }
 
     render() {
-
       const userGroupsProps = {
         userHasGroup: this.userHasGroup,
         toggleGroup: this.toggleGroup
@@ -105,9 +113,12 @@ export function withUserGroups<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit(({user, groupMemberships }) => {
+    withOrbit((props: ICurrentUserProps & IOwnProps) => {
+      const { currentUser, propsForGroupMemberships, groupMemberships } = props;
 
       if (groupMemberships) { return {}; }
+
+      const user = propsForGroupMemberships && propsForGroupMemberships.user || currentUser;
 
       return {
         groupMemberships: q => q.findRelatedRecords(user,'groupMemberships')

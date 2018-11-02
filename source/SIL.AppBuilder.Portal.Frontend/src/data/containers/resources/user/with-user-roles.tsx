@@ -10,6 +10,7 @@ import {
   UserResource, OrganizationResource, RoleResource, UserRoleResource,
 } from '@data';
 import { TYPE_NAME as USER_ROLE } from '@data/models/user-role';
+import { IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 
 
 export interface IProvidedProps {
@@ -69,8 +70,6 @@ export function withUserRoles<T>(WrappedComponent) {
     }
 
     toggleRole = async (roleName: string) => {
-      const { dataStore } = this.props;
-
       const selectedRole = this.roleForName(roleName);
       const userHasRole = this.userHasRole(selectedRole);
 
@@ -90,9 +89,9 @@ export function withUserRoles<T>(WrappedComponent) {
 
       await create(dataStore, 'userRole', {
         relationships: {
-          role: { ...role, id: role.keys.remoteId },
-          user: { ...this.user, id: this.user.keys.remoteId },
-          organization: { ...this.organization, id: this.organization.keys.remoteId },
+          role,
+          user: this.user,
+          organization: this.organization,
         }
       });
 
@@ -103,9 +102,14 @@ export function withUserRoles<T>(WrappedComponent) {
       const { dataStore } = this.props;
 
       const userRole = this.userRoleForRole(role);
-      await dataStore.update(t => t.removeRecord(userRole), buildOptions());
 
-      toast.success(`${this.userName} removed from role`);
+      if (userRole) {
+        await dataStore.update(t => t.removeRecord(userRole), buildOptions());
+
+        toast.success(`${this.userName} removed from role`);
+      } else {
+        toast.warning(`${this.userName} is not in that role`);
+      }
     }
 
     roleForName = (roleName: string): RoleResource => {
@@ -143,7 +147,8 @@ export function withUserRoles<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit((props: ICurrentUserProps) => {
+
+    withOrbit((props: ICurrentUserProps & IOwnProps) => {
       const { currentUser, propsforUserRoles, userRoles } = props;
 
       // userRoles already present.
