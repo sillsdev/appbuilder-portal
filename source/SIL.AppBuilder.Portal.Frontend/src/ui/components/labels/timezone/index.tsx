@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { Popup } from 'semantic-ui-react';
 
 import {
   withMomentTimezone,
@@ -18,7 +19,7 @@ type IProps =
   & TimezoneProps
   & i18nProps;
 
-class TimezoneLabel extends React.Component<IProps> {
+class Timezone extends React.Component<IProps> {
 
   render() {
 
@@ -34,10 +35,14 @@ class TimezoneLabel extends React.Component<IProps> {
     }
     const dateTimeTZ = moment(dateTimeZ).tz(timezone);
 
-    return (
-      <span className={className} title={dateTimeTZ.format('MMMM Do YYYY, h:mm:ss')}>
+    const trigger = (
+      <span className={className}>
         {dateTimeTZ.fromNow(true)}
       </span>
+    );
+
+    return (
+      <Popup trigger={trigger} content={dateTimeTZ.format('MMMM Do YYYY, h:mm:ss')}/>
     );
   }
 }
@@ -45,4 +50,4 @@ class TimezoneLabel extends React.Component<IProps> {
 export default compose(
   withTranslations,
   withMomentTimezone
-)(TimezoneLabel);
+)(Timezone);

@@ -9,7 +9,7 @@ interface IOwnProps {
 type IProps =
   & IOwnProps;
 
-class EmptyLabel extends React.Component<IProps> {
+class Empty extends React.Component<IProps> {
 
   render() {
 
@@ -25,4 +25,4 @@ class EmptyLabel extends React.Component<IProps> {
 
 }
 
-export default EmptyLabel;
+export default Empty;

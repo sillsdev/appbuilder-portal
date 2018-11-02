@@ -6,7 +6,7 @@ import { attributesFor } from '@data/helpers';
 import { i18nProps } from '@lib/i18n';
 import { NotificationResource } from '@data';
 import { withDataActions, IProvidedProps as IDataProps } from '@data/containers/resources/notification/with-data-actions';
-import TimezoneLabel from '@ui/components/timezone-label';
+import TimezoneLabel from '@ui/components/labels/timezone';
 
 export interface IOwnProps {
   notification: NotificationResource;
