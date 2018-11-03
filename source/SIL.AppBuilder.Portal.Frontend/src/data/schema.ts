@@ -242,7 +242,8 @@ const schemaDefinition: SchemaSettings = {
     group: {
       keys: { remoteId: {} },
       attributes: {
-        name: { type: 'string' }
+        name: { type: 'string' },
+        abbreviation: { type: 'string' }
       },
       relationships: {
         groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'group' },

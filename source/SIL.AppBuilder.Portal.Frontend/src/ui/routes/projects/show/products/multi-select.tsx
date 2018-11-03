@@ -1,6 +1,4 @@
-import * as React from 'react';
 import { compose, withProps } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { MultiSelect } from '@ui/components/inputs/multi-select';

@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { ResourceObject } from 'jsonapi-typescript';
 
 import {
-  UserResource, GroupResource, RoleResource,
+  UserResource,
+  RoleResource,
 } from '@data';
+
 import { withRoles } from '@data/containers/resources/role';
 
 import { isEmpty } from '@lib/collection';
@@ -19,7 +20,6 @@ import { withCurrentUser } from '@data/containers/with-current-user';
 interface IOwnProps {
   users: UserResource[];
   currentUser: UserResource;
-  groups: GroupResource[];
   roles: RoleResource[];
 }
 
@@ -29,7 +29,8 @@ type IProps =
 
 class Table extends React.Component<IProps> {
   render() {
-    const { users, groups, roles, currentUser, t } = this.props;
+
+    const { users, roles, currentUser, t } = this.props;
 
     return (
       <table data-test-users className= 'ui table user-table' >
@@ -41,7 +42,6 @@ class Table extends React.Component<IProps> {
               key={index}
               currentUser={currentUser}
               user={user}
-              groups={groups}
               roles={roles} />
           ))}
 

@@ -69,7 +69,7 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
           const result = await this.fetchRelationships();
 
           this.setState({ result, isLoading: false, error: undefined });
-        } catch (error: any) {
+        } catch (error) {
           this.setState({ isLoading: false, error });
         }
       }
@@ -110,7 +110,7 @@ type RelationshipArgs =
 | [ResourceObject, string, string]
 | [ResourceObject, string];
 
-async function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs): any {
+async function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs) {
   const sourceModel = relationshipArgs[0];
   const relationshipPath = relationshipArgs.slice(1) as [string, string] | [string];
 

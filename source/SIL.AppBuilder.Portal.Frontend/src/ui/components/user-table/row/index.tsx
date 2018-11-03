@@ -7,18 +7,19 @@ import { withData as withOrbit } from 'react-orbitjs';
 
 import {
   UserResource, GroupResource, RoleResource, OrganizationResource,
-  attributesFor, idFromRecordIdentity} from '@data';
+  attributesFor, idFromRecordIdentity, withLoader} from '@data';
 import { UserAttributes } from '@data/models/user';
 import { withDataActions, IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
 import { withRelationships } from '@data/containers/with-relationship';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 
+import MultiGroupSelect from './multi-group-select';
 import MultiRoleSelect from './multi-role-select';
 
 
 export interface IOwnProps {
-  user: UserResource[];
+  user: UserResource;
   groups: GroupResource[];
   roles: RoleResource[];
   organizations: OrganizationResource[];
@@ -54,13 +55,13 @@ class Row extends React.Component<IProps> {
   }
 
   render() {
-    const { user: userData, t, roles, organizations } = this.props;
-    const user = attributesFor(userData as any) as UserAttributes;
-    const userId = idFromRecordIdentity(userData as any);
+    const { user, t, roles, organizations } = this.props;
+    const { givenName, familyName, isLocked } = attributesFor(user);
+    const userId = idFromRecordIdentity(user);
 
-    const firstName = user.givenName || `(${t('profile.firstName')})`;
-    const lastName = user.familyName || `(${t('profile.lastName')})`;
-    const isActive = !user.isLocked;
+    const firstName = givenName || `(${t('profile.firstName')})`;
+    const lastName = familyName || `(${t('profile.lastName')})`;
+    const isActive = !isLocked;
 
     return (
       <tr>
@@ -71,17 +72,14 @@ class Row extends React.Component<IProps> {
         </td>
         <td>
           <MultiRoleSelect
-            user={userData}
+            user={user}
             roles={roles}
             organizations={organizations} />
         </td>
         <td>
-          Groups Here
-          {/* <GroupDropdown
-            items={groups.map(g => ({ id: g.id, value: g.attributes.name }))}
-            selected={user.groups.map(g => ({ id: g.id, value: g.name }))}
-          />
-          */}
+          <MultiGroupSelect
+            user={user}
+            organizations={organizations} />
         </td >
         <td>
           <Radio
