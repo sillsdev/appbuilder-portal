@@ -7,7 +7,11 @@ import {
   Interactor
 } from '@bigtest/interactor';
 
+import orgSwitcherInteractor from '@ui/components/sidebar/org-switcher/__tests__/page';
+
 class App {
+  orgSwitcher = orgSwitcherInteractor;
+
   headers = text('h1,h2,h3');
 
   clickNotificationsBell = clickable('[data-test-header-notification]');

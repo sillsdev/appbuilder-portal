@@ -164,6 +164,7 @@
     "title": "Project",
     "newProject": "New Project",
     "projectName": "Project Name",
+    "noAvailableGroups": "There are no available groups for the selected organization",
     "projectDescription": "Description",
     "projectGroup": "Project Group",
     "languageCode": "Language Code",
