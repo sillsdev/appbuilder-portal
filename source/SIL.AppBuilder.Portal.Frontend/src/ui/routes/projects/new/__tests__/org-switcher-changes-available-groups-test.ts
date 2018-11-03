@@ -89,12 +89,6 @@ describe('Acceptance | Project New | group select', () => {
           expect(actual).to.equal(expected);
         });
 
-        it('has disabled the group select field', () => {
-          const actual = page.groupSelect.isDisabled;
-
-          expect(actual).to.be.true;
-        });
-
         describe('the user changes the organization back', () => {
           beforeEach(async function() {
             await newProjectWithSelectedOrg('SIL');

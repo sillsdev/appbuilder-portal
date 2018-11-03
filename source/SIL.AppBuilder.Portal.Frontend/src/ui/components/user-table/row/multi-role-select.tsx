@@ -1,14 +1,18 @@
 import * as React from 'react';
-import { compose, withProps } from 'recompose';
+import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
+import { Dropdown } from 'semantic-ui-react';
 
 import {
   OrganizationResource, UserResource, RoleResource,
   UserRoleResource,
-  attributesFor
+  attributesFor,
+  idFor,
+  relationshipFor,
+  recordsWithIdIn
 } from '@data';
 import { ROLE } from '@data/models/role';
-import { isEmpty } from '@lib/collection';
+import { isEmpty, unique } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { RequireRole } from '@ui/components/authorization';
 
@@ -31,6 +35,27 @@ type IProps =
 & i18nProps;
 
 class MultiRoleSelect extends React.Component<IProps> {
+  roleNames = () => {
+    const { userRoles, organizations, roles } = this.props;
+
+    const applicable = userRoles.filter(userRole => {
+      const id = idFor(relationshipFor(userRole, 'organization'));
+
+      return recordsWithIdIn(organizations, [id]).length > 0;
+    });
+
+    const names = applicable.map(userRole => {
+      const roleId = idFor(relationshipFor(userRole, 'role'));
+      const role = roles.find(role => role.id === roleId);
+
+      console.log('role', role);
+      return attributesFor(role).roleName;
+    });
+
+    const result = unique(names).join(', ');
+    return result;
+  }
+
   render() {
     const { roles, userRoles, organizations, user, t } = this.props;
 
@@ -38,36 +63,49 @@ class MultiRoleSelect extends React.Component<IProps> {
       return t('errors.orgMembershipRequired');
     }
 
-    return organizations.map(( organization, i ) => {
-      const roleProps = {
-        organization,
-        user,
-        roles,
-        userRoles
-      };
+    return (
+      <>
+        <Dropdown
+          data-test-role-multi-select
+          multiple
+          text={this.roleNames()}
+          className='w-100 multiDropdown'
+        >
+          <Dropdown.Menu className='' data-test-role-menu>
+            {
+              organizations.map((organization, index) => {
+                const organizationName = attributesFor(organization).name;
+                const roleProps = {
+                  organization,
+                  user,
+                  roles,
+                  userRoles
+                };
 
-      return (
-        <div key={i}>
-          <label className='bold m-b-sm'>
-            {attributesFor(organization).name}
-          </label>
+                return (
+                  <React.Fragment key={index}>
+                    <Dropdown.Header data-test-role-multi-organization-name content={organizationName} />
 
-          <RequireRole
-            roleName={ROLE.OrganizationAdmin}
-            forOrganization={organization}
-            componentOnForbidden={() => {
-              return (
-                <>
-                  <br />
-                  <ActiveRolesDisplay { ...roleProps } />
-                </>
-              );
-            }}>
-            <RoleSelect { ...roleProps } />
-          </RequireRole>
-        </div>
-      );
-    });
+                    <RequireRole
+                      roleName={ROLE.OrganizationAdmin}
+                      forOrganization={organization}
+                      componentOnForbidden={() => {
+                        return (
+                          <>
+                            <ActiveRolesDisplay { ...roleProps } />
+                          </>
+                        );
+                      }}>
+                      <RoleSelect { ...roleProps } />
+                    </RequireRole>
+                  </React.Fragment>
+                );
+              })
+            }
+          </Dropdown.Menu>
+        </Dropdown>
+      </>
+    );
   }
 }
 
@@ -82,5 +120,5 @@ export default compose<IProps, INeededProps>(
     return {
       userRoles: q => q.findRelatedRecords(user, 'userRoles'),
     };
-  }),
+  })
 )(MultiRoleSelect);

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { attributesFor, GroupResource, UserResource, relationshipFor, idFor, recordsWithIdIn } from '@data';
 import { isEmpty } from '@lib/collection';
@@ -52,7 +51,7 @@ class MultiGroupSelect extends React.Component<IProps> {
           data-test-group-multi-select
           multiple
           text={this.groupNames()}
-          className='w-100 groupDropdown'
+          className='w-100 multiDropdown'
         >
           <Dropdown.Menu className='groups' data-test-group-menu>
             {
