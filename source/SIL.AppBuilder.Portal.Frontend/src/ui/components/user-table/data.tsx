@@ -1,33 +1,24 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { ResourceObject } from 'jsonapi-typescript';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { i18nProps } from '@lib/i18n';
 
 import { withNetwork as withUserList } from '@data/containers/resources/user/list';
 
-import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
-import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
+import { TYPE_NAME as GROUP } from '@data/models/group';
+import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as ROLE } from '@data/models/role';
-import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
 import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
-import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS, OrganizationMembershipAttributes } from '@data/models/organization-membership';
+import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS } from '@data/models/organization-membership';
 
 import {
   withLoader,
-  buildOptions, isRelatedTo,
+  isRelatedTo,
   UserResource, GroupResource, OrganizationResource, OrganizationMembershipResource
 } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
 
-function mapRecordsToProps() {
-  return {
-    organizationMemberships: q => q.findRecords('organizationMembership'),
-    groups: q => q.findRecords(GROUP),
-    roles: q => q.findRecords(ROLE),
-  };
-}
 
 interface IOwnProps {
   users: UserResource[];
@@ -36,7 +27,7 @@ interface IOwnProps {
   organizationMemberships: OrganizationMembershipResource[];
 }
 
-type IProps =
+export type IProps =
   & IOwnProps
   & i18nProps
   & IActionProps
@@ -64,7 +55,6 @@ export function withData(WrappedComponent) {
     render() {
       const {
         users,
-        groups,
         organizationMemberships,
         currentOrganization,
         ...otherProps
@@ -79,7 +69,6 @@ export function withData(WrappedComponent) {
             !!user.attributes && this.isRelatedTo(user, organizationMemberships, currentOrganization)
           );
         }),
-        groups
       };
 
       return (
@@ -95,10 +84,10 @@ export function withData(WrappedComponent) {
     withCurrentOrganization,
     withUserList({ include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION},${GROUP_MEMBERSHIPS}.${GROUP},user-roles` }),
     withLoader(({ users }) => !users),
-    withOrbit(mapRecordsToProps),
-    withLoader(({ roles, groups, organizationMemberships }) =>
-               !roles || !groups || !organizationMemberships
-              ),
-    withTranslations,
+    withOrbit({
+      organizationMemberships: q => q.findRecords('organizationMembership'),
+      groups: q => q.findRecords(GROUP),
+      roles: q => q.findRecords(ROLE),
+    }),
   )(DataWrapper);
 }

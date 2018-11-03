@@ -8,6 +8,7 @@ import { IProvidedProps as IOrgProps } from '@data/containers/with-current-organ
 
 export interface IProvidedProps {
   users: UserResource[];
+  isLoading: boolean;
   error?: any;
 }
 

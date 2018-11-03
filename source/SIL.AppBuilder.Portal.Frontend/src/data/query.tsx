@@ -41,7 +41,6 @@ export interface IQueryOptions {
 // way to actually make network requests.
 //
 // TODO: tie in to react-orbitjs' cache handling.
-// TODO: investigate why we would use react-orbitjs' cache over orbit's
 // TODO: what if we just use orbit directly? do we need react-orbitjs?
 export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
   let map;
@@ -50,7 +49,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
 
   if (typeof mapRecordsToProps !== 'function') {
-    map = (props) => ({
+    map = (/* props */) => ({
       cacheKey: 'default-cache-key',
       ...mapRecordsToProps
     });
@@ -64,23 +63,16 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
       mapResult: any = {};
 
-      // TODO: find a non-hacky way to achieve this behavior
-      //       calling fetchData every render is bad, and could cause
-      //       infinite loops if cache is not properly maintained...
-      //
-      // NOTE: componentWillUpdate / componentWillReceiveProps
-      //       were removed...
-      //
-      // this needs concurrency handling
-      // "take latest" "take last" etc
+      componentDidMount() {
+        this.tryFetch();
+      }
+
+      componentDidUpdate() {
+        this.tryFetch();
+      }
+
       fetchData = async () => {
         const result = map(this.props);
-
-        if (arePropsEqual(result, this.mapResult)) {
-          return;
-        }
-
-        this.mapResult = result;
 
         const { dataStore, sources: { remote } } = this.props;
         const querier = useRemoteDirectly ? remote : dataStore;
@@ -108,12 +100,32 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
           this.setState({ error: e });
         }
 
-        this.setState({ result: responses, isLoading: false });
+        return responses;
+      }
+
+      tryFetch = async () => {
+        if (!this.isFetchNeeded()) { return; }
+
+        this.setState({ isLoading: true }, async () => {
+          const result = await this.fetchData();
+
+          this.setState({ result, isLoading: false });
+        });
+      }
+
+      isFetchNeeded = () => {
+        const result = map(this.props);
+
+        if (arePropsEqual(result, this.mapResult)) {
+          return false;
+        }
+
+        this.mapResult = result;
+
+        return true;
       }
 
       render() {
-        this.fetchData();
-
         const { result, error, isLoading } = this.state;
         const dataProps = {
           ...result,
@@ -126,7 +138,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         }
 
 
-        return <InnerComponent { ...dataProps } { ...this.props } />;
+        return <InnerComponent { ...this.props } { ...dataProps } />;
       }
     }
 

@@ -15,14 +15,22 @@ import { RequireRole } from '@ui/components/authorization';
 import RoleSelect from './role-select';
 import ActiveRolesDisplay from './active-roles-display';
 
-interface IProps {
-  organizations: OrganizationResource[];
+interface INeededProps {
   user: UserResource;
+  organizations: OrganizationResource[];
   roles: RoleResource[];
+}
+
+interface IOwnProps {
   userRoles: UserRoleResource[];
 }
 
-class MultiRoleSelect extends React.Component<IProps & i18nProps> {
+type IProps =
+& INeededProps
+& IOwnProps
+& i18nProps;
+
+class MultiRoleSelect extends React.Component<IProps> {
   render() {
     const { roles, userRoles, organizations, user, t } = this.props;
 
@@ -63,12 +71,12 @@ class MultiRoleSelect extends React.Component<IProps & i18nProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, INeededProps>(
   withTranslations,
   // share one set of userRoles for the entire list.
   // otherwise the RoleSelect's own withUserRoles will
   // make a call to get the userRoles as a convient default
-  withOrbit((props) => {
+  withOrbit((props: INeededProps) => {
     const { user } = props;
 
     return {

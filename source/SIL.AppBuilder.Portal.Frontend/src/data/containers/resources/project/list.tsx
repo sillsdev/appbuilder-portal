@@ -2,17 +2,17 @@ import { compose } from 'recompose';
 
 import { buildOptions, ProjectResource } from '@data';
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';
-import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
+import { TYPE_NAME as PROJECT } from '@data/models/project';
 import { IPaginateProps } from '@data/containers/api/pagination';
 import { ISortProps } from '@data/containers/api/sorting';
 import { IProvidedProps as IOrgProps } from '@data/containers/with-current-organization';
 
-import { query, PROJECTS_TYPE } from '@data';
+import { query } from '@data';
 
-import { ResourceObject } from 'jsonapi-typescript';
 
 export interface IOwnProps {
   projects: ProjectResource[];
+  isLoading: boolean;
   error?: any;
 }
 
