@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 
-import { ResourceObject } from 'jsonapi-typescript';
-
-import { PROJECTS_TYPE } from '@data';
-import { ProjectAttributes } from '@data/models/project';
+import { ProjectResource } from '@data';
 import { ISortProps } from '@data/containers/api/sorting';
 
 import { IProvidedProps as ITableColumns } from './with-table-columns';
@@ -12,9 +9,10 @@ import Header from './header';
 import Row from './row';
 import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import LoadingWrapper from '@ui/components/loading-wrapper';
 
 interface IOwnProps {
-  projects: Array<ResourceObject<PROJECTS_TYPE, ProjectAttributes>>;
+  projects: ProjectResource[];
   isLoading?: boolean;
 }
 
@@ -65,10 +63,12 @@ class Table extends React.Component<IProps> {
     }
 
     return (
-      <div data-test-project-table className='project-table'>
+      <LoadingWrapper
+        data-test-project-table
+        isLoading={isLoading}
+        className='project-table'>
         {projectList}
-        { isLoading && <div className='loading-overlay' /> }
-      </div>
+      </LoadingWrapper>
     );
   }
 

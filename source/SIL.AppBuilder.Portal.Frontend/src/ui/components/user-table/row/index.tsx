@@ -17,16 +17,20 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import MultiGroupSelect from './multi-group-select';
 import MultiRoleSelect from './multi-role-select';
 
-
-export interface IOwnProps {
+export interface INeededProps {
+  currentUser: UserResource;
   user: UserResource;
   groups: GroupResource[];
   roles: RoleResource[];
+}
+
+export interface IOwnProps {
+  roles: RoleResource[];
   organizations: OrganizationResource[];
-  currentUser: UserResource;
 }
 
 export type IProps =
+  & INeededProps
   & i18nProps
   & IActionProps
   & IOwnProps;
@@ -93,7 +97,7 @@ class Row extends React.Component<IProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, INeededProps>(
   withTranslations,
   withDataActions,
   // read from cache for active/lock toggle

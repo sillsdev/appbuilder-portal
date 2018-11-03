@@ -30,7 +30,11 @@ export type IProps =
 
 export default class Display extends React.Component<IProps> {
   search = (term: string) => {
-    const { updateFilter } = this.props;
+    const { updateFilter, removeFilter } = this.props;
+
+    if (!term) {
+      return removeFilter({ attribute: 'name', value: '' });
+    }
 
     updateFilter({ attribute: 'search-term', value: term });
   }
@@ -39,14 +43,14 @@ export default class Display extends React.Component<IProps> {
     const {
       tableName, projects,
       toggleSort, isAscending, sortProperty,
-      columns, selectedColumns,
+      columns, selectedColumns, isLoading,
       toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns
     } = this.props;
 
     /* TODO: figure out how to disable certain pagination buttons */
 
     const tableProps = {
-      projects,
+      projects, isLoading,
       toggleSort, isAscending, sortProperty,
       columns, selectedColumns,
       toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns

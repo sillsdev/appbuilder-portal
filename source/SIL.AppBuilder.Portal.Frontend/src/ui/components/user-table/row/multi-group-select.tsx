@@ -11,16 +11,20 @@ import { withGroupMemberships, IProvidedProps as IUserGroupProps } from '@data/c
 
 import GroupSelect from './group-select';
 
-interface IOwnProps {
-  organizations: OrganizationResource[];
-  groups: GroupResource[];
+interface INeededProps {
   user: UserResource;
+  organizations: OrganizationResource[];
+}
+
+interface IOwnProps {
+  groups: GroupResource[];
   currentUser: UserResource;
 }
 
 type IProps =
-  & IUserGroupProps
-  & IOwnProps;
+& INeededProps
+& IUserGroupProps
+& IOwnProps;
 
 class MultiGroupSelect extends React.Component<IProps> {
 
@@ -76,7 +80,7 @@ class MultiGroupSelect extends React.Component<IProps> {
 
 }
 
-export default compose(
+export default compose<IProps, INeededProps>(
   withProps(({ user }) => {
     return {
       propsForGroupMemberships: {

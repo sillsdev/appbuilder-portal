@@ -34,7 +34,11 @@ export type IProps =
 
 export default class DirectoryDisplay extends React.Component<IProps> {
   search = (value) => {
-    const { updateFilter } = this.props;
+    const { updateFilter, removeFilter } = this.props;
+
+    if (!value) {
+      return removeFilter({ attribute: 'search-term', value: '' });
+    }
 
     updateFilter({ attribute: 'search-term', value });
   }
