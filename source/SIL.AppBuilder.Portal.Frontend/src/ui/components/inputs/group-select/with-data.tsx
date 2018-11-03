@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, branch, withProps } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
@@ -15,8 +15,9 @@ import {
 
 import { GroupMembershipAttributes } from '@data/models/group-membership';
 import { OrganizationAttributes } from '@data/models/organization';
-import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
+import { TYPE_NAME as GROUP, GroupAttributes, GroupResource } from '@data/models/group';
 import { UserAttributes } from '@data/models/user';
+import { withRelationships } from '@data/containers/with-relationship';
 
 
 
@@ -25,16 +26,20 @@ export interface IProvidedProps {
   disableSelection: true;
 }
 
-interface IOwnProps {
-  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
-  groupMembershipsForCurrentUser: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
+interface INeededProps {
   scopeToCurrentUser?: boolean;
   scopeToOrganization?: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
   selected: Id;
 }
 
+interface IOwnProps {
+  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
+  groupMembershipsForCurrentUser: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
+}
+
 type IProps =
+  & INeededProps
   & IOwnProps
   & WithDataProps;
 
@@ -60,6 +65,7 @@ export function withData(WrappedComponent) {
         selected,
         ...otherProps
       } = this.props;
+      console.log(this.props);
 
       let availableGroups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
 
@@ -95,8 +101,37 @@ export function withData(WrappedComponent) {
     }
   }
 
-  return compose(
+  return compose<IProps, INeededProps>(
     withOrbit(mapRecordsToProps),
-    withLoader(({ groups, groupMembershipsForCurrentUser: gmU }) => !groups || !gmU)
+    withLoader(({ groups, groupMembershipsForCurrentUser: gmU }) => !groups || !gmU),
+    branch(
+      (props: INeededProps) => props.scopeToCurrentUser,
+      withRelationships((props: INeededProps) => {
+        const { currentUser } = props;
+
+        return {
+          availableGroups: [currentUser, 'groupMemberships', 'group']
+        };
+      }),
+      withProps(({ groups }) => {
+        return {
+          availableGroups: groups
+        };
+      })
+    ),
+    branch(
+      (props: INeededProps) => props.scopeToOrganization,
+      withProps((props: INeededProps & { availableGroups: GroupResource[] }) => {
+        const { availableGroups, selected, scopeToOrganization } = props;
+
+        return {
+          availableGroups: availableGroups && availableGroups.filter(group => {
+            if (group.id === selected) { return true; }
+
+            return isRelatedTo(group, 'owner', scopeToOrganization.id);
+          })
+        };
+      })
+    )
   )(DataWrapper);
 }
