@@ -11,6 +11,7 @@ export class GroupSelectInteractor {
 
   isDisabled = is('.disabled');
   selectedGroup = text('.selected');
+  noAvailableGroupsText = text('[data-test-no-available-groups]');
 
   options = collection('.item');
 

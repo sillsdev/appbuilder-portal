@@ -55,7 +55,7 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
 
     if (groupOptions.length === 0) {
       return (
-        <span className='text-danger'>
+        <span className='text-danger' data-test-no-available-groups>
           {t('project.noAvailableGroups')}
         </span>
       );
