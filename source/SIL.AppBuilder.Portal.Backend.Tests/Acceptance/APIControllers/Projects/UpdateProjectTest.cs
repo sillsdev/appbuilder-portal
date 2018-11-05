@@ -302,6 +302,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                     }
                 }
             };
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+            backgroundJobClientMock.Reset();
             var response = await Patch("/api/projects/" + project3.Id.ToString(), content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -310,7 +313,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 
             Assert.Equal(updatedProject.GroupId, group1.Id);
             Assert.Equal(updatedProject.OrganizationId, org1.Id);
-
+            // Hangfire does not get called if a change is made but does not change owner
+            backgroundJobClientMock.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Never());
         }
         //
         // Verify that you can't set the organization to a different value than the group.owner
