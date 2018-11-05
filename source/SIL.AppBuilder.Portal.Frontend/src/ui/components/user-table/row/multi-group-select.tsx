@@ -6,6 +6,7 @@ import { attributesFor, GroupResource, UserResource, relationshipFor, idFor, rec
 import { isEmpty } from '@lib/collection';
 import { OrganizationResource } from '@data';
 import { withRelationships } from '@data/containers/with-relationship';
+import { withTranslations, i18nProps } from '@lib/i18n';
 import { withGroupMemberships, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
 
 import GroupSelect from './group-select';
@@ -22,19 +23,20 @@ interface IOwnProps {
 
 type IProps =
 & INeededProps
+& i18nProps
 & IUserGroupProps
 & IOwnProps;
 
 class MultiGroupSelect extends React.Component<IProps> {
 
   groupNames = () => {
-    const { groups, userHasGroup } = this.props;
+    const { groups, userHasGroup, t } = this.props;
     const groupsForMemberships = groups.filter(group => {
       return userHasGroup(group);
     });
 
     if (isEmpty(groupsForMemberships)) {
-      return "None";
+      return t('common.none');
     }
 
     return groupsForMemberships.map(group => {
@@ -80,6 +82,7 @@ class MultiGroupSelect extends React.Component<IProps> {
 }
 
 export default compose<IProps, INeededProps>(
+  withTranslations,
   withProps(({ user }) => {
     return {
       propsForGroupMemberships: {

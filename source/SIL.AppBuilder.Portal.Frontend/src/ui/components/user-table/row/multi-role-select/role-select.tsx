@@ -56,8 +56,7 @@ class RoleSelect extends React.Component<IProps> {
               key={i}
               className='item flex-row align-items-center m-b-sm'>
 
-              <Checkbox data-test-role-select
-                toggle
+              <Checkbox data-test-role-select toggle
                 value={attributes.roleName}
                 checked={userHasRole(role)}
                 onChange={this.toggleRole}

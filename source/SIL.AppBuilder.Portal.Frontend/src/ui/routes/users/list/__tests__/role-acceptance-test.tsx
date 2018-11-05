@@ -10,7 +10,17 @@ import {
 } from 'tests/helpers';
 import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 
+import i18n from '@translations/index';
+
 import page from './page';
+
+async function toggleRoleAt(index, role: string, organization: string) {
+  await page.row(index).role.open();
+
+  expect(page.row(index).role.isOpen).to.be.true;
+
+  await page.row(index).role.chooseUnder(role, organization);
+}
 
 describe('Acceptance | User List | Role Management', () => {
   setupApplicationTest();
@@ -48,8 +58,8 @@ describe('Acceptance | User List | Role Management', () => {
               user: { data: { type: 'user', id: 2}}
             }
           },
-          userRoleFrom(roles.orgAdmin, { id: 1, userId: 2, orgId: 1 }),
-          userRoleFrom(roles.appBuilder, { id: 2, userId: 2, orgId: 1 }),
+          userRoleFrom(roles.orgAdmin, { id: 2, userId: 2, orgId: 1 }),
+          userRoleFrom(roles.appBuilder, { id: 3, userId: 2, orgId: 1 }),
           roles.orgAdmin,
           roles.appBuilder
         ]
@@ -65,7 +75,9 @@ describe('Acceptance | User List | Role Management', () => {
     });
 
     it('two roles are selected', () => {
-      expect(page.roleDropdownText).to.equal('Organization Admin, App Builder');
+      const actual = page.row(0).role.list;
+
+      expect(actual).to.equal('AppBuilder, OrganizationAdmin');
     });
 
     describe('remove user from all roles',() => {
@@ -75,12 +87,15 @@ describe('Acceptance | User List | Role Management', () => {
       });
 
       beforeEach(async function() {
-        await page.roleDropdownCheckboxes(0).click();
-        await page.roleDropdownCheckboxes(1).click();
+        await toggleRoleAt(0, 'AppBuilder', 'DeveloperTown');
+        await toggleRoleAt(0, 'OrganizationAdmin', 'DeveloperTown');
       });
 
       it('None is displayed',() => {
-        expect(page.roleDropdownText).to.equal('None');
+        const actual = page.row(0).role.list;
+        const expected = i18n.t('users.noRoles');
+
+        expect(actual).to.equal(expected);
       });
 
       describe('add one role back', () => {
@@ -99,17 +114,19 @@ describe('Acceptance | User List | Role Management', () => {
         });
 
         beforeEach(async function() {
-          await page.roleDropdownCheckboxes(0).click();
+          await toggleRoleAt(0, 'AppBuilder', 'DeveloperTown');
         });
 
-        it('First role is displayed', () => {
-          expect(page.roleDropdownText).to.equal('Fake role');
+        it('the role is displayed', () => {
+          const actual = page.row(0).role.list;
+
+          expect(actual).to.equal('AppBuilder');
         });
       });
     });
   });
 
-  describe('User belongs to two organizations',() => {
+  describe('A User belongs to two organizations',() => {
     beforeEach(function () {
       this.mockGet(200, '/users', {
         data: [{
@@ -167,10 +184,12 @@ describe('Acceptance | User List | Role Management', () => {
 
       beforeEach(async function () {
         await visit('/users');
+        await page.row(0).role.open();
       });
 
       it('does not render second organization',() => {
-        const orgNames = page.roleDropdownOrganizationName().map(item => item.text);
+        const orgNames = page.row(0).role.organizationNames;
+
         expect(orgNames).to.contain('DeveloperTown');
         expect(orgNames).to.not.contain('SIL');
       });
@@ -231,7 +250,9 @@ describe('Acceptance | User List | Role Management', () => {
       });
 
       it('renders two roles', () => {
-        expect(page.roleDropdownText).to.equal('App Builder, Organization Admin');
+        const actual = page.row(0).role.list;
+
+        expect(actual).to.equal('AppBuilder, OrganizationAdmin');
       });
 
     });
