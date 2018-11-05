@@ -2,13 +2,11 @@ using Microsoft.AspNetCore.Builder;
 using AspNetCore.RouteAnalyzer;
 using JsonApiDotNetCore.Extensions;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OptimaJet.DWKit.Application;
 using React.AspNet;
 using OptimaJet.DWKit.StarterApplication.Data;
 using Bugsnag.AspNet.Core;
@@ -17,8 +15,9 @@ using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Hangfire;
 using System;
 using Bugsnag;
-using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using OptimaJet.DWKit.Core;
+using Microsoft.AspNetCore.SignalR;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -84,6 +83,9 @@ namespace OptimaJet.DWKit.StarterApplication
                 // or the jwt token scheme
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
+
+            services.AddSignalR(o => { o.EnableDetailedErrors = true; });
+            services.AddSingleton<IUserIdProvider, SignalRIdProvider>();
 
             services.AddApiServices();
             services.AddContextServices();
@@ -166,6 +168,10 @@ namespace OptimaJet.DWKit.StarterApplication
                     template: "{controller=StarterApplication}/{action=Index}/");
             });
 
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ClientNotificationHub>("/hubs/notifications");
+            });
 
             app.UseJsonApi();
 
