@@ -1,5 +1,14 @@
-import * as React from 'react'; import { InjectedTranslateProps as i18nProps } from 'react-i18next';
+import * as React from 'react';
+import * as toast from '@lib/toast';
+import { compose } from 'recompose';
+
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
+
+import { withTranslations, i18nProps } from '@lib/i18n';
+import {
+  IProvidedProps as IDataActionsProps
+} from '@data/containers/resources/group/with-data-actions';
+
 
 interface IOwnProps {
   onFinish: () => void;
@@ -12,21 +21,32 @@ interface IState {
 
 type IProps =
   & IOwnProps
+  & IDataActionsProps
   & i18nProps;
 
 @withTemplateHelpers
-export default class AddGroupFormDisplay extends React.Component<IProps, IState> {
+class Form extends React.Component<IProps, IState> {
   mut: Mut;
 
-  state = { name: '', abbreviation: '' };
+  state = {
+    name: '',
+    abbreviation: ''
+  };
 
-  onSubmit = async (e) => {
+  onSubmit = (e) => {
     e.preventDefault();
 
-    const { onSubmit, onFinish } = this.props;
+    const { createRecord, onFinish, t } = this.props;
     const data = this.state;
 
-    await onSubmit(data);
+    createRecord(data);
+    toast.success('Record created');
+    onFinish();
+  }
+
+  close = (e) => {
+    e.preventDefault();
+    const { onFinish } = this.props;
     onFinish();
   }
 
@@ -53,11 +73,20 @@ export default class AddGroupFormDisplay extends React.Component<IProps, IState>
               onChange={mut('abbreviation')} />
           </div>
 
-          <button className='ui button'>
-            {t('common.save')}
-          </button>
+          <div className='flex'>
+            <button className='ui button'>
+              {t('common.save')}
+            </button>
+            <a className='ui button' onClick={this.close}>
+              {t('common.cancel')}
+            </a>
+          </div>
         </form>
       </div>
     );
   }
 }
+
+export default compose(
+  withTranslations
+)(Form);

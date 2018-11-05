@@ -1,9 +1,12 @@
 import * as React from 'react';
-import { i18nProps } from '@lib/i18n';
+import { compose } from 'recompose';
 import CloseIcon from '@material-ui/icons/Close';
 
+import { withTranslations, i18nProps } from '@lib/i18n';
+import { IProvidedProps } from '@data/containers/resources/group/with-data-actions';
 import { GroupResource, attributesFor } from '@data';
 import { isEmpty } from '@lib/collection';
+
 
 interface IOwnProps {
   groups: GroupResource[];
@@ -11,9 +14,16 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
+  & IProvidedProps
   & i18nProps;
 
-export default class ListDisplay extends React.Component<IProps> {
+class List extends React.Component<IProps> {
+
+  remove = group => (e) => {
+    e.preventDefault();
+    const { removeRecord } = this.props;
+    removeRecord(group);
+  }
 
   render() {
 
@@ -36,7 +46,10 @@ export default class ListDisplay extends React.Component<IProps> {
                 multi-select-item'
             >
               {attributesFor(group).name}
-              <div className='flex align-items-center'>
+              <div
+                className='flex align-items-center'
+                onClick={this.remove(group)}
+              >
                 <CloseIcon/>
               </div>
             </div>
@@ -46,3 +59,7 @@ export default class ListDisplay extends React.Component<IProps> {
     );
   }
 }
+
+export default compose(
+  withTranslations
+)(List);
