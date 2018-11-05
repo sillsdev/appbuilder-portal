@@ -17,6 +17,7 @@
     "cancel": "Cancel",
     "save": "Save",
     "name": "Name",
+    "none": "None",
     "abbreviation": "Abbreviation",
     "general": "General Information",
     "notAvailable": "Not Available"
@@ -166,6 +167,7 @@
     "title": "Project",
     "newProject": "New Project",
     "projectName": "Project Name",
+    "noAvailableGroups": "There are no available groups for the selected organization",
     "projectDescription": "Description",
     "projectGroup": "Project Group",
     "languageCode": "Language Code",
@@ -287,7 +289,7 @@
   },
   "users": {
     "noneFound": "No users matching the selected criteria were found.",
-    "noRoles": "No roles assigned.",
+    "noRoles": "No roles assigned",
     "title": "Manage Users",
     "table": {
       "columns": {
