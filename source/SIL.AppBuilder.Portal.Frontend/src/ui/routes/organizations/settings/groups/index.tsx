@@ -44,7 +44,7 @@ class GroupsRoute extends React.Component<IProps, IState> {
     const listProps = {
       removeRecord,
       groups
-    }
+    };
 
     return (
       <div className='sub-page-content'>
