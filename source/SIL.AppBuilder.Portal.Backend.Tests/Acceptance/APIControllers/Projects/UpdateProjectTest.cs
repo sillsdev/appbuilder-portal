@@ -304,6 +304,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             };
             var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+            backgroundJobClientMock.Reset();
             var response = await Patch("/api/projects/" + project3.Id.ToString(), content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
