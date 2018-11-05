@@ -17,5 +17,5 @@ export default compose(
   withCurrentOrganization,
   requireOrganizationToBeSelected,
   withData,
-  withAccessRestriction
+  withAccessRestriction,
 )( Display );

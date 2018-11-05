@@ -36,6 +36,14 @@ export default class Display extends React.Component<IProps, IState> {
 
   state: IState = { disableSubmit: false, isPublic: true };
 
+  componentDidUpdate(prevProps) {
+    const hasOrgChanged = prevProps.currentOrganizationId !== this.props.currentOrganizationId;
+
+    if (hasOrgChanged) {
+      this.setState({ groupId: undefined });
+    }
+  }
+
   areAllRequiredFieldsPresent = () => {
     const { name, groupId, language, typeId } = this.state;
 

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 
 import { attributesFor } from '@data';
+import { i18nProps } from '@lib/i18n';
 import { IProvidedProps as IDataProps } from './with-data';
 
 interface IOwnProps {
@@ -12,10 +13,19 @@ interface IOwnProps {
 
 type IProps =
 & IOwnProps
+& i18nProps
 & IDataProps;
 
 export default class GroupSelectDisplay extends React.Component<IProps> {
   componentDidMount() {
+    this.defaultToFirst();
+  }
+
+  componentDidUpdate() {
+    this.defaultToFirst();
+  }
+
+  defaultToFirst = () => {
     const { selected, groups, onChange } = this.props;
 
     if (!selected && groups && groups.length > 0) {
@@ -34,7 +44,7 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
   }
 
   render() {
-    const { groups, selected, disableSelection } = this.props;
+    const { groups, selected, disableSelection, t } = this.props;
 
     const groupOptions = groups
       .filter(group => attributesFor(group).name)
@@ -42,6 +52,14 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
         text: attributesFor(group).name,
         value: group.id
       }));
+
+    if (groupOptions.length === 0) {
+      return (
+        <span className='text-danger' data-test-no-available-groups>
+          {t('project.noAvailableGroups')}
+        </span>
+      );
+    }
 
     return (
       <Dropdown

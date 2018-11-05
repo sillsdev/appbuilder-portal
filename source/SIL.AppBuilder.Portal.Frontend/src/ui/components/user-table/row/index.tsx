@@ -68,13 +68,13 @@ class Row extends React.Component<IProps> {
     const isActive = !isLocked;
 
     return (
-      <tr>
+      <tr data-test-user-row>
         <td>
           <Link data-test-user-table-username to={`/users/${userId}/edit`}>
             {firstName} {lastName}
           </Link>
         </td>
-        <td>
+        <td data-test-role-selector>
           <MultiRoleSelect
             user={user}
             roles={roles}
