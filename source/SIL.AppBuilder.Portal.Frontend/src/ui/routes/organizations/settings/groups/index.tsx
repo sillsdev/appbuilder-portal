@@ -1,46 +1,42 @@
 import * as React from 'react';
-import { match as Match } from 'react-router';
 import { Button } from 'semantic-ui-react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
 import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 
 import AddGroupForm from './add-group';
 import List from './list';
-import { withTranslations } from '@lib/i18n';
+import { withTranslations, i18nProps } from '@lib/i18n';
+import { OrganizationResource } from '@data';
 
 export const pathName = '/organizations/:orgId/settings/groups';
 
-export interface Params {
-  orgId: string;
+interface IOwnProps {
+  organization: OrganizationResource;
 }
 
-export interface IProps {
-  match: Match<Params>;
-  organization: any;
-}
-
-export interface IState {
+interface IState {
   showAddGroupForm: boolean;
 }
 
+type IProps =
+  & IOwnProps
+  & i18nProps;
+
 @withTemplateHelpers
-class GroupsRoute extends React.Component<IProps & i18nProps, IState> {
+class GroupsRoute extends React.Component<IProps, IState> {
+
   toggle: Toggle;
   state = { showAddGroupForm: false };
 
   render() {
     const { toggle } = this;
-    const { match, t } = this.props;
+    const { t, organization } = this.props;
     const { showAddGroupForm } = this.state;
-    const { params: { orgId } } = match;
 
     return (
       <div className='sub-page-content'>
         <h2 className='sub-page-heading'>{t('org.groupsTitle')}</h2>
-
-
-        <List />
 
         { !showAddGroupForm && (
           <Button
@@ -54,6 +50,7 @@ class GroupsRoute extends React.Component<IProps & i18nProps, IState> {
           <AddGroupForm onFinish={toggle('showAddGroupForm')} />
         ) }
 
+        <List organization={organization}/>
 
       </div>
     );
