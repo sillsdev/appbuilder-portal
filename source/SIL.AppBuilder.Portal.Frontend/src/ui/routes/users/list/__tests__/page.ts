@@ -43,19 +43,17 @@ export class UserInteractor {
                 .querySelectorAll('[data-test-organization-name]');
 
               const formField = Array.from(nameElements)
-                .map(item => item.parentElement)
-                .find(item => item
-                      .innerText.toLowerCase()
-                      .includes(role.toLowerCase()));
+                .map(item => item.parentElement.querySelectorAll(`[data-test-role-select] input`))
+                .map(elements => Array.from(elements))
+                .flat()
+                .find(item => item.value.toLowerCase().includes(role.toLowerCase()));
 
               if (!formField) {
                 throw new Error(`could not find role ${role} under organization ${organization}`);
               }
 
-              const option = formField.querySelector('[data-test-role-select]');
 
-              return option;
-
+              return formField;
            }).do(el => el.click())
         );
       },

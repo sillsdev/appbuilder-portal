@@ -67,7 +67,7 @@ export default compose<IProps, INeededProps>(
     });
 
     if (isEmpty(names)) {
-      return t('users.noRoles');
+      return { roleNames: t('users.noRoles') };
     }
 
     const result = unique(names)

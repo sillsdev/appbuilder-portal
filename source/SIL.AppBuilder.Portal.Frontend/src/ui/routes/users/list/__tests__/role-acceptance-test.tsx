@@ -6,7 +6,7 @@ import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
-  fakeAuth0Id
+  fakeAuth0Id, wait
 } from 'tests/helpers';
 import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 
@@ -17,7 +17,7 @@ import page from './page';
 async function toggleRoleAt(index, role: string, organization: string) {
   await page.row(index).role.open();
 
-  expect(page.row(index).role.isOpen).to.be.true;
+  expect(page.row(index).role.isOpen).to.equal(true);
 
   await page.row(index).role.chooseUnder(role, organization);
 }
@@ -91,7 +91,7 @@ describe('Acceptance | User List | Role Management', () => {
         await toggleRoleAt(0, 'OrganizationAdmin', 'DeveloperTown');
       });
 
-      it('None is displayed',() => {
+      it('no roles are assigned',() => {
         const actual = page.row(0).role.list;
         const expected = i18n.t('users.noRoles');
 
