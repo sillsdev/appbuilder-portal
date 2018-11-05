@@ -17,6 +17,7 @@
     "cancel": "Cancelar",
     "save": "Guardar",
     "name": "Nombre",
+    "none": "None",
     "abbreviation": "Abreviatura",
     "general": "General Information",
     "notAvailable": "Not Available"
@@ -166,6 +167,7 @@
     "title": "Proyecto",
     "newProject": "Nuevo proyecto",
     "projectName": "Nombre de proyecto",
+    "noAvailableGroups": "There are no available groups for the selected organization",
     "projectDescription": "Description",
     "projectGroup": "Grupo de proyecto",
     "languageCode": "Código de lenguaje",
@@ -287,7 +289,7 @@
   },
   "users": {
     "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
-    "noRoles": "No roles assigned.",
+    "noRoles": "No roles assigned",
     "title": "Administrar usuarios",
     "table": {
       "columns": {
