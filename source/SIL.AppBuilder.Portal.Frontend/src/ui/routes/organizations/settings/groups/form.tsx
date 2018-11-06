@@ -34,7 +34,7 @@ const initialState = {
   nameError: '',
   abbreviation: '',
   abbreviationError: ''
-}
+};
 
 @withTemplateHelpers
 class Form extends React.Component<IProps, IState> {
