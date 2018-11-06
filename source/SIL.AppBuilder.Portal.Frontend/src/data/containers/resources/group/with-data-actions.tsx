@@ -11,6 +11,7 @@ import { OrganizationResource } from '@data';
 export interface IProvidedProps {
   createRecord: (attrs: GroupAttributes) => any;
   removeRecord: (group: GroupResource) => any;
+  updateAttributes: (group: GroupResource, attrs: GroupAttributes) => any;
 }
 
 interface IOwnProps {
@@ -40,7 +41,6 @@ export function withDataActions(InnerComponent) {
           }),
           defaultOptions()
         );
-        toast.success('group created');
       } catch (e) {
         toast.error(e);
       }
@@ -53,17 +53,26 @@ export function withDataActions(InnerComponent) {
         await dataStore.update(
           q => q.removeRecord(group),
           defaultOptions());
-        toast.success('group deleted');
       } catch(e) {
         toast.error(e);
       }
 
     }
 
+    updateAttributes = (group: GroupResource, attributes: GroupAttributes) => {
+      const { updateStore } = this.props;
+      const { id, type } = group;
+
+      return updateStore(q => q.replaceRecord({
+        id, type, attributes
+      }), defaultOptions());
+    }
+
     render() {
       const dataProps = {
         createRecord: this.createRecord,
-        removeRecord: this.removeRecord
+        removeRecord: this.removeRecord,
+        updateAttributes: this.updateAttributes
       };
 
       return <InnerComponent {...this.props} {...dataProps} />;

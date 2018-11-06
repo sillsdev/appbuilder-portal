@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -10,6 +11,7 @@ import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {
   groups: GroupResource[];
+  setGroupToEdit: (group: GroupResource) => void;
 }
 
 type IProps =
@@ -21,8 +23,19 @@ class List extends React.Component<IProps> {
 
   remove = group => (e) => {
     e.preventDefault();
-    const { removeRecord } = this.props;
-    removeRecord(group);
+    const { removeRecord, t } = this.props;
+    try {
+      removeRecord(group);
+      toast.success(t('org.groupDeleted'));
+    } catch(e) {
+      toast.error(e);
+    }
+  }
+
+  edit = group => e => {
+    e.preventDefault();
+    const { setGroupToEdit } = this.props;
+    setGroupToEdit(group);
   }
 
   render() {
@@ -45,7 +58,9 @@ class List extends React.Component<IProps> {
                 w-100-xs-only flex-100 m-b-sm
                 multi-select-item'
             >
-              {attributesFor(group).name}
+              <div onClick={this.edit(group)} title={t('common.clickToEdit')}>
+                {attributesFor(group).name}
+              </div>
               <div
                 className='flex align-items-center'
                 onClick={this.remove(group)}

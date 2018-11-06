@@ -16,7 +16,8 @@ interface IOwnProps {
 }
 
 interface IState {
-  showAddGroupForm: boolean;
+  showForm: boolean;
+  groupToEdit: GroupResource;
 }
 
 type IProps =
@@ -29,20 +30,38 @@ class GroupsRoute extends React.Component<IProps, IState> {
 
   toggle: Toggle;
 
-  state = { showAddGroupForm: false };
+  state = {
+    showForm: false,
+    groupToEdit: null
+  };
+
+  setGroupToEdit = (group) => {
+    this.setState({
+      groupToEdit: group,
+      showForm: true
+    });
+  }
 
   render() {
     const { toggle } = this;
-    const { t, groups, createRecord, removeRecord } = this.props;
-    const { showAddGroupForm } = this.state;
+    const { t, groups, createRecord, updateAttributes, removeRecord } = this.props;
+    const { showForm, groupToEdit } = this.state;
 
     const formProps = {
+      groupToEdit,
       createRecord,
-      onFinish: toggle('showAddGroupForm')
+      updateAttributes,
+      onFinish: () => {
+        this.setState({
+          showForm: false,
+          groupToEdit: null
+        });
+      }
     };
 
     const listProps = {
       removeRecord,
+      setGroupToEdit: this.setGroupToEdit,
       groups
     };
 
@@ -50,17 +69,15 @@ class GroupsRoute extends React.Component<IProps, IState> {
       <div className='sub-page-content'>
         <h2 className='sub-page-heading'>{t('org.groupsTitle')}</h2>
 
-        { !showAddGroupForm && (
+        {!showForm &&
           <button
             className='ui button tertiary uppercase large'
-            onClick={toggle('showAddGroupForm')}>
+            onClick={toggle('showForm')}>
             {t('org.addGroupButton')}
           </button>
-        ) }
+        }
 
-        { showAddGroupForm && (
-          <Form {...formProps} />
-        ) }
+        { showForm && <Form {...formProps} /> }
 
         <List {...listProps} />
       </div>
