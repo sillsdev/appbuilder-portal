@@ -14,3 +14,4 @@ export interface RoleAttributes extends AttributesObject {
 }
 
 export type RoleResource = ResourceObject<ROLE_TYPE | string, RoleAttributes>;
+

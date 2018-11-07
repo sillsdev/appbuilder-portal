@@ -15,6 +15,27 @@ export const roles = {
   }
 };
 
+export const applicationTypes = {
+  sab: {
+    id: '1', type: 'applicationTypes',
+    attributes: { name: 'Scripture App Builder' }
+  },
+  rab: {
+    id: '2', type: 'applicationTypes',
+    attributes: { name: 'Reading App Builder' }
+  },
+  fab: {
+    id: '3', type: 'applicationTypes',
+    attributes: { name: 'Fabulous App Builder' }
+  }
+};
+
+export const applicationTypesData = [
+  applicationTypes.sab,
+  applicationTypes.rab,
+  applicationTypes.fab
+];
+
 interface IUserRoleFactory {
   id: number;
   userId: number;

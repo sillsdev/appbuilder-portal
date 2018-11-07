@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { attributesFor, GroupResource, UserResource, relationshipFor, idFor, recordsWithIdIn } from '@data';
 import { isEmpty } from '@lib/collection';
 import { OrganizationResource } from '@data';
 import { withRelationships } from '@data/containers/with-relationship';
+import { withTranslations, i18nProps } from '@lib/i18n';
 import { withGroupMemberships, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
 
 import GroupSelect from './group-select';
@@ -23,19 +23,20 @@ interface IOwnProps {
 
 type IProps =
 & INeededProps
+& i18nProps
 & IUserGroupProps
 & IOwnProps;
 
 class MultiGroupSelect extends React.Component<IProps> {
 
   groupNames = () => {
-    const { groups, userHasGroup } = this.props;
+    const { groups, userHasGroup, t } = this.props;
     const groupsForMemberships = groups.filter(group => {
       return userHasGroup(group);
     });
 
     if (isEmpty(groupsForMemberships)) {
-      return "None";
+      return t('common.none');
     }
 
     return groupsForMemberships.map(group => {
@@ -52,7 +53,7 @@ class MultiGroupSelect extends React.Component<IProps> {
           data-test-group-multi-select
           multiple
           text={this.groupNames()}
-          className='w-100 groupDropdown'
+          className='w-100 multiDropdown'
         >
           <Dropdown.Menu className='groups' data-test-group-menu>
             {
@@ -81,6 +82,7 @@ class MultiGroupSelect extends React.Component<IProps> {
 }
 
 export default compose<IProps, INeededProps>(
+  withTranslations,
   withProps(({ user }) => {
     return {
       propsForGroupMemberships: {

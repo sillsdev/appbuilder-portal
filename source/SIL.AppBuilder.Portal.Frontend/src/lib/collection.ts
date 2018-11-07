@@ -6,6 +6,10 @@ export function isEmpty(data) {
   );
 }
 
+export function unique(arr) {
+  return Array.from(new Set(arr));
+}
+
 
 export const applyNumberOfTimes = (x, f) => {
   const result: any[] = [];
@@ -17,13 +21,22 @@ export const applyNumberOfTimes = (x, f) => {
   return result;
 };
 
-export function compareVia(accessor: any) {
+const comparatorInverted = (v) => {
+  if (v === 1) { return -1; }
+  if (v === -1) { return 1; }
+
+  return v;
+};
+
+export function compareVia(accessor: any, invert?: boolean) {
+  const inverter = invert ? comparatorInverted : v => v;
+
   return (a,b) => {
     const aV = accessor(a);
     const bV = accessor(b);
 
-    if (aV < bV) { return -1; }
-    if (aV > bV) { return 1; }
+    if (aV < bV) { return inverter(-1); }
+    if (aV > bV) { return inverter(1); }
     return 0;
   };
 }
