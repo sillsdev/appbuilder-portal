@@ -14,8 +14,6 @@ import Reviewers from './reviewers';
 import Settings from './settings';
 import Files from './files';
 
-import './project.scss';
-
 export const pathName = '/projects/:id';
 
 export interface Params {

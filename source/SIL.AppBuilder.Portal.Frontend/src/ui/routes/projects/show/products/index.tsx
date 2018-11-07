@@ -84,7 +84,10 @@ class Products extends React.Component<IProps> {
     }
 
     return (
-      <div data-test-project-products className='product p-t-lg p-b-xl m-b-lg thin-bottom-border'>
+      <div
+        data-test-project-products
+        className='product p-t-lg p-b-xl m-b-lg thin-bottom-border'
+      >
         <h3 className='m-b-md fs-21'>
           {t('project.products.title')}
         </h3>
