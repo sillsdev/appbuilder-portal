@@ -56,7 +56,7 @@ class List extends React.Component<IProps> {
             <div
               key={index}
               className='
-                col flex align-items-center
+                flex align-items-center
                 justify-content-space-between
                 w-100-xs-only flex-100 m-b-sm
                 multi-select-item'
