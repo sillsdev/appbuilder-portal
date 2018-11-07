@@ -43,7 +43,10 @@ class List extends React.Component<IProps> {
     const { t, groups } = this.props;
 
     if (isEmpty(groups)) {
-      return <p className='gray-text p-b-lg'>{t('org.noGroups')}</p>;
+      return (
+      <p data-test-org-groups-empty className='gray-text m-t-lg p-b-lg'>
+        {t('org.noGroups')}
+      </p>);
     }
 
     return (
@@ -58,10 +61,15 @@ class List extends React.Component<IProps> {
                 w-100-xs-only flex-100 m-b-sm
                 multi-select-item'
             >
-              <div onClick={this.edit(group)} title={t('common.clickToEdit')}>
+              <div
+                data-test-org-edit-group-button
+                onClick={this.edit(group)}
+                title={t('common.clickToEdit')}
+              >
                 {attributesFor(group).name}
               </div>
               <div
+                data-test-org-delete-button
                 className='flex align-items-center'
                 onClick={this.remove(group)}
               >

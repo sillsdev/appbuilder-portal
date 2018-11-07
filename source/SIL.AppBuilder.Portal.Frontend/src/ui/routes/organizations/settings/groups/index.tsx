@@ -66,11 +66,12 @@ class GroupsRoute extends React.Component<IProps, IState> {
     };
 
     return (
-      <div className='sub-page-content'>
+      <div className='sub-page-content' data-test-org-groups>
         <h2 className='sub-page-heading'>{t('org.groupsTitle')}</h2>
 
         {!showForm &&
           <button
+            data-test-org-add-group-button
             className='ui button tertiary uppercase large'
             onClick={toggle('showForm')}>
             {t('org.addGroupButton')}

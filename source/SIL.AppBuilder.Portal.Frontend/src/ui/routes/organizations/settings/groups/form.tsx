@@ -107,7 +107,10 @@ class Form extends React.Component<IProps, IState> {
         <form className='ui form' onSubmit={this.onSubmit}>
           <div className='field'>
             <label>{t('common.name')}</label>
-            <input className='ui input' type='text'
+            <input
+              data-test-org-group-form-name
+              className='ui input'
+              type='text'
               value={name}
               onChange={mut('name')} />
             {nameError && <span className='error'>{nameError}</span>}
@@ -116,17 +119,20 @@ class Form extends React.Component<IProps, IState> {
 
           <div className='field'>
             <label>{t('common.abbreviation')}</label>
-            <input className='ui input' type='text'
+            <input
+              data-test-org-group-form-abbreviation
+              className='ui input'
+              type='text'
               value={abbreviation}
               onChange={mut('abbreviation')} />
             {abbreviationError && <span className='error'>{abbreviationError}</span>}
           </div>
 
           <div className='flex'>
-            <button className='ui button'>
+            <button className='ui button' data-test-org-group-form-save>
               {t('common.save')}
             </button>
-            <a className='ui button' onClick={this.close}>
+            <a className='ui button' onClick={this.close} data-test-org-group-form-cancel>
               {t('common.cancel')}
             </a>
           </div>
