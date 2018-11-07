@@ -4,6 +4,10 @@
     border: solid 2px $panel-border-color;
   }
 
+  .thin-border#{$modifier} {
+    border: 1px solid $border-color;
+  }
+
   .page-heading-border#{$modifier} {
     border-bottom: 1px solid $border-color;
   }
@@ -14,6 +18,14 @@
 
   .round-border {
     border-radius: 50%;
+  }
+
+  .round-border-4 {
+    border-radius: 4px;
+  }
+
+  .round-border-8 {
+    border-radius: 8px;
   }
 
   @each $position in $positions {

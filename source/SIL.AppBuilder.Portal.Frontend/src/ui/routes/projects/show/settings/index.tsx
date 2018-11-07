@@ -37,7 +37,7 @@ class Settings extends React.Component<IProps> {
         <h3 className='fs-21'>
           {t('project.settings.title')}
         </h3>
-        <div className='flex justify-content-space-around setting m-b-lg p-b-lg'>
+        <div className='flex justify-content-space-around thin-bottom-border m-b-lg p-b-lg'>
           <div className='flex-grow'>
             <h4 className='fs-16 m-b-sm'>
               {t('project.settings.automaticRebuild.title')}
@@ -56,7 +56,7 @@ class Settings extends React.Component<IProps> {
             />
           </div>
         </div>
-        <div className='flex justify-content-space-around setting m-b-lg p-b-lg no-border'>
+        <div className='flex justify-content-space-around thin-bottom-border m-b-lg p-b-lg'>
           <div className='flex-grow'>
             <h4 className='fs-16 m-b-sm'>
               {t('project.settings.organizationDownloads.title')}
@@ -75,7 +75,7 @@ class Settings extends React.Component<IProps> {
             />
           </div>
         </div>
-        <div className='flex justify-content-space-around setting no-border'>
+        <div className='flex justify-content-space-around border-none'>
           <div className='flex-grow'>
             <h4 className='fs-16 m-b-sm'>
               {t('project.settings.visibility.title')}

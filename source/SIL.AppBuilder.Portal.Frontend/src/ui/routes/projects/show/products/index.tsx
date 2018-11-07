@@ -68,7 +68,10 @@ class Products extends React.Component<IProps> {
 
     if (isEmpty(products)) {
       productList = (
-        <div className='empty-products flex align-items-center justify-content-center'>
+        <div
+          className='flex align-items-center justify-content-center
+          m-b-lg p-t-md p-b-md round-border-8 thin-border'
+        >
           <span data-test-project-product-empty-text>
             {t('project.products.empty')}
           </span>
@@ -81,7 +84,7 @@ class Products extends React.Component<IProps> {
     }
 
     return (
-      <div data-test-project-products className='product p-t-lg p-b-xl m-b-lg'>
+      <div data-test-project-products className='product p-t-lg p-b-xl m-b-lg thin-bottom-border'>
         <h3 className='m-b-md fs-21'>
           {t('project.products.title')}
         </h3>

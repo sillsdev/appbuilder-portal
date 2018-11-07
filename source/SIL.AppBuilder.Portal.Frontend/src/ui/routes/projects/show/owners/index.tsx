@@ -63,15 +63,15 @@ class Owners extends React.Component<IProps> {
   }
 
   render() {
-    const { t, project, group, organization, owner } = this.props;
+    const { t, group, organization, owner } = this.props;
     const groupId = group.id;
     const ownerId = owner.id;
 
     return (
-      <div className='owner p-t-md p-b-sm p-l-md p-r-md'>
+      <div className='thin-bottom-border p-t-md p-b-sm p-l-md p-r-md'>
         <div className='m-b-md'>
           <h4 className='fs-11 m-b-sm'>{t('project.side.organization')}</h4>
-          <div className='p-l-sm p-r-sm p-t-sm p-b-sm'>
+          <div className='p-l-sm p-r-sm p-t-sm p-b-sm thin-bottom-border'>
             <span>SIL International</span>
           </div>
         </div>
@@ -80,7 +80,7 @@ class Owners extends React.Component<IProps> {
             {t('project.side.projectOwner')}
           </h4>
           <div className='flex justify-content-space-around'>
-            <div className='flex-grow p-l-sm p-r-sm p-t-sm p-b-sm'>
+            <div className='flex-grow p-l-sm p-r-sm p-t-sm p-b-sm thin-bottom-border'>
               <UserSelect
                 selected={ownerId}
                 groupId={groupId}

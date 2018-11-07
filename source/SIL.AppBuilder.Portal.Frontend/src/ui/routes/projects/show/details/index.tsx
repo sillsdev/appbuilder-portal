@@ -33,7 +33,7 @@ class Details extends React.Component<IProps> {
     const { description: type } = attributesFor(applicationType);
 
     return (
-      <div data-test-project-details className='details m-b-lg'>
+      <div data-test-project-details className='thin-bottom-border m-b-lg'>
         <h3 className='fs-21'>
           {t('project.details.title')}
         </h3>
@@ -44,7 +44,7 @@ class Details extends React.Component<IProps> {
             </h4>
             <p
               data-test-project-detail-language
-              className='m-r-lg p-b-sm fs-16'
+              className='m-r-lg p-b-sm fs-16 thin-bottom-border'
             >
               {language}
             </p>
@@ -55,7 +55,7 @@ class Details extends React.Component<IProps> {
             </h4>
             <p
               data-test-project-detail-type
-              className='p-b-sm fs-16'
+              className='p-b-sm fs-16 thin-bottom-border'
             >
               {type}
             </p>

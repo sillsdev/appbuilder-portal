@@ -216,3 +216,29 @@ Modal
   }
 }
 
+/***********************************
+Tabs
+************************************/
+.tabs {
+
+  .ui.menu {
+    border-bottom: 1px solid #d8d8d8;
+    margin: 1em 0;
+
+    .item.active {
+      color: #0c3855;
+      border-bottom: 4px solid #4a90e2;
+    }
+  }
+
+  .ui.tab {
+    border: 0px;
+    box-shadow: none;
+  }
+
+  @include media-breakpoint-only('xs') {
+    .ui.tab {
+      padding: 0;
+    }
+  }
+}

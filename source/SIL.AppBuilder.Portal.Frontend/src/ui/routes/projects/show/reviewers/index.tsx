@@ -47,7 +47,7 @@ class Reviewers extends React.Component<IProps> {
 
     return (
       <div data-test-project-reviewers className='reviewers'>
-        <div className='flex justify-content-space-around header align-items-center p-md'>
+        <div className='flex justify-content-space-around thin-bottom-border align-items-center p-md'>
           <h4 className='flex-grow m-none'>
             {t('project.side.reviewers.title')}
           </h4>

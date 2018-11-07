@@ -58,7 +58,7 @@ class Display extends React.Component<IProps> {
               <Products project={project} />
               <Settings project={project} />
             </div>
-            <div className='project-aside w-50'>
+            <div className='thin-border w-50'>
               <Owners project={project} />
               <Reviewers project={project} />
             </div>
@@ -146,7 +146,7 @@ class Display extends React.Component<IProps> {
           </div>
         </div>
 
-        <Tab menu={{ text: true }} panes={this.renderTabPanes()} className='project-tabs' />
+        <Tab menu={{ text: true }} panes={this.renderTabPanes()} className='tabs' />
       </div>
     );
   }
