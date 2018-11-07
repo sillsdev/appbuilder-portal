@@ -64,23 +64,23 @@ class Owners extends React.Component<IProps> {
 
   render() {
     const { t, project, group, organization, owner } = this.props;
-    const { language, type } = attributesFor(project);
     const groupId = group.id;
-    const organizationId = organization.id;
     const ownerId = owner.id;
 
     return (
-      <div className='owner'>
-        <div>
-          <h4>{t('project.side.organization')}</h4>
-          <div className='content'>
+      <div className='owner p-t-md p-b-sm p-l-md p-r-md'>
+        <div className='m-b-md'>
+          <h4 className='fs-11 m-b-sm'>{t('project.side.organization')}</h4>
+          <div className='p-l-sm p-r-sm p-t-sm p-b-sm'>
             <span>SIL International</span>
           </div>
         </div>
-        <div>
-          <h4>{t('project.side.projectOwner')}</h4>
-          <div className='flex justify-content-space-around content'>
-            <div className='flex-grow'>
+        <div className='m-b-md'>
+          <h4 className='fs-11 m-b-sm'>
+            {t('project.side.projectOwner')}
+          </h4>
+          <div className='flex justify-content-space-around'>
+            <div className='flex-grow p-l-sm p-r-sm p-t-sm p-b-sm'>
               <UserSelect
                 selected={ownerId}
                 groupId={groupId}
@@ -89,15 +89,18 @@ class Owners extends React.Component<IProps> {
             </div>
           </div>
         </div>
-        <div>
-          <h4>{t('project.side.projectGroup')}</h4>
-
-          <GroupSelect
-            data-test-group-select
-            scopeToCurrentUser={true}
-            scopeToOrganization={organization}
-            selected={groupId}
-            onChange={this.updateGroup} />
+        <div className='m-b-md'>
+          <h4 className='fs-11 m-b-sm'>
+            {t('project.side.projectGroup')}
+          </h4>
+          <div className='flex-grow p-l-sm p-r-sm p-t-sm p-b-sm'>
+            <GroupSelect
+              data-test-group-select
+              scopeToCurrentUser={true}
+              scopeToOrganization={organization}
+              selected={groupId}
+              onChange={this.updateGroup} />
+          </div>
         </div>
       </div>
     );

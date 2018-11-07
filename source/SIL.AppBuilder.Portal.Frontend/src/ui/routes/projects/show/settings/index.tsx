@@ -34,11 +34,17 @@ class Settings extends React.Component<IProps> {
 
     return (
       <div className='settings'>
-        <h3>{t('project.settings.title')}</h3>
-        <div className='flex justify-content-space-around setting'>
+        <h3 className='fs-21'>
+          {t('project.settings.title')}
+        </h3>
+        <div className='flex justify-content-space-around setting m-b-lg p-b-lg'>
           <div className='flex-grow'>
-            <h4>{t('project.settings.automaticRebuild.title')}</h4>
-            <p>{t('project.settings.automaticRebuild.description')}</p>
+            <h4 className='fs-16 m-b-sm'>
+              {t('project.settings.automaticRebuild.title')}
+            </h4>
+            <p className='fs-13'>
+              {t('project.settings.automaticRebuild.description')}
+            </p>
           </div>
           <div className='flex-shrink'>
             <Checkbox
@@ -50,10 +56,14 @@ class Settings extends React.Component<IProps> {
             />
           </div>
         </div>
-        <div className='flex justify-content-space-around setting no-border'>
+        <div className='flex justify-content-space-around setting m-b-lg p-b-lg no-border'>
           <div className='flex-grow'>
-            <h4>{t('project.settings.organizationDownloads.title')}</h4>
-            <p>{t('project.settings.organizationDownloads.description')}</p>
+            <h4 className='fs-16 m-b-sm'>
+              {t('project.settings.organizationDownloads.title')}
+            </h4>
+            <p className='fs-13'>
+              {t('project.settings.organizationDownloads.description')}
+            </p>
           </div>
           <div className='flex-shrink'>
             <Checkbox
@@ -67,8 +77,12 @@ class Settings extends React.Component<IProps> {
         </div>
         <div className='flex justify-content-space-around setting no-border'>
           <div className='flex-grow'>
-            <h4>{t('project.settings.visibility.title')}</h4>
-            <p>{t('project.settings.visibility.description')}</p>
+            <h4 className='fs-16 m-b-sm'>
+              {t('project.settings.visibility.title')}
+            </h4>
+            <p className='fs-13'>
+              {t('project.settings.visibility.description')}
+            </p>
           </div>
           <div className='flex-shrink'>
             <Checkbox

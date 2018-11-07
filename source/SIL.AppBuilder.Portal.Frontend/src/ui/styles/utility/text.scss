@@ -1,9 +1,9 @@
 .bold {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .font-normal {
-  font-weight: normal;
+  font-weight: normal !important;
 }
 
 .text-left {
@@ -19,7 +19,7 @@
 }
 
 .uppercase {
-  text-transform: uppercase;
+  text-transform: uppercase !important;
 }
 
 .page-heading {
@@ -45,6 +45,22 @@
 
 .fs-13 {
   font-size: 13px;
+}
+
+.fs-14 {
+  font-size: 14px;
+}
+
+.fs-16 {
+  font-size: 16px;
+}
+
+.fs-21 {
+  font-size: 21px;
+}
+
+.fs-24 {
+  font-size: 24px;
 }
 
 .line-height-0 {
