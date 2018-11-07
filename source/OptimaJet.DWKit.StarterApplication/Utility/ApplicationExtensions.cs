@@ -2,8 +2,11 @@
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
+using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using OptimaJet.Workflow.Core.Runtime;
@@ -14,8 +17,13 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
     {
         public static IApplicationBuilder UseWorkflow(this IApplicationBuilder app, IConfigurationRoot configuration)
         {
+            // WorkflowInit static properties need to be setup before Configurator.Configure since 
+            // WorkflowRuntime.ForceInit is called.
+            WorkflowInit.RuleProvider = app.ApplicationServices.GetRequiredService<IWorkflowRuleProvider>();
+            //DWKIT Init
             Configurator.Configure(
                 (IHttpContextAccessor)app.ApplicationServices.GetService(typeof(IHttpContextAccessor)),
+                (IHubContext<ClientNotificationHub>)app.ApplicationServices.GetService(typeof(IHubContext<ClientNotificationHub>)),
                 configuration);
 
             WorkflowRuntime runtime = app.ApplicationServices.GetService(typeof(WorkflowRuntime)) as WorkflowRuntime;

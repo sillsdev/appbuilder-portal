@@ -54,5 +54,10 @@ namespace OptimaJet.DWKit.Application
 
             //TODO change Document transition history and WorkflowInbox
         }
+        
+        public static void ForceInit()
+        {
+            var r = Runtime;
+        }
     }
 }
