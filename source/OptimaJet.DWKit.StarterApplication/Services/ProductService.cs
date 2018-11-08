@@ -16,9 +16,9 @@ using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
-    public class ProductService : EntityResourceService<Product>
+    public class ProductService : EntityResourceService<Product, Guid>
     {
-        IEntityRepository<Product> ProductRepository { get; set; }
+        IEntityRepository<Product, Guid> ProductRepository { get; set; }
         IEntityRepository<ProductDefinition> ProductDefinitionRepository { get; set; }
         IEntityRepository<Store> StoreRepository { get; }
         IBackgroundJobClient HangfireClient { get; }
@@ -31,7 +31,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public ProductService(
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
-            IEntityRepository<Product> productRepository,
+            IEntityRepository<Product, Guid> productRepository,
             UserRepository userRepository,
             ProjectRepository projectRepository,
             ICurrentUserContext currentUserContext,
@@ -57,13 +57,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                                OrganizationContext,
                                                JsonApiContext);
         }
-        public override async Task<Product> GetAsync(int id)
+        public override async Task<Product> GetAsync(Guid id)
         {
             var products = await GetAsync();
             return products.SingleOrDefault(p => p.Id == id);
         }
 
-        public override async Task<Product> UpdateAsync(int id, Product resource)
+        public override async Task<Product> UpdateAsync(Guid id, Product resource)
         {
             //If changing organization, validate the change
             var updateForm = new UpdateForm(UserRepository,
@@ -109,13 +109,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             return product;
         }
 
-        public override async Task<bool> DeleteAsync(int id)
+        public override async Task<bool> DeleteAsync(Guid id)
         {
             var products = await GetAsync();
             var product = products.SingleOrDefault(p => p.Id == id);
-            if (product != null && product.WorkflowProcessId.HasValue)
+            if (product != null)
             {
-                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageDeletedProduct(product.WorkflowProcessId.Value));
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageDeletedProduct(product.Id));
             }
 
             return await base.DeleteAsync(id);

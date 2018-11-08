@@ -14,24 +14,24 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
     {
         public BuildEngineProductService(
             IBuildEngineApi buildEngineApi,
-            IJobRepository<Product> productRepository,
+            IJobRepository<Product, Guid> productRepository,
             IJobRepository<SystemStatus> systemStatusRepository
         ) : base(buildEngineApi, systemStatusRepository)
         {
             ProductRepository = productRepository;
         }
 
-        public IJobRepository<Product> ProductRepository { get; }
+        public IJobRepository<Product, Guid> ProductRepository { get; }
 
-        public static void CreateBuildEngineProduct(int productId)
+        public static void CreateBuildEngineProduct(Guid productId)
         {
             BackgroundJob.Enqueue<BuildEngineProductService>(service => service.ManageProduct(productId));
         }
-        public void ManageProduct(int productId)
+        public void ManageProduct(Guid productId)
         {
             ManageProductAsync(productId).Wait();
         }
-        public async Task ManageProductAsync(int productId)
+        public async Task ManageProductAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                               .Where(p => p.Id == productId)

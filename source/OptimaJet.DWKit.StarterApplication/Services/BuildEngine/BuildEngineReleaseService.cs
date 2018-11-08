@@ -14,27 +14,27 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
     public class BuildEngineReleaseService : BuildEngineServiceBase
     {
         public IRecurringJobManager RecurringJobManager { get; }
-        public IJobRepository<Product> ProductRepository { get; }
+        public IJobRepository<Product, Guid> ProductRepository { get; }
  
         public BuildEngineReleaseService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
-            IJobRepository<Product> productRepository,
+            IJobRepository<Product, Guid> productRepository,
             IJobRepository<SystemStatus> systemStatusRepository
         ) : base(buildEngineApi, systemStatusRepository)
         {
             RecurringJobManager = recurringJobManager;
             ProductRepository = productRepository;
         }
-        public void CreateRelease(int productId, string channel)
+        public void CreateRelease(Guid productId, string channel)
         {
             CreateReleaseAsync(productId, channel).Wait();
         }
-        public void CheckRelease(int productId)
+        public void CheckRelease(Guid productId)
         {
             CheckReleaseAsync(productId).Wait();
         }
-        public async Task CreateReleaseAsync(int productId, string channel)
+        public async Task CreateReleaseAsync(Guid productId, string channel)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
@@ -61,7 +61,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             await CreateBuildEngineReleaseAsync(product, channel);
             return;
         }
-        public async Task CheckReleaseAsync(int productId)
+        public async Task CheckReleaseAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                                      .Where(p => p.Id == productId)
@@ -88,7 +88,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             return;
 
         }
-        public async Task<BuildEngineStatus> GetStatusAsync(int productId)
+        public async Task<BuildEngineStatus> GetStatusAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
@@ -184,11 +184,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                                                             product.WorkflowPublishId);
             return releaseResponse;
         }
-        protected String GetHangfireToken(int productId)
+        protected String GetHangfireToken(Guid productId)
         {
             return "CreateReleaseMonitor" + productId.ToString();
         }
-        protected void ClearRecurringJob(int productId)
+        protected void ClearRecurringJob(Guid productId)
         {
             var jobToken = GetHangfireToken(productId);
             RecurringJobManager.RemoveIfExists(jobToken);

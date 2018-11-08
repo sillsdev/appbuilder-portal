@@ -135,7 +135,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected ProjectResponse GetBuildEngineProject(Project project)
         {
             SetBuildEngineEndpoint(project.Organization);
-            var projectResponse = BuildEngineApi.GetProject(project.WorkflowProjectId);
+            var projectResponse = BuildEngineApi.GetProject(project.WorkflowProjectId.Value);
             return projectResponse;
         }
         protected async Task ProjectCompletedAsync(Project project, ProjectResponse projectResponse)
@@ -216,7 +216,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 PublishingKey = project.Owner.PublishingKey,
             };
             SetBuildEngineEndpoint(project.Organization);
-            var projectResponse = BuildEngineApi.UpdateProject(project.WorkflowProjectId, buildEngineProject);
+            var projectResponse = BuildEngineApi.UpdateProject(project.WorkflowProjectId.Value, buildEngineProject);
 
         }
     }

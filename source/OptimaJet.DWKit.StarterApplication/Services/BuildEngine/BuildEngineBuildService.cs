@@ -16,14 +16,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
     {
         public IRecurringJobManager RecurringJobManager { get; }
         public WebRequestWrapper WebRequestWrapper { get; }
-        public IJobRepository<Product> ProductRepository { get; }
+        public IJobRepository<Product, Guid> ProductRepository { get; }
         public IJobRepository<ProductArtifact> ProductArtifactRepository { get; }
 
         public BuildEngineBuildService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
             WebRequestWrapper webRequestWrapper,
-            IJobRepository<Product> productRepository,
+            IJobRepository<Product, Guid> productRepository,
             IJobRepository<ProductArtifact> productArtifactRepository,
             IJobRepository<SystemStatus> systemStatusRepository
         ) : base(buildEngineApi, systemStatusRepository)
@@ -33,11 +33,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ProductRepository = productRepository;
             ProductArtifactRepository = productArtifactRepository;
         }
-        public void CreateBuild(int productId)
+        public void CreateBuild(Guid productId)
         {
             CreateBuildAsync(productId).Wait();
         }
-        public async Task CreateBuildAsync(int productId)
+        public async Task CreateBuildAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
@@ -64,11 +64,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             await CreateBuildEngineBuildAsync(product);
             return;
         }
-        public void CheckBuild(int productId)
+        public void CheckBuild(Guid productId)
         {
             CheckBuildAsync(productId).Wait();
         }
-        public async Task CheckBuildAsync(int productId)
+        public async Task CheckBuildAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
@@ -184,17 +184,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             ClearRecurringJob(product.Id);
         }
-        protected void ClearRecurringJob(int productId)
+        protected void ClearRecurringJob(Guid productId)
         {
             var jobToken = GetHangfireToken(productId);
             RecurringJobManager.RemoveIfExists(jobToken);
             return;
         }
-        protected String GetHangfireToken(int productId)
+        protected String GetHangfireToken(Guid productId)
         {
             return "CreateBuildMonitor" + productId.ToString();
         }
-        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, int productId)
+        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, Guid productId)
         {
             var productArtifact = new ProductArtifact
             {
@@ -206,7 +206,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             await ProductArtifactRepository.CreateAsync(updatedArtifact);
             return updatedArtifact.LastModified;
         }
-        public async Task<BuildEngineStatus> GetStatusAsync(int productId)
+        public async Task<BuildEngineStatus> GetStatusAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
