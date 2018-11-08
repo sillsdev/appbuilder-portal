@@ -1,9 +1,9 @@
 .bold {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .font-normal {
-  font-weight: normal;
+  font-weight: normal !important;
 }
 
 .text-left {
@@ -19,7 +19,11 @@
 }
 
 .uppercase {
-  text-transform: uppercase;
+  text-transform: uppercase !important;
+}
+
+.capitalize {
+  text-transform: capitalize !important;
 }
 
 .page-heading {
@@ -40,11 +44,27 @@
 }
 
 .fs-11 {
-  font-size: 11px;
+  font-size: 11px !important;
 }
 
 .fs-13 {
-  font-size: 13px;
+  font-size: 13px !important;
+}
+
+.fs-14 {
+  font-size: 14px !important;
+}
+
+.fs-16 {
+  font-size: 16px !important;
+}
+
+.fs-21 {
+  font-size: 21px !important;
+}
+
+.fs-24 {
+  font-size: 24px !important;
 }
 
 .line-height-0 {

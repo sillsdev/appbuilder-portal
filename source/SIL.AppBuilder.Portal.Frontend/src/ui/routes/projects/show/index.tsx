@@ -12,8 +12,6 @@ import { withData } from './with-data';
 import { withTranslations } from '@lib/i18n';
 import { withProjectOperations } from './with-project-operations';
 
-import './project.scss';
-
 export const pathName = '/projects/:id';
 
 export default compose(

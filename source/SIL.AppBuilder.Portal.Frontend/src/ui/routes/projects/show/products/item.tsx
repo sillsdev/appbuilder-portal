@@ -41,14 +41,15 @@ class ProductItem extends React.Component<IProps> {
 
     return (
       <div
-        className='col flex w-100-xs-only
-        flex-100 m-b-sm
+        className='flex-md w-100-xs-only
+        flex-100 m-b-sm position-relative
         justify-content-space-between
-        p-sm
-        product-item'
+        align-items-center
+        p-md fs-13 light-gray-text
+        round-border-4 thin-border'
         data-test-project-product-item
       >
-        <div className='flex align-items-center w-50'>
+        <div className='flex align-items-center w-55-md'>
           <ProductIcon product={productDefinition} />
           <div
             data-test-project-product-name
@@ -57,22 +58,20 @@ class ProductItem extends React.Component<IProps> {
             {description}
           </div>
         </div>
-        <div className='flex align-items-center  w-50'>
-          <div className='position-relative w-30'>
-            {includeHeader ? <div className='item-title'>{t('project.products.updated')}</div> : ''}
-            <TimezoneLabel dateTime={dateUpdated}/>
-          </div>
-          <div className='position-relative m-l-sm w-30'>
-            {includeHeader ? <div className='item-title'>{t('project.products.published')}</div> : ''}
-            <TimezoneLabel dateTime={datePublished} emptyLabel={t('project.products.unpublished')} />
-          </div>
-          <div className='m-l-sm w-30'>
-            <button className='ui button'>{t('project.products.rebuild')}</button>
-          </div>
-          <div className='flex w-10 m-l-md'>
-            <ItemActions />
-          </div>
-
+        <div className='w-20-md p-l-xs-md'>
+          <span className='d-md-none m-r-sm bold'>
+            {t('project.products.updated')}:
+          </span>
+          <TimezoneLabel dateTime={dateUpdated} emptyLabel='--'/>
+        </div>
+        <div className='p-l-sm-md w-20-md'>
+          <span className='d-md-none m-r-sm bold'>
+            {t('project.products.published')}:
+          </span>
+          <TimezoneLabel dateTime={datePublished} emptyLabel='--' />
+        </div>
+        <div className='flex w-5-md p-l-md-md move-right'>
+          <ItemActions />
         </div>
       </div>
     );

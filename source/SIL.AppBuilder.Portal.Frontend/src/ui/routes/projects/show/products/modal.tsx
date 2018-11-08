@@ -42,7 +42,9 @@ type IProps =
     const trigger = (
       <button
         data-test-project-products-manage-button
-        className='ui button'
+        className='ui button fs-13 bold uppercase
+        round-border-4 dark-blue-text
+        thin-inverted-border bg-transparent'
         onClick={toggleModal}
       >
         {t('project.products.addRemove')}

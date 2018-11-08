@@ -7,7 +7,7 @@
 }
 
 .dark-blue-text {
-  color: $blue-dark;
+  color: $blue-dark !important;
 }
 
 .blue-highlight {
@@ -16,6 +16,10 @@
 
 .gray-text {
   color: $gray;
+}
+
+.light-gray-text {
+  color: $light-gray;
 }
 
 a.white-text {
@@ -41,4 +45,8 @@ a.white-text {
 
 .bg-default {
   background: $background;
+}
+
+.bg-transparent {
+  background: transparent !important;
 }

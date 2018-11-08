@@ -207,7 +207,7 @@
       "published": "Published",
       "unpublished": "Unpublished",
       "noArtifacts": "No artifacts",
-      "rebuild": "REBUILD"
+      "rebuild": "rebuild"
     },
     "settings": {
       "title": "Settings",

@@ -68,21 +68,42 @@ class Products extends React.Component<IProps> {
 
     if (isEmpty(products)) {
       productList = (
-        <div className='empty-products flex align-items-center justify-content-center'>
+        <div
+          className='flex align-items-center justify-content-center
+          m-b-lg p-t-md p-b-md round-border-8 thin-border'
+        >
           <span data-test-project-product-empty-text>
             {t('project.products.empty')}
           </span>
         </div>
       );
     } else {
-      productList = products.map((product, i) =>
-        <ProductItem key={i} product={product} includeHeader={i === 0} />
+      productList = products.map((product, i) => {
+
+        const productItemProps = {
+          product,
+          includeHeader: (i === 0)
+        };
+
+        return <ProductItem key={i} {...productItemProps} />;
+      }
       );
     }
 
     return (
-      <div data-test-project-products className='product'>
-        <h3 className='m-b-md'>{t('project.products.title')}</h3>
+      <div
+        data-test-project-products
+        className='product p-t-lg p-b-xl m-b-lg thin-bottom-border'
+      >
+        <h3 className='m-b-md fs-21'>
+          {t('project.products.title')}
+        </h3>
+        <div className='flex align-items-center fs-13 bold gray-text m-b-sm d-xs-only-none d-sm-only-none'>
+          <div className='w-55'/>
+          <div className='w-20 item-title'>{t('project.products.updated')}</div>
+          <div className='w-20 item-title'>{t('project.products.published')}</div>
+          <div className='w-5'/>
+        </div>
         <div className='m-b-lg'>
           {productList}
         </div>

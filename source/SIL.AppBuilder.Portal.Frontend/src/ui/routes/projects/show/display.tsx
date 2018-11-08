@@ -14,8 +14,6 @@ import Reviewers from './reviewers';
 import Settings from './settings';
 import Files from './files';
 
-import './project.scss';
-
 export const pathName = '/projects/:id';
 
 export interface Params {
@@ -42,16 +40,23 @@ class Display extends React.Component<IProps> {
     const { t, project } = this.props;
 
     const tabPanes = [{
-      menuItem: <Menu.Item key={1} data-test-project-files-tab name={t('project.overview')} />,
+      menuItem: (
+        <Menu.Item
+          key={1}
+          className='bold p-b-sm p-l-md p-r-md uppercase'
+          data-test-project-files-tab
+          name={t('project.overview')}
+        />
+      ),
       render: () =>
         <Tab.Pane attached={false}>
-          <div className='flex'>
-            <div className='flex-grow' style={{ marginRight: '33px' }}>
+          <div className='flex-lg'>
+            <div className='flex-grow p-r-lg-lg'>
               <Details project={project} />
               <Products project={project} />
               <Settings project={project} />
             </div>
-            <div className='project-aside'>
+            <div className='thin-border w-50-lg m-t-lg-xs-only m-t-lg-sm-only'>
               <Owners project={project} />
               <Reviewers project={project} />
             </div>
@@ -59,7 +64,14 @@ class Display extends React.Component<IProps> {
         </Tab.Pane>
 
     }, {
-      menuItem: <Menu.Item key={2} data-test-project-files-tab name={t('project.productFiles')} />,
+      menuItem: (
+        <Menu.Item
+          key={2}
+          className='bold p-d-sm  p-l-md p-r-md uppercase'
+          data-test-project-files-tab
+          name={t('project.productFiles')}
+        />
+      ),
       render: () =>
         <Tab.Pane attached={false}>
           <Files project={project} />
@@ -95,18 +107,23 @@ class Display extends React.Component<IProps> {
       t('project.private');
 
     return (
-      <div className='ui container project-details' data-test-project>
+      <div className='project-details' data-test-project>
         <div className='page-heading page-heading-border-sm'>
           <div className='flex justify-content-space-around'>
             <div className='flex-grow'>
-              <h1 data-test-project-name className='title'>{name}</h1>
-              <div className='subtitle'>
-                <span data-test-project-visibility-label>{visibility}</span><span className='dot-space font-normal'>.</span>
+              <h1 data-test-project-name className='fs-24 m-b-sm'>
+                {name}
+              </h1>
+              <div>
+                <span data-test-project-visibility-label>
+                  {visibility}
+                </span>
+                <span className='font-normal m-l-md m-r-md'>.</span>
                 <span className='font-normal'>{t('project.createdOn')} </span>
                 <TimezoneLabel dateTime={dateCreated} />
               </div>
             </div>
-            <div className='flex-shrink' style={{ paddingTop: '20px' }}>
+            <div className='flex-shrink'>
               <Dropdown
                 pointing='top right'
                 icon={null}
@@ -127,7 +144,7 @@ class Display extends React.Component<IProps> {
           </div>
         </div>
 
-        <Tab menu={{ text: true }} panes={this.renderTabPanes()} className='project-tabs' />
+        <Tab menu={{ text: true }} panes={this.renderTabPanes()} className='tabs' />
       </div>
     );
   }
