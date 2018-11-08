@@ -56,7 +56,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public bool? AutomaticBuilds { get; set; } = true;
 
         [Attr("workflow-project-id")]
-        public int? WorkflowProjectId { get; set; }
+        public int WorkflowProjectId { get; set; }
 
         [HasMany("products", Link.None)]
         public virtual List<Product> Products { get; set; }

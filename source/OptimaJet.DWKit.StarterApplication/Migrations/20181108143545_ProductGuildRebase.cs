@@ -444,7 +444,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     DateArchived = table.Column<DateTime>(nullable: true),
                     AllowDownloads = table.Column<bool>(nullable: true, defaultValue: true),
                     AutomaticBuilds = table.Column<bool>(nullable: true, defaultValue: true),
-                    WorkflowProjectId = table.Column<int>(nullable: true),
+                    WorkflowProjectId = table.Column<int>(nullable: false, defaultValue: 0),
                     WorkflowProjectUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
