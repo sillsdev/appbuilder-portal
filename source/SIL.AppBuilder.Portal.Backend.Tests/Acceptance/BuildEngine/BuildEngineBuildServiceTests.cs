@@ -145,7 +145,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            await buildBuildService.CreateBuildAsync(999);
+            await buildBuildService.CreateBuildAsync(Guid.NewGuid());
             // TODO: Verify notification
         }
         [Fact(Skip = skipAcceptanceTest)]

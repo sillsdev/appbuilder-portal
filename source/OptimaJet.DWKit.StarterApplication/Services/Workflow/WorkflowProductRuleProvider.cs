@@ -36,10 +36,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public IEnumerable<string> OrgAdminGet(ProcessInstance processInstance, WorkflowRuntime runtime, string parameter)
         {
             using (var scope = ServiceProvider.CreateScope()) {
-                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product>>();
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 var userRolesRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<UserRole>>();
                 var product = productRepository.Get()
-                    .Where(p => p.WorkflowProcessId == processInstance.ProcessId)
+                    .Where(p => p.Id == processInstance.ProcessId)
                     .Include(p => p.Project)
                         .ThenInclude(p => p.Organization)
                     .FirstOrDefault();
@@ -64,10 +64,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             var workflowUserId = new Guid(identityId);
             using (var scope = ServiceProvider.CreateScope())
             {
-                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product>>();
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 var userRolesRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<UserRole>>();
                 var product = productRepository.Get()
-                    .Where(p => p.WorkflowProcessId == processInstance.ProcessId)
+                    .Where(p => p.Id == processInstance.ProcessId)
                     .Include(p => p.Project)
                         .ThenInclude(p => p.Organization)
                     .FirstOrDefault();
@@ -88,9 +88,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
             using (var scope = ServiceProvider.CreateScope())
             {
-                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product>>();
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 var product = productRepository.Get()
-                    .Where(p => p.WorkflowProcessId == processInstance.ProcessId)
+                    .Where(p => p.Id == processInstance.ProcessId)
                     .Include(p => p.Project)
                         .ThenInclude(p => p.Owner)
                     .FirstOrDefault();
@@ -103,9 +103,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
             using (var scope = ServiceProvider.CreateScope())
             {
-                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product>>();
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 var product = productRepository.Get()
-                    .Where(p => p.WorkflowProcessId == processInstance.ProcessId)
+                    .Where(p => p.Id == processInstance.ProcessId)
                     .Include(p => p.Project)
                         .ThenInclude(p => p.Owner)
                     .FirstOrDefault();

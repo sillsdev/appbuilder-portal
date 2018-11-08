@@ -11,13 +11,14 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20181015183450_AddUserRoles")]
-    partial class AddUserRoles
+    [Migration("20181108143545_ProductGuildRebase")]
+    partial class ProductGuildRebase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("Npgsql:PostgresExtension:uuid-ossp", "'uuid-ossp', '', ''")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
@@ -221,8 +222,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.Property<DateTime?>("DateBuilt");
 
@@ -236,9 +238,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("ProjectId");
 
-                    b.Property<int>("StoreId");
+                    b.Property<int?>("StoreId");
 
-                    b.Property<int>("StoreLanguageId");
+                    b.Property<int?>("StoreLanguageId");
 
                     b.Property<int>("WorkflowBuildId");
 
@@ -257,6 +259,32 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("StoreLanguageId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductArtifact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ArtifactType");
+
+                    b.Property<string>("ContentType");
+
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<DateTime?>("DateUpdated");
+
+                    b.Property<long?>("FileSize");
+
+                    b.Property<Guid>("ProductId");
+
+                    b.Property<string>("Url");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductArtifacts");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductDefinition", b =>
@@ -318,7 +346,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("TypeId");
 
-                    b.Property<int>("WorkflowProjectId");
+                    b.Property<int>("WorkflowProjectId")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(0);
 
                     b.Property<string>("WorkflowProjectUrl");
 
@@ -351,6 +381,18 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Reviewers");
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("RoleName");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Store", b =>
@@ -428,6 +470,10 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<DateTime?>("DateUpdated");
+
                     b.Property<string>("Email");
 
                     b.Property<bool?>("EmailNotification")
@@ -456,7 +502,11 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("Timezone");
 
+                    b.Property<Guid?>("WorkflowUserId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("WorkflowUserId");
 
                     b.ToTable("Users");
                 });
@@ -466,15 +516,47 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("Name");
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<int>("RoleId");
 
                     b.Property<int>("UserId");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("RoleId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.UserTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ActivityName");
+
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<DateTime?>("DateUpdated");
+
+                    b.Property<Guid>("ProductId");
+
+                    b.Property<string>("Status");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserTasks");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.WorkflowDefinition", b =>
@@ -488,7 +570,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("StoreTypeId");
+                    b.Property<int?>("StoreTypeId");
+
+                    b.Property<string>("WorkflowBusinessFlow");
 
                     b.Property<string>("WorkflowScheme");
 
@@ -581,12 +665,18 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Store", "Store")
                         .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("StoreId");
 
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.StoreLanguage", "StoreLanguage")
                         .WithMany()
-                        .HasForeignKey("StoreLanguageId")
+                        .HasForeignKey("StoreLanguageId");
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductArtifact", b =>
+                {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                        .WithMany("ProductArtifacts")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -652,8 +742,31 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.UserRole", b =>
                 {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Organization", "Organization")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
                         .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.UserTask", b =>
+                {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -662,8 +775,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.StoreType", "StoreType")
                         .WithMany()
-                        .HasForeignKey("StoreTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("StoreTypeId");
                 });
 #pragma warning restore 612, 618
         }

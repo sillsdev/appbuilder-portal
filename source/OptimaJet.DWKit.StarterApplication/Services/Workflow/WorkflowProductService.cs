@@ -12,13 +12,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowProductService
     {
-        IJobRepository<Product> ProductRepository { get; set; }
+        IJobRepository<Product, Guid> ProductRepository { get; set; }
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
         public WorkflowRuntime Runtime { get; }
 
         public WorkflowProductService(
-            IJobRepository<Product> productRepository,
+            IJobRepository<Product, Guid> productRepository,
             IJobRepository<UserTask> taskRepository,
             IJobRepository<User> userRepository,
             WorkflowRuntime runtime
@@ -31,7 +31,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         }
 
 
-        public void ManageNewProduct(int productId)
+        public void ManageNewProduct(Guid productId)
         {
             ManageNewProductAsync(productId).Wait();
         }
@@ -48,7 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
 
 
-        public async Task ManageNewProductAsync(int productId)
+        public async Task ManageNewProductAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                               .Where(p => p.Id == productId)
@@ -84,25 +84,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         protected async Task CreateWorkflowProcessInstance(Product product)
         {
-
-            var processId = Guid.NewGuid();
-            Task createInstance = WorkflowInit.Runtime.CreateInstanceAsync(
+            await WorkflowInit.Runtime.CreateInstanceAsync(
                 new CreateInstanceParams(
                     product.ProductDefinition.Workflow.WorkflowScheme,
-                    processId)
+                    product.Id)
                     {
                         IdentityId = product.Project.Owner.WorkflowUserId.Value.ToString()
                     }
             );
-
-            product.WorkflowProcessId = processId;
-            await ProductRepository.UpdateAsync(product);
         }
 
         public async Task ProductProcessChangedAsync(Guid workflowProcessId, string activityName, string currentState)
         {
             // Find the Product assoicated with the ProcessId
-            var product = await ProductRepository.Get().Where(p => p.WorkflowProcessId == workflowProcessId).FirstOrDefaultAsync();
+            var product = await ProductRepository.Get().Where(p => p.Id == workflowProcessId).FirstOrDefaultAsync();
             if (product == null)
             {
                 Log.Error($"Could find Product for ProcessId={workflowProcessId}");
@@ -128,7 +123,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         }
 
-        private async Task RemoveTasksByProductId(int productId)
+        private async Task RemoveTasksByProductId(Guid productId)
         {
             // Remove all the current tasks associated with the Product
             var tasks = TaskRepository.Get().Where(t => t.ProductId == productId);

@@ -16,6 +16,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("Npgsql:PostgresExtension:uuid-ossp", "'uuid-ossp', '', ''")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
@@ -219,8 +220,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.Property<DateTime?>("DateBuilt");
 
@@ -241,8 +243,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.Property<int>("WorkflowBuildId");
 
                     b.Property<int>("WorkflowJobId");
-
-                    b.Property<Guid?>("WorkflowProcessId");
 
                     b.Property<int>("WorkflowPublishId");
 
@@ -274,7 +274,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<long?>("FileSize");
 
-                    b.Property<int>("ProductId");
+                    b.Property<Guid>("ProductId");
 
                     b.Property<string>("Url");
 
@@ -344,7 +344,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("TypeId");
 
-                    b.Property<int>("WorkflowProjectId");
+                    b.Property<int?>("WorkflowProjectId");
 
                     b.Property<string>("WorkflowProjectUrl");
 
@@ -540,7 +540,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<DateTime?>("DateUpdated");
 
-                    b.Property<int>("ProductId");
+                    b.Property<Guid>("ProductId");
 
                     b.Property<string>("Status");
 

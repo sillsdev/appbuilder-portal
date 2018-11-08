@@ -28,15 +28,8 @@
     "data-buildertype": "gridview",
     "columns": [
       {
-        "key": "id",
-        "name": "ID",
-        "sortable": true,
-        "filterable": false,
-        "resizable": false
-      },
-      {
-        "key": "product",
-        "name": "Product",
+        "key": "user",
+        "name": "User",
         "sortable": true,
         "filterable": false,
         "resizable": false
@@ -49,15 +42,22 @@
         "resizable": false
       },
       {
-        "key": "user",
-        "name": "User",
+        "key": "app",
+        "name": "App",
         "sortable": true,
         "filterable": false,
         "resizable": false
       },
       {
-        "key": "app",
-        "name": "App",
+        "key": "product",
+        "name": "Product",
+        "sortable": true,
+        "filterable": false,
+        "resizable": false
+      },
+      {
+        "key": "id",
+        "name": "ID",
         "sortable": true,
         "filterable": false,
         "resizable": false
@@ -70,7 +70,7 @@
         "resizable": false
       }
     ],
-    "editForm": "SIL_Default_AppBuilders_Android_GooglePlay",
+    "editForm": "SIL_AppBuilders_Product_Definition",
     "rowKey": "Id",
     "pagerType": "server",
     "autoHeight": true,
@@ -93,7 +93,6 @@
       }
     },
     "multiselect": true,
-    "editType": "flow",
     "editFlow": "SIL_Default_AppBuilders_Android_GooglePlay"
   }
 ]

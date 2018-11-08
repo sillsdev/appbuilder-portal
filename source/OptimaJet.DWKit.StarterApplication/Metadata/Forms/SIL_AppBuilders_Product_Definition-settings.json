@@ -1,7 +1,7 @@
 {
   "name": "SIL_AppBuilders_Product_Definition",
-  "lastUpdate": "2018-10-31T10:04:42.406284-04:00",
-  "entityId": "5d8aafda-47af-4f0c-a296-4bbf20289147",
+  "lastUpdate": "2018-11-08T15:47:43.2464825+00:00",
+  "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "dataSourceType": "",
   "isTemplate": false,
   "triggers": [],
@@ -10,74 +10,105 @@
   ],
   "dataMap": [
     {
-      "id": "8ec15ba4-b32f-b00b-8ed8-9f5df8783374",
-      "attributeId": "b1364e53-be1c-4a4c-8721-d39a6c8c06b4",
+      "id": "110bebb2-587f-327a-2849-9f77e8606369",
+      "attributeId": "441e60ec-8a68-4c74-bcc4-853a678f11c3",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "9ffeeea2-3549-aa7d-442b-5d91e210ff8c",
+      "id": "1ce02187-117a-d46d-3e45-592845e291a1",
+      "attributeId": "37ecc7d1-c69e-4b7b-b611-409fe36392f7",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "e8d767f1-da67-9197-51c8-32fd6d31f813",
+      "attributeId": "7fc91699-2b16-4ab1-a91a-1d0d3401f5e3",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "1084eb9e-17d9-9211-064c-f18287597d4e",
+      "attributeId": "1018080e-7abe-4a87-bd07-721dc54fc6b0",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "b3a47096-ff4f-43e5-2795-4de6b7d1014c",
+      "attributeId": "e079ff30-3aec-49eb-824b-fea61e4da080",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "c38a2890-cc2b-e5de-b8fb-0048fd6b1279",
+      "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "02eb15e3-d1f4-2f35-2c37-1caf9317499b",
+      "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "76110c8b-b6b6-36b1-4c0b-82d65d81c14c",
+      "attributeId": "cc8522c4-bc11-4669-a876-3ab71cfeba1f",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "c30dbcbe-f8f4-b240-7352-cd6b5efc0a94",
+      "attributeId": "8759b596-a767-45c0-9e30-387b41e190c9",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "03c0dec6-6236-5bf6-9b4b-cf2594c97af4",
+      "attributeId": "46ebc3ca-16f9-4cf2-bea0-5d52f30e031e",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "72851cd8-0529-74ea-9581-61c71fa6e082",
+      "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "d96a4831-19b1-e19b-2027-ea51f0245466",
+      "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "f8ec7e90-b191-3b5b-9c23-50da8d014a54",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_product_name",
+      "parentId": "c38a2890-cc2b-e5de-b8fb-0048fd6b1279",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "6fffb992-a87a-f532-fd63-c0f524165a3e",
+      "attributeId": "4fa02def-abc9-4abf-9cf2-795dcbee93cc",
+      "control": "input_description",
+      "parentId": "b3a47096-ff4f-43e5-2795-4de6b7d1014c",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "cf319949-b4f0-d86f-4032-3296f3f5cfbc",
+      "attributeId": "409379f4-a53a-4ae9-a43f-28dff1c831be",
+      "parentId": "b3a47096-ff4f-43e5-2795-4de6b7d1014c",
+      "isEditable": false,
+      "isLoadable": false
+    },
+    {
+      "id": "d1545bc6-7cd8-5fbf-4bac-5b84af67fbc2",
       "attributeId": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
       "control": "input_type",
-      "parentId": "8ec15ba4-b32f-b00b-8ed8-9f5df8783374",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "dc907463-a3f7-5fc0-fcbb-6476f8e01ecc",
-      "attributeId": "dc49e4e7-17a6-4bd8-ada9-0598ac215a66",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "f483e086-9aa5-96a7-841e-2ab447d76485",
-      "attributeId": "20f8880c-ed7b-463c-9c87-4dd4257b47e9",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "9e52f51c-70a2-7bd7-d357-9959be875474",
-      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
-      "control": "input_description",
-      "parentId": "f483e086-9aa5-96a7-841e-2ab447d76485",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "f5e73e8d-50f3-70b0-c498-b8b327b5e238",
-      "attributeId": "c5a42dcc-92b9-4fd5-a924-7d9e482155bd",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "f4b61420-44ff-d4bf-5d2d-473f2ac7bcec",
-      "attributeId": "e11d277e-7e14-4a12-8093-2112c44c3904",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "b1dc8cc7-3797-a7f4-a5c2-ddd30760404b",
-      "attributeId": "0f9d3552-fe3d-486a-9ff1-ab730f85a55a",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "9f108c09-4f57-0b10-d869-5ad3c6e341c8",
-      "attributeId": "751b58a3-d65b-4929-ac0d-f827acaedbe7",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "10d8b0c0-f09b-97cd-731a-5923dfe4c2c8",
-      "attributeId": "a637ebbc-85ff-4003-8b20-aad2d4ad1eae",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "1e721933-bf40-cecc-fd6b-dbba2900535d",
-      "attributeId": "4fa02def-abc9-4abf-9cf2-795dcbee93cc",
-      "control": "input_product_name",
-      "parentId": "10d8b0c0-f09b-97cd-731a-5923dfe4c2c8",
+      "parentId": "cf319949-b4f0-d86f-4032-3296f3f5cfbc",
       "isEditable": false,
       "isLoadable": true
     }

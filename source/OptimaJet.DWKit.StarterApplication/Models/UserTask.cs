@@ -11,7 +11,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasOne("product", Link.None)]
         public virtual Product Product { get; set; }
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
         [Attr("activity-name")]
         public String ActivityName { get; set; }

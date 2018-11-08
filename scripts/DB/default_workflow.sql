@@ -1,16 +1,3 @@
-CREATE VIEW "abV_WorkflowAppBuildersProduct" AS
-SELECT
-    prod."WorkflowProcessId" as "Id",
-    prod."Id" as "ProductId",
-    proj."OwnerId" as "UserId",
-    proj."Id" as "ProjectId",
-    proj."TypeId" as "ApplicationTypeId",
-    prod."StoreId",
-    prod."StoreLanguageId",
-    prod."ProductDefinitionId"
-   FROM ("Products" prod
-     JOIN "Projects" proj ON ((proj."Id" = prod."ProjectId")));
-
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
 (1,	'sil_android_google_play',	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay',	1);
 
