@@ -63,6 +63,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 // services.AddAppAuthorization();
 
                 services.AddScoped(typeof(IJobRepository<>), typeof(JobRepository<>));
+                services.AddScoped(typeof(IJobRepository<,>), typeof(JobRepository<,>));
                 services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
 
 
