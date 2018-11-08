@@ -18,6 +18,10 @@
   color: $gray;
 }
 
+.light-gray-text {
+  color: $light-gray;
+}
+
 a.white-text {
   &:hover {
     color: darken(white, 30%);

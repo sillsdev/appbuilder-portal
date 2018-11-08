@@ -20,8 +20,9 @@ class ItemActions extends React.Component<i18nProps> {
         className='line-height-0'
       >
         <Dropdown.Menu>
-          <Dropdown.Item text={t('project.products.options.update')} />
-          <Dropdown.Item text={t('project.products.options.publish')} />
+          <Dropdown.Item className='capitalize' text={t('project.products.rebuild')} />
+          <Dropdown.Item className='capitalize' text={t('project.products.options.update')} />
+          <Dropdown.Item className='capitalize' text={t('project.products.options.publish')} />
         </Dropdown.Menu>
       </Dropdown>
     );

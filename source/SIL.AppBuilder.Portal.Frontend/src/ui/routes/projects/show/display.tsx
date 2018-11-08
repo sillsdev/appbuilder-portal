@@ -50,13 +50,13 @@ class Display extends React.Component<IProps> {
       ),
       render: () =>
         <Tab.Pane attached={false}>
-          <div className='flex-sm'>
-            <div className='flex-grow p-r-lg-md'>
+          <div className='flex-lg'>
+            <div className='flex-grow p-r-lg-lg'>
               <Details project={project} />
               <Products project={project} />
               <Settings project={project} />
             </div>
-            <div className='thin-border w-50-md m-t-lg-xs-only m-t-lg-sm-only'>
+            <div className='thin-border w-50-lg m-t-lg-xs-only m-t-lg-sm-only'>
               <Owners project={project} />
               <Reviewers project={project} />
             </div>
