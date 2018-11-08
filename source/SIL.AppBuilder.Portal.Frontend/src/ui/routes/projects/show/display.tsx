@@ -132,7 +132,6 @@ class Display extends React.Component<IProps> {
                 }
               >
                 <Dropdown.Menu>
-                  <Dropdown.Item text={t('project.dropdown.transfer')} />
                   <Dropdown.Item
                     data-test-archive
                     text={toggleText}
