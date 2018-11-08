@@ -12,7 +12,10 @@
       "onCommandClick": {
         "active": true,
         "actions": [
-          "workflowCommand"
+          "workflowCommand",
+          "validate",
+          "save",
+          "refresh"
         ],
         "targets": [],
         "parameters": []
@@ -27,7 +30,24 @@
       }
     },
     "style-source": "float:left",
-    "blockSetState": false
+    "blockSetState": true
+  },
+  {
+    "key": "btnOpenInWorkflowDesigner",
+    "data-buildertype": "button",
+    "content": "Open in Workflow Designer",
+    "circular": true,
+    "events": {
+      "onClick": {
+        "active": true,
+        "actions": [
+          "openworkflowdesigner"
+        ],
+        "targets": [],
+        "parameters": []
+      }
+    },
+    "floated": "left"
   },
   {
     "key": "container_1",

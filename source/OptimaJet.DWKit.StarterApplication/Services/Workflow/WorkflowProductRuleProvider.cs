@@ -28,11 +28,38 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public WorkflowProductRuleProvider(IServiceProvider serviceProvider)
         {
             //Register your rules in the _rules Dictionary
+            _rules.Add("CheckRole", new RuleFunction { CheckFunction = RoleCheck, GetFunction = RoleGet });
             _rules.Add("IsOwner", new RuleFunction { CheckFunction = ProjectOwnerCheck, GetFunction = ProjectOwnerGet });
             _rules.Add("IsOrgAdmin", new RuleFunction { CheckFunction = OrgAdminCheck, GetFunction = OrgAdminGet });
             ServiceProvider = serviceProvider;
         }
 
+        //
+        // CheckRole
+        //
+        public IEnumerable<string> RoleGet(ProcessInstance processInstance, WorkflowRuntime runtime, string parameter)
+        {
+            var rolesModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwSecurityRole").Result;
+            var role = rolesModel.GetAsync(Filter.And.Equal(parameter, "Name")).Result.FirstOrDefault();
+            if (role == null)
+                return new List<string>();
+            var roleUserModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwV_Security_UserRole").Result;
+            return roleUserModel.GetAsync(Filter.And.Equal(role.GetId(), "RoleId")).Result.Select(r => r["UserId"].ToString()).Distinct();
+        }
+
+        public bool RoleCheck(ProcessInstance processInstance, WorkflowRuntime runtime, string identityId, string parameter)
+        {
+            var rolesModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwSecurityRole").Result;
+            var role = rolesModel.GetAsync(Filter.And.Equal(parameter, "Name")).Result.FirstOrDefault();
+            if (role == null)
+                return false;
+            var roleUserModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwV_Security_UserRole").Result;
+            return roleUserModel.GetCountAsync(Filter.And.Equal(role.GetId(), "RoleId").Equal(Guid.Parse(identityId), "UserId")).Result > 0;
+        }
+
+        //
+        // IsOrgAdmin
+        //
         public IEnumerable<string> OrgAdminGet(ProcessInstance processInstance, WorkflowRuntime runtime, string parameter)
         {
             using (var scope = ServiceProvider.CreateScope()) {
@@ -84,6 +111,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
+        //
+        // IsOwner
+        //
         public IEnumerable<string> ProjectOwnerGet(ProcessInstance processInstance, WorkflowRuntime runtime, string parameter)
         {
             using (var scope = ServiceProvider.CreateScope())
