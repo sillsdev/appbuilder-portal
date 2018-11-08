@@ -1,65 +1,96 @@
 import * as React from 'react';
-import { match as Match } from 'react-router';
-import { Button } from 'semantic-ui-react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
 import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 
-import AddGroupForm from './add-group';
+import Form from './form';
 import List from './list';
-import { withTranslations } from '@lib/i18n';
+import { withLoader, GroupResource } from '@data';
+import { withTranslations, i18nProps } from '@lib/i18n';
+import { withDataActions, IProvidedProps } from '@data/containers/resources/group/with-data-actions';
 
 export const pathName = '/organizations/:orgId/settings/groups';
 
-export interface Params {
-  orgId: string;
+interface IOwnProps {
+  groups: GroupResource[];
 }
 
-export interface IProps {
-  match: Match<Params>;
-  organization: any;
+interface IState {
+  showForm: boolean;
+  groupToEdit: GroupResource;
 }
 
-export interface IState {
-  showAddGroupForm: boolean;
-}
+type IProps =
+  & IOwnProps
+  & IProvidedProps
+  & i18nProps;
 
 @withTemplateHelpers
-class GroupsRoute extends React.Component<IProps & i18nProps, IState> {
+class GroupsRoute extends React.Component<IProps, IState> {
+
   toggle: Toggle;
-  state = { showAddGroupForm: false };
+
+  state = {
+    showForm: false,
+    groupToEdit: null
+  };
+
+  setGroupToEdit = (group) => {
+    this.setState({
+      groupToEdit: group,
+      showForm: true
+    });
+  }
 
   render() {
     const { toggle } = this;
-    const { match, t } = this.props;
-    const { showAddGroupForm } = this.state;
-    const { params: { orgId } } = match;
+    const { t, groups, createRecord, updateAttributes, removeRecord } = this.props;
+    const { showForm, groupToEdit } = this.state;
+
+    const formProps = {
+      groupToEdit,
+      createRecord,
+      updateAttributes,
+      onFinish: () => {
+        this.setState({
+          showForm: false,
+          groupToEdit: null
+        });
+      }
+    };
+
+    const listProps = {
+      removeRecord,
+      setGroupToEdit: this.setGroupToEdit,
+      groups
+    };
 
     return (
-      <div className='sub-page-content'>
+      <div className='sub-page-content' data-test-org-groups>
         <h2 className='sub-page-heading'>{t('org.groupsTitle')}</h2>
 
-
-        <List />
-
-        { !showAddGroupForm && (
-          <Button
-            className='tertiary uppercase large'
-            onClick={toggle('showAddGroupForm')}>
+        {!showForm &&
+          <button
+            data-test-org-add-group-button
+            className='ui button tertiary uppercase large'
+            onClick={toggle('showForm')}>
             {t('org.addGroupButton')}
-          </Button>
-        ) }
+          </button>
+        }
 
-        { showAddGroupForm && (
-          <AddGroupForm onFinish={toggle('showAddGroupForm')} />
-        ) }
+        { showForm && <Form {...formProps} /> }
 
-
+        <List {...listProps} />
       </div>
     );
   }
 }
 
 export default compose(
-  withTranslations
+  withTranslations,
+  withOrbit(({ organization }) => ({
+    groups: q => q.findRelatedRecords(organization, 'groups')
+  })),
+  withDataActions,
+  withLoader(({ groups }) => !groups),
 )( GroupsRoute );

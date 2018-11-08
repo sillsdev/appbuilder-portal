@@ -53,7 +53,7 @@ const mapRecordsToProps = (ownProps: PassedProps) => {
   return {
     cacheKey: [`org-${orgId}`],
     organization: [q => buildFindRecord(q, TYPE_NAME, orgId), buildOptions({
-      include: ['organization-product-definitions.product-definition']
+      include: ['organization-product-definitions.product-definition','groups']
     })],
   };
 };
