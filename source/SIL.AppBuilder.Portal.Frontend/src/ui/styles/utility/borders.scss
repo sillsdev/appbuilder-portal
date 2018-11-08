@@ -9,7 +9,7 @@
   }
 
   .thin-inverted-border#{$modifier} {
-    border: 1px solid $inverted-border-color;
+    border: 1px solid $inverted-border-color !important;
   }
 
   .page-heading-border#{$modifier} {

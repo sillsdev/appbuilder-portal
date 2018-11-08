@@ -7,7 +7,7 @@
 }
 
 .dark-blue-text {
-  color: $blue-dark;
+  color: $blue-dark !important;
 }
 
 .blue-highlight {
@@ -44,5 +44,5 @@ a.white-text {
 }
 
 .bg-transparent {
-  background: transparent;
+  background: transparent !important;
 }
