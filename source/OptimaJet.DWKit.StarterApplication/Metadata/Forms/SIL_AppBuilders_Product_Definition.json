@@ -67,24 +67,52 @@
             "widths": "equal",
             "children": [
               {
-                "key": "dictionary_store",
-                "data-buildertype": "dictionary",
+                "key": "dropdown_store",
+                "data-buildertype": "dropdown",
                 "label": "Store",
                 "fluid": true,
                 "selection": true,
-                "dataModel": "Stores",
-                "columns": "Id ASC, Description"
+                "data-elements": [
+                  {
+                    "key": 1,
+                    "value": 1,
+                    "text": "Wycliffe USA"
+                  },
+                  {
+                    "key": 2,
+                    "value": 2,
+                    "text": "Internet Publishing Service"
+                  },
+                  {
+                    "key": 3,
+                    "value": 3,
+                    "text": "Indigitous Hack"
+                  }
+                ]
               },
               {
-                "key": "dictionary_language",
-                "data-buildertype": "dictionary",
+                "key": "dropdown_language",
+                "data-buildertype": "dropdown",
                 "label": "Store Listing Language",
                 "fluid": true,
                 "selection": true,
-                "dataModel": "StoreLanguages",
-                "columns": "Id ASC, Description",
-                "events": {},
-                "other-required": true
+                "data-elements": [
+                  {
+                    "key": 1,
+                    "value": "20",
+                    "text": "English (United States) - en-US"
+                  },
+                  {
+                    "key": 2,
+                    "value": "62",
+                    "text": "Spanish (Latin America - es-419"
+                  },
+                  {
+                    "key": 3,
+                    "value": "53",
+                    "text": "Portuguese (Brazil) - pt-BR"
+                  }
+                ]
               }
             ]
           }
