@@ -32,15 +32,6 @@ type IProps =
   & i18nProps
   & IDataActionsProps;
 
-const mapRecordsToProps = (passedProps) => {
-  const { project } = passedProps;
-
-  return {
-    organization: q => q.findRelatedRecord(project, 'organization'),
-    products: q => q.findRelatedRecords(project, 'products')
-  };
-};
-
 class Products extends React.Component<IProps> {
 
   onSelectionChange = async (item: ProductDefinitionResource) => {
@@ -78,15 +69,8 @@ class Products extends React.Component<IProps> {
         </div>
       );
     } else {
-      productList = products.map((product, i) => {
-
-        const productItemProps = {
-          product,
-          includeHeader: (i === 0)
-        };
-
-        return <ProductItem key={i} {...productItemProps} />;
-      }
+      productList = products.map((product, i) =>
+        <ProductItem key={i} product={product} />
       );
     }
 
@@ -98,26 +82,32 @@ class Products extends React.Component<IProps> {
         <h3 className='m-b-md fs-21'>
           {t('project.products.title')}
         </h3>
-        <div className='flex align-items-center fs-13 bold gray-text m-b-sm d-xs-only-none d-sm-only-none'>
-          <div className='w-55'/>
-          <div className='w-20 item-title'>{t('project.products.updated')}</div>
-          <div className='w-20 item-title'>{t('project.products.published')}</div>
-          <div className='w-5'/>
-        </div>
+        {
+          !isEmpty(products) &&
+          (
+            <div className='flex align-items-center fs-13 bold gray-text m-b-sm d-xs-only-none d-sm-only-none'>
+              <div className='w-55' />
+              <div className='w-20 item-title'>{t('project.products.updated')}</div>
+              <div className='w-20 item-title'>{t('project.products.published')}</div>
+              <div className='w-5' />
+            </div>
+          )
+        }
         <div className='m-b-lg'>
           {productList}
         </div>
         <ProductModal {...productModalProps} />
       </div>
     );
-
   }
-
 }
 
 export default compose(
   withTranslations,
-  withOrbit(mapRecordsToProps),
+  withOrbit(({project}) => ({
+    organization: q => q.findRelatedRecord(project, 'organization'),
+    products: q => q.findRelatedRecords(project, 'products')
+  })),
   withLoader(({products}) => !products),
   withDataActions
 )(Products);
