@@ -1,20 +1,14 @@
 [
   {
-    "key": "header_product_definition",
-    "data-buildertype": "header",
-    "content": "Product Definition",
-    "size": "medium"
-  },
-  {
     "key": "workflow",
     "data-buildertype": "workflowbar",
     "events": {
       "onCommandClick": {
         "active": true,
         "actions": [
-          "workflowCommand",
           "validate",
           "save",
+          "workflowExecuteCommand",
           "refresh"
         ],
         "targets": [],
@@ -23,31 +17,17 @@
       "onSetStateClick": {
         "active": true,
         "actions": [
-          "workflowSetState"
+          "validate",
+          "save",
+          "workflowSetState",
+          "refresh"
         ],
         "targets": [],
         "parameters": []
       }
     },
-    "style-source": "float:left",
+    "style-source": "",
     "blockSetState": true
-  },
-  {
-    "key": "btnOpenInWorkflowDesigner",
-    "data-buildertype": "button",
-    "content": "Open in Workflow Designer",
-    "circular": true,
-    "events": {
-      "onClick": {
-        "active": true,
-        "actions": [
-          "openworkflowdesigner"
-        ],
-        "targets": [],
-        "parameters": []
-      }
-    },
-    "floated": "left"
   },
   {
     "key": "container_1",
@@ -111,5 +91,58 @@
         ]
       }
     ]
+  },
+  {
+    "key": "save",
+    "data-buildertype": "button",
+    "content": "Save",
+    "primary": true,
+    "events": {
+      "onClick": {
+        "actions": [
+          "validate",
+          "save"
+        ],
+        "active": true,
+        "targets": [],
+        "parameters": []
+      }
+    }
+  },
+  {
+    "key": "saveclose",
+    "data-buildertype": "button",
+    "content": "Save & Close",
+    "secondary": true,
+    "events": {
+      "onClick": {
+        "actions": [
+          "validate",
+          "save",
+          "exit"
+        ],
+        "active": true,
+        "targets": [],
+        "parameters": []
+      }
+    }
+  },
+  {
+    "key": "cancel",
+    "data-buildertype": "button",
+    "content": "Cancel",
+    "events": {
+      "onClick": {
+        "active": true,
+        "actions": [
+          "cancel",
+          "exit"
+        ],
+        "targets": [],
+        "parameters": []
+      }
+    },
+    "secondary": true,
+    "floated": "right"
   }
 ]
