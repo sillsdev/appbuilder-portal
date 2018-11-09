@@ -63,7 +63,7 @@ class TaskRow extends React.Component<IProps> {
         </td>
         <td className={cellSecondaryClasses}>
           <div className='flex align-items-center'>
-            <ProductIcon product={product} />
+            <ProductIcon product={product} selected={true}/>
             <span className='p-l-sm-xs'>{productAttrs.name}</span>
           </div>
         </td>

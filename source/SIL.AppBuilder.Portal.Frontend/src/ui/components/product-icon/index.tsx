@@ -11,28 +11,31 @@ const colorStyles = {
   html: { color: '#f5a623' }
 };
 
+const DEFAULT_COLOR = { color: '#9b9b9b' };
+
 const iconMap = {
-  android: () => <AndriodIcon style={colorStyles.android} />,
-  html: () => <WebIcon style={colorStyles.html} />,
+  android: (selected) => <AndriodIcon style={selected ? colorStyles.android : DEFAULT_COLOR} />,
+  html: (selected) => <WebIcon style={selected ? colorStyles.html : DEFAULT_COLOR} />,
   [undefined]: () => <MissingIcon />
 };
 
 // TODO: We need to change this to product definition
 export interface IProps {
   product: ProductDefinitionResource | ProductResource;
+  selected?: boolean;
 }
 
 export default class ProductIcon extends React.Component<IProps> {
 
   render() {
 
-    const { product } = this.props;
+    const { product, selected } = this.props;
 
     const { name } = attributesFor(product);
     const lowerName = name && name.toLowerCase();
     const closestKey = Object.keys(iconMap)
       .find(key => lowerName && lowerName.includes(key));
 
-    return iconMap[closestKey]() || <WebIcon />;
+    return iconMap[closestKey](selected) || <WebIcon />;
   }
 }

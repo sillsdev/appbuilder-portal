@@ -50,7 +50,7 @@ class ProductItem extends React.Component<IProps> {
         data-test-project-product-item
       >
         <div className='flex align-items-center w-55-md'>
-          <ProductIcon product={productDefinition} />
+          <ProductIcon product={productDefinition} selected={true} />
           <div
             data-test-project-product-name
             className='m-l-sm'

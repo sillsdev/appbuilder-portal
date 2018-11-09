@@ -74,6 +74,32 @@ Inputs
   background-color: $checkbox-background-color;
 }
 
+.ui.checkbox:not(.toggle) .box:before,
+.ui.checkbox:not(.toggle) label:before {
+  border-radius: 1px;
+}
+
+.ui.checkbox:not(.toggle) input:checked ~ .box:after,
+.ui.checkbox:not(.toggle) input:checked ~ label:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0.5px;
+    left: 0.5px;
+    width: 10px;
+    height: 5px;
+    border: solid 2px $white;
+    border-right: none;
+    border-top: none;
+    transform: translate(3px, 4px) rotate(-45deg);
+}
+
+.ui.checkbox:not(.toggle) input:checked ~ .box:before,
+.ui.checkbox:not(.toggle) input:checked ~ label:before {
+  background: $blue-highlight;
+  border-color: $blue-highlight;
+}
+
 
 /***********************************
 Vertical Menu
