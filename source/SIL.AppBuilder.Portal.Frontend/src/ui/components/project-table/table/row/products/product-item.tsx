@@ -81,7 +81,7 @@ class ProductItem extends React.Component<IProps> {
     return (
       <div className='flex flex-column-xxs flex-row-xs grid product p-b-sm p-t-sm'>
         <div className='col flex align-items-center w-100-xs-only flex-100 p-l-md p-r-md'>
-          <ProductIcon product={productDefinition} />
+          <ProductIcon product={productDefinition} selected={true} />
           <span className='p-l-sm-xs'>{this.humanReadableName()}</span>
         </div>
 

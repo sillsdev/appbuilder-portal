@@ -72,7 +72,10 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
               value={element.id}
               checked={this.inSelectedList(element)}
             />
-            { displayProductIcon ? <ProductIcon product={element} /> : null }
+            {
+              displayProductIcon &&
+                <ProductIcon product={element} selected={this.inSelectedList(element)} />
+            }
             <span
               data-test-item-text
               className='p-l-sm-xs'
