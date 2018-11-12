@@ -53,7 +53,7 @@ class ProductItem extends React.Component<IProps> {
           <ProductIcon product={productDefinition} selected={true} />
           <div
             data-test-project-product-name
-            className='m-l-sm'
+            className='m-l-sm fs-16 bold blue-highlight'
           >
             {description}
           </div>
