@@ -2,60 +2,72 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
-import { ResourceObject } from 'jsonapi-typescript';
+import { withData as withOrbit } from 'react-orbitjs';
+import { ROLE } from '@data/models/role';
+import { RequireRole } from '@ui/components/authorization';
 
-import { attributesFor, PROJECTS_TYPE } from '@data';
-import { ProjectAttributes } from '@data/models/project';
+import { attributesFor, ProjectResource, UserResource } from '@data';
 import { withProjectOperations } from '@ui/routes/projects/show/with-project-operations';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { withCurrentUser, IProvidedProps as currentUserProps } from '@data/containers/with-current-user';
 
-export interface IProps {
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
-  toggleArchiveProject: (project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>) => void;
+interface IOWnProps {
+  project: ProjectResource;
+  owner: UserResource;
+  toggleArchiveProject: () => void;
 }
 
-class RowActions extends React.Component<IProps & i18nProps> {
+type IProps =
+  & IOWnProps
+  & i18nProps
+  & currentUserProps
 
-  toggleArchivedProject = () => {
-    const { project, toggleArchiveProject } = this.props;
-    toggleArchiveProject(project);
-  }
+class RowActions extends React.Component<IProps> {
 
   render() {
 
-    const { t, project } = this.props;
+    const { t, toggleArchiveProject, project, owner, currentUser } = this.props;
     const { dateArchived } = attributesFor(project);
 
     const dropdownItemText = !dateArchived ?
       t('project.dropdown.archive') :
       t('project.dropdown.reactivate');
 
+    const requireRoleProps = {
+      roleName: ROLE.OrganizationAdmin,
+      overrideIf: (props: {}) => {
+        return owner.id === currentUser.id;
+      }
+    }
+
     return (
       <Dropdown
         className='project-actions'
         pointing='top right'
         icon={null}
-        trigger={
-          <MoreVerticalIcon />
-        }
+        trigger={<MoreVerticalIcon />}
       >
         <Dropdown.Menu>
           <Dropdown.Item
             text={t('project.dropdown.build')}
           />
-          <Dropdown.Item
-            text={dropdownItemText}
-            onClick={this.toggleArchivedProject}
-          />
+          <RequireRole {...requireRoleProps}>
+            <Dropdown.Item
+              text={dropdownItemText}
+              onClick={toggleArchiveProject}
+            />
+          </RequireRole>
         </Dropdown.Menu>
       </Dropdown>
     );
-
   }
-
 }
 
 export default compose(
   withTranslations,
+  withCurrentUser(),
+  withOrbit(({project}) => ({
+    owner: q => q.findRelatedRecord(project,'owner')
+  })),
   withProjectOperations
 )(RowActions);
