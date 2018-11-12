@@ -12,6 +12,10 @@
     border: 1px solid $inverted-border-color !important;
   }
 
+  .blue-light-border#{$modifier} {
+    border: 1px solid $blue-highlight !important;
+  }
+
   .page-heading-border#{$modifier} {
     border-bottom: 1px solid $border-color;
   }

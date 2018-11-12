@@ -59,31 +59,38 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
     return (
       <div data-test-multi-select>
       {
-        list.map((element, index) => (
-          <div
-            key={index}
-            className='col flex align-items-center w-100-xs-only flex-100 m-b-sm multi-select-item'
-            data-test-item
-            onClick={this.onChange(element)}
-          >
-            <Checkbox
-              data-test-item-checkbox
-              className='m-r-md'
-              value={element.id}
-              checked={this.inSelectedList(element)}
-            />
-            {
-              displayProductIcon &&
-                <ProductIcon product={element} selected={this.inSelectedList(element)} />
-            }
-            <span
-              data-test-item-text
-                className={`p-l-sm-xs ${this.inSelectedList(element) && 'black-text'}`}
+        list.map((element, index) => {
+
+          const isSelected = this.inSelectedList(element);
+
+          return (
+            <div
+              key={index}
+              className={`flex align-items-center w-100-xs-only
+              flex-100 m-b-sm multi-select-item
+              ${ isSelected && 'blue-light-border'}`}
+              data-test-item
+              onClick={this.onChange(element)}
             >
-              {attributesFor(element).description}
-            </span>
-          </div>
-        ))
+              <Checkbox
+                data-test-item-checkbox
+                className='m-r-md'
+                value={element.id}
+                checked={isSelected}
+              />
+              {
+                displayProductIcon &&
+                <ProductIcon product={element} selected={isSelected} />
+              }
+              <span
+                data-test-item-text
+                className={`p-l-sm-xs ${isSelected && 'black-text'}`}
+              >
+                {attributesFor(element).description}
+              </span>
+            </div>
+          );
+        })
       }
       </div>
     );
