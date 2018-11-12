@@ -78,7 +78,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
             }
             <span
               data-test-item-text
-              className='p-l-sm-xs'
+                className={`p-l-sm-xs ${this.inSelectedList(element) && 'black-text'}`}
             >
               {attributesFor(element).description}
             </span>
