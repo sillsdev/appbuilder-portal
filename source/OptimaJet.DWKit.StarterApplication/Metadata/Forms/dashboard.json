@@ -93,6 +93,7 @@
       }
     },
     "multiselect": true,
-    "editFlow": "SIL_Default_AppBuilders_Android_GooglePlay"
+    "editFlow": "SIL_Default_AppBuilders_Android_GooglePlay_Flow",
+    "editType": "flow"
   }
 ]

@@ -1,12 +1,10 @@
 {
   "name": "SIL_AppBuilders_Project_Approval",
-  "lastUpdate": "2018-11-08T15:20:25.1461259+00:00",
+  "lastUpdate": "2018-11-12T16:28:50.00195-05:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
-  "schemes": [
-    "SIL_Default_AppBuilders_Android_GooglePlay"
-  ],
+  "schemes": [],
   "dataMap": [
     {
       "id": "b2a60f6d-28e0-65f4-197c-1f44fbf1fdee",
@@ -39,44 +37,38 @@
       "isLoadable": true
     },
     {
+      "id": "03951924-2185-40f1-b4d6-4599424bb39c",
+      "attributeId": "4fa02def-abc9-4abf-9cf2-795dcbee93cc",
+      "control": "input_product",
+      "parentId": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "269ff72b-2ee4-cf89-0ec1-beefa784074c",
+      "attributeId": "cd802744-15b2-43a9-b66a-48997a8e5a9f",
+      "parentId": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "9a66c58a-775d-8c9c-9203-801d8143cd0f",
+      "attributeId": "409379f4-a53a-4ae9-a43f-28dff1c831be",
+      "parentId": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
+      "isEditable": false,
+      "isLoadable": false
+    },
+    {
+      "id": "da0d1492-0644-de44-114d-1b29205d0892",
+      "attributeId": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
+      "control": "input_application_type",
+      "parentId": "9a66c58a-775d-8c9c-9203-801d8143cd0f",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "e738604a-ee0f-3db8-6f78-e16c848b6db6",
       "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "f91cbb3c-d2d1-050b-4efa-b3d0b7ecfb23",
-      "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "7d7a138d-6def-cc77-27e1-6ef1b030208f",
-      "attributeId": "cc8522c4-bc11-4669-a876-3ab71cfeba1f",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "d28d0b46-8cc2-f4cb-a50c-38e5f11cad4e",
-      "attributeId": "8759b596-a767-45c0-9e30-387b41e190c9",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "2ff0ae40-339b-ab19-ed99-98e8f9b42757",
-      "attributeId": "46ebc3ca-16f9-4cf2-bea0-5d52f30e031e",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "6020a864-3ad3-75c7-e4b4-fec32822f8e7",
-      "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "08b08182-26d8-bef9-2f04-482f6f2512a5",
-      "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
       "isEditable": true,
       "isLoadable": true
     },
@@ -120,29 +112,44 @@
       "isLoadable": true
     },
     {
-      "id": "269ff72b-2ee4-cf89-0ec1-beefa784074c",
-      "attributeId": "cd802744-15b2-43a9-b66a-48997a8e5a9f",
-      "control": "input_product",
-      "parentId": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
-      "isEditable": false,
+      "id": "f91cbb3c-d2d1-050b-4efa-b3d0b7ecfb23",
+      "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
+      "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "9a66c58a-775d-8c9c-9203-801d8143cd0f",
-      "attributeId": "409379f4-a53a-4ae9-a43f-28dff1c831be",
-      "parentId": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
-      "isEditable": false,
-      "isLoadable": false
+      "id": "7d7a138d-6def-cc77-27e1-6ef1b030208f",
+      "attributeId": "cc8522c4-bc11-4669-a876-3ab71cfeba1f",
+      "isEditable": true,
+      "isLoadable": true
     },
     {
-      "id": "da0d1492-0644-de44-114d-1b29205d0892",
-      "attributeId": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
-      "control": "input_application_type",
-      "parentId": "9a66c58a-775d-8c9c-9203-801d8143cd0f",
-      "isEditable": false,
+      "id": "d28d0b46-8cc2-f4cb-a50c-38e5f11cad4e",
+      "attributeId": "8759b596-a767-45c0-9e30-387b41e190c9",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "2ff0ae40-339b-ab19-ed99-98e8f9b42757",
+      "attributeId": "46ebc3ca-16f9-4cf2-bea0-5d52f30e031e",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "6020a864-3ad3-75c7-e4b4-fec32822f8e7",
+      "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
+      "control": "dropdown_store",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "08b08182-26d8-bef9-2f04-482f6f2512a5",
+      "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
+      "control": "dropdown_language",
+      "isEditable": true,
       "isLoadable": true
     }
   ],
   "dataColl": [],
-  "securityGroup": "Organization"
+  "securityGroup": ""
 }
