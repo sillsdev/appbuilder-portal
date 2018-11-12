@@ -20,7 +20,7 @@ interface IOWnProps {
 type IProps =
   & IOWnProps
   & i18nProps
-  & currentUserProps
+  & currentUserProps;
 
 class RowActions extends React.Component<IProps> {
 
@@ -38,7 +38,7 @@ class RowActions extends React.Component<IProps> {
       overrideIf: (props: {}) => {
         return owner.id === currentUser.id;
       }
-    }
+    };
 
     return (
       <Dropdown
