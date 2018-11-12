@@ -27,7 +27,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             Log.Information($":::::::::: ActivityChanged: pid={args.ProcessId.ToString()}, scheme={args.SchemeCode}, activity={args.CurrentActivityName}, state={args.CurrentState}, last={args.PreviousState}");
             // There is a bit of a timing window before the ProcessId is assigned to the Product.  So delay this a little bit (15 seconds in the default minimum time.
-            BackgroundJob.Schedule<WorkflowProductService>(service => service.ProductProcessChanged(args.ProcessId, args.CurrentActivityName, args.CurrentState), TimeSpan.FromSeconds(15));
+            BackgroundJob.Enqueue<WorkflowProductService>(service => service.ProductProcessChanged(args.ProcessId, args.CurrentActivityName, args.CurrentState));
 
             //TODO change Document transition history and WorkflowInbox
         }
