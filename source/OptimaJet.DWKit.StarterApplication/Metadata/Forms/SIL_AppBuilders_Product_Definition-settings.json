@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Product_Definition",
-  "lastUpdate": "2018-11-09T14:16:25.2445989+00:00",
+  "lastUpdate": "2018-11-12T14:14:08.673882-05:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "dataSourceType": "",
   "isTemplate": false,
@@ -100,14 +100,14 @@
     {
       "id": "72851cd8-0529-74ea-9581-61c71fa6e082",
       "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
-      "control": "dropdown_stores",
+      "control": "dropdown_store",
       "isEditable": true,
       "isLoadable": true
     },
     {
       "id": "d96a4831-19b1-e19b-2027-ea51f0245466",
       "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
-      "control": "dropdown_languages",
+      "control": "dropdown_language",
       "isEditable": true,
       "isLoadable": true
     }
