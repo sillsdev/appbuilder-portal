@@ -56,7 +56,8 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
     redirectTo,
     checkOrganizationOf,
     overrideIf,
-    componentOnForbidden: OnForbidden
+    componentOnForbidden: OnForbidden,
+    ...extraProps
   } = options;
 
   return WrappedComponent => {
@@ -64,7 +65,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
       state = { roleEvaluated: false, accessGranted: false, error: '' };
 
       doesUserHaveAccess = async () => {
-        if (overrideIf && overrideIf(this.props)) {
+        if (overrideIf && overrideIf({ ...(this.props as any), ...(extraProps || {}) })) {
           return true;
         }
 

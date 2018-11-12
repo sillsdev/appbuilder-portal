@@ -9,7 +9,6 @@ import { RequireRole } from '@ui/components/authorization';
 import { attributesFor, ProjectResource, UserResource } from '@data';
 import { withProjectOperations } from '@ui/routes/projects/show/with-project-operations';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { withCurrentUser, IProvidedProps as currentUserProps } from '@data/containers/with-current-user';
 
 interface IOWnProps {
   project: ProjectResource;
@@ -19,14 +18,17 @@ interface IOWnProps {
 
 type IProps =
   & IOWnProps
-  & i18nProps
-  & currentUserProps;
+  & i18nProps;
 
 class RowActions extends React.Component<IProps> {
 
+  overrideIf = ({ owner, currentUser }) => {
+    return owner.id === currentUser.id;
+  }
+
   render() {
 
-    const { t, toggleArchiveProject, project, owner, currentUser } = this.props;
+    const { t, toggleArchiveProject, project, owner } = this.props;
     const { dateArchived } = attributesFor(project);
 
     const dropdownItemText = !dateArchived ?
@@ -35,9 +37,8 @@ class RowActions extends React.Component<IProps> {
 
     const requireRoleProps = {
       roleName: ROLE.OrganizationAdmin,
-      overrideIf: (props: {}) => {
-        return owner.id === currentUser.id;
-      }
+      owner,
+      overrideIf: this.overrideIf
     };
 
     return (
@@ -65,7 +66,6 @@ class RowActions extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
-  withCurrentUser(),
   withOrbit(({project}) => ({
     owner: q => q.findRelatedRecord(project,'owner')
   })),
