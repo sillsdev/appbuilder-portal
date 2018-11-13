@@ -1,13 +1,10 @@
 {
   "name": "SIL_AppBuilders_Product_Definition",
-  "lastUpdate": "2018-11-08T15:47:43.2464825+00:00",
+  "lastUpdate": "2018-11-12T14:14:08.673882-05:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "dataSourceType": "",
   "isTemplate": false,
   "triggers": [],
-  "schemes": [
-    "SIL_Default_AppBuilders_Android_GooglePlay"
-  ],
   "dataMap": [
     {
       "id": "110bebb2-587f-327a-2849-9f77e8606369",
@@ -40,9 +37,40 @@
       "isLoadable": true
     },
     {
+      "id": "6fffb992-a87a-f532-fd63-c0f524165a3e",
+      "attributeId": "4fa02def-abc9-4abf-9cf2-795dcbee93cc",
+      "control": "input_description",
+      "parentId": "b3a47096-ff4f-43e5-2795-4de6b7d1014c",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "cf319949-b4f0-d86f-4032-3296f3f5cfbc",
+      "attributeId": "409379f4-a53a-4ae9-a43f-28dff1c831be",
+      "parentId": "b3a47096-ff4f-43e5-2795-4de6b7d1014c",
+      "isEditable": false,
+      "isLoadable": false
+    },
+    {
+      "id": "d1545bc6-7cd8-5fbf-4bac-5b84af67fbc2",
+      "attributeId": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
+      "control": "input_type",
+      "parentId": "cf319949-b4f0-d86f-4032-3296f3f5cfbc",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "c38a2890-cc2b-e5de-b8fb-0048fd6b1279",
       "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "f8ec7e90-b191-3b5b-9c23-50da8d014a54",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_product_name",
+      "parentId": "c38a2890-cc2b-e5de-b8fb-0048fd6b1279",
+      "isEditable": false,
       "isLoadable": true
     },
     {
@@ -72,44 +100,15 @@
     {
       "id": "72851cd8-0529-74ea-9581-61c71fa6e082",
       "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
+      "control": "dropdown_store",
       "isEditable": true,
       "isLoadable": true
     },
     {
       "id": "d96a4831-19b1-e19b-2027-ea51f0245466",
       "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
+      "control": "dropdown_language",
       "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "f8ec7e90-b191-3b5b-9c23-50da8d014a54",
-      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
-      "control": "input_product_name",
-      "parentId": "c38a2890-cc2b-e5de-b8fb-0048fd6b1279",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "6fffb992-a87a-f532-fd63-c0f524165a3e",
-      "attributeId": "4fa02def-abc9-4abf-9cf2-795dcbee93cc",
-      "control": "input_description",
-      "parentId": "b3a47096-ff4f-43e5-2795-4de6b7d1014c",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "cf319949-b4f0-d86f-4032-3296f3f5cfbc",
-      "attributeId": "409379f4-a53a-4ae9-a43f-28dff1c831be",
-      "parentId": "b3a47096-ff4f-43e5-2795-4de6b7d1014c",
-      "isEditable": false,
-      "isLoadable": false
-    },
-    {
-      "id": "d1545bc6-7cd8-5fbf-4bac-5b84af67fbc2",
-      "attributeId": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
-      "control": "input_type",
-      "parentId": "cf319949-b4f0-d86f-4032-3296f3f5cfbc",
-      "isEditable": false,
       "isLoadable": true
     }
   ],
