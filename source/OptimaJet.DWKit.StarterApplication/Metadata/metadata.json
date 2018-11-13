@@ -5,6 +5,7 @@
       "name": "ApplicationTypes",
       "dbObjectName": "ApplicationTypes",
       "schemaName": "",
+      "triggers": [],
       "attributes": [
         {
           "id": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
@@ -19,7 +20,7 @@
         {
           "id": "2131c2ef-1705-4c67-997e-1b37d16b8d23",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1095,7 +1096,7 @@
         {
           "id": "3a67db0d-3502-4691-a739-f290efc2b73a",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1135,7 +1136,7 @@
         {
           "id": "2a72ca20-cab0-4fc7-8d79-7c29255a3a52",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1175,7 +1176,7 @@
         {
           "id": "503f350b-55d1-4b2c-9a1c-df2659b472ed",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1215,7 +1216,7 @@
         {
           "id": "f5dc1e86-6b6d-4adc-8e14-243150b95240",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1275,7 +1276,7 @@
         {
           "id": "2e8d6fc0-f451-4229-8f7c-d9e66868026f",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1325,7 +1326,7 @@
         {
           "id": "5425dd4e-72b4-4527-abc1-5f6a3c40d997",
           "name": "PublicByDefault",
-          "type": "String",
+          "type": "Boolean",
           "typeId": 0,
           "isNullable": true,
           "isVirtual": false,
@@ -1335,7 +1336,7 @@
         {
           "id": "91f15fbd-a667-4035-904d-a546b8763eaf",
           "name": "UseSilBuildInfrastructure",
-          "type": "String",
+          "type": "Boolean",
           "typeId": 0,
           "isNullable": true,
           "isVirtual": false,
@@ -1355,7 +1356,7 @@
         {
           "id": "6b0a2d45-f542-46ed-bff5-6512169e9253",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1405,7 +1406,7 @@
         {
           "id": "bac9a92e-5866-4ed2-8ce8-cf883ca1b829",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1585,7 +1586,7 @@
         {
           "id": "f6338564-5a02-41fb-821c-9b6148f875bf",
           "name": "AllowDownloads",
-          "type": "String",
+          "type": "Boolean",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1595,7 +1596,7 @@
         {
           "id": "0ad60018-1aa7-41f9-8e8c-1c246a167ed7",
           "name": "AutomaticBuilds",
-          "type": "String",
+          "type": "Boolean",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1605,7 +1606,7 @@
         {
           "id": "88282072-a7cb-4e32-b8dd-252e43f0d65f",
           "name": "DateArchived",
-          "type": "String",
+          "type": "DateTime",
           "typeId": 0,
           "isNullable": true,
           "isVirtual": false,
@@ -1615,7 +1616,7 @@
         {
           "id": "ec6d1cf2-4325-4386-ae5f-fbe1f769d06d",
           "name": "DateCreated",
-          "type": "String",
+          "type": "DateTime",
           "typeId": 0,
           "isNullable": true,
           "isVirtual": false,
@@ -1625,7 +1626,7 @@
         {
           "id": "a97cf79e-7e6e-420a-b836-0b9aca90a72d",
           "name": "DateUpdated",
-          "type": "String",
+          "type": "DateTime",
           "typeId": 0,
           "isNullable": true,
           "isVirtual": false,
@@ -1655,7 +1656,7 @@
         {
           "id": "1d80e4df-542b-4f19-be1a-604155c7e15a",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1665,9 +1666,9 @@
         {
           "id": "50dc679b-4fc9-4f77-b4ec-21d1aaa91c41",
           "name": "IsPublic",
-          "type": "String",
+          "type": "Boolean",
           "typeId": 0,
-          "isNullable": false,
+          "isNullable": true,
           "isVirtual": false,
           "isCalculated": false,
           "isExtension": false
@@ -1726,7 +1727,7 @@
         {
           "id": "6bad32b5-bced-4b28-85cf-fe85167dea4f",
           "name": "WorkflowProjectId",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1751,6 +1752,7 @@
       "name": "Reviewers",
       "dbObjectName": "Reviewers",
       "schemaName": "",
+      "triggers": [],
       "attributes": [
         {
           "id": "0a2b52b4-bd37-4f43-bd7c-e43b03f0d2e7",
@@ -1765,7 +1767,7 @@
         {
           "id": "bd189001-8e59-48e5-b8ea-7b3eb752b0ff",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1815,7 +1817,7 @@
         {
           "id": "341609ad-6f41-4166-9085-5eb1ab72dcee",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1865,7 +1867,7 @@
         {
           "id": "d5d8e0a5-7b80-4304-8708-c377b598c2ee",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1900,6 +1902,7 @@
       "name": "StoreTypes",
       "dbObjectName": "StoreTypes",
       "schemaName": "",
+      "triggers": [],
       "attributes": [
         {
           "id": "710d4f34-c977-4077-b513-b7e323349fe7",
@@ -1914,7 +1917,7 @@
         {
           "id": "12b69a92-45b9-494c-b41d-2a2f7a994f7c",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -1939,6 +1942,7 @@
       "name": "Users",
       "dbObjectName": "Users",
       "schemaName": "",
+      "triggers": [],
       "attributes": [
         {
           "id": "df55b534-5efe-49c3-8ebb-798db97d306c",
@@ -1953,9 +1957,9 @@
         {
           "id": "912ae962-dc90-4b97-8834-a844babd0699",
           "name": "EmailNotification",
-          "type": "String",
+          "type": "Boolean",
           "typeId": 0,
-          "isNullable": false,
+          "isNullable": true,
           "isVirtual": false,
           "isCalculated": false,
           "isExtension": false
@@ -1993,7 +1997,7 @@
         {
           "id": "e63c768a-8e11-49c2-9af8-9d9d6b88edfb",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -2003,7 +2007,7 @@
         {
           "id": "a251d903-837e-4551-baa4-564821fb115c",
           "name": "IsLocked",
-          "type": "String",
+          "type": "Boolean",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -2043,7 +2047,7 @@
         {
           "id": "7900be94-12da-4e68-83b3-cd6f11381e2c",
           "name": "ProfileVisibility",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -2078,6 +2082,7 @@
       "name": "WorkflowDefinitions",
       "dbObjectName": "WorkflowDefinitions",
       "schemaName": "",
+      "triggers": [],
       "attributes": [
         {
           "id": "712c6bb1-281d-44f8-9f37-f4faff5639dd",
@@ -2092,7 +2097,7 @@
         {
           "id": "7caf1f49-bc66-4009-97f8-a84f5e233dbe",
           "name": "Enabled",
-          "type": "String",
+          "type": "Boolean",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
@@ -2102,7 +2107,7 @@
         {
           "id": "633e98bf-ec76-4994-a7fe-9e9998cebd25",
           "name": "Id",
-          "type": "String",
+          "type": "Int32",
           "typeId": 0,
           "isNullable": false,
           "isVirtual": false,
