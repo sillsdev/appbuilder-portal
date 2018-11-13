@@ -82,7 +82,7 @@ export function withData(WrappedComponent) {
 
   return compose(
     withCurrentOrganization,
-    withUserList({ include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION},${GROUP_MEMBERSHIPS}.${GROUP},user-roles` }),
+    withUserList({ include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}.groups,${GROUP_MEMBERSHIPS}.${GROUP},user-roles` }),
     withLoader(({ users }) => !users),
     withOrbit({
       organizationMemberships: q => q.findRecords('organizationMembership'),

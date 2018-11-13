@@ -2,12 +2,13 @@ import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
-import { GroupResource, withLoader, attributesFor, OrganizationResource } from '@data';
+import { GroupResource, withLoader, attributesFor, OrganizationResource, UserResource } from '@data';
 import { Checkbox } from 'semantic-ui-react';
 import { withGroupMemberships, IProvidedProps as IUserGroupProps } from '@data/containers/resources/user/with-user-groups';
 import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {
+  user: UserResource;
   organization: OrganizationResource;
   groups: GroupResource[];
 }
