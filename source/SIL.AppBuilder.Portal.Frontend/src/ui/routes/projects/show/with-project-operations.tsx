@@ -37,11 +37,7 @@ export function withProjectOperations(WrappedComponent) {
         );
       } catch (e) {
         console.error(e);
-        toast.error(
-          !dateArchived ?
-            t('project.operations.archive.error') :
-            t('project.operations.reactivate.error')
-        );
+        toast.error(e);
       }
 
     }
