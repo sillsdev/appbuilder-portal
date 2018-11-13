@@ -27,11 +27,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public WorkflowProductRuleProvider(IServiceProvider serviceProvider)
         {
+            ServiceProvider = serviceProvider;
+
             //Register your rules in the _rules Dictionary
             _rules.Add("CheckRole", new RuleFunction { CheckFunction = RoleCheck, GetFunction = RoleGet });
             _rules.Add("IsOwner", new RuleFunction { CheckFunction = ProjectOwnerCheck, GetFunction = ProjectOwnerGet });
             _rules.Add("IsOrgAdmin", new RuleFunction { CheckFunction = OrgAdminCheck, GetFunction = OrgAdminGet });
-            ServiceProvider = serviceProvider;
         }
 
         //

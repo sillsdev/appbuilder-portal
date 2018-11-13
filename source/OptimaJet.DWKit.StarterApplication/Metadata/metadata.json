@@ -2814,6 +2814,15 @@
             "*"
           ],
           "form": "SIL_AppBuilders_Project_Approval"
+        },
+        {
+          "states": [
+            "SynchronizeData"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Synchronize_Data"
         }
       ]
     }
