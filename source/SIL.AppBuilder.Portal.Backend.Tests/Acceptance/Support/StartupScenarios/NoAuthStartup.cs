@@ -15,6 +15,8 @@ using OptimaJet.DWKit.StarterApplication.Models;
 using System.Collections.Generic;
 using Hangfire;
 using Moq;
+using Microsoft.AspNetCore.SignalR;
+using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
@@ -22,10 +24,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
     public class NoAuthStartup : BaseTestStartup
     {
         private Mock<IBackgroundJobClient> backgroundJobClient;
+        private Mock<IHubContext<ScriptoriaHub>> hubContext;
 
         public NoAuthStartup(IHostingEnvironment env) : base(env)
         {
             backgroundJobClient = new Mock<IBackgroundJobClient>();
+            hubContext = new Mock<IHubContext<ScriptoriaHub>> { DefaultValue = DefaultValue.Mock};
         }
 
         public IServiceCollection ConfiguredServices { get; private set; }
@@ -73,6 +77,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 
 
                 this.ConfiguredServices = services;
+
+                SendNotificationService.HubContext = hubContext.Object;
             }
         }
 }

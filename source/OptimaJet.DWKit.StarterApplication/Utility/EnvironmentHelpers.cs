@@ -21,5 +21,15 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
             return variable;
         }
+
+        public static int GetIntVarOrDefault(string name, int defaultValue)
+        {
+            var envString = GetVarOrDefault(name, defaultValue.ToString());
+            if (!Int32.TryParse(envString, out int varValue))
+            {
+                varValue = defaultValue;
+            }
+            return varValue;
+        }
     }
 }

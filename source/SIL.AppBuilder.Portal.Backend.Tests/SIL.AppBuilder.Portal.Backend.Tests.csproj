@@ -44,6 +44,8 @@
     <Folder Include="Acceptance\APIControllers\OrganizationInviteRequests\" />
     <Folder Include="Acceptance\BuildEngine\" />
     <Folder Include="Acceptance\APIControllers\GroupMemberships\" />
+    <Folder Include="Acceptance\APIControllers\Notifications\" />
+    <Folder Include="Acceptance\Support\TestClasses\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Acceptance\APIControllers\ProjectsTest.cs" />
