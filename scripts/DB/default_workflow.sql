@@ -27,24 +27,33 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </InputParameters>
     </Command>
   </Commands>
+  <Timers>
+    <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
+  </Timers>
   <Activities>
     <Activity Name="Definition" State="Definition" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Designer X="40" Y="100" />
     </Activity>
-    <Activity Name="Job Creation" State="JobCreation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Product Creation" State="ProductCreation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="BuildEngine_CreateProduct" />
+      </Implementation>
       <Designer X="700" Y="100" />
     </Activity>
-    <Activity Name="Check Job Creation" State="CheckJobCreation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
-      <Designer X="1020" Y="100" />
+    <Activity Name="Check Product Creation" State="CheckProductCreation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Designer X="700" Y="260" />
     </Activity>
     <Activity Name="Approval" State="Approval" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Designer X="360" Y="100" />
     </Activity>
+    <Activity Name="SynchronizeData" State="SynchronizeData" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Designer X="40" Y="260" />
+    </Activity>
   </Activities>
   <Transitions>
-    <Transition Name="Job Creation_Activity_1_1" To="Check Job Creation" From="Job Creation" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Job Creation_Activity_1_1" To="Check Product Creation" From="Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
-        <Trigger Type="Command" NameRef="Approve" />
+        <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />
@@ -64,9 +73,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="300" Y="116" />
     </Transition>
-    <Transition Name="Approval_Job Creation_1" To="Job Creation" From="Approval" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Approval_Job Creation_1" To="Product Creation" From="Approval" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
+        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Approve" />
@@ -88,6 +98,24 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Condition Type="Always" />
       </Conditions>
       <Designer X="301" Y="150" />
+    </Transition>
+    <Transition Name="Check Job Creation_Activity_1_1" To="SynchronizeData" From="Check Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_ProductCreated" ConditionInversion="false" ResultOnPreExecution="true" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Job Creation_Check Job Creation_1" To="Check Product Creation" From="Check Product Creation" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Timer" NameRef="CheckReady" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer />
     </Transition>
   </Transitions>
 </Process>');

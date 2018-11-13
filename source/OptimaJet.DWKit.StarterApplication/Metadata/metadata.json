@@ -2793,7 +2793,7 @@
   "businessFlow": [
     {
       "id": "f57d6c03-490c-6534-55e9-fa1d8708c699",
-      "name": "SIL_Default_AppBuilders_Android_GooglePlay",
+      "name": "SIL_Default_AppBuilders_Android_GooglePlay_Flow",
       "scheme": "SIL_Default_AppBuilders_Android_GooglePlay",
       "defaultForm": "SIL_AppBuilders_Product_Definition",
       "map": [
@@ -2814,6 +2814,15 @@
             "*"
           ],
           "form": "SIL_AppBuilders_Project_Approval"
+        },
+        {
+          "states": [
+            "SynchronizeData"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Synchronize_Data"
         }
       ]
     }

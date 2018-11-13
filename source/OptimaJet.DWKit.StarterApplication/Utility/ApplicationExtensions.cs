@@ -20,6 +20,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             // WorkflowInit static properties need to be setup before Configurator.Configure since 
             // WorkflowRuntime.ForceInit is called.
             WorkflowInit.RuleProvider = app.ApplicationServices.GetRequiredService<IWorkflowRuleProvider>();
+            WorkflowInit.ActionProvider = app.ApplicationServices.GetRequiredService<IWorkflowActionProvider>();
             //DWKIT Init
             Configurator.Configure(
                 (IHttpContextAccessor)app.ApplicationServices.GetService(typeof(IHttpContextAccessor)),
