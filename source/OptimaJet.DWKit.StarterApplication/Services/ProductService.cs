@@ -21,6 +21,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         IEntityRepository<Product, Guid> ProductRepository { get; set; }
         IEntityRepository<ProductDefinition> ProductDefinitionRepository { get; set; }
         IEntityRepository<Store> StoreRepository { get; }
+        public IEntityRepository<UserRole> UserRolesRepository { get; }
         IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
@@ -37,12 +38,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ICurrentUserContext currentUserContext,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
             IEntityRepository<Store> storeRepository,
+            IEntityRepository<UserRole> userRolesRepository,
             IBackgroundJobClient hangfireClient,
             ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
         {
             ProductRepository = productRepository;
             ProductDefinitionRepository = productDefinitionRepository;
             StoreRepository = storeRepository;
+            UserRolesRepository = userRolesRepository;
             HangfireClient = hangfireClient;
             UserRepository = userRepository;
             ProjectRepository = projectRepository;
@@ -70,6 +73,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                             ProductRepository,
                                             ProductDefinitionRepository,
                                             StoreRepository,
+                                            UserRolesRepository,
                                             ProjectRepository,
                                             OrganizationContext,
                                             CurrentUserContext);
@@ -90,6 +94,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var createForm = new CreateForm(ProjectRepository,
                                             ProductDefinitionRepository,
                                             StoreRepository,
+                                            UserRolesRepository,
                                             UserRepository,
                                             CurrentUserContext);
             if (!createForm.IsValid(resource))

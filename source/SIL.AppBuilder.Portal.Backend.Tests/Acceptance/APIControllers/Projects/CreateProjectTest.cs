@@ -373,6 +373,60 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
 
         }
+        [Fact]
+        public async Task Create_Project_CurrentUser_SuperAdmin()
+        {
+            BuildTestData();
+            var roleSA = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.SuperAdmin
+            });
+            var userRole1 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleSA.Id
+            });
+
+            var content = new
+            {
+                data = new
+                {
+                    type = "projects",
+                    attributes = new
+                    {
+                        name = "project5",
+                        description = "description",
+                        language = "eng-US"
+                    },
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                        { "id", user1.Id.ToString() }
+                                }}}},
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organizations" },
+                                    { "id", org3.Id.ToString() }
+                            }}}},
+                            {"group", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "groups" },
+                                    { "id", group4.Id.ToString() }
+                            }}}},
+                            {"type", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "application-types" },
+                                    { "id", type1.Id.ToString() }
+                            }}}}
+                        }
+                }
+            };
+            var response = await Post("/api/projects/", content);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        }
 
 
     }

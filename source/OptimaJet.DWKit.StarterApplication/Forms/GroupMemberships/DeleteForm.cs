@@ -17,7 +17,8 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.GroupMemberships
             UserRepository userRepository,
             ProjectRepository projectRepository,
             IEntityRepository<GroupMembership> groupMembershipRepository,
-            ICurrentUserContext currentUserContext) : base(userRepository, currentUserContext)
+            IEntityRepository<UserRole> userRolesRepository,
+            ICurrentUserContext currentUserContext) : base(userRepository, userRolesRepository, currentUserContext)
         {
             ProjectRepository = projectRepository;
             GroupMembershipRepository = groupMembershipRepository;
