@@ -10,9 +10,9 @@ INSERT INTO "Users" ("Name", "Email", "ExternalId", "FamilyName", "GivenName", "
 (	'Loren Hawthorne', 'loren_hawthrone@sil.org',	'google-oauth2|116603781884964961816', 'Loren',	'Hawthorne',	'0',	NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId") VALUES
-(	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru',	'replace',	1),
-(	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru',	'replace',	3),
-(	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru',	'replace',	1);
+(	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1),
+(	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru:8443',	'replace',	3),
+(	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru:8443',	'replace',	1);
 
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
 (2,     'sil_android_amazon_store',      '1',    'SIL Default Workflow for Publishing to Amazon App Store',   'SIL_Default_AppBuilders_Android_AmazonAppStore',	'SIL_Default_AppBuilders_Android_AmazonAppStore',   1),
