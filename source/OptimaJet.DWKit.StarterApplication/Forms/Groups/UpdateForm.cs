@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -19,7 +20,8 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Groups
             UserRepository userRepository,
             GroupRepository groupRepository,
             IOrganizationContext organizationContext,
-            ICurrentUserContext currentUserContext): base(userRepository, currentUserContext)
+            IEntityRepository<UserRole> userRolesRepository,
+            ICurrentUserContext currentUserContext): base(userRepository, userRolesRepository, currentUserContext)
         {
             UserRepository = userRepository;
             GroupRepository = groupRepository;
@@ -37,7 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Groups
             ValidateOrganizationHeader(original.OwnerId, "group");
             if (group.OwnerId != VALUE_NOT_SET)
             {
-                if (!CurrentUserOrgIds.Contains(group.OwnerId))
+                if ((!CurrentUserOrgIds.Contains(group.OwnerId)) && (!IsCurrentUserSuperAdmin()))
                 {
                     var message = "You do not belong to an organization that the group is owned by and therefor cannot reassign ownership";
                     AddError(message);

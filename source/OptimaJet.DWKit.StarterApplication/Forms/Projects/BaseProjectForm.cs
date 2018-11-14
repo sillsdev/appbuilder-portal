@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
@@ -17,7 +18,8 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Projects
         protected int InitialOrganizationId { get; set; }
         public BaseProjectForm(
             UserRepository userRepository,
-            ICurrentUserContext currentUserContext) : base(userRepository, currentUserContext)
+            IEntityRepository<UserRole> userRolesRepository,
+            ICurrentUserContext currentUserContext) : base(userRepository, userRolesRepository, currentUserContext)
         {
         }
 
@@ -40,7 +42,7 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Projects
                 AddError(message);
             }
             // The current user should be a member of the organization
-            if (!CurrentUserOrgIds.Contains(Organization.Id))
+            if ((!CurrentUserOrgIds.Contains(Organization.Id)) && (!IsCurrentUserSuperAdmin()))
             {
                 var message = ("The current user is not a member of the project organization");
                 AddError(message);

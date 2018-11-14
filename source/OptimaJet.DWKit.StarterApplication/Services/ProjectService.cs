@@ -26,6 +26,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public ProjectRepository ProjectRepository { get; }
         public CurrentUserRepository CurrentUserRepository { get; }
         public IEntityRepository<Organization> OrganizationRepository { get; set; }
+        public IEntityRepository<UserRole> UserRolesRepository { get; }
 
         public ProjectService(
             IBackgroundJobClient hangfireClient,
@@ -37,6 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             CurrentUserRepository currentUserRepository,
             GroupRepository groupRepository,
             IEntityRepository<Organization> organizationRepository,
+            IEntityRepository<UserRole> userRolesRepository,
             ILoggerFactory loggerFactory) : base(jsonApiContext, projectRepository, loggerFactory)
         {
             OrganizationContext = organizationContext;
@@ -46,6 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             UserRepository = userRepository;
             GroupRepository = groupRepository;
             OrganizationRepository = organizationRepository;
+            UserRolesRepository = userRolesRepository;
             ProjectRepository = (ProjectRepository)projectRepository;
             CurrentUserRepository = currentUserRepository;
         }
@@ -76,6 +79,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                            GroupRepository,
                                            CurrentUserContext,
                                            OrganizationRepository,
+                                           UserRolesRepository,
                                            OrganizationContext,
                                            ProjectRepository);
             if (!updateForm.IsValid(id, resource))
@@ -97,6 +101,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var createForm = new CreateForm(UserRepository,
                                            GroupRepository,
                                            CurrentUserContext,
+                                           UserRolesRepository,
                                            OrganizationRepository);
             if (!createForm.IsValid(resource))
             {

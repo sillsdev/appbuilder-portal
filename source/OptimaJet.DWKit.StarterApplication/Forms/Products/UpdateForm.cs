@@ -19,9 +19,10 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
                           IEntityRepository<Product, Guid> productRepository,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
             IEntityRepository<Store> storeRepository,
+            IEntityRepository<UserRole> userRolesRepository,
             ProjectRepository projectRepository,
             IOrganizationContext organizationContext,
-            ICurrentUserContext currentUserContext) : base(userRepository, currentUserContext)
+            ICurrentUserContext currentUserContext) : base(userRepository, userRolesRepository ,currentUserContext)
         {
             ProductRepository = productRepository;
             ProjectRepository = projectRepository;

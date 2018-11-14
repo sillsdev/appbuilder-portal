@@ -421,6 +421,62 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 
         }
         [Fact]
+        public async Task Patch_CurrentUser_SuperAdmin()
+        {
+            BuildTestData();
+            var roleSA = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.SuperAdmin
+            });
+            var userRole1 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleSA.Id
+            });
+
+            var content = new
+            {
+                data = new
+                {
+                    type = "projects",
+                    id = project3.Id.ToString(),
+                    relationships = new
+                    {
+                        organization = new
+                        {
+                            data = new
+                            {
+                                type = "organizations",
+                                id = org3.Id.ToString()
+                            }
+                        },
+                        group = new
+                        {
+                            data = new
+                            {
+                                type = "groups",
+                                id = group4.Id.ToString()
+                            }
+                        },
+                        owner = new
+                        {
+                            data = new
+                            {
+                                type = "users",
+                                id = user1.Id.ToString()
+                            }
+                        }
+
+                    }
+                }
+            };
+            var response = await Patch("/api/projects/" + project3.Id.ToString(), content);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        }
+
+        [Fact]
         public async Task Patch_Owner()
         {
             BuildTestData();
