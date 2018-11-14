@@ -1,33 +1,46 @@
 [
   {
-    "key": "workflow",
-    "data-buildertype": "workflowbar",
-    "events": {
-      "onCommandClick": {
-        "active": true,
-        "actions": [
-          "validate",
-          "save",
-          "workflowExecuteCommand",
-          "refresh"
-        ],
-        "targets": [],
-        "parameters": []
+    "key": "form_2",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "workflow",
+        "data-buildertype": "workflowbar",
+        "events": {
+          "onCommandClick": {
+            "active": true,
+            "actions": [
+              "validate",
+              "save",
+              "workflowExecuteCommand",
+              "refresh"
+            ],
+            "targets": [],
+            "parameters": []
+          },
+          "onSetStateClick": {
+            "active": true,
+            "actions": [
+              "validate",
+              "save",
+              "workflowSetState",
+              "refresh"
+            ],
+            "targets": [],
+            "parameters": []
+          }
+        },
+        "style-source": "",
+        "blockSetState": true
       },
-      "onSetStateClick": {
-        "active": true,
-        "actions": [
-          "validate",
-          "save",
-          "workflowSetState",
-          "refresh"
-        ],
-        "targets": [],
-        "parameters": []
+      {
+        "key": "textarea_comment",
+        "data-buildertype": "textarea",
+        "label": "Comment",
+        "fluid": true,
+        "rows": "2"
       }
-    },
-    "style-source": "",
-    "blockSetState": true
+    ]
   },
   {
     "key": "container_1",
@@ -38,20 +51,36 @@
         "data-buildertype": "form",
         "children": [
           {
-            "key": "input_product_name",
-            "data-buildertype": "input",
-            "label": "Name",
-            "fluid": true,
-            "onChangeTimeout": 200,
-            "readOnly": true
+            "key": "header_1",
+            "data-buildertype": "header",
+            "content": "Product Definition",
+            "size": "medium"
           },
           {
-            "key": "input_description",
-            "data-buildertype": "input",
-            "label": "Description",
-            "fluid": true,
-            "onChangeTimeout": 200,
-            "readOnly": true
+            "key": "formgroup_2",
+            "data-buildertype": "formgroup",
+            "widths": "custom",
+            "children": [
+              {
+                "key": "input_product_name",
+                "data-buildertype": "input",
+                "label": "Name",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-customcss": "six wide field"
+              },
+              {
+                "key": "input_description",
+                "data-buildertype": "input",
+                "label": "Description",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-customcss": "ten wide field"
+              }
+            ],
+            "widthsCustom": "16"
           },
           {
             "key": "input_type",
@@ -62,13 +91,12 @@
             "readOnly": true
           },
           {
-            "key": "input_publishingkey",
-            "data-buildertype": "input",
+            "key": "textarea_publishingkey",
+            "data-buildertype": "textarea",
             "label": "Publishing Key",
             "fluid": true,
-            "onChangeTimeout": 200,
-            "placeholder": "Your publishing key can be found under the \"Publishing\" page.",
-            "size": ""
+            "rows": "4",
+            "placeholder": "Your publishing key can be found under the \"Publishing\" page."
           },
           {
             "key": "formgroup_1",
@@ -495,41 +523,5 @@
         "parameters": []
       }
     }
-  },
-  {
-    "key": "saveclose",
-    "data-buildertype": "button",
-    "content": "Save & Close",
-    "secondary": true,
-    "events": {
-      "onClick": {
-        "actions": [
-          "validate",
-          "save",
-          "exit"
-        ],
-        "active": true,
-        "targets": [],
-        "parameters": []
-      }
-    }
-  },
-  {
-    "key": "cancel",
-    "data-buildertype": "button",
-    "content": "Cancel",
-    "events": {
-      "onClick": {
-        "active": true,
-        "actions": [
-          "cancel",
-          "exit"
-        ],
-        "targets": [],
-        "parameters": []
-      }
-    },
-    "secondary": true,
-    "floated": "right"
   }
 ]

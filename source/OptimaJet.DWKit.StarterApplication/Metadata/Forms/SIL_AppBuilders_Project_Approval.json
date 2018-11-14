@@ -1,32 +1,45 @@
 [
   {
-    "key": "workflowbar_1",
-    "data-buildertype": "workflowbar",
-    "events": {
-      "onCommandClick": {
-        "active": true,
-        "actions": [
-          "validate",
-          "save",
-          "workflowExecuteCommand",
-          "refresh"
-        ],
-        "targets": [],
-        "parameters": []
+    "key": "form_2",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "workflowbar_1",
+        "data-buildertype": "workflowbar",
+        "events": {
+          "onCommandClick": {
+            "active": true,
+            "actions": [
+              "validate",
+              "save",
+              "workflowExecuteCommand",
+              "refresh"
+            ],
+            "targets": [],
+            "parameters": []
+          },
+          "onSetStateClick": {
+            "active": true,
+            "actions": [
+              "validate",
+              "save",
+              "workflowSetState",
+              "refresh"
+            ],
+            "targets": [],
+            "parameters": []
+          }
+        },
+        "blockSetState": true
       },
-      "onSetStateClick": {
-        "active": true,
-        "actions": [
-          "validate",
-          "save",
-          "workflowSetState",
-          "refresh"
-        ],
-        "targets": [],
-        "parameters": []
+      {
+        "key": "textarea_comment",
+        "data-buildertype": "textarea",
+        "label": "Comment",
+        "fluid": true,
+        "rows": "2"
       }
-    },
-    "blockSetState": true
+    ]
   },
   {
     "key": "container_1",
@@ -37,28 +50,65 @@
         "data-buildertype": "form",
         "children": [
           {
-            "key": "input_UserName",
-            "data-buildertype": "input",
-            "label": "User Name",
-            "fluid": true,
-            "onChangeTimeout": 200,
-            "readOnly": true
+            "key": "header_1",
+            "data-buildertype": "header",
+            "content": "Project Approval",
+            "size": "medium"
           },
           {
-            "key": "input_email",
-            "data-buildertype": "input",
-            "label": "Email",
-            "fluid": true,
-            "onChangeTimeout": 200,
-            "readOnly": true
+            "key": "formgroup_3",
+            "data-buildertype": "formgroup",
+            "widths": "custom",
+            "children": [
+              {
+                "key": "input_UserName",
+                "data-buildertype": "input",
+                "label": "User Name",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-customcss": "six wide field"
+              },
+              {
+                "key": "input_email",
+                "data-buildertype": "input",
+                "label": "Email",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-customcss": "ten wide field"
+              }
+            ],
+            "widthsCustom": "16"
           },
           {
-            "key": "input_project_name",
-            "data-buildertype": "input",
-            "label": "Project Name",
-            "fluid": true,
-            "onChangeTimeout": 200,
-            "readOnly": true
+            "key": "formgroup_2",
+            "data-buildertype": "formgroup",
+            "widths": "custom",
+            "children": [
+              {
+                "key": "input_project_name",
+                "data-buildertype": "input",
+                "label": "Project Name",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-width": "",
+                "style-customcss": "six wide field"
+              },
+              {
+                "key": "input_project_description",
+                "data-buildertype": "input",
+                "label": "Project Description",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-source": "",
+                "style-width": "",
+                "style-customcss": "ten wide field"
+              }
+            ],
+            "widthsCustom": "16"
           },
           {
             "key": "input_product",
@@ -81,7 +131,8 @@
             "data-buildertype": "input",
             "label": "Language Code",
             "fluid": true,
-            "onChangeTimeout": 200
+            "onChangeTimeout": 200,
+            "readOnly": true
           },
           {
             "key": "formgroup_1",
@@ -110,7 +161,8 @@
                     "value": 3,
                     "text": "Indigitous Hack"
                   }
-                ]
+                ],
+                "readOnly": true
               },
               {
                 "key": "dropdown_language",
@@ -484,7 +536,8 @@
                     "value": 73,
                     "text": "Zulu – zu"
                   }
-                ]
+                ],
+                "readOnly": true
               }
             ]
           }

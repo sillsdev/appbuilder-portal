@@ -40,6 +40,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("workflow-publish-id")]
         public int WorkflowPublishId { get; set; }
 
+        [Attr("workflow-comment")]
+        public string WorkflowComment { get; set; }
+
         [Attr("date-published")]
         public DateTime? DatePublished { get; set; }
 
