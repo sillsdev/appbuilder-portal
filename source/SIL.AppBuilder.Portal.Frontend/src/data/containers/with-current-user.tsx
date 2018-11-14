@@ -121,7 +121,13 @@ export function withCurrentUser(opts = {}) {
           const unauthorized = status === 401;
 
           if (status === 403 || status === 401) {
-            const errorJson = await tryParseJson(response);
+
+            let errorJson = {};
+            try {
+              errorJson = await tryParseJson(response);
+            } catch (e) {
+              // body is not json
+            }
             const errorTitle = firstError(errorJson).title;
             const defaultMessage = unauthorized ? t('errors.notAuthorized') : t('errors.userForbidden');
 

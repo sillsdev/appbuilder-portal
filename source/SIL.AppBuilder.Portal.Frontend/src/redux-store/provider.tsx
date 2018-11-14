@@ -9,8 +9,13 @@ import { reducers } from './reducers';
 import { middleware, setup as setupMiddleware } from './middleware';
 import { default as enhancers } from './enhancers';
 
+export interface IYieldedProps {
+  store: Store;
+}
+
 export interface IProps {
   initialState?: any;
+  children: any;
 }
 
 export default class ReduxProvider extends React.Component<IProps> {
@@ -74,6 +79,16 @@ export default class ReduxProvider extends React.Component<IProps> {
   }
 
   render() {
-    return <Provider store={this.store}>{this.props.children}</Provider>;
+    const { children } = this.props;
+
+    const isFunction = typeof children === 'function';
+    return (
+      <Provider store={this.store}>
+        {isFunction
+          ? children({ store: this.store })
+          : children
+        }
+      </Provider>
+    );
   }
 }

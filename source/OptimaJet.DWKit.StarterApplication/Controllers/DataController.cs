@@ -14,19 +14,21 @@ using OptimaJet.DWKit.Core.View;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [AllowAnonymous]
+    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class DataController : Controller
     {
+        [AllowAnonymous]
         [Route("data/get")]
         public async Task<ActionResult> GetData(string name, string control, string urlFilter, string options,
             string filter, string paging, string sort)
         {
             try
             {
-                if (!await DWKitRuntime.Security.CheckFormPermissionAsync(name, "View"))
-                {
-                    throw new Exception("Access denied!");
-                }
+                // if (!await DWKitRuntime.Security.CheckFormPermissionAsync(name, "View"))
+                // {
+                //     throw new Exception("Access denied!");
+                // }
 
                 string filterActionName = null;
                 string idValue = null;

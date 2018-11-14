@@ -1,0 +1,76 @@
+
+.dwkit-form-container {
+  display: flex;
+
+  .form-layout-wrapper {
+    // FormContent renders an uncustomizable div
+    > div {
+      display: flex;
+      flex-grow: 1;
+    }
+  }
+
+  // FormContent does not expose a way to customize this
+  .dwkit-form:not(.dwkit-header) {
+    flex-grow: 1;
+  }
+}
+
+.dwkit-gridview-autoHeight {
+  display: flex;
+  // default is 100vh, which if your form
+  // is nested under any elements, will
+  // force scrolling, because 100vh is
+  // the full height of the viewport, and
+  // not the available space.
+  height: auto !important;
+  flex-grow: 1;
+}
+
+.react-grid-Container {
+  display: flex;
+  flex-grow: 1;
+
+  .react-grid-Main {
+    display: flex;
+    flex-grow: 1;
+    height: auto;
+
+    .react-grid-Grid {
+      height: auto;
+      flex-grow: 1;
+
+      .react-grid-Header {
+        position: static;
+      }
+
+      .react-grid-Header + div {
+        overflow: hidden auto;
+        position: absolute;
+        top: 35px;
+        bottom: 0;
+        right: 0;
+        left: 0;
+
+        .react-grid-Viewport {
+          position: static !important;
+          overflow: initial;
+
+          .react-grid-Canvas {
+            height: auto !important;
+
+            // some containing div hack
+            > div {
+              overflow: initial !important;
+
+              // note: each row is wrapped in a useless div
+              .react-grid-Row {
+                contain: inherit !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

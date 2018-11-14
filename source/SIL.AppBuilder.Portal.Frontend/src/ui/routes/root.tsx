@@ -20,6 +20,9 @@ import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-sou
 
 import ErrorRootRoute from '@ui/routes/errors';
 
+
+import Workflows, { pathName as workflowPath } from '@ui/routes/workflow';
+
 export default class RootPage extends React.Component {
   render() {
     return (
@@ -30,11 +33,13 @@ export default class RootPage extends React.Component {
 
         <section className='flex flex-grow'>
           <Switch>
+
+
             <Route path={loginPath} component={LoginRoute} />
             <Route path={adminPath} component={AdminRoute} />
 
             <Route exact path={rootPath} component={IndexRoute} />
-            <Route path={tasksPath} component={TasksRoute} />
+            {/* <Route path={tasksPath} component={TasksRoute} /> */}
             <Route path={invitationsPath} component={InvitationsRoute} />
 
             <Route exact path={requestOrgAccessPath} component={RequestOrgAccessRoute} />
@@ -48,6 +53,11 @@ export default class RootPage extends React.Component {
             <Route path={usersPath} component={UsersRoute} />
 
             <Route path={openSourcePath} component={OpenSourceRoute} />
+
+            {/* <Route path={tasksPath} component={Workflows} /> */}
+            {/* Find a way to make this asyncily loaded based on path */}
+            <Workflows />
+
 
             <Route component={ErrorRootRoute} />
           </Switch>

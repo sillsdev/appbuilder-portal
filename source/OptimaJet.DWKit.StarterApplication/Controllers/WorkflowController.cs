@@ -21,7 +21,8 @@ using OptimaJet.Workflow.Core.Runtime;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [AllowAnonymous]
+    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class WorkflowController : Controller
     {
         private IHostingEnvironment _env;

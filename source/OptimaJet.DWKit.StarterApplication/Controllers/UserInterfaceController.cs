@@ -17,9 +17,11 @@ using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [AllowAnonymous]
+    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UserInterfaceController : Controller
     {
+        [AllowAnonymous]
         [Route("ui/form/{name}")]
         public async Task<ActionResult> GetForm(string name, bool wrapResult = false, bool enableSecurity = false)
         {
@@ -109,11 +111,11 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
             if (wrapResult)
             {
-                if (enableSecurity)
-                {
-                    var userId = DWKitRuntime.Security.CurrentUser.GetOperationUserId();
-                    await form.FillPermissionsAsync(userId);
-                }
+                // if (enableSecurity)
+                // {
+                //     var userId = DWKitRuntime.Security.CurrentUser.GetOperationUserId();
+                //     await form.FillPermissionsAsync(userId);
+                // }
                 await form.FillMappingAsync();
                 return Json(new ItemSuccessResponse<object>(form));
             }

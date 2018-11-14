@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
+
 import { I18nextProvider } from 'react-i18next';
 
 import { DataProvider } from '@data';

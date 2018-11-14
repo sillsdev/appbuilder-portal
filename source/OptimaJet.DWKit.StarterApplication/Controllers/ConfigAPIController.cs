@@ -12,7 +12,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [AllowAnonymous]
+    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class ConfigAPIController : Controller
     {
         private IHostingEnvironment _env;
@@ -40,13 +41,14 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             return View("Admin");
         }
 
+        [AllowAnonymous]
         [Route("ConfigAPI")]
         public async Task<ActionResult> API()
         {
-            if (!CheckAccess())
-            {
-                return AccessDenied();
-            }
+            // if (!CheckAccess())
+            // {
+            //     return AccessDenied();
+            // }
 
             var pars = new NameValueCollection();
             foreach (var item in Request.Query)

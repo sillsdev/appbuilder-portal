@@ -17,6 +17,7 @@ export type IProps =
   & i18nProps;
 
 export default class Display extends React.Component<IProps> {
+  state = { data: {}, errors: {} };
   render() {
     const { tasks, t } = this.props;
 

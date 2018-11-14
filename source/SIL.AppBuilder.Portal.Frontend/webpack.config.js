@@ -37,6 +37,7 @@ let config = {
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),
+    WorkflowApp: locate('src/ui/routes/workflow/app.tsx'),
   },
   module: {
     rules: moduleRules
@@ -66,14 +67,32 @@ let config = {
   optimization: {
     runtimeChunk: 'single',
     splitChunks: {
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          enforce: true,
-          chunks: 'all'
-        }
-      }
+      chunks: 'all',
+      // maxInitialRequests: Infinity,
+      // minSize: 500,
+      // cacheGroups: {
+      //   dwkitDependencies: {
+      //     test(module, chunks) {
+      //       return 
+      //     }
+      //   }
+      // }
+      // cacheGroups: {
+      //   vendors: {
+      //     test: /[\\/]node_modules[\\/]/,
+      //     enforce: true,
+      //     chunks: 'all',
+      //     name: 'vendor',
+      //     // name(module) {
+      //     //   // get the name. E.g. node_modules/packageName/not/this/part.js
+      //     //   // or node_modules/packageName
+      //     //   const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+
+      //     //   // npm package names are URL-safe, but some servers don't like @ symbols
+      //     //   return `npm.${packageName.replace('@', '')}`;
+      //     // },
+      //   }
+      // }
     }
   }
 };
@@ -99,7 +118,7 @@ if (isDevelopment) {
     overlay: true,
     progress: true,
     proxy: [{
-      context: ['/api', '/ui', '/configapi'],
+      context: ['/api', '/ui', '/configapi', '/account', '/data', '/workflow'],
       target: `http://${process.env.API_HOST}`
     }]
   }

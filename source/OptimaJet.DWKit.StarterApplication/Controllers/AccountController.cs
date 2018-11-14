@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OptimaJet.DWKit.Core;
+using OptimaJet.DWKit.Core.IntegrationApi;
 using OptimaJet.DWKit.Core.Security;
 using OptimaJet.DWKit.Core.View;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -13,9 +15,29 @@ using User = OptimaJet.DWKit.Core.Security.User;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [AllowAnonymous]
+    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AccountController : Controller
     {
+        [AllowAnonymous]
+        [Route("swagger/{mode?}/{name?}")]
+        [HttpGet]
+        public async Task<ActionResult> GetSwaggerFile()
+        {
+            try
+            {
+                var swagger = await IntegrationApiHttp.GetSwaggerSpecsAsync(HttpContext.Request);
+                var filename = "dwkit.yaml";
+                var contentType = "application/yaml";
+
+                return File(Encoding.UTF8.GetBytes(swagger), contentType, filename);
+            }
+            catch (Exception ex)
+            {
+                return Json(new FailResponse(ex));
+            }
+        }
+
         [AllowAnonymous]
         [HttpGet]
         public ActionResult Login()
