@@ -9,7 +9,7 @@ import {
   OrganizationResource,
   OrganizationProductDefinitionResource,
   ProductDefinitionResource,
-  withLoader
+  attributesFor
 } from '@data';
 
 import ProductDefinitionMultiSelect from '@ui/components/inputs/product-definition-multi-select';
@@ -23,7 +23,7 @@ export interface Params {
 
 export interface IProps {
   match: Match<Params>;
-  update: (payload: OrganizationAttributes) => void;
+  updateOrganization: (payload: OrganizationAttributes) => void;
   updateProductDefinition: (payload: ProductDefinitionResource) => void;
   organization: OrganizationResource;
   organizationProductDefinitions: OrganizationProductDefinitionResource[];
@@ -33,21 +33,13 @@ type IOwnProps =
   & IProps
   & i18nProps;
 
-const mapRecordsToProps = (passedProps) => {
-  const { organization } = passedProps;
-
-  return {
-    organizationProductDefinitions: q => q.findRelatedRecords(organization, 'organizationProductDefinitions')
-  };
-};
-
 class ProductsRoute extends React.Component<IOwnProps> {
 
   togglePrivacy = () => {
-    const { update, organization } = this.props;
-    const { makePrivateByDefault } = organization.attributes;
+    const { updateOrganization, organization } = this.props;
+    const { publicByDefault } = attributesFor(organization);
 
-    update({ makePrivateByDefault: !makePrivateByDefault });
+    updateOrganization({ publicByDefault: !publicByDefault });
   }
 
   updateProductDefinition = (productDefinition) => {
@@ -59,9 +51,7 @@ class ProductsRoute extends React.Component<IOwnProps> {
 
   render() {
     const { organization, organizationProductDefinitions, t } = this.props;
-    const { makePrivateByDefault } = organization.attributes;
-
-    const makePublicByDefault = !makePrivateByDefault;
+    const { publicByDefault } = attributesFor(organization);
 
     const multiSelectProps = {
       selected: organizationProductDefinitions,
@@ -78,7 +68,7 @@ class ProductsRoute extends React.Component<IOwnProps> {
             <p className='input-info'>{t('org.makePrivateDescription')}</p>
           </div>
           <Checkbox toggle className='m-l-lg'
-            checked={makePublicByDefault}
+            checked={publicByDefault}
             onChange={this.togglePrivacy}
             />
         </div>
@@ -94,5 +84,8 @@ class ProductsRoute extends React.Component<IOwnProps> {
 
 export default compose(
   withTranslations,
-  withOrbit(mapRecordsToProps),
+  withOrbit(({organization}) => ({
+    organizationProductDefinitions: q =>
+      q.findRelatedRecords(organization, 'organizationProductDefinitions')
+  })),
 )(ProductsRoute);

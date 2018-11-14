@@ -47,24 +47,23 @@ export function withDataActions<T>(WrappedComponent) {
 
   class OrganizationDataActionWrapper extends React.Component<IProps & T> {
 
-    updateAttribute = async (attribute: string, value: any) => {
+    updateAttribute = (attribute: string, value: any) => {
       const { organization, dataStore } = this.props;
 
-      await dataStore.update(
+      return dataStore.update(
         q => q.replaceAttribute(organization, attribute, value),
         defaultOptions()
       );
-
-      this.forceUpdate();
     }
 
     updateAttributes = (attributes: OrganizationAttributes) => {
       const { organization, dataStore } = this.props;
       const { id, type } = organization;
 
-      return dataStore.update(q => q.replaceRecord({
-        id, type, attributes
-      }), defaultOptions());
+      return dataStore.update(q =>
+        q.replaceRecord({ id, type, attributes }),
+        defaultOptions()
+      );
     }
 
     updateProductDefinition = (productDefinition) => {

@@ -12,7 +12,7 @@ export interface OrganizationAttributes extends AttributesObject {
   websiteUrl?: string;
   buildEngineUrl?: string;
   buildEngineApiAccessToken?: string;
-  makePrivateByDefault?: boolean;
+  publicByDefault?: boolean;
   useSilBuildInfrastructure?: boolean;
   logoUrl?: string;
 }
