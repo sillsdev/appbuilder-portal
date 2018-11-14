@@ -91,13 +91,12 @@
             "readOnly": true
           },
           {
-            "key": "input_publishingkey",
-            "data-buildertype": "input",
+            "key": "textarea_publishingkey",
+            "data-buildertype": "textarea",
             "label": "Publishing Key",
             "fluid": true,
-            "onChangeTimeout": 200,
-            "placeholder": "",
-            "size": ""
+            "rows": "4",
+            "placeholder": "Your publishing key can be found under the \"Publishing\" page."
           },
           {
             "key": "formgroup_1",
