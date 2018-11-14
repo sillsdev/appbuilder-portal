@@ -3,7 +3,7 @@ import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
-import { WithDataProps } from 'react-orbitjs';
+import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import NotFound from '@ui/routes/errors/not-found';
 import { query, withLoader, buildFindRecord, buildOptions } from '@data';
@@ -46,28 +46,15 @@ export type IProps =
   & i18nProps
   & IDataActionsProps;
 
-const mapRecordsToProps = (ownProps: PassedProps) => {
-  const { match } = ownProps;
-  const { params: { orgId } } = match;
-
-  return {
-    cacheKey: [`org-${orgId}`],
-    organization: [q => buildFindRecord(q, TYPE_NAME, orgId), buildOptions({
-      include: ['organization-product-definitions.product-definition','groups']
-    })],
-  };
-};
-
 class SettingsRoute extends React.Component<IProps> {
 
-  updateOrganization = async (payload: OrganizationAttributes) => {
+  updateOrganization = (payload: OrganizationAttributes) => {
 
     const { t, updateAttributes } = this.props;
 
     try {
-      await updateAttributes(payload);
+      updateAttributes(payload);
       toast.success(t('updated'));
-
     } catch (e) {
       toast.error(e.message);
     }
@@ -110,7 +97,7 @@ class SettingsRoute extends React.Component<IProps> {
 
     const settingsProps = {
       organization,
-      update: this.updateOrganization,
+      updateOrganization: this.updateOrganization,
       updateProductDefinition: this.updateOrganizationProductDefinitions,
       updateOrganizationStore: this.updateOrganizationStore
     };
@@ -140,7 +127,7 @@ class SettingsRoute extends React.Component<IProps> {
               )} />
 
               <Route path={groupsPath} render={(routeProps) => (
-                <GroupsRoute {...routeProps } organization={organization} />
+                <GroupsRoute {...routeProps} {...settingsProps} />
               )} />
 
               <Route path={infrastructurePath} render={(routeProps) => (
@@ -156,8 +143,16 @@ class SettingsRoute extends React.Component<IProps> {
 }
 
 export default compose(
-  query(mapRecordsToProps),
+  query(({match: { params: { orgId } } }) => ({
+    cacheKey: [`org-${orgId}`],
+    organization: [q => buildFindRecord(q, TYPE_NAME, orgId), buildOptions({
+      include: ['organization-product-definitions.product-definition', 'groups']
+    })],
+  })),
   withLoader(({ organization }) => !organization),
+  withOrbit(({ organization }) => ({
+    organization: q => q.findRecord({ type: TYPE_NAME,id: organization.id,})
+  })),
+  withDataActions,
   withTranslations,
-  withDataActions
 )(SettingsRoute);

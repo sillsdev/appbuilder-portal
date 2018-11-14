@@ -24,7 +24,7 @@ const schemaDefinition: SchemaSettings = {
         buildEngineUrl: { type: 'string' },
         logoUrl: { type: 'string' },
 
-        makePrivateByDefault: { type: 'boolean' },
+        publicByDefault: { type: 'boolean' },
         useSilBuildInfrastructure: { type: 'boolean' },
 
         // note, that the Build Engine API access token probably should
