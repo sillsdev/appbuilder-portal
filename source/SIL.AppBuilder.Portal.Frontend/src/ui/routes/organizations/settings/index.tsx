@@ -151,7 +151,7 @@ export default compose(
   })),
   withLoader(({ organization }) => !organization),
   withOrbit(({ organization }) => ({
-    organization: q => q.findRecord({ type: TYPE_NAME,id: organization.id,})
+    organization: q => q.findRecord(organization)
   })),
   withDataActions,
   withTranslations,
