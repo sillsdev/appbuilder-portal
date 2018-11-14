@@ -50,29 +50,20 @@ export function withDataActions<T>(WrappedComponent) {
     updateAttribute = async (attribute: string, value: any) => {
       const { organization, dataStore } = this.props;
 
-      try {
-
-        await dataStore.update(
-          q => q.replaceAttribute(organization, attribute, value),
-          defaultOptions()
-        );
-      } catch (e) {
-        console.log(e);
-      }
+      await dataStore.update(
+        q => q.replaceAttribute(organization, attribute, value),
+        defaultOptions()
+      );
     }
 
     updateAttributes = async (attributes: OrganizationAttributes) => {
       const { organization, dataStore } = this.props;
       const { id, type } = organization;
 
-      try {
-        await dataStore.update(q =>
-          q.replaceRecord({ id, type, attributes }),
-          defaultOptions()
-        );
-      } catch(e) {
-        console.log(e);
-      }
+      await dataStore.update(q =>
+        q.replaceRecord({ id, type, attributes }),
+        defaultOptions()
+      );
     }
 
     updateProductDefinition = (productDefinition) => {
