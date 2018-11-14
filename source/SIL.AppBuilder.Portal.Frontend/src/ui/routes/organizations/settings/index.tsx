@@ -48,12 +48,12 @@ export type IProps =
 
 class SettingsRoute extends React.Component<IProps> {
 
-  updateOrganization = (payload: OrganizationAttributes) => {
+  updateOrganization = async (payload: OrganizationAttributes) => {
 
     const { t, updateAttributes } = this.props;
 
     try {
-      updateAttributes(payload);
+      await updateAttributes(payload);
       toast.success(t('updated'));
     } catch (e) {
       toast.error(e.message);
