@@ -14,10 +14,13 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public Guid ProductId { get; set; }
 
         [Attr("activity-name")]
-        public String ActivityName { get; set; }
+        public string ActivityName { get; set; }
 
         [Attr("status")]
-        public String Status { get; set; }
+        public string Status { get; set; }
+
+        [Attr("comment")]
+        public string Comment { get; set; }
 
         [Attr("date-created")]
         public DateTime? DateCreated { get; set; }

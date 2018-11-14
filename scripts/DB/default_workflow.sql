@@ -16,16 +16,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
   </Parameters>
   <Commands>
-    <Command Name="Approve">
-      <InputParameters>
-        <ParameterRef Name="Comment" IsRequired="false" DefaultValue="" NameRef="Comment" />
-      </InputParameters>
-    </Command>
-    <Command Name="Reject">
-      <InputParameters>
-        <ParameterRef Name="Comment" IsRequired="true" DefaultValue="" NameRef="Comment" />
-      </InputParameters>
-    </Command>
+    <Command Name="Approve" />
+    <Command Name="Reject" />
+    <Command Name="Continue" />
+    <Command Name="Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
@@ -66,7 +60,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
-        <Trigger Type="Command" NameRef="Approve" />
+        <Trigger Type="Command" NameRef="Continue" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />

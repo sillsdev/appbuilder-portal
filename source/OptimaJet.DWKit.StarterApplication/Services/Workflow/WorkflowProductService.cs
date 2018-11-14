@@ -12,6 +12,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowProductService
     {
+        public class ProductProcessChangedArgs
+        {
+            public Guid ProcessId { get; set; }
+            public string CurrentActivityName { get; set; }
+            public string PreviousActivityName { get; set; }
+            public string CurrentState { get; set; }
+            public string PreviousState { get; set; }
+            public string ExecutingCommand { get; set; }
+        };
+
         IJobRepository<Product, Guid> ProductRepository { get; set; }
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
@@ -41,9 +51,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             DeleteWorkflowProcessInstance(workflowProcessId);
         }
 
-        public void ProductProcessChanged(Guid workflowProcessId, string activityName, string currentState)
+        public void ProductProcessChanged(ProductProcessChangedArgs args)
         {
-            ProductProcessChangedAsync(workflowProcessId, activityName, currentState).Wait();
+            ProductProcessChangedAsync(args).Wait();
         }
 
 
@@ -94,33 +104,45 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             );
         }
 
-        public async Task ProductProcessChangedAsync(Guid workflowProcessId, string activityName, string currentState)
+        public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)
         {
             // Find the Product assoicated with the ProcessId
-            var product = await ProductRepository.Get().Where(p => p.Id == workflowProcessId).FirstOrDefaultAsync();
+            var product = await ProductRepository.Get().Where(p => p.Id == args.ProcessId).FirstOrDefaultAsync();
             if (product == null)
             {
-                Log.Error($"Could find Product for ProcessId={workflowProcessId}");
+                Log.Error($"Could find Product for ProcessId={args.ProcessId}");
                 return;
             }
 
             await RemoveTasksByProductId(product.Id);
 
             // Find all users who could perform the current activity and create tasks for them
-            var workflowUserIds = Runtime.GetAllActorsForDirectCommandTransitions(workflowProcessId, activityName: activityName).ToList();
+            var workflowUserIds = Runtime.GetAllActorsForDirectCommandTransitions(args.ProcessId, activityName: args.CurrentActivityName).ToList();
             var users = UserRepository.Get().Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString())).ToList();
+            var workflowComment = product.WorkflowComment;
             foreach (var user in users)
             {
                 var task = new UserTask
                 {
                     UserId = user.Id,
                     ProductId = product.Id,
-                    ActivityName = activityName,
-                    Status = currentState
+                    ActivityName = args.CurrentActivityName,
+                    Status = args.CurrentState,
+                    Comment = workflowComment
                 };
                 task = await TaskRepository.CreateAsync(task);
+
+                // TODO: SendNotification to User
+                Log.Information($"Notification: user={user.Name}, command={args.ExecutingCommand}, fromActivity:{args.PreviousActivityName}, toActivity:{args.CurrentState}, comment:{product.WorkflowComment}");
             }
 
+            // Clear the WorkflowComment
+            if (!String.IsNullOrWhiteSpace(workflowComment)) 
+            {
+                // Clear the comment
+                product.WorkflowComment = "";
+                await ProductRepository.UpdateAsync(product);
+            }
         }
 
         private async Task RemoveTasksByProductId(Guid productId)
