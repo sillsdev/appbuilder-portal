@@ -15,8 +15,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 name: "WorkflowProjectId",
                 table: "Projects",
                 nullable: false,
-                oldClrType: typeof(int),
-                oldDefaultValue: 0);
+                defaultValue: 0,
+                oldClrType: typeof(int));
 
             migrationBuilder.AddColumn<string>(
                 name: "WorkflowComment",
@@ -30,16 +30,17 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 name: "Comment",
                 table: "UserTasks");
 
-            migrationBuilder.DropColumn(
-                name: "WorkflowComment",
-                table: "Products");
-
             migrationBuilder.AlterColumn<int>(
                 name: "WorkflowProjectId",
                 table: "Projects",
                 nullable: false,
-                defaultValue: 0,
-                oldClrType: typeof(int));
+                oldClrType: typeof(int),
+                oldDefaultValue: 0);
+
+            migrationBuilder.DropColumn(
+                name: "WorkflowComment",
+                table: "Products");
+                
         }
     }
 }
