@@ -348,7 +348,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("TypeId");
 
-                    b.Property<int>("WorkflowProjectId");
+                    b.Property<int>("WorkflowProjectId")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(0);
 
                     b.Property<string>("WorkflowProjectUrl");
 
