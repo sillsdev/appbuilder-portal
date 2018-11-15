@@ -99,7 +99,6 @@ const schemaDefinition: SchemaSettings = {
         ownerId: { type: 'string' }
       },
       relationships: {
-        tasks: { type: 'hasMany', model: 'task', inverse: 'project'},
         products: { type: 'hasMany', model: 'product', inverse: 'project' },
         organization: { type: 'hasOne', model: 'organization', inverse: 'projects'},
         owner: { type: 'hasOne', model: 'user', inverse: 'projects' },
@@ -132,7 +131,7 @@ const schemaDefinition: SchemaSettings = {
         store: { type: 'hasOne', model: 'store', inverse: 'products' },
         storeLanguage: { type: 'hasOne', model: 'storeLanguage', inverse: 'products' },
         artifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'product' },
-        tasks: { type: 'hasMany', model: 'task', inverse: 'project' }, // TODO: doesn't exist in DB
+        tasks: { type: 'hasMany', model: 'userTask', inverse: 'product' },
       }
     },
     productArtifact: {
@@ -158,7 +157,8 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         products: { type: 'hasMany', model: 'product', inverse: 'productDefinition' },
         organizationProductDefinitions: { type: 'hasMany', model: 'organizationProductDefinition', inverse: 'productDefinition'},
-        type: { type: 'hasOne', model: 'applicationType', inverse: 'productDefinitions' }
+        type: { type: 'hasOne', model: 'applicationType', inverse: 'productDefinitions' },
+        workflow: { type: 'hasOne', model: 'workflowDefinition', inverse: 'productDefinitions' },
       }
     },
     store: {
@@ -191,19 +191,25 @@ const schemaDefinition: SchemaSettings = {
         description: { type: 'string' }
       },
       relationships: {
+        workflowDefinitions: { type: 'hasMany', model: 'workflowDefinition', inverse: 'storeType' } ,
         stores: { type: 'hasMany', model: 'store', inverse: 'storeType'},
         storeLanguages: { type: 'hasMany', model: 'storeLanguage', inverse: 'storeType' },
 
       }
     },
-    task: {
+    userTask: {
       keys: { remoteId: {} },
       attributes: {
+        activityName: { type: 'string' },
+        comment: { type: 'string' },
         status: { type: 'string' },
+        dateCreated: { type: 'string' },
+        dateUpdated: { type: 'string' },
+
+        // Not yet implemented -- post MVP
         waitTime: { type: 'number' }
       },
       relationships: {
-        project: { type: 'hasOne', model: 'project', inverse: 'tasks'},
         product: { type: 'hasOne', model: 'product', inverse: 'tasks'},
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
       }
@@ -282,12 +288,26 @@ const schemaDefinition: SchemaSettings = {
         organizationMemberships: { type: 'hasMany', model: 'organizationMembership', inverse: 'user' },
         groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'user' },
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
-        assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' },
+        assignedTasks: { type: 'hasMany', model: 'userTask', inverse: 'assigned' },
         projects: { type: 'hasMany', model: 'project', inverse: 'owner' },
         userRoles: { type: 'hasMany', model: 'userRole', inverse: 'user'},
         groups: { type: 'hasMany', model: 'group', inverse: 'users'}
       }
-    }
+    },
+    workflowDefinition: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        enabled: { type: 'boolean' },
+        workflowBusinessFlow: { type: 'string' },
+        workflowScheme: { type: 'string' }
+      },
+      relationships: {
+        productDefinitions: { type: 'hasMany', model: 'productDefinition', inverse: 'workflow' },
+        storeType: { type: 'hasOne', model: 'storeType', inverse: 'workflowDefinitions' },
+      }
+    },
   }
 };
 

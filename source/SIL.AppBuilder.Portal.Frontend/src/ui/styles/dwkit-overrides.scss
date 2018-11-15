@@ -3,6 +3,7 @@
   display: flex;
 
   .form-layout-wrapper {
+    width: 100%;
     // FormContent renders an uncustomizable div
     > div {
       display: flex;

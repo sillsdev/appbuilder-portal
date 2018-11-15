@@ -1,8 +1,9 @@
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 
 import { withData } from 'react-orbitjs';
 
-import { TYPE_NAME as TASKS } from '@data/models/task';
+import { withLoader } from '@data';
+import { withUserTaskList } from '@data/containers/resources/user-task';
 import { withTranslations } from '@lib/i18n';
 import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
@@ -12,16 +13,16 @@ import Display from './display';
 
 export const pathName = '/tasks';
 
-const mapRecordsToProps = () => {
-  return {
-    tasks: q => q.findRecords(TASKS)
-  };
-};
-
 export default compose(
+  withTranslations,
   withLayout,
   requireAuth,
-  // query(mapNetworkToProps),
-  withData(mapRecordsToProps),
-  withTranslations
+  withUserTaskList(),
+  withLoader(({ userTasks }) => !userTasks),
+  withProps(({ userTasks }) => ({
+    userTasks: userTasks.filter(ut => ut),
+  })),
+  /* withData({ */
+  /*   tasks: q => q.findRecords('user-task') */
+  /* }), */
 )(Display);

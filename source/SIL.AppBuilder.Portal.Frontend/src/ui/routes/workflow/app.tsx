@@ -93,16 +93,15 @@ export class App extends React.Component {
 
             <Route path='/form' render={(props) => {
               return (
-                <div className='flex-row flex-grow w-100-xs w-75-lg w-50-xl form-layout-wrapper'>
+                <div className='flex-row flex-grow form-layout-wrapper'>
                   <FormContent className='flex-grow' { ...props } />
                 </div>
               );
             }} />
-            <Route path='/flow' component={FlowContent} />
-            <Route path='/tasks' render={() => {
+            <Route path='/flow' render={(props) => {
               return (
-                <div className='flex-row flex-grow w-100-xs w-75-lg w-50-xl form-layout-wrapper'>
-                  <FormContent className='flex-grow' formName="dashboard" />
+                <div className='flex-row flex-grow form-layout-wrapper'>
+                  <FormContent className='flex-grow' { ...props } />
                 </div>
               )
             }} />
