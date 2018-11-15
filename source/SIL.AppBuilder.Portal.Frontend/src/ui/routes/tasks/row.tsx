@@ -13,7 +13,8 @@ import { ResourceObject } from 'jsonapi-typescript';
 import {
   withLoader,
   attributesFor,
-  TaskResource, WorkflowResource,
+  idFromRecordIdentity,
+  TaskResource, WorkflowDefinitionResource,
   ProductResource, ProjectResource, ProductDefinitionResource,
   UserResource
 } from '@data';
@@ -24,7 +25,7 @@ export interface IOwnProps {
   productDefinition: ProductDefinitionResource;
   project: ProjectResource;
   assignedTo: UserResource;
-  workflow: WorkflowResource;
+  workflow: WorkflowDefinitionResource;
   cellClasses: string;
   cellSecondaryClasses: string;
 }
@@ -41,9 +42,9 @@ class TaskRow extends React.Component<IProps> {
 
     const { workflow, product, history } = this.props;
     const { workflowBusinessFlow } = attributesFor(workflow);
+    const id = idFromRecordIdentity(product);
 
-
-    history.push(`/flow/${workflowBusinessFlow}/${product.id}`);
+    history.push(`/flow/${workflowBusinessFlow}/${id}`);
   }
 
   render() {
