@@ -10,6 +10,7 @@ using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using OptimaJet.Workflow.Core.Runtime;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Utility
 {
@@ -38,6 +39,11 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
         public static IApplicationBuilder UseBuildEngine(this IApplicationBuilder app, IConfigurationRoot configuration)
         {
+            var sampleDataApiToken = GetVarOrDefault("SAMPLEDATA_BUILDENGINE_API_ACCESS_TOKEN", String.Empty);
+            if (!String.IsNullOrEmpty(sampleDataApiToken))
+            {
+                BackgroundJob.Enqueue<BuildEngineSystemMonitor>(service => service.SetSampleDataApiToken(sampleDataApiToken));
+            }
             RecurringJob.AddOrUpdate<BuildEngineSystemMonitor>("BuildEngineMonitor", service => service.CheckBuildEngineStatus(), Cron.MinuteInterval(5));
 
             return app;

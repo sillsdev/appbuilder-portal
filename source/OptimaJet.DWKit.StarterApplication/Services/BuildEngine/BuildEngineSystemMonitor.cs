@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JsonApiDotNetCore.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -63,6 +64,45 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 }
             }
         }
+
+        public void SetSampleDataApiToken(string sampleDataApiToken)
+        {
+            var tokens = ParseApiTokens(sampleDataApiToken);
+            var organizations = OrganizationRepository.Get().ToList();
+            foreach (var organization in organizations)
+            {
+                var token = sampleDataApiToken;
+                if (tokens.ContainsKey(organization.Id.ToString()))
+                {
+                    token = tokens[organization.Id.ToString()];
+                }
+                
+                if (organization.BuildEngineApiAccessToken != token)
+                {
+                    organization.BuildEngineApiAccessToken = token;
+                    OrganizationRepository.UpdateAsync(organization).Wait();
+                }
+            }
+        }
+
+        private static Dictionary<string,string> ParseApiTokens(string sampleDataApiToken)
+        {
+            var tokens = new Dictionary<string, string>();
+            if (sampleDataApiToken.Contains('|'))
+            {
+                var entries = sampleDataApiToken.Split('|');
+                foreach (var entry in entries)
+                {
+                    var values = entry.Split('=');
+                    if (values.Count() == 2)
+                    {
+                        tokens[values[0]] = values[1];
+                    }
+                }
+            }
+            return tokens;
+        }
+
         private bool CheckConnection(SystemStatus systemEntry)
         {
             BuildEngineApi.SetEndpoint(systemEntry.BuildEngineUrl, systemEntry.BuildEngineApiAccessToken);
