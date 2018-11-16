@@ -7,7 +7,8 @@ INSERT INTO "Users" ("Name", "Email", "ExternalId", "FamilyName", "GivenName", "
 (	'Chris Hubbard (Kalaam)',	'chris.kalaam@gmail.com',	'auth0|5b578f6197af652b19f9bb41',	'Hubbard',	'Chris',	'0',	NULL,	NULL,	NULL),
 ( 	'Preston Sego (dt)', 'psego@developertown.com', 'google-oauth2|111802484969448690930', 'Sego (dt)', 'Preston', '0', NULL, NULL, NULL),
 (	'Bill Dyck', 'bill_dyck@sil.org',	'google-oauth2|102643649500459434996', 'Dyck',	'Bill',	'0',	NULL, NULL, NULL),
-(	'Loren Hawthorne', 'loren_hawthrone@sil.org',	'google-oauth2|116603781884964961816', 'Loren',	'Hawthorne',	'0',	NULL, NULL, NULL);
+(	'Loren Hawthorne', 'loren_hawthrone@sil.org',	'google-oauth2|116603781884964961816', 'Loren',	'Hawthorne',	'0',	NULL, NULL, NULL),
+(	'liztabor19+1@gmail.com', 'liztabor19+1@gmail.com',	'auth0|5b86fb131a8ed52ad10259e5', 'Liz',	'tabor',	'0',	NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId") VALUES
 (	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1),
@@ -92,7 +93,9 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	7,  2), -- psego@developertown.com - DT
 (	8,  1), -- bill_dyck@sil.org - SIL
 (	8,  3), -- bill_dyck@sil.org - Kalaam
-(	9,  1); -- loren_hawthorne@sil.org - SIL
+(	9,  1), -- loren_hawthorne@sil.org - SIL
+(	10,  1), -- liztabor19+1@gmail.com - SIL
+(	10,  2); -- liztabor19+1@gmail.com - DT
 
 
 
@@ -121,7 +124,9 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	1,	1,	3), -- chris_hubbard@sil.org - SuperAdmin - Kalaam
 (	8,	2,	3), -- bill_dyck@sil.org - OrgAdmin - Kalaam
 (	2,	2,	3), -- david_moore1@sil.org - OrgAdmin - Kalaam
-(	6,	3,	3); -- chris.kalaam@gmail.com - AppBuilder - Kalaam
+(	6,	3,	3), -- chris.kalaam@gmail.com - AppBuilder - Kalaam
+(	10,	3,	1), -- liztabor19+1@gmail.com - AppBuilder - SIL
+(	10,	3,	2); -- liztabor19+1@gmail.com - AppBuilder - DT
 
 
 INSERT INTO "Projects"
