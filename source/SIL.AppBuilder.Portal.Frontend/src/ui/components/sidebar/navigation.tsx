@@ -88,10 +88,13 @@ class Navigation extends React.Component<IProps & i18nProps> {
         </RequireRole>
 
         { hasSelectedOrg && (
-          <MenuItem
-            name={t('sidebar.organizationSettings')}
-            to={`/organizations/${currentOrganizationId}/settings`}
-            onClick={closeSidebar} />
+          <RequireRole roleName={ROLE.OrganizationAdmin}>
+            <MenuItem
+              name={t('sidebar.organizationSettings')}
+              to={`/organizations/${currentOrganizationId}/settings`}
+              onClick={closeSidebar}
+            />
+          </RequireRole>
         ) }
 
         <hr />

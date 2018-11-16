@@ -7,6 +7,8 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import NotFound from '@ui/routes/errors/not-found';
 import { query, withLoader, buildFindRecord, buildOptions } from '@data';
+import { ROLE }  from '@data/models/role';
+import { withRole } from '@data/containers/with-role';
 import { OrganizationAttributes, TYPE_NAME, OrganizationResource } from '@data/models/organization';
 
 
@@ -153,6 +155,10 @@ export default compose(
   withOrbit(({ organization }) => ({
     organization: q => q.findRecord(organization)
   })),
+  withRole(ROLE.OrganizationAdmin, {
+    redirectTo: '/',
+    checkOrganizationOf: (props: IProps) => props.organization
+  }),
   withDataActions,
   withTranslations,
 )(SettingsRoute);
