@@ -8,6 +8,7 @@ import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { OrganizationResource } from '../models/organization';
+import { UserResource } from '../models/user';
 import { RoleResource, ROLE } from '../models/role';
 import { isRelatedTo, attributesFor } from '../helpers';
 import { withCurrentUser, IProvidedProps as ICurrentUserProps } from './with-current-user';
@@ -15,6 +16,7 @@ import { withCurrentOrganization, IProvidedProps as IOrganziationProps } from '.
 
 export interface IOptions<TWrappedProps> {
   forOrganization?: OrganizationResource;
+  forAnyOrganization?: (props: TWrappedProps) => OrganizationResource[];
   errorOnForbidden?: boolean;
   redirectTo?: string;
   componentOnForbidden?: any;
@@ -53,6 +55,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
   const {
     forOrganization,
     errorOnForbidden,
+    forAnyOrganization,
     redirectTo,
     checkOrganizationOf,
     overrideIf,
@@ -71,9 +74,33 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 
         const { currentUser, dataStore, currentOrganization } = this.props;
         const organization = forOrganization || currentOrganization;
+        const anyOrganization = forAnyOrganization ? forAnyOrganization(this.props as any) : [];
+
+        const resultOfSuperAdmin = await canDoEverything(dataStore, currentUser);
+
+        if (resultOfSuperAdmin) {
+          return true;
+        }
 
         let resultOfResource = false;
         let resultOfOrganization = false;
+        let resultOfAnyOrganization = false;
+
+        if (anyOrganization) {
+          const results = await Promise.all(
+            anyOrganization.map(org => {
+              return roleInOrganization(currentUser, dataStore, org, role);
+            })
+          );
+
+          // only one needs to be true
+          const resultOfAnyOrganization = results.some(r => r);
+          console.log(anyOrganization, results, resultOfAnyOrganization, this.props);
+        }
+
+        if (resultOfAnyOrganization) {
+          return true;
+        }
 
         if (organization) {
           resultOfOrganization = await roleInOrganization(currentUser, dataStore, organization, role);
@@ -88,7 +115,15 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
         return resultOfOrganization || resultOfResource;
       }
 
-      async componentDidMount() {
+      componentDidMount() {
+        this.resolveAccess();
+      }
+
+      componentDidUpdate() {
+        this.resolveAccess();
+      }
+
+      resolveAccess = async () => {
         try {
           const result = await this.doesUserHaveAccess();
 
@@ -106,7 +141,6 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
         // work here is with local cache, so I don't know if it would cause a stutter
         // on slower devices
         if (!roleEvaluated) { return null; }
-
 
         if (!accessGranted) {
           if (OnForbidden) {
@@ -148,6 +182,14 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 
 }
 
+async function canDoEverything(dataStore, currentUser: UserResource) {
+  const userRoles = await dataStore.cache.query(q => q.findRelatedRecords(currentUser, 'userRoles'));
+
+  const result = await isSuperAdmin(dataStore, userRoles);
+
+  return result;
+}
+
 async function isSuperAdmin(dataStore, userRoles): Promise<boolean> {
   // NOTE: SuperAdmins are cross-organization
   //       the organization relationship doesn't matter.
@@ -164,12 +206,6 @@ async function isSuperAdmin(dataStore, userRoles): Promise<boolean> {
 
 export async function roleInOrganization(currentUser, dataStore, organization, role: ROLE): Promise<boolean> {
   const userRoles = await dataStore.cache.query(q => q.findRelatedRecords(currentUser, 'userRoles'));
-
-  const canDoEverything = await isSuperAdmin(dataStore, userRoles);
-
-  if (canDoEverything) {
-    return true;
-  }
 
   const userRolesMatchingOrganization = userRoles.filter(userRole => {
     return isRelatedTo(userRole, 'organization', organization.id);

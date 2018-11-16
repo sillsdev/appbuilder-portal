@@ -7,7 +7,10 @@ import { withData as withOrbit } from 'react-orbitjs';
 
 import {
   UserResource, GroupResource, RoleResource, OrganizationResource,
-  attributesFor, idFromRecordIdentity, withLoader} from '@data';
+  attributesFor, idFromRecordIdentity, withLoader,
+} from '@data';
+import { withRole } from '@data/containers/with-role';
+import { ROLE } from '@data/models/role';
 import { UserAttributes } from '@data/models/user';
 import { withDataActions, IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
 import { withRelationships } from '@data/containers/with-relationship';
@@ -121,6 +124,12 @@ export default compose<IProps, INeededProps>(
       );
     }
 
+    console.log('orgs', userOrganizations, currentUserOrganizations);
     return { organizations };
+  }),
+  // TODO: look here -- for some reason when all organizations are selected
+  // organizations is an empty array
+  withRole(ROLE.OrganizationAdmin, {
+    forAnyOrganization: (props: IProps) => props.organizations,
   })
 )(Row);

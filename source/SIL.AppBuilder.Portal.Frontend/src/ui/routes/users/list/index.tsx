@@ -14,9 +14,6 @@ import Display from './display';
 export const pathName = '/users';
 
 export default compose(
-  withRole(ROLE.OrganizationAdmin, {
-    redirectTo: '/'
-  }),
   withTranslations,
   withCurrentUser(),
   withRoles(),
