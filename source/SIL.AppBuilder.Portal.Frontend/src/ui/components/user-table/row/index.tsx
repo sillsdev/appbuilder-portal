@@ -124,11 +124,8 @@ export default compose<IProps, INeededProps>(
       );
     }
 
-    console.log('orgs', userOrganizations, currentUserOrganizations);
     return { organizations };
   }),
-  // TODO: look here -- for some reason when all organizations are selected
-  // organizations is an empty array
   withRole(ROLE.OrganizationAdmin, {
     forAnyOrganization: (props: IProps) => props.organizations,
   })

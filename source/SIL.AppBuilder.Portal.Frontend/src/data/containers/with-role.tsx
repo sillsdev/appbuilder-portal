@@ -94,8 +94,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
           );
 
           // only one needs to be true
-          const resultOfAnyOrganization = results.some(r => r);
-          console.log(anyOrganization, results, resultOfAnyOrganization, this.props);
+          resultOfAnyOrganization = results.some(r => r);
         }
 
         if (resultOfAnyOrganization) {
@@ -127,8 +126,9 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
         try {
           const result = await this.doesUserHaveAccess();
 
-          this.setState({ accessGranted: result, roleEvaluated: true });
+          this.setState({ accessGranted: result, roleEvaluated: true, error: undefined });
         } catch(error) {
+          console.error('check failed', error);
           this.setState({ accessGranted: false, roleEvaluated: true, error });
         }
       }
@@ -159,7 +159,6 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 
           return null;
         }
-
 
         const props: TWrappedProps & IProvidedProps = {
           ...(this.props as object),
