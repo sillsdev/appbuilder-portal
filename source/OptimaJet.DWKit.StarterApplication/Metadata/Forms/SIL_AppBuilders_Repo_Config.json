@@ -38,14 +38,22 @@
       {
         "key": "header_1",
         "data-buildertype": "header",
-        "content": "Synchronize Data",
+        "content": "Repository Configuration",
         "size": "medium"
+      },
+      {
+        "key": "input_repository_location",
+        "data-buildertype": "input",
+        "label": "Repository Location",
+        "fluid": true,
+        "onChangeTimeout": 200,
+        "readOnly": true
       },
       {
         "key": "message_1",
         "data-buildertype": "message",
         "header": "Instructions",
-        "content": "Make any changes needed in the app.  Click \"Send\" in the \"Publishing\" app configuration page and successfully upload the data to the app publishing repository.  Click Continue to proceed to build the product."
+        "content": "Paste the above \"Repository Location\" into the \"Publishing\" app configuration page."
       }
     ]
   }

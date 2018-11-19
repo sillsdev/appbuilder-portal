@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using OptimaJet.DWKit.Core;
-using OptimaJet.DWKit.Core.Model;
 using OptimaJet.Workflow.Core.Model;
 using OptimaJet.Workflow.Core.Runtime;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +11,11 @@ using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using Hangfire;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
-	public class WorkflowProductActionProvider : IWorkflowActionProvider
+    public class WorkflowProductActionProvider : IWorkflowActionProvider
     {
         private readonly Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>> _actions = new Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>>();
 
@@ -30,22 +29,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             new Dictionary<string, Func<ProcessInstance, WorkflowRuntime, string, CancellationToken, Task<bool>>>();
 
         public IServiceProvider ServiceProvider { get; }
+        public IBackgroundJobClient BackgroundJobClient { get; }
 
-        public WorkflowProductActionProvider(IServiceProvider serviceProvider)
+        public WorkflowProductActionProvider(IServiceProvider serviceProvider, IBackgroundJobClient backgroundJobClient)
         {
             ServiceProvider = serviceProvider;
+            BackgroundJobClient = backgroundJobClient;
 
             //Register your actions in _actions and _asyncActions dictionaries
             //_asyncActions.Add("WriteTransitionHistory", WriteTransitionHistoryAsync);
             //_asyncActions.Add("UpdateTransitionHistory", UpdateTransitionHistoryAsync);
             _asyncActions.Add("SendOwnerNotification", SendOwnerNotificationAsync);
             _asyncActions.Add("BuildEngine_CreateProduct", BuildEngineCreateProductAsync);
+            _asyncActions.Add("BuildEngine_BuildProduct", BuildEngineBuildProductAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
             //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync); 
             _asyncConditions.Add("BuildEngine_ProductCreated", BuildEngineProductCreated);
+            _asyncConditions.Add("BuildEngine_BuildCompleted", BuildEngineBuildCompleted);
+            _asyncConditions.Add("BuildEngine_BuildFailed", BuildEngineBuildFailed);
         }
 
+        //
+        // Conditions
+        //
         private async Task<bool> BuildEngineProductCreated(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
             using (var scope = ServiceProvider.CreateScope())
@@ -57,6 +64,48 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
+        private async Task<bool> BuildEngineBuildCompleted(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                Log.Information($"BuildEngineBuildCompleted: workflowJobId={product.WorkflowBuildId}, productId={product.Id}, projectName={product.Project.Name}");
+
+                bool buildCompleted = false;
+                if (product.WorkflowBuildId != 0)
+                {
+                    var service = scope.ServiceProvider.GetRequiredService<BuildEngineBuildService>();
+                    var status = await service.GetStatusAsync(product.Id);
+                    buildCompleted = (status == BuildEngineStatus.Success);
+                }
+                return buildCompleted;
+            }
+        }
+
+        private async Task<bool> BuildEngineBuildFailed(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                Log.Information($"BuildEngineProductCreated: workflowJobId={product.WorkflowBuildId}, productId={product.Id}, projectName={product.Project.Name}");
+
+                bool buildFailed = false;
+                if (product.WorkflowBuildId != 0)
+                {
+                    var service = scope.ServiceProvider.GetRequiredService<BuildEngineBuildService>();
+                    var status = await service.GetStatusAsync(product.Id);
+                    buildFailed = (status == BuildEngineStatus.Failure);
+                }
+                return buildFailed;
+            }
+        }
+
+
+        //
+        // Actions
+        //
         private async Task BuildEngineCreateProductAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
             using (var scope = ServiceProvider.CreateScope())
@@ -65,8 +114,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 Product product = await GetProductForProcess(processInstance, productRepository);
                 if (product.WorkflowJobId == 0) 
                 {
-                    BuildEngineProductService.CreateBuildEngineProduct(product.Id);
+                    BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ManageProduct(product.Id));
                     Log.Information($"BuildEngineCreateProduct: productId={product.Id}, projectName={product.Project.Name}");
+                }
+                else
+                {
+                    throw new Exception("Product already has a BuildEngine Product");
+                }
+            }
+        }
+
+        private async Task BuildEngineBuildProductAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                if (product.WorkflowJobId != 0)
+                {
+                    BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id));
+                    Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
+                }
+                else 
+                {
+                    throw new Exception("Product does nto have BuildEngine Product");
                 }
             }
         }

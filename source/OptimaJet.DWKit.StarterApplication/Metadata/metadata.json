@@ -2799,6 +2799,96 @@
         }
       ],
       "primaryKeyAttribute": "Code"
+    },
+    {
+      "id": "7ad334d2-b660-43d0-8520-9491eb0f0083",
+      "name": "ProductArtifacts",
+      "dbObjectName": "ProductArtifacts",
+      "schemaName": "",
+      "triggers": [],
+      "attributes": [
+        {
+          "id": "34f1138f-019a-48fa-af8f-9dd5258e5abc",
+          "name": "ArtifactType",
+          "type": "String",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "edabc700-a7b1-42d7-837d-95910c4b254c",
+          "name": "ContentType",
+          "type": "String",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "824bf7e4-6c64-4740-94b8-d68bc88e8f7c",
+          "name": "DateCreated",
+          "type": "DateTime",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "c8ff77d9-2e65-4975-b9f1-cca2b22c9145",
+          "name": "DateUpdated",
+          "type": "DateTime",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "ce62ce6e-c4c9-4788-a4ff-797f96ddfc57",
+          "name": "FileSize",
+          "type": "Int64",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "e1937119-1b61-499d-8888-28a3c71e0530",
+          "name": "Id",
+          "type": "Int32",
+          "typeId": 0,
+          "isNullable": false,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "ed9ab792-26ec-4dae-ad54-aa7c9edf36b0",
+          "referenceEntityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
+          "name": "ProductId",
+          "typeId": 1,
+          "isNullable": false,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "9fe8c791-cafa-448c-9505-22f4d047827a",
+          "name": "Url",
+          "type": "String",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        }
+      ],
+      "primaryKeyAttribute": "Id"
     }
   ],
   "codeActions": [],
@@ -2829,12 +2919,30 @@
         },
         {
           "states": [
+            "RepoConfig"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Repo_Config"
+        },
+        {
+          "states": [
             "SynchronizeData"
           ],
           "roles": [
             "*"
           ],
           "form": "SIL_AppBuilders_Synchronize_Data"
+        },
+        {
+          "states": [
+            "AppStorePreview"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_App_Store_Review"
         }
       ]
     }

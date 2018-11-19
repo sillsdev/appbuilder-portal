@@ -1,0 +1,156 @@
+[
+  {
+    "key": "workflowbar",
+    "data-buildertype": "workflowbar",
+    "events": {
+      "onCommandClick": {
+        "active": true,
+        "actions": [
+          "workflowExecuteCommand"
+        ]
+      },
+      "onSetStateClick": {
+        "active": true,
+        "actions": [
+          "workflowSetState"
+        ]
+      }
+    },
+    "blockSetState": true
+  },
+  {
+    "key": "form_2",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "textarea_comment",
+        "data-buildertype": "textarea",
+        "label": "Comment",
+        "fluid": true,
+        "rows": "2"
+      }
+    ]
+  },
+  {
+    "key": "form_1",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "header_1",
+        "data-buildertype": "header",
+        "content": "App Store Review",
+        "size": "medium"
+      },
+      {
+        "key": "formgroup_3",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_UserName",
+            "data-buildertype": "input",
+            "label": "User Name",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_email",
+            "data-buildertype": "input",
+            "label": "Email",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
+        "key": "formgroup_2",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_project_name",
+            "data-buildertype": "input",
+            "label": "Project Name",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-width": "",
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_project_description",
+            "data-buildertype": "input",
+            "label": "Project Description",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-source": "",
+            "style-width": "",
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
+        "key": "input_product",
+        "data-buildertype": "input",
+        "label": "Product",
+        "fluid": true,
+        "onChangeTimeout": 200,
+        "readOnly": true
+      },
+      {
+        "key": "input_application_type",
+        "data-buildertype": "input",
+        "label": "Application Type",
+        "fluid": true,
+        "onChangeTimeout": 200,
+        "readOnly": true
+      },
+      {
+        "key": "input_language_code",
+        "data-buildertype": "input",
+        "label": "Language Code",
+        "fluid": true,
+        "onChangeTimeout": 200,
+        "readOnly": true
+      },
+      {
+        "key": "gridview_1",
+        "data-buildertype": "gridview",
+        "columns": [
+          {
+            "key": "type",
+            "name": "Type",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "width": 150
+          },
+          {
+            "key": "size",
+            "name": "Size",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "type": "number",
+            "width": 75
+          },
+          {
+            "key": "link",
+            "name": "Link",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "type": "link"
+          }
+        ]
+      }
+    ]
+  }
+]
