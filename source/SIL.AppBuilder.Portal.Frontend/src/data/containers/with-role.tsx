@@ -74,7 +74,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
 
         const { currentUser, dataStore, currentOrganization } = this.props;
         const organization = forOrganization || currentOrganization;
-        const anyOrganization = forAnyOrganization ? forAnyOrganization(this.props as any) : [];
+        const anyOrganization = forAnyOrganization ? forAnyOrganization(this.props as any) : null;
 
         const resultOfSuperAdmin = await canDoEverything(dataStore, currentUser);
 
@@ -205,6 +205,11 @@ async function isSuperAdmin(dataStore, userRoles): Promise<boolean> {
 
 export async function roleInOrganization(currentUser, dataStore, organization, role: ROLE): Promise<boolean> {
   const userRoles = await dataStore.cache.query(q => q.findRelatedRecords(currentUser, 'userRoles'));
+  const isAuthorized = await isSuperAdmin(dataStore, userRoles);
+
+  if (isAuthorized) {
+    return true;
+  }
 
   const userRolesMatchingOrganization = userRoles.filter(userRole => {
     return isRelatedTo(userRole, 'organization', organization.id);

@@ -26,7 +26,8 @@ describe('Acceptance | User list | Filtering users by organization', () => {
           data: [
             { id: 1, type: 'organization-memberships' },
           ]
-        }
+        },
+        ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
       }
     },
     included: [
@@ -65,6 +66,19 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         relationships: {
           organization: { data: { id: 1, type: 'organizations' } }
         }
+      },
+      {
+        id: 1, type: 'user-roles',
+        attributes: { roleName: 'SuperAdmin' },
+        relationships: {
+          ['user']: { data: { id: 1, type: 'users' } },
+          ['role']: { data: { id: 1, type: 'roles' } },
+          ['organization']: { data: { id: 1, type: 'organizations' } }
+        }
+      },
+      {
+        id: 1, type: 'roles',
+        attributes: { roleName: 'SuperAdmin' }
       }
     ]
   });

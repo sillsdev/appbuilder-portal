@@ -154,6 +154,11 @@ describe('Acceptance | User List | Role Management', () => {
         included: [
           {
             type: 'organizations',
+            id: 1,
+            attributes: { name: 'DeveloperTown' },
+          },
+          {
+            type: 'organizations',
             id: 2,
             attributes: { name: 'SIL' }
           }, {
@@ -171,8 +176,8 @@ describe('Acceptance | User List | Role Management', () => {
               user: { data: { type: 'user', id: 2 } }
             }
           },
-          userRoleFrom(roles.orgAdmin, { id: 1, userId: 2, orgId: 1 }),
-          userRoleFrom(roles.appBuilder, { id: 2, userId: 2, orgId: 1 }),
+          userRoleFrom(roles.orgAdmin, { id: 2, userId: 2, orgId: 1 }),
+          userRoleFrom(roles.appBuilder, { id: 3, userId: 2, orgId: 1 }),
           roles.orgAdmin,
           roles.appBuilder,
         ]
@@ -240,7 +245,7 @@ describe('Acceptance | User List | Role Management', () => {
             id: 2,
             attributes: { name: 'SIL'}
           },
-          userRoleFrom(roles.superAdmin, { id: 1, userId: 2, orgId: 1 }),
+          userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 1 }),
           roles.superAdmin,
         ]
       });

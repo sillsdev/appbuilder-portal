@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { fakeAuth0JWT, fakeAuth0Id } from './jwt';
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import { respondWithJsonApi } from './request-intercepting/jsonapi';
+import { roles, userRoleFrom } from './fixtures';
 
 // this requires the request interceptor
 // by default: this user is a super admin
@@ -50,19 +51,8 @@ export function useFakeAuthentication(currentUser?: object) {
             organization: { data: { id: 1, type: 'organizations' } }
           }
         },
-        {
-          id: 1, type: 'user-roles',
-          attributes: { roleName: 'SuperAdmin' },
-          relationships: {
-            ['user']: { data: { id: 1, type: 'users' } },
-            ['role']: { data: { id: 1, type: 'roles' } },
-            ['organization']: { data: { id: 1, type: 'organizations' } }
-          }
-        },
-        {
-          id: 1, type: 'roles',
-          attributes: { roleName: 'SuperAdmin' }
-        }
+        userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 1 }),
+        roles.superAdmin,
       ]
     });
   });

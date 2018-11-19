@@ -127,6 +127,8 @@ export default compose<IProps, INeededProps>(
     return { organizations };
   }),
   withRole(ROLE.OrganizationAdmin, {
-    forAnyOrganization: (props: IProps) => props.organizations,
+    forAnyOrganization: (props: IProps) => {
+      return props.organizations;
+    },
   })
 )(Row);
