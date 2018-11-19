@@ -27,7 +27,7 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
         res.status(200);
         res.headers['Content-Type'] = 'application/vnd.api+json';
 
-        if (!req.query['filter[organization-header]']) {
+        if (!req.query['filter[organization-id]']) {
           res.json(threeProjects);
 
         } else {

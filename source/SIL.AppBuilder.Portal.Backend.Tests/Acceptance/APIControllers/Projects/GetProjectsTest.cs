@@ -323,7 +323,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         {
             BuildTestData();
 
-            var url = "/api/projects?filter%5Borganization-header%5D=" + org3.Id.ToString();
+            var url = "/api/projects?filter%5Borganization-id%5D=" + org3.Id.ToString();
             var response = await Get(url, addOrgHeader: false);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

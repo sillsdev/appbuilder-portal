@@ -62,14 +62,14 @@ class Filter extends React.Component<IProps, IState> {
     const { updateFilter } = this.props;
 
     if (value === 'all') {
-      updateFilter({ attribute: 'organization-header', value });
+      updateFilter({ attribute: 'organization-id', value });
 
       return this.setState({ selectedOrganization: value });
     }
 
     const id = idFromRecordIdentity({ type: ORGANIZATION, id: value });
 
-    updateFilter({ attribute: 'organization-header', value: id });
+    updateFilter({ attribute: 'organization-id', value: id });
 
     this.setState({ selectedOrganization: value });
   }
