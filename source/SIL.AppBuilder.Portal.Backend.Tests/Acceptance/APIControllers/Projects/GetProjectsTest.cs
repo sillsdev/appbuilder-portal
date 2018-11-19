@@ -319,6 +319,25 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         }
 
         [Fact]
+        public async Task GetProjects_ForDirectory_QueryOutsideOrganization() 
+        {
+            BuildTestData();
+
+            var url = "/api/projects?filter%5Borganization-header%5D=" + org3.Id.ToString();
+            var response = await Get(url, addOrgHeader: false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(1, projects.Count);
+
+            var ids = projects.Select(p => p.Id);
+
+            Assert.Contains(project4.Id, ids);
+        }
+
+        [Fact]
         public async Task GetProjects_ForDirectory_QueryLanguage()
         {
             BuildTestData();
