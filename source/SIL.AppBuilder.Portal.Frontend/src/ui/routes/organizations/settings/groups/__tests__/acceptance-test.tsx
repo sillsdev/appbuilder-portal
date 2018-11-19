@@ -12,7 +12,7 @@ import page from './page';
 
 
 
-describe.only('Acceptance | Organization Settings | Groups', () => {
+describe('Acceptance | Organization Settings | Groups', () => {
 
   setupApplicationTest();
   setupRequestInterceptor();

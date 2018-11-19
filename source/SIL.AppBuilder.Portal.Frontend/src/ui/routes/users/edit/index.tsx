@@ -10,6 +10,8 @@ import { withTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
 
 import { USERS_TYPE, update } from '@data';
+import { ROLE }  from '@data/models/role';
+import { withRole } from '@data/containers/with-role';
 import { UserAttributes } from '@data/models/user';
 import { withCurrentUser } from '@data/containers/with-current-user';
 
@@ -66,4 +68,12 @@ export default compose(
   withTranslations,
   withCurrentUser(),
   withData,
+  withRole(ROLE.OrganizationAdmin, {
+    redirectTo: '/',
+    overrideIf: (props: IProps) => {
+      const { currentUser, user } = props;
+
+      return currentUser.id === user.id;
+    }
+  }),
 )(Profile);
