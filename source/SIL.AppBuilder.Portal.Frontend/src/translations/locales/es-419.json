@@ -10,6 +10,10 @@
     "title": "Proyecto de código abierto usado en Scriptoria",
     "subtitle": "Librerías usadas por la licencia"
   },
+  "notifications": {
+    "buildComplete": "The build for {projectName} has completed!",
+    "buildServerConnectionLost": "Connection to the build server has been lost!"
+  },
   "common": {
     "search": "Buscar",
     "noResults": "Sin resultados...",
