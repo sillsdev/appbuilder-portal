@@ -11,7 +11,7 @@ class NotFoundRoute extends React.Component<i18nProps> {
 
     return (
       <div className='ui text container'>
-        <h1 className='ui header'>{t('errors.notFoundTitle')}</h1>
+        <h1 className='ui header p-t-lg'>{t('errors.notFoundTitle')}</h1>
         <div className='content'>{t('errors.notFoundDescription')}</div>
       </div>
     );

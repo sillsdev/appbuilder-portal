@@ -14,6 +14,7 @@ import LoadingWrapper from '@ui/components/loading-wrapper';
 interface IOwnProps {
   projects: ProjectResource[];
   isLoading?: boolean;
+  projectPath?: (id: string) => string;
 }
 
 type IProps =
@@ -32,7 +33,8 @@ class Table extends React.Component<IProps> {
       activeProjectColumns,
       activeProductColumns,
       t,
-      isLoading
+      isLoading,
+      projectPath,
     } = this.props;
 
     const isProjectListEmpty = isEmpty(projects);
@@ -52,7 +54,8 @@ class Table extends React.Component<IProps> {
                 project,
                 selectedColumns,
                 activeProjectColumns,
-                activeProductColumns
+                activeProductColumns,
+                projectPath,
               };
 
               return <Row key={index} {...rowProps} />;

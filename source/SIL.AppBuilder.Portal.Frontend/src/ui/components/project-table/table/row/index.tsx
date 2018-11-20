@@ -26,6 +26,7 @@ export interface IProps {
   owner: UserResource;
   group: GroupResource;
   toggleArchiveProject: (project: ProjectResource) => void;
+  projectPath?: (id: string) => string;
 }
 
 class Row extends React.Component<IProps & IProvidedProps> {
@@ -61,17 +62,19 @@ class Row extends React.Component<IProps & IProvidedProps> {
     });
   }
   render() {
-    const { project } = this.props;
+    const { project, projectPath } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
     const { name: projectName } = attributesFor(project);
 
+    const clickPath = projectPath ? projectPath(projectId) : `/projects/${projectId}`;
+
     return (
       <div data-test-project-row className='m-b-md with-shadow'>
         <div className='flex row-header grid align-items-center p-l-md p-r-md'>
           <div className='col flex-grow-xs flex-100'>
-            <Link to={`/projects/${projectId}`}>{projectName}</Link>
+            <Link to={clickPath}>{projectName}</Link>
           </div>
 
           { activeProjectColumns.map((column, i) => (
