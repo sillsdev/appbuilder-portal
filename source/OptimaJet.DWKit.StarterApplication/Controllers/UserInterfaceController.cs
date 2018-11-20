@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OptimaJet.DWKit.Core;
@@ -17,11 +18,11 @@ using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [AllowAnonymous]
-    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    // Does this allow both?
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserInterfaceController : Controller
     {
-        [AllowAnonymous]
         [Route("ui/form/{name}")]
         public async Task<ActionResult> GetForm(string name, bool wrapResult = false, bool enableSecurity = false)
         {
@@ -111,11 +112,11 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
             if (wrapResult)
             {
-                // if (enableSecurity)
-                // {
-                //     var userId = DWKitRuntime.Security.CurrentUser.GetOperationUserId();
-                //     await form.FillPermissionsAsync(userId);
-                // }
+                if (enableSecurity)
+                {
+                    var userId = DWKitRuntime.Security.CurrentUser.GetOperationUserId();
+                    await form.FillPermissionsAsync(userId);
+                }
                 await form.FillMappingAsync();
                 return Json(new ItemSuccessResponse<object>(form));
             }

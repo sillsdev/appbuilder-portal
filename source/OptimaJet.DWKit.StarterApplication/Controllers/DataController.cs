@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -14,8 +15,9 @@ using OptimaJet.DWKit.Core.View;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [AllowAnonymous]
-    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
     public class DataController : Controller
     {
         [AllowAnonymous]
@@ -25,10 +27,10 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         {
             try
             {
-                // if (!await DWKitRuntime.Security.CheckFormPermissionAsync(name, "View"))
-                // {
-                //     throw new Exception("Access denied!");
-                // }
+                if (!await DWKitRuntime.Security.CheckFormPermissionAsync(name, "View"))
+                {
+                    throw new Exception("Access denied!");
+                }
 
                 string filterActionName = null;
                 string idValue = null;

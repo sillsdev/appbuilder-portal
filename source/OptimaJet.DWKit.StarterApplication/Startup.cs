@@ -177,6 +177,8 @@ namespace OptimaJet.DWKit.StarterApplication
 
             app.UseBuildEngine(Configuration);
             app.UseWorkflow(Configuration);
+
+            DWKitRuntime.Security = new ScriptoriaSecurityProvider();
         }
     }
 }
