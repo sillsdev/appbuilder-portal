@@ -97,7 +97,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             var emails = ReadTestData<AppDbContext, Email>();
             Assert.Single(emails);
             var email = emails[0];
-            Assert.Equal("[Scriptoria] Notification", email.Subject);
+            Assert.Equal("[Scriptoria] Test Notification", email.Subject);
             Assert.Equal("{\"Message\":\"Build Engine for organization SIL International status change: connected\"}", email.ContentModelJson);
         }
         [Fact]
@@ -123,7 +123,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             var emails = ReadTestData<AppDbContext, Email>();
             Assert.Single(emails);
             var email = emails[0];
-            Assert.Equal("[Scriptoria] Notification", email.Subject);
+            Assert.Equal("[Scriptoria] Test Notification", email.Subject);
             Assert.Equal("{\"Message\":\"Failed to create project Test project. Could not connect to build engine for organization SIL International.\"}", email.ContentModelJson);
         }
         [Fact]

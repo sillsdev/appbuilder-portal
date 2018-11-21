@@ -40,7 +40,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
             services.AddScoped<SendNotificationServiceTester>();
             services.AddI18NextLocalization(i18n => i18n
                                             .IntegrateToAspNetCore()
-                                            .AddBackend(new ScriptoriaI18NextFileBackend("../../../../../OptimaJet.DWKit.StarterApplication/wwwroot/locales"))
+                                            .AddBackend(new ScriptoriaI18NextFileBackend("wwwroot/locales"))
                                             .UseDefaultLanguage("en-US"));
             services.AddMvc()
                 // Enable view localization and register required I18Next services
@@ -53,7 +53,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                                IServiceScopeFactory serviceScopeFactory,
                                IServiceProvider serviceProvider)
         {
-            app.UseRequestLocalization(options => options.AddSupportedCultures("es-419", "en-us"));
+            app.UseRequestLocalization(options => options.AddSupportedCultures("es-419", "en-us", "fr-FR"));
             base.Configure(app, env, loggerFactory, serviceScopeFactory, serviceProvider);
         }
     }

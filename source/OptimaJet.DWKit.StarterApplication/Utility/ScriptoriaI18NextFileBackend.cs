@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using I18Next.Net.Backends;
@@ -41,8 +42,9 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             var path = FindFile(language, @namespace);
 
             if (path == null)
+            {
                 return null;
-
+            }
             JObject parsedJson;
 
             using (var streamReader = new StreamReader(path, Encoding))
@@ -64,7 +66,11 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
             if (File.Exists(path))
                 return path;
-            
+
+            path = Path.Combine(_basePath, language.ToLower() + ".json");
+            if (File.Exists(path))
+                return path;
+
             path = Path.Combine(_basePath, GetLanguagePart(language) + ".json");
 
             return !File.Exists(path) ? null : path;

@@ -118,6 +118,9 @@ function runstuff {
         bash -c "dotnet test /app/SIL.AppBuilder.Portal.Backend.Tests/"
     ;;
 
+    ci)
+      ${CI_COMPOSE} $arguments
+    ;;
     ################
     # Host-Machine Utils
 

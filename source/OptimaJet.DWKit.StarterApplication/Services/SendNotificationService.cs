@@ -95,6 +95,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 locale = notification.User.Locale;
             }
+            if (String.IsNullOrEmpty(locale))
+            {
+                locale = "en-US";
+            }
             var subject = await Translator.TranslateAsync(locale, "notifications", "notifications.subject", null);
             var subsDict = notification.MessageSubstitutions as Dictionary<string, object>;
             var message = await Translator.TranslateAsync(locale, "notifications", notification.MessageId, subsDict);
