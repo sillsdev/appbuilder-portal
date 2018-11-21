@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using JsonApiDotNetCore.Data;
-using JsonApiDotNetCore.Internal;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
-using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Forms.Projects
 {
@@ -45,6 +42,11 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Projects
             if ((!CurrentUserOrgIds.Contains(Organization.Id)) && (!IsCurrentUserSuperAdmin()))
             {
                 var message = ("The current user is not a member of the project organization");
+                AddError(message);
+            }
+            if (ProjectOwner.PublishingKey == null)
+            {
+                var message = ("The project owner's publishing key is not set");
                 AddError(message);
             }
         }
