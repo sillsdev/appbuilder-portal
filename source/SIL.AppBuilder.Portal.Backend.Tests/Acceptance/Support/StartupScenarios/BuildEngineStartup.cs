@@ -40,7 +40,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
             services.AddScoped<SendNotificationServiceTester>();
             services.AddI18NextLocalization(i18n => i18n
                                             .IntegrateToAspNetCore()
-                                            .AddBackend(new ScriptoriaI18NextFileBackend("wwwroot/locales"))
+                                            .AddBackend(new ScriptoriaI18NextFileBackend("source/locales"))
                                             .UseDefaultLanguage("en-US"));
             services.AddMvc()
                 // Enable view localization and register required I18Next services

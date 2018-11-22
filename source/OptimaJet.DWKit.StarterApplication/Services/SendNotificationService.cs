@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using OptimaJet.DWKit.StarterApplication.Utility.Extensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
@@ -34,19 +35,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             NotificationRepository = notificationRepository;
 
         }
-        public async Task SendNotificationToOrgAdminsAsync(Organization organization, String message, dynamic subs)
+        public async Task SendNotificationToOrgAdminsAsync(Organization organization, String message, object subs)
         {
             var orgAdmins = UserRolesRepository.Get()
                 .Include(ur => ur.User)
                 .Include(ur => ur.Role)
-                .Where(ur => ur.OrganizationId == organization.Id && ur.Role.RoleName == RoleName.OrganizationAdmin)
+                .Where(ur => ur.OrganizationId == organization.Id && ur.RoleName == RoleName.OrganizationAdmin)
                 .ToList();
             foreach (UserRole orgAdmin in orgAdmins)
             {
                 await SendNotificationToUserAsync(orgAdmin.User, message, subs);
             }
         }
-        public async Task SendNotificationToUserAsync(User user, String message, dynamic subs)
+        public async Task SendNotificationToUserAsync(User user, String message, object subs)
         {
             var notification = new Notification
             {
@@ -60,33 +61,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public void NotificationEmailMonitor()
         {
             // Get limits from environment
-            int sendNotificationEmailMinutes = GetIntVarOrDefault("SEND_NOTIFICATION_EMAIL_MINUTES", 60);
-            int dontSendNotificationEmailMinutes = GetIntVarOrDefault("DONT_SEND_NOTIFICATION_EMAIL_MINUTES", 180);
+            int sendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MIN_MINUTES", 60);
+            int dontSendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MAX_MINUTES", 180);
+            var now = DateTime.UtcNow;
             var notifications = NotificationRepository.Get()
-                                                    .Where(n => n.DateEmailSent == null && n.DateRead == null)
+                                                    .Where(n => n.DateEmailSent == null
+                                                           && n.DateRead == null
+                                                           && n.User.EmailNotification == true
+                                                           && now.Subtract((DateTime)n.DateCreated).TotalMinutes > sendNotificationEmailMinutes
+                                                           && now.Subtract((DateTime)n.DateCreated).TotalMinutes < dontSendNotificationEmailMinutes
+                                                          )
                                                     .Include(n => n.User)
                                                     .ToList();
             foreach (var notification in notifications)
             {
-                if (ShouldSendEmail(notification, sendNotificationEmailMinutes, dontSendNotificationEmailMinutes))
-                {
-                    SendEmailAsync(notification).Wait();
-                }
+                SendEmailAsync(notification).Wait();
             }
-        }
-        protected bool ShouldSendEmail(Notification notification, int beginMinutes, int endMinutes)
-        {
-            var sendEmail = false;
-            var now = DateTime.UtcNow;
-            var dateCreated = notification.DateCreated ?? now;
-            var elapsedTime = now.Subtract((DateTime)notification.DateCreated).TotalMinutes;
-            if (elapsedTime > beginMinutes
-                && elapsedTime < endMinutes
-                && notification.User.EmailNotification == true)
-            {
-                sendEmail = true;
-            }
-            return sendEmail;
         }
         protected async Task SendEmailAsync(Notification notification)
         {
@@ -95,10 +85,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 locale = notification.User.Locale;
             }
-            if (String.IsNullOrEmpty(locale))
-            {
-                locale = "en-US";
-            }
+            locale = locale.ValidateLocale("en-US");
             var subject = await Translator.TranslateAsync(locale, "notifications", "notifications.subject", null);
             var subsDict = notification.MessageSubstitutions as Dictionary<string, object>;
             var message = await Translator.TranslateAsync(locale, "notifications", notification.MessageId, subsDict);

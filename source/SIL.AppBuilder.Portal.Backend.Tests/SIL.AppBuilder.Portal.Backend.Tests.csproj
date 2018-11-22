@@ -54,7 +54,7 @@
     <None Remove="wwwroot\locales\en-us.json" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="wwwroot\locales\en-us.json">
+    <EmbeddedResource Include="source\locales\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

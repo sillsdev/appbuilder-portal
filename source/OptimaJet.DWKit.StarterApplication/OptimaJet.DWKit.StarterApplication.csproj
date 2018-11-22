@@ -89,7 +89,8 @@
     <Folder Include="Repositories\Background\" />
     <Folder Include="Services\Workflow\" />
     <Folder Include="Forms\GroupMemberships\" />
-    <Folder Include="wwwroot\locales\" />
+    <Folder Include="source\" />
+    <Folder Include="source\locales\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services\CurrentUserMemberships.cs" />
@@ -98,5 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Templates\Notification.cshtml" />
+    <Content Remove="source\locales\es-419.json" />
+    <Content Remove="source\locales\fr-FR.json" />
   </ItemGroup>
 </Project>

@@ -21,9 +21,5 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support.TestClasses
             await base.SendEmailAsync(notification);
             return;
         }
-        public bool ShouldSendEmailTest(Notification notification, int beginMinutes, int endMinutes)
-        {
-            return base.ShouldSendEmail(notification, beginMinutes, endMinutes);
-        }
     }
 }

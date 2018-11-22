@@ -86,10 +86,10 @@ namespace OptimaJet.DWKit.StarterApplication
                 // or the jwt token scheme
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
-            services.AddSingleton<ITranslationBackend>(s => new ScriptoriaI18NextFileBackend("wwwroot/locales"));
+            services.AddSingleton<ITranslationBackend>(s => new ScriptoriaI18NextFileBackend("source/locales"));
             services.AddI18NextLocalization(i18n => i18n
                                             .IntegrateToAspNetCore()
-                                            .AddBackend(new ScriptoriaI18NextFileBackend("wwwroot/locales"))
+                                            .AddBackend(new ScriptoriaI18NextFileBackend("source/locales"))
                                             .UseDefaultLanguage("en-us"));
             services.AddMvc()
                 // Enable view localization and register required I18Next services

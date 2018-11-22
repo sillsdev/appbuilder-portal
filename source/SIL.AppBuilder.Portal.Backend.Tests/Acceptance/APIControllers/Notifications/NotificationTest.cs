@@ -20,10 +20,22 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
         public Notification notification1 { get; set; }
         public Notification notification2 { get; set; }
         public User user1 { get; private set; }
+        public User user2 { get; set; }
+        public Organization org1 { get; private set; }
+        public Organization org2 { get; private set; }
+        public OrganizationMembership orgmember1 { get; set; }
+        public OrganizationMembership orgmember2 { get; set; }
+        public UserRole ur1 { get; set; }
+        public UserRole ur2 { get; set; }
 
         private void BuildTestData()
         {
-            CurrentUser = NeedsCurrentUser();
+            NeedsRoles();
+            var tuple = NeedsConfiguredCurrentUser();
+            CurrentUser = tuple.Item1;
+            orgmember1 = tuple.Item2;
+            org1 = tuple.Item3;
+
             user1 = AddEntity<AppDbContext, User>(new User
             {
                 ExternalId = "test-auth0-id1",
@@ -31,7 +43,25 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 Name = "Test Testenson1",
                 GivenName = "Test1",
                 FamilyName = "Testenson1",
-                Locale = "en-US"
+                Locale = "en-US",
+                EmailNotification = true
+            });
+            orgmember2 = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user1.Id,
+                OrganizationId = org1.Id
+            });
+            ur1 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                OrganizationId = org1.Id,
+                RoleId = 1
+            });
+            ur2 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = user1.Id,
+                OrganizationId = org1.Id,
+                RoleId = 2
             });
             var notificationParm = new
             {
@@ -58,6 +88,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
         }
         public NotificationTest(TestFixture<BuildEngineStartup> fixture) : base(fixture)
         {
+
         }
 
         [Fact]
@@ -68,7 +99,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             var notification = new Notification
             {
                 MessageId = "test:subset1",
-
+                DateCreated = DateTime.UtcNow
             };
 
             notification.MessageSubstitutionsJson = substitutions;
@@ -82,6 +113,24 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             notification.MessageSubstitutions = subObject;
             var deserializedSubstitutions2 = notification.MessageSubstitutionsJson;
             Assert.Equal(substitutions, deserializedSubstitutions2);
+        }
+        [Fact]
+        public async Task TestSendNotificationToUser()
+        {
+            BuildTestData();
+            var notificationParm = new
+            {
+                orgName = "SIL International",
+                url = "http://gtis.guru.com:8443",
+                token = "replace"
+            };
+
+            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "notifications.buildengineConnected", notificationParm);
+            var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(2, modifiedNotifications.Count);
+            var a = modifiedNotifications[1].MessageSubstitutionsJson;
+            Assert.Equal("{\"orgName\":\"SIL International\",\"url\":\"http://gtis.guru.com:8443\",\"token\":\"replace\"}", modifiedNotifications[1].MessageSubstitutionsJson);
         }
         [Fact]
         public async Task Send_EmailAsync()
@@ -125,16 +174,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             var email = emails[0];
             Assert.Equal("[Scriptoria] Test Notification", email.Subject);
             Assert.Equal("{\"Message\":\"Failed to create project Test project. Could not connect to build engine for organization SIL International.\"}", email.ContentModelJson);
-        }
-        [Fact]
-        public void Should_Send_Email_Test()
-        {
-            BuildTestData();
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
-            Assert.True(sendNotificationService.ShouldSendEmailTest(notification2, 60, 180));
-            Assert.False(sendNotificationService.ShouldSendEmailTest(notification2, 120, 180));
-            Assert.False(sendNotificationService.ShouldSendEmailTest(notification2, 60, 90));
-
         }
     }
 }
