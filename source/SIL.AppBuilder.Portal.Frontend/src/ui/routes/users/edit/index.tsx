@@ -49,7 +49,7 @@ class Profile extends React.Component<IProps> {
     const editProfileProps = {
       user,
       onSubmit: this.updateProfile
-    }
+    };
 
     return (
       <div className='ui container profile'>
