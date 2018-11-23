@@ -79,6 +79,6 @@ export default compose<IProps, INeededProps>(
   withProps(({currentUser, user}) => {
     return {
       editable: currentUser.id !== user.id
-    }
+    };
   })
 )(Display);
