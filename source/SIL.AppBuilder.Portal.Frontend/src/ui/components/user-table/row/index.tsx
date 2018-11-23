@@ -62,7 +62,7 @@ class Row extends React.Component<IProps> {
   }
 
   render() {
-    const { user, t, roles, organizations } = this.props;
+    const { user, t, roles, organizations, currentUser } = this.props;
     const { givenName, familyName, isLocked } = attributesFor(user);
     const userId = idFromRecordIdentity(user);
 
@@ -79,6 +79,7 @@ class Row extends React.Component<IProps> {
         </td>
         <td data-test-role-selector>
           <MultiRoleSelect
+            currentUser={currentUser}
             user={user}
             roles={roles}
             organizations={organizations} />

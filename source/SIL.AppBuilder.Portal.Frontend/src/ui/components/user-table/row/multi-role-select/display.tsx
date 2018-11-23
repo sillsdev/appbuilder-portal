@@ -16,6 +16,7 @@ import ActiveRolesDisplay from './active-roles-display';
 import RoleSelect from './role-select';
 
 export interface IOwnProps {
+  currentUser: UserResource;
   user: UserResource;
   organizations: OrganizationResource[];
   roles: RoleResource[];
@@ -29,10 +30,14 @@ export type IProps =
 
 export default class MultiRoleSelect extends React.Component<IProps> {
   render() {
-    const { roles, userRoles, organizations, user, roleNames, t } = this.props;
+    const { roles, userRoles, organizations, user, roleNames, t, currentUser } = this.props;
 
     if (isEmpty(organizations)) {
       return t('errors.orgMembershipRequired');
+    }
+
+    if (currentUser.id == user.id) {
+      return <span className='p-l-md'> {roleNames} </span>;
     }
 
     return (
@@ -58,7 +63,6 @@ export default class MultiRoleSelect extends React.Component<IProps> {
                   <Dropdown.Header
                     data-test-organization-name
                     content={organizationName} />
-
                   <RequireRole
                     roleName={ROLE.OrganizationAdmin}
                     forOrganization={organization}
