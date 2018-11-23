@@ -2,10 +2,6 @@ import { notify } from 'react-notify-toast';
 
 import { parseError } from '@ui/components/errors/parse-error';
 
-// TODO: do we want queued notifications
-// for displaying multiple?
-// not sure if at same time
-// https://www.npmjs.com/package/react-notify-toast#queued-notifications
 export interface NotifyOptions {
   type?: string;
   timeout?: number; // ms, default 5000ms
@@ -14,14 +10,16 @@ export interface NotifyOptions {
     text: string;
   };
 }
+const notifyQueue = notify.createShowQueue();
+
 export function show(msg: string, options: NotifyOptions) {
   console.debug(msg, options);
-  notify.show(msg, options.type, options.timeout, options.color);
+  notifyQueue(msg, options.type, options.timeout, options.color);
 }
 
 export function custom(msg: string, options: NotifyOptions) {
   console.debug(msg, options);
-  notify.show(msg, 'custom', options.timeout, options.color);
+  notifyQueue(msg, 'custom', options.timeout, options.color);
 }
 
 export function success(msg: string, options: NotifyOptions = {}) {
