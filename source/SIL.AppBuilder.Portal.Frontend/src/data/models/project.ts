@@ -16,7 +16,8 @@ export interface ProjectAttributes extends AttributesObject {
   location?: string;
   lastUpdatedAt?: string;
   isPublic: boolean;
-  organization?: any; // TODO Remove this when API is ready
+  organization?: any; // TODO Remove this when API is ready,
+  workflowProjectUrl?: string;
 }
 
 export type ProjectResource = ResourceObject<PROJECTS_TYPE, ProjectAttributes>;

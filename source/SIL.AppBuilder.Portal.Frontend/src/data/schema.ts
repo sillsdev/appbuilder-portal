@@ -95,6 +95,7 @@ const schemaDefinition: SchemaSettings = {
         allowDownloads: { type: 'boolean' },
         location: { type: 'string' },
         isPublic: { type: 'boolean' },
+        workflowProjectUrl: { type: 'string'},
         // filter keys
         ownerId: { type: 'string' }
       },
