@@ -43,7 +43,7 @@ export default compose<IProps, INeededProps>(
   // make a call to get the userRoles as a convient default
   withOrbit((props: INeededProps) => {
     const { user } = props;
-    debugger;
+
     return {
       userRoles: q => q.findRelatedRecords(user, 'userRoles'),
     };
