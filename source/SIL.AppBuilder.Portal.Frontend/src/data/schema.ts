@@ -273,6 +273,7 @@ const schemaDefinition: SchemaSettings = {
         isLocked: { type: 'boolean' },
         profileVisibility: { type: 'number' },
         emailNotification: { type: 'boolean'},
+        publishingKey: { type: 'string'},
         timezone: { type: 'string' },
         localization: { type: 'string' },
         decimalSeparator: { type: 'string' },
