@@ -24,6 +24,7 @@ export interface IState {
   timezone: string;
   emailNotification: boolean;
   profileVisibility: number;
+  publishingKey: string;
 }
 
 const PUBLIC_PROFILE = 1;
@@ -57,7 +58,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const {
       givenName, familyName, email, phone,
       timezone, emailNotification,
-      profileVisibility
+      profileVisibility, publishingKey
     } = this.state;
 
     const { t } = this.props;
@@ -120,7 +121,17 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
         </div>
 
         <div className='ui divider m-t-xl m-b-xl' />
-
+        <h2 className='fs-21 bold gray-text m-b-lg'>
+          {t('profile.sshKeyLabel')}
+        </h2>
+        <div className='field fs-16 w-50'>
+          <textarea
+            data-test-profile-publishing-key
+            value={publishingKey || ''}
+            onChange={mut('publishingKey')}
+          />
+        </div>
+        <div className='ui divider m-t-xl m-b-xl' />
         <h2 className='fs-21 bold gray-text m-b-lg'>
           {t('profile.notificationSettingsTitle')}
         </h2>
@@ -160,9 +171,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
         </button>
       </form>
     );
-
   }
-
 }
 
 export  default compose(

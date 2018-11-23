@@ -48,7 +48,7 @@ class Profile extends React.Component<IProps> {
     const { t, user } = this.props;
     const editProfileProps = {
       user,
-      onSumbit: this.updateProfile
+      onSubmit: this.updateProfile
     }
 
     return (
