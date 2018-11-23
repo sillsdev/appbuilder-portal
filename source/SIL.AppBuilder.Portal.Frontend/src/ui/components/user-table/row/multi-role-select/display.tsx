@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 
-import { isEmpty, unique } from '@lib/collection';
+import { isEmpty } from '@lib/collection';
 
 import {
   attributesFor,
@@ -16,7 +16,7 @@ import ActiveRolesDisplay from './active-roles-display';
 import RoleSelect from './role-select';
 
 export interface IOwnProps {
-  currentUser: UserResource;
+  editable: boolean;
   user: UserResource;
   organizations: OrganizationResource[];
   roles: RoleResource[];
@@ -30,14 +30,14 @@ export type IProps =
 
 export default class MultiRoleSelect extends React.Component<IProps> {
   render() {
-    const { roles, userRoles, organizations, user, roleNames, t, currentUser } = this.props;
+    const { roles, userRoles, organizations, user, roleNames, t, editable } = this.props;
 
     if (isEmpty(organizations)) {
       return t('errors.orgMembershipRequired');
     }
 
-    if (currentUser.id == user.id) {
-      return <span className='p-l-md'> {roleNames} </span>;
+    if (!editable) {
+      return <span className='p-l-md'>{roleNames}</span>;
     }
 
     return (
