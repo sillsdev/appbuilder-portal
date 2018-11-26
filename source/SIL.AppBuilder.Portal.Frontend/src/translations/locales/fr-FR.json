@@ -124,7 +124,7 @@
     "notificationSettingsTitle": "Notification Settings",
     "optOutOfEmailOption": "I want to receive email notifications",
     "sshSettingsTitle": "Manage Personal SSH Keys",
-    "sshKeyLabel": "SSH Key",
+    "sshKeyLabel": "Publishing SSH Key",
     "visibleProfile": "Profile visibility",
     "noPhone": "no phone added",
     "noTimezone": "(GMT-0)",
