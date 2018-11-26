@@ -38,6 +38,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public Project project4 { get; set; }
         public Project project5 { get; set; }
         public Project project6 { get; set; }
+        public Project project7 { get; set; }
         public WorkflowDefinition workflow1 { get; set; }
         public WorkflowDefinition workflow2 { get; set; }
         public ProductDefinition productDefinition1 { get; set; }
@@ -219,7 +220,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group1.Id,
                 OrganizationId = org1.Id,
                 Language = "eng-US",
-                IsPublic = true
+                IsPublic = true,
+                WorkflowProjectUrl = "www.workflow.url"
             });
             project2 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -230,7 +232,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group1.Id,
                 OrganizationId = org1.Id,
                 Language = "eng-US",
-                IsPublic = true
+                IsPublic = true,
+                WorkflowProjectUrl = "www.workflow.url"
             });
             project3 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -241,7 +244,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group3.Id,
                 OrganizationId = org2.Id,
                 Language = "eng-US",
-                IsPublic = true
+                IsPublic = true,
+                WorkflowProjectUrl = "www.workflow.url"
             });
             project4 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -252,7 +256,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group4.Id,
                 OrganizationId = org3.Id,
                 Language = "eng-US",
-                IsPublic = true
+                IsPublic = true,
+                WorkflowProjectUrl = "www.workflow.url"
             });
             project5 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -263,7 +268,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group5.Id,
                 OrganizationId = org4.Id,
                 Language = "eng-US",
-                IsPublic = true
+                IsPublic = true,
+                WorkflowProjectUrl = "www.workflow.url"
             });
             project6 = AddEntity<AppDbContext, Project>(new Project
             {
@@ -274,6 +280,19 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group5.Id,
                 OrganizationId = org4.Id,
                 Language = "eng-GB",
+                IsPublic = true,
+                WorkflowProjectUrl = "www.workflow.url"
+
+            });
+            project7 = AddEntity<AppDbContext, Project>(new Project
+            {
+                Name = "Test Project7",
+                TypeId = type1.Id,
+                Description = "Test Description",
+                OwnerId = CurrentUser.Id,
+                GroupId = group1.Id,
+                OrganizationId = org1.Id,
+                Language = "eng-US",
                 IsPublic = true
             });
 
