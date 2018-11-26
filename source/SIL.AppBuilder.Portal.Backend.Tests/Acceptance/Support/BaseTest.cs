@@ -192,7 +192,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
                 Email = testUserData.Email,
                 GivenName = testUserData.GivenName,
                 FamilyName = testUserData.FamilyName,
-                Name = testUserData.Name
+                Name = testUserData.Name,
+                PublishingKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTF+wTVdaMDYmgeAZd7voe/b5MEHJWBXQDik14sqqj0aXtwV4+qxPU2ptqcjGpRk3ynmxp9i6Venw1JVf39iDFhWgd7VGBA7QEfApRm1v1FRI0wuN test@testMBP.local"
             };
 
             NeedsTestData<AppDbContext, User>(new List<User> {
