@@ -40,7 +40,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var orgAdmins = UserRolesRepository.Get()
                 .Include(ur => ur.User)
                 .Include(ur => ur.Role)
-                .Where(ur => ur.OrganizationId == organization.Id && ur.RoleName == RoleName.OrganizationAdmin)
+                .Where(ur => ur.OrganizationId == organization.Id && ur.Role.RoleName == RoleName.OrganizationAdmin)
                 .ToList();
             foreach (UserRole orgAdmin in orgAdmins)
             {
@@ -80,12 +80,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         }
         protected async Task SendEmailAsync(Notification notification)
         {
-            var locale = CultureInfo.CurrentCulture.Name;
-            if (notification.User.Locale != null)
-            {
-                locale = notification.User.Locale;
-            }
-            locale = locale.ValidateLocale("en-US");
+            var locale = notification.User.LocaleOrDefault;
             var subject = await Translator.TranslateAsync(locale, "notifications", "notifications.subject", null);
             var subsDict = notification.MessageSubstitutions as Dictionary<string, object>;
             var message = await Translator.TranslateAsync(locale, "notifications", notification.MessageId, subsDict);

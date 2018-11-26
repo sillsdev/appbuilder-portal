@@ -25,15 +25,6 @@ namespace OptimaJet.DWKit.StarterApplication.Utility.Extensions
         {
             return DateTime.Parse(value, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
         }
-
-        public static String ValidateLocale(this String value, String defaultLocale)
-        {
-            if (String.IsNullOrEmpty(value))
-            {
-                return defaultLocale;
-            }
-            return value;
-        }
     }
 }
 
