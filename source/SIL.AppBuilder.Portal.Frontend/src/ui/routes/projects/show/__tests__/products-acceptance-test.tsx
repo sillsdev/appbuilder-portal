@@ -21,7 +21,8 @@ describe('Acceptance | Project View | Products', () => {
           type: 'projects',
           id: 1,
           attributes: {
-            name: 'Fake project'
+            name: 'Fake project',
+            workflowProjectUrl: 'project.url'
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
@@ -161,7 +162,8 @@ describe('Acceptance | Project View | Products', () => {
           type: 'projects',
           id: 1,
           attributes: {
-            name: 'Fake project'
+            name: 'Fake project',
+            workflowProjectUrl: 'project.url'
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },

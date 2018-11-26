@@ -9,7 +9,8 @@ import {
   ProductResource,
   withLoader,
   ProductDefinitionResource,
-  OrganizationResource
+  OrganizationResource,
+  attributesFor
 } from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductModal from './modal';
@@ -25,6 +26,7 @@ interface IOwnProps {
   project: ProjectResource;
   products: ProductResource[];
   organization: OrganizationResource;
+  isEmptyWorkflowProjectUrl: boolean;
 }
 
 type IProps =
@@ -111,5 +113,11 @@ export default compose(
   })),
   withLoader(({products}) => !products),
   withDataActions,
-  withProps(({project}) => ({ isEmptyWorkflowProjectUrl: isEmpty(project.workflowProjectUrl)}))
+  withProps(({project}) => {
+    return {
+      isEmptyWorkflowProjectUrl: isEmpty(
+        attributesFor(project).workflowProjectUrl
+      )
+    }
+  })
 )(Products);
