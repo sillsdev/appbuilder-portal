@@ -118,6 +118,6 @@ export default compose(
       isEmptyWorkflowProjectUrl: isEmpty(
         attributesFor(project).workflowProjectUrl
       )
-    }
+    };
   })
 )(Products);
