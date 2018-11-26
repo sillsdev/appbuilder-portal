@@ -16,7 +16,6 @@ export interface ProjectAttributes extends AttributesObject {
   location?: string;
   lastUpdatedAt?: string;
   isPublic: boolean;
-  organization?: any; // TODO Remove this when API is ready,
   workflowProjectUrl?: string;
 }
 
