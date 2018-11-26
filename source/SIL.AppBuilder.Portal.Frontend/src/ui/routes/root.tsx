@@ -17,6 +17,7 @@ import DirectoryRoute, { pathName as directoryPath } from '@ui/routes/project-di
 import ProjectsRoute, { pathName as projectsPath } from '@ui/routes/projects';
 import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-source';
+import AdminSettingsRoute, { pathName as adminSettingsPath } from '@ui/routes/admin/settings';
 
 import ErrorRootRoute from '@ui/routes/errors';
 
@@ -31,7 +32,8 @@ export default class RootPage extends React.Component {
         <section className='flex flex-grow'>
           <Switch>
             <Route path={loginPath} component={LoginRoute} />
-            <Route path={adminPath} component={AdminRoute} />
+            <Route exact path={adminPath} component={AdminRoute} />
+            <Route path={adminSettingsPath} component={AdminSettingsRoute} />
 
             <Route exact path={rootPath} component={IndexRoute} />
             <Route path={tasksPath} component={TasksRoute} />

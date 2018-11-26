@@ -52,6 +52,7 @@
     "organizationProjects": "Organization Projects",
     "users": "Users",
     "organizationSettings": "Organization Settings",
+    "adminSettings": "Admin Settings",
     "projectDirectory": "Project Directory",
     "addProject": "Add Project"
   },
@@ -315,6 +316,17 @@
       "unlock": {
         "success": "User is active. The user will now be able to log in to Scriptoria.",
         "error": "there was an error activating the user"
+      }
+    }
+  },
+  "admin": {
+    "settings": {
+      "title": "Admin settings",
+      "navigation": {
+        "organizations": "Organizations"
+      },
+      "organizations": {
+        "title": "Organizations"
       }
     }
   }
