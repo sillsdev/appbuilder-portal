@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as toast from '@lib/toast';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import { isEmpty } from '@lib/collection';
@@ -9,7 +9,8 @@ import {
   ProductResource,
   withLoader,
   ProductDefinitionResource,
-  OrganizationResource
+  OrganizationResource,
+  attributesFor
 } from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductModal from './modal';
@@ -25,6 +26,7 @@ interface IOwnProps {
   project: ProjectResource;
   products: ProductResource[];
   organization: OrganizationResource;
+  isEmptyWorkflowProjectUrl: boolean;
 }
 
 type IProps =
@@ -47,12 +49,13 @@ class Products extends React.Component<IProps> {
 
   render() {
 
-    const { t, products, organization } = this.props;
+    const { t, products, organization, isEmptyWorkflowProjectUrl } = this.props;
 
     const productModalProps = {
       organization,
       selected: products,
-      onSelectionChange: this.onSelectionChange
+      onSelectionChange: this.onSelectionChange,
+      isEmptyWorkflowProjectUrl
     };
 
     let productList;
@@ -106,8 +109,15 @@ export default compose(
   withTranslations,
   withOrbit(({project}) => ({
     organization: q => q.findRelatedRecord(project, 'organization'),
-    products: q => q.findRelatedRecords(project, 'products')
+    products: q => q.findRelatedRecords(project, 'products'),
   })),
   withLoader(({products}) => !products),
-  withDataActions
+  withDataActions,
+  withProps(({project}) => {
+    return {
+      isEmptyWorkflowProjectUrl: isEmpty(
+        attributesFor(project).workflowProjectUrl
+      )
+    };
+  })
 )(Products);
