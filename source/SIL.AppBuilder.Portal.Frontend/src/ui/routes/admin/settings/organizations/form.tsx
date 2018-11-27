@@ -24,12 +24,13 @@ interface IOwnProps {
 
 interface IState {
   name?: string;
-  ownerEmail?: string;
-  expiresAt?: Date;
   url?: string;
+  buildEngineUrl?: string;
+  buildEngineApiAccessToken?: string;
 }
 
 type IProps =
+  & i18nProps
   & IOwnProps
   & IOrganizationProps
   & RouteComponentProps<{}>;
@@ -42,11 +43,13 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
 
-    const { name, websiteUrl } = props;
+    const { name, websiteUrl, buildEngineUrl, buildEngineApiAccessToken } = props;
 
     this.state = {
       name,
-      url: websiteUrl
+      url: websiteUrl,
+      buildEngineUrl,
+      buildEngineApiAccessToken
     };
   }
 
@@ -56,7 +59,8 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
     try {
       await createRecord({
         name: this.state.name,
-        websiteUrl: this.state.url
+        websiteUrl: this.state.url,
+        buildEngineUrl: this.state.buildEngineUrl
       });
       Toast.success('Organization added');
     } catch (e) {
@@ -73,14 +77,15 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
 
   render() {
     const { mut } = this;
-    const { name, url } = this.state;
+    const { name, url, buildEngineUrl, buildEngineApiAccessToken } = this.state;
+    const { t } = this.props;
 
     return (
       <div className='flex invite-organization'>
         <form data-test-form className='ui form flex-grow'>
 
           <div className='field m-b-xl'>
-            <label>Organization Name</label>
+            <label>{t('admin.settings.organizations.name')}</label>
             <input
               data-test-org-name
               type='text'
@@ -90,7 +95,7 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
 
 
           <div className='field m-b-xl'>
-            <label>Organization Website URL</label>
+            <label>{t('admin.settings.organizations.websiteURL')}</label>
             <input
               data-test-org-url
               type='text'
@@ -98,18 +103,38 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
               onChange={mut('url')} />
           </div>
 
+          <div className='field m-b-xl'>
+            <label>{t('admin.settings.organizations.buildEngineURL')}</label>
+            <input
+              data-test-build-engine-url
+              type='text'
+              value={buildEngineUrl || ''}
+              onChange={mut('buildEngineUrl')}
+            />
+          </div>
+
+           <div className='field m-b-xl'>
+            <label>{t('admin.settings.organizations.accessToken')}</label>
+            <input
+              data-test-build-engine-access-token
+              type='text'
+              value={buildEngineApiAccessToken || ''}
+              onChange={mut('buildEngineApiAccessToken')}
+            />
+          </div>
+
           <button
             data-test-submit
             className='ui button p-t-md p-b-md p-l-lg p-r-lg'
             onClick={this.submit}>
-            Add Organization
+            {t('admin.settings.organizations.add')}
           </button>
 
           <button
             data-test-cancel
             className='ui button p-t-md p-b-md p-l-lg p-r-lg'
             onClick={this.cancel}>
-            Cancel
+            {t('common.cancel')}
           </button>
 
         </form>
