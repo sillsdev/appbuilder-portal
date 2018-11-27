@@ -47,7 +47,6 @@ export function withDataActions<T>(WrappedComponent) {
         defaultOptions()
       );
 
-      this.forceUpdate();
     }
 
     updateAttributes = (attributes: ProjectAttributes) => {
