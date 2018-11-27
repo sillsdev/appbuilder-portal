@@ -47,7 +47,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             Assert.Equal(productDefinition1.Id, product.ProductDefinitionId);
         }
 
-        [Fact (Skip = "Enabling the updating of a Project in the Product service throws a NullReferenceException. Reason unknown. Unable to debug libraries with VS Code - Preston")]
+        [Fact(Skip = "Enabling the updating of a Project in the Product service throws a NullReferenceException. Reason unknown. Unable to debug libraries with VS Code - Preston")]
         public async Task Create_Product_Updates_Project()
         {
             BuildTestData();
@@ -265,6 +265,34 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
+        [Fact]
+        public async Task Create_Product_Failure_NoUrl()
+        {
+            BuildTestData();
 
+            var content = new
+            {
+                data = new
+                {
+                    type = "products",
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"project", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "projects" },
+                                    { "id", project7.Id.ToString() }
+                                }}}},
+                            {"product-definition", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "product-definitions" },
+                                    { "id", productDefinition1.Id.ToString() }
+                            }}}}
+                        }
+                }
+            };
+            var response = await Post("/api/products/", content);
+
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+
+        }
     }
 }

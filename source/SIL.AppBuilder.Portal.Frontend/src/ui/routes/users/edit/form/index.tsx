@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
-import { Form, Divider, Checkbox, Button, Grid } from 'semantic-ui-react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { compose } from 'recompose';
+import { Checkbox } from 'semantic-ui-react';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import TimezonePicker from 'react-timezone';
 
-import { UserAttributes } from '@data/models/user';
-import { USERS_TYPE } from '@data';
-import { ResourceObject } from 'jsonapi-typescript';
+import {
+  withTemplateHelpers, Mut, ToggleHelper
+} from 'react-action-decorators';
+
+import { UserResource } from '@data/models/user';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 export interface IProps {
-  user: ResourceObject<USERS_TYPE, UserAttributes>;
-  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
+  user: UserResource;
   onSubmit: (data: IState) => Promise<void>;
 }
 
@@ -23,6 +24,7 @@ export interface IState {
   timezone: string;
   emailNotification: boolean;
   profileVisibility: number;
+  publishingKey: string;
 }
 
 const PUBLIC_PROFILE = 1;
@@ -56,119 +58,122 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const {
       givenName, familyName, email, phone,
       timezone, emailNotification,
-      profileVisibility
+      profileVisibility, publishingKey
     } = this.state;
 
     const { t } = this.props;
 
     return (
-      <Form data-test-edit-profile>
-        <Grid>
-          <Grid.Row columns={2}>
-            <Grid.Column>
-              <Form.Field>
-                <label>{t('profile.firstName')}</label>
-                <input
-                  data-test-profile-firstname
-                  value={givenName || ''}
-                  onChange={mut('givenName')} />
-              </Form.Field>
-            </Grid.Column>
-
-            <Grid.Column>
-              <Form.Field>
-                <label>{t('profile.lastName')}</label>
-                <input
-                  data-test-profile-lastname
-                  value={familyName || ''}
-                  onChange={mut('familyName')} />
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-        <Form.Field>
+      <form data-test-edit-profile className='ui form'>
+        <div className='flex'>
+          <div className='flex w-100'>
+            <div className='field w-50-md p-r-lg'>
+              <label>{t('profile.firstName')}</label>
+              <input
+                data-test-profile-firstname
+                value={givenName || ''}
+                onChange={mut('givenName')} />
+            </div>
+            <div className='field w-50-md'>
+              <label>{t('profile.lastName')}</label>
+              <input
+                data-test-profile-lastname
+                value={familyName || ''}
+                onChange={mut('familyName')} />
+            </div>
+          </div>
+        </div>
+        <div className='field w-50-md p-r-lg m-t-lg'>
           <label>{t('profile.email')}</label>
           <input
             data-test-profile-email
             value={email || ''}
             onChange={mut('email')} />
-        </Form.Field>
-        <Form.Field>
+        </div>
+        <div className='field w-50-md  p-r-lg m-t-lg'>
           <label>{t('profile.phone')}</label>
           <input
             data-test-profile-phone
             value={phone || ''}
             onChange={mut('phone')} />
-        </Form.Field>
-
-        <div className='flex-row justify-content-space-between'>
-          <Form.Field>
-            <label>{t('profile.timezone')}</label>
-            <div
-              data-test-profile-timezone
-              className='timezone-group'
-            >
-              <ArrowDropDownIcon/>
-              <TimezonePicker
-                ref={input => this.timezoneInput = input}
-                className='timezone'
-                value={timezone || ''}
-                onChange={tz => {
-                  this.setState({timezone: tz});
-                }}
-                inputProps={{
-                  placeholder: t('profile.timezonePlaceholder'),
-                  name: 'timezone'
-                }}
-              />
-            </div>
-          </Form.Field>
         </div>
-
-        <Divider horizontal/>
-
-        <h2 className='form-title'>{t('profile.notificationSettingsTitle')}</h2>
-        <Form.Field>
-          <div className='toggle-selector'>
-            <span>{t('profile.optOutOfEmailOption')}</span>
-            <Checkbox
-              data-test-profile-email-notification
-              toggle
-              defaultChecked={emailNotification}
-              onChange={toggle('emailNotification')}
-              />
-          </div>
-        </Form.Field>
-
-        <Divider horizontal />
-
-        <h2 className='form-title'>{t('profile.visibleProfile')}</h2>
-        <Form.Field>
-          <div className='toggle-selector'>
-            <span data-test-profile-visible-text>{t('profile.visibility.visible')}</span>
-            <Checkbox
-              data-test-profile-visible-profile
-              toggle
-              defaultChecked={profileVisibility === PUBLIC_PROFILE}
-              onChange={toggle('profileVisibility')}
+        <div className='field w-50-md p-r-lg m-t-lg'>
+          <label>{t('profile.timezone')}</label>
+          <div
+            data-test-profile-timezone
+            className='position-relative'
+          >
+            <ArrowDropDownIcon className='timezone-icon'/>
+            <TimezonePicker
+              ref={input => this.timezoneInput = input}
+              className='w-100'
+              value={timezone || ''}
+              onChange={tz => {
+                this.setState({timezone: tz});
+              }}
+              inputProps={{
+                placeholder: t('profile.timezonePlaceholder'),
+                className: 'bg-transparent',
+                name: 'timezone'
+              }}
             />
           </div>
-        </Form.Field>
+        </div>
 
-        <Divider horizontal />
-
-        <Button
+        <div className='ui divider m-t-xl m-b-xl' />
+        <h2 className='fs-21 bold gray-text m-b-lg'>
+          {t('profile.sshKeyLabel')}
+        </h2>
+        <div className='field fs-16 w-50'>
+          <textarea
+            data-test-profile-publishing-key
+            value={publishingKey || ''}
+            onChange={mut('publishingKey')}
+          />
+        </div>
+        <div className='ui divider m-t-xl m-b-xl' />
+        <h2 className='fs-21 bold gray-text m-b-lg'>
+          {t('profile.notificationSettingsTitle')}
+        </h2>
+        <div className='field flex align-items-center'>
+          <span className='fs-16 m-r-md bold gray-text'>
+            {t('profile.optOutOfEmailOption')}
+          </span>
+          <Checkbox
+            data-test-profile-email-notification
+            toggle
+            defaultChecked={emailNotification}
+            onChange={toggle('emailNotification')}
+            />
+        </div>
+        <div className='ui divider m-t-xl m-b-xl' />
+        <h2 className='fs-21 bold gray-text m-b-lg'>
+          {t('profile.visibleProfile')}
+        </h2>
+        <div className='field flex align-items-center'>
+          <span data-test-profile-visible-text className='fs-16 m-r-md bold gray-text'>
+            {t('profile.visibility.visible')}
+          </span>
+          <Checkbox
+            data-test-profile-visible-profile
+            toggle
+            defaultChecked={profileVisibility === PUBLIC_PROFILE}
+            onChange={toggle('profileVisibility')}
+          />
+        </div>
+        <div className='ui divider m-t-xl m-b-xl' />
+        <button
           data-test-profile-submit
           onClick={this.submit}
-          className='form-button'
+          className='ui button massive bold fs-21 m-b-xl'
         >
           {t('common.save')}
-        </Button>
-      </Form>
+        </button>
+      </form>
     );
-
   }
-
 }
 
-export  default translate('translations')(EditProfileDisplay);
+export  default compose(
+  withTranslations
+)(EditProfileDisplay);

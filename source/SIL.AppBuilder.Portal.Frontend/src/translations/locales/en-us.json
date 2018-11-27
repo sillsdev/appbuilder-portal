@@ -123,7 +123,7 @@
     "notificationSettingsTitle": "Notification Settings",
     "optOutOfEmailOption": "I want to receive email notifications",
     "sshSettingsTitle": "Manage Personal SSH Keys",
-    "sshKeyLabel": "SSH Key",
+    "sshKeyLabel": "Publishing SSH Key",
     "visibleProfile": "Profile visibility",
     "noPhone": "no phone added",
     "noTimezone": "(GMT-0)",
@@ -218,7 +218,8 @@
       "published": "Published",
       "unpublished": "Unpublished",
       "noArtifacts": "No artifacts",
-      "rebuild": "rebuild"
+      "rebuild": "rebuild",
+      "creationInProgress": "You can't add products to this project until it finish creating the workflow. Please refresh in a while."
     },
     "settings": {
       "title": "Settings",

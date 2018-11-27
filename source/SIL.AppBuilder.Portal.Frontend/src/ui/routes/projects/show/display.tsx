@@ -91,7 +91,6 @@ class Display extends React.Component<IProps> {
 
   render() {
     const { project, t } = this.props;
-
     if (!project || !project.attributes) {
       return null;
     }
