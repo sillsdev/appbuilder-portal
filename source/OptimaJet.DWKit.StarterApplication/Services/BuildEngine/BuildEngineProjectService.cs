@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
-using SIL.AppBuilder.BuildEngineApiClient;
-using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
-using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
-using Hangfire;
-using Job = Hangfire.Common.Job;
 using OptimaJet.DWKit.StarterApplication.Repositories;
-using System.Threading.Tasks;
+using SIL.AppBuilder.BuildEngineApiClient;
+using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
+using Job = Hangfire.Common.Job;
+using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -17,15 +17,18 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected IJobRepository<Project> ProjectRepository;
 
         public IRecurringJobManager RecurringJobManager { get; set; }
+        public SendNotificationService SendNotificationService { get; }
 
         public BuildEngineProjectService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
+            SendNotificationService sendNotificationService,
             IJobRepository<Project> projectRepository,
             IJobRepository<SystemStatus> systemStatusRepository
         ) : base(buildEngineApi, systemStatusRepository)
         {
             RecurringJobManager = recurringJobManager;
+            SendNotificationService = sendNotificationService;
             ProjectRepository = projectRepository;
         }
         public static void CreateBuildEngineProject(int projectId)
@@ -66,6 +69,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     // If the build engine isn't available, there is no point in continuing
                     // Notifications for this are handled by the monitor
                     // Throw exception to retry
+                    var messageParms = new
+                    {
+                        orgName = project.Organization.Name,
+                        projectName = project.Name
+                    };
+                    await SendNotificationService.SendNotificationToOrgAdminsAsync(project.Organization,
+                                                                                   "notifications.projectFailedBuildEngine",
+                                                                                   messageParms);
                     throw new Exception("Connection not available");
                 }
                 await CreateBuildEngineProjectAsync(project);

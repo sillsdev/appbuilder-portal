@@ -14,7 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.StarterApplication.Data;
-using OptimaJet.DWKit.StarterApplication.Forms;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
@@ -68,6 +67,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<OrganizationService>();
             services.AddScoped<GroupService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
+            services.AddScoped<SendNotificationService>();
 
             return services;
         }

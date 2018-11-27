@@ -23,6 +23,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public Organization org4 { get; private set; }
         public SystemStatus sysstat1 { get; private set; }
         public SystemStatus sysstat2 { get; private set; }
+        public Role roleOA { get; set; }
+        public UserRole ur1 { get; set; }
+        public UserRole ur2 { get; set; }
+        public UserRole ur3 { get; set; }
+        public UserRole ur4 { get; set; }
+
         public BuildEngineSystemMonitorTests(TestFixture<BuildEngineStartup> fixture) : base(fixture)
         {
         }
@@ -36,6 +42,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Name = "Test Testenson1",
                 GivenName = "Test1",
                 FamilyName = "Testenson1"
+            });
+            roleOA = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.OrganizationAdmin
             });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {
@@ -73,6 +83,30 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 OwnerId = CurrentUser.Id
 
             });
+            ur1 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleOA.Id,
+                OrganizationId = org1.Id
+            });
+            ur2 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleOA.Id,
+                OrganizationId = org2.Id
+            });
+            ur3 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleOA.Id,
+                OrganizationId = org3.Id
+            });
+            ur4 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleOA.Id,
+                OrganizationId = org4.Id
+            });
             sysstat1 = AddEntity<AppDbContext, SystemStatus>(new SystemStatus
             {
                 BuildEngineUrl = "https://testorg3.org",
@@ -83,6 +117,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 BuildEngineUrl = "https://testorg4.org",
                 BuildEngineApiAccessToken = "5161678"
             });
+
         }
         [Fact]
         public void MonitorSystem_Available()
@@ -99,11 +134,19 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 
             var systemStatus1 = systemStatuses[0];
             Assert.True(systemStatus1.SystemAvailable);
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(4, notifications.Count);
         }
         [Fact]
         public void MonitorSystem_Unavailable()
         {
             SetTestData();
+            var systat3 = AddEntity<AppDbContext, SystemStatus>(new SystemStatus
+            {
+                BuildEngineUrl = "https://buildengine.testorg1",
+                BuildEngineApiAccessToken = "5161678",
+                SystemAvailable = true
+            });
 
             var buildEngineService = _fixture.GetService<BuildEngineSystemMonitor>();
             var mockClient = Mock.Get(buildEngineService.BuildEngineApi);
@@ -115,6 +158,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 
             var systemStatus1 = systemStatuses[0];
             Assert.False(systemStatus1.SystemAvailable);
+
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Single(notifications);
+
         }
     }
 }

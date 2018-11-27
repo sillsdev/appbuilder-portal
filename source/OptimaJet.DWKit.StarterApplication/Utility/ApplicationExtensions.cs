@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core;
+using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using OptimaJet.Workflow.Core.Runtime;
@@ -48,5 +49,13 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
             return app;
         }
+
+        public static IApplicationBuilder UseNotifications(this IApplicationBuilder app, IConfigurationRoot configuration)
+        {
+            RecurringJob.AddOrUpdate<SendNotificationService>("SendNotificationService", service => service.NotificationEmailMonitor(), Cron.MinuteInterval(5));
+
+            return app;
+        }
+
     }
 }

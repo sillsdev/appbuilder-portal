@@ -174,12 +174,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
         #region Data Helpers
 
-        public Tuple<User, OrganizationMembership> NeedsConfiguredCurrentUser()
+        public Tuple<User, OrganizationMembership, Organization> NeedsConfiguredCurrentUser()
         {
             var currentUser = NeedsCurrentUser();
-            var membership = NeedsDefaultOrganization(currentUser);
+            var tuple = NeedsDefaultOrganization(currentUser);
 
-            return Tuple.Create(currentUser, membership);
+            return Tuple.Create(currentUser, tuple.Item1, tuple.Item2);
         }
 
         public User NeedsCurrentUser()
@@ -203,7 +203,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             return user;
         }
 
-        public OrganizationMembership NeedsDefaultOrganization(User forUser)
+        public Tuple<OrganizationMembership, Organization> NeedsDefaultOrganization(User forUser)
         {
 
             var organization = AddEntity<AppDbContext, Organization>(new Organization
@@ -217,7 +217,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
                 OrganizationId = organization.Id
             });
 
-            return membership;
+            return Tuple.Create(membership, organization);
         }
 
         protected TEntity AddEntity<TDbContext, TEntity>(TEntity obj)
