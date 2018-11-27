@@ -251,9 +251,7 @@ describe('Acceptance | Project View | Products', () => {
       });
 
       it('popup is not visible', () => {
-        expect(
-          page.isProductModalPresent
-        ).to.be.false;
+        expect(page.isProductModalPresent).to.be.false;
       });
     });
 
