@@ -219,7 +219,8 @@
       "published": "Published",
       "unpublished": "Unpublished",
       "noArtifacts": "No artifacts",
-      "rebuild": "rebuild"
+      "rebuild": "rebuild",
+      "creationInProgress": "You can't add products to this project until it finish creating the workflow. Please refresh in a while."
     },
     "settings": {
       "title": "Configuración",
