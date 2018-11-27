@@ -57,7 +57,7 @@ namespace OptimaJet.DWKit.Application
 
             DWKitRuntime.ConnectionStringData = configuration[$"ConnectionStrings:{connectionstringName}"];
             DWKitRuntime.DbProvider = AutoDetectProvider();
-            DWKitRuntime.Security = new SecurityProvider(httpContextAccessor);
+            // DWKitRuntime.Security = new SecurityProvider(httpContextAccessor);
             DWKitRuntime.Metadata = new DefaultMetadataProvider("Metadata/metadata.json", "Metadata/Forms", "Metadata/Localization");
 
             if (configuration["DWKit:BlockMetadataChanges"] == "True")

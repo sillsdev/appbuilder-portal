@@ -18,9 +18,7 @@ using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    // Does this allow both?
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UserInterfaceController : Controller
     {
         [Route("ui/form/{name}")]

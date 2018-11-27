@@ -1,5 +1,6 @@
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OptimaJet.DWKit.Core.Metadata;
@@ -27,8 +28,13 @@ namespace OptimaJet.DWKit.StarterApplication
         // TODO: need to look up some mapping between
         //       our users, and the DWKit users
         var user = this.currentUserRepo.GetCurrentUser().Result;
+        var dwUser = base.GetUserById(user.WorkflowUserId.Value);
+          // .SelectAsync().Result
+          // .Where(dwUser => dwUser.Id == user.WorkflowUserId)
 
-        return new Core.Security.User(new Guid(), user.Name);
+        // this.contextAccessor.HttpContext.Items["CurrentUser"] == null;
+
+        return dwUser;
       }
     }
 

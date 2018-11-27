@@ -40,9 +40,12 @@ class TaskRow extends React.Component<IProps> {
     e.preventDefault();
     e.stopPropagation();
 
-    const { workflow, product, history } = this.props;
+    const { workflow, product, history, userTask } = this.props;
     const { workflowBusinessFlow } = attributesFor(workflow);
     const id = idFromRecordIdentity(product);
+
+    console.log(product, workflow, userTask);
+    debugger;
 
     history.push(`/flow/${workflowBusinessFlow}/${id}`);
   }

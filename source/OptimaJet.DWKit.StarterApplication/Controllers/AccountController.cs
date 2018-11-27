@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OptimaJet.DWKit.Core;
@@ -15,8 +16,7 @@ using User = OptimaJet.DWKit.Core.Security.User;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [AllowAnonymous]
-    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AccountController : Controller
     {
         [AllowAnonymous]

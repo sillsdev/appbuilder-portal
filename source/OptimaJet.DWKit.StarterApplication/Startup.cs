@@ -18,6 +18,8 @@ using Bugsnag;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using OptimaJet.DWKit.Core;
 using Microsoft.AspNetCore.SignalR;
+using OptimaJet.DWKit.StarterApplication.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -177,8 +179,6 @@ namespace OptimaJet.DWKit.StarterApplication
 
             app.UseBuildEngine(Configuration);
             app.UseWorkflow(Configuration);
-
-            DWKitRuntime.Security = new ScriptoriaSecurityProvider();
         }
     }
 }

@@ -25,3 +25,15 @@ $.ajaxSetup({
     xhr.setRequestHeader('Organization', `${orgId}`);
   }
 });
+
+window.globalFetchOptions = () => {
+  const token = getToken();
+  const orgId = getCurrentOrganizationId();
+
+  return {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Organization': `${orgId}`,
+    }
+  };
+};

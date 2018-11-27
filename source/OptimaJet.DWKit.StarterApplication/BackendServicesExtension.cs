@@ -10,9 +10,11 @@ using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
+using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Forms;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -125,6 +127,12 @@ namespace OptimaJet.DWKit.StarterApplication
 
         public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // HACK
+            var sp = services.BuildServiceProvider();
+            var userRepo = (CurrentUserRepository)sp.GetService<CurrentUserRepository>();
+            var httpContextAccessor = (IHttpContextAccessor)sp.GetService<IHttpContextAccessor>();
+
+            DWKitRuntime.Security = new ScriptoriaSecurityProvider(userRepo, httpContextAccessor);
 
 
             // JWT Auth disabled for now, because we need to
@@ -169,15 +177,15 @@ namespace OptimaJet.DWKit.StarterApplication
                 options.ExpireTimeSpan = TimeSpan.FromDays(365);
                 options.LoginPath = "/Account/Login/";
 
-                options.ForwardDefaultSelector = ctx =>
-                {
-                    if (ctx.Request.Path.StartsWithSegments("/api"))
-                    {
-                        return "Bearer";
-                    } else {
-                        return "Cookies";
-                    }
-                };
+                // options.ForwardDefaultSelector = ctx =>
+                // {
+                //     if (ctx.Request.Path.StartsWithSegments("/api"))
+                //     {
+                //         return "Bearer";
+                //     } else {
+                //         return "Cookies";
+                //     }
+                // };
             });
 
             services.AddAuthorization(options =>
