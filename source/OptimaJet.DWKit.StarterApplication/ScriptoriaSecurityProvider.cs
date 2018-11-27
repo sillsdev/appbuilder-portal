@@ -2,100 +2,72 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using JsonApiDotNetCore.Data;
 using Microsoft.AspNetCore.Http;
 using OptimaJet.DWKit.Core.Metadata;
 using OptimaJet.DWKit.Core.Metadata.DbObjects;
 using OptimaJet.DWKit.Core.Security;
 using OptimaJet.DWKit.Security.Providers;
+using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
   public class ScriptoriaSecurityProvider : SecurityProvider
   {
+    public AppDbContext DBContext { get; }
+
     private CurrentUserRepository currentUserRepo;
+    private HttpContext currentContext;
+    private ICurrentUserContext CurrentUserContext;
+    private string auth0Id;
 
     public ScriptoriaSecurityProvider(
       CurrentUserRepository currentUserRepo,
-      IHttpContextAccessor httpContext
-    ) : base(httpContext) {
+      ICurrentUserContext currentUserContext,
+      IDbContextResolver contextResolver,
+
+      IHttpContextAccessor httpContextAccessor
+    ) : base(httpContextAccessor) {
+                  this.DBContext = (AppDbContext)contextResolver.GetContext();
+
+      // this.currentContext = httpContextAccessor.HttpContext;
+      this.CurrentUserContext = currentUserContext;
+      // this.auth0Id = this.currentUserContext.Auth0Id;
       this.currentUserRepo = currentUserRepo;
     }
 
-
-    public new Core.Security.User CurrentUser {
-      get {
-        // TODO: need to look up some mapping between
-        //       our users, and the DWKit users
-        var user = this.currentUserRepo.GetCurrentUser().Result;
-        var dwUser = base.GetUserById(user.WorkflowUserId.Value);
-          // .SelectAsync().Result
-          // .Where(dwUser => dwUser.Id == user.WorkflowUserId)
-
-        // this.contextAccessor.HttpContext.Items["CurrentUser"] == null;
-
-        return dwUser;
-      }
-    }
-
-    // public Task AuthorizeAsync(string login, bool remember)
+    // public override async Task<OptimaJet.DWKit.Core.Security.User> GetCurrentUserAsync()
     // {
-    //   throw new NotImplementedException();
+    //   // try {
+    //   //   var auth0Id = this.CurrentUserContext.Auth0Id;
+
+    //   //   var userFromResult = this.DBContext
+    //   //           .Users.Local
+    //   //           .FirstOrDefault(u => u.ExternalId.Equals(auth0Id));
+    //   //   var user = await this.currentUserRepo.GetCurrentUser();
+    //   //   var dwUser = base.GetUserById(user.WorkflowUserId.Value);
+
+    //   //   return dwUser;
+    //   // } catch (Exception e) {
+    //     return await base.GetCurrentUserAsync();
+    //   // }
     // }
 
-    // public Task<bool> CheckFormPermissionAsync(string formName, string permissionCode)
-    // {
-    //   throw new NotImplementedException();
-    // }
+    // public new Core.Security.User CurrentUser {
+    //   get {
+    //     // TODO: need to look up some mapping between
+    //     //       our users, and the DWKit users
+    //     var user = this.currentUserRepo.GetCurrentUser().Result;
+    //     var dwUser = base.GetUserById(user.WorkflowUserId.Value);
+    //       // .SelectAsync().Result
+    //       // .Where(dwUser => dwUser.Id == user.WorkflowUserId)
 
-    // public Task<bool> CheckFormPermissionAsync(Form form, string permissionCode)
-    // {
-    //   throw new NotImplementedException();
-    // }
+    //     // this.contextAccessor.HttpContext.Items["CurrentUser"] == null;
 
-    // public bool CheckPermission(string group, string permission)
-    // {
-    //   throw new NotImplementedException();
-    // }
-
-    // public bool CheckPermission(Guid userId, string groupPermissionCode, string permissionCode)
-    // {
-    //   throw new NotImplementedException();
-    // }
-
-    // public SecurityCredential GetCredential(Guid id)
-    // {
-    //   throw new NotImplementedException();
-    // }
-
-    // public Task<Core.Security.User> GetCurrentUserAsync()
-    // {
-    //   throw new NotImplementedException();
-    // }
-
-    // public Core.Security.User GetUserById(Guid id)
-    // {
-    //   throw new NotImplementedException();
-    // }
-
-    // public Task SignInAsync(string login, bool remember)
-    // {
-    //   throw new NotImplementedException();
-    // }
-
-    // public Task SignOutAsync()
-    // {
-    //   throw new NotImplementedException();
-    // }
-
-    // public Task<bool> ValidateUserByLoginAsync(string login, string password)
-    // {
-    //   throw new NotImplementedException();
-    // }
-
-    // public bool ValidateUserByUserId(Guid userId, string password)
-    // {
-    //   throw new NotImplementedException();
+    //     return dwUser;
+    //   }
     // }
   }
 }

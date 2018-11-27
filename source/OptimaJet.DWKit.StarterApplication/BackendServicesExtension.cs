@@ -127,25 +127,20 @@ namespace OptimaJet.DWKit.StarterApplication
 
         public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // HACK
-            var sp = services.BuildServiceProvider();
-            var userRepo = (CurrentUserRepository)sp.GetService<CurrentUserRepository>();
-            var httpContextAccessor = (IHttpContextAccessor)sp.GetService<IHttpContextAccessor>();
-
-            DWKitRuntime.Security = new ScriptoriaSecurityProvider(userRepo, httpContextAccessor);
-
-
             // JWT Auth disabled for now, because we need to
             // 1. Add an Auth0 Id column to the users table
             // 2. Set the DWKitRuntime.Security.CurrentUser
             // 3. Controller actions are not allowed to have multiple authentication schemes
             // 4. Cookies must be removed.
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+            services.AddAuthentication(
+                // options =>
+                // {
+                //     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                //     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                //     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                // }
+            )
+            .AddJwtBearer(options =>
             {
                 options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
                 options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");

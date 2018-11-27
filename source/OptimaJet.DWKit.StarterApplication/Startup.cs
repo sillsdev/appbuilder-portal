@@ -96,6 +96,8 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddRouteAnalyzer();
 
+            // services.AddScoped<ScriptoriaSecurityProvider>();
+
             ConfigureDatabase(services);
         }
 
@@ -147,6 +149,12 @@ namespace OptimaJet.DWKit.StarterApplication
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
+
+            // var userRepo = serviceProvider.GetService<CurrentUserRepository>();
+            // var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+
+            // DWKitRuntime.Security = serviceProvider.GetService<ScriptoriaSecurityProvider>();
+            // new ScriptoriaSecurityProvider(userRepo, httpContextAccessor);
 
 
             app.UseStaticFiles();

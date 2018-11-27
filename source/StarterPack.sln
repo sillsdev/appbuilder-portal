@@ -13,6 +13,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.AppBuilder.BuildEngineA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.AppBuilder.BuildEngineApiClient.Tests", "SIL.AppBuilder.BuildEngineApiClient.Tests\SIL.AppBuilder.BuildEngineApiClient.Tests.csproj", "{CDF899EE-5D27-488E-ADE6-05E04B523D65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaJet.DWKit.Core", "OptimaJet.DWKit.Core\OptimaJet.DWKit.Core.csproj", "{0A0919A3-269E-4F80-B73D-91F6FDF5B538}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaJet.DWKit.PostgreSQL", "OptimaJet.DWKit.PostgreSQL\OptimaJet.DWKit.PostgreSQL.csproj", "{3F4746ED-E900-4D98-B5CF-2F4B51EC8226}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaJet.DWKit.MSSQL", "OptimaJet.DWKit.MSSQL\OptimaJet.DWKit.MSSQL.csproj", "{7CF40560-BE33-4823-A83B-2EBFE48EBC22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaJet.DWKit.Oracle", "OptimaJet.DWKit.Oracle\OptimaJet.DWKit.Oracle.csproj", "{D22A4E43-7333-4DA7-B19C-7731E5630DCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimaJet.DWKit.Security", "OptimaJet.DWKit.Security\OptimaJet.DWKit.Security.csproj", "{14BBD8BC-9AEC-44F4-AC00-8EE7477130AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +49,26 @@ Global
 		{CDF899EE-5D27-488E-ADE6-05E04B523D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDF899EE-5D27-488E-ADE6-05E04B523D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDF899EE-5D27-488E-ADE6-05E04B523D65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A0919A3-269E-4F80-B73D-91F6FDF5B538}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A0919A3-269E-4F80-B73D-91F6FDF5B538}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A0919A3-269E-4F80-B73D-91F6FDF5B538}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A0919A3-269E-4F80-B73D-91F6FDF5B538}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F4746ED-E900-4D98-B5CF-2F4B51EC8226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F4746ED-E900-4D98-B5CF-2F4B51EC8226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F4746ED-E900-4D98-B5CF-2F4B51EC8226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F4746ED-E900-4D98-B5CF-2F4B51EC8226}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CF40560-BE33-4823-A83B-2EBFE48EBC22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CF40560-BE33-4823-A83B-2EBFE48EBC22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CF40560-BE33-4823-A83B-2EBFE48EBC22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CF40560-BE33-4823-A83B-2EBFE48EBC22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D22A4E43-7333-4DA7-B19C-7731E5630DCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D22A4E43-7333-4DA7-B19C-7731E5630DCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D22A4E43-7333-4DA7-B19C-7731E5630DCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D22A4E43-7333-4DA7-B19C-7731E5630DCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14BBD8BC-9AEC-44F4-AC00-8EE7477130AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14BBD8BC-9AEC-44F4-AC00-8EE7477130AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14BBD8BC-9AEC-44F4-AC00-8EE7477130AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14BBD8BC-9AEC-44F4-AC00-8EE7477130AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
