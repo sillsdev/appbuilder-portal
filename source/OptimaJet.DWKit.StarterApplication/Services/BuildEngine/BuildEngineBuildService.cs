@@ -119,8 +119,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected async Task CreateBuildEngineBuildAsync(Product product)
         {
             await ResetPreviousBuildAsync(product);
-            SetBuildEngineEndpoint(product.Project.Organization);
-            var buildResponse = BuildEngineApi.CreateBuild(product.WorkflowJobId);
+            BuildResponse buildResponse = null;
+            if (SetBuildEngineEndpoint(product.Project.Organization))
+            {
+                buildResponse = BuildEngineApi.CreateBuild(product.WorkflowJobId);
+            }
             if ((buildResponse != null) && (buildResponse.Id != 0))
             {
                 product.WorkflowBuildId = buildResponse.Id;
@@ -158,7 +161,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected BuildResponse GetBuildEngineBuild(Product product)
         {
-            SetBuildEngineEndpoint(product.Project.Organization);
+            if (!SetBuildEngineEndpoint(product.Project.Organization))
+            {
+                return null;
+            }
             var buildResponse = BuildEngineApi.GetBuild(product.WorkflowJobId, product.WorkflowBuildId);
             return buildResponse;
         }

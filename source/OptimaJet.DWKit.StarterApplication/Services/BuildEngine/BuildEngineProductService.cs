@@ -67,8 +67,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 AppId = product.Project.Type.Name,
                 PublisherId = product.Store.Name
             };
-            SetBuildEngineEndpoint(product.Project.Organization);
-            var jobResponse = BuildEngineApi.CreateJob(buildEngineJob);
+            JobResponse jobResponse = null;
+            if (SetBuildEngineEndpoint(product.Project.Organization))
+            {
+                jobResponse = BuildEngineApi.CreateJob(buildEngineJob);
+            }
             if ((jobResponse != null) && (jobResponse.Id != 0))
             {
                 product.WorkflowJobId = jobResponse.Id;
