@@ -29,26 +29,33 @@ interface IOwnProps {
   isEmptyWorkflowProjectUrl: boolean;
 }
 
+interface IPendingUpdates {
+  [itemId: string]: boolean;
+}
+
 type IProps =
   & IOwnProps
   & i18nProps
   & IDataActionsProps;
 
 class Products extends React.Component<IProps> {
+  pendingUpdates: IPendingUpdates = {};
 
   onSelectionChange = async (item: ProductDefinitionResource) => {
-
-    const { t, updateProduct } = this.props;
-    try {
-      await updateProduct(item);
-      toast.success(t('updated'));
-    } catch (e) {
-      toast.error(e.message);
+    if (!this.pendingUpdates[item.id]){
+      this.pendingUpdates[item.id] = true;
+      const { t, updateProduct } = this.props;
+      try {
+        await updateProduct(item);
+        toast.success(t('updated'));
+      } catch (e) {
+        toast.error(e.message);
+      }
+      delete this.pendingUpdates[item.id];
     }
   }
 
   render() {
-
     const { t, products, organization, isEmptyWorkflowProjectUrl } = this.props;
 
     const productModalProps = {
@@ -112,6 +119,7 @@ export default compose(
     products: q => q.findRelatedRecords(project, 'products'),
   })),
   withLoader(({products}) => !products),
+
   withDataActions,
   withProps(({project}) => {
     return {
