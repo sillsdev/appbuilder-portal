@@ -37,7 +37,11 @@ export default class MultiRoleSelect extends React.Component<IProps> {
     }
 
     if (!editable) {
-      return <span className='p-l-md'>{roleNames}</span>;
+      return (
+        <span className='p-l-md' data-test-role-no-edit>
+          {roleNames}
+        </span>
+      );
     }
 
     return (
