@@ -29,7 +29,7 @@ class AdminSettingsRoute extends React.Component<IProps> {
           <Navigation/>
           <div className='m-l-lg flex-grow'>
             <Switch>
-              <Route exact path={pathName} render={(routeProps) => (
+              <Route path={pathName} render={(routeProps) => (
                 <OrganizationsRoute {...routeProps} />
               )} />
             </Switch>

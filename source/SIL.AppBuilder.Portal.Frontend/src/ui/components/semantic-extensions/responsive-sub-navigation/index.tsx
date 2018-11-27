@@ -15,7 +15,7 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
     const { items, location } = this.props;
 
     const matchingItem = items.find(i => {
-      return (i.to === location.pathname);
+      return (location.pathname.includes(i.to));
     });
 
     return matchingItem.text || 'Setting Navigation...';

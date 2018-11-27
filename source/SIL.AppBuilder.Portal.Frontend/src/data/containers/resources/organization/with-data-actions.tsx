@@ -15,6 +15,7 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProvidedProps {
+  createRecord: (attributes: OrganizationAttributes) => Promise<any>;
   updateAttribute: (attribute: string, value: any) => Promise<any>;
   updateAttributes: (attrs: OrganizationAttributes) => any;
   updateProductDefinition: (productDefinition: ProductDefinitionResource) => any;
@@ -35,6 +36,10 @@ const mapRecordsToProps = (passedProps) => {
 
   const { organization } = passedProps;
 
+  if (!organization) {
+    return {};
+  }
+
   return {
     organizationProductDefinitions: q =>
       q.findRelatedRecords(organization, 'organizationProductDefinitions'),
@@ -46,6 +51,19 @@ const mapRecordsToProps = (passedProps) => {
 export function withDataActions<T>(WrappedComponent) {
 
   class OrganizationDataActionWrapper extends React.Component<IProps & T> {
+
+    createRecord = async (payload: OrganizationAttributes) => {
+
+      const { dataStore } = this.props;
+
+      await dataStore.update(
+        q => q.addRecord({
+          type: 'organization',
+          attributes: payload
+        }),
+        defaultOptions()
+      );
+    }
 
     updateAttribute = (attribute: string, value: any) => {
       const { organization, dataStore } = this.props;
@@ -126,6 +144,7 @@ export function withDataActions<T>(WrappedComponent) {
 
     render() {
       const actionProps = {
+        createRecord: this.createRecord,
         updateAttributes: this.updateAttributes,
         updateAttribute: this.updateAttribute,
         updateProductDefinition: this.updateProductDefinition,
@@ -138,8 +157,7 @@ export function withDataActions<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit(mapRecordsToProps),
-    requireProps('organization')
+    withOrbit(mapRecordsToProps)
   )(OrganizationDataActionWrapper);
 
 }
