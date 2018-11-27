@@ -23,6 +23,7 @@ export class UserInteractor {
       isOpen: isPresent('[data-test-role-menu].visible'),
       list: text('[data-test-role-multi-select] > div.text'),
       organizationNames: text('[data-test-organization-name]'),
+      noEditText: text('[data-test-role-no-edit]'),
 
       chooseUnder(role: string, organization: string) {
         return (
