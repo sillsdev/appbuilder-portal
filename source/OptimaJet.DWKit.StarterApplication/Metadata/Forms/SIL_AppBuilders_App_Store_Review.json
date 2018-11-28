@@ -139,7 +139,7 @@
             "filterable": false,
             "resizable": false,
             "type": "number",
-            "width": 75
+            "width": 100
           },
           {
             "key": "link",
@@ -149,7 +149,23 @@
             "resizable": false,
             "type": "link"
           }
-        ]
+        ],
+        "events": {
+          "onRowDblClick": {
+            "active": false,
+            "actions": [],
+            "targets": [],
+            "parameters": []
+          },
+          "onRowClick": {
+            "actions": [
+              "openArtifactLink"
+            ],
+            "active": true,
+            "targets": [],
+            "parameters": []
+          }
+        }
       }
     ]
   }

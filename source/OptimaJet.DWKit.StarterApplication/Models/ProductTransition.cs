@@ -3,9 +3,9 @@ using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class ProductTransitionHistory : Identifiable
+    public class ProductTransition : Identifiable
     {
-        [HasOne("project")]
+        [HasOne("product")]
         public virtual Product Product { get; set; }
         public Guid ProductId { get; set; }
 
@@ -26,6 +26,5 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("date-transition")]
         public DateTime? DateTransition { get; set; }
-
     }
 }

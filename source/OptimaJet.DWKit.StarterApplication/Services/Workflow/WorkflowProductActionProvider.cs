@@ -12,6 +12,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using Hangfire;
+using OptimaJet.DWKit.Application;
+using OptimaJet.DWKit.Core.Model;
+using OptimaJet.DWKit.Core;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
@@ -37,8 +40,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             BackgroundJobClient = backgroundJobClient;
 
             //Register your actions in _actions and _asyncActions dictionaries
-            //_asyncActions.Add("WriteTransitionHistory", WriteTransitionHistoryAsync);
-            //_asyncActions.Add("UpdateTransitionHistory", UpdateTransitionHistoryAsync);
+            _asyncActions.Add("WriteProductTransition", WriteProductTransitionAsync);
+            _asyncActions.Add("UpdateProductTransition", UpdateProductTransitionAsync);
             _asyncActions.Add("SendOwnerNotification", SendOwnerNotificationAsync);
             _asyncActions.Add("BuildEngine_CreateProduct", BuildEngineCreateProductAsync);
             _asyncActions.Add("BuildEngine_BuildProduct", BuildEngineBuildProductAsync);
@@ -119,7 +122,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 }
                 else
                 {
-                    throw new Exception("Product already has a BuildEngine Product");
+                    Log.Warning($"Product \"{product.Id}\" already has a BuildEngine Product \"{product.WorkflowJobId}\"");
                 }
             }
         }
@@ -137,7 +140,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 }
                 else 
                 {
-                    throw new Exception("Product does nto have BuildEngine Product");
+                    throw new Exception($"Product \"{product.Id}\" does not have BuildEngine Product");
                 }
             }
         }
@@ -164,6 +167,84 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 Log.Information($"SendNotification: auth0Id={owner.ExternalId}, name={owner.Name}");
             }
         }
+
+        //
+        // Actions from DWKit Samples (with name changes for Tables and Fields)
+        //
+        private async Task WriteProductTransitionAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            if (processInstance.IdentityIds == null)
+                return;
+
+            var currentstate = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.CurrentState);
+
+            var nextState = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.ExecutedActivityState);
+
+            var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
+
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var userRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<User>>();
+                var userNames = userRepository.Get()
+                    .Where(u => processInstance.IdentityIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
+                    .Select(u => u.Name).ToList();
+                var userNamesString = String.Join(',', userNames);
+                var productTransitionsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<ProductTransition>>();
+                var history = new ProductTransition
+                {
+                    ProductId = processInstance.ProcessId,
+                    AllowedUserNames = userNamesString,
+                    InitialState = currentstate,
+                    DestinationState = nextState,
+                    Command = command
+                };
+                await productTransitionsRepository.CreateAsync(history);
+            }
+        }
+
+        private async Task UpdateProductTransitionAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            if (string.IsNullOrEmpty(processInstance.CurrentCommand))
+                return;
+
+            var currentstate = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.CurrentState);
+
+            var nextState = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.ExecutedActivityState);
+
+            var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
+
+            var isTimer = !string.IsNullOrEmpty(processInstance.ExecutedTimer);
+
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productTransitionsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<ProductTransition>>();
+                var history = await productTransitionsRepository.Get()
+                    .Where(h => h.ProductId == processInstance.ProcessId
+                           && h.DateTransition == null
+                           && h.InitialState == currentstate
+                           && h.DestinationState == nextState).FirstOrDefaultAsync();
+                if (history == null)
+                {
+                    history = new ProductTransition
+                    {
+                        ProductId = processInstance.ProcessId,
+                        AllowedUserNames = String.Empty,
+                        InitialState = currentstate,
+                        DestinationState = nextState
+                    };
+                    history = await productTransitionsRepository.CreateAsync(history);
+                }
+
+                history.Command = !isTimer ? command : string.Format("Timer: {0}", processInstance.ExecutedTimer);
+                history.DateTransition = DateTime.UtcNow;
+                if (Guid.TryParse(processInstance.IdentityId, out Guid identityId))
+                {
+                    history.WorkflowUserId = identityId;
+                }
+                await productTransitionsRepository.UpdateAsync(history);
+            }
+        }
+
 
         #region Implementation of IWorkflowActionProvider
 
@@ -215,12 +296,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public List<string> GetActions()
         {
-            return _actions.Keys.Union(_asyncActions.Keys).ToList();
+            var actions = _actions.Keys.Union(_asyncActions.Keys).ToList();
+            return actions;
         }
 
         public List<string> GetConditions()
         {
-            return _conditions.Keys.Union(_asyncConditions.Keys).ToList();
+            var conditions = _conditions.Keys.Union(_asyncConditions.Keys).ToList();
+                return conditions;
         }
 
         #endregion
