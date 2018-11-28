@@ -9,7 +9,9 @@ import {
   fakeAuth0Id
 } from 'tests/helpers';
 
-import page from './page';
+import UserTableInteractor from './-user-table';
+
+let userTable = null;
 
 describe('Acceptance | User groups', () => {
   setupApplicationTest();
@@ -83,6 +85,7 @@ describe('Acceptance | User groups', () => {
 
     beforeEach(async function () {
       await visit('/users');
+      userTable = new UserTableInteractor();
     });
 
     it('is in users page', () => {
@@ -90,7 +93,7 @@ describe('Acceptance | User groups', () => {
     });
 
     it('two groups are selected', () => {
-      expect(page.groupDropdownText).to.equal('Fake group, Another Fake group');
+      expect(userTable.groupDropdownText).to.equal('Fake group, Another Fake group');
     });
 
     describe('remove user from all groups',() => {
@@ -101,12 +104,12 @@ describe('Acceptance | User groups', () => {
       });
 
       beforeEach(async function() {
-        await page.groupDropdownCheckboxes(0).click();
-        await page.groupDropdownCheckboxes(1).click();
+        await userTable.groupDropdownCheckboxes(0).click();
+        await userTable.groupDropdownCheckboxes(1).click();
       });
 
       it('None is displayed',() => {
-        expect(page.groupDropdownText).to.equal('None');
+        expect(userTable.groupDropdownText).to.equal('None');
       });
 
       describe('add one group back', () => {
@@ -126,11 +129,11 @@ describe('Acceptance | User groups', () => {
         });
 
         beforeEach(async function() {
-          await page.groupDropdownCheckboxes(0).click();
+          await userTable.groupDropdownCheckboxes(0).click();
         });
 
         it('First group is displayed', () => {
-          expect(page.groupDropdownText).to.equal('Fake group');
+          expect(userTable.groupDropdownText).to.equal('Fake group');
         });
 
       });
@@ -239,7 +242,7 @@ describe('Acceptance | User groups', () => {
       });
 
       it('does not render second organization',() => {
-        const orgNames = page.groupDropdownOrganizationName().map(item => item.text);
+        const orgNames = userTable.groupDropdownOrganizationName().map(item => item.text);
         expect(orgNames).to.contain('DeveloperTown');
         expect(orgNames).to.not.contain('SIL');
       });
@@ -312,7 +315,7 @@ describe('Acceptance | User groups', () => {
       });
 
       it('renders two organizations groups',() => {
-        expect(page.groupDropdownText).to.equal('Fake group, Another Fake group, SIL fake group');
+        expect(userTable.groupDropdownText).to.equal('Fake group, Another Fake group, SIL fake group');
       });
 
     });

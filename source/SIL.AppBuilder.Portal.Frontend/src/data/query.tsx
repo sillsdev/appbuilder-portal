@@ -105,8 +105,8 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         return responses;
       }
 
-      tryFetch = async () => {
-        if (!this.isFetchNeeded()) { return; }
+      tryFetch = async (force: boolean = false) => {
+        if (!this.isFetchNeeded() && !force) { return; }
 
         this.setState({ isLoading: true }, async () => {
           try {
@@ -136,7 +136,8 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         const dataProps = {
           ...result,
           error,
-          isLoading
+          isLoading,
+          refetch: this.tryFetch.bind(this, true),
         };
 
         if (!passthroughError && error) {

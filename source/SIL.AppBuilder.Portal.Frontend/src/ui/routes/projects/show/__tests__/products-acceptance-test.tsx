@@ -1,6 +1,6 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
-import Convergence from '@bigtest/convergence';
+import Convergence, {when} from '@bigtest/convergence';
 import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers/index';
@@ -100,6 +100,7 @@ describe('Acceptance | Project View | Products', () => {
           }
         }
       }, requestCustomizer);
+      this.mockDelete(204, 'products/1', requestCustomizer);
     });
 
     beforeEach(async function () {
@@ -148,13 +149,13 @@ describe('Acceptance | Project View | Products', () => {
           const productsText = productList.map(item => item.text);
           expect(productsText).to.contain('Publish Android app to S3');
           expect(productsText).to.contain('Publish Android App to Google Play');
-        });
+        }).timeout(2000);
 
         it('project product is selected',() => {
           const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
           expect(selector.items(0).isChecked).to.be.true;
           expect(selector.items(1).isChecked).to.be.true;
-        });
+        }).timeout(2000);
       });
 
       describe("ignores requests until previous request has completed.", () => {
@@ -162,15 +163,14 @@ describe('Acceptance | Project View | Products', () => {
         beforeEach(async function () {
           requestCount = 0;
           customizer = async (server, req, resp) => {
-            ++requestCount;
-            console.log(req);
-            await server.timeout(1000);
+            if (req.method === "POST" || req.method === "DELETE" && /\/api\/products/.test(req.pathname)){
+              ++requestCount;
+              await server.timeout(1000);
+            }
           };
-          console.log(`select the product start ${Date.now().valueOf()}`);
           await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
           await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
           await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
-          console.log(`select the product finished ${Date.now().valueOf()}`);
         });
 
         it("is only requested once.", () => {
@@ -189,9 +189,24 @@ describe('Acceptance | Project View | Products', () => {
           expect(selector.items(0).isChecked).to.be.true;
           expect(selector.items(1).isChecked).to.be.true;
         }).timeout(4000);
+
+        describe('and on deselect', () => {
+          beforeEach(async () => {
+            await new Convergence()
+              .when(() => page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).isChecked)
+              .do(async () => {
+                await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+                await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+                await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+              });
+            await when(() => !page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).isChecked);
+          });
+          it('is only requested one additional time.', () => {
+            expect(requestCount).to.equal(2);
+          }).timeout(4000);
+        });
       });
     });
-
   });
 
   describe('Workflow project URL not present', () => {

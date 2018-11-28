@@ -10,7 +10,7 @@ import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import UserTable from '@ui/components/user-table/table';
 import { IProps as IUserDataProps } from '@ui/components/user-table/data';
 import { LoadingWrapper } from '@ui/components/loading-wrapper';
-
+import AddUser from './add';
 interface IOwnProps {
 }
 
@@ -34,13 +34,21 @@ export default class Users extends React.Component<IProps> {
     updateFilter({ attribute: 'name', value: `like:${term}` });
   }
 
-  render() {
-    const { t, isLoading } = this.props;
+  onUserAdded = async () => {
+    const { refetch } = this.props;
+    await refetch();
+  }
 
+  render() {
+    const { t, isLoading, roles } = this.props;
+    const addUserProps = { t, roles };
     return (
-      <div className='ui container users'>
+      <div className='ui container users' data-test-manageusers>
         <div className='flex justify-content-space-between'>
-          <h1 className='page-heading'>{t('users.title')}</h1>
+          <div className="page-heading flex align-items-center">
+            <h1>{t('users.title')}</h1>
+            <AddUser {...addUserProps} onUserAdded={this.onUserAdded}/>
+          </div>
           <div className='flex align-items-center'>
             <DebouncedSearch
               placeholder={t('common.search')}
@@ -56,4 +64,3 @@ export default class Users extends React.Component<IProps> {
     );
   }
 }
-
