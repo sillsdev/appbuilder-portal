@@ -17,11 +17,9 @@ import DirectoryRoute, { pathName as directoryPath } from '@ui/routes/project-di
 import ProjectsRoute, { pathName as projectsPath } from '@ui/routes/projects';
 import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-source';
+import Workflows from '@ui/routes/workflow';
 
 import ErrorRootRoute from '@ui/routes/errors';
-
-
-import Workflows, { pathName as workflowPath } from '@ui/routes/workflow';
 
 export default class RootPage extends React.Component {
   render() {
@@ -33,8 +31,6 @@ export default class RootPage extends React.Component {
 
         <section className='flex flex-grow'>
           <Switch>
-
-
             <Route path={loginPath} component={LoginRoute} />
             <Route path={adminPath} component={AdminRoute} />
 

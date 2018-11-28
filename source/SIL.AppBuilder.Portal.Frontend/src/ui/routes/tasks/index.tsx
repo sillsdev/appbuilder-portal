@@ -22,7 +22,4 @@ export default compose(
   withProps(({ userTasks }) => ({
     userTasks: userTasks.filter(ut => ut),
   })),
-  /* withData({ */
-  /*   tasks: q => q.findRecords('user-task') */
-  /* }), */
 )(Display);

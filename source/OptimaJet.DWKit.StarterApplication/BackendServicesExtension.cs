@@ -132,14 +132,7 @@ namespace OptimaJet.DWKit.StarterApplication
             // 2. Set the DWKitRuntime.Security.CurrentUser
             // 3. Controller actions are not allowed to have multiple authentication schemes
             // 4. Cookies must be removed.
-            services.AddAuthentication(
-                // options =>
-                // {
-                //     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                //     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                //     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                // }
-            )
+            services.AddAuthentication()
             .AddJwtBearer(options =>
             {
                 options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
@@ -171,16 +164,6 @@ namespace OptimaJet.DWKit.StarterApplication
             .AddCookie(options => {
                 options.ExpireTimeSpan = TimeSpan.FromDays(365);
                 options.LoginPath = "/Account/Login/";
-
-                // options.ForwardDefaultSelector = ctx =>
-                // {
-                //     if (ctx.Request.Path.StartsWithSegments("/api"))
-                //     {
-                //         return "Bearer";
-                //     } else {
-                //         return "Cookies";
-                //     }
-                // };
             });
 
             services.AddAuthorization(options =>

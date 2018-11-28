@@ -41,7 +41,6 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             return View("Admin");
         }
 
-        [AllowAnonymous]
         [Route("ConfigAPI")]
         public async Task<ActionResult> API()
         {

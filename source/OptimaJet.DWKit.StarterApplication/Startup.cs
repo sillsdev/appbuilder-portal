@@ -96,8 +96,6 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddRouteAnalyzer();
 
-            // services.AddScoped<ScriptoriaSecurityProvider>();
-
             ConfigureDatabase(services);
         }
 
@@ -124,8 +122,8 @@ namespace OptimaJet.DWKit.StarterApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, 
-                                      IHostingEnvironment env, 
+        public virtual void Configure(IApplicationBuilder app,
+                                      IHostingEnvironment env,
                                       ILoggerFactory loggerFactory,
                                       IServiceScopeFactory serviceScopeFactory,
                                       IServiceProvider serviceProvider)
@@ -149,12 +147,6 @@ namespace OptimaJet.DWKit.StarterApplication
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
-
-            // var userRepo = serviceProvider.GetService<CurrentUserRepository>();
-            // var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
-
-            // DWKitRuntime.Security = serviceProvider.GetService<ScriptoriaSecurityProvider>();
-            // new ScriptoriaSecurityProvider(userRepo, httpContextAccessor);
 
 
             app.UseStaticFiles();

@@ -44,8 +44,6 @@ class TaskRow extends React.Component<IProps> {
     const { workflowBusinessFlow } = attributesFor(workflow);
     const id = idFromRecordIdentity(product);
 
-    console.log(product, workflow, userTask);
-
     history.push(`/flow/${workflowBusinessFlow}/${id}`);
   }
 

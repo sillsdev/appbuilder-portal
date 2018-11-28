@@ -18,7 +18,6 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     public class DataController : Controller
     {
-        [AllowAnonymous]
         [Route("data/get")]
         public async Task<ActionResult> GetData(string name, string control, string urlFilter, string options,
             string filter, string paging, string sort)
@@ -44,9 +43,9 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                     {
                         var filterActions = DWKitRuntime.ServerActions.GetFilterNames().Where(n => n.Equals(urlFilter, StringComparison.OrdinalIgnoreCase)).ToList();
                         string filterAction = null;
-                        filterAction = filterActions.Count == 1 ? filterActions.First() 
+                        filterAction = filterActions.Count == 1 ? filterActions.First()
                             : filterActions.FirstOrDefault(n => n.Equals(urlFilter, StringComparison.Ordinal));
-                        
+
                         if (!string.IsNullOrEmpty(filterAction))
                             filterActionName = filterAction;
                         else
@@ -95,12 +94,12 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 }
 
                 var data = await DataSource.GetDataForFormAsync(getRequest).ConfigureAwait(false);
-                
+
                 if (data.IsFromUrl && FailResponse.IsFailResponse(data.Entity, out FailResponse fail))
                 {
                     return Json(fail);
                 }
-                
+
                 return Json(new ItemSuccessResponse<object>(data.Entity.ToDictionary(true)));
             }
             catch (Exception e)
@@ -167,7 +166,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
                 if (NotNullOrEmpty(filter))
                 {
-                    filterItems.AddRange(JsonConvert.DeserializeObject<List<ClientFilterItem>>(filter));                   
+                    filterItems.AddRange(JsonConvert.DeserializeObject<List<ClientFilterItem>>(filter));
                 }
 
                 var getRequest = new GetDictionaryRequest(name)
@@ -189,7 +188,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 {
                     getRequest.Paging = JsonConvert.DeserializeObject<ClientPaging>(paging);
                 }
-                
+
                 var data = await DataSource.GetDictionaryAsync(getRequest).ConfigureAwait(false);
                 var res = new ItemSuccessResponse<List<KeyValuePair<object, string>>>(data.Item1.ToList());
                 res.Count = data.Item2;
