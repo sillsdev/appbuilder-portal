@@ -73,11 +73,6 @@ export class App extends React.Component {
 
     return (
       <div className="p-lg flex-column flex-grow dwkit-form-container align-items-center" key={this.state.pagekey}>
-        { /* <DWKitForm {...sectorprops}
-          className='dwkit-header'
-          formName="header"
-          data={{currentUser: attributesFor(currentUser).name}}
-          modelurl="/ui/form/header" />*/}
         <DWKitForm className='dwkit-header w-100' {...sectorprops} formName="top" modelurl="/ui/form/top"/>
         <Provider store={Store}>
           <>
@@ -107,11 +102,10 @@ export class App extends React.Component {
                 <div className='flex-row flex-grow form-layout-wrapper'>
                   <FlowContent className='flex-grow' { ...props } />
                 </div>
-              )
+              );
             }} />
           </>
         </Provider>
-        { /* <DWKitForm {...sectorprops} formName="footer" modelurl="/ui/form/footer" />*/ }
       </div>
     );
   }
