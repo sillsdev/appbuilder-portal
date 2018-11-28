@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
@@ -10,13 +9,11 @@ import {
   relationshipFor,
   recordsWithIdIn
 } from '@data';
-import { ROLE } from '@data/models/role';
 import { isEmpty, unique } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { compareVia } from '@lib/collection';
-import { RequireRole } from '@ui/components/authorization';
 
 import Display from './display';
+import { withCurrentUser } from '@data/containers/with-current-user';
 
 interface INeededProps {
   user: UserResource;
@@ -40,6 +37,7 @@ type IProps =
 
 export default compose<IProps, INeededProps>(
   withTranslations,
+  withCurrentUser(),
   // share one set of userRoles for the entire list.
   // otherwise the RoleSelect's own withUserRoles will
   // make a call to get the userRoles as a convient default
@@ -76,6 +74,11 @@ export default compose<IProps, INeededProps>(
 
     return {
       roleNames: result
+    };
+  }),
+  withProps(({currentUser, user}) => {
+    return {
+      editable: currentUser.id !== user.id
     };
   })
 )(Display);

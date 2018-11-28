@@ -46,9 +46,15 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
                     AddError(message);
                 }
             }
+
             if (!project.Organization.ProductDefinitionIds.Contains(productDefinition.Id))
             {
                 var message = $"This product is not permitted for the organization";
+                AddError(message);
+            }
+            if (project.WorkflowProjectUrl == null)
+            {
+                var message = $"There is no workflow project url for this product";
                 AddError(message);
             }
             // The current user should be a member of the organization

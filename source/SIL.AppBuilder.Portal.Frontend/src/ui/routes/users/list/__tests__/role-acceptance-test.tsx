@@ -6,7 +6,7 @@ import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
-  fakeAuth0Id, wait
+  fakeAuth0Id
 } from 'tests/helpers';
 import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 
@@ -125,6 +125,7 @@ describe('Acceptance | User List | Role Management', () => {
       });
     });
   });
+
 
   describe('A User belongs to two organizations',() => {
     beforeEach(function () {
@@ -261,5 +262,60 @@ describe('Acceptance | User List | Role Management', () => {
       });
 
     });
+  });
+
+  describe('current user is editing itself', () => {
+    useFakeAuthentication();
+
+    beforeEach(function () {
+      this.mockGet(200, '/users', {
+        data: [{
+          type: 'users',
+          id: 1,
+          attributes: {
+            name: "Current User"
+          },
+          relationships: {
+            'user-roles': {
+              data: [
+                { type: 'user-roles', id: 2 },
+                { type: 'user-roles', id: 3 }
+              ]
+            },
+            'organization-memberships': {
+              data: [{ type: 'organization-memberships', id: 2 }]
+            }
+          }
+        }],
+        included: [
+          {
+            type: 'organization-memberships',
+            id: 2,
+            relationships: {
+              organization: { data: { type: 'organization', id: 1 } },
+              user: { data: { type: 'user', id: 1 } }
+            }
+          },
+          userRoleFrom(roles.orgAdmin, { id: 2, userId: 1, orgId: 1 }),
+          userRoleFrom(roles.appBuilder, { id: 3, userId: 1, orgId: 1 }),
+          roles.orgAdmin,
+          roles.appBuilder
+        ]
+      });
+    });
+
+    beforeEach(async function () {
+      await visit('/users');
+    });
+
+    it('is in users page', () => {
+      expect(location().pathname).to.equal('/users');
+    });
+
+    it('text instead of dropdown', () => {
+      expect(page.row(0).role.noEditText).to.equal('AppBuilder, OrganizationAdmin');
+      expect(page.row(0).role.isOpen).to.be.false;
+    });
+
   });
 });
