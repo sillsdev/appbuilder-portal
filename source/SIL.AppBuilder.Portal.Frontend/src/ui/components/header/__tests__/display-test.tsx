@@ -59,6 +59,19 @@ describe('Acceptance | Component | Header', () => {
   });
 
   describe('Go to profile', () => {
+
+    beforeEach(function () {
+      this.mockGet(200, '/users/1', {
+        data: {
+          type: 'users',
+          id: '1',
+          attributes: {
+            givenName: 'hi'
+          }
+        }
+      });
+    });
+
     beforeEach(async () => {
       await visit('/');
       await headerHelper.clickProfileLink();
