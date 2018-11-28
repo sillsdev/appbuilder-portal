@@ -4,6 +4,7 @@ using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
@@ -48,6 +49,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                 .Include(user => user.OrganizationMemberships)
                 .Include(user => user.UserRoles)
                 .FirstOrDefaultAsync();
+
+            // DWKit signs in via name --- what if someone has the same name as someone else?
+            // is there a way to change this to email, which is unique?
+            await DWKitRuntime.Security.SignInAsync("admin", remember: false);
 
             return currentUser;
         }
