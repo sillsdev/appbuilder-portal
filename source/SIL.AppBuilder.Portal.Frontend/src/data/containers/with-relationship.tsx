@@ -77,10 +77,13 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
       componentDidMount() {
         this.asyncStarter();
       }
-
+      
+      componentWillReceiveProps(newProps) {
+        newProps.user !== this.props.user && this.asyncStarter();
+      }
+      
       render() {
         const { result, isLoading, error } = this.state;
-
         const nextProps = {
           ...(this.props as object),
           ...( result || {} ),
@@ -100,7 +103,6 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
           relationshipsToFind: mapResult,
         };
       }),
-      withOrbit({}),
     )(WithRelationship);
   };
 }
