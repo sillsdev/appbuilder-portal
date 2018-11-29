@@ -7,6 +7,7 @@ import { OrganizationInviteAttributes } from '@data/models/organization-invite';
 import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { Checkbox } from 'semantic-ui-react';
 
 import { listPathName } from './index';
 import * as Toast from '@lib/toast';
@@ -14,12 +15,10 @@ import * as Toast from '@lib/toast';
 import {
   withDataActions, IProvidedProps as IOrganizationProps
 } from '@data/containers/resources/organization/with-data-actions';
+import { debug } from 'util';
 
 interface IOwnProps {
-  onSubmit: (data: OrganizationInviteAttributes) => Promise<void>;
-  name?: string;
-  orgAdminEmail?: string;
-  websiteUrl?: string;
+  toggleField: (fieldName: string, newToggleState: boolean) => void;
 }
 
 interface IState {
@@ -27,6 +26,8 @@ interface IState {
   url?: string;
   buildEngineUrl?: string;
   buildEngineApiAccessToken?: string;
+  logoUrl?: string;
+  publicByDefault?: boolean;
 }
 
 type IProps =
@@ -43,13 +44,15 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
 
-    const { name, websiteUrl, buildEngineUrl, buildEngineApiAccessToken } = props;
+    const { name, websiteUrl, buildEngineUrl, buildEngineApiAccessToken, logoUrl, publicByDefault } = props;
 
     this.state = {
       name,
       url: websiteUrl,
       buildEngineUrl,
-      buildEngineApiAccessToken
+      buildEngineApiAccessToken,
+      logoUrl,
+      publicByDefault
     };
   }
 
@@ -60,13 +63,14 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
       await createRecord({
         name: this.state.name,
         websiteUrl: this.state.url,
-        buildEngineUrl: this.state.buildEngineUrl
+        buildEngineUrl: this.state.buildEngineUrl,
+        logoUrl: this.state.logoUrl
       });
       Toast.success('Organization added');
     } catch (e) {
       Toast.error(e);
     }
-    this.setState({ name: '', url: '' });
+    this.setState({ name: '', url: '', buildEngineUrl: '', buildEngineApiAccessToken: '', logoUrl: '' });
   }
 
   cancel = (e) => {
@@ -74,10 +78,17 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
     const { history } = this.props;
     history.push(listPathName);
   }
+  toggle = (e, toggleData) => {
 
+    const { toggleField } = this.props;
+
+    const newToggleState = toggleData.checked;
+debug;
+    toggleField(toggleData.name, newToggleState);
+  }
   render() {
     const { mut } = this;
-    const { name, url, buildEngineUrl, buildEngineApiAccessToken } = this.state;
+    const { name, url, buildEngineUrl, buildEngineApiAccessToken, logoUrl, publicByDefault } = this.state;
     const { t } = this.props;
 
     return (
@@ -121,6 +132,32 @@ class AddNewOrganizationForm extends React.Component<IProps, IState> {
               value={buildEngineApiAccessToken || ''}
               onChange={mut('buildEngineApiAccessToken')}
             />
+          </div>
+
+          <div className='field m-b-xl'>
+            <label>{t('admin.settings.organizations.logoURL')}</label>
+            <input
+              data-test-logo-url
+              type='text'
+              value={logoUrl || ''}
+              onChange={mut('logoUrl')}
+            />
+          </div>
+          <div className='flex justify-content-space-around border-none'>
+            <div className='flex-grow'>
+              <p className='field m-b-xl'>
+                {t('admin.settings.organizations.publicByDefault')}
+              </p>
+            </div>
+            <div className='flex-shrink'>
+              <Checkbox
+                data-test-build-engine-public-by-default
+                toggle
+                name='publicByDefault'
+                defaultChecked={publicByDefault}
+                onChange={this.toggle}
+              />
+            </div>
           </div>
 
           <button

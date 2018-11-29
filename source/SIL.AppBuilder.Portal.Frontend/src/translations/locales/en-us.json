@@ -332,7 +332,9 @@
         "add": "Add Organization",
         "websiteURL": "Website URL",
         "buildEngineURL": "Build Engine URL",
-        "accessToken": "Build Engine API Access Token"
+        "accessToken": "Build Engine API Access Token",
+        "logoURL": "Logo URL",
+        "publicByDefault": "Public By Default"
       }
     }
   }
