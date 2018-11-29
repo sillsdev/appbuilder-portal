@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Project_Approval",
-  "lastUpdate": "2018-11-14T18:41:14.0091+00:00",
+  "lastUpdate": "2018-11-28T08:51:15.390629-05:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -70,6 +70,14 @@
       "id": "e738604a-ee0f-3db8-6f78-e16c848b6db6",
       "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "d7e00179-1002-0e5b-5dc5-d347d9e89e32",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "e738604a-ee0f-3db8-6f78-e16c848b6db6",
+      "isEditable": false,
       "isLoadable": true
     },
     {

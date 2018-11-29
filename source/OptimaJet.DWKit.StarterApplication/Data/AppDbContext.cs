@@ -177,5 +177,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<ProductArtifact> ProductArtifacts { get; set; }
         public DbSet<UserTask> UserTasks { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<ProductTransition> ProductTransitions { get; set; }
     }
 }

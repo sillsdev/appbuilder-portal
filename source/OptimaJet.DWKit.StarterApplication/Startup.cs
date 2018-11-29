@@ -15,12 +15,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Middleware;
 using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using React.AspNet;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
+using Microsoft.AspNetCore.SignalR;
+using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -149,7 +152,12 @@ namespace OptimaJet.DWKit.StarterApplication
             GlobalJobFilters.Filters.Add(
                 new ErrorReportingJobFilter(serviceProvider.GetService<IClient>()));
             app.UseHangfireServer();
-            app.UseHangfireDashboard();
+            var useDashBoard = GetVarOrDefault("HANGFIRE_USE_DASHBOARD", ""); 
+            if (!String.IsNullOrEmpty(useDashBoard))
+            {
+                Log.Information("Using Hangfire Dashboard");
+                app.UseHangfireDashboard();
+            }
 
             if (env.IsDevelopment())
             {

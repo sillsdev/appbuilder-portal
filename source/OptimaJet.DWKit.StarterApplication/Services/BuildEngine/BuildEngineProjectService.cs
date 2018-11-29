@@ -31,10 +31,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             SendNotificationService = sendNotificationService;
             ProjectRepository = projectRepository;
         }
-        public static void CreateBuildEngineProject(int projectId)
-        {
-            BackgroundJob.Enqueue<BuildEngineProjectService>(service => service.ManageProject(projectId));
-        }
+
         public void ManageProject(int projectId)
         {
             // Hangfire methods cannot be async, hence the Wait

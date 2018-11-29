@@ -6,7 +6,6 @@ using SIL.AppBuilder.BuildEngineApiClient;
 using BuildEngineJob = SIL.AppBuilder.BuildEngineApiClient.Job;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Threading.Tasks;
-using Hangfire;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -23,10 +22,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         public IJobRepository<Product, Guid> ProductRepository { get; }
 
-        public static void CreateBuildEngineProduct(Guid productId)
-        {
-            BackgroundJob.Enqueue<BuildEngineProductService>(service => service.ManageProduct(productId));
-        }
         public void ManageProduct(Guid productId)
         {
             ManageProductAsync(productId).Wait();
@@ -55,9 +50,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 // Throw exception to retry
                 throw new Exception("Connection not available");
             }
+            if (!ProjectUrlSet(product.Project))
+            {
+                // If the Project URL is not set yet, then don't try to create the job.
+                // Throw exception to retry
+                throw new Exception("Project URL not set");
+            }
             await CreateBuildEngineProductAsync(product);
-
         }
+
+        private bool ProjectUrlSet(Models.Project project)
+        {
+            return !String.IsNullOrEmpty(project.WorkflowProjectUrl);
+        }
+
         protected async Task CreateBuildEngineProductAsync(Product product)
         {
             var buildEngineJob = new BuildEngineJob

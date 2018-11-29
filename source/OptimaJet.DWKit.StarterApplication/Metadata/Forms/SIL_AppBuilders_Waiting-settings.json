@@ -1,87 +1,101 @@
 {
-  "name": "SIL_AppBuilders_Synchronize_Data",
-  "lastUpdate": "2018-11-16T15:46:43.376278-05:00",
+  "name": "SIL_AppBuilders_Waiting",
+  "lastUpdate": "2018-11-28T08:47:38.005588-05:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
   "dataMap": [
     {
-      "id": "607d4c79-5e64-23ca-3010-3c6e2ea5fee0",
+      "id": "019535bf-8308-18b5-1009-c0d7d5c25553",
       "attributeId": "441e60ec-8a68-4c74-bcc4-853a678f11c3",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "f4879d4b-ffec-3417-cc62-860d04c123b0",
+      "id": "42347230-04cd-0a38-4564-f9b8b36ff13c",
       "attributeId": "37ecc7d1-c69e-4b7b-b611-409fe36392f7",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "b8e746d2-9324-883e-03fe-4d56d65583c1",
+      "id": "8a77fc52-5fd1-4ba1-d461-631776ec73d8",
       "attributeId": "7fc91699-2b16-4ab1-a91a-1d0d3401f5e3",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "8664cd23-746a-9170-cb35-aa811b39357f",
+      "id": "ec654350-aad3-1945-0529-f342ff170b7b",
       "attributeId": "1018080e-7abe-4a87-bd07-721dc54fc6b0",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "c2166614-b464-98d5-16b1-6c8786afadf6",
+      "id": "14d03dd5-aa3b-3e32-16bd-e2e675728f81",
       "attributeId": "e079ff30-3aec-49eb-824b-fea61e4da080",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "c4075e68-bab0-e442-d551-2137911069f4",
+      "id": "8ba5c640-ab74-a147-4f70-7b2c0c730750",
       "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "5752d24b-87ba-9897-5346-eeee48bba2f7",
+      "id": "c2ef6d7a-2f7e-23db-9fcf-aaa2160647ad",
       "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "13f998df-3398-724a-4691-45b1a3869827",
+      "id": "e677a833-67dc-23f1-d49e-d091b639da83",
       "attributeId": "cc8522c4-bc11-4669-a876-3ab71cfeba1f",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "07d2e9e4-b4ff-cf01-6b17-ecb2df498ea3",
+      "id": "aa5d125c-4d4d-9705-85f7-160301136945",
       "attributeId": "8759b596-a767-45c0-9e30-387b41e190c9",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "e4732728-5020-48b7-9300-f712213eb285",
+      "id": "58f667a0-c82f-df50-56d6-e1cd62858316",
       "attributeId": "46ebc3ca-16f9-4cf2-bea0-5d52f30e031e",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "6a587051-94e5-8442-4548-63817bd23739",
+      "id": "c7e072fa-b7b0-645f-647c-1454a9f50816",
       "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "928d93e2-0c05-afd2-48b8-f20438f4835d",
+      "id": "e211f804-4f60-6d40-655d-aa02321d1b17",
       "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "2c2dc6cd-988c-74a8-ee50-b6fe941a09fa",
-      "attributeId": "8835d06d-a91a-4289-a632-96d0d4fb48c2",
-      "control": "input_repository_location",
-      "parentId": "c4075e68-bab0-e442-d551-2137911069f4",
+      "id": "10485f3e-e921-2ada-8255-b52289b3f6b2",
+      "attributeId": "da31659f-07de-4af3-b377-7ac8109c00fd",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "5845829f-040d-dab3-2bba-2223166c2f8d",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_description",
+      "parentId": "8ba5c640-ab74-a147-4f70-7b2c0c730750",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "b45a4c56-f8ea-09da-7a75-4f8d65aebd90",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_product_name",
+      "parentId": "8ba5c640-ab74-a147-4f70-7b2c0c730750",
       "isEditable": false,
       "isLoadable": true
     }
