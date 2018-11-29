@@ -1,11 +1,16 @@
 ﻿using System;
 using Hangfire;
+using I18Next.Net.AspNetCore;
+using I18Next.Net.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using SIL.AppBuilder.BuildEngineApiClient;
+using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support.TestClasses;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
@@ -32,7 +37,24 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
             services.AddScoped<BuildEngineProductService>();
             services.AddScoped<BuildEngineBuildService>();
             services.AddScoped<BuildEngineReleaseService>();
+            services.AddScoped<SendNotificationServiceTester>();
+            services.AddI18NextLocalization(i18n => i18n
+                                            .IntegrateToAspNetCore()
+                                            .AddBackend(new ScriptoriaI18NextFileBackend("source/locales"))
+                                            .UseDefaultLanguage("en-US"));
+            services.AddMvc()
+                // Enable view localization and register required I18Next services
+                .AddI18NextViewLocalization();
             base.ConfigureServices(services);
+        }
+        public override void Configure(IApplicationBuilder app,
+                               IHostingEnvironment env,
+                               ILoggerFactory loggerFactory,
+                               IServiceScopeFactory serviceScopeFactory,
+                               IServiceProvider serviceProvider)
+        {
+            app.UseRequestLocalization(options => options.AddSupportedCultures("es-419", "en-us", "fr-FR"));
+            base.Configure(app, env, loggerFactory, serviceScopeFactory, serviceProvider);
         }
     }
 }

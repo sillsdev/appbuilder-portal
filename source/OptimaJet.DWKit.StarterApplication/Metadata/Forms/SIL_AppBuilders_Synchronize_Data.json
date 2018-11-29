@@ -19,34 +19,33 @@
     "blockSetState": true
   },
   {
+    "key": "form_2",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "textarea_comment",
+        "data-buildertype": "textarea",
+        "label": "Comment",
+        "fluid": true,
+        "rows": "2"
+      }
+    ]
+  },
+  {
     "key": "form_1",
     "data-buildertype": "form",
     "children": [
       {
-        "key": "input_repository_location",
-        "data-buildertype": "input",
-        "label": "Repository Location",
-        "fluid": true,
-        "onChangeTimeout": 200,
-        "readOnly": true
-      },
-      {
         "key": "header_1",
         "data-buildertype": "header",
-        "content": "Complete the following before clicking on the Continue button:",
+        "content": "Synchronize Data",
         "size": "medium"
       },
       {
-        "key": "checkbox_1",
-        "data-buildertype": "checkbox",
-        "label": "I have pasted the above \"repository location\" into the \"Publishing\" page.",
-        "events": {},
-        "other-required": true
-      },
-      {
-        "key": "checkbox_2",
-        "data-buildertype": "checkbox",
-        "label": "I have clicked \"Send\" in the \"Publishing\" page and successfully uploaded by app data to the app publishing repository."
+        "key": "message_1",
+        "data-buildertype": "message",
+        "header": "Instructions",
+        "content": "Make any changes needed in the app.  Click \"Send\" in the \"Publishing\" app configuration page and successfully upload the data to the app publishing repository.  Click Continue to proceed to build the product."
       }
     ]
   }
