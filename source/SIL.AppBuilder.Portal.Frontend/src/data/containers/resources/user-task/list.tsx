@@ -12,8 +12,8 @@ export interface IProvidedProps {
   error?: any;
 }
 
-type IProps =
-& {}
+interface IProps =
+{}
 
 export function withNetwork<TWRappedProps>(options: IOptions = {}) {
   const { include } = options;
@@ -35,13 +35,13 @@ export function withNetwork<TWRappedProps>(options: IOptions = {}) {
         cacheKey: ['static'],
         userTasks: [
           q => {
-            let builder = q.findRecords('userTask');
+            const builder = q.findRecords('userTask');
 
             return builder;
           },
           requestOptions
         ]
-      }
+      };
     }
 
     return compose(

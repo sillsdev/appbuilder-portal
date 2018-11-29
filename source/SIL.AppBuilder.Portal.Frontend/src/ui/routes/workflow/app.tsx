@@ -76,10 +76,10 @@ export class App extends React.Component {
         <DWKitForm className='dwkit-header w-100' {...sectorprops} formName="top" modelurl="/ui/form/top"/>
         <Provider store={Store}>
           <>
-            <ApplicationRouter onRefresh={this.onRefresh.bind(this)} />
+            <ApplicationRouter onRefresh={this.onRefresh} />
             <NotificationComponent
-              onFetchStarted={this.onFetchStarted.bind(this)}
-              onFetchFinished={this.onFetchFinished.bind(this)} />
+              onFetchStarted={this.onFetchStarted}
+              onFetchFinished={this.onFetchFinished} />
 
             <Route path='/form' render={(props) => {
               return (
@@ -94,7 +94,7 @@ export class App extends React.Component {
                 <div className='flex-row flex-grow form-layout-wrapper'>
                   <FormContent className='flex-grow' { ...props } formName='dashboard' />
                 </div>
-              )
+              );
             }} />
 
             <Route path='/flow' render={(props) => {
@@ -110,7 +110,7 @@ export class App extends React.Component {
     );
   }
 
-  onFetchStarted() {
+  onFetchStarted = () => {
     $('body').loadingModal({
       text: 'Loading...',
       animation: 'foldingCube',
@@ -118,20 +118,20 @@ export class App extends React.Component {
     });
   }
 
-  onFetchFinished() {
+  onFetchFinished = () => {
     $('body').loadingModal('destroy');
   }
 
-  onRefresh() {
+  onRefresh = () => {
     this.onFetchStarted();
     Store.resetForm();
   }
 
-  actionsFetch(args) {
+  actionsFetch = (args) => {
     Store.dispatch(Thunks.form.executeActions(args));
   }
 
-  additionalFetch(formName, controlRef, { startIndex, pageSize, filters, sort, model }, callback) {
+  additionalFetch = (formName, controlRef, { startIndex, pageSize, filters, sort, model }, callback) => {
     Store.dispatch(Thunks.additional.fetch({
       type: controlRef.props["data-buildertype"],
       formName, controlRef, startIndex, pageSize, filters, sort, callback
