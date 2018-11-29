@@ -37,7 +37,7 @@ let config = {
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),
-    WorkflowApp: locate('src/ui/routes/workflow/app.tsx'),
+    // WorkflowApp: locate('src/ui/routes/workflow/app.tsx'),
   },
   module: {
     rules: moduleRules

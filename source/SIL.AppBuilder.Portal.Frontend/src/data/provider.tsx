@@ -24,7 +24,7 @@ export default class APIProvider extends React.Component<{}, IState> {
   }
 
   async initDataStore() {
-    const { sources } = await createStore();
+    const { sources } = await createStore.bind(this)();
 
     this.setState({ store: sources.inMemory, sources });
   }

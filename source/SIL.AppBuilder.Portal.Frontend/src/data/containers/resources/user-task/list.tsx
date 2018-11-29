@@ -12,8 +12,7 @@ export interface IProvidedProps {
   error?: any;
 }
 
-interface IProps =
-{}
+interface IProps {}
 
 export function withNetwork<TWRappedProps>(options: IOptions = {}) {
   const { include } = options;

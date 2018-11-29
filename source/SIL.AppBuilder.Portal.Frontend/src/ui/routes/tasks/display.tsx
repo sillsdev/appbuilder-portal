@@ -1,4 +1,4 @@
-import React = require("react");
+import * as React from 'react';
 import { WithDataProps } from "react-orbitjs";
 
 import { IUserTaskListProps } from '@data/containers/resources/user-task';

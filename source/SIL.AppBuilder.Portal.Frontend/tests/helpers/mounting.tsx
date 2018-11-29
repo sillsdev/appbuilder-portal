@@ -14,9 +14,7 @@ import { ScrollToTop } from '@lib/routing';
 
 
 import 'semantic-ui-css/semantic.min.css';
-import 'vendor/legacy-support';
 import '@ui/styles/app.scss';
-import '@ui/../global-config';
 
 
 import i18n from '../../src/translations';
