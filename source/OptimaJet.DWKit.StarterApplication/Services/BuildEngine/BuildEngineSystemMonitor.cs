@@ -114,6 +114,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         private bool CheckConnection(SystemStatus systemEntry)
         {
+            if (systemEntry.BuildEngineUrl is null || systemEntry.BuildEngineApiAccessToken is null)
+            {
+                return false;
+            }
             BuildEngineApi.SetEndpoint(systemEntry.BuildEngineUrl, systemEntry.BuildEngineApiAccessToken);
             var response = BuildEngineApi.SystemCheck();
             if (response == System.Net.HttpStatusCode.OK)

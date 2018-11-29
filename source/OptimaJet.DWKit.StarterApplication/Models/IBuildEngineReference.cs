@@ -13,7 +13,12 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public bool Equals(IBuildEngineReference x, IBuildEngineReference y)
         {
             if (Object.ReferenceEquals(x, y)) return true;
-            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+            if (x is null
+                || y is null
+                || x.BuildEngineUrl is null
+                || y.BuildEngineUrl is null
+                || x.BuildEngineApiAccessToken is null
+                || y.BuildEngineApiAccessToken is null)
             {
                 return false;
             }
@@ -22,12 +27,13 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         public int GetHashCode(IBuildEngineReference obj)
         {
-            if (obj == null)
+            if (obj is null
+                || obj.BuildEngineUrl is null
+                || obj.BuildEngineApiAccessToken is null)
             {
                 return 0;
             }
-
-            return 37 * obj.BuildEngineUrl.GetHashCode() + 19 * obj.BuildEngineApiAccessToken.GetHashCode();
+            return (37 * obj.BuildEngineUrl.GetHashCode()) + (19 * obj.BuildEngineApiAccessToken.GetHashCode());
         }
     }
 

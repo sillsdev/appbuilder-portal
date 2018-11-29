@@ -128,10 +128,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 Channel = channel
             };
             ClearRecurringJob(product.Id);
-            SetBuildEngineEndpoint(product.Project.Organization);
-            var releaseResponse = BuildEngineApi.CreateRelease(product.WorkflowJobId,
-                                                               product.WorkflowBuildId,
-                                                               release);
+            ReleaseResponse releaseResponse = null;
+            if (SetBuildEngineEndpoint(product.Project.Organization))
+            {
+                releaseResponse = BuildEngineApi.CreateRelease(product.WorkflowJobId,
+                                                                   product.WorkflowBuildId,
+                                                                   release);
+            }
             if ((releaseResponse != null) && (releaseResponse.Id != 0))
             {
                 product.WorkflowPublishId = releaseResponse.Id;
@@ -178,10 +181,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected ReleaseResponse GetBuildEngineRelease(Product product)
         {
-            SetBuildEngineEndpoint(product.Project.Organization);
-            var releaseResponse = BuildEngineApi.GetRelease(product.WorkflowJobId,
-                                                            product.WorkflowBuildId,
-                                                            product.WorkflowPublishId);
+            ReleaseResponse releaseResponse = null;
+            if (SetBuildEngineEndpoint(product.Project.Organization))
+            {
+                releaseResponse = BuildEngineApi.GetRelease(product.WorkflowJobId,
+                                                                product.WorkflowBuildId,
+                                                                product.WorkflowPublishId);
+            }
             return releaseResponse;
         }
         protected String GetHangfireToken(Guid productId)
