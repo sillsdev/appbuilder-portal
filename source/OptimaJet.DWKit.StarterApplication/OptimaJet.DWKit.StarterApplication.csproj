@@ -18,10 +18,6 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Project</StartAction>
-    <EnvironmentVariables>
-      <Variable name="ASPNETCORE_ENVIRONMENT" value="Development" />
-      <Variable name="ASPNETCORE_ENVIRONMENT" value="Development" />
-    </EnvironmentVariables>
     <LaunchBrowser>false</LaunchBrowser>
     <ApplicationURL>http://localhost:5000</ApplicationURL>
   </PropertyGroup>
@@ -63,6 +59,9 @@
     <PackageReference Include="Hangfire.AspNetCore" Version="1.6.20" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.4.8.2" />
     <PackageReference Include="JsonApiDotNetCore" Version="3.0.0-beta7" />
+    <PackageReference Include="I18Next.Net.AspNetCore" Version="0.6.1" />
+    <PackageReference Include="I18Next.Net" Version="0.6.1" />
+    <PackageReference Include="I18Next.Net.Extensions" Version="0.6.1" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
@@ -90,10 +89,17 @@
     <Folder Include="Repositories\Background\" />
     <Folder Include="Services\Workflow\" />
     <Folder Include="Forms\GroupMemberships\" />
+    <Folder Include="source\" />
+    <Folder Include="source\locales\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services\CurrentUserMemberships.cs" />
     <Compile Remove="Services\Contracts\ICurrentUserOrganizationsContext.cs" />
     <Compile Remove="Services\Contracts\ICurrentUserMembershipsContext.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Templates\Notification.cshtml" />
+    <Content Remove="source\locales\es-419.json" />
+    <Content Remove="source\locales\fr-FR.json" />
   </ItemGroup>
 </Project>
