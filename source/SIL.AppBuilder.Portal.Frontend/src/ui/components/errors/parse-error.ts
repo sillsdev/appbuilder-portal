@@ -22,7 +22,7 @@ export function parseError(error: any): ParsedError {
   }
 
   const errorDetail = error.data && error.data.errors && error.data.errors.length > 0 && error.data.errors[0].detail;
-  
+
   if( errorDetail ) {
     return {
       title: errorDetail
