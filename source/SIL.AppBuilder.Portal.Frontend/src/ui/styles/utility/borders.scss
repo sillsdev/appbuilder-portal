@@ -21,7 +21,7 @@
   }
 
   .thin-bottom-border#{$modifier} {
-    border-bottom: 1px solid $border-color;
+    border-bottom: 1px solid $border-color !important;
   }
 
   @each $position in $positions {

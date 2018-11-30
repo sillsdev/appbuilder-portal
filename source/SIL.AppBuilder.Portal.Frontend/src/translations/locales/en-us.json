@@ -329,12 +329,15 @@
       "organizations": {
         "title": "Organizations",
         "name": "Organization Name",
+        "owner": "Owner",
         "add": "Add Organization",
+        "edit": "Edit Organization",
         "websiteURL": "Website URL",
         "buildEngineURL": "Build Engine URL",
         "accessToken": "Build Engine API Access Token",
         "logoURL": "Logo URL",
-        "publicByDefault": "Public By Default"
+        "publicByDefault": "Public By Default",
+        "publicByDefaultDescription": "Projects created under this organization are set to public by default"
       }
     }
   }

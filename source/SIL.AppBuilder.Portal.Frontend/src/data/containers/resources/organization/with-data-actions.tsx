@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import {
   defaultOptions,
@@ -7,18 +8,20 @@ import {
   ProductDefinitionResource,
   OrganizationProductDefinitionResource,
   OrganizationStoreResource,
+  StoreResource,
+  UserResource,
   relationshipFor
 } from '@data';
 
-import { requireProps } from '@lib/debug';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProvidedProps {
-  createRecord: (attributes: OrganizationAttributes) => Promise<any>;
+  createRecord: (attributes: OrganizationAttributes, relationships) => Promise<any>;
   updateAttribute: (attribute: string, value: any) => Promise<any>;
   updateAttributes: (attrs: OrganizationAttributes) => any;
+  updateOwner: (owner: UserResource) => any;
   updateProductDefinition: (productDefinition: ProductDefinitionResource) => any;
+  updateStore: (store: StoreResource) => any;
 }
 
 interface IOwnProps {
@@ -52,14 +55,15 @@ export function withDataActions<T>(WrappedComponent) {
 
   class OrganizationDataActionWrapper extends React.Component<IProps & T> {
 
-    createRecord = async (payload: OrganizationAttributes) => {
+    createRecord = async (attributes: OrganizationAttributes, relationships) => {
 
       const { dataStore } = this.props;
 
       await dataStore.update(
         q => q.addRecord({
           type: 'organization',
-          attributes: payload
+          attributes,
+          relationships
         }),
         defaultOptions()
       );
@@ -82,6 +86,17 @@ export function withDataActions<T>(WrappedComponent) {
         q.replaceRecord({ id, type, attributes }),
         defaultOptions()
       );
+    }
+
+    updateOwner = (owner) => {
+
+      const { organization, dataStore } = this.props;
+
+      return dataStore.update(q =>
+        q.replaceRelatedRecord(organization,'owner',owner),
+        defaultOptions()
+      );
+
     }
 
     updateProductDefinition = (productDefinition) => {
@@ -147,6 +162,7 @@ export function withDataActions<T>(WrappedComponent) {
         createRecord: this.createRecord,
         updateAttributes: this.updateAttributes,
         updateAttribute: this.updateAttribute,
+        updateOwner: this.updateOwner,
         updateProductDefinition: this.updateProductDefinition,
         updateStore: this.updateStore
       };
