@@ -47,6 +47,6 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public DateTime? DatePublished { get; set; }
 
         [HasMany("product-artifacts", Link.None)]
-        public virtual List<ProductArtifact> ProductArtifacts { get; set; }
+        public virtual List<ProductBuild> ProductBuilds { get; set; }
     }
 }
