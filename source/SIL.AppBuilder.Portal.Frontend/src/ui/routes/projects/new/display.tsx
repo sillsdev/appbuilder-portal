@@ -75,7 +75,7 @@ export default class Display extends React.Component<IProps, IState> {
       history.push(`/projects/${id}`);
 
     } catch (e) {
-      const message = e.data && e.data.errors && e.data.errors[0] && e.data.errors[0].detail || e.message
+      const message = (e.data && e.data.errors && e.data.errors.lenght > 0 && e.data.errors[0].detail) || e.message;
       toast.error(t('errors.generic', { errorMessage: message }));
     }
 
