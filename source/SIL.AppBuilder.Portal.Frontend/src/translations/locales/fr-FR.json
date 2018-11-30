@@ -220,7 +220,7 @@
       "unpublished": "Unpublished",
       "noArtifacts": "No artifacts",
       "rebuild": "rebuild",
-      "creationInProgress": "You can't add products to this project until it finish creating the workflow. Please refresh in a while."
+      "creationInProgress": "There are server resources being created for this project.  Products cannot be added yet. Please refresh in a few minutes."
     },
     "settings": {
       "title": "Settings",
