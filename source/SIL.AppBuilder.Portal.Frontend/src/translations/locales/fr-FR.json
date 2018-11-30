@@ -220,7 +220,7 @@
       "unpublished": "Unpublished",
       "noArtifacts": "No artifacts",
       "rebuild": "rebuild",
-      "creationInProgress": "There are server resources being created for this project.  Products cannot be added yet. Please refresh in a few minutes."
+      "creationInProgress": "Pending: You cannot add a product until the project setup has been completed."
     },
     "settings": {
       "title": "Settings",
