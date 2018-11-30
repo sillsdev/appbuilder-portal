@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { DWKitForm } from "@assets/vendor/dwkit/optimajet-form.js";
 import {
   ApplicationRouter, NotificationComponent, FormContent,
@@ -13,14 +12,6 @@ import { requireAuth } from '@lib/auth';
 import { withCurrentUser } from '~/data/containers/with-current-user';
 import { withLayout } from '@ui/components/layout';
 import { attributesFor } from '~/data';
-
-import * as $ from '@assets/vendor/dwkit/jquery.js';
-window.$ = window.jQuery = $;
-import '@assets/vendor/dwkit/konva.min.js';
-import '@assets/vendor/dwkit/ace.js';
-import '@assets/vendor/dwkit/Chart.min.js';
-import '@assets/vendor/dwkit/jquery.auto-complete.min.js';
-import '@assets/vendor/dwkit/jquery.loadingModal.min.js';
 
 import '~/global-config';
 
@@ -44,6 +35,7 @@ window.Pace = {
 export class App extends React.Component {
   constructor(props) {
     super(props);
+    console.log('jQuery', $);
     this.state = {
       pagekey: 0
     };

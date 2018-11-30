@@ -19,32 +19,8 @@ import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-source';
 
 import ErrorRootRoute from '@ui/routes/errors';
-import { PageLoader as Loader } from '@ui/components/loaders';
-import { ErrorBoundary } from '@ui/components/errors';
 
-const WithRouteMatchingAny = withRouter(props => {
-  const { match: { path } } = props;
-  const dwKitPaths = ['/form', '/flow'];
-  const isMatch = dwKitPaths
-    .filter(pathRoot => new RegExp(`^${pathRoot}`).test(path))
-    .length > 0;
-
-  console.log('isMatch0,', isMatch);
-
-  if (isMatch) {
-    const LazyWorkflows = React.lazy(() => import(/* webpackChunkName: "workflow/index", webpackMode: "lazy" */ './workflow/index'));
-
-    return (
-      <React.Suspense fallback={<Loader />}>
-        <ErrorBoundary>
-          <LazyWorkflows />
-        </ErrorBoundary>
-      </React.Suspense>
-    );
-  }
-
-  return null;
-});
+import Workflow from './workflow';
 
 export default class RootPage extends React.Component {
   render() {
@@ -75,8 +51,7 @@ export default class RootPage extends React.Component {
 
             <Route path={openSourcePath} component={OpenSourceRoute} />
 
-            {/* Find a way to make this asyncily loaded based on path */}
-            <WithRouteMatchingAny />
+            <Workflow />
 
 
             <Route component={ErrorRootRoute} />

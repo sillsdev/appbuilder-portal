@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { compose } from 'recompose';
-
 import { OrganizationAttributes } from '@data/models/organization';
 import ErrorHeader from '@ui/components/errors/header-message';
+import { withTranslations, i18nProps } from '~/lib/i18n';
 
 export interface IProps {
   token: string;
@@ -71,4 +69,4 @@ class InviteOrganizationDisplay extends React.Component<IProps & i18nProps, ISta
   }
 }
 
-export  default translate('translations')(InviteOrganizationDisplay);
+export default withTranslations(InviteOrganizationDisplay);

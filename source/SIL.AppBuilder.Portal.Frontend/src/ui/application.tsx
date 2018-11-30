@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 
 import { I18nextProvider } from 'react-i18next';
 
@@ -26,15 +26,22 @@ export default class Application extends React.Component<IProps> {
   render() {
     const { initialState, history } = this.props;
 
+    const Router = history ? GenericRouter : BrowserRouter;
+    const routerProps = {};
+
+    if (history) {
+      routerProps.history = history;
+    }
+
     return (
       <I18nextProvider i18n={i18n}>
         <DataProvider>
           <ReduxProvider initialState={initialState || {}}>
-            <BrowserRouter>
+            <Router { ...routerProps }>
               <ScrollToTop>
                 <RootRoute />
               </ScrollToTop>
-            </BrowserRouter>
+            </Router>
           </ReduxProvider>
         </DataProvider>
       </I18nextProvider>

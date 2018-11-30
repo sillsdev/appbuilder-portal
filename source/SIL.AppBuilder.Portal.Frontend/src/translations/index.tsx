@@ -1,15 +1,13 @@
-import * as i18n from 'i18next';
+import i18n from 'i18next';
 import * as ICU from 'i18next-icu';
+import { reactI18nextModule } from "react-i18next";
+
 // import * as Backend from 'i18next-xhr-backend';
 import * as LanguageDetector from 'i18next-browser-languagedetector';
 // import { reactI18nextModule } from 'react-i18next';
 
-import * as enUs from './locales/en-us.json';
-import * as esLa from './locales/es-419.json';
-
-const localTranslations = {
-  'en-US': { translations: enUs },
-};
+import enUs from './locales/en-us.json';
+import esLa from './locales/es-419.json';
 
 i18n
   // https://github.com/i18next/i18next-icu
@@ -18,30 +16,28 @@ i18n
   // .use(Backend)
   // https://github.com/i18next/i18next-browser-languageDetector
   .use(LanguageDetector)
+  .use(reactI18nextModule)
   .init({
     resources: {},
     fallbackLng: 'en-US',
+    // lowerCaseLng: true,
+    // nsSeparator: false,
+    // keySeparator: false,
 
     // common namespace for the app
     ns: ['translations'],
     defaultNS: 'translations',
 
-    /* debug: true, */
+    // debug: true,
 
     interpolation: {
       // react already does escaping
       escapeValue: false,
     },
-
-    react: {
-      wait: true,
-      // bindI18n: 'languageChanged loaded',
-      // bindStore: 'added removed'
-    }
   });
 
-i18n.default.addResourceBundle('es-419', 'translations', esLa);
-i18n.default.addResourceBundle('en-US', 'translations', enUs);
+i18n.addResourceBundle('es-419', 'translations', esLa, true, true);
+i18n.addResourceBundle('en-US', 'translations', enUs, true, true);
 
 export default i18n;
 

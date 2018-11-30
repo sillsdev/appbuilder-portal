@@ -11,7 +11,7 @@ import page from './page';
 describe('Integration | Component | InviteOrganizationDisplay', () => {
   let fakeSubmit;
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     fakeSubmit = sinon.spy();
     await mountWithContext(() => <Form onSubmit={fakeSubmit}/>);
   });
