@@ -10,7 +10,7 @@ export function parseError(error: any): ParsedError {
   if( errorDetail ) {
     return {
       title: errorDetail
-    }
+    };
   }
   if (error instanceof RecordNotFoundException) {
     return {
