@@ -77,7 +77,7 @@ class OrganizationForm extends React.Component<IProps, IState> {
         publicByDefault: false,
         owner: null,
         ownerError: ''
-      }
+      };
     }
 
   }
@@ -98,7 +98,7 @@ class OrganizationForm extends React.Component<IProps, IState> {
     const { onSubmit } = this.props;
 
     if (this.isValidForm()) {
-      onSubmit(this.state, this.cleanForm)
+      onSubmit(this.state, this.cleanForm);
     }
   }
 
@@ -171,9 +171,8 @@ class OrganizationForm extends React.Component<IProps, IState> {
                   <Dropdown.Menu>
                     {
                       users.map((u, i) => {
-                        const { givenName, familyName } = attributesFor(u);
-                        const name = `${givenName} ${familyName}`;
-                        return <Dropdown.Item key={i} text={name} onClick={this.ownerSelection(u)} />
+                        const { name: fullName } = attributesFor(u);
+                        return <Dropdown.Item key={i} text={fullName} onClick={this.ownerSelection(u)} />;
                       })
                     }
                   </Dropdown.Menu>

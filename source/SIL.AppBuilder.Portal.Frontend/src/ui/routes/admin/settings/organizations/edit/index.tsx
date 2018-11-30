@@ -61,7 +61,7 @@ class EditOrganization extends React.Component<IProps> {
       owner,
       onSubmit: this.update,
       onCancel: this.redirectToList
-    }
+    };
 
     return <OrganizationForm {...organizationProps} />;
   }

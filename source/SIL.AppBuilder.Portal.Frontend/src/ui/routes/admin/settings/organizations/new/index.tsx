@@ -51,7 +51,7 @@ class NewOrganization extends React.Component<IProps> {
     const organizationProps = {
       onSubmit: this.save,
       onCancel: this.redirectToList
-    }
+    };
 
     return <OrganizationForm {...organizationProps}/>;
   }

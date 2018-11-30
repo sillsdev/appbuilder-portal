@@ -8,7 +8,7 @@ import { Switch, Route } from 'react-router-dom';
 
 export const listPathName = '/admin/settings/organizations';
 export const addOrganizationPathName = '/admin/settings/organizations/new';
-export const editOrganizationPathName = '/admin/settings/organizations/:orgId/edit'
+export const editOrganizationPathName = '/admin/settings/organizations/:orgId/edit';
 
 class OrganizationRoute extends React.Component {
 
