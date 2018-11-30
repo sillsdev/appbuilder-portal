@@ -218,7 +218,7 @@
       "unpublished": "Unpublished",
       "noArtifacts": "No artifacts",
       "rebuild": "rebuild",
-      "creationInProgress": "You cannot add a product until the project setup has been completed. Please refresh in a while."
+      "creationInProgress": "Pending: You cannot add a product until the project setup has been completed."
     },
     "settings": {
       "title": "Settings",
