@@ -42,10 +42,10 @@
         "size": "medium"
       },
       {
-        "key": "message_1",
-        "data-buildertype": "message",
-        "header": "Instructions",
-        "content": "Make any changes needed in the app.  Click \"Send\" in the \"Publishing\" app configuration page and successfully upload the data to the app publishing repository.  Click Continue to proceed to build the product."
+        "key": "staticcontent_1",
+        "data-buildertype": "staticcontent",
+        "content": "<h3>Instructions</h3>\n<ul>\n<li>Make any changes needed in the app. </li>\n<li>Click \"Send\" in the \"Publishing\" app configuration page and successfully upload the data to the app publishing repository.\n</li>\n\n",
+        "isHtml": true
       }
     ]
   }
