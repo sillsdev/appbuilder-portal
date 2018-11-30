@@ -1,5 +1,6 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
+import Convergence from '@bigtest/convergence';
 import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers/index';
@@ -12,10 +13,16 @@ describe('Acceptance | Project View | Products', () => {
   useFakeAuthentication();
 
   describe('Show list of products', () => {
-
+    let customizer: (server, req, resp) => Promise<void>;
+    const requestCustomizer = async (server, req, resp) => {
+      if (customizer) {
+        await customizer(server, req, resp);
+      }
+    };
     beforeEach(function () {
-      this.mockGet(200, 'users', { data: [] });
-      this.mockGet(200, '/groups', { data: [] });
+      customizer = null;
+      this.mockGet(200, 'users', { data: [] }, requestCustomizer);
+      this.mockGet(200, '/groups', { data: [] }, requestCustomizer);
       this.mockGet(200, 'projects/1', {
         data: {
           type: 'projects',
@@ -76,7 +83,7 @@ describe('Acceptance | Project View | Products', () => {
             }
           }
         ]
-      });
+      }, requestCustomizer);
       this.mockPost(200, 'products', {
         data: {
           id: 1,
@@ -92,7 +99,7 @@ describe('Acceptance | Project View | Products', () => {
             'product-definition': { data: { id: 2, type: 'product-definitions' } }
           }
         }
-      });
+      }, requestCustomizer);
     });
 
     beforeEach(async function () {
@@ -110,17 +117,12 @@ describe('Acceptance | Project View | Products', () => {
       expect(productsText).to.contain('Publish Android app to S3');
     });
 
-    describe('select a new product', () => {
+    describe('manage products', () => {
 
       beforeEach(async function() {
-        await page.productsInteractor.clickManageProductButton();
-      });
-
-      it('popup is visible', () => {
-        const interactor = page.productsInteractor.modalInteractor;
-        expect(
-          interactor.$root.classList.contains('visible')
-        ).to.be.true;
+        await new Convergence()
+          .do(() => page.productsInteractor.clickManageProductButton() )
+          .when( () => page.productsInteractor.modalInteractor.isVisible );
       });
 
       it('has render product definitions',() => {
@@ -130,24 +132,64 @@ describe('Acceptance | Project View | Products', () => {
         expect(itemTexts).to.contain('Publish Android App to Google Play');
       });
 
-      it('project product is selected',() => {
+      it.always('project product is selected',() => {
         const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
         expect(selector.items(0).isChecked).to.be.true;
         expect(selector.items(1).isChecked).to.be.false;
       });
 
-      beforeEach(async function() {
-        await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+      describe("select a new product", () => {
+        beforeEach(async function () {
+          await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+        });
+
+        it('product is added to product list', () => {
+          const productList = page.productsInteractor.itemsText();
+          const productsText = productList.map(item => item.text);
+          expect(productsText).to.contain('Publish Android app to S3');
+          expect(productsText).to.contain('Publish Android App to Google Play');
+        });
+
+        it('project product is selected',() => {
+          const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
+          expect(selector.items(0).isChecked).to.be.true;
+          expect(selector.items(1).isChecked).to.be.true;
+        });
       });
 
-      it('product is added to product list', () => {
-        const productList = page.productsInteractor.itemsText();
-        const productsText = productList.map(item => item.text);
+      describe("ignores requests until previous request has completed.", () => {
+        let requestCount;
+        beforeEach(async function () {
+          requestCount = 0;
+          customizer = async (server, req, resp) => {
+            ++requestCount;
+            console.log(req);
+            await server.timeout(1000);
+          };
+          console.log(`select the product start ${Date.now().valueOf()}`);
+          await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+          await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+          await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+          console.log(`select the product finished ${Date.now().valueOf()}`);
+        });
 
-        expect(productsText).to.contain('Publish Android app to S3');
-        expect(productsText).to.contain('Publish Android App to Google Play');
+        it("is only requested once.", () => {
+          expect(requestCount).to.equal(1);
+        });
+
+        it('product is added to product list', () => {
+          const productList = page.productsInteractor.itemsText();
+          const productsText = productList.map(item => item.text);
+          expect(productsText).to.contain('Publish Android app to S3');
+          expect(productsText).to.contain('Publish Android App to Google Play');
+        });
+
+        it('project product is selected',() => {
+          const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
+          expect(selector.items(0).isChecked).to.be.true;
+          expect(selector.items(1).isChecked).to.be.true;
+        });
       });
-
     });
 
   });

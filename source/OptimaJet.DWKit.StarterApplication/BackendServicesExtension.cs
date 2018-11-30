@@ -101,6 +101,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<BuildEngineSystemMonitor>();
             services.AddScoped<BuildEngineProjectService>();
             services.AddScoped<BuildEngineProductService>();
+            services.AddScoped<BuildEngineBuildService>();
 
             services.AddHangfire(config =>
                                  config.UsePostgreSqlStorage(configuration["ConnectionStrings:default"]));

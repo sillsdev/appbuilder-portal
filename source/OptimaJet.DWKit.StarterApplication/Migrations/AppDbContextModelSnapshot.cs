@@ -335,6 +335,32 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.ToTable("ProductDefinitions");
                 });
 
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductTransition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AllowedUserNames");
+
+                    b.Property<string>("Command");
+
+                    b.Property<DateTime?>("DateTransition");
+
+                    b.Property<string>("DestinationState");
+
+                    b.Property<string>("InitialState");
+
+                    b.Property<Guid>("ProductId");
+
+                    b.Property<Guid?>("WorkflowUserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductTransitions");
+                });
+
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -726,6 +752,14 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.WorkflowDefinition", "Workflow")
                         .WithMany()
                         .HasForeignKey("WorkflowId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductTransition", b =>
+                {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

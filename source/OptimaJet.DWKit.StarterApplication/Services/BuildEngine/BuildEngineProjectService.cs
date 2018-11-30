@@ -31,10 +31,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             SendNotificationService = sendNotificationService;
             ProjectRepository = projectRepository;
         }
-        public static void CreateBuildEngineProject(int projectId)
-        {
-            BackgroundJob.Enqueue<BuildEngineProjectService>(service => service.ManageProject(projectId));
-        }
+
         public void ManageProject(int projectId)
         {
             // Hangfire methods cannot be async, hence the Wait
@@ -105,8 +102,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 PublishingKey = project.Owner.PublishingKey,
                 ProjectName = project.Name
             };
-            SetBuildEngineEndpoint(project.Organization);
-            var projectResponse = BuildEngineApi.CreateProject(buildEngineProject);
+            ProjectResponse projectResponse = null;
+            if (SetBuildEngineEndpoint(project.Organization))
+            {
+                projectResponse = BuildEngineApi.CreateProject(buildEngineProject);
+            }
             if ((projectResponse != null) && (projectResponse.Id != 0))
             {
                 // Set state to active?
@@ -145,7 +145,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected ProjectResponse GetBuildEngineProject(Project project)
         {
-            SetBuildEngineEndpoint(project.Organization);
+            if (!SetBuildEngineEndpoint(project.Organization))
+            {
+                return null;
+            }
             var projectResponse = BuildEngineApi.GetProject(project.WorkflowProjectId);
             return projectResponse;
         }
@@ -226,9 +229,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 UserId = project.Owner.Email,
                 PublishingKey = project.Owner.PublishingKey,
             };
-            SetBuildEngineEndpoint(project.Organization);
-            var projectResponse = BuildEngineApi.UpdateProject(project.WorkflowProjectId, buildEngineProject);
-
+            if (SetBuildEngineEndpoint(project.Organization))
+            {
+                var projectResponse = BuildEngineApi.UpdateProject(project.WorkflowProjectId, buildEngineProject);
+            }
         }
     }
 }

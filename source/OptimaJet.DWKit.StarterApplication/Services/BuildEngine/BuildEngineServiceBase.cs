@@ -35,9 +35,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
             return systemStatus.SystemAvailable;
         }
-        protected void SetBuildEngineEndpoint(Organization organization)
+        protected bool SetBuildEngineEndpoint(Organization organization)
         {
+            if (organization.BuildEngineUrl is null || organization.BuildEngineApiAccessToken is null)
+            {
+                return false;
+            }
             BuildEngineApi.SetEndpoint(organization.BuildEngineUrl, organization.BuildEngineApiAccessToken);
+            return true;
         }
 
     }

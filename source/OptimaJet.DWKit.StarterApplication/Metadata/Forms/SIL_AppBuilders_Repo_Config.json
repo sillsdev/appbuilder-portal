@@ -1,0 +1,60 @@
+[
+  {
+    "key": "workflowbar",
+    "data-buildertype": "workflowbar",
+    "events": {
+      "onCommandClick": {
+        "active": true,
+        "actions": [
+          "workflowExecuteCommand"
+        ]
+      },
+      "onSetStateClick": {
+        "active": true,
+        "actions": [
+          "workflowSetState"
+        ]
+      }
+    },
+    "blockSetState": true
+  },
+  {
+    "key": "form_2",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "textarea_comment",
+        "data-buildertype": "textarea",
+        "label": "Comment",
+        "fluid": true,
+        "rows": "2"
+      }
+    ]
+  },
+  {
+    "key": "form_1",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "header_1",
+        "data-buildertype": "header",
+        "content": "Repository Configuration",
+        "size": "medium"
+      },
+      {
+        "key": "input_repository_location",
+        "data-buildertype": "input",
+        "label": "Repository Location",
+        "fluid": true,
+        "onChangeTimeout": 200,
+        "readOnly": true
+      },
+      {
+        "key": "staticcontent_1",
+        "data-buildertype": "staticcontent",
+        "content": "<h3>Instructions</h3>\n<ul>\n<li>Paste the above \"Repository Location\" into the \"Publishing\" app configuration page. </li>\n<li>Click \"Send\" in the \"Publishing\" app configuration page and successfully upload the data to the app publishing repository.\n</li>\n\n",
+        "isHtml": true
+      }
+    ]
+  }
+]
