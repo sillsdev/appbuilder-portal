@@ -10,7 +10,7 @@ const getFirstJSONAPIError = (error) => {
     error.data.errors &&
     error.data.errors.length > 0 &&
     error.data.errors[0].detail;
-}
+};
 
 export function parseError(error: any): ParsedError {
 
