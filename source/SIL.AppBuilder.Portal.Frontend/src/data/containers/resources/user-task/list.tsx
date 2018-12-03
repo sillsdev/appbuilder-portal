@@ -19,10 +19,6 @@ export function withNetwork<TWRappedProps>(options: IOptions = {}) {
 
   return WrappedComponent => {
     function mapNetworkToProps(passedProps: TWRappedProps & IProps) {
-      const {
-
-      } = passedProps;
-
       const requestOptions = buildOptions({
         include: [
           'product.project',
