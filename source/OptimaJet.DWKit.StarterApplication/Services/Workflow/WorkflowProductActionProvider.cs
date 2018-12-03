@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using OptimaJet.DWKit.Core;
-using OptimaJet.DWKit.Core.Model;
 using OptimaJet.Workflow.Core.Model;
 using OptimaJet.Workflow.Core.Runtime;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +11,14 @@ using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using Hangfire;
+using OptimaJet.DWKit.Application;
+using OptimaJet.DWKit.Core.Model;
+using OptimaJet.DWKit.Core;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
-	public class WorkflowProductActionProvider : IWorkflowActionProvider
+    public class WorkflowProductActionProvider : IWorkflowActionProvider
     {
         private readonly Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>> _actions = new Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>>();
 
@@ -30,22 +32,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             new Dictionary<string, Func<ProcessInstance, WorkflowRuntime, string, CancellationToken, Task<bool>>>();
 
         public IServiceProvider ServiceProvider { get; }
+        public IBackgroundJobClient BackgroundJobClient { get; }
 
-        public WorkflowProductActionProvider(IServiceProvider serviceProvider)
+        public WorkflowProductActionProvider(IServiceProvider serviceProvider, IBackgroundJobClient backgroundJobClient)
         {
             ServiceProvider = serviceProvider;
+            BackgroundJobClient = backgroundJobClient;
 
             //Register your actions in _actions and _asyncActions dictionaries
-            //_asyncActions.Add("WriteTransitionHistory", WriteTransitionHistoryAsync);
-            //_asyncActions.Add("UpdateTransitionHistory", UpdateTransitionHistoryAsync);
+            _asyncActions.Add("WriteProductTransition", WriteProductTransitionAsync);
+            _asyncActions.Add("UpdateProductTransition", UpdateProductTransitionAsync);
             _asyncActions.Add("SendOwnerNotification", SendOwnerNotificationAsync);
             _asyncActions.Add("BuildEngine_CreateProduct", BuildEngineCreateProductAsync);
+            _asyncActions.Add("BuildEngine_BuildProduct", BuildEngineBuildProductAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
             //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync); 
             _asyncConditions.Add("BuildEngine_ProductCreated", BuildEngineProductCreated);
+            _asyncConditions.Add("BuildEngine_BuildCompleted", BuildEngineBuildCompleted);
+            _asyncConditions.Add("BuildEngine_BuildFailed", BuildEngineBuildFailed);
         }
 
+        //
+        // Conditions
+        //
         private async Task<bool> BuildEngineProductCreated(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
             using (var scope = ServiceProvider.CreateScope())
@@ -57,6 +67,48 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
+        private async Task<bool> BuildEngineBuildCompleted(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                Log.Information($"BuildEngineBuildCompleted: workflowJobId={product.WorkflowBuildId}, productId={product.Id}, projectName={product.Project.Name}");
+
+                bool buildCompleted = false;
+                if (product.WorkflowBuildId != 0)
+                {
+                    var service = scope.ServiceProvider.GetRequiredService<BuildEngineBuildService>();
+                    var status = await service.GetStatusAsync(product.Id);
+                    buildCompleted = (status == BuildEngineStatus.Success);
+                }
+                return buildCompleted;
+            }
+        }
+
+        private async Task<bool> BuildEngineBuildFailed(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                Log.Information($"BuildEngineProductCreated: workflowJobId={product.WorkflowBuildId}, productId={product.Id}, projectName={product.Project.Name}");
+
+                bool buildFailed = false;
+                if (product.WorkflowBuildId != 0)
+                {
+                    var service = scope.ServiceProvider.GetRequiredService<BuildEngineBuildService>();
+                    var status = await service.GetStatusAsync(product.Id);
+                    buildFailed = (status == BuildEngineStatus.Failure);
+                }
+                return buildFailed;
+            }
+        }
+
+
+        //
+        // Actions
+        //
         private async Task BuildEngineCreateProductAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
             using (var scope = ServiceProvider.CreateScope())
@@ -65,8 +117,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 Product product = await GetProductForProcess(processInstance, productRepository);
                 if (product.WorkflowJobId == 0) 
                 {
-                    BuildEngineProductService.CreateBuildEngineProduct(product.Id);
+                    BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ManageProduct(product.Id));
                     Log.Information($"BuildEngineCreateProduct: productId={product.Id}, projectName={product.Project.Name}");
+                }
+                else
+                {
+                    Log.Warning($"Product \"{product.Id}\" already has a BuildEngine Product \"{product.WorkflowJobId}\"");
+                }
+            }
+        }
+
+        private async Task BuildEngineBuildProductAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                if (product.WorkflowJobId != 0)
+                {
+                    BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id));
+                    Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
+                }
+                else 
+                {
+                    throw new Exception($"Product \"{product.Id}\" does not have BuildEngine Product");
                 }
             }
         }
@@ -93,6 +167,84 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 Log.Information($"SendNotification: auth0Id={owner.ExternalId}, name={owner.Name}");
             }
         }
+
+        //
+        // Actions from DWKit Samples (with name changes for Tables and Fields)
+        //
+        private async Task WriteProductTransitionAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            if (processInstance.IdentityIds == null)
+                return;
+
+            var currentstate = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.CurrentState);
+
+            var nextState = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.ExecutedActivityState);
+
+            var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
+
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var userRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<User>>();
+                var userNames = userRepository.Get()
+                    .Where(u => processInstance.IdentityIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
+                    .Select(u => u.Name).ToList();
+                var userNamesString = String.Join(',', userNames);
+                var productTransitionsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<ProductTransition>>();
+                var history = new ProductTransition
+                {
+                    ProductId = processInstance.ProcessId,
+                    AllowedUserNames = userNamesString,
+                    InitialState = currentstate,
+                    DestinationState = nextState,
+                    Command = command
+                };
+                await productTransitionsRepository.CreateAsync(history);
+            }
+        }
+
+        private async Task UpdateProductTransitionAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            if (string.IsNullOrEmpty(processInstance.CurrentCommand))
+                return;
+
+            var currentstate = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.CurrentState);
+
+            var nextState = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.ExecutedActivityState);
+
+            var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
+
+            var isTimer = !string.IsNullOrEmpty(processInstance.ExecutedTimer);
+
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productTransitionsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<ProductTransition>>();
+                var history = await productTransitionsRepository.Get()
+                    .Where(h => h.ProductId == processInstance.ProcessId
+                           && h.DateTransition == null
+                           && h.InitialState == currentstate
+                           && h.DestinationState == nextState).FirstOrDefaultAsync();
+                if (history == null)
+                {
+                    history = new ProductTransition
+                    {
+                        ProductId = processInstance.ProcessId,
+                        AllowedUserNames = String.Empty,
+                        InitialState = currentstate,
+                        DestinationState = nextState
+                    };
+                    history = await productTransitionsRepository.CreateAsync(history);
+                }
+
+                history.Command = !isTimer ? command : string.Format("Timer: {0}", processInstance.ExecutedTimer);
+                history.DateTransition = DateTime.UtcNow;
+                if (Guid.TryParse(processInstance.IdentityId, out Guid identityId))
+                {
+                    history.WorkflowUserId = identityId;
+                }
+                await productTransitionsRepository.UpdateAsync(history);
+            }
+        }
+
 
         #region Implementation of IWorkflowActionProvider
 
@@ -144,12 +296,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public List<string> GetActions()
         {
-            return _actions.Keys.Union(_asyncActions.Keys).ToList();
+            var actions = _actions.Keys.Union(_asyncActions.Keys).ToList();
+            return actions;
         }
 
         public List<string> GetConditions()
         {
-            return _conditions.Keys.Union(_asyncConditions.Keys).ToList();
+            var conditions = _conditions.Keys.Union(_asyncConditions.Keys).ToList();
+                return conditions;
         }
 
         #endregion

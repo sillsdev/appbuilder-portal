@@ -115,12 +115,10 @@ class Navigation extends React.Component<IProps & i18nProps> {
         )}
 
         { !allOrgsSelected && (
-          <RequireRole roleName={ROLE.OrganizationAdmin}>
-            <MenuItem
-              name={t('sidebar.addProject')}
-              to='/projects/new'
-              onClick={closeSidebar} />
-          </RequireRole>
+          <MenuItem
+            name={t('sidebar.addProject')}
+            to='/projects/new'
+            onClick={closeSidebar} />
         )}
 
         <hr />

@@ -50,12 +50,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public bool RoleCheck(ProcessInstance processInstance, WorkflowRuntime runtime, string identityId, string parameter)
         {
+            if (!Guid.TryParse(identityId, out Guid identity))
+            {
+                return false;
+            }
+
             var rolesModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwSecurityRole").Result;
             var role = rolesModel.GetAsync(Filter.And.Equal(parameter, "Name")).Result.FirstOrDefault();
             if (role == null)
                 return false;
             var roleUserModel = MetadataToModelConverter.GetEntityModelByModelAsync("dwV_Security_UserRole").Result;
-            return roleUserModel.GetCountAsync(Filter.And.Equal(role.GetId(), "RoleId").Equal(Guid.Parse(identityId), "UserId")).Result > 0;
+            return roleUserModel.GetCountAsync(Filter.And.Equal(role.GetId(), "RoleId").Equal(identity, "UserId")).Result > 0;
         }
 
         //

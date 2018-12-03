@@ -14,6 +14,7 @@ export interface NotifyOptions {
     text: string;
   };
 }
+
 export function show(msg: string, options: NotifyOptions) {
   try {
     notify.show(msg, options.type, options.timeout, options.color);

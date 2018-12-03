@@ -75,7 +75,7 @@ export default class Display extends React.Component<IProps, IState> {
       history.push(`/projects/${id}`);
 
     } catch (e) {
-      toast.error(t('errors.generic', { errorMessage: e.message }));
+      toast.error(e);
     }
 
     this.setState({ disableSubmit: false });

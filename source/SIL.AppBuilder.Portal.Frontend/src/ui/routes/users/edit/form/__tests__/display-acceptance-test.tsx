@@ -38,6 +38,7 @@ describe('Acceptance | Edit Profile Form', () => {
           await page.fillLastName('Name');
           await page.fillEmail('fake@domain.com');
           await page.fillPhone('997528963');
+          await page.fillPublishingKey('ssh-rsa 1234');
           await page.clickEmailNotification();
           await page.clickProfileVisibility();
         });
@@ -47,6 +48,7 @@ describe('Acceptance | Edit Profile Form', () => {
           expect(page.lastname).to.equal('Name');
           expect(page.email).to.equal('fake@domain.com');
           expect(page.phone).to.equal('997528963');
+          expect(page.publishingKeyText).to.equal('ssh-rsa 1234');
           expect(page.isEmailNotificationChecked).to.be.true;
           expect(page.profileVisibility).to.be.true;
         });
@@ -121,9 +123,5 @@ describe('Acceptance | Edit Profile Form', () => {
         expect(page.isEmailNotificationChecked).to.be.false;
       });
     });
-
   });
-
-
-
 });

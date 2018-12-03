@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.Application;
+using OptimaJet.DWKit.Core;
+using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.Workflow.Core.Runtime;
@@ -25,18 +27,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         IJobRepository<Product, Guid> ProductRepository { get; set; }
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
+        public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
         public WorkflowRuntime Runtime { get; }
 
         public WorkflowProductService(
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<UserTask> taskRepository,
             IJobRepository<User> userRepository,
+            IJobRepository<ProductTransition> productTransitionRepository,
             WorkflowRuntime runtime
         )
         {
             ProductRepository = productRepository;
             TaskRepository = taskRepository;
             UserRepository = userRepository;
+            ProductTransitionRepository = productTransitionRepository;
             Runtime = runtime;
         }
 
@@ -106,6 +111,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)
         {
+            // Clear PreExecute entries
+            var emptyItems = ProductTransitionRepository.Get()
+                .Where(pt => pt.WorkflowUserId == null && pt.ProductId == args.ProcessId)
+                .Select(pt => pt.Id).ToList();
+            foreach (var item in emptyItems)
+            {
+                await ProductTransitionRepository.DeleteAsync(item);
+            }
+            // Create PreExecute entries
+            await Runtime.PreExecuteFromCurrentActivityAsync(args.ProcessId);
+
             // Find the Product assoicated with the ProcessId
             var product = await ProductRepository.Get().Where(p => p.Id == args.ProcessId).FirstOrDefaultAsync();
             if (product == null)

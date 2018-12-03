@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
@@ -77,6 +78,12 @@ namespace OptimaJet.DWKit.StarterApplication.Models
                 .FirstOrDefault();
 
             return userRole != null;
+        }
+
+        [NotMapped]
+        public string LocaleOrDefault
+        {
+            get => Locale ?? (CultureInfo.CurrentCulture.Name ?? "en-US");
         }
     }
 }

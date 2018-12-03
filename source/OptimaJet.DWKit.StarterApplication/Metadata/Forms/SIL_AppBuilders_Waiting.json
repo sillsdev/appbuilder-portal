@@ -1,0 +1,52 @@
+[
+  {
+    "key": "container_1",
+    "data-buildertype": "container",
+    "children": [
+      {
+        "key": "form_1",
+        "data-buildertype": "form",
+        "children": [
+          {
+            "key": "header_1",
+            "data-buildertype": "header",
+            "content": "Waiting",
+            "size": "medium"
+          },
+          {
+            "key": "message_1",
+            "data-buildertype": "message",
+            "header": "Scriptoria Busy with ...",
+            "content": "Please wait while Scriptoria is working on your request."
+          },
+          {
+            "key": "formgroup_2",
+            "data-buildertype": "formgroup",
+            "widths": "custom",
+            "children": [
+              {
+                "key": "input_product_name",
+                "data-buildertype": "input",
+                "label": "Name",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-customcss": "six wide field"
+              },
+              {
+                "key": "input_description",
+                "data-buildertype": "input",
+                "label": "Description",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-customcss": "ten wide field"
+              }
+            ],
+            "widthsCustom": "16"
+          }
+        ]
+      }
+    ]
+  }
+]

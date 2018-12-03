@@ -7,10 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core;
+using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using OptimaJet.Workflow.Core.Runtime;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
+using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Utility
 {
@@ -42,11 +44,19 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             var sampleDataApiToken = GetVarOrDefault("SAMPLEDATA_BUILDENGINE_API_ACCESS_TOKEN", String.Empty);
             if (!String.IsNullOrEmpty(sampleDataApiToken))
             {
-                BackgroundJob.Enqueue<BuildEngineSystemMonitor>(service => service.SetSampleDataApiToken(sampleDataApiToken));
+                BackgroundJob.Schedule<BuildEngineSystemMonitor>(service => service.SetSampleDataApiToken(sampleDataApiToken), TimeSpan.FromSeconds(30));
             }
             RecurringJob.AddOrUpdate<BuildEngineSystemMonitor>("BuildEngineMonitor", service => service.CheckBuildEngineStatus(), Cron.MinuteInterval(5));
 
             return app;
         }
+
+        public static IApplicationBuilder UseNotifications(this IApplicationBuilder app, IConfigurationRoot configuration)
+        {
+            RecurringJob.AddOrUpdate<SendNotificationService>("SendNotificationService", service => service.NotificationEmailMonitor(), Cron.MinuteInterval(5));
+
+            return app;
+        }
+
     }
 }

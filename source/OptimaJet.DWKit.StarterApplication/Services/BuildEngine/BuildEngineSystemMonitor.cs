@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JsonApiDotNetCore.Data;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using SIL.AppBuilder.BuildEngineApiClient;
@@ -13,16 +15,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         public IJobRepository<Organization> OrganizationRepository;
         public IJobRepository<SystemStatus> SystemStatusRepository;
 
+        public IJobRepository<UserRole> UserRolesRepository { get; }
+        public SendNotificationService SendNotificationService { get; }
         public IBuildEngineApi BuildEngineApi { get; }
 
         public BuildEngineSystemMonitor(
             IJobRepository<Organization> organizationRepository,
             IJobRepository<SystemStatus> systemStatusRepository,
+            IJobRepository<UserRole> userRolesRepository,
+            SendNotificationService sendNotificationService,
             IBuildEngineApi buildEngineApi
         )
         {
             OrganizationRepository = organizationRepository;
             SystemStatusRepository = systemStatusRepository;
+            UserRolesRepository = userRolesRepository;
+            SendNotificationService = sendNotificationService;
             BuildEngineApi = buildEngineApi;
         }
         public void CheckBuildEngineStatus()
@@ -31,7 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             SyncDatabaseTablesAsync().Wait();
             CheckSystemStatusesAsync().Wait();
         }
-         private async System.Threading.Tasks.Task SyncDatabaseTablesAsync()
+        private async Task SyncDatabaseTablesAsync()
         {
             var organizations = await OrganizationRepository.GetListAsync();
             var statuses = await SystemStatusRepository.GetListAsync();
@@ -51,7 +59,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 await SystemStatusRepository.CreateAsync(newEntry);
             }
         }
-        private async System.Threading.Tasks.Task CheckSystemStatusesAsync()
+        private async Task CheckSystemStatusesAsync()
         {
             var systems = await SystemStatusRepository.GetListAsync();
             foreach (SystemStatus systemEntry in systems)
@@ -61,7 +69,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 {
                     systemEntry.SystemAvailable = available;
                     await SystemStatusRepository.UpdateAsync(systemEntry);
-                }
+                    await sendStatusUpdateNotificationAsync(systemEntry);
+                 }
             }
         }
 
@@ -105,6 +114,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         private bool CheckConnection(SystemStatus systemEntry)
         {
+            if (systemEntry.BuildEngineUrl is null || systemEntry.BuildEngineApiAccessToken is null)
+            {
+                return false;
+            }
             BuildEngineApi.SetEndpoint(systemEntry.BuildEngineUrl, systemEntry.BuildEngineApiAccessToken);
             var response = BuildEngineApi.SystemCheck();
             if (response == System.Net.HttpStatusCode.OK)
@@ -112,6 +125,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 return true;
             }
             return false;
+        }
+        protected async Task sendStatusUpdateNotificationAsync(SystemStatus systemEntry)
+        {
+            var organizations = OrganizationRepository.Get()
+                                                      .Where(o => (o.BuildEngineUrl == systemEntry.BuildEngineUrl)
+                                                             && (o.BuildEngineApiAccessToken == systemEntry.BuildEngineApiAccessToken));
+             foreach (Organization organization in organizations)
+            {
+                var messageParms = new {
+                    orgName = organization.Name,
+                    url = organization.BuildEngineUrl,
+                    token = organization.BuildEngineApiAccessToken};
+                await SendNotificationService.SendNotificationToOrgAdminsAsync(organization,
+                                                                               systemEntry.SystemAvailable ? "notifications.buildengineConnected" : "notifications.buildengineDisconnected",
+                                                                               messageParms);
+            }
         }
     }
 }

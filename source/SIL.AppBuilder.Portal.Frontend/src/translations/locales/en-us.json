@@ -10,6 +10,10 @@
     "title": "Open Source Project used in Scriptoria",
     "subtitle": "Libraries used by License"
   },
+  "notifications": {
+    "buildComplete": "The build for {projectName} has completed!",
+    "buildServerConnectionLost": "Connection to the build server has been lost!"
+  },
   "common": {
     "search": "Search",
     "noResults": "No Results...",
@@ -118,7 +122,7 @@
     "notificationSettingsTitle": "Notification Settings",
     "optOutOfEmailOption": "I want to receive email notifications",
     "sshSettingsTitle": "Manage Personal SSH Keys",
-    "sshKeyLabel": "SSH Key",
+    "sshKeyLabel": "Publishing SSH Key",
     "visibleProfile": "Profile visibility",
     "noPhone": "no phone added",
     "noTimezone": "(GMT-0)",
@@ -213,7 +217,8 @@
       "published": "Published",
       "unpublished": "Unpublished",
       "noArtifacts": "No artifacts",
-      "rebuild": "rebuild"
+      "rebuild": "rebuild",
+      "creationInProgress": "Pending: You cannot add a product until the project setup has been completed."
     },
     "settings": {
       "title": "Settings",

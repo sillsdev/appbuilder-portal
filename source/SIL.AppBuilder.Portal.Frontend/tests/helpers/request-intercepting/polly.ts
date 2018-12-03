@@ -113,6 +113,8 @@ const setup = function(config) {
     Orbit.fetch = fakeFetch.bind(window);
   };
 
+  this.server = server;
+
   // by default? stub out auth0 so that auth0/lock.js doesn't
   // try to contact auth0 during testing.
   server.options('*anypath').intercept((req, res) => {
@@ -164,4 +166,3 @@ const setup = function(config) {
   // });
 
 };
-

@@ -54,15 +54,14 @@ class Filter extends React.Component<IProps, IState> {
       updateFilter({ attribute: 'any-product-definition-id', value: id });
     }
 
-
     this.setState({ selectedProduct: value });
   }
 
   handleOrganizationChange = (value) => {
-    const { updateFilter } = this.props;
+    const { updateFilter, removeFilter } = this.props;
 
     if (value === 'all') {
-      updateFilter({ attribute: 'organization-id', value });
+      removeFilter({ attribute: 'organization-id' });
 
       return this.setState({ selectedOrganization: value });
     }

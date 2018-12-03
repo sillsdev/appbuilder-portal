@@ -23,7 +23,13 @@ module.exports = function(config) {
     reporters: [
       'mocha',
     ],
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'ChromeDebug'],
+    customLaunchers: {
+      ChromeDebug: {
+        base: 'Chrome',
+        flags: [ '--remote-debugging-port=9333']
+      }
+    },
     mime: { 'text/x-typescript': ['ts','tsx'] },
 
     files: [
@@ -78,7 +84,7 @@ module.exports = function(config) {
       'karma-mocha-reporter',
       'karma-chrome-launcher',
       'karma-firefox-launcher',
-    ],
+    ]
   });
 
   if (process.env.DETACHED) {

@@ -96,6 +96,32 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.ToTable("GroupMemberships");
                 });
 
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<DateTime?>("DateEmailSent");
+
+                    b.Property<DateTime?>("DateRead");
+
+                    b.Property<DateTime?>("DateUpdated");
+
+                    b.Property<string>("MessageId");
+
+                    b.Property<string>("MessageSubstitutionsJson");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Organization", b =>
                 {
                     b.Property<int>("Id")
@@ -307,6 +333,32 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("WorkflowId");
 
                     b.ToTable("ProductDefinitions");
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductTransition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AllowedUserNames");
+
+                    b.Property<string>("Command");
+
+                    b.Property<DateTime?>("DateTransition");
+
+                    b.Property<string>("DestinationState");
+
+                    b.Property<string>("InitialState");
+
+                    b.Property<Guid>("ProductId");
+
+                    b.Property<Guid?>("WorkflowUserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductTransitions");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Project", b =>
@@ -606,6 +658,14 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Notification", b =>
+                {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Organization", b =>
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "Owner")
@@ -692,6 +752,14 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.WorkflowDefinition", "Workflow")
                         .WithMany()
                         .HasForeignKey("WorkflowId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductTransition", b =>
+                {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

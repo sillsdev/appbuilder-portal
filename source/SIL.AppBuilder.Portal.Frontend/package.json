@@ -20,6 +20,7 @@
     "webpack:analyze": "./node_modules/.bin/webpack-bundle-analyzer dist/stats.json",
     "analyze": "yarn webpack:build:analyze && yarn webpack:analyze",
     "karma:start": "yarn karma start ./tests/karma.conf.js --fail-on-empty-test-suite",
+    "karam:debug": "yarn karama start ./tests/karma.conf.js --fail-on-empty-test-suite --browsers ChromeDebug",
     "test:watch": "yarn karma:start",
     "test:watch:headless": "CI=true yarn karma:start",
     "test:watch:detached": "DETACHED=true yarn karma:start",

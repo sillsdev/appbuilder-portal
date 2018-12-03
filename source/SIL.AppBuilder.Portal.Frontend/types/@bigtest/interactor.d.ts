@@ -6,7 +6,7 @@ export function isPresent(selector: string): boolean;
 export function selectable(selector: string): (text: string) => Promise<void>;
 export function fillable(selector: string): (text: string) => Promise<void>;
 export function isHidden(selector: string): boolean;
-export function hasClass(selector: string, className: string): boolean;
+export function hasClass(selector?: string, className?: string): boolean;
 export function collection(selector: string, interactors?: any): (index?: number) => any;
 export function value(selector: string): string;
 export function is(selector: string): boolean;
