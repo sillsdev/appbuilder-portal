@@ -19,7 +19,7 @@ export function show(msg: string, options: NotifyOptions) {
   try {
     notify.show(msg, options.type, options.timeout, options.color);
   } catch (e) {
-    console.log('Somthing horrible happened', e);
+    console.error('Something horrible happened', e);
   }
 }
 
