@@ -105,6 +105,7 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
           relationshipsToFind: mapResult,
         };
       }),
+      withOrbit({}),
     )(WithRelationship);
   };
 }
