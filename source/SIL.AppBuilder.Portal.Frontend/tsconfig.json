@@ -9,8 +9,8 @@
     // "ES3" (default), "ES5", "ES6"/"ES2015", "ES2016", "ES2017" or "ESNext". 
     // Note: "ESNext" targets latest supported ES proposed features.
     //
-    // NOTE: React will not work with anything higher than es5
-    //       if class components are used
+    // NOTE: class decorators will not work with anything higher than es5
+    //       unless the class decorator treats classes and decorators separately
     "target": "es5",
 
     // Specify module code generation: 
