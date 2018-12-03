@@ -127,6 +127,7 @@ export function withCurrentUser(opts = {}) {
               errorJson = await tryParseJson(response);
             } catch (e) {
               // body is not json
+              console.error('response body is not json', e);
             }
             const errorTitle = firstError(errorJson).title;
             const defaultMessage = unauthorized ? t('errors.notAuthorized') : t('errors.userForbidden');
