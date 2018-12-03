@@ -44,7 +44,6 @@ window.Pace = {
 export class App extends React.Component {
   constructor(props) {
     super(props);
-    console.log('jQuery', $);
     this.state = {
       pagekey: 0
     };
@@ -65,7 +64,6 @@ export class App extends React.Component {
     };
 
     const state = Store.getState();
-    console.log(Store, state);
 
     let user = state.app.user;
     if (user === undefined) {
