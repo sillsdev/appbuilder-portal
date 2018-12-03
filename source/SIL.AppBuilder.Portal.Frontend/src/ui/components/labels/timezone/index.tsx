@@ -47,7 +47,7 @@ class Timezone extends React.Component<IProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, IOwnProps>(
   withTranslations,
   withMomentTimezone
 )(Timezone);
