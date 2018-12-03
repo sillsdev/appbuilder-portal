@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -14,7 +15,7 @@ using OptimaJet.DWKit.Core.View;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     public class DataController : Controller
     {
         [Route("data/get")]
@@ -42,9 +43,9 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                     {
                         var filterActions = DWKitRuntime.ServerActions.GetFilterNames().Where(n => n.Equals(urlFilter, StringComparison.OrdinalIgnoreCase)).ToList();
                         string filterAction = null;
-                        filterAction = filterActions.Count == 1 ? filterActions.First() 
+                        filterAction = filterActions.Count == 1 ? filterActions.First()
                             : filterActions.FirstOrDefault(n => n.Equals(urlFilter, StringComparison.Ordinal));
-                        
+
                         if (!string.IsNullOrEmpty(filterAction))
                             filterActionName = filterAction;
                         else
@@ -93,12 +94,12 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 }
 
                 var data = await DataSource.GetDataForFormAsync(getRequest).ConfigureAwait(false);
-                
+
                 if (data.IsFromUrl && FailResponse.IsFailResponse(data.Entity, out FailResponse fail))
                 {
                     return Json(fail);
                 }
-                
+
                 return Json(new ItemSuccessResponse<object>(data.Entity.ToDictionary(true)));
             }
             catch (Exception e)
@@ -191,7 +192,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
                 if (NotNullOrEmpty(filter))
                 {
-                    filterItems.AddRange(JsonConvert.DeserializeObject<List<ClientFilterItem>>(filter));                   
+                    filterItems.AddRange(JsonConvert.DeserializeObject<List<ClientFilterItem>>(filter));
                 }
 
                 var getRequest = new GetDictionaryRequest(name)
@@ -213,7 +214,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 {
                     getRequest.Paging = JsonConvert.DeserializeObject<ClientPaging>(paging);
                 }
-                
+
                 var data = await DataSource.GetDictionaryAsync(getRequest).ConfigureAwait(false);
                 var res = new ItemSuccessResponse<List<KeyValuePair<object, string>>>(data.Item1.ToList());
                 res.Count = data.Item2;

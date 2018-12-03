@@ -6,6 +6,7 @@ import {
   isPresent,
   Interactor
 } from '@bigtest/interactor';
+import Convergence from '@bigtest/convergence';
 
 import orgSwitcherInteractor from '@ui/components/sidebar/org-switcher/__tests__/page';
 
@@ -43,4 +44,4 @@ export const AppInteractor = interactor(App);
 
 export type TAppInteractor = App & Interactor;
 
-export default new (AppInteractor as any)('[data-test-app-container]') as TAppInteractor;
+export default new (AppInteractor as any)('#testing-root') as TAppInteractor;

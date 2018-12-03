@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, Link, Switch } from 'react-router-dom';
+import { Route, Link, Switch, withRouter } from 'react-router-dom';
 import Notifications from 'react-notify-toast';
 
 import IndexRoute, { pathName as rootPath } from '@ui/routes/index';
@@ -19,6 +19,8 @@ import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-source';
 
 import ErrorRootRoute from '@ui/routes/errors';
+
+import Workflow from './workflow';
 
 export default class RootPage extends React.Component {
   render() {
@@ -48,6 +50,9 @@ export default class RootPage extends React.Component {
             <Route path={usersPath} component={UsersRoute} />
 
             <Route path={openSourcePath} component={OpenSourceRoute} />
+
+            <Workflow />
+
 
             <Route component={ErrorRootRoute} />
           </Switch>

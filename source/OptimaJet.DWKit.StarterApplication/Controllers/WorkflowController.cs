@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ using HashHelper = OptimaJet.DWKit.Core.Utils.HashHelper;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     public class WorkflowController : Controller
     {
         private IHostingEnvironment _env;
@@ -242,9 +243,15 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         
         private static Guid GetUserId()
         {
-            return DWKitRuntime.Security.CurrentUser.ImpersonatedUserId.HasValue
-                ? DWKitRuntime.Security.CurrentUser.ImpersonatedUserId.Value
-                : DWKitRuntime.Security.CurrentUser.Id;
+            var isImpersonating = (
+                null != DWKitRuntime.Security.CurrentUser?.ImpersonatedUserId 
+                && DWKitRuntime.Security.CurrentUser.ImpersonatedUserId.HasValue
+            );
+            if (isImpersonating) {
+                return DWKitRuntime.Security.CurrentUser.ImpersonatedUserId.Value;
+            }
+
+            return DWKitRuntime.Security.CurrentUser.Id;
         }
 
         private static bool NotNullOrEmpty(string urlFilter)

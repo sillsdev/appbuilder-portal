@@ -10,9 +10,11 @@ using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
+using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
@@ -126,19 +128,8 @@ namespace OptimaJet.DWKit.StarterApplication
 
         public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
-
-
-            // JWT Auth disabled for now, because we need to
-            // 1. Add an Auth0 Id column to the users table
-            // 2. Set the DWKitRuntime.Security.CurrentUser
-            // 3. Controller actions are not allowed to have multiple authentication schemes
-            // 4. Cookies must be removed.
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+            services.AddAuthentication()
+            .AddJwtBearer(options =>
             {
                 options.Authority = GetVarOrThrow("AUTH0_DOMAIN");
                 options.Audience = GetVarOrThrow("AUTH0_AUDIENCE");
@@ -169,16 +160,6 @@ namespace OptimaJet.DWKit.StarterApplication
             .AddCookie(options => {
                 options.ExpireTimeSpan = TimeSpan.FromDays(365);
                 options.LoginPath = "/Account/Login/";
-
-                options.ForwardDefaultSelector = ctx =>
-                {
-                    if (ctx.Request.Path.StartsWithSegments("/api"))
-                    {
-                        return "Bearer";
-                    } else {
-                        return "Cookies";
-                    }
-                };
             });
 
             services.AddAuthorization(options =>

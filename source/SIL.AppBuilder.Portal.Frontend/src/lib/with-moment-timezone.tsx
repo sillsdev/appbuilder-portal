@@ -20,7 +20,7 @@ export function withMomentTimezone(WrappedComponent) {
       const { i18n, currentUser } = this.props;
       const { timezone } = attributesFor(currentUser);
 
-      moment.locale(i18n.default.language);
+      moment.locale(i18n.language);
 
       const timeProps = {
         moment,

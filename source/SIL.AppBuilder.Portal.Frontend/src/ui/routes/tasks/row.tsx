@@ -1,76 +1,82 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Link } from 'react-router-dom';
+import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
 import * as prettyMs from 'pretty-ms';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import { TaskAttributes } from '@data/models/task';
-import { ProductAttributes } from '@data/models/product';
-import { ProjectAttributes } from '@data/models/project';
-import { UserAttributes } from '@data/models/user';
-
 import ProductIcon from '@ui/components/product-icon';
 import { RectLoader as Loader } from '@ui/components/loaders';
 import { ResourceObject } from 'jsonapi-typescript';
-import { TASKS_TYPE, PRODUCTS_TYPE, PROJECTS_TYPE, USERS_TYPE } from '@data';
+import {
+  withLoader,
+  attributesFor,
+  idFromRecordIdentity,
+  TaskResource, WorkflowDefinitionResource,
+  ProductResource, ProjectResource, ProductDefinitionResource,
+  UserResource
+} from '@data';
 
 export interface IOwnProps {
-  task: ResourceObject<TASKS_TYPE, TaskAttributes>;
-  product: ResourceObject<PRODUCTS_TYPE, ProductAttributes>;
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
-  assignedTo: ResourceObject<USERS_TYPE, UserAttributes>;
+  userTask: TaskResource;
+  product: ProductResource;
+  productDefinition: ProductDefinitionResource;
+  project: ProjectResource;
+  assignedTo: UserResource;
+  workflow: WorkflowDefinitionResource;
   cellClasses: string;
   cellSecondaryClasses: string;
 }
 
 export type IProps =
+  & RouteComponentProps
   & IOwnProps
   & i18nProps;
 
-const mapRecordsToProps = ({ task: { type, id } }) => ({
-  project: q => q.findRelatedRecord({ type, id }, 'project'),
-  product: q => q.findRelatedRecord({ type, id }, 'product'),
-  assignedTo: q => q.findRelatedRecord({ type, id }, 'assigned')
-});
-
 class TaskRow extends React.Component<IProps> {
+  didClickRow = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { workflow, product, history, userTask } = this.props;
+    const { workflowBusinessFlow } = attributesFor(workflow);
+    const id = idFromRecordIdentity(product);
+
+    history.push(`/flow/${workflowBusinessFlow}/${id}`);
+  }
+
   render() {
     const {
-      t, task, product, project, assignedTo,
+      t, userTask, product, project, assignedTo,
+      productDefinition,
       cellClasses, cellSecondaryClasses
     } = this.props;
 
-    if (!task || !task.attributes) {
-      return <tr><td colSpan={6}><Loader /></td></tr>;
-    }
+    const { status, waitTime } = attributesFor(userTask);
+    const { name } = attributesFor(assignedTo);
 
-    const { status, waitTime } = task.attributes;
-    const { givenName, familyName } = (assignedTo.attributes || {}) as UserAttributes;
-    const hasName = givenName || familyName;
+    const claimedBy = name || t('tasks.unclaimed');
 
-    const claimedBy = hasName ? `${givenName || ''} ${familyName || ''}` : t('tasks.unclaimed');
-
-    const projectAttrs = project.attributes || {};
-    const productAttrs = product.attributes || {};
+    const { name: projectName } = attributesFor(project);
+    const { name: productName } = attributesFor(productDefinition);
 
     return (
-      <tr>
+      <tr onClick={this.didClickRow}>
         <td>
-          <Link to={`/projects/${project.id}`}>{projectAttrs.name}</Link>
+          <Link to={`/projects/${project.id}`}>{projectName}</Link>
         </td>
         <td className={cellSecondaryClasses}>
           <div className='flex align-items-center'>
-            <ProductIcon product={product} selected={true}/>
-            <span className='p-l-sm-xs'>{productAttrs.name}</span>
+            <ProductIcon product={productDefinition} selected={true}/>
+            <span className='p-l-sm-xs'>{productName}</span>
           </div>
         </td>
         <td className={cellClasses}>{claimedBy}</td>
         <td className={cellClasses}>{status}</td>
         <td className={cellClasses}>
-          {prettyMs(waitTime)}
+          {waitTime && prettyMs(waitTime)}
         </td>
         <td>
           <Button>{t('tasks.reassign')}</Button>
@@ -81,6 +87,19 @@ class TaskRow extends React.Component<IProps> {
 }
 
 export default compose(
-  withOrbit(mapRecordsToProps),
-  withTranslations
+  withTranslations,
+  withRouter,
+  withOrbit(({ userTask }) => {
+    return {
+      product: q => q.findRelatedRecord(userTask, 'product'),
+      assignedTo: q => q.findRelatedRecord(userTask, 'assigned')
+    };
+  }),
+  withOrbit(({ product }) => ({
+    project: q => q.findRelatedRecord(product, 'project'),
+    productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
+  })),
+  withOrbit(({ productDefinition }) => ({
+    workflow: q => q.findRelatedRecord(productDefinition, 'workflow'),
+  }))
 )( TaskRow );

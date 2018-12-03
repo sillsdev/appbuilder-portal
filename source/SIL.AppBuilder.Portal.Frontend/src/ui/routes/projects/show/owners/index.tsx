@@ -66,13 +66,14 @@ class Owners extends React.Component<IProps> {
     const { t, group, organization, owner } = this.props;
     const groupId = group.id;
     const ownerId = owner.id;
+    const { name: orgName } = attributesFor(organization);
 
     return (
       <div className='thin-bottom-border p-t-md p-b-sm p-l-md p-r-md'>
         <div className='m-b-md'>
           <h4 className='fs-11 m-b-sm'>{t('project.side.organization')}</h4>
           <div className='p-l-sm p-r-sm p-t-sm p-b-sm thin-bottom-border'>
-            <span>SIL International</span>
+            <span>{orgName}</span>
           </div>
         </div>
         <div className='m-b-md'>
