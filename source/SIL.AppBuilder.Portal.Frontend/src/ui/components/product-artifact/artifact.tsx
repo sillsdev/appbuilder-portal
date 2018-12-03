@@ -14,10 +14,8 @@ interface IOwnProps {
 type IProps =
   & IOwnProps;
 
-class Artifact extends React.Component<IProps> {
-
+class Artifact extends React.PureComponent<IProps> {
   render() {
-
     const { artifact } = this.props;
     const { artifactType, url, fileSize, dateUpdated } = attributesFor(artifact);
 
@@ -31,6 +29,7 @@ class Artifact extends React.Component<IProps> {
           <div className='flex-grow'>
             <TimezoneLabel dateTime={dateUpdated} className='m-r-md'/>
           </div>
+
           <FileSize size={fileSize} className='flex-30 text-align-right p-r-md' />
           <a href={url} download className='download flex-10'>
             <VerticalAlignBottomIcon />

@@ -14,7 +14,7 @@ type IProps =
   & IOwnProps
   & ICurrentUserProps;
 
-class FileSize extends React.Component<IProps> {
+class FileSize extends React.PureComponent<IProps> {
 
   render() {
 

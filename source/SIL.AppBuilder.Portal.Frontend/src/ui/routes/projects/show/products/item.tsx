@@ -36,7 +36,7 @@ class ProductItem extends React.Component<IProps> {
   render() {
 
     const { product, productDefinition, t, includeHeader } = this.props;
-    const { description } = attributesFor(productDefinition);
+    const { description, name } = attributesFor(productDefinition);
     const { dateUpdated, datePublished } = attributesFor(product);
 
     return (
@@ -55,7 +55,7 @@ class ProductItem extends React.Component<IProps> {
             data-test-project-product-name
             className='m-l-sm fs-16 bold blue-highlight'
           >
-            {description}
+            {name}
           </div>
         </div>
         <div className='w-20-md p-l-xs-md'>

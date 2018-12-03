@@ -11,12 +11,11 @@ export function withPublicProject<T>(idGetter: (props: T) => string) {
           'organization',
           'group',
           'owner',
-          'products.product-definition.type'
+          'products.product-definition.type',
+          'products.product-artifacts',
         ],
-        // TODO: are sparse fieldsets supported by orbit?
-        //       (they are on the backend)
         fields: {
-          owner: ['name', 'email']
+          // owner: 'name,email',
         }
       });
 

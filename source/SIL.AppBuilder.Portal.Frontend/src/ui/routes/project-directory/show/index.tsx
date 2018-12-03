@@ -3,10 +3,12 @@ import { withTranslations } from '@lib/i18n';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import { IExpectedPropsForRoute } from './types';
-import Display from './display';
 import { withLoader } from '@data';
 import { withError } from '@data/containers/with-error';
 import { withPublicProject } from '@data/containers/resources/project/public';
+
+import Display from './display';
+
 
 export const pathName = '/directory/:projectId';
 

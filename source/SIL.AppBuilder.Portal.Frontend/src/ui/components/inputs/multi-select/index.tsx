@@ -88,6 +88,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
               >
                 {attributesFor(element).description}
               </span>
+
             </div>
           );
         })
