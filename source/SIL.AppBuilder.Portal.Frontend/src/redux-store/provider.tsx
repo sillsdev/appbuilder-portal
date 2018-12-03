@@ -9,10 +9,6 @@ import { reducers } from './reducers';
 import { middleware, setup as setupMiddleware } from './middleware';
 import { default as enhancers } from './enhancers';
 
-export interface IYieldedProps {
-  store: Store;
-}
-
 export interface IProps {
   initialState?: any;
   children: any;
