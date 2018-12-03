@@ -244,9 +244,15 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         
         private static Guid GetUserId()
         {
-            return DWKitRuntime.Security.CurrentUser.ImpersonatedUserId.HasValue
-                ? DWKitRuntime.Security.CurrentUser.ImpersonatedUserId.Value
-                : DWKitRuntime.Security.CurrentUser.Id;
+            var isImpersonating = (
+                null != DWKitRuntime.Security.CurrentUser?.ImpersonatedUserId 
+                && DWKitRuntime.Security.CurrentUser.ImpersonatedUserId.HasValue
+            );
+            if (isImpersonating) {
+                return DWKitRuntime.Security.CurrentUser.ImpersonatedUserId.Value;
+            }
+
+            return DWKitRuntime.Security.CurrentUser.Id;
         }
 
         private static bool NotNullOrEmpty(string urlFilter)

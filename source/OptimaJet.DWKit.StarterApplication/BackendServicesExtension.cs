@@ -128,11 +128,6 @@ namespace OptimaJet.DWKit.StarterApplication
 
         public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // JWT Auth disabled for now, because we need to
-            // 1. Add an Auth0 Id column to the users table
-            // 2. Set the DWKitRuntime.Security.CurrentUser
-            // 3. Controller actions are not allowed to have multiple authentication schemes
-            // 4. Cookies must be removed.
             services.AddAuthentication()
             .AddJwtBearer(options =>
             {
