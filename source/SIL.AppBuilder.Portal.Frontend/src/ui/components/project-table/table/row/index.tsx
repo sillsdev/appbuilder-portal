@@ -27,6 +27,7 @@ export interface IProps {
   group: GroupResource;
   toggleArchiveProject: (project: ProjectResource) => void;
   projectPath?: (id: string) => string;
+  withOptions: boolean;
 }
 
 class Row extends React.Component<IProps & IProvidedProps> {
@@ -62,7 +63,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
     });
   }
   render() {
-    const { project, projectPath } = this.props;
+    const { project, projectPath, withOptions } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
@@ -76,16 +77,16 @@ class Row extends React.Component<IProps & IProvidedProps> {
           <div className='col flex-grow-xs flex-100'>
             <Link to={clickPath}>{projectName}</Link>
           </div>
-
           { activeProjectColumns.map((column, i) => (
             <div key={i} data-test-project-table-column className='col flex-100'>
               {column.value}
             </div>
           ))}
-
-          <div className='action'>
-            <RowActions project={project} />
-          </div>
+          { withOptions && (
+            <div className='action'>
+              <RowActions project={project} />
+            </div>
+          )}
         </div>
 
         <Products { ...this.props } />

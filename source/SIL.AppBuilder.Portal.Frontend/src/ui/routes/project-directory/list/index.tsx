@@ -43,14 +43,16 @@ export default compose (
   withProjects({ all: true }),
   withLoader(({ error, projects }) => !error && !projects),
   withError('error', ({ error }) => error !== undefined),
-  withProps(({ projects }) => ({
-    projects: projects.filter(resource => resource.type === PROJECT),
-    tableName: 'directory'
-  })),
   withCache(() => ({
     organizations: q => q.findRecords(ORGANIZATION),
     groups: q => q.findRecords(GROUP),
+    projects : q => q.findRecords(PROJECT)
   })),
+  withProps(({ projects }) => ({
+    projects: projects.filter(resource => resource.type === PROJECT && resource.attributes.dateArchived == null),
+    tableName: 'directory'
+  })),
+
   withTableColumns({
     tableName: 'directory',
     defaultColumns: [
