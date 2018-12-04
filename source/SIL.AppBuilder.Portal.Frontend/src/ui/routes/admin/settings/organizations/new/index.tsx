@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Toast from '@lib/toast';
+import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
@@ -11,34 +11,20 @@ import {
 import OrganizationForm from '../common/form';
 
 import { listPathName } from '../index';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 type IProps =
+  & i18nProps
   & IOrganizationProps
   & RouteComponentProps<{}>;
 
 class NewOrganization extends React.Component<IProps> {
 
-  save = async (attributes, onSuccess) => {
-
-    const { createRecord } = this.props;
-
-    try {
-      await createRecord({
-        name: attributes.name,
-        websiteUrl: attributes.websiteUrl,
-        buildEngineUrl: attributes.buildEngineUrl,
-        buildEngineApiAccessToken: attributes.buildEngineApiAccessToken,
-        logoUrl: attributes.logoUrl,
-        publicByDefault: attributes.publicByDefault
-      },{
-        owner: attributes.owner
-      });
-      onSuccess();
-      this.redirectToList();
-      Toast.success('Organization added');
-    } catch (e) {
-      Toast.error(e);
-    }
+  save = async (attributes, relationships) => {
+    const { createRecord, t } = this.props;
+    await createRecord(attributes, relationships);
+    toast.success(t('admin.settings.organizations.addSuccess'));
+    this.redirectToList();
   }
 
   redirectToList = () => {
@@ -59,6 +45,7 @@ class NewOrganization extends React.Component<IProps> {
 }
 
 export default compose(
+  withTranslations,
   withRouter,
   withDataActions
 )(NewOrganization);

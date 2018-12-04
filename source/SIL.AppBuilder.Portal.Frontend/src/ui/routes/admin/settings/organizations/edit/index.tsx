@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Toast from '@lib/toast';
+import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { withData as withOrbit } from 'react-orbitjs';
@@ -12,7 +12,17 @@ import {
 import OrganizationForm from '../common/form';
 
 import { listPathName } from '../index';
-import { query, withLoader, buildOptions, buildFindRecord, OrganizationResource, UserResource } from '@data';
+
+import {
+  query,
+  withLoader,
+  buildOptions,
+  buildFindRecord,
+  OrganizationResource,
+  UserResource
+} from '@data';
+
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   organization: OrganizationResource;
@@ -22,30 +32,17 @@ interface IOwnProps {
 type IProps =
   & IOrganizationProps
   & IOwnProps
+  & i18nProps
   & RouteComponentProps<{}>;
 
 class EditOrganization extends React.Component<IProps> {
 
-  update = async (attributes, onSuccess) => {
-
-    const { updateAttributes, updateOwner } = this.props;
-
-    try {
-      await updateAttributes({
-        name: attributes.name,
-        websiteUrl: attributes.websiteUrl,
-        buildEngineUrl: attributes.buildEngineUrl,
-        buildEngineApiAccessToken: attributes.buildEngineApiAccessToken,
-        logoUrl: attributes.logoUrl,
-        publicByDefault: attributes.publicByDefault
-      });
-      await updateOwner(attributes.owner);
-      onSuccess();
-      this.redirectToList();
-      Toast.success('Organization updated');
-    } catch(e) {
-      Toast.error(e);
-    }
+  update = async (attributes, relationships) => {
+    const { updateAttributes, updateOwner, t } = this.props;
+    await updateAttributes(attributes);
+    await updateOwner(relationships.owner);
+    this.redirectToList();
+    toast.success(t('admin.settings.organizations.editSuccess'));
   }
 
   redirectToList = () => {
@@ -69,6 +66,7 @@ class EditOrganization extends React.Component<IProps> {
 
 export default compose(
   withRouter,
+  withTranslations,
   query(({ match: { params: { orgId } } }) => ({
     organization: [
       q => buildFindRecord(q, 'organization', orgId), buildOptions({
@@ -82,12 +80,3 @@ export default compose(
   })),
   withDataActions,
 )(EditOrganization);
-
-/*
- TODO:
-
- - load owner into form
- - create update function and hook it
- - fix sidebar navigation
- - add tests
-*/

@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import CreateIcon from '@material-ui/icons/Create';
+import { withData as withOrbit } from 'react-orbitjs';
 
-import { attributesFor, idFromRecordIdentity, OrganizationResource } from '@data';
+import { attributesFor, idFromRecordIdentity, OrganizationResource, UserResource } from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { Link } from 'react-router-dom';
 
 interface IOwnProps {
   organization: OrganizationResource;
+  owner: UserResource;
 }
 
 type IProps =
@@ -18,7 +20,7 @@ class OrganizationItem extends React.Component<IProps> {
 
   render() {
 
-    const { t, organization } = this.props;
+    const { t, organization, owner } = this.props;
 
     const {
       name, websiteUrl, buildEngineUrl,
@@ -33,20 +35,26 @@ class OrganizationItem extends React.Component<IProps> {
           <div className='bold fs-16'>{name}</div>
           <div className='p-t-md'>
             <span className='bold m-r-sm'>
+              {t('admin.settings.organizations.owner')}:
+            </span>
+            <span>{attributesFor(owner).name}</span>
+          </div>
+          <div>
+            <span className='bold m-r-sm'>
               {t('admin.settings.organizations.websiteURL')}:
-                  </span>
+            </span>
             <span>{websiteUrl}</span>
           </div>
           <div>
             <span className='bold m-r-sm'>
               {t('admin.settings.organizations.buildEngineURL')}:
-                  </span>
+            </span>
             <span>{buildEngineUrl}</span>
           </div>
           <div>
             <span className='bold m-r-sm'>
               {t('admin.settings.organizations.accessToken')}:
-                  </span>
+            </span>
             <span>{buildEngineApiAccessToken}</span>
           </div>
         </div>
@@ -65,5 +73,8 @@ class OrganizationItem extends React.Component<IProps> {
 }
 
 export default compose(
-  withTranslations
+  withTranslations,
+  withOrbit(({organization}) => ({
+    owner: q => q.findRelatedRecord(organization,'owner')
+  }))
 )(OrganizationItem);

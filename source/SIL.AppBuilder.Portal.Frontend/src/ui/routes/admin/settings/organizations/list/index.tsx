@@ -8,6 +8,8 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { addOrganizationPathName } from '../index';
 import OrganizationItem from './item';
 import { compareVia } from '@lib/collection';
+import { OrganizationAttributes } from '@data/models/organization';
+
 
 interface IOwnProps {
   organizations: OrganizationResource[];
@@ -40,7 +42,7 @@ class ListOrganization extends React.Component<IProps> {
             className='ui button tertiary uppercase large m-b-lg'
             onClick={this.showAddForm}
           >
-            Add Organization
+            {t('admin.settings.organizations.add')}
           </button>
           { organizations.map((organization,i) =>
               <OrganizationItem key={i} organization={organization} />
@@ -57,11 +59,16 @@ export default compose(
   withRouter,
   query(() => ({
     organizations: [
-      q => q.findRecords('organization'), buildOptions()
+      q => q.findRecords('organization'), buildOptions({
+        include: ['owner']
+      })
     ],
   })),
   withLoader(({organizations}) => !organizations),
   withProps(({organizations}) => ({
-    organizations: organizations.sort(compareVia((org) => attributesFor(org.name)))
+    organizations: organizations.sort(
+      compareVia((org) =>
+        attributesFor(org).name.toLowerCase())
+    )
   }))
 )(ListOrganization);

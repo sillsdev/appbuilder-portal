@@ -6,6 +6,9 @@ import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 
+import * as toast from '@lib/toast';
+
+import { OrganizationAttributes } from '@data/models/organization';
 import {
   query,
   buildOptions,
@@ -20,7 +23,7 @@ interface IOwnProps {
   organization: OrganizationResource;
   owner: UserResource;
   users: UserResource[];
-  onSubmit: (attributes: IState, onSuccess?: () => void) => void;
+  onSubmit: (attributes: OrganizationAttributes, relationships: any) => void;
   onCancel: () => void;
 }
 
@@ -83,9 +86,27 @@ class OrganizationForm extends React.Component<IProps, IState> {
     e.preventDefault();
 
     const { onSubmit } = this.props;
+    const {
+      name, websiteUrl, buildEngineUrl,
+      buildEngineApiAccessToken, logoUrl,
+      publicByDefault, owner
+    } = this.state;
 
     if (this.isValidForm()) {
-      onSubmit(this.state, this.cleanForm);
+      try {
+        await onSubmit({
+          name,
+          websiteUrl,
+          buildEngineUrl,
+          buildEngineApiAccessToken,
+          logoUrl,
+          publicByDefault
+        },{
+          owner
+        });
+      } catch(e) {
+        toast.error(e);
+      }
     }
   }
 
@@ -123,7 +144,7 @@ class OrganizationForm extends React.Component<IProps, IState> {
 
     const { t, users, organization } = this.props;
 
-    const { name: OwnerName } = attributesFor(owner);
+    const { name: ownerName } = attributesFor(owner);
 
     return (
       <>
@@ -151,9 +172,9 @@ class OrganizationForm extends React.Component<IProps, IState> {
               <label>{t('admin.settings.organizations.owner')}</label>
               <div className='w-100 thin-bottom-border'>
                 <Dropdown
-                  className='w-100 no-borders'
+                  className='custom w-100 no-borders p-sm'
                   data-test-org-owner
-                  text={OwnerName}
+                  text={ownerName}
                 >
                   <Dropdown.Menu>
                     {
