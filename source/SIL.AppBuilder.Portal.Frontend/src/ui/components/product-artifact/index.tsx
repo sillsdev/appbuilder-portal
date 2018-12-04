@@ -6,6 +6,7 @@ import ProductIcon from '@ui/components/product-icon';
 import {
   ProductDefinitionResource,
   ProductArtifactResource,
+  ProductResource,
   attributesFor
 } from '@data';
 import Artifact from './artifact';
@@ -14,6 +15,10 @@ import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import Header from './header';
+
+interface IExpectedProps {
+  product: ProductResource;
+}
 
 interface IOwnProps {
   productDefinition: ProductDefinitionResource;
@@ -53,7 +58,7 @@ class ProductArtifact extends React.Component<IProps, IState> {
         <Header {...this.props} onClick={this.toggleShowArtifacts} isCollapsed={areArtifactsVisible} />
 
         {areArtifactsVisible && (
-          <div>
+          <div data-test-artifact-list-container>
             <EmptyLabel
               className='m-t-lg m-l-lg m-b-lg'
               condition={!isEmpty(artifacts)}
@@ -88,7 +93,7 @@ class ProductArtifact extends React.Component<IProps, IState> {
 
 }
 
-export default compose(
+export default compose<IProps, IExpectedProps>(
   withTranslations,
   withOrbit(mapRecordsToProps)
 )(ProductArtifact);

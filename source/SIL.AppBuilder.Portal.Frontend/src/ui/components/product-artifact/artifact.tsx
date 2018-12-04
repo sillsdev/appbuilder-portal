@@ -20,7 +20,7 @@ class Artifact extends React.PureComponent<IProps> {
     const { artifactType, url, fileSize, dateUpdated } = attributesFor(artifact);
 
     return (
-      <div className='artifact-item flex p-l-md p-t-sm p-b-sm p-r-md'>
+      <div data-test-artifact className='artifact-item flex p-l-md p-t-sm p-b-sm p-r-md'>
         <div className='flex-70 flex align-items-center'>
           <InsertDriveFileIcon className='m-r-sm' />
           <span data-test-project-files-artifact-name>{artifactType}</span>
