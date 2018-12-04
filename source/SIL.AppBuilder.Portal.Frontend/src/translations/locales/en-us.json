@@ -330,6 +330,7 @@
         "title": "Organizations",
         "name": "Organization Name",
         "owner": "Owner",
+        "emptyOwner": "Need to select an owner for this organization",
         "add": "Add Organization",
         "edit": "Edit Organization",
         "websiteURL": "Website URL",

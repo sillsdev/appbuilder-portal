@@ -9,7 +9,7 @@ import OrganizationsRoute from '@ui/routes/admin/settings/organizations';
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 
-export const pathName = '/admin/settings/organizations';
+export const pathName = '/admin/settings';
 
 type IProps =
   & i18nProps;

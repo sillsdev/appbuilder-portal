@@ -49,43 +49,33 @@ class OrganizationForm extends React.Component<IProps, IState> {
 
     const { organization, owner } = props;
 
-    if (organization) {
+    const {
+      name, websiteUrl, logoUrl,
+      buildEngineUrl, buildEngineApiAccessToken,
+      publicByDefault
+    } = attributesFor(organization);
 
-      const {
-        name, websiteUrl, logoUrl,
-        buildEngineUrl, buildEngineApiAccessToken,
-        publicByDefault
-      } = attributesFor(organization);
-
-      this.state = {
-        name,
-        websiteUrl,
-        buildEngineUrl,
-        buildEngineApiAccessToken,
-        logoUrl,
-        publicByDefault,
-        owner
-      };
-
-    } else {
-      this.state = {
-        name: '',
-        websiteUrl: '',
-        buildEngineUrl: '',
-        buildEngineApiAccessToken: '',
-        logoUrl: '',
-        publicByDefault: false,
-        owner: null,
-        ownerError: ''
-      };
-    }
+    this.state = {
+      name: name || '',
+      websiteUrl: websiteUrl || '',
+      buildEngineUrl: buildEngineUrl || '',
+      buildEngineApiAccessToken: buildEngineApiAccessToken || '',
+      logoUrl: logoUrl || '',
+      publicByDefault: publicByDefault || false,
+      owner: owner || null,
+      ownerError: ''
+    };
 
   }
 
   isValidForm = () => {
     const { owner } = this.state;
+    const { t } = this.props;
+
     if (!owner) {
-      this.setState({ ownerError: 'Cannot be empty' });
+      this.setState({
+        ownerError: t('admin.settings.organizations.emptyOwner')
+      });
     } else {
       this.setState({ ownerError: '' });
     }
