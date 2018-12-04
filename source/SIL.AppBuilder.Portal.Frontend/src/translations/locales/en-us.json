@@ -173,6 +173,8 @@
   },
   "project": {
     "title": "Project",
+    "organizationContact": "Organization Contact: ",
+    "projectOwner": "Project Owner: ",
     "newProject": "New Project",
     "projectName": "Project Name",
     "noAvailableGroups": "There are no available groups for the selected organization",
@@ -216,7 +218,7 @@
       "filename": "Filename",
       "published": "Published",
       "unpublished": "Unpublished",
-      "numArtifacts": "{amount, plural, =0 {} other {({ amount })}} Artifacts",
+      "numArtifacts": "{amount, plural, =0 {No Artifacts} other {{ amount } Artifacts}}",
       "noArtifacts": "No artifacts",
       "rebuild": "rebuild",
       "creationInProgress": "Pending: You cannot add a product until the project setup has been completed."

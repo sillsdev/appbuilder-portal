@@ -3,6 +3,7 @@ import {
   clickable,
   text,
   selectable,
+  scoped,
   isPresent,
   Interactor
 } from '@bigtest/interactor';
@@ -14,6 +15,12 @@ class App {
   orgSwitcher = orgSwitcherInteractor;
 
   headers = text('h1,h2,h3');
+
+  toast = scoped('#notification-wrapper .toast-notification', {
+    // NOTE: there is no way to tell if this is an error, or a success
+    //       without checking the background color
+    text: text('span'),
+  });
 
   clickNotificationsBell = clickable('[data-test-header-notification]');
   clickLogout = clickable('[data-test-header-menu] [data-test-logout]');
