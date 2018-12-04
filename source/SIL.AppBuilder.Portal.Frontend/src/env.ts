@@ -15,6 +15,7 @@ export const auth0 = {
 };
 
 export const NODE_ENV = process.env.NODE_ENV;
+export const isTesting = process.env.IS_TESTING;
 export const isDevelopment = NODE_ENV === 'development' || !NODE_ENV;
 
 export const api = {

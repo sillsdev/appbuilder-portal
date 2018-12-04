@@ -6,6 +6,8 @@ console.log('root path: ', root);
 
 const TEST_PORT = 9876;
 
+process.env.IS_TESTING = 'true';
+
 // process.env.API_HOST = `localhost:${TEST_PORT}`;
 
 module.exports = function(config) {

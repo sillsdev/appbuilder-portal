@@ -1,5 +1,6 @@
 import { getToken } from './auth0';
 import { getCurrentOrganizationId } from './current-organization';
+import { isTesting } from '@env';
 
 export const tryParseJson = async (response) => {
   const text = await response.text();
@@ -8,7 +9,9 @@ export const tryParseJson = async (response) => {
 
     return json;
   } catch (e) {
-    console.debug('payload text: ', text, response);
+    if (!isTesting) {
+      console.error(e);
+    }
 
     throw e;
   }
