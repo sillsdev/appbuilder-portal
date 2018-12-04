@@ -194,6 +194,7 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         stores: { type: 'hasMany', model: 'store', inverse: 'storeType'},
         storeLanguages: { type: 'hasMany', model: 'storeLanguage', inverse: 'storeType' },
+        workflowDefinitions: { type: 'hasMany', model: 'workflowDefinition', inverse: 'storeType'}
 
       }
     },
@@ -207,6 +208,19 @@ const schemaDefinition: SchemaSettings = {
         project: { type: 'hasOne', model: 'project', inverse: 'tasks'},
         product: { type: 'hasOne', model: 'product', inverse: 'tasks'},
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
+      }
+    },
+    workflowDefinition: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        workflowScheme: { type: 'string' },
+        workflowBusinessFlow: { type: 'string' },
+        enabled: { type: 'boolean'}
+      },
+      relationships: {
+        storeType: { type: 'hasOne', model: 'storeType', inverse: 'workflowDefinitions'}
       }
     },
     notification: {

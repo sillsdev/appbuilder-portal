@@ -6,10 +6,13 @@ import { withLayout } from '@ui/components/layout';
 import Navigation from './navigation';
 import { Switch, Route } from 'react-router-dom';
 import OrganizationsRoute from '@ui/routes/admin/settings/organizations';
+import WorkflowDefinitionsRoute from '@ui/routes/admin/settings/workflow-definitions';
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 
-export const pathName = '/admin/settings/organizations';
+export const pathName = '/admin/settings';
+export const organizationPathName = '/admin/settings/organizations';
+export const workflowDefinitionPathName = "/admin/settings/workflow-definitions";
 
 type IProps =
   & i18nProps;
@@ -17,9 +20,8 @@ type IProps =
 class AdminSettingsRoute extends React.Component<IProps> {
 
   render() {
-
+    
     const { t } = this.props;
-
     return (
       <div className='ui container'>
         <h2 className='page-heading page-heading-border-sm'>
@@ -29,8 +31,11 @@ class AdminSettingsRoute extends React.Component<IProps> {
           <Navigation/>
           <div className='m-l-lg flex-grow'>
             <Switch>
-              <Route path={pathName} render={(routeProps) => (
+              <Route path={organizationPathName} render={(routeProps) => (
                 <OrganizationsRoute {...routeProps} />
+              )} />
+              <Route path={workflowDefinitionPathName} render={(routeProps) => (
+                <WorkflowDefinitionsRoute {...routeProps} />
               )} />
             </Switch>
           </div>
