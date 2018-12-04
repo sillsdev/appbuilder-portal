@@ -42,25 +42,25 @@ class Details extends React.PureComponent<IProps> {
         <div data-test-public-project-details className='m-b-lg'>
 
           <div className='m-b-md thin-bottom-border p-b-lg flex-row justify-content-start align-items-center'>
-            <span>{logo}</span>
+            <span data-test-logo>{logo}</span>
 
             <div className='p-l-lg'>
-              <h2 className='p-r-sm p-t-sm p-b-none'>
+              <h2 data-test-org-name className='p-r-sm p-t-sm p-b-none'>
                 {organizationName}
               </h2>
-              <div className='italic'>
+              <div data-test-org-owner className='italic'>
                 <label>{t('project.organizationContact')}</label>
                 <strong>{orgOwnerName}</strong>
               </div>
 
-              <div className='italic'>
+              <div data-test-project-owner className='italic'>
                 <label>{t('project.projectOwner')}</label>
                 <strong>{attributesFor(owner).name}</strong>
               </div>
             </div>
           </div>
 
-          <div className='p-b-lg fs-16'>
+          <div data-test-description className='p-b-lg fs-16'>
             {description}
           </div>
         </div>

@@ -37,7 +37,7 @@ export default class Header extends React.Component<IProps> {
     } = this.props;
 
     return (
-      <div role='button' onClick={onClick} className='header flex align-items-center p-md bold justify-content-space-between'>
+      <div data-test-artifact-header role='button' onClick={onClick} className='header flex align-items-center p-md bold justify-content-space-between'>
         <span className='flex align-items-center'>
           <ProductIcon product={productDefinition} selected={true}/>
           <span
@@ -47,7 +47,7 @@ export default class Header extends React.Component<IProps> {
             {humanReadableName(productDefinition)}
           </span>
         </span>
-        <span className='flex align-items-center'>
+        <span data-test-count className='flex align-items-center'>
           {t('project.products.numArtifacts', { amount: artifacts.length })}
 
           {isCollapsed ? <Up /> : <Down />}

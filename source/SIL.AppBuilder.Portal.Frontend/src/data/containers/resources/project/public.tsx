@@ -8,7 +8,7 @@ export function withPublicProject<T>(idGetter: (props: T) => string) {
 
       const options = buildOptions({
         include: [
-          'organization',
+          'organization.owner',
           'group',
           'owner',
           'products.product-definition.type',

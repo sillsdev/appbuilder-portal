@@ -20,7 +20,6 @@ export type IProps =
   & i18nProps;
 
 export class InviteOrganization extends React.Component<IProps> {
-
   submit = async (payload: OrganizationInviteAttributes) => {
     try {
       await this.create(payload);

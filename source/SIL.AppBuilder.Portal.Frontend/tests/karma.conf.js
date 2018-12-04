@@ -46,8 +46,8 @@ module.exports = function(config) {
         'webpack',
       ],
     },
-
     client: {
+      captureConsole: false,
       mocha: {
         reporter: 'html',
         ui: 'bdd',

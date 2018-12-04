@@ -1,6 +1,5 @@
 import { compose } from 'recompose';
 import { withTranslations } from '@lib/i18n';
-import { withData as withOrbit } from 'react-orbitjs';
 
 import { IExpectedPropsForRoute } from './types';
 import { withLoader } from '@data';

@@ -24,7 +24,7 @@ export default class Display extends React.Component<IProps> {
 
     return (
       <div className='ui container'>
-        <div className='project-details' data-test-project>
+        <div className='project-details' data-test-public-project>
           <Header project={project} />
 
           <div className='flex-lg p-b-xxl-lg'>

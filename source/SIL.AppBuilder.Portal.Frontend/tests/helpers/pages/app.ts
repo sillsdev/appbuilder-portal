@@ -7,7 +7,6 @@ import {
   isPresent,
   Interactor
 } from '@bigtest/interactor';
-import Convergence from '@bigtest/convergence';
 
 import orgSwitcherInteractor from '@ui/components/sidebar/org-switcher/__tests__/page';
 

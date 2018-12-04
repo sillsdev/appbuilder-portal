@@ -49,7 +49,7 @@ class ProductArtifact extends React.Component<IProps, IState> {
     const { areArtifactsVisible } = this.state;
 
     return (
-      <div className='product-artifact w-100 m-b-lg'>
+      <div data-test-product-artifacts className='product-artifact w-100 m-b-lg'>
         <Header {...this.props} onClick={this.toggleShowArtifacts} isCollapsed={areArtifactsVisible} />
 
         {areArtifactsVisible && (
