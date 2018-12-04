@@ -4,6 +4,7 @@ import { Checkbox, Dropdown } from 'semantic-ui-react';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { isEmpty } from '@lib/collection';
 
 import {
   query,
@@ -72,14 +73,10 @@ class OrganizationForm extends React.Component<IProps, IState> {
     const { owner } = this.state;
     const { t } = this.props;
 
-    if (!owner) {
-      this.setState({
-        ownerError: t('admin.settings.organizations.emptyOwner')
-      });
-    } else {
-      this.setState({ ownerError: '' });
-    }
-    return owner;
+    const ownerError = isEmpty(owner) ? t('admin.settings.organizations.emptyOwner') : '';
+    this.setState({ownerError});
+
+    return !isEmpty(owner);
   }
 
   submit = async (e) => {
