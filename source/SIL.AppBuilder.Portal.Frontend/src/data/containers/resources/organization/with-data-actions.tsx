@@ -58,7 +58,7 @@ export function withDataActions<T>(WrappedComponent) {
     createRecord = async (attributes: OrganizationAttributes, relationships) => {
 
       const { dataStore } = this.props;
-
+      
       await dataStore.update(
         q => q.addRecord({
           type: 'organization',

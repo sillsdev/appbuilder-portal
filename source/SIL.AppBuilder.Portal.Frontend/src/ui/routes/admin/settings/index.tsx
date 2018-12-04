@@ -6,6 +6,7 @@ import { withLayout } from '@ui/components/layout';
 import Navigation from './navigation';
 import { Switch, Route } from 'react-router-dom';
 import OrganizationsRoute from '@ui/routes/admin/settings/organizations';
+import WorkflowDefinitionsRoute from '@ui/routes/admin/settings/workflow-definitions';
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 
@@ -31,6 +32,11 @@ class AdminSettingsRoute extends React.Component<IProps> {
             <Switch>
               <Route path={pathName} render={(routeProps) => (
                 <OrganizationsRoute {...routeProps} />
+              )} />
+            </Switch>
+            <Switch>
+              <Route path={pathName} render={(routeProps) => (
+                <WorkflowDefinitionsRoute {...routeProps} />
               )} />
             </Switch>
           </div>

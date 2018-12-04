@@ -62,6 +62,6 @@ export default compose(
   })),
   withLoader(({organizations}) => !organizations),
   withProps(({organizations}) => ({
-    organizations: organizations.sort(compareVia((org) => attributesFor(org.name)))
+    organizations: organizations.sort(compareVia((org) => attributesFor(org).name))
   }))
 )(ListOrganization);
