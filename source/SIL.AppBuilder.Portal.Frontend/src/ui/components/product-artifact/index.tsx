@@ -33,15 +33,6 @@ type IProps =
   & IOwnProps
   & i18nProps;
 
-const mapRecordsToProps = (passedProps) => {
-  const { product } = passedProps;
-
-  return {
-    productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
-    artifacts: q => q.findRelatedRecords(product, 'artifacts')
-  };
-};
-
 class ProductArtifact extends React.Component<IProps, IState> {
   state = { areArtifactsVisible: false };
 
@@ -95,5 +86,12 @@ class ProductArtifact extends React.Component<IProps, IState> {
 
 export default compose<IProps, IExpectedProps>(
   withTranslations,
-  withOrbit(mapRecordsToProps)
+  withOrbit((passedProps: IExpectedProps) => {
+    const { product } = passedProps;
+
+    return {
+      productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
+      artifacts: q => q.findRelatedRecords(product, 'artifacts')
+    };
+  })
 )(ProductArtifact);
