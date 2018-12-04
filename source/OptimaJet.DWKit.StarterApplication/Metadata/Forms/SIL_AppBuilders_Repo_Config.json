@@ -50,10 +50,10 @@
         "readOnly": true
       },
       {
-        "key": "message_1",
-        "data-buildertype": "message",
-        "header": "Instructions",
-        "content": "Paste the above \"Repository Location\" into the \"Publishing\" app configuration page."
+        "key": "staticcontent_1",
+        "data-buildertype": "staticcontent",
+        "content": "<h3>Instructions</h3>\n<ul>\n<li>Paste the above \"Repository Location\" into the \"Publishing\" app configuration page. </li>\n<li>Click \"Send\" in the \"Publishing\" app configuration page and successfully upload the data to the app publishing repository.\n</li>\n\n",
+        "isHtml": true
       }
     ]
   }

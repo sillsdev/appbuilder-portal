@@ -1,24 +1,25 @@
-import React = require("react");
+import * as React from 'react';
 import { WithDataProps } from "react-orbitjs";
 
-import { TaskResource } from "@data";
+import { IUserTaskListProps } from '@data/containers/resources/user-task';
 import { isEmpty } from "@lib/collection";
 import { i18nProps } from '@lib/i18n';
 
 import Row from "./row";
 
 export interface IOwnProps {
-  tasks: TaskResource[];
 }
 
 export type IProps =
   & IOwnProps
+  & IUserTaskListProps
   & WithDataProps
   & i18nProps;
 
 export default class Display extends React.Component<IProps> {
+  state = { data: {}, errors: {} };
   render() {
-    const { tasks, t } = this.props;
+    const { userTasks, t } = this.props;
 
     const cellClasses = 'd-xs-none d-md-table-cell';
     const cellSecondaryClasses = 'd-xs-none d-sm-table-cell flex align-items-center';
@@ -39,14 +40,14 @@ export default class Display extends React.Component<IProps> {
             </tr>
           </thead>
           <tbody>
-            { tasks && tasks.map(( task, i ) => (
+            { userTasks && userTasks.map(( task, i ) => (
               <Row key={i}
                 cellClasses={cellClasses}
                 cellSecondaryClasses={cellSecondaryClasses}
-                task={task} />
+                userTask={task} />
             )) }
 
-            { isEmpty(tasks) && (
+            { isEmpty(userTasks) && (
               <tr>
                 <td colSpan={6}>
                   <p>{t('tasks.noTasksDescription')}</p>

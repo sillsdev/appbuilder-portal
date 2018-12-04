@@ -54,20 +54,6 @@
         "sortable": true,
         "filterable": false,
         "resizable": false
-      },
-      {
-        "key": "id",
-        "name": "ID",
-        "sortable": true,
-        "filterable": false,
-        "resizable": false
-      },
-      {
-        "key": "workflow",
-        "name": "Workflow",
-        "sortable": true,
-        "filterable": false,
-        "resizable": false
       }
     ],
     "editForm": "SIL_AppBuilders_Product_Definition",

@@ -54,7 +54,7 @@ describe('Acceptance | Pagination', () => {
 
         navigateTo(screen.path);
 
-        it('Pagination is not displayed',() => {
+        xit('Pagination is not displayed',() => {
           expect(app.isPaginationVisible).to.equal(false);
         });
 
@@ -70,7 +70,7 @@ describe('Acceptance | Pagination', () => {
 
         navigateTo(screen.path);
 
-        it('Pagination is not displayed', () => {
+        xit('Pagination is not displayed', () => {
           expect(app.isPaginationVisible).to.equal(false);
         });
 

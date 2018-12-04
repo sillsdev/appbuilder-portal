@@ -37,6 +37,7 @@ let config = {
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),
+    // WorkflowApp: locate('src/ui/routes/workflow/app.tsx'),
   },
   module: {
     rules: moduleRules
@@ -66,14 +67,7 @@ let config = {
   optimization: {
     runtimeChunk: 'single',
     splitChunks: {
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          enforce: true,
-          chunks: 'all'
-        }
-      }
+      chunks: 'all',
     }
   }
 };
@@ -99,7 +93,7 @@ if (isDevelopment) {
     overlay: true,
     progress: true,
     proxy: [{
-      context: ['/api', '/ui', '/configapi'],
+      context: ['/api', '/ui', '/configapi', '/account', '/data', '/workflow'],
       target: `http://${process.env.API_HOST}`
     }]
   }

@@ -9,10 +9,11 @@ using OptimaJet.DWKit.Core.View;
 using OptimaJet.DWKit.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     public class ConfigAPIController : Controller
     {
         private IHostingEnvironment _env;
@@ -39,7 +40,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             }
             return View("Admin");
         }
-
+        
         [Route("ConfigAPI")]
         public async Task<ActionResult> API()
         {
@@ -53,7 +54,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             {
                 pars.Add(item.Key, item.Value);
             }
-
+            
             if(Request.HasFormContentType)
             {
                 foreach (var item in Request.Form)

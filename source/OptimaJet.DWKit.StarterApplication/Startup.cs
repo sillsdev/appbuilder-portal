@@ -23,6 +23,8 @@ using OptimaJet.DWKit.StarterApplication.Utility;
 using React.AspNet;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using Microsoft.AspNetCore.SignalR;
+using OptimaJet.DWKit.StarterApplication.Repositories;
+using Microsoft.AspNetCore.Http;
 using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication
@@ -134,8 +136,8 @@ namespace OptimaJet.DWKit.StarterApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, 
-                                      IHostingEnvironment env, 
+        public virtual void Configure(IApplicationBuilder app,
+                                      IHostingEnvironment env,
                                       ILoggerFactory loggerFactory,
                                       IServiceScopeFactory serviceScopeFactory,
                                       IServiceProvider serviceProvider)

@@ -176,7 +176,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
-    <Transition Name="RepoConfig_SynchronizeData_1" To="SynchronizeData" From="RepoConfig" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="RepoConfig_SynchronizeData_1" To="Product Build" From="RepoConfig" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
         <Restriction Type="Allow" NameRef="Admins" />
@@ -187,7 +187,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer />
+      <Designer X="300" Y="332" />
     </Transition>
     <Transition Name="SynchronizeData_Activity_1_1" To="Product Build" From="SynchronizeData" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -218,7 +218,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildFailed" ConditionInversion="false" />
       </Conditions>
-      <Designer X="478" Y="364" />
+      <Designer X="463" Y="363" />
     </Transition>
     <Transition Name="Check Product Build_Activity_1_1" To="App Store Preview" From="Check Product Build" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>

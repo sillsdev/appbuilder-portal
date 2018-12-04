@@ -64,7 +64,8 @@ const plugins = [
     "AUTH0_CLIENT_ID",
     "AUTH0_SCOPE",
     "API_HOST",
-    "HAS_API"
+    "HAS_API",
+    "NODE_ENV",
   ])
 ];
 

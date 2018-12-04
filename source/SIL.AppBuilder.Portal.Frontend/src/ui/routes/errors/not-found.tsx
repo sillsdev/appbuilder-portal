@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { withTranslations } from '@lib/i18n';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 export const pathName = '/not-found';
 
