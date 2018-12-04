@@ -106,6 +106,47 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
             Assert.True(org.PublicByDefault);
 
         }
+        [Fact]
+        public async Task Create_Organization_With_Owner()
+        {
+            TestDataSetup();
+
+            var content = new
+            {
+                data = new
+                {
+                    type = "organizations",
+                    attributes = new Dictionary<string, string>()
+                    {
+                        {"name", "testorgwithowner"},
+                        {"website-url", "http://test.org"},
+                        {"build-engine-url", "http://buildengine.com"},
+                        {"build-engine-api-access-token", "4323864"},
+                        {"use-sil-build-infrastructure", "false"},
+                        {"public-by-default", "false"}
+                    },
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                        { "id", user2.Id.ToString() }
+                                }}}}
+                    }
+                }
+            };
+            var response = await Post("/api/organizations/", content);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            var org = await Deserialize<Organization>(response);
+
+            Assert.Equal(user2.Id, org.OwnerId);
+            Assert.False(org.UseSilBuildInfrastructure);
+            Assert.False(org.PublicByDefault);
+            var orgs = ReadTestData<AppDbContext, Organization>();
+            Assert.Equal(4, orgs.Count);
+            var newOrg = orgs.First(a => a.Name == "testorgwithowner");
+            Assert.Equal(user2.Id, newOrg.OwnerId);
+        }
 
     }
 }
