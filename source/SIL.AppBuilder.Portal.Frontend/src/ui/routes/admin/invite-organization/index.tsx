@@ -10,6 +10,8 @@ import { OrganizationInviteAttributes, TYPE_NAME } from '@data/models/organizati
 import { withQueryParams, IProvidedQueryParams } from '@lib/query-string';
 
 import Display from './display';
+import Header from '@ui/components/header/only-logo';
+
 import { withTranslations, i18nProps  } from '@lib/i18n';
 
 export type IProps =
@@ -20,7 +22,6 @@ export type IProps =
   & i18nProps;
 
 export class InviteOrganization extends React.Component<IProps> {
-
   submit = async (payload: OrganizationInviteAttributes) => {
     try {
       await this.create(payload);
@@ -45,13 +46,16 @@ export class InviteOrganization extends React.Component<IProps> {
     const { queryParams, t } = this.props;
 
     return (
-      <div className='ui container p-t-lg'>
-        <h1 className='title page-heading-border p-b-md m-b-lg'>
-          {t('newOrganization.title')}
-        </h1>
-        <div>
-          <h3 className='m-b-lg'>{t('common.general')}</h3>
-          <Display onSubmit={this.submit} { ...queryParams } />
+      <div className='flex flex-column flex-grow'>
+        <Header />
+        <div className='ui container p-t-lg'>
+          <h1 className='title page-heading-border p-b-md m-b-lg'>
+            {t('newOrganization.title')}
+          </h1>
+          <div>
+            <h3 className='m-b-lg'>{t('common.general')}</h3>
+            <Display onSubmit={this.submit} { ...queryParams } />
+          </div>
         </div>
       </div>
     );

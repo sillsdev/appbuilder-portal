@@ -9,6 +9,8 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using Newtonsoft.Json;
+using System.Net;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -16,22 +18,28 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
     {
         public IRecurringJobManager RecurringJobManager { get; }
         public WebRequestWrapper WebRequestWrapper { get; }
+        public IWebClient WebClient { get; }
         public IJobRepository<Product, Guid> ProductRepository { get; }
         public IJobRepository<ProductArtifact> ProductArtifactRepository { get; }
+        public IJobRepository<ProductBuild> ProductBuildRepository { get; }
 
         public BuildEngineBuildService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
             WebRequestWrapper webRequestWrapper,
+            IWebClient webClient,
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<ProductArtifact> productArtifactRepository,
+            IJobRepository<ProductBuild> productBuildRepository,
             IJobRepository<SystemStatus> systemStatusRepository
         ) : base(buildEngineApi, systemStatusRepository)
         {
             RecurringJobManager = recurringJobManager;
             WebRequestWrapper = webRequestWrapper;
+            WebClient = webClient;
             ProductRepository = productRepository;
             ProductArtifactRepository = productArtifactRepository;
+            ProductBuildRepository = productBuildRepository;
         }
         public void CreateBuild(Guid productId)
         {
@@ -61,9 +69,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 // Throw exception to retry
                 throw new Exception("Connection not available");
             }
+
+            // Clear current BuildId used by Workflow
+            product.WorkflowBuildId = 0;
+            await ProductRepository.UpdateAsync(product);
+
             await CreateBuildEngineBuildAsync(product);
-            return;
         }
+
         public void CheckBuild(Guid productId)
         {
             CheckBuildAsync(productId).Wait();
@@ -127,6 +140,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             if ((buildResponse != null) && (buildResponse.Id != 0))
             {
                 product.WorkflowBuildId = buildResponse.Id;
+                var productBuild = new ProductBuild
+                {
+                    ProductId = product.Id,
+                    BuildId = product.WorkflowBuildId
+                };
+                await ProductBuildRepository.CreateAsync(productBuild);
                 await ProductRepository.UpdateAsync(product);
                 var monitorJob = Job.FromExpression<BuildEngineBuildService>(service => service.CheckBuild(product.Id));
                 RecurringJobManager.AddOrUpdate(GetHangfireToken(product.Id), monitorJob, "* * * * *");
@@ -174,17 +193,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             if (buildEngineBuild.Artifacts != null)
             {
+                var productBuild = await ProductBuildRepository.Get()
+                    .Where(pb => pb.ProductId == product.Id && pb.BuildId == product.WorkflowBuildId)
+                    .FirstOrDefaultAsync();
                 foreach(KeyValuePair<string, string> entry in buildEngineBuild.Artifacts)
                 {
-                    var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product.Id);
+                    var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product.Id, productBuild);
                     if ((artifactModifiedDate != null) && (artifactModifiedDate > mostRecentArtifactDate))
                     {
                         mostRecentArtifactDate = artifactModifiedDate;
                     }
                 }
+
+                product.DateBuilt = mostRecentArtifactDate;
+                await ProductRepository.UpdateAsync(product);
             }
-            product.DateBuilt = mostRecentArtifactDate;
-            await ProductRepository.UpdateAsync(product);
         }
         protected void BuildCreationFailed(Product product, BuildResponse buildEngineBuild)
         {
@@ -200,16 +223,31 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             return "CreateBuildMonitor" + productId.ToString();
         }
-        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, Guid productId)
+        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, Guid productId, ProductBuild productBuild)
         {
             var productArtifact = new ProductArtifact
             {
                 ProductId = productId,
+                ProductBuildId = productBuild.Id,
                 ArtifactType = key,
                 Url = value
             };
             var updatedArtifact = WebRequestWrapper.GetFileInfo(productArtifact);
             await ProductArtifactRepository.CreateAsync(updatedArtifact);
+
+#pragma warning disable RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
+            if (key == "version" && updatedArtifact.ContentType == "application/json")
+#pragma warning restore RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
+            {
+                var contents = WebClient.DownloadString(value);
+                var version = JsonConvert.DeserializeObject<Dictionary<string, string>>(contents);
+                if (version.ContainsKey("version"))
+                {
+                    productBuild.Version = version["version"];
+                    await ProductBuildRepository.UpdateAsync(productBuild);
+                }
+            }
+
             return updatedArtifact.LastModified;
         }
         public async Task<BuildEngineStatus> GetStatusAsync(Guid productId)

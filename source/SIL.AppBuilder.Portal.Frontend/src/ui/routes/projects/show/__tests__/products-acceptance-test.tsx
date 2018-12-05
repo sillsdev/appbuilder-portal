@@ -175,20 +175,20 @@ describe('Acceptance | Project View | Products', () => {
 
         it("is only requested once.", () => {
           expect(requestCount).to.equal(1);
-        });
+        }).timeout(4000);
 
         it('product is added to product list', () => {
           const productList = page.productsInteractor.itemsText();
           const productsText = productList.map(item => item.text);
           expect(productsText).to.contain('Publish Android app to S3');
           expect(productsText).to.contain('Publish Android App to Google Play');
-        });
+        }).timeout(4000);
 
         it('project product is selected',() => {
           const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
           expect(selector.items(0).isChecked).to.be.true;
           expect(selector.items(1).isChecked).to.be.true;
-        });
+        }).timeout(4000);
       });
     });
 

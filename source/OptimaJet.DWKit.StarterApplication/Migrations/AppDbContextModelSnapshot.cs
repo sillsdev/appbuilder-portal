@@ -302,15 +302,41 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<long?>("FileSize");
 
+                    b.Property<int>("ProductBuildId");
+
                     b.Property<Guid>("ProductId");
 
                     b.Property<string>("Url");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductBuildId");
+
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductArtifacts");
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductBuild", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BuildId");
+
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<DateTime?>("DateUpdated");
+
+                    b.Property<Guid>("ProductId");
+
+                    b.Property<string>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductBuilds");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductDefinition", b =>
@@ -736,8 +762,21 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductArtifact", b =>
                 {
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ProductBuild", "ProductBuild")
                         .WithMany("ProductArtifacts")
+                        .HasForeignKey("ProductBuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductBuild", b =>
+                {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                        .WithMany("ProductBuilds")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

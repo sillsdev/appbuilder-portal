@@ -29,6 +29,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var orgInviteEntity = modelBuilder.Entity<OrganizationInvite>();
             var groupMemberEntity = modelBuilder.Entity<GroupMembership>();
             var productEntity = modelBuilder.Entity<Product>();
+            var productBuildEntity = modelBuilder.Entity<ProductBuild>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
@@ -107,9 +108,14 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasForeignKey(os => os.OrganizationId);
 
             productEntity
-                .HasMany(p => p.ProductArtifacts)
-                .WithOne(pa => pa.Product)
-                .HasForeignKey(pa => pa.ProductId);
+                .HasMany(p => p.ProductBuilds)
+                .WithOne(pb => pb.Product)
+                .HasForeignKey(pb => pb.ProductId);
+
+            productBuildEntity
+                .HasMany(pb => pb.ProductArtifacts)
+                .WithOne(pa => pa.ProductBuild)
+                .HasForeignKey(pa => pa.ProductBuildId);
 
             userEntity
                 .HasIndex(u => u.WorkflowUserId);
@@ -178,5 +184,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<UserTask> UserTasks { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ProductTransition> ProductTransitions { get; set; }
+        public DbSet<ProductBuild> ProductBuilds { get; set; }
     }
 }

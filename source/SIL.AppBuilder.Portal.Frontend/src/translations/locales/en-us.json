@@ -52,6 +52,7 @@
     "organizationProjects": "Organization Projects",
     "users": "Users",
     "organizationSettings": "Organization Settings",
+    "adminSettings": "Admin Settings",
     "projectDirectory": "Project Directory",
     "addProject": "Add Project"
   },
@@ -173,6 +174,8 @@
   },
   "project": {
     "title": "Project",
+    "organizationContact": "Organization Contact: ",
+    "projectOwner": "Project Owner: ",
     "newProject": "New Project",
     "projectName": "Project Name",
     "noAvailableGroups": "There are no available groups for the selected organization",
@@ -216,6 +219,7 @@
       "filename": "Filename",
       "published": "Published",
       "unpublished": "Unpublished",
+      "numArtifacts": "{amount, plural, =0 {No Artifacts} other {{ amount } Artifacts}}",
       "noArtifacts": "No artifacts",
       "rebuild": "rebuild",
       "creationInProgress": "Pending: You cannot add a product until the project setup has been completed."
@@ -316,6 +320,30 @@
       "unlock": {
         "success": "User is active. The user will now be able to log in to Scriptoria.",
         "error": "there was an error activating the user"
+      }
+    }
+  },
+  "admin": {
+    "settings": {
+      "title": "Admin settings",
+      "navigation": {
+        "organizations": "Organizations"
+      },
+      "organizations": {
+        "title": "Organizations",
+        "name": "Organization Name",
+        "owner": "Owner",
+        "emptyOwner": "Need to select an owner for this organization",
+        "add": "Add Organization",
+        "addSuccess": "Organization added",
+        "edit": "Edit Organization",
+        "editSuccess": "Organization updated",
+        "websiteURL": "Website URL",
+        "buildEngineURL": "Build Engine URL",
+        "accessToken": "Build Engine API Access Token",
+        "logoURL": "Logo URL",
+        "publicByDefault": "Public By Default",
+        "publicByDefaultDescription": "Projects created under this organization are set to public by default"
       }
     }
   }

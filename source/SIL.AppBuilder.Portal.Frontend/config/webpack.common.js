@@ -66,6 +66,7 @@ const plugins = [
     "API_HOST",
     "HAS_API",
     "NODE_ENV",
+    "IS_TESTING",
   ])
 ];
 

@@ -172,6 +172,14 @@ Dropdown Menu
   }
 }
 
+.ui.dropdown.custom {
+  display: flex;
+
+  .text {
+    flex-grow: 1;
+  }
+}
+
 /***********************************
 Table
 ************************************/

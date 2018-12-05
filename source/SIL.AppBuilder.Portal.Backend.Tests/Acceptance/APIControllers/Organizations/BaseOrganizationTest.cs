@@ -12,6 +12,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
         {
         }
         public User CurrentUser { get; set; }
+        public User user2 { get; set; }
         public Organization org1 { get; private set; }
         public Organization org2 { get; private set; }
         public Organization org3 { get; private set; }
@@ -32,6 +33,14 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
                 Name = "Test Testenson",
                 GivenName = "Test",
                 FamilyName = "Testenson"
+            });
+            user2 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id2",
+                Email = "test-email2@test.test",
+                Name = "Test Testenson2",
+                GivenName = "Test",
+                FamilyName = "Testenson2"
             });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {

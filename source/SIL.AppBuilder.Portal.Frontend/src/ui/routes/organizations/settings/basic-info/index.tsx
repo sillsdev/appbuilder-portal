@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
+import { withTranslations, i18nProps } from '@lib/i18n';
 import { OrganizationAttributes, OrganizationResource } from '@data/models/organization';
 
 export const pathName = '/organizations/:orgId/settings';
@@ -19,7 +19,7 @@ export interface Params {
 
 export interface IProps {
   match: Match<Params>;
-  update: (payload: OrganizationAttributes) => void;
+  updateOrganization: (payload: OrganizationAttributes) => void;
   organization: OrganizationResource;
 }
 
@@ -42,9 +42,9 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
   onSubmit = (e) => {
     e.preventDefault();
 
-    const { update } = this.props;
+    const { updateOrganization } = this.props;
 
-    update(this.state);
+    updateOrganization(this.state);
   }
 
   render() {
@@ -55,13 +55,16 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
     } = this;
 
     return (
-      <form className='ui form sub-page-content' onSubmit={this.onSubmit}>
+      <form
+        data-test-org-settings-basic-info
+        className='ui form sub-page-content' onSubmit={this.onSubmit}>
         <div className='flex-column-reverse-xs flex-row-sm justify-content-space-between m-b-md'>
           <div className='flex-grow'>
             <h2 className='d-xs-none bold m-b-xl'>{t('org.basicTitle')}</h2>
             <div className='ui field fm-b-md'>
               <label>{t('org.orgName')}</label>
               <input
+                data-test-name
                 value={name}
                 onChange={mut('name')}
                 placeholder={t('org.orgName')}
@@ -70,6 +73,7 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
             <div className='ui field fm-b-md'>
               <label>{t('org.logoUrl')}</label>
               <input
+                data-test-logo-url
                 value={logoUrl}
                 onChange={mut('logoUrl')}
                 placeholder={t('org.logoUrl')}
@@ -90,6 +94,7 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
         </div>
 
         <button
+          data-test-submit
           className='
             m-t-md-xs-only w-100-xs-only
             p-md-xs-only m-b-md-xs-only
@@ -103,6 +108,6 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
   }
 }
 
-export default compose(
-  translate('translations')
+export default compose<IProps & i18nProps, IProps>(
+  withTranslations
 )( BasicInfoRoute );

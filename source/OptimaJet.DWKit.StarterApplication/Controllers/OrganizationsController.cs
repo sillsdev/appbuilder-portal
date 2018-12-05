@@ -24,7 +24,10 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         [HttpPost]
         public override async Task<IActionResult> PostAsync([FromBody] Organization entity)
         {
-            entity.Owner = CurrentUser;
+            if (entity.Owner == null)
+            {
+                entity.Owner = CurrentUser;
+            }
 
             return await base.PostAsync(entity);
         }

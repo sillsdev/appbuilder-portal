@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import { ProductResource } from '@data';
-import ProductArtifact from './product-artifact';
+import ProductArtifact from '@ui/components/product-artifact';
 
 import './styles.scss';
 

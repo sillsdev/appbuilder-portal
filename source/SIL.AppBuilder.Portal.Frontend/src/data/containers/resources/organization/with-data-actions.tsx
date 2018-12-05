@@ -1,23 +1,27 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
+import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { create, update } from '@data/store-helpers';
 import {
   defaultOptions,
   OrganizationResource,
   ProductDefinitionResource,
   OrganizationProductDefinitionResource,
   OrganizationStoreResource,
+  StoreResource,
+  UserResource,
   relationshipFor
 } from '@data';
 
-import { requireProps } from '@lib/debug';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProvidedProps {
+  createRecord: (attributes: OrganizationAttributes, relationships) => Promise<any>;
   updateAttribute: (attribute: string, value: any) => Promise<any>;
-  updateAttributes: (attrs: OrganizationAttributes) => any;
+  updateAttributes: (attrs: OrganizationAttributes, relationships?:any) => any;
+  updateOwner: (owner: UserResource) => any;
   updateProductDefinition: (productDefinition: ProductDefinitionResource) => any;
+  updateStore: (store: StoreResource) => any;
 }
 
 interface IOwnProps {
@@ -35,6 +39,10 @@ const mapRecordsToProps = (passedProps) => {
 
   const { organization } = passedProps;
 
+  if (!organization) {
+    return {};
+  }
+
   return {
     organizationProductDefinitions: q =>
       q.findRelatedRecords(organization, 'organizationProductDefinitions'),
@@ -47,23 +55,41 @@ export function withDataActions<T>(WrappedComponent) {
 
   class OrganizationDataActionWrapper extends React.Component<IProps & T> {
 
+    createRecord = async (attributes: OrganizationAttributes, relationships) => {
+
+      const { dataStore } = this.props;
+
+      await create(dataStore, 'organization', {
+        attributes,
+        relationships
+      });
+    }
+
     updateAttribute = (attribute: string, value: any) => {
       const { organization, dataStore } = this.props;
-
       return dataStore.update(
         q => q.replaceAttribute(organization, attribute, value),
         defaultOptions()
       );
     }
 
-    updateAttributes = (attributes: OrganizationAttributes) => {
+    updateAttributes = (attributes: OrganizationAttributes, relationships?: any) => {
       const { organization, dataStore } = this.props;
-      const { id, type } = organization;
+      return update(dataStore, organization, {
+        attributes,
+        relationships
+      });
+    }
+
+    updateOwner = (owner) => {
+
+      const { organization, dataStore } = this.props;
 
       return dataStore.update(q =>
-        q.replaceRecord({ id, type, attributes }),
+        q.replaceRelatedRecord(organization,'owner',owner),
         defaultOptions()
       );
+
     }
 
     updateProductDefinition = (productDefinition) => {
@@ -126,8 +152,10 @@ export function withDataActions<T>(WrappedComponent) {
 
     render() {
       const actionProps = {
+        createRecord: this.createRecord,
         updateAttributes: this.updateAttributes,
         updateAttribute: this.updateAttribute,
+        updateOwner: this.updateOwner,
         updateProductDefinition: this.updateProductDefinition,
         updateStore: this.updateStore
       };
@@ -138,8 +166,7 @@ export function withDataActions<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit(mapRecordsToProps),
-    requireProps('organization')
+    withOrbit(mapRecordsToProps)
   )(OrganizationDataActionWrapper);
 
 }

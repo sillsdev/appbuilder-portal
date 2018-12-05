@@ -19,7 +19,7 @@ type IProps =
   & TimezoneProps
   & i18nProps;
 
-class Timezone extends React.Component<IProps> {
+class Timezone extends React.PureComponent<IProps> {
 
   render() {
 
@@ -47,7 +47,7 @@ class Timezone extends React.Component<IProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, IOwnProps>(
   withTranslations,
   withMomentTimezone
 )(Timezone);

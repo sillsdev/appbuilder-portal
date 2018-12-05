@@ -76,7 +76,7 @@ const setup = function(config) {
     recordIfMissing: false,
     matchRequestsBy: {
       order: false,
-      headers: true,
+      // headers: false,
       // url: {
       //   protocol: true,
       //   username: true,
@@ -120,6 +120,9 @@ const setup = function(config) {
   server.options('*anypath').intercept((req, res) => {
     req.headers.Allow = 'OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE';
   });
+
+  // by default, unless overridden manually, we should force a 401 on current-user
+  this.mockGet(401, '/users/current-user');
 
   this.mockGet(200, '/user-tasks', { "data": [] });
 
