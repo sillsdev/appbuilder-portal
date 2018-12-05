@@ -34,7 +34,7 @@ export function withDataActions<T>(WrappedComponent) {
     createRecord = async (attributes: WorkflowDefinitionAttributes, relationships) => {
 
       const { dataStore } = this.props;
-      
+
       await create(dataStore,'workflowDefinition', {
         attributes,
         relationships

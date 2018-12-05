@@ -69,8 +69,6 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       storeType: storeType || null,
       storeTypeError: ''
     };
-    
-
   }
 
   isValidForm = () => {
@@ -115,9 +113,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
   }
 
   storeTypeSelection = storeType => e => {
-    this.setState({
-      storeType: storeType
-    });
+    this.setState({ storeType });
   }
 
   render() {
@@ -167,8 +163,8 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
                   <Dropdown.Menu>
                     {
                       storeTypes.map((s, i) => {
-                        const { name: name } = attributesFor(s);
-                        return <Dropdown.Item key={i} text={name} onClick={this.storeTypeSelection(s)} />;
+                        const { name: typeName } = attributesFor(s);
+                        return <Dropdown.Item key={i} text={typeName} onClick={this.storeTypeSelection(s)} />;
                       })
                     }
                   </Dropdown.Menu>

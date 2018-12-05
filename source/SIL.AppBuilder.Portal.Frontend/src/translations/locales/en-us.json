@@ -356,7 +356,7 @@
         "edit": "Edit Workflow Definition",
         "storeType": "Store Type",
         "enabled": "Enabled",
-        "enabledDescription": "Workflow descriptions may not be used until enabled.",
+        "enabledDescription": "Workflow definitions may not be used until enabled.",
         "workflowAdded": "Workflow Definition added",
         "workflowUpdated": "Workflow Definition updated",
         "emptyStoreType": "Need to select a store type for this workflow definition"

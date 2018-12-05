@@ -215,19 +215,6 @@ const schemaDefinition: SchemaSettings = {
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
       }
     },
-    workflowDefinition: {
-      keys: { remoteId: {} },
-      attributes: {
-        name: { type: 'string' },
-        description: { type: 'string' },
-        workflowScheme: { type: 'string' },
-        workflowBusinessFlow: { type: 'string' },
-        enabled: { type: 'boolean'}
-      },
-      relationships: {
-        storeType: { type: 'hasOne', model: 'storeType', inverse: 'workflowDefinitions'}
-      }
-    },
     notification: {
       keys: { remoteId: {} },
       attributes: {
