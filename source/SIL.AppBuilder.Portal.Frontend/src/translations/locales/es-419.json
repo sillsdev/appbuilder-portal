@@ -52,6 +52,7 @@
     "organizationProjects": "Proyectos de organización",
     "users": "Usuarios",
     "organizationSettings": "Configuración de organización",
+    "adminSettings": "Admin Settings",
     "projectDirectory": "Directorio de proyectos",
     "addProject": "Agregar proyectos"
   },
@@ -321,6 +322,30 @@
       "unlock": {
         "success": "Usuario activo. El usuario ahora podrá iniciar sesión en Scriptoria.",
         "error": "ocurrió un error al activar el usuario"
+      }
+    }
+  },
+  "admin": {
+    "settings": {
+      "title": "Admin settings",
+      "navigation": {
+        "organizations": "Organizations"
+      },
+      "organizations": {
+        "title": "Organizations",
+        "name": "Organization Name",
+        "owner": "Owner",
+        "emptyOwner": "Need to select an owner for this organization",
+        "add": "Add Organization",
+        "addSuccess": "Organization added",
+        "edit": "Edit Organization",
+        "editSuccess": "Organization updated",
+        "websiteURL": "Website URL",
+        "buildEngineURL": "Build Engine URL",
+        "accessToken": "Build Engine API Access Token",
+        "logoURL": "Logo URL",
+        "publicByDefault": "Public By Default",
+        "publicByDefaultDescription": "Projects created under this organization are set to public by default"
       }
     }
   }
