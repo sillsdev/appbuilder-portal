@@ -329,7 +329,8 @@
     "settings": {
       "title": "Admin settings",
       "navigation": {
-        "organizations": "Organizations"
+        "organizations": "Organizations",
+        "workflowdefinitions": "Workflow Definitions"
       },
       "organizations": {
         "title": "Organizations",
@@ -346,6 +347,21 @@
         "logoURL": "Logo URL",
         "publicByDefault": "Public By Default",
         "publicByDefaultDescription": "Projects created under this organization are set to public by default"
+      },
+      "workflowDefinitions": {
+        "title": "Workflow Definitions",
+        "name": "Workflow Definition Name",
+        "description": "Description",
+        "workflowScheme": "Workflow Scheme",
+        "workflowBusinessFlow": "Workflow Business Flow",
+        "add": "Add Workflow Definition",
+        "edit": "Edit Workflow Definition",
+        "storeType": "Store Type",
+        "enabled": "Enabled",
+        "enabledDescription": "Workflow definitions may not be used until enabled.",
+        "workflowAdded": "Workflow Definition added",
+        "workflowUpdated": "Workflow Definition updated",
+        "emptyStoreType": "Need to select a store type for this workflow definition"
       }
     }
   }
