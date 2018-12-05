@@ -21,9 +21,7 @@ class Row extends React.Component<IProps> {
           flex-row align-items-center
           ${isActive ? 'active' : ''}`;
 
-    const logo = logoUrl ?
-      <img src={logoUrl} width='32' height='32' style={{background: 'white'}} /> :
-      '\u00A0';
+    const logo = logoUrl ? <img src={logoUrl} /> : '\u00A0';
 
     return (
       <Menu.Item
@@ -32,7 +30,11 @@ class Row extends React.Component<IProps> {
         name={name}
         onClick={onClick}>
 
-        <span className='list-thumbnail m-r-md'>
+        <span
+          className={`
+            list-thumbnail image-fill-container
+            m-r-md ${!logoUrl && 'bg-lighter-gray'}
+          `}>
           {logo}
         </span>
 
