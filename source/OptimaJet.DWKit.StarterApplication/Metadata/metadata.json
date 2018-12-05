@@ -1595,26 +1595,6 @@
       "triggers": [],
       "attributes": [
         {
-          "id": "f6338564-5a02-41fb-821c-9b6148f875bf",
-          "name": "AllowDownloads",
-          "type": "Boolean",
-          "typeId": 0,
-          "isNullable": false,
-          "isVirtual": false,
-          "isCalculated": false,
-          "isExtension": false
-        },
-        {
-          "id": "0ad60018-1aa7-41f9-8e8c-1c246a167ed7",
-          "name": "AutomaticBuilds",
-          "type": "Boolean",
-          "typeId": 0,
-          "isNullable": false,
-          "isVirtual": false,
-          "isCalculated": false,
-          "isExtension": false
-        },
-        {
           "id": "88282072-a7cb-4e32-b8dd-252e43f0d65f",
           "name": "DateArchived",
           "type": "DateTime",
@@ -1750,6 +1730,26 @@
           "id": "8835d06d-a91a-4289-a632-96d0d4fb48c2",
           "name": "WorkflowProjectUrl",
           "type": "String",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "3c77764a-b9d7-44a4-89b2-37871c247502",
+          "name": "AllowDownloads",
+          "type": "Boolean",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "b37387a3-33cd-48dd-925a-1eecca4634ea",
+          "name": "AutomaticBuilds",
+          "type": "Boolean",
           "typeId": 0,
           "isNullable": true,
           "isVirtual": false,
@@ -2080,6 +2080,36 @@
           "id": "e609adb7-8079-49ba-b9a6-cad9bda30541",
           "name": "Timezone",
           "type": "String",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "fb6ec978-2c2e-4494-954b-8c0b4294fda8",
+          "name": "DateCreated",
+          "type": "DateTime",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "9b8a5110-f685-43df-b411-32e4e5827e53",
+          "name": "DateUpdated",
+          "type": "DateTime",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "3b607921-ac9b-4d21-b163-ca86a43d61c6",
+          "name": "WorkflowUserId",
+          "type": "Guid",
           "typeId": 0,
           "isNullable": true,
           "isVirtual": false,
@@ -2880,6 +2910,85 @@
         {
           "id": "9fe8c791-cafa-448c-9505-22f4d047827a",
           "name": "Url",
+          "type": "String",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "debc9415-a4f2-41a7-a009-4551511ea416",
+          "referenceEntityId": "12c5f309-f8f8-41c0-b79e-1f17e2c17fbd",
+          "name": "ProductBuildId",
+          "typeId": 1,
+          "isNullable": false,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        }
+      ],
+      "primaryKeyAttribute": "Id"
+    },
+    {
+      "id": "12c5f309-f8f8-41c0-b79e-1f17e2c17fbd",
+      "name": "ProductBuilds",
+      "dbObjectName": "ProductBuilds",
+      "schemaName": "",
+      "attributes": [
+        {
+          "id": "e4ea61c8-ab9d-426c-9c93-6b80ec2b191c",
+          "name": "BuildId",
+          "type": "Int32",
+          "typeId": 0,
+          "isNullable": false,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "35a7225c-bb48-47ad-93cb-514b87ea8e72",
+          "name": "DateCreated",
+          "type": "DateTime",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "855d9e10-1529-4c7e-97ce-460b9947f460",
+          "name": "DateUpdated",
+          "type": "DateTime",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "c9b7c0bb-9787-4f26-8373-c8c398b92c0e",
+          "name": "Id",
+          "type": "Int32",
+          "typeId": 0,
+          "isNullable": false,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "6efc6e4c-8c2c-4758-a7a0-bc16012e050a",
+          "referenceEntityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
+          "name": "ProductId",
+          "typeId": 1,
+          "isNullable": false,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "9fd277fe-6fd5-440b-8d28-ea9340255c58",
+          "name": "Version",
           "type": "String",
           "typeId": 0,
           "isNullable": true,

@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_App_Store_Review",
-  "lastUpdate": "2018-11-29T11:56:45.5896145+00:00",
+  "lastUpdate": "2018-12-05T16:05:15.8381743+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -204,6 +204,7 @@
         {
           "id": "ec9b31f4-7010-1dc1-8660-59c4178f1105",
           "attributeId": "e1937119-1b61-499d-8888-28a3c71e0530",
+          "control": "id",
           "isEditable": true,
           "isLoadable": true
         },
@@ -217,6 +218,13 @@
           "id": "eec2e148-e3a3-e083-f79c-bcdc462aa424",
           "attributeId": "9fe8c791-cafa-448c-9505-22f4d047827a",
           "control": "link",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "dc457c5a-ba20-f468-6f19-efb064866775",
+          "attributeId": "debc9415-a4f2-41a7-a009-4551511ea416",
+          "control": "buildid",
           "isEditable": true,
           "isLoadable": true
         }
