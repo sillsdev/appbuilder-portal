@@ -69,7 +69,10 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
     }
 
     return compose(
-      query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }),
+            query(mapNetworkToProps, {
+              passthroughError: true,
+              useRemoteDirectly: true
+            }),
     )(WrappedComponent);
   };
 }

@@ -30,8 +30,7 @@ export default compose(
   }),
   withNetwork(),
   withLoader(({ error, projects }) => !error && !projects),
-  withProps(({ projects }) => ({
-    projects: projects.filter(resource => resource.type === PROJECT),
+  withProps(() => ({
     tableName: 'organization'
   })),
   withTableColumns({
