@@ -4,7 +4,9 @@ import { Switch, Route } from 'react-router-dom';
 
 import { requireAuth } from '@lib/auth';
 import InviteOrganization from './invite-organization';
-import SettingsRoute, { pathName as settingsPathName } from './settings';
+import AdminSettingsRoute, { pathName as settingsPathName } from './settings';
+import { withRole } from '@data/containers/with-role';
+import { ROLE } from '@data/models/role';
 
 export const pathName = '/admin';
 
@@ -13,12 +15,8 @@ class AdminRoute extends React.Component {
 
     return (
       <Switch>
-        <Route exact path={pathName} render={(routeProps) => (
-          <InviteOrganization {...routeProps} />
-        )} />
-        <Route path={settingsPathName} render={(routeProps) => (
-          <SettingsRoute {...routeProps} />
-        )} />
+        <Route exact path={pathName} component={InviteOrganization} />
+        <Route path={settingsPathName} component={AdminSettingsRoute} />
       </Switch>
     );
   }
@@ -26,5 +24,8 @@ class AdminRoute extends React.Component {
 
 
 export default compose(
-  requireAuth
+  requireAuth,
+  withRole(ROLE.SuperAdmin, {
+    redirectTo: '/'
+  }),
 )(AdminRoute);

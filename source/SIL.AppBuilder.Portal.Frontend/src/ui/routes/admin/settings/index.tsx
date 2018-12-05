@@ -6,8 +6,6 @@ import { withLayout } from '@ui/components/layout';
 import Navigation from './navigation';
 import { Switch, Route } from 'react-router-dom';
 import OrganizationsRoute from '@ui/routes/admin/settings/organizations';
-import { withRole } from '@data/containers/with-role';
-import { ROLE } from '@data/models/role';
 
 export const pathName = '/admin/settings';
 
@@ -29,9 +27,7 @@ class AdminSettingsRoute extends React.Component<IProps> {
           <Navigation/>
           <div className='m-l-lg flex-grow'>
             <Switch>
-              <Route path={pathName} render={(routeProps) => (
-                <OrganizationsRoute {...routeProps} />
-              )} />
+              <Route path={pathName} component={OrganizationsRoute} />
             </Switch>
           </div>
         </div>
@@ -45,7 +41,4 @@ class AdminSettingsRoute extends React.Component<IProps> {
 export default compose(
   withLayout,
   withTranslations,
-  withRole(ROLE.SuperAdmin, {
-    redirectTo: '/'
-  }),
 )(AdminSettingsRoute);

@@ -16,17 +16,10 @@ class OrganizationRoute extends React.Component {
     return (
       <div className='sub-page-content' data-test-admin-organizations>
         <Switch>
-          <Route exact path={listPathName} render={(routeProps) => (
-            <List {...routeProps} />
-          )} />
-          <Route path={addOrganizationPathName} render={(routeProps) => (
-            <AddOrganizationForm {...routeProps} />
-          )} />
-          <Route path={editOrganizationPathName} render={(routeProps) => (
-            <EditOrganizationForm {...routeProps} />
-          )} />
+          <Route exact path={listPathName} component={List} />
+          <Route path={addOrganizationPathName} component={AddOrganizationForm} />
+          <Route path={editOrganizationPathName} component={EditOrganizationForm} />
         </Switch>
-
       </div>
     );
   }

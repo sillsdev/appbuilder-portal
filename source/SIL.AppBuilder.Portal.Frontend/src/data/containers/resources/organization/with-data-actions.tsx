@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-
+import { create } from '@data/store-helpers';
 import {
   defaultOptions,
   OrganizationResource,
@@ -59,14 +59,10 @@ export function withDataActions<T>(WrappedComponent) {
 
       const { dataStore } = this.props;
 
-      await dataStore.update(
-        q => q.addRecord({
-          type: 'organization',
-          attributes,
-          relationships
-        }),
-        defaultOptions()
-      );
+      await create(dataStore,'organization', {
+        attributes,
+        relationships
+      });
     }
 
     updateAttribute = (attribute: string, value: any) => {
