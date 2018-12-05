@@ -48,7 +48,9 @@ export default compose(
     // _because_ of the subscription to the data store in withCache
     //
     // This could all be avoided if we develop a way to subscribe
-    // to updates of individual records via the query HoC
+    // to updates of individual records via the query HoC.
+    // though, we could manually subscribe to the individual records
+    // in the Row of each project. This is probably the best course of action.
     projects: projects.filter(
       resource => resource.type === PROJECT &&
         resource.attributes.dateArchived == null &&
