@@ -15,7 +15,7 @@ interface IOwnProps {
   projects: ProjectResource[];
   isLoading?: boolean;
   projectPath?: (id: string) => string;
-  withOptions?: boolean
+  withOptions?: boolean;
 }
 
 type IProps =
