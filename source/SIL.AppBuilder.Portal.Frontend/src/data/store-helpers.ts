@@ -139,7 +139,7 @@ export function buildRecordOptions<TAttrs, TRelationships>(options: IBuildNewOpt
   return {
     attributes,
     relationships
-  }
+  };
 }
 
 export function buildRelationships<TRelationships>(relationMap: TRelationships) {
