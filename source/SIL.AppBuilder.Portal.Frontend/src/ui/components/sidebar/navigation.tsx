@@ -97,6 +97,14 @@ class Navigation extends React.Component<IProps & i18nProps> {
           </RequireRole>
         ) }
 
+        <RequireRole roleName={ROLE.SuperAdmin}>
+          <MenuItem
+            name={t('sidebar.adminSettings')}
+            to={`/admin/settings/organizations`}
+            onClick={closeSidebar}
+          />
+        </RequireRole>
+
         <hr />
 
         <MenuItem

@@ -1,25 +1,30 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { Switch, Route } from 'react-router-dom';
 
 import { requireAuth } from '@lib/auth';
-
 import InviteOrganization from './invite-organization';
-import Header from '@ui/components/header/only-logo';
+import AdminSettingsRoute, { pathName as settingsPathName } from './settings';
+import { withRole } from '@data/containers/with-role';
+import { ROLE } from '@data/models/role';
 
 export const pathName = '/admin';
 
 class AdminRoute extends React.Component {
   render() {
     return (
-      <div className='flex flex-column flex-grow'>
-        <Header/>
-        <InviteOrganization />
-      </div>
+      <Switch>
+        <Route exact path={pathName} component={InviteOrganization} />
+        <Route path={settingsPathName} component={AdminSettingsRoute} />
+      </Switch>
     );
   }
 }
 
 
 export default compose(
-  requireAuth
+  requireAuth,
+  withRole(ROLE.SuperAdmin, {
+    redirectTo: '/'
+  }),
 )(AdminRoute);
