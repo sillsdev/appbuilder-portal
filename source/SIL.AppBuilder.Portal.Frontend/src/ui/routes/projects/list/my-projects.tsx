@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { withData as withCache } from 'react-orbitjs';
 
-import { idFromRecordIdentity, TEMP_DEFAULT_PAGE_SIZE, isRelatedTo } from '@data';
+import { idFromRecordIdentity, TEMP_DEFAULT_PAGE_SIZE } from '@data';
 import { PaginationFooter } from '@data/containers/api';
 import { withCurrentUser } from '@data/containers/with-current-user';
 import { withSorting } from '@data/containers/api/sorting';
