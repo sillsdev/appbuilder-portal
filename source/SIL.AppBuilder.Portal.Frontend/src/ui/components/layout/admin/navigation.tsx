@@ -19,6 +19,10 @@ class Navigation extends React.Component<IProps> {
           { to: '/admin/settings/organizations',
             text: t('admin.settings.navigation.organizations')
           },
+          {
+            to: '/admin/settings/workflow-definitions',
+            text: t('admin.settings.navigation.workflowdefinitions')
+          }
         ]}
       />
     );
