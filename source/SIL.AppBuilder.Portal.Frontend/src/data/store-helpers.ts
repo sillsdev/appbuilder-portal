@@ -1,6 +1,7 @@
 import Store from '@orbit/store';
 import { QueryBuilder, QueryOrExpression } from '@orbit/data';
 import { camelize } from '@orbit/utils';
+import * as qs from 'querystring';
 
 import { ResourceObject, AttributesObject } from 'jsonapi-typescript';
 
@@ -14,6 +15,7 @@ export interface IBuildNewOptions<TAttrs, TRelationships> {
 
 export interface IQueryOptions {
   include?: string[];
+  fields?: { [key: string]: string[] | any };
   settings?: any;
 }
 
@@ -64,9 +66,19 @@ export function inverseRelationshipOf(modelName: string, relationshipName) {
 
 export function buildOptions(options: IQueryOptions = {}, label?: string) {
   const maybeInclude: any = {};
+  let fieldSettings: any = {};
 
   if (options.include) {
     maybeInclude.include = options.include;
+  }
+
+
+  if (options.fields) {
+    fieldSettings = {
+      params: {
+        fields: options.fields
+      },
+    };
   }
 
   return {
@@ -75,9 +87,11 @@ export function buildOptions(options: IQueryOptions = {}, label?: string) {
       remote: {
         settings: {
           ...defaultSourceOptions(),
-          ...(options.settings || {})
+          ...(options.settings || {}),
+          ...fieldSettings,
         },
-        ...maybeInclude
+        ...maybeInclude,
+
       }
     }
   };

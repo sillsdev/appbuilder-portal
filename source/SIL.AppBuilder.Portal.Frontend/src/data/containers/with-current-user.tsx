@@ -145,14 +145,11 @@ export function withCurrentUser(opts = {}) {
 
           await pushPayload(updateStore, json);
 
-          console.debug('Current User Data has been fetched');
           // this state value isn't used anywhere, but we need to trigger
           // a re-render once the current user data has finished being consumed
           this.makingRequest = false;
           this.setState({ networkFetchComplete: true });
         } catch (e) {
-          console.debug('error', e);
-
           this.setState({ error: e, networkFetchComplete: true });
         }
 

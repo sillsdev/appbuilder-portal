@@ -36,7 +36,7 @@ class ProductItem extends React.Component<IProps> {
   render() {
 
     const { product, productDefinition, t, includeHeader } = this.props;
-    const { description } = attributesFor(productDefinition);
+    const { description, name } = attributesFor(productDefinition);
     const { dateUpdated, datePublished } = attributesFor(product);
 
     return (
