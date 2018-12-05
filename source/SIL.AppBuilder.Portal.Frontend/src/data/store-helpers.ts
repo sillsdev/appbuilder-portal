@@ -89,11 +89,13 @@ export async function update<TAttrs, TRelationships>(
   resource: any,
   options: IBuildNewOptions<TAttrs, TRelationships>
 ) {
+  const recordOptions = buildRecordOptions(options);
+
   await store.update(
     q => q.replaceRecord({
       id: resource.id,
       type: resource.type,
-      ...options
+      ...recordOptions
     }),
     defaultOptions()
   );
@@ -122,10 +124,26 @@ export async function create<TAttrs, TRelationships>(
 //   }
 // });
 export function buildNew<TAttrs, TRelationships>(type: string, options: IBuildNewOptions<TAttrs, TRelationships>) {
+  const recordOptions = buildRecordOptions(options);
+  return {
+    type,
+    ...recordOptions
+  };
+}
+
+export function buildRecordOptions<TAttrs, TRelationships>(options: IBuildNewOptions<TAttrs, TRelationships>) {
   const attributes = options.attributes || {};
   const relationMap = options.relationships || {};
+  const relationships = buildRelationships(relationMap);
 
-  const relationships = Object.keys(relationMap).reduce((result, relationName) => {
+  return {
+    attributes,
+    relationships
+  }
+}
+
+export function buildRelationships<TRelationships>(relationMap: TRelationships) {
+  return Object.keys(relationMap).reduce((result, relationName) => {
     const relationInfo = relationMap[relationName];
     const relationData =
       Array.isArray(relationInfo)
@@ -133,17 +151,11 @@ export function buildNew<TAttrs, TRelationships>(type: string, options: IBuildNe
         : remoteIdentityFrom(relationInfo);
 
     result[relationName] = {
-      data:relationData
+      data: relationData
     };
 
     return result;
   }, {});
-
-  return {
-    type,
-    attributes,
-    relationships
-  };
 }
 
 interface IOrbitTracking {

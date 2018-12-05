@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { create } from '@data/store-helpers';
+import { create, update } from '@data/store-helpers';
 import {
   defaultOptions,
   OrganizationResource,
@@ -18,7 +18,7 @@ import { OrganizationAttributes } from '@data/models/organization';
 export interface IProvidedProps {
   createRecord: (attributes: OrganizationAttributes, relationships) => Promise<any>;
   updateAttribute: (attribute: string, value: any) => Promise<any>;
-  updateAttributes: (attrs: OrganizationAttributes) => any;
+  updateAttributes: (attrs: OrganizationAttributes, relationships?:any) => any;
   updateOwner: (owner: UserResource) => any;
   updateProductDefinition: (productDefinition: ProductDefinitionResource) => any;
   updateStore: (store: StoreResource) => any;
@@ -67,21 +67,18 @@ export function withDataActions<T>(WrappedComponent) {
 
     updateAttribute = (attribute: string, value: any) => {
       const { organization, dataStore } = this.props;
-
       return dataStore.update(
         q => q.replaceAttribute(organization, attribute, value),
         defaultOptions()
       );
     }
 
-    updateAttributes = (attributes: OrganizationAttributes) => {
+    updateAttributes = (attributes: OrganizationAttributes, relationships?: any) => {
       const { organization, dataStore } = this.props;
-      const { id, type } = organization;
-
-      return dataStore.update(q =>
-        q.replaceRecord({ id, type, attributes }),
-        defaultOptions()
-      );
+      return update(dataStore, organization, {
+        attributes,
+        relationships
+      });
     }
 
     updateOwner = (owner) => {

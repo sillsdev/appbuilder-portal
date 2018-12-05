@@ -38,9 +38,8 @@ type IProps =
 class EditOrganization extends React.Component<IProps> {
 
   update = async (attributes, relationships) => {
-    const { updateAttributes, updateOwner, t } = this.props;
-    await updateAttributes(attributes);
-    await updateOwner(relationships.owner);
+    const { updateAttributes, t } = this.props;
+    await updateAttributes(attributes, relationships);
     this.redirectToList();
     toast.success(t('admin.settings.organizations.editSuccess'));
   }
