@@ -125,13 +125,13 @@
         "data-buildertype": "gridview",
         "columns": [
           {
-            "key": "id",
-            "name": "Id",
+            "key": "buildid",
+            "name": "BuildId",
             "type": "number",
+            "width": 100,
             "sortable": true,
             "filterable": false,
-            "resizable": false,
-            "width": 100
+            "resizable": false
           },
           {
             "key": "type",
@@ -140,15 +140,6 @@
             "filterable": false,
             "resizable": false,
             "width": 150
-          },
-          {
-            "key": "buildid",
-            "name": "BuildId",
-            "type": "number",
-            "width": 100,
-            "sortable": true,
-            "filterable": false,
-            "resizable": false
           },
           {
             "key": "size",
@@ -184,7 +175,7 @@
             "parameters": []
           }
         },
-        "defaultSort": "Id DESC"
+        "defaultSort": "buildid DESC"
       }
     ]
   }

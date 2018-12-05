@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_App_Store_Review",
-  "lastUpdate": "2018-12-05T16:05:15.8381743+00:00",
+  "lastUpdate": "2018-12-05T18:59:34.7302716+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -180,19 +180,19 @@
           "id": "ed8015ad-a8c8-ae69-8600-91807e446c8a",
           "attributeId": "edabc700-a7b1-42d7-837d-95910c4b254c",
           "isEditable": true,
-          "isLoadable": true
+          "isLoadable": false
         },
         {
           "id": "ea824479-19ff-599b-816e-072b7238d439",
           "attributeId": "824bf7e4-6c64-4740-94b8-d68bc88e8f7c",
           "isEditable": true,
-          "isLoadable": true
+          "isLoadable": false
         },
         {
           "id": "41c3ebab-ced8-2e7b-fdd1-3b1165aaf5ed",
           "attributeId": "c8ff77d9-2e65-4975-b9f1-cca2b22c9145",
           "isEditable": true,
-          "isLoadable": true
+          "isLoadable": false
         },
         {
           "id": "b84df7ea-c8a2-efd6-81c9-49857f41deb9",
@@ -212,7 +212,7 @@
           "id": "b1934ee4-13b7-3385-319f-74bfc76d0897",
           "attributeId": "ed9ab792-26ec-4dae-ad54-aa7c9edf36b0",
           "isEditable": true,
-          "isLoadable": true
+          "isLoadable": false
         },
         {
           "id": "eec2e148-e3a3-e083-f79c-bcdc462aa424",
