@@ -31,7 +31,7 @@ class AdminLayout extends React.Component<i18nProps> {
 const ComposeAdminLayout = compose(
   withLayout,
   withTranslations
-)(AdminLayout)
+)(AdminLayout);
 
 export const withAdminLayout = (Component) => (props) => (
   <ComposeAdminLayout>
