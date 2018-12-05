@@ -59,7 +59,7 @@ export function withDataActions<T>(WrappedComponent) {
 
       const { dataStore } = this.props;
 
-      await create(dataStore,'organization', {
+      await create(dataStore, 'organization', {
         attributes,
         relationships
       });

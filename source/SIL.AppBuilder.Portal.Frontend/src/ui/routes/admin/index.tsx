@@ -12,7 +12,6 @@ export const pathName = '/admin';
 
 class AdminRoute extends React.Component {
   render() {
-
     return (
       <Switch>
         <Route exact path={pathName} component={InviteOrganization} />

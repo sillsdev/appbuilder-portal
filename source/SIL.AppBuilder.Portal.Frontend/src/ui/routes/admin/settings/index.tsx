@@ -13,11 +13,8 @@ type IProps =
   & i18nProps;
 
 class AdminSettingsRoute extends React.Component<IProps> {
-
   render() {
-
     const { t } = this.props;
-
     return (
       <div className='ui container'>
         <h2 className='page-heading page-heading-border-sm'>
@@ -33,9 +30,7 @@ class AdminSettingsRoute extends React.Component<IProps> {
         </div>
       </div>
     );
-
   }
-
 }
 
 export default compose(
