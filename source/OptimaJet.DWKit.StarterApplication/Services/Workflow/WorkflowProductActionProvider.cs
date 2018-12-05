@@ -135,6 +135,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 Product product = await GetProductForProcess(processInstance, productRepository);
                 if (product.WorkflowJobId != 0)
                 {
+                    product.WorkflowBuildId = 0;
+                    await productRepository.UpdateAsync(product);
                     BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id));
                     Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
                 }

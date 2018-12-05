@@ -20,11 +20,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
         public Mock<IBuildEngineApi> buildEngineApiMock;
         public Mock<IRecurringJobManager> recurringJobManagerMock;
         public Mock<WebRequestWrapper> webRequestWrapperMock;
+        public Mock<IWebClient> webClientMock;
         public BuildEngineStartup(IHostingEnvironment env) : base(env)
         {
             buildEngineApiMock = new Mock<IBuildEngineApi>();
             recurringJobManagerMock = new Mock<IRecurringJobManager>();
             webRequestWrapperMock = new Mock<WebRequestWrapper>();
+            webClientMock = new Mock<IWebClient>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -32,6 +34,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
             services.AddScoped(s => buildEngineApiMock.Object);
             services.AddScoped(s => recurringJobManagerMock.Object);
             services.AddScoped(s => webRequestWrapperMock.Object);
+            services.AddScoped(s => webClientMock.Object);
             services.AddScoped<BuildEngineSystemMonitor>();
             services.AddScoped<BuildEngineProjectService>();
             services.AddScoped<BuildEngineProductService>();
