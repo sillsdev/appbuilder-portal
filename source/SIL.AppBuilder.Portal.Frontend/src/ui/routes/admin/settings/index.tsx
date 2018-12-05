@@ -8,15 +8,13 @@ import OrganizationsRoute from '@ui/routes/admin/settings/organizations';
 import WorkflowDefinitionsRoute from '@ui/routes/admin/settings/workflow-definitions';
 
 export const pathName = '/admin/settings';
-export const workflowDefinitionsPathName = '/admin/settings/workflow-definitions';
-export const organizationsPathName = '/admin/settings/organizations';
 
 class AdminSettingsRoute extends React.Component {
-  render() {
+    render() {
     return (
       <Switch>
-        <Route path={organizationsPathName} component={OrganizationsRoute} />
-        <Route path={workflowDefinitionsPathName} component={WorkflowDefinitionsRoute} />
+        <Route path={'/admin/settings/organizations'} component={OrganizationsRoute} />
+        <Route path={'/admin/settings/workflow-definitions'} component={WorkflowDefinitionsRoute} />
       </Switch>
     );
   }

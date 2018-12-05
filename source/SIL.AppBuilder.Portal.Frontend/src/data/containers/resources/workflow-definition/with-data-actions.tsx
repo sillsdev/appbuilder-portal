@@ -27,18 +27,6 @@ type IProps =
   & IOwnProps
   & WithDataProps;
 
-const mapRecordsToProps = (passedProps) => {
-
-  const { workflowDefinition } = passedProps;
-  
-  if (!workflowDefinition) {
-    return {};
-  }
-
-  return {
-  };
-};
-
 export function withDataActions<T>(WrappedComponent) {
 
   class WorkflowDefinitionDataActionWrapper extends React.Component<IProps & T> {
@@ -94,7 +82,7 @@ export function withDataActions<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit(mapRecordsToProps)
+    withOrbit({})
   )(WorkflowDefinitionDataActionWrapper);
 
 }

@@ -1,4 +1,4 @@
-import { AttributesObject, ResourceObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type WORKFLOW_DEFINITIONS_TYPE = 'workflowDefinition';
 export const TYPE_NAME = 'workflowDefinition';

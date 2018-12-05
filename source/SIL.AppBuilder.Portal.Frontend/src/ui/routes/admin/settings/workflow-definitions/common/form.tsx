@@ -108,15 +108,6 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
     }
   }
 
-  cleanForm = () => {
-    this.setState({
-      name: '',
-      description: '',
-      workflowScheme: '',
-      workflowBusinessFlow: '',
-    });
-  }
-
   cancel = (e) => {
     e.preventDefault();
     const { onCancel } = this.props;
