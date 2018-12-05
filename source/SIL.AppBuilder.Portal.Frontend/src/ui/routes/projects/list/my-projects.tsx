@@ -16,7 +16,6 @@ import { TYPE_NAME as PROJECT } from '@data/models/project';
 
 import { withTableColumns, COLUMN_KEY } from '@ui/components/project-table';
 
-import { logProps } from '@lib/debug';
 import Display from './display';
 
 export const pathName = '/projects/own';
@@ -57,7 +56,6 @@ export default compose(
     ),
     tableName: 'my-projects'
   })),
-  logProps('my-projects: after withProps'),
   withTableColumns({
     tableName: 'my-projects',
     defaultColumns: [
@@ -67,5 +65,4 @@ export default compose(
       COLUMN_KEY.PRODUCT_UPDATED_ON
     ]
   }),
-  logProps('my-projects: after table columns')
 )(Display);
