@@ -113,6 +113,8 @@ namespace OptimaJet.DWKit.StarterApplication
                 options.BaseUrl = GetVarOrDefault("UI_URL", "http://localhost:9091");
             });
 
+            services.AddScoped(typeof(IWebClient), typeof(SystemWebClient));
+
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
             services.AddScoped(typeof(SIL.AppBuilder.BuildEngineApiClient.IBuildEngineApi), typeof(SIL.AppBuilder.BuildEngineApiClient.BuildEngineApi));
 

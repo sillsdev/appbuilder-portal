@@ -18,6 +18,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
     {
         public IRecurringJobManager RecurringJobManager { get; }
         public WebRequestWrapper WebRequestWrapper { get; }
+        public IWebClient WebClient { get; }
         public IJobRepository<Product, Guid> ProductRepository { get; }
         public IJobRepository<ProductArtifact> ProductArtifactRepository { get; }
         public IJobRepository<ProductBuild> ProductBuildRepository { get; }
@@ -26,6 +27,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
             WebRequestWrapper webRequestWrapper,
+            IWebClient webClient,
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<ProductArtifact> productArtifactRepository,
             IJobRepository<ProductBuild> productBuildRepository,
@@ -34,6 +36,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             RecurringJobManager = recurringJobManager;
             WebRequestWrapper = webRequestWrapper;
+            WebClient = webClient;
             ProductRepository = productRepository;
             ProductArtifactRepository = productArtifactRepository;
             ProductBuildRepository = productBuildRepository;
@@ -236,7 +239,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             if (!String.IsNullOrEmpty(value) && value.EndsWith("version.json"))
 #pragma warning restore RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
             {
-                var contents = (new WebClient()).DownloadString(value);
+                var contents = WebClient.DownloadString(value);
                 var version = JsonConvert.DeserializeObject<Dictionary<string, string>>(contents);
                 if (version.ContainsKey("version"))
                 {

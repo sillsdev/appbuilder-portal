@@ -200,8 +200,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
             var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
             var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
+            var mockWebClient = Mock.Get(buildBuildService.WebClient);
             mockBuildEngine.Reset();
             mockWebRequestWrapper.Reset();
+            mockWebClient.Reset();
             var modifiedArtifact1 = new ProductArtifact
             {
                 ProductId = product1.Id,
@@ -220,11 +222,30 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 FileSize = 1831,
                 LastModified = DateTime.UtcNow
             };
+            var modifiedArtifact3 = new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ArtifactType = "version",
+                Url = "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/version.json",
+                ContentType = "application/json",
+                FileSize = 1831,
+                LastModified = DateTime.UtcNow
+            };
             var artifacts = new Dictionary<string, string>()
             {
                 {"apk", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7.apk"},
-                {"about", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt"}
+                {"about", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt"},
+                {"json", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/version.json"}
             };
+            product2.WorkflowBuildId = 42;
+
+            var productBuild = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product2.Id,
+                BuildId = 42,
+            });
+
+
             var buildResponse = new BuildResponse
             {
                 Id = 2,
@@ -243,17 +264,26 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
                                                                                   a.ArtifactType == "about")))
                                  .Returns(modifiedArtifact2);
+            mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
+                                                                                  a.ArtifactType == "json")))
+                                 .Returns(modifiedArtifact3);
+            mockWebClient.Setup(x => x.DownloadString(It.Is<string>(addr => addr == modifiedArtifact3.Url)))
+                .Returns("{ \"version\" : \"4.7.6\", \"versionName\" : \"4.7\", \"versionCode\" : \"6\" } ");
             await buildBuildService.CheckBuildAsync(product2.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
             var modifiedArtifacts = ReadTestData<AppDbContext, ProductArtifact>();
-            Assert.Equal(2, modifiedArtifacts.Count);
+            Assert.Equal(3, modifiedArtifacts.Count);
             var modifiedApk = modifiedArtifacts.First(a => a.ArtifactType == modifiedArtifact1.ArtifactType);
             Assert.Equal(modifiedArtifact1.Url, modifiedApk.Url);
             Assert.Equal(modifiedArtifact1.ContentType, modifiedApk.ContentType);
             Assert.Equal(modifiedArtifact1.FileSize, modifiedApk.FileSize);
+            var modifiedProductBuilds = ReadTestData<AppDbContext, ProductBuild>();
+            Assert.Equal(1, modifiedProductBuilds.Count);
+            var build = modifiedProductBuilds.First();
+            Assert.Equal("4.7.6", build.Version);
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Get_Build_Status_Unavailable()
