@@ -10,14 +10,14 @@ import { attributesFor, ProjectResource, UserResource } from '@data';
 import { withProjectOperations } from '@ui/routes/projects/show/with-project-operations';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-interface IOWnProps {
+interface IOwnProps {
   project: ProjectResource;
   owner: UserResource;
   toggleArchiveProject: () => void;
 }
 
 type IProps =
-  & IOWnProps
+  & IOwnProps
   & i18nProps;
 
 class RowActions extends React.Component<IProps> {

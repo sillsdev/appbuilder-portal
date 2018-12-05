@@ -61,7 +61,7 @@ export default class DirectoryDisplay extends React.Component<IProps> {
       columns, selectedColumns,
       toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns,
       projectPath: id => `/directory/${id}`,
-      withOptions: false
+      showProjectActions: false
     };
 
     return (

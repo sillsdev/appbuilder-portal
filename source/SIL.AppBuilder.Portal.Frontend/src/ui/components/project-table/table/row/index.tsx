@@ -27,7 +27,7 @@ export interface IProps {
   group: GroupResource;
   toggleArchiveProject: (project: ProjectResource) => void;
   projectPath?: (id: string) => string;
-  withOptions: boolean;
+  showProjectActions: boolean;
 }
 
 class Row extends React.Component<IProps & IProvidedProps> {
@@ -63,7 +63,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
     });
   }
   render() {
-    const { project, projectPath, withOptions } = this.props;
+    const { project, projectPath, showProjectActions } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
@@ -82,7 +82,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
               {column.value}
             </div>
           ))}
-          { withOptions && (
+          {showProjectActions && (
             <div className='action'>
               <RowActions project={project} />
             </div>

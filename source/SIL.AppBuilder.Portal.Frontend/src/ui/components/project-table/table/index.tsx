@@ -15,7 +15,7 @@ interface IOwnProps {
   projects: ProjectResource[];
   isLoading?: boolean;
   projectPath?: (id: string) => string;
-  withOptions?: boolean;
+  showProjectActions?: boolean;
 }
 
 type IProps =
@@ -27,7 +27,7 @@ type IProps =
 class Table extends React.Component<IProps> {
 
   static defaultProps= {
-    withOptions: true
+    showProjectActions: true
   };
 
   render() {
@@ -39,7 +39,7 @@ class Table extends React.Component<IProps> {
       t,
       isLoading,
       projectPath,
-      withOptions
+      showProjectActions
     } = this.props;
 
     const isProjectListEmpty = isEmpty(projects);
@@ -61,7 +61,7 @@ class Table extends React.Component<IProps> {
                 activeProjectColumns,
                 activeProductColumns,
                 projectPath,
-                withOptions
+                showProjectActions
               };
 
               return <Row key={index} {...rowProps} />;
