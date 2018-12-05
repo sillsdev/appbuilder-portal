@@ -235,7 +235,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             {
                 {"apk", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7.apk"},
                 {"about", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt"},
-                {"json", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/version.json"}
+                {"version", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/version.json"}
             };
             product2.WorkflowBuildId = 42;
 
@@ -265,7 +265,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                                                                                   a.ArtifactType == "about")))
                                  .Returns(modifiedArtifact2);
             mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
-                                                                                  a.ArtifactType == "json")))
+                                                                                  a.ArtifactType == "version")))
                                  .Returns(modifiedArtifact3);
             mockWebClient.Setup(x => x.DownloadString(It.Is<string>(addr => addr == modifiedArtifact3.Url)))
                 .Returns("{ \"version\" : \"4.7.6\", \"versionName\" : \"4.7\", \"versionCode\" : \"6\" } ");

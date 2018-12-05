@@ -236,7 +236,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             await ProductArtifactRepository.CreateAsync(updatedArtifact);
 
 #pragma warning disable RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
-            if (!String.IsNullOrEmpty(value) && value.EndsWith("version.json"))
+            if (key == "version" && updatedArtifact.ContentType == "application/json")
 #pragma warning restore RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
             {
                 var contents = WebClient.DownloadString(value);
