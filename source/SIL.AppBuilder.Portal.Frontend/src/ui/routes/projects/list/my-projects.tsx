@@ -37,25 +37,7 @@ export default compose(
   }),
   withNetwork(),
   withLoader(({ error, projects }) => !error && !projects),
-  withCache(() => ({
-    projects : q => q.findRecords(PROJECT)
-  })),
-  withProps(({ projects, currentUser }) => ({
-    // the additional filter here is required because someone in the
-    // "my projects" view could be performing actions from the table
-    // such as "Archive".
-    // the archived project would then be removed from the table,
-    // _because_ of the subscription to the data store in withCache
-    //
-    // This could all be avoided if we develop a way to subscribe
-    // to updates of individual records via the query HoC.
-    // though, we could manually subscribe to the individual records
-    // in the Row of each project. This is probably the best course of action.
-    projects: projects.filter(
-      resource => resource.type === PROJECT &&
-        resource.attributes.dateArchived == null &&
-        isRelatedTo(resource, 'owner', currentUser.id)
-    ),
+  withProps(() => ({
     tableName: 'my-projects'
   })),
   withTableColumns({

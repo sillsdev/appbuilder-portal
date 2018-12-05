@@ -66,12 +66,16 @@ class Row extends React.Component<IProps & IProvidedProps> {
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
-    const { name: projectName } = attributesFor(project);
+    const { name: projectName, dateArchived } = attributesFor(project);
 
     const clickPath = projectPath ? projectPath(projectId) : `/projects/${projectId}`;
 
     return (
-      <div data-test-project-row className='m-b-md with-shadow'>
+      <div
+        data-test-project-row
+        className='m-b-md with-shadow'
+        style={{ opacity: dateArchived ? 0.5 : 1 }}
+      >
         <div className='flex row-header grid align-items-center p-l-md p-r-md'>
           <div className='col flex-grow-xs flex-100'>
             <Link to={clickPath}>{projectName}</Link>
@@ -96,6 +100,9 @@ class Row extends React.Component<IProps & IProvidedProps> {
 
 export default compose(
   withOrbit(({ project }) => ({
+    // subscribes this component sub-tree to updates for the project
+    // this is what enables the row to fade when a project is archived.
+    project: q => q.findRecord(project),
     organization: q => q.findRelatedRecord(project, 'organization'),
     owner: q => q.findRelatedRecord(project, 'owner'),
     group: q => q.findRelatedRecord(project, 'group'),
