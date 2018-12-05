@@ -4,6 +4,7 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { defaultSourceOptions } from '@data';
 import { ErrorMessage } from '@ui/components/errors';
 import { isEmpty } from '@lib/collection';
+import { timeoutablePromise } from '@lib/promises';
 
 interface IState {
   result: object;
@@ -77,9 +78,8 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         const { dataStore, sources: { remote } } = this.props;
         const querier = useRemoteDirectly ? remote : dataStore;
 
-        this.setState({ isLoading: true });
-
         const responses = {};
+        debugger;
         const requestPromises = Object.keys(result).map(async (key: string) => {
           if (key === 'cacheKey') { return; }
 
@@ -93,12 +93,8 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
           return queryResult;
         });
 
-        try {
-          await Promise.all(requestPromises);
-        } catch (e) {
-          console.error('responses:', responses, 'error:', e);
-          this.setState({ error: e });
-        }
+        console.log('before promise', requestPromises, 'result', result);
+        await timeoutablePromise(5000, Promise.all(requestPromises));
 
         return responses;
       }
@@ -107,9 +103,13 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         if (!this.isFetchNeeded()) { return; }
 
         this.setState({ isLoading: true }, async () => {
-          const result = await this.fetchData();
+          try {
+            const result = await this.fetchData();
 
-          this.setState({ result, isLoading: false });
+            this.setState({ result, isLoading: false });
+          } catch (e) {
+            this.setState({ error: e, isLoading: false });
+          }
         });
       }
 

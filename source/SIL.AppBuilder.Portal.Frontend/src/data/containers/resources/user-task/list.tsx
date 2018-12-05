@@ -29,7 +29,7 @@ export function withNetwork<TWRappedProps>(options: IOptions = {}) {
       });
 
       return {
-        cacheKey: ['static'],
+        cacheKey: ['static', include],
         userTasks: [
           q => {
             const builder = q.findRecords('userTask');
@@ -42,7 +42,10 @@ export function withNetwork<TWRappedProps>(options: IOptions = {}) {
     }
 
     return compose(
-      query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }),
+            query(mapNetworkToProps, {
+              passthroughError: true,
+              useRemoteDirectly: true
+            }),
     )(WrappedComponent);
   };
 }
