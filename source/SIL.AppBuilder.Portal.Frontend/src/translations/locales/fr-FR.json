@@ -172,7 +172,7 @@
     }
   },
   "productDefinitions": {
-    "filterAllProjects": "All Projects"
+    "filterAllProjects": "All projects that contain..."
   },
   "project": {
     "title": "Project",
