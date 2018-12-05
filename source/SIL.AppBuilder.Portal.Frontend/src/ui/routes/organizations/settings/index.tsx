@@ -157,7 +157,9 @@ export default compose(
   })),
   withRole(ROLE.OrganizationAdmin, {
     redirectTo: '/',
-    checkOrganizationOf: (props: IProps) => props.organization
+    forOrganization: (props: IProps) => {
+      return props.organization;
+    }
   }),
   withDataActions,
   withTranslations,

@@ -10,6 +10,8 @@ type Id =
 | string
 | number;
 
+type MaybeFunction<T, TProps> = T | ((props: TProps) => T);
+
 declare module "public/images/*";
 
 interface Auth0JWT {
@@ -31,6 +33,6 @@ interface Auth0JWT {
 
 type FnParams<TParams, TResult> = (passedProps: TParams) => TResult;
 
-type FnOrObject<TParams, TResult> = 
+type FnOrObject<TParams, TResult> =
   | TResult
   | FnParams<TParams, TResult>

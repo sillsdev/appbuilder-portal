@@ -15,7 +15,7 @@ import { withCurrentUser, IProvidedProps as ICurrentUserProps } from './with-cur
 import { withCurrentOrganization, IProvidedProps as IOrganziationProps } from './with-current-organization';
 
 export interface IOptions<TWrappedProps> {
-  forOrganization?: OrganizationResource;
+  forOrganization?: MaybeFunction<OrganizationResource, TWrappedProps>;
   forAnyOrganization?: (props: TWrappedProps) => OrganizationResource[];
   errorOnForbidden?: boolean;
   redirectTo?: string;
@@ -47,6 +47,15 @@ interface IState {
   error?: string;
 }
 
+
+export function evalWithProps(maybeFunction, props) {
+  if (typeof maybeFunction === 'function') {
+    return maybeFunction(props);
+  }
+
+  return maybeFunction;
+}
+
 export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IOptions<TWrappedProps>) {
   const options = {
     ...(givenOptions || {})
@@ -73,7 +82,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
         }
 
         const { currentUser, dataStore, currentOrganization } = this.props;
-        const organization = forOrganization || currentOrganization;
+        const organization = evalWithProps(forOrganization, this.props) || currentOrganization;
         const anyOrganization = forAnyOrganization ? forAnyOrganization(this.props as any) : null;
 
         const resultOfSuperAdmin = await canDoEverything(dataStore, currentUser);
@@ -85,6 +94,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
         let resultOfResource = false;
         let resultOfOrganization = false;
         let resultOfAnyOrganization = false;
+
 
         if (anyOrganization) {
           const results = await Promise.all(
