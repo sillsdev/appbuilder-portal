@@ -46,6 +46,7 @@ CURRENT_VERSION=$(git rev-parse HEAD)
 
 Running Locally:
 ```
+docker run -p 8080:80 nginx-$CURRENT_VERSION
 docker run -p 3000:7081 api-$CURRENT_VERSION
 
 
