@@ -8,7 +8,6 @@ import { withTranslations } from '@lib/i18n';
 import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
 
-import { withDebugger, logProps } from '@lib/debug';
 import './tasks.scss';
 import Display from './display';
 
