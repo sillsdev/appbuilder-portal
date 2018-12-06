@@ -36,12 +36,8 @@ export default compose(
     };
   }),
   withNetwork(),
-  withCache(() => ({
-    projects : q => q.findRecords(PROJECT)
-  })),
   withLoader(({ error, projects }) => !error && !projects),
-  withProps(({ projects }) => ({
-    projects: projects.filter(resource => resource.type === PROJECT && resource.attributes.dateArchived == null),
+  withProps(() => ({
     tableName: 'my-projects'
   })),
   withTableColumns({

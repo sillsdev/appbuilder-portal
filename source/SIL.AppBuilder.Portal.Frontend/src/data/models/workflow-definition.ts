@@ -1,13 +1,15 @@
 import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
-export type WORKFLOW_DEFINITION_TYPE = 'workflowDefinition';
+export type WORKFLOW_DEFINITIONS_TYPE = 'workflowDefinition';
+export const TYPE_NAME = 'workflowDefinition';
 
 export interface WorkflowDefinitionAttributes extends AttributesObject {
-  name: string;
-  description: string;
-  enabled: boolean;
-  workflowBusinessFlow: string;
-  workflowScheme: string;
+  // actual attributes;
+  name?: string;
+  enabled?: boolean;
+  description?: string;
+  workflowScheme?: string;
+  workflowBusinessFlow?: string;
 }
 
-export type WorkflowDefinitionResource = ResourceObject<WORKFLOW_DEFINITION_TYPE, WorkflowDefinitionAttributes>;
+export type WorkflowDefinitionResource = ResourceObject<WORKFLOW_DEFINITIONS_TYPE, WorkflowDefinitionAttributes>;

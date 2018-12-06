@@ -34,7 +34,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
     const bgClass = isOrgSwitcherActive ? 'bg-white' : '';
 
     const logoUrl = orgAttributes.logoUrl ?
-      <img src={orgAttributes.logoUrl} width='32' height='32' style={{ background: 'white' }} /> :
+      <img src={orgAttributes.logoUrl} /> :
       '\u00A0';
 
     return (
@@ -48,7 +48,13 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
           className='switcher p-l-md no-select flex-row align-items-center'
           onClick={toggleOrgSwitcher}
         >
-          <span className='list-thumbnail m-r-md'>{logoUrl}</span>
+          <span
+            className={`
+              list-thumbnail m-r-md image-fill-container
+              ${!orgAttributes.logoUrl && 'bg-white'}
+            `}>
+            {logoUrl}
+          </span>
           <span className='bold blue-highlight'>{orgName}</span>
           { icon }
         </div>

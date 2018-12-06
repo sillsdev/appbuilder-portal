@@ -5,14 +5,16 @@ import { withAdminLayout } from '@ui/components/layout/admin';
 
 import { Switch, Route } from 'react-router-dom';
 import OrganizationsRoute from '@ui/routes/admin/settings/organizations';
+import WorkflowDefinitionsRoute from '@ui/routes/admin/settings/workflow-definitions';
 
 export const pathName = '/admin/settings';
 
 class AdminSettingsRoute extends React.Component {
-  render() {
+    render() {
     return (
       <Switch>
-        <Route path={pathName} component={OrganizationsRoute} />
+        <Route path={'/admin/settings/organizations'} component={OrganizationsRoute} />
+        <Route path={'/admin/settings/workflow-definitions'} component={WorkflowDefinitionsRoute} />
       </Switch>
     );
   }

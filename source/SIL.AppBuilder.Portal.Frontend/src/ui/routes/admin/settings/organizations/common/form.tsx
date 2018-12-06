@@ -110,16 +110,6 @@ class OrganizationForm extends React.Component<IProps, IState> {
     }
   }
 
-  cleanForm = () => {
-    this.setState({
-      name: '',
-      websiteUrl: '',
-      buildEngineUrl: '',
-      buildEngineApiAccessToken: '',
-      logoUrl: ''
-    });
-  }
-
   cancel = (e) => {
     e.preventDefault();
     const { onCancel } = this.props;

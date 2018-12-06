@@ -192,9 +192,9 @@ const schemaDefinition: SchemaSettings = {
         description: { type: 'string' }
       },
       relationships: {
-        workflowDefinitions: { type: 'hasMany', model: 'workflowDefinition', inverse: 'storeType' } ,
         stores: { type: 'hasMany', model: 'store', inverse: 'storeType'},
         storeLanguages: { type: 'hasMany', model: 'storeLanguage', inverse: 'storeType' },
+        workflowDefinitions: { type: 'hasMany', model: 'workflowDefinition', inverse: 'storeType'}
 
       }
     },
