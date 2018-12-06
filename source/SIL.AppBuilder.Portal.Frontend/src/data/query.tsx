@@ -85,7 +85,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
           const args = typeof query === 'function' ? [query] : query;
 
           try {
-            const queryResult = await querier.query(...args)
+            const queryResult = await querier.query(...args);
             responses[key] = queryResult;
 
             return Promise.resolve(queryResult);
