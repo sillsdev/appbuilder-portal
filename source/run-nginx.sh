@@ -15,5 +15,4 @@ export VARS_TO_REPLACE='$API_URL:$NGINX_PORT'
 envsubst "$VARS_TO_REPLACE" < $NGINX_CONF_DIR/default.conf.template > $NGINX_CONF_DIR/default.conf
 
 echo "Starting NGINX"
-cat $NGINX_CONF_DIR/default.conf
 nginx -g 'daemon off;'
