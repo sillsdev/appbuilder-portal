@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using Microsoft.EntityFrameworkCore;
@@ -72,6 +73,19 @@ namespace OptimaJet.DWKit.StarterApplication.Forms
                 .Where(ur => ur.UserId == CurrentUser.Id && ur.Role.RoleName == RoleName.SuperAdmin)
                 .FirstOrDefault();
             return userRole != null;
+        }
+        protected bool ValidPublishingKey(string publishingKeyString)
+        {
+            try
+            {
+                var sshKeyPattern = new Regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)");
+                var match = sshKeyPattern.Match(publishingKeyString);
+                return match.Success;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }
