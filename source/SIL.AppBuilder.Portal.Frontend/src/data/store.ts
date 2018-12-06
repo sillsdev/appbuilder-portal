@@ -115,14 +115,37 @@ export async function createStore() {
     source: 'inMemory',
     on: 'beforeQuery',
     target: 'remote',
-    action: 'pull',
-    blocking: true,
+    // action: 'pull',
+    blocking: false,
+
+    action(...args) {
+      console.log('action', args);
+
+      try {
+        return this.target.pull(...args);
+      } catch (e) {
+
+        console.log('help', e);
+        // this.source.requestQueue.skip();
+        this.target.requestQueue.skip();
+
+        throw e;
+      }
+    },
 
     filter(query) {
       const options = ((query || {}).options || {});
       const keep = !(options.devOnly || options.skipRemote);
 
       return keep;
+    },
+    catch(e) {
+      console.log('error performing remote.pull', e);
+
+      this.source.requestQueue.skip();
+      this.target.requestQueue.skip();
+
+      throw e;
     }
   }));
 
@@ -140,6 +163,11 @@ export async function createStore() {
       const keep = !(options.devOnly || options.skipRemote);
 
       return keep;
+    },
+    catch(e) {
+      console.log('error in pessimistic strat', e);
+
+      throw e;
     }
   }));
 

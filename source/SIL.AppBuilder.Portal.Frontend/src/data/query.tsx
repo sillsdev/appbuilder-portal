@@ -79,22 +79,20 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         const querier = useRemoteDirectly ? remote : dataStore;
 
         const responses = {};
-        debugger;
-        const requestPromises = Object.keys(result).map(async (key: string) => {
-          if (key === 'cacheKey') { return; }
-
+        const resultingKeys = Object.keys(result).filter(k => k !== 'cacheKey');
+        const requestPromises = resultingKeys.map((key: string) => {
           const query = result[key];
           const args = typeof query === 'function' ? [query] : query;
 
-          const queryResult = await querier.query(...args);
-
-          responses[key] = queryResult;
-
-          return queryResult;
+          return querier.query(...args).then(queryResult => {
+            responses[key] = queryResult;
+            return Promise.resolve(queryResult);
+          });
         });
 
-        console.log('before promise', requestPromises, 'result', result);
-        await timeoutablePromise(5000, Promise.all(requestPromises));
+        if (requestPromises.length > 0) {
+          await timeoutablePromise(5000, Promise.all(requestPromises));
+        }
 
         return responses;
       }
