@@ -131,8 +131,20 @@ const schemaDefinition: SchemaSettings = {
         productDefinition: { type: 'hasOne', model: 'productDefinition', inverse: 'products' },
         store: { type: 'hasOne', model: 'store', inverse: 'products' },
         storeLanguage: { type: 'hasOne', model: 'storeLanguage', inverse: 'products' },
-        artifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'product' },
+        builds: { type: 'hasMany', model: 'productBuild', inverse: 'product'},
         tasks: { type: 'hasMany', model: 'userTask', inverse: 'product' },
+      }
+    },
+    productBuild: {
+      keys: { remoteId: {} },
+      attributes: {
+        version: {type: 'string' },
+        dateCreated: { type: 'string' },
+        dateUpdated: { type: 'string' }
+      },
+      relationships: {
+        product: { type: 'hasOne', model: 'product', inverse: 'builds' },
+        artifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'build' }
       }
     },
     productArtifact: {
@@ -146,7 +158,7 @@ const schemaDefinition: SchemaSettings = {
         dateUpdated: { type: 'string' }
       },
       relationships: {
-        product: { type: 'hasOne', model: 'product', inverse: 'artifacts' }
+        build: { type: 'hasOne', model: 'productBuild', inverse: 'artifacts' }
       }
     },
     productDefinition: {
