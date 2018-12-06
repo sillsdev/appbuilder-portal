@@ -48,6 +48,17 @@ Running Locally:
 ```
 docker run -p 8080:80 nginx-$CURRENT_VERSION
 docker run -p 3000:7081 api-$CURRENT_VERSION
+
+
+# to connect to an api container running from docker-compose
+# get the container id from
+docker ls
+
+docker run -it \
+    -p 9091:80 \
+    -e "API_URL=http://api.docker:7081" \
+    --network appbuilder-portal_default \
+    --link 93a93b14287a:api.docker nginx-$CURRENT_VERSION
 ```
 
 ## Production
