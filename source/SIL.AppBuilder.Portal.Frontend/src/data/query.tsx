@@ -80,14 +80,22 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
         const responses = {};
         const resultingKeys = Object.keys(result).filter(k => k !== 'cacheKey');
-        const requestPromises = resultingKeys.map((key: string) => {
+        const requestPromises = resultingKeys.map(async (key: string) => {
           const query = result[key];
           const args = typeof query === 'function' ? [query] : query;
 
-          return querier.query(...args).then(queryResult => {
+          try {
+            const queryResult = await querier.query(...args)
             responses[key] = queryResult;
+
             return Promise.resolve(queryResult);
-          });
+          } catch(e) {
+            if (querier === remote) {
+              querier.requestQueue.skip();
+            }
+
+            return Promise.reject(e);
+          }
         });
 
         if (requestPromises.length > 0) {
