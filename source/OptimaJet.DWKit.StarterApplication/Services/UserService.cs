@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
-using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
 using Microsoft.Extensions.Logging;
+using OptimaJet.DWKit.StarterApplication.Forms.Users;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
@@ -22,15 +21,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public IJsonApiContext JsonApiContext { get; }
         public IOrganizationContext OrganizationContext { get; }
         public ICurrentUserContext CurrentUserContext { get; }
+        public UserRepository UserRepository { get; }
         public CurrentUserRepository CurrentUserRepository { get; }
+        public IEntityRepository<UserRole> UserRolesRepository { get; }
 
         public UserService(
             IBackgroundJobClient hangfireClient,
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
             ICurrentUserContext currentUserContext,
+            UserRepository userRepository,
             CurrentUserRepository currentUserRepository,
             IEntityRepository<User> entityRepository,
+            IEntityRepository<UserRole> userRolesRepository,
             ILoggerFactory loggerFactory) : base(jsonApiContext, entityRepository, loggerFactory)
         {
             this.EntityRepository = (UserRepository)entityRepository;
@@ -38,7 +41,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             JsonApiContext = jsonApiContext;
             OrganizationContext = organizationContext;
             CurrentUserContext = currentUserContext;
+            UserRepository = userRepository;
             CurrentUserRepository = currentUserRepository;
+            UserRolesRepository = userRolesRepository;
         }
 
         public override async Task<User> CreateAsync(User resource)
@@ -77,6 +82,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             if (user == null)
             {
                 throw new JsonApiException(404, $"User Id '{id}' not found."); ;
+            }
+            var updateForm = new UpdateForm(UserRepository, CurrentUserContext, UserRolesRepository);
+            if (!updateForm.IsValid(id, resource))
+            {
+                throw new JsonApiException(updateForm.Errors);
             }
             return await base.UpdateAsync(id, resource);
         }
