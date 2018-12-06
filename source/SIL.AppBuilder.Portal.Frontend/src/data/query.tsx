@@ -4,6 +4,7 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { defaultSourceOptions } from '@data';
 import { ErrorMessage } from '@ui/components/errors';
 import { isEmpty } from '@lib/collection';
+import { timeoutablePromise } from '@lib/promises';
 
 interface IState {
   result: object;
@@ -77,27 +78,28 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         const { dataStore, sources: { remote } } = this.props;
         const querier = useRemoteDirectly ? remote : dataStore;
 
-        this.setState({ isLoading: true });
-
         const responses = {};
-        const requestPromises = Object.keys(result).map(async (key: string) => {
-          if (key === 'cacheKey') { return; }
-
+        const resultingKeys = Object.keys(result).filter(k => k !== 'cacheKey');
+        const requestPromises = resultingKeys.map(async (key: string) => {
           const query = result[key];
           const args = typeof query === 'function' ? [query] : query;
 
-          const queryResult = await querier.query(...args);
+          try {
+            const queryResult = await querier.query(...args);
+            responses[key] = queryResult;
 
-          responses[key] = queryResult;
+            return Promise.resolve(queryResult);
+          } catch(e) {
+            if (querier === remote) {
+              querier.requestQueue.skip();
+            }
 
-          return queryResult;
+            return Promise.reject(e);
+          }
         });
 
-        try {
-          await Promise.all(requestPromises);
-        } catch (e) {
-          console.error('responses:', responses, 'error:', e);
-          this.setState({ error: e });
+        if (requestPromises.length > 0) {
+          await timeoutablePromise(5000, Promise.all(requestPromises));
         }
 
         return responses;
@@ -107,9 +109,13 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         if (!this.isFetchNeeded()) { return; }
 
         this.setState({ isLoading: true }, async () => {
-          const result = await this.fetchData();
+          try {
+            const result = await this.fetchData();
 
-          this.setState({ result, isLoading: false });
+            this.setState({ result, isLoading: false });
+          } catch (e) {
+            this.setState({ error: e, isLoading: false });
+          }
         });
       }
 

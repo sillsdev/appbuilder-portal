@@ -123,6 +123,14 @@ export async function createStore() {
       const keep = !(options.devOnly || options.skipRemote);
 
       return keep;
+    },
+
+    catch(e) {
+      console.error('Could not pull from remote', e);
+      this.target.requestQueue.skip();
+      this.source.requestQueue.skip();
+
+      throw e;
     }
   }));
 
@@ -140,6 +148,14 @@ export async function createStore() {
       const keep = !(options.devOnly || options.skipRemote);
 
       return keep;
+    },
+
+    catch(e) {
+      console.error('Could not push to remote', e);
+      this.target.requestQueue.skip();
+      this.source.requestQueue.skip();
+
+      throw e;
     }
   }));
 

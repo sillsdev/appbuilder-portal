@@ -25,6 +25,7 @@ export {
 } from './helpers';
 
 export { withLoader } from './containers/with-loader';
+export { withError } from './containers/with-error';
 export { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/with-logout';
 
 export { queryApi as query } from './query';
