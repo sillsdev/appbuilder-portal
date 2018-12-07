@@ -3,6 +3,8 @@ import { Dropdown } from 'semantic-ui-react';
 import { titleize } from 'inflected';
 import { ResourceObject } from "jsonapi-typescript";
 
+import { attributesFor } from '@data';
+
 interface IProps<T> {
   items: T[];
   labelField: string;
@@ -22,7 +24,7 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
   }
 
   render() {
-    const { items, labelField, value, onChange } = this.props;
+    const { items, labelField, value, onChange, ...other } = this.props;
 
     const options = items.map(i => {
       const label = attributesFor(i)[labelField];
@@ -33,7 +35,7 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
 
     const dropdownProps = {
       options,
-      defaultValue: value,
+      defaultValue: value.id,
       onChange: this.onChange
     };
 
@@ -41,6 +43,7 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
       <Dropdown
         data-test-resource-select
         { ...dropdownProps }
+        { ...other }
       />
     );
   }

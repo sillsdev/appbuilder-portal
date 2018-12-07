@@ -72,7 +72,7 @@ class ProductArtifact extends React.Component<IProps, IState> {
                 </div>
               </div>
 
-              { artifacts.map((artifact, i) =>
+              { ( artifacts || [] ).map((artifact, i) =>
                 <Artifact key={i} artifact={artifact}/>
               )}
 
@@ -91,9 +91,14 @@ export default compose<IProps, IExpectedProps>(
   withOrbit((passedProps: IExpectedProps) => {
     const { productBuild, product } = passedProps;
 
-    return {
+    const relations: any = {
       productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
-      artifacts: q => q.findRelatedRecords(productBuild, 'artifacts')
-    };
+    }
+
+    if (productBuild) {
+      relations.artifacts = q => q.findRelatedRecords(productBuild, 'artifacts');
+    }
+
+    return relations;
   })
 )(ProductArtifact);

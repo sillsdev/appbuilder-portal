@@ -61,6 +61,7 @@ class Builds extends React.Component<IProps, IState> {
           labelField={'version'}
           value={activeVersion}
           onChange={this.changeSelectedBuild}
+          className='is-large'
         />
 
         <Artifacts
@@ -80,7 +81,7 @@ export default compose<IProps, IExpectedProps>(
     const { product } = passedProps;
 
     return {
-      productBuilds: q => q.findRelatedRecords(product, 'productBuilds'),
+      productBuilds: q => q.findRelatedRecords(product, 'builds'),
     };
   })
 )(Builds);
