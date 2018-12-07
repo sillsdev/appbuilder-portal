@@ -34,6 +34,14 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             var workflowService = app.ApplicationServices.GetService(typeof(WorkflowActivityMonitorService)) as WorkflowActivityMonitorService;
             workflowService.RegisterEventHandlers(runtime);
 
+            var CodeActionsDebugOn = GetIntVarOrDefault("DWKIT_CODE_ACTIONS_DEBUG", 0);
+            if (CodeActionsDebugOn > 0)
+            {
+                Log.Information("DWKIT CodeActionDebugOn");
+                runtime.CodeActionsDebugOn();
+            }
+
+
             RecurringJob.AddOrUpdate<WorkflowActivityMonitorService>("WorkflowActivityMonitor", service => service.CheckActivityStatus(), Cron.MinuteInterval(5));
             RecurringJob.AddOrUpdate<WorkflowSecuritySyncService>("WorkflowSecuritySync", service => service.SyncWorkflowSecurity(), Cron.MinuteInterval(5));
             return app;
