@@ -126,6 +126,11 @@ export const projectOne = {
         'product-definition': { data: { type: 'product-definitions', id: '1' } },
         store: { data: { type: 'stores', id: '1' } },
         'store-language': { data: { type: 'store-languages', id: '20' } },
+        'product-builds': {
+          data: [
+            { type: 'product-builds', id: '1' },
+          ]
+        },
         'product-artifacts': {
           data: [
             { type: 'product-artifacts', id: '48' },
@@ -134,6 +139,21 @@ export const projectOne = {
       },
       type: 'products',
       id: 'bccb8128-2721-4fad-b138-d4137c5e34bf'
+    },
+    {
+      type: 'product-builds',
+      id: '1',
+      attributes: {
+        version: '1.0.1',
+      },
+      relationships: {
+        product: { data: { type: 'products', id: 'bccb8128-2721-4fad-b138-d4137c5e34bf' } },
+        'product-artifacts': {
+          data: [
+            { type: 'product-artifacts', id: '48' },
+          ]
+        },
+      },
     },
     {
       attributes: {
@@ -165,7 +185,10 @@ export const projectOne = {
         'date-updated': '2018-12-03T22:27:06.201276'
       },
       relationships: {
-        product: { data: { type: 'products', id: 'bccb8128-2721-4fad-b138-d4137c5e34bf' } }
+        product: { data: { type: 'products', id: 'bccb8128-2721-4fad-b138-d4137c5e34bf' } },
+        'product-build': {
+          data: { type: 'product-builds', id: '1' },
+        },
       },
       type: 'product-artifacts',
       id: '48'

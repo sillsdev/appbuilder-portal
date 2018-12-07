@@ -35,4 +35,4 @@ type FnParams<TParams, TResult> = (passedProps: TParams) => TResult;
 
 type FnOrObject<TParams, TResult> =
   | TResult
-  | FnParams<TParams, TResult>
+  | FnParams<TParams, TResult>;

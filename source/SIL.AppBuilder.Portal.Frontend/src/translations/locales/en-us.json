@@ -159,6 +159,7 @@
     "reassign": "Reassign"
   },
   "projects": {
+    "latestBuild": "Latest Build ({version})",
     "switcher": {
       "myProjects": "My Projects ({numProjects})",
       "archived": "Archived ({numProjects})",
