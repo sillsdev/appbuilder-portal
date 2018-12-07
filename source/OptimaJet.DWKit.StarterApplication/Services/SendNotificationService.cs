@@ -80,7 +80,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         }
         protected async Task SendEmailAsync(Notification notification)
         {
-            var locale = notification.User.LocaleOrDefault;
+            var locale = notification.User.LocaleOrDefault();
             var subject = await Translator.TranslateAsync(locale, "notifications", "notifications.subject", null);
             var subsDict = notification.MessageSubstitutions as Dictionary<string, object>;
             var message = await Translator.TranslateAsync(locale, "notifications", notification.MessageId, subsDict);
