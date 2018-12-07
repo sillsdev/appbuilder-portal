@@ -82,10 +82,17 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         public string LocaleOrDefault()
         {
-            var locale = Locale ?? ((CultureInfo.CurrentCulture == null) ? "en-US" : CultureInfo.CurrentCulture.Name ?? "en-US");
-            if (String.IsNullOrEmpty(locale))
+            var locale = "en-US";
+            if (!String.IsNullOrEmpty(Locale))
             {
-                locale = "en-US";
+                locale = Locale;
+            }
+            else
+            {
+                if ((CultureInfo.CurrentCulture != null) && !String.IsNullOrEmpty(CultureInfo.CurrentCulture.Name))
+                {
+                    locale = CultureInfo.CurrentCulture.Name;
+                }
             }
             return locale;
         }
