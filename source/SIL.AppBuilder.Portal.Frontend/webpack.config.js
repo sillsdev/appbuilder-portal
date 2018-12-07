@@ -24,7 +24,7 @@ function checkEnvVar(varName) {
     console.error(`${varName} is not defined!`);
     process.exit(1);
   }
-}
+// }
 
 // sorry for the serial env var checking.
 checkEnvVar('AUTH0_CLIENT_ID');
@@ -33,7 +33,7 @@ checkEnvVar('AUTH0_CONNECTION');
 
 let config = {
   mode: isProduction ? 'production' : 'development',
-  devtool: isProduction ? 'none' : 'inline-source-map',
+  devtool: isProduction ? 'none' : 'eval-source-map',
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),

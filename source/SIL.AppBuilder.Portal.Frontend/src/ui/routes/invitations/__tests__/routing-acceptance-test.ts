@@ -1,6 +1,7 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
+import Convergence from '@bigtest/convergence';
 import i18n from '@translations';
 
 import {
@@ -45,6 +46,9 @@ describe('Acceptance | Invitations | routing', () => {
   describe('navigates to an invitation', () => {
     beforeEach(async () => {
       await visit('/invitations/organization/something');
+
+      await new Convergence()
+        .when(() => app.headers);;
     });
 
     it.always('should not say that the path was not found', () => {
