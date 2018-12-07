@@ -48,7 +48,7 @@ describe('Acceptance | Invitations | routing', () => {
       await visit('/invitations/organization/something');
 
       await new Convergence()
-        .when(() => app.headers);;
+        .when(() => app.headers);
     });
 
     it.always('should not say that the path was not found', () => {
