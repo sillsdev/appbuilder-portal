@@ -7,9 +7,12 @@ import { attributesFor } from '@data';
 
 interface IProps<T> {
   items: T[];
-  labelField: string;
+  labelField: MaybeFunction<string, T>;
   value: T;
   onChange: (selected: T) => void;
+
+  // dom / props for semantic
+  className?: string;
 }
 
 export default class ResourceSelect<T extends ResourceObject> extends React.Component<IProps<T>> {
@@ -17,7 +20,6 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
     e.preventDefault();
 
     const { onChange, items } = this.props;
-
     const selected = items.find(i => i.id === dropdownEvent.value);
 
     onChange(selected);
@@ -27,7 +29,15 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
     const { items, labelField, value, onChange, ...other } = this.props;
 
     const options = items.map(i => {
-      const label = attributesFor(i)[labelField];
+      let label;
+      const attributes = attributesFor(i);
+
+      if (typeof labelField === 'string') {
+        label = attributes[labelField];
+      } else {
+        label = labelField(i);
+      }
+
       const text = titleize(label);
 
       return { text, value: i.id };

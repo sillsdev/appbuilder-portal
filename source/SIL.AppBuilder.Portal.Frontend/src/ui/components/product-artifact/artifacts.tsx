@@ -91,14 +91,9 @@ export default compose<IProps, IExpectedProps>(
   withOrbit((passedProps: IExpectedProps) => {
     const { productBuild, product } = passedProps;
 
-    const relations: any = {
+    return {
       productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
-    }
-
-    if (productBuild) {
-      relations.artifacts = q => q.findRelatedRecords(productBuild, 'artifacts');
-    }
-
-    return relations;
+      artifacts: q => q.findRelatedRecords(productBuild, 'productArtifacts'),
+    };
   })
 )(ProductArtifact);

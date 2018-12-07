@@ -12,7 +12,7 @@ import {
 } from '@data';
 import Artifact from './artifact';
 import EmptyLabel from '@ui/components/labels/empty';
-import { isEmpty } from '@lib/collection';
+import { isEmpty, compareVia } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import ResourceSelect from '@ui/components/inputs/resource-select';
@@ -28,7 +28,7 @@ interface IOwnProps {
 }
 
 interface IState {
-  activeVersion: boolean;
+  activeVersion: ProductBuildResource;
 }
 
 type IProps =
@@ -54,14 +54,25 @@ class Builds extends React.Component<IProps, IState> {
     const { artifacts, t, product, productBuilds } = this.props;
     const { activeVersion } = this.state;
 
+    const sortedBuilds = productBuilds
+      .sort(compareVia(build => attributesFor(build).version));
+
     return (
       <div data-test-build>
         <ResourceSelect
-          items={productBuilds}
-          labelField={'version'}
+          items={sortedBuilds}
+          labelField={(build: ProductBuildResource) => {
+            const version = attributesFor(build).version;
+
+            if (build === sortedBuilds[0]) {
+              return t('projects.latestBuild', { version });
+            }
+
+            return version;
+          }}
           value={activeVersion}
           onChange={this.changeSelectedBuild}
-          className='is-large'
+          className='is-large p-b-md'
         />
 
         <Artifacts
@@ -81,7 +92,7 @@ export default compose<IProps, IExpectedProps>(
     const { product } = passedProps;
 
     return {
-      productBuilds: q => q.findRelatedRecords(product, 'builds'),
+      productBuilds: q => q.findRelatedRecords(product, 'productBuilds'),
     };
   })
 )(Builds);
