@@ -24,7 +24,7 @@ function checkEnvVar(varName) {
     console.error(`${varName} is not defined!`);
     process.exit(1);
   }
-// }
+}
 
 // sorry for the serial env var checking.
 checkEnvVar('AUTH0_CLIENT_ID');
