@@ -118,6 +118,7 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	9,	3,	1), -- loren_hawthorne@sil.org - AppBuilder - SIL
 (	7,	1,	2), -- psego@developertown.com - SuperAdmin - DT
 (	5,	1,	2), -- ltabor@developertown.com - SuperAdmin - DT
+(	5,	2,	2), -- ltabor@developertown.com - OrgAdmin - DT
 (	1,	2,	2), -- chris_hubbard@sil.org - OrgAdmin - DT
 (	3,	3,	2), -- lt.sego@gmail.com - AppBuilder - DT
 (	4,	3,	2), -- gian.corzo@gmail.com - AppBuilder - DT
