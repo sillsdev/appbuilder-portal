@@ -38,6 +38,14 @@
         "label": "Comment",
         "fluid": true,
         "rows": "2"
+      },
+      {
+        "key": "staticcontent_hr",
+        "data-buildertype": "staticcontent",
+        "content": "<hr style=\"height:5px;\"/>",
+        "isHtml": true,
+        "style-customcss": "",
+        "style-source": "height:5px;"
       }
     ]
   },

@@ -3000,7 +3000,26 @@
       "primaryKeyAttribute": "Id"
     }
   ],
-  "codeActions": [],
+  "codeActions": [
+    {
+      "id": "3668ecf4-89f9-e513-36d4-a54728193f68",
+      "name": "LatestApk",
+      "definedOnServer": false,
+      "type": 0,
+      "source": "var id = entities.Select(e => (int) e.ProductBuildId).Max();\n\nreturn Filter.And.Equal(\"apk\", \"ArtifactType\").Equal(id, \"ProductBuildId\");",
+      "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
+      "isAsync": false
+    },
+    {
+      "id": "fcd3898a-b4bf-c741-5ee2-109dd52e9892",
+      "name": "LatestArtifacts",
+      "definedOnServer": false,
+      "type": 0,
+      "source": "var id = entities.Select(e => (int) e.ProductBuildId).Max();\nreturn Filter.And.Equal(id, \"ProductBuildId\");",
+      "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
+      "isAsync": false
+    }
+  ],
   "businessFlow": [
     {
       "id": "f57d6c03-490c-6534-55e9-fa1d8708c699",
@@ -3052,6 +3071,15 @@
             "*"
           ],
           "form": "SIL_AppBuilders_App_Store_Review"
+        },
+        {
+          "states": [
+            "CreateAppStoreEntry"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Create_App_Entry"
         }
       ]
     }
