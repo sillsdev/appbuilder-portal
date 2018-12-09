@@ -39,12 +39,25 @@ export default class Display extends React.Component<IProps> {
     updateFilter({ attribute: 'search-term', value: term });
   }
 
+  onTableSelection = () => {
+
+  }
+
+  onBulkArchive = () => {
+
+  }
+
+  onBulkBuild = () => {
+
+  }
+
   render() {
     const {
       tableName, projects,
       toggleSort, isAscending, sortProperty,
       columns, selectedColumns, isLoading,
-      toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns
+      toggleColumnSelection, activeProductColumns,
+      activeProjectColumns, possibleColumns
     } = this.props;
 
     /* TODO: figure out how to disable certain pagination buttons */
@@ -53,12 +66,19 @@ export default class Display extends React.Component<IProps> {
       projects, isLoading,
       toggleSort, isAscending, sortProperty,
       columns, selectedColumns,
-      toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns
+      toggleColumnSelection, activeProductColumns,
+      activeProjectColumns, possibleColumns,
+      onTableSelection: this.onTableSelection
     };
 
     return (
       <>
-        <Header filter={tableName} onSearch={this.search} />
+        <Header
+          filter={tableName}
+          onSearch={this.search}
+          onBulkArchive={this.onBulkArchive}
+          onBulkBuild={this.onBulkBuild}
+        />
         <ProjectTable { ...tableProps } />
 
         {(

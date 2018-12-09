@@ -12,6 +12,8 @@ import { NavLink } from 'react-router-dom';
 interface IOwnProps {
   filter: string;
   onSearch: (term: string) => any;
+  onBulkArchive: (e) => void;
+  onBulkBuild: (e) => void;
 }
 
 type IProps =
@@ -22,7 +24,7 @@ class Header extends React.Component<IProps> {
 
   render() {
 
-    const { t, filter, onSearch } = this.props;
+    const { t, filter, onSearch, onBulkArchive, onBulkBuild } = this.props;
 
     const dropdownText = {
       'my-projects': t('projects.switcher.dropdown.myProjects'),
@@ -39,35 +41,51 @@ class Header extends React.Component<IProps> {
 
     return (
       <div className='flex justify-content-space-between p-t-md-xs p-b-md-xs'>
-        <Dropdown
-          className='project-switcher'
-          trigger={trigger}
-          icon={null}
-          inline
-        >
-          <Dropdown.Menu>
-            <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} as={NavLink} to='/projects/own'/>
-            <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} as={NavLink} to='/projects/organization' />
-            <Dropdown.Item text={t('projects.switcher.dropdown.archived')} as={NavLink} to='/projects/archived' />
-          </Dropdown.Menu>
-        </Dropdown>
+        <div>
+          <Dropdown
+            className='project-switcher'
+            trigger={trigger}
+            icon={null}
+            inline
+          >
+            <Dropdown.Menu>
+              <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} as={NavLink} to='/projects/own'/>
+              <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} as={NavLink} to='/projects/organization' />
+              <Dropdown.Item text={t('projects.switcher.dropdown.archived')} as={NavLink} to='/projects/archived' />
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
         <div className='flex align-items-center'>
+          <button
+            className='ui button basic blue m-r-md'
+            onClick={onBulkArchive}
+          >
+            {t('common.archive')}
+          </button>
+          <button
+            className='ui button basic blue m-r-md'
+            onClick={onBulkBuild}
+          >
+            {t('common.build')}
+          </button>
+          <div className='flex align-items-center'>
 
-          <Popup
-            basic
-            hoverable
-            trigger={<div>
-              <DebouncedSearch
-                className='search-component'
-                placeholder={t('common.search')}
-                onSubmit={onSearch}
-              />
-            </div>}
-            position='bottom center'>
+            <Popup
+              basic
+              hoverable
+              trigger={<div>
+                <DebouncedSearch
+                  className='search-component'
+                  placeholder={t('common.search')}
+                  onSubmit={onSearch}
+                />
+              </div>}
+              position='bottom center'>
 
-            <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
+              <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
 
-          </Popup>
+            </Popup>
+          </div>
         </div>
       </div>
     );

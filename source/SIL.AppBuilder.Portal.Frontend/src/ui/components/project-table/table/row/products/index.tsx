@@ -48,7 +48,7 @@ class Products extends React.Component<IProps> {
         ) }
 
         { !hasProducts && (
-          <div className='flex grid products-header flex-grow'>
+          <div className='flex grid products-header flex-grow p-md'>
             <div className='col flex-grow-xs product-xs-only flex-100'>
               {t('projectTable.noProducts')}
             </div>

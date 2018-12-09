@@ -25,7 +25,9 @@
     "none": "None",
     "abbreviation": "Abbreviation",
     "general": "General Information",
-    "notAvailable": "Not Available"
+    "notAvailable": "Not Available",
+    "archive": "Archive",
+    "build": "Build / Rebuild"
   },
   "auth": {
     "title": "Scriptoria",

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
 import { withData as withOrbit } from 'react-orbitjs';
+import { Checkbox } from 'semantic-ui-react';
 
 import {
   attributesFor,
@@ -15,12 +16,12 @@ import {
 
 import RowActions from './row-actions';
 
-import { IProvidedProps } from '../with-table-columns';
+import { IProvidedProps as ITableSelection } from '../with-table-selection';
 import { COLUMN_KEY } from '../column-data';
 
 import Products from './products';
 
-export interface IProps {
+interface IOwnProps {
   project: ProjectResource;
   organization: OrganizationResource;
   owner: UserResource;
@@ -29,7 +30,12 @@ export interface IProps {
   projectPath?: (id: string) => string;
 }
 
-class Row extends React.Component<IProps & IProvidedProps> {
+type IProps =
+  & IOwnProps
+  & ITableSelection;
+
+class Row extends React.Component<IProps> {
+
   getActiveProjectColumns = () => {
     const { project, organization, owner, group, activeProjectColumns } = this.props;
 
@@ -61,8 +67,15 @@ class Row extends React.Component<IProps & IProvidedProps> {
       return column;
     });
   }
+
+  onSelect = project => e => {
+    e.preventDefault();
+    const { selectItem } = this.props;
+    selectItem(project);
+  }
+
   render() {
-    const { project, projectPath } = this.props;
+    const { project, projectPath, inSelection, allSelected } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
@@ -76,8 +89,13 @@ class Row extends React.Component<IProps & IProvidedProps> {
         className='m-b-md with-shadow'
         style={{ opacity: dateArchived ? 0.5 : 1 }}
       >
-        <div className='flex row-header grid align-items-center p-l-md p-r-md'>
-          <div className='col flex-grow-xs flex-100'>
+        <div className='flex row-header align-items-center p-t-md p-b-md'>
+          <div className='col flex align-items-center flex-grow-xs flex-100 p-l-sm'>
+            <Checkbox
+              className='m-r-sm'
+              checked={allSelected || inSelection(project)}
+              onClick={this.onSelect(project)}
+            />
             <Link to={clickPath}>{projectName}</Link>
           </div>
 
@@ -87,7 +105,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
             </div>
           ))}
 
-          <div className='action'>
+          <div className='flex align-items-center p-r-md line-height-0'>
             <RowActions project={project} />
           </div>
         </div>
