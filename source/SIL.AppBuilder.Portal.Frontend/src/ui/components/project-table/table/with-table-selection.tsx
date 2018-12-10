@@ -30,7 +30,7 @@ export function withTableSelection(WrappedComponent) {
       this.state = {
         selection: [],
         allSelected: false
-      }
+      };
     }
 
     selectItem = (project: ProjectResource) => {
@@ -43,7 +43,7 @@ export function withTableSelection(WrappedComponent) {
       if (projectInSelection) {
         this.setState({
           selection: selection.filter((p:ProjectResource) => {
-            return p.id !== project.id
+            return p.id !== project.id;
           })
         });
       } else {
@@ -91,4 +91,4 @@ export function withTableSelection(WrappedComponent) {
   return compose(
     requireProps('projects')
   )(DataWrapper);
-};
+}
