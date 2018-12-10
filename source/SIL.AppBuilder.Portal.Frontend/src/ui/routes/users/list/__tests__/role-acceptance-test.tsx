@@ -1,5 +1,6 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
+import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 
 import {
@@ -12,14 +13,15 @@ import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 
 import i18n from '@translations/index';
 
-import page from './page';
+import UserTableInteractor from './-user-table';
 
+let userTable = null;
 async function toggleRoleAt(index, role: string, organization: string) {
-  await page.row(index).role.open();
+  await userTable.row(index).role.open();
 
-  expect(page.row(index).role.isOpen).to.equal(true);
+  expect(userTable.row(index).role.isOpen).to.equal(true);
 
-  await page.row(index).role.chooseUnder(role, organization);
+  await userTable.row(index).role.chooseUnder(role, organization);
 }
 
 describe('Acceptance | User List | Role Management', () => {
@@ -35,7 +37,8 @@ describe('Acceptance | User List | Role Management', () => {
           type: 'users',
           id: 2,
           attributes: {
-            name: "Fake user"
+            name: "Fake user",
+            email: "fake.user@fake.com",
           },
           relationships: {
             'user-roles': {
@@ -68,6 +71,8 @@ describe('Acceptance | User List | Role Management', () => {
 
     beforeEach(async function () {
       await visit('/users');
+      userTable = new UserTableInteractor();
+      await when(() => userTable.isVisible);
     });
 
     it('is in users page', () => {
@@ -75,8 +80,7 @@ describe('Acceptance | User List | Role Management', () => {
     });
 
     it('two roles are selected', () => {
-      const actual = page.row(0).role.list;
-
+      const actual = userTable.row(0).role.list;
       expect(actual).to.equal('AppBuilder, OrganizationAdmin');
     });
 
@@ -92,7 +96,7 @@ describe('Acceptance | User List | Role Management', () => {
       });
 
       it('no roles are assigned',() => {
-        const actual = page.row(0).role.list;
+        const actual = userTable.row(0).role.list;
         const expected = i18n.t('users.noRoles');
 
         expect(actual).to.equal(expected);
@@ -118,8 +122,7 @@ describe('Acceptance | User List | Role Management', () => {
         });
 
         it('the role is displayed', () => {
-          const actual = page.row(0).role.list;
-
+          const actual = userTable.row(0).role.list;
           expect(actual).to.equal('AppBuilder');
         });
       });
@@ -134,7 +137,8 @@ describe('Acceptance | User List | Role Management', () => {
           type: 'users',
           id: 2,
           attributes: {
-            name: "Fake user"
+            name: "Fake user",
+            email: "fake.user@fake.com",
           },
           relationships: {
             'user-roles': {
@@ -190,11 +194,11 @@ describe('Acceptance | User List | Role Management', () => {
 
       beforeEach(async function () {
         await visit('/users');
-        await page.row(0).role.open();
+        await userTable.row(0).role.open();
       });
 
       it('does not render second organization',() => {
-        const orgNames = page.row(0).role.organizationNames;
+        const orgNames = userTable.row(0).role.organizationNames;
 
         expect(orgNames).to.contain('DeveloperTown');
         expect(orgNames).to.not.contain('SIL');
@@ -256,7 +260,7 @@ describe('Acceptance | User List | Role Management', () => {
       });
 
       it('renders two roles', () => {
-        const actual = page.row(0).role.list;
+        const actual = userTable.row(0).role.list;
 
         expect(actual).to.equal('AppBuilder, OrganizationAdmin');
       });
@@ -273,7 +277,8 @@ describe('Acceptance | User List | Role Management', () => {
           type: 'users',
           id: 1,
           attributes: {
-            name: "Current User"
+            name: "Current User",
+            email: "current.user@fake.com"
           },
           relationships: {
             'user-roles': {
@@ -313,8 +318,8 @@ describe('Acceptance | User List | Role Management', () => {
     });
 
     it('text instead of dropdown', () => {
-      expect(page.row(0).role.noEditText).to.equal('AppBuilder, OrganizationAdmin');
-      expect(page.row(0).role.isOpen).to.be.false;
+      expect(userTable.row(0).role.noEditText).to.equal('AppBuilder, OrganizationAdmin');
+      expect(userTable.row(0).role.isOpen).to.be.false;
     });
 
   });

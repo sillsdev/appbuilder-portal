@@ -31,13 +31,13 @@ export default class DebouncedSearch extends React.Component<IProps & IAttribute
   }
 
   render() {
-    const { placeholder, className, ...other } = this.props;
+    const { placeholder, className, onSubmit, ...other } = this.props;
     const { searchTerm } = this.state;
 
     const attributes = filterForValidAttributes(other);
 
     return (
-      <div className={`ui left input icon ${className}`} { ...attributes }>
+      <div className={`ui left input icon ${className}`} { ...other }>
         <input
           type='text'
           placeholder={placeholder}

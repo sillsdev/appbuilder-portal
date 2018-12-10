@@ -9,8 +9,8 @@ import {
 
 import app from 'tests/helpers/pages/app';
 import switcher from '@ui/components/sidebar/org-switcher/__tests__/page';
-import page from './page';
-
+import UserTableInteractor from './-user-table';
+let userTable = null;
 describe('Acceptance | User list | Filtering users by organization', () => {
   setupApplicationTest({
     data: { currentOrganizationId: '1'}
@@ -214,6 +214,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
     describe('Select all organizations',() => {
       beforeEach(async function () {
         await visit('/users');
+        userTable = new UserTableInteractor();
 
         await app.openSidebar();
         await app.openOrgSwitcher();
@@ -224,9 +225,9 @@ describe('Acceptance | User list | Filtering users by organization', () => {
 
       describe('Renders users page', () => {
         it('Should see all users', () => {
-          expect(page.usernames().length).to.equal(3);
+          expect(userTable.usernames().length).to.equal(3);
 
-          const usernames = page.usernames();
+          const usernames = userTable.usernames();
           const text = usernames.map(u => u.text).join();
 
           expect(text).to.include('fake fake');
@@ -245,9 +246,9 @@ describe('Acceptance | User list | Filtering users by organization', () => {
           });
 
           it('Only display the users that belong to the selected organization', () => {
-            expect(page.usernames().length).to.equal(2);
+            expect(userTable.usernames().length).to.equal(2);
 
-            const usernames = page.usernames();
+            const usernames = userTable.usernames();
             const text = usernames.map(u => u.text).join();
 
             expect(text).to.include('fake fake');

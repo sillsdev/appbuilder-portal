@@ -29,7 +29,7 @@ export default class Table extends React.Component<IProps> {
     const { users, roles, currentUser, t } = this.props;
 
     return (
-      <table data-test-users className='ui table user-table' >
+      <table data-test-userstable className='ui table user-table' >
         <Header />
         <tbody>
 

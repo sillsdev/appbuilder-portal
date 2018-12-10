@@ -278,6 +278,13 @@
   "users": {
     "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
     "title": "Administrar usuarios",
+    "addUser": {
+      "placeholder": "Enter an email",
+      "button": "Add User",
+      "modalTitle": "Add User",
+      "modalAddButton": "Add",
+      "error": "No user was found with that email address. Please ask them to create an account."
+    },
     "table": {
       "columns": {
         "name": "Nombre",
