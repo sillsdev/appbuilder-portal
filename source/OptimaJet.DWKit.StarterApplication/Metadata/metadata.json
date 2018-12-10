@@ -3003,20 +3003,20 @@
   "codeActions": [
     {
       "id": "3668ecf4-89f9-e513-36d4-a54728193f68",
-      "name": "LatestApk",
+      "name": "ProductLatestApk",
       "definedOnServer": false,
       "type": 0,
-      "source": "var id = entities.Select(e => (int) e.ProductBuildId).Max();\n\nreturn Filter.And.Equal(\"apk\", \"ArtifactType\").Equal(id, \"ProductBuildId\");",
+      "source": "var id = entities.Select(e => (int) e.WorkflowBuildId).Max();\n\nreturn Filter.And.Equal(\"apk\", \"type\").Equal(id, \"buildid\");",
       "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
       "isAsync": false
     },
     {
       "id": "fcd3898a-b4bf-c741-5ee2-109dd52e9892",
-      "name": "LatestArtifacts",
+      "name": "ProductLatestArtifacts",
       "definedOnServer": false,
       "type": 0,
-      "source": "var id = entities.Select(e => (int) e.ProductBuildId).Max();\nreturn Filter.And.Equal(id, \"ProductBuildId\");",
-      "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
+      "source": "// entities are List<DynamicEntity> of mapped properties for the form (Product properties and form field names)\n// DateBuilt, DateCreated, DatePublished, DateUpdated, ProductDefinitionId, ProjectId, WorkflowBuildId, WorkflowJobId,\n// WorkflowPublishId, Id, dropdown_store, dropdown_language, textarea_comment, input_project_description, input_project_name\n// if (entities != null && entities.Count > 0)\n// {\n//     var entity1 = entities.First();\n//     foreach(var pair in entity1.ToDictionary())\n//     {\n//         Console.WriteLine(\":::: Property: \" + pair.ToString());\n//     }\n// } \nvar id = entities.Select(e => (int) e.WorkflowBuildId).Max();\nLog.Information($\":::: Max WorkflowBuildId id:{id} typeof:{id.GetType()}\");\nreturn Filter.And.Equal(id, \"buildid\");\n//return Filter.Empty;",
+      "usings": "Serilog;\nSystem;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Diagnostics;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
       "isAsync": false
     }
   ],
@@ -3047,7 +3047,8 @@
         },
         {
           "states": [
-            "RepoConfig"
+            "RepoConfig",
+            "Repo Configuration"
           ],
           "roles": [
             "*"
@@ -3056,7 +3057,8 @@
         },
         {
           "states": [
-            "SynchronizeData"
+            "SynchronizeData",
+            "Synchronize Data"
           ],
           "roles": [
             "*"
@@ -3065,7 +3067,8 @@
         },
         {
           "states": [
-            "AppStorePreview"
+            "AppStorePreview",
+            "App Store Preview"
           ],
           "roles": [
             "*"
@@ -3074,12 +3077,32 @@
         },
         {
           "states": [
-            "CreateAppStoreEntry"
+            "CreateAppStoreEntry",
+            "Create App Store Entry"
           ],
           "roles": [
             "*"
           ],
           "form": "SIL_AppBuilders_Create_App_Entry"
+        },
+        {
+          "states": [
+            "VerifyAndPublish",
+            "Verify and Publish"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Verify_And_Publish"
+        },
+        {
+          "states": [
+            "Published"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Published"
         }
       ]
     }

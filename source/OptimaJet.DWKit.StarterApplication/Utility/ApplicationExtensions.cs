@@ -37,7 +37,8 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             var CodeActionsDebugOn = GetIntVarOrDefault("DWKIT_CODE_ACTIONS_DEBUG", 0);
             if (CodeActionsDebugOn > 0)
             {
-                Log.Information("DWKIT CodeActionDebugOn");
+                var temp = GetVarOrDefault("TEMP", "unset");
+                Log.Information($"DWKIT CodeActionDebugOn: TEMP={temp}");
                 runtime.CodeActionsDebugOn();
             }
 

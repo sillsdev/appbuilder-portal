@@ -45,12 +45,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncActions.Add("SendOwnerNotification", SendOwnerNotificationAsync);
             _asyncActions.Add("BuildEngine_CreateProduct", BuildEngineCreateProductAsync);
             _asyncActions.Add("BuildEngine_BuildProduct", BuildEngineBuildProductAsync);
+            _asyncActions.Add("BuildEngine_PublishProduct", BuildEnginePublishProductAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
             //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync); 
             _asyncConditions.Add("BuildEngine_ProductCreated", BuildEngineProductCreated);
             _asyncConditions.Add("BuildEngine_BuildCompleted", BuildEngineBuildCompleted);
             _asyncConditions.Add("BuildEngine_BuildFailed", BuildEngineBuildFailed);
+            _asyncConditions.Add("BuildEngine_PublishCompleted", BuildEnginePublishCompleted);
+            _asyncConditions.Add("BuildEngine_PublishFailed", BuildEnginePublishFailed);
         }
 
         //
@@ -82,6 +85,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     var status = await service.GetStatusAsync(product.Id);
                     buildCompleted = (status == BuildEngineStatus.Success);
                 }
+                Log.Information($"BuildEngineBuildCompleted: {buildCompleted}");
                 return buildCompleted;
             }
         }
@@ -92,7 +96,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
-                Log.Information($"BuildEngineProductCreated: workflowJobId={product.WorkflowBuildId}, productId={product.Id}, projectName={product.Project.Name}");
+                Log.Information($"BuildEngineBuildFailed: workflowJobId={product.WorkflowBuildId}, productId={product.Id}, projectName={product.Project.Name}");
 
                 bool buildFailed = false;
                 if (product.WorkflowBuildId != 0)
@@ -101,10 +105,51 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     var status = await service.GetStatusAsync(product.Id);
                     buildFailed = (status == BuildEngineStatus.Failure);
                 }
+                Log.Information($"BuildEngineBuildFailed: {buildFailed}");
                 return buildFailed;
             }
         }
 
+        private async Task<bool> BuildEnginePublishCompleted(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                Log.Information($"BuildEnginePublishCompleted: workflowJobId={product.WorkflowBuildId}, productId={product.Id}, projectName={product.Project.Name}");
+
+                bool publishCompleted = false;
+                if (product.WorkflowPublishId != 0)
+                {
+                    var service = scope.ServiceProvider.GetRequiredService<BuildEngineReleaseService>();
+                    var status = await service.GetStatusAsync(product.Id);
+                    publishCompleted = (status == BuildEngineStatus.Success);
+                }
+                Log.Information($"BuildEnginePublishCompleted: {publishCompleted}");
+                return publishCompleted;
+            }
+        }
+
+        private async Task<bool> BuildEnginePublishFailed(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                Log.Information($"BuildEnginePublishFailed: workflowJobId={product.WorkflowBuildId}, productId={product.Id}, projectName={product.Project.Name}");
+
+                bool publishFailed = false;
+                if (product.WorkflowBuildId != 0)
+                {
+                    var service = scope.ServiceProvider.GetRequiredService<BuildEngineReleaseService>();
+                    var status = await service.GetStatusAsync(product.Id);
+                    publishFailed = (status == BuildEngineStatus.Failure);
+                }
+                Log.Information($"BuildEnginePublishFailed: {publishFailed}");
+
+                return publishFailed;
+            }
+        }
 
         //
         // Actions
@@ -138,9 +183,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     product.WorkflowBuildId = 0;
                     await productRepository.UpdateAsync(product);
                     BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id));
-                    Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
+                    Log.Information($"BuildEngineBuildProduct: productId={product.Id}, projectName={product.Project.Name}");
                 }
                 else 
+                {
+                    throw new Exception($"Product \"{product.Id}\" does not have BuildEngine Product");
+                }
+            }
+        }
+
+        private async Task BuildEnginePublishProductAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            var channel = actionParameter ?? "production";
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                if (product.WorkflowJobId != 0)
+                {
+                    product.WorkflowPublishId = 0;
+                    await productRepository.UpdateAsync(product);
+                    BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, channel));
+                    Log.Information($"BuildEnginePublishProduct: productId={product.Id}, projectName={product.Project.Name}");
+                }
+                else
                 {
                     throw new Exception($"Product \"{product.Id}\" does not have BuildEngine Product");
                 }
@@ -170,7 +236,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
-        //
+        //  
         // Actions from DWKit Samples (with name changes for Tables and Fields)
         //
         private async Task WriteProductTransitionAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)

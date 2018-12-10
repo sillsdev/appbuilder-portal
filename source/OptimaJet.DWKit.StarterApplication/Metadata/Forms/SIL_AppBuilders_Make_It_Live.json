@@ -44,13 +44,13 @@
       {
         "key": "header_1",
         "data-buildertype": "header",
-        "content": "Create App Entry",
+        "content": "Make It Live",
         "size": "medium"
       },
       {
         "key": "staticcontent_instructions",
         "data-buildertype": "staticcontent",
-        "content": "<h3>Instructions</h3>\n<ul>\n<li>Save the APK file by clicking on the entry with type <em>apk</em> in the <em>Artifacts</em> grid view.</li>\n<li>Go to <a href=\"https://play.google.com/apps/publish/\" target=\"_blank\">Google Play Developer Console</a> and sign in.</li>\n<li>Click <strong>CREATE APPLICATION</strong> and  complete the following items:</li>\n<ul>\n<li>Set the <strong>Default language</strong> to <em>Store Listing Language</em> shown below.</li>\n<li>Set the <strong>Title</strong> to <em>Project Name</em> shown below.</li>\n<li>Click <strong>CREATE</strong>.</li>\n</ul>\n<li>Select <strong>App releases</strong> in the menu at the left.</li>\n<li>On the right, click <strong>MANAGE</strong> in the <strong>Production</strong> section under <strong>Production track</strong> and complete the following items: \n<ul>\n<li>Click <strong>CREATE RELEASE</strong>.</li>\n<li>Click <strong>OPT OUT</strong> to <strong>App signing by Google Play</strong> and Click <strong>CONFIRM</strong>.</li>\n<li>Click <strong>BROWSE FILES</strong> and select the downloaded APK.</li>\n</ul>\n</ul>",
+        "content": "<h3>Instructions</h3>\n<ul>\n\n<li>Select <strong>Store listing</strong> in the menu at the left and set the follow properties:</li>\n<ul>\n\n<li>In the <strong>Categorization</strong> section:\n<ul>\n<li> Set the <strong>Application type</strong> to <em>Applications</em> </li>\n<li> Set the <strong>Category</strong> to <em>Books & Reference</em> (or appropriate category)</li>\n</ul>\n\n<li>In the <strong>Content details</strong> section:\n<ul>\n<li>Set  <strong>Website</strong> </li>\n<li>Set <strong>Email</strong> </li>\n</ul>\n\n<li>In the <strong>Privacy Policy</strong> section:\n<ul>\n<li>Set <strong>Privacy Policy</strong> to the URL of the App Privacy Policy</li>\n<li>For an example, see the <a href=\"https://www.wycliffe.org/scripture-app-privacy\">Wycliffe Scripture App Privacy Policy</a></li>\n</ul>\n</ul>\n\n\n<li>Select <strong>Content rating</strong> in the menu at the left and do the following:</li>\n<ul>\n<li>Click <strong>CONTINUE</strong> to start the process of creating the content rating</li>\n<li>Enter <strong>Email address</strong> and <strong>Confirm email address</strong> of the administrator of the app channel who will receive the content rating license. </li>\n<li>Select app category <strong>REFERENCE, NEWS, OR EDUCATIONAL</strong> (or appropriate category)</li>\n<li>Answer the questions</li>\n<li>Click <strong>SAVE QUESTIONNAIRE</strong></li>\n<li>Click <strong>CALCULATE RATING</strong></li>\n<li>Review <em>Rating Category</em> values</li>\n<li>If correct, click <strong>APPLY RATING</strong></li>\n<li>To make changes in the future, go back to <strong>Content rating</strong> and click <strong>START NEW QUESTIONNAIRE</strong></li>\n</ul>\n\n<li>Select <strong>Pricing & distribution</strong> in the menu at the left and set the follow properties:</li>\n<ul>\n<li>In Countries, choose <strong>Available</strong> for the appropriate countries.  To make the app available for all countries, select the radio button in the header.</li>\n<li>Set <strong>Primarily Child-Directed</strong> to appropriate value</li>\n<li>Set <strong>Contains ads</strong> to <em>No, it has no ads</em></li>\n<li> In the <strong>Consent</strong> section:\n<ul>\n<li>Check <strong>Content guidelines</strong> that your app meets <a href=\"https://play.google.com/about/developer-content-policy.html\">Android Content Guidelines</a>.  Please review to ensure that you do.</li>\n<li>Check <strong>US export laws</strong>\n</ul>\n<li>Click <strong>SAVE DRAFT</strong></li>\n<li>Click <strong>Ready to publish</strong> link</li>\n<li>Click <strong>MANAGE RELEASES</strong> which will take you to <strong>App releases</strong></li>\n</ul>\n\n<li>In <strong>App releases</strong> do the following</li>\n<ul>\n<li>Click <strong>EDIT RELEASE</strong> in <strong>Production</strong> section under the <strong>Production track</strong> and do the following:</li>\n<ul>\n<li>Enter initial Release notes in <strong>What's new in this release?</strong></li>\n<li>Note: For subsequent releases, this information will be inserted automatically from the App Builder's <em>Google Play Listing</em> section from the <em>What's New</em> tab.</li>\n<li>Click <strong>REVIEW</strong></li>\n<li> Click <strong>START ROLLOUT TO PRODUCTION</strong></li>\n</ul>\n</ul>\n\n</ul>\n\n</ul>",
         "isHtml": true,
         "style-marginBottom": ""
       },
@@ -488,72 +488,6 @@
             ]
           }
         ]
-      },
-      {
-        "key": "header_2",
-        "data-buildertype": "header",
-        "content": "Artifacts",
-        "size": "small"
-      },
-      {
-        "key": "gridview_1",
-        "data-buildertype": "gridview",
-        "columns": [
-          {
-            "key": "buildid",
-            "name": "BuildId",
-            "type": "number",
-            "width": 100,
-            "sortable": true,
-            "filterable": false,
-            "resizable": false
-          },
-          {
-            "key": "type",
-            "name": "Type",
-            "sortable": true,
-            "filterable": false,
-            "resizable": false,
-            "width": 150
-          },
-          {
-            "key": "size",
-            "name": "Size",
-            "sortable": true,
-            "filterable": false,
-            "resizable": false,
-            "type": "number",
-            "width": 100
-          },
-          {
-            "key": "link",
-            "name": "Link",
-            "sortable": true,
-            "filterable": false,
-            "resizable": false,
-            "type": "link"
-          }
-        ],
-        "events": {
-          "onRowDblClick": {
-            "active": false,
-            "actions": [],
-            "targets": [],
-            "parameters": []
-          },
-          "onRowClick": {
-            "actions": [
-              "openArtifactLink"
-            ],
-            "active": true,
-            "targets": [],
-            "parameters": []
-          }
-        },
-        "defaultSort": "buildid DESC",
-        "autoHeight": false,
-        "minHeight": "",
-        "pageSize": ""
       }
     ]
   }
