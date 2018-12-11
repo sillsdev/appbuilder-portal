@@ -87,12 +87,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
             {
                 locale = Locale;
             }
-            else
+            else if ((CultureInfo.CurrentCulture != null) && !String.IsNullOrEmpty(CultureInfo.CurrentCulture.Name))
             {
-                if ((CultureInfo.CurrentCulture != null) && !String.IsNullOrEmpty(CultureInfo.CurrentCulture.Name))
-                {
-                    locale = CultureInfo.CurrentCulture.Name;
-                }
+                locale = CultureInfo.CurrentCulture.Name;
             }
             return locale;
         }
