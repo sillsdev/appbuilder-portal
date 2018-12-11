@@ -16,7 +16,8 @@ import {
 
 import RowActions from './row-actions';
 
-import { IProvidedProps as ITableSelection } from '../with-table-selection';
+import { IProvidedProps as ITableColumns } from '../with-table-columns';
+import { IProvidedProps as ITableRows } from '../with-table-rows';
 import { COLUMN_KEY } from '../column-data';
 
 import Products from './products';
@@ -32,7 +33,8 @@ interface IOwnProps {
 
 type IProps =
   & IOwnProps
-  & ITableSelection;
+  & ITableColumns
+  & ITableRows;
 
 class Row extends React.Component<IProps> {
 
@@ -68,14 +70,22 @@ class Row extends React.Component<IProps> {
     });
   }
 
-  onSelect = project => e => {
+  onSelect = row => e => {
     e.preventDefault();
-    const { selectItem } = this.props;
-    selectItem(project);
+    const { toggleRowSelection } = this.props;
+    toggleRowSelection(row);
+  }
+
+  inRowSelection = row => {
+    const { selectedRows } = this.props;
+    const p = selectedRows && selectedRows.find(r =>
+      idFromRecordIdentity(r) === idFromRecordIdentity(row)
+    );
+    return p != undefined;
   }
 
   render() {
-    const { project, projectPath, inSelection, allSelected } = this.props;
+    const { project, projectPath } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
@@ -93,8 +103,8 @@ class Row extends React.Component<IProps> {
           <div className='col flex align-items-center flex-grow-xs flex-100 p-l-sm'>
             <Checkbox
               className='m-r-sm'
-              checked={allSelected || inSelection(project)}
               onClick={this.onSelect(project)}
+              checked={this.inRowSelection(project)}
             />
             <Link to={clickPath}>{projectName}</Link>
           </div>

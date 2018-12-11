@@ -1,30 +1,41 @@
 import * as React from 'react';
-import { Dropdown, Popup } from 'semantic-ui-react';
 import { compose } from 'recompose';
 import CaretDown from '@material-ui/icons/KeyboardArrowDown';
+import { Dropdown, Popup } from 'semantic-ui-react';
+import { NavLink } from 'react-router-dom';
 
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { IRowProps } from '@ui/components/project-table';
 
 import './styles.scss';
-import { NavLink } from 'react-router-dom';
+
 
 interface IOwnProps {
   filter: string;
   onSearch: (term: string) => any;
-  onBulkArchive: (e) => void;
-  onBulkBuild: (e) => void;
 }
 
 type IProps =
 & IOwnProps
+& IRowProps
 & i18nProps;
 
 class Header extends React.Component<IProps> {
 
+  onBulkArchive = () => {
+    const { selectedRows } = this.props;
+    console.log(selectedRows);
+  }
+
+  onBulkBuild = () => {
+    const { selectedRows } = this.props;
+    console.log(selectedRows);
+  }
+
   render() {
 
-    const { t, filter, onSearch, onBulkArchive, onBulkBuild } = this.props;
+    const { t, filter, onSearch } = this.props;
 
     const dropdownText = {
       'my-projects': t('projects.switcher.dropdown.myProjects'),
@@ -58,13 +69,13 @@ class Header extends React.Component<IProps> {
         <div className='flex align-items-center'>
           <button
             className='ui button basic blue m-r-md'
-            onClick={onBulkArchive}
+            onClick={this.onBulkArchive}
           >
             {t('common.archive')}
           </button>
           <button
             className='ui button basic blue m-r-md'
-            onClick={onBulkBuild}
+            onClick={this.onBulkBuild}
           >
             {t('common.build')}
           </button>

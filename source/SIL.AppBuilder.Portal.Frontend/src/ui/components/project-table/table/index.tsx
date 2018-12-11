@@ -11,7 +11,7 @@ import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import LoadingWrapper from '@ui/components/loading-wrapper';
 
-import { withTableSelection, IProvidedProps as ITableActionsProps } from './with-table-selection';
+import { IProvidedProps as ITableRows } from './with-table-rows';
 
 interface IOwnProps {
   projects: ProjectResource[];
@@ -22,8 +22,8 @@ interface IOwnProps {
 type IProps =
   & IOwnProps
   & ITableColumns
+  & ITableRows
   & ISortProps
-  & ITableActionsProps
   & i18nProps;
 
 class Table extends React.Component<IProps> {
@@ -38,10 +38,8 @@ class Table extends React.Component<IProps> {
       t,
       isLoading,
       projectPath,
-      selectItem,
-      inSelection,
-      selection,
-      allSelected
+      selectedRows,
+      toggleRowSelection
     } = this.props;
 
     const isProjectListEmpty = isEmpty(projects);
@@ -63,10 +61,8 @@ class Table extends React.Component<IProps> {
                 activeProjectColumns,
                 activeProductColumns,
                 projectPath,
-                selectItem,
-                inSelection,
-                selection,
-                allSelected
+                selectedRows,
+                toggleRowSelection
               };
 
               return <Row key={index} {...rowProps} />;
@@ -89,6 +85,5 @@ class Table extends React.Component<IProps> {
 }
 
 export default compose(
-  withTranslations,
-  withTableSelection
+  withTranslations
 )(Table);

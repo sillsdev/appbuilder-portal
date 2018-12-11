@@ -11,16 +11,15 @@ export interface State {
     [tableName: string]: Column[];
   };
   rowSelections: {
-    [tableName: string]: any[];
-  };
-  allRowsSelected: {
-    [tableName: string]: boolean;
+    [tableName: string]: {
+      rows: any[];
+      allCheckboxState: string;
+    }
   };
 }
 
 export const initialState: State = {
   currentOrganizationId: '',
   columnSelections: {},
-  rowSelections: {},
-  allRowsSelected: {}
+  rowSelections: {}
 };

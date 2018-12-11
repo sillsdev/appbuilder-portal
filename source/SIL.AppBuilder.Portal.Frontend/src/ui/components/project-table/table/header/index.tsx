@@ -1,24 +1,27 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { Checkbox } from 'semantic-ui-react';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
-
 import { ISortProps } from '@data/containers/api/sorting';
-import { IProvidedProps as ITableActionsProps } from '../with-table-selection';
+import { IProvidedProps as ITableRows } from '../with-table-rows';
 
 import { UpArrow, DownArrow } from './sort-arrows';
 import ColumnSelector from './column-selector';
 import { IProvidedProps, IColumn } from '../with-table-columns';
 import { COLUMN_KEY } from '@ui/components/project-table';
-import { Checkbox } from 'semantic-ui-react';
 
-interface IOwnProps {}
+import { ProjectResource } from '@data';
+
+interface IOwnProps {
+  projects: ProjectResource[];
+}
 
 type IProps =
   & IOwnProps
   & i18nProps
   & IProvidedProps
-  & ITableActionsProps
+  & ITableRows
   & ISortProps;
 
 interface IColumnProps {
@@ -67,13 +70,16 @@ class Header extends React.Component<IProps> {
 
   toggleSelectAll = (e) => {
     e.preventDefault();
-    const { toggleSelectAll } = this.props;
-    toggleSelectAll();
+    const { toggleAllRowSelection, projects } = this.props;
+    toggleAllRowSelection(projects);
   }
 
   render() {
 
-    const { toggleSelectAll } = this.props;
+    const { allCheckboxState } = this.props;
+
+    const checked = allCheckboxState === 'all';
+    const indeterminate = allCheckboxState == 'indeterminate';
 
     const nameColumn = this.buildColumn({
       i18nKey: 'projectTable.columns.project',
@@ -85,7 +91,11 @@ class Header extends React.Component<IProps> {
     return (
       <div className='flex header grid m-b-md'>
         <div className='flex align-items-center justify-content-space-evenly flex-grow-xs p-sm'>
-          <Checkbox onClick={this.toggleSelectAll}/>
+          <Checkbox
+            onClick={this.toggleSelectAll}
+            checked={checked}
+            indeterminate={indeterminate}
+            />
           { nameColumn }
           { this.buildHeaderTitles() }
           <div className='flex align-items-center p-r-md line-height-0'>

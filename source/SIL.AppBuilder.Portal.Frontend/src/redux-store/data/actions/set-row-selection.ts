@@ -24,7 +24,10 @@ export const reducer = (state: State, action: SetRowSelectionAction) => {
   return {
     ...state,
     rowSelections: {
-      [tableName]: rows
+      [tableName]: {
+        ...state.rowSelections[tableName],
+        rows
+      }
     }
   };
 };

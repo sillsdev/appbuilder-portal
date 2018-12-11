@@ -10,6 +10,7 @@ import './project-table.scss';
 
 export { default as Table } from './table';
 export { IProvidedProps as IColumnProps, withTableColumns } from './table/with-table-columns';
+export { IProvidedProps as IRowProps, withTableRows } from './table/with-table-rows';
 export { possibleColumns, COLUMN_KEY, possibleColumnsByType } from './table/column-data';
 export { IOwnProps as IDataProps, withNetwork as withData } from '@data/containers/resources/project/list';
 
