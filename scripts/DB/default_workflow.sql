@@ -20,6 +20,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Reject" />
     <Command Name="Continue" />
     <Command Name="Back" />
+    <Command Name="Rebuild" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
@@ -453,7 +454,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
-        <Trigger Type="Command" NameRef="Back" />
+        <Trigger Type="Command" NameRef="Rebuild" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />

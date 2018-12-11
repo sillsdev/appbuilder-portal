@@ -3103,6 +3103,15 @@
             "*"
           ],
           "form": "SIL_AppBuilders_Published"
+        },
+        {
+          "states": [
+            "Make It Live"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Make_It_Live"
         }
       ]
     }
