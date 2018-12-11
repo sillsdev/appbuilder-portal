@@ -8,6 +8,8 @@ import {
   setAllCheckboxState as setAllCheckboxStateData
 } from '@store/data';
 
+import { ALL_CHECKBOX_STATE } from './all-checkbox-state';
+
 export interface IProvidedProps {
   selectedRows?: IRow[];
   allCheckboxState?: string;
@@ -37,7 +39,7 @@ interface IOptions {
 }
 
 const ROWS_DEFAULT_VALUE = [];
-const TOGGLE_DEFAULT_VALUE = 'none';
+const TOGGLE_DEFAULT_VALUE = ALL_CHECKBOX_STATE.NONE;
 
 export function withTableRows(options: IOptions) {
 
@@ -71,23 +73,26 @@ export function withTableRows(options: IOptions) {
     };
   }
 
+  const equalIds = (a, b) => idFromRecordIdentity(a) === idFromRecordIdentity(b);
+
   return InnerComponent => {
 
     class WrapperComponent extends React.Component<IProps> {
 
       toggleRowSelection = (row: IRow) => {
-        const { setRowSelection, selectedRows, rowCount, setAllCheckboxState } = this.props;
+        const {
+          setRowSelection,
+          selectedRows,
+          rowCount,
+          setAllCheckboxState
+        } = this.props;
 
         let newSelection;
 
-        const isRowInSelection = selectedRows.find(r =>
-          idFromRecordIdentity(r) === idFromRecordIdentity(row)
-        );
+        const isRowInSelection = selectedRows.find(r => equalIds(r, row));
 
         if (isRowInSelection) {
-          newSelection = selectedRows.filter((r) =>
-            idFromRecordIdentity(r) !== idFromRecordIdentity(row)
-          );
+          newSelection = selectedRows.filter((r) => equalIds(r,row));
         } else {
           newSelection = [...selectedRows, row];
         }
@@ -95,11 +100,11 @@ export function withTableRows(options: IOptions) {
         setRowSelection(newSelection);
 
         if (newSelection.length === 0) {
-          setAllCheckboxState('none');
+          setAllCheckboxState(ALL_CHECKBOX_STATE.NONE);
         } else if (newSelection.length < rowCount) {
-          setAllCheckboxState('indeterminate');
+          setAllCheckboxState(ALL_CHECKBOX_STATE.INDETERMINATE);
         } else {
-          setAllCheckboxState('all');
+          setAllCheckboxState(ALL_CHECKBOX_STATE.ALL);
         }
       }
 
@@ -112,13 +117,14 @@ export function withTableRows(options: IOptions) {
 
         let newSelection;
 
-        if (allCheckboxState === 'none') {
+        if (allCheckboxState === ALL_CHECKBOX_STATE.NONE) {
           newSelection = rows;
-          setAllCheckboxState('all');
+          setAllCheckboxState(ALL_CHECKBOX_STATE.ALL);
         }
-        if (allCheckboxState === 'all' || allCheckboxState === 'indeterminate') {
+        if (allCheckboxState === ALL_CHECKBOX_STATE.ALL ||
+            allCheckboxState === ALL_CHECKBOX_STATE.INDETERMINATE) {
           newSelection = [];
-          setAllCheckboxState('none');
+          setAllCheckboxState(ALL_CHECKBOX_STATE.NONE);
         }
 
         setRowSelection(newSelection);
