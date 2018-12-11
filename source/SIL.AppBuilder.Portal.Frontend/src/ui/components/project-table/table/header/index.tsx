@@ -9,7 +9,7 @@ import { IProvidedProps as ITableRows } from '../with-table-rows';
 import { UpArrow, DownArrow } from './sort-arrows';
 import ColumnSelector from './column-selector';
 import { IProvidedProps, IColumn } from '../with-table-columns';
-import { COLUMN_KEY } from '@ui/components/project-table';
+import { COLUMN_KEY, ALL_CHECKBOX_STATE } from '@ui/components/project-table';
 
 import { ProjectResource } from '@data';
 
@@ -78,8 +78,8 @@ class Header extends React.Component<IProps> {
 
     const { allCheckboxState } = this.props;
 
-    const checked = allCheckboxState === 'all';
-    const indeterminate = allCheckboxState === 'indeterminate';
+    const checked = allCheckboxState === ALL_CHECKBOX_STATE.ALL;
+    const indeterminate = allCheckboxState === ALL_CHECKBOX_STATE.INDETERMINATE;
 
     const nameColumn = this.buildColumn({
       i18nKey: 'projectTable.columns.project',

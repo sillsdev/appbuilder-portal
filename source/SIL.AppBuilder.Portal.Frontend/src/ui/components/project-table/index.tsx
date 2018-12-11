@@ -13,6 +13,7 @@ export { IProvidedProps as IColumnProps, withTableColumns } from './table/with-t
 export { IProvidedProps as IRowProps, withTableRows } from './table/with-table-rows';
 export { possibleColumns, COLUMN_KEY, possibleColumnsByType } from './table/column-data';
 export { IOwnProps as IDataProps, withNetwork as withData } from '@data/containers/resources/project/list';
+export { ALL_CHECKBOX_STATE } from './table/all-checkbox-state';
 
 export default compose(
   withSorting({ defaultSort: 'name' }),
