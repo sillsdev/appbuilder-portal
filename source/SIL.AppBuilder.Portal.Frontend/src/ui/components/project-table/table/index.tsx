@@ -17,7 +17,7 @@ interface IOwnProps {
   projects: ProjectResource[];
   isLoading?: boolean;
   projectPath?: (id: string) => string;
-  showSelection?: boolean
+  showSelection?: boolean;
 }
 
 type IProps =

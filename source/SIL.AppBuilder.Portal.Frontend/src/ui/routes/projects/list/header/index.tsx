@@ -4,9 +4,14 @@ import CaretDown from '@material-ui/icons/KeyboardArrowDown';
 import { Dropdown, Popup } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 
+import * as toast from '@lib/toast';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { IRowProps } from '@ui/components/project-table';
+import {
+  withBulkActions,
+  IProvidedProps as IBulkActions
+} from '@data/containers/resources/project/with-bulk-actions';
 
 import './styles.scss';
 
@@ -17,20 +22,26 @@ interface IOwnProps {
 }
 
 type IProps =
-& IOwnProps
-& IRowProps
-& i18nProps;
+  & IOwnProps
+  & IRowProps
+  & IBulkActions
+  & i18nProps;
 
 class Header extends React.Component<IProps> {
 
-  onBulkArchive = () => {
-    const { selectedRows } = this.props;
-    console.log(selectedRows);
+  onBulkArchive = async () => {
+    const { selectedRows, bulkArchive } = this.props;
+
+    try {
+      await bulkArchive(selectedRows);
+    }catch(e) {
+      toast.error(e);
+    }
   }
 
   onBulkBuild = () => {
     const { selectedRows } = this.props;
-    console.log(selectedRows);
+    toast.error("Not implemented yet");
   }
 
   render() {
@@ -105,5 +116,6 @@ class Header extends React.Component<IProps> {
 }
 
 export default compose<IOwnProps, IOwnProps>(
-  withTranslations
+  withTranslations,
+  withBulkActions
 )(Header);
