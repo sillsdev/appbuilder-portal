@@ -6,7 +6,7 @@ import { ResourceObject } from 'jsonapi-typescript';
 import { Redirect } from 'react-router';
 
 import { OrganizationAttributes, TYPE_NAME } from '../models/organization';
-import { ORGANIZATIONS_TYPE, query } from '@data';
+import { ORGANIZATIONS_TYPE, query, withLoader } from '@data';
 
 import { buildFindRecord } from '@data/store-helpers';
 import * as toast from '@lib/toast';
@@ -20,23 +20,13 @@ export interface IProvidedProps {
 
 export interface IProps {
   currentOrganizationId: string | number;
-  organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
+  organization?: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
   setCurrentOrganizationId: (id: string) => void;
 }
 
 function mapStateToProps({ data }) {
   return {
     currentOrganizationId: data.currentOrganizationId
-  };
-}
-
-function mapRecordsToProps(passedProps) {
-  const { currentOrganizationId: id } = passedProps;
-
-  if (!id || id === '') { return {}; }
-
-  return {
-    organization: q => buildFindRecord(q, TYPE_NAME, id),
   };
 }
 
@@ -53,9 +43,9 @@ export function withCurrentOrganization(InnerComponent) {
     render() {
       const { currentOrganizationId, organization, setCurrentOrganizationId } = this.props;
 
-      if (!organization) {
-        setCurrentOrganizationId('');
-      }
+      // if (!organization) {
+      //   setCurrentOrganizationId('');
+      // }
 
       const dataProps = {
         currentOrganization: organization || null,
@@ -66,12 +56,24 @@ export function withCurrentOrganization(InnerComponent) {
     }
   }
 
-  return compose(
+  return compose<IProps, IProvidedProps>(
     connect(mapStateToProps, mapDispatchToProps),
     branch(
       ({ currentOrganizationId: id }) => id && `${id}`.length > 0,
-      withData(mapRecordsToProps)
-    )
+      withData((passedProps: IProvidedProps) => {
+        const { currentOrganizationId: id } = passedProps;
+      
+        if (!id || id === '') { return {}; }
+      
+        return {
+          organization: q => buildFindRecord(q, TYPE_NAME, id),
+        };
+      })
+    ),
+    withLoader(({ currentOrganizationId: id, organization }) => {
+      const hasId = !(!id || id === '');
+      return hasId && !organization;
+    })
   )(WrapperClass);
 }
 
