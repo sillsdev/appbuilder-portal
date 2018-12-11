@@ -47,6 +47,18 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 await SendNotificationToUserAsync(orgAdmin.User, message, subs);
             }
         }
+        public async Task SendNotificationToSuperAdminsAsync(String message, object subs)
+        {
+            var superAdmins = UserRolesRepository.Get()
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
+                .Where(ur => ur.Role.RoleName == RoleName.SuperAdmin)
+                .ToList();
+            foreach (UserRole superAdmin in superAdmins)
+            {
+                await SendNotificationToUserAsync(superAdmin.User, message, subs);
+            }
+        }
         public async Task SendNotificationToUserAsync(User user, String message, object subs)
         {
             var notification = new Notification
