@@ -86,7 +86,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
             organizationInviteService.Process(request);
 
             var emails = ReadTestData<AppDbContext, Email>();
-            Assert.Equal(2, emails.Count);
+            Assert.Equal(3, emails.Count);
             var invites = ReadTestData<AppDbContext, OrganizationInviteRequest>();
             Assert.Empty(invites);
             var email1 = emails[0];

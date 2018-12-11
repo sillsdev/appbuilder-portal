@@ -38,9 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var superAdmins = userRolesRepository.Get()
                 .Include(ur => ur.User)
                 .Include(ur => ur.Role)
-                .Where(ur =>  ur.Role.RoleName == RoleName.SuperAdmin
-                       && ur.User.EmailNotification == true
-                )
+                .Where(ur =>  ur.Role.RoleName == RoleName.SuperAdmin)
                 .ToList();
             foreach (UserRole superAdmin in superAdmins)
             {
