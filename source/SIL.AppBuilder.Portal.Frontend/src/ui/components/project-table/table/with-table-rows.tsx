@@ -30,7 +30,7 @@ interface IReduxProps {
 type IProps =
   & IProvidedProps
   & IOwnProps
-  & IReduxProps
+  & IReduxProps;
 
 interface IOptions {
   tableName: string;
@@ -116,7 +116,7 @@ export function withTableRows(options: IOptions) {
           newSelection = rows;
           setAllCheckboxState('all');
         }
-        if (allCheckboxState == 'all' || allCheckboxState == 'indeterminate') {
+        if (allCheckboxState === 'all' || allCheckboxState === 'indeterminate') {
           newSelection = [];
           setAllCheckboxState('none');
         }

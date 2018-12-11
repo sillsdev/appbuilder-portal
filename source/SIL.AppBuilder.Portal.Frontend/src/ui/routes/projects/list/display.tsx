@@ -70,7 +70,7 @@ export default class Display extends React.Component<IProps> {
       onSearch: this.search,
       projects,
       selectedRows,
-    }
+    };
 
     return (
       <>

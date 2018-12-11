@@ -79,7 +79,7 @@ class Header extends React.Component<IProps> {
     const { allCheckboxState } = this.props;
 
     const checked = allCheckboxState === 'all';
-    const indeterminate = allCheckboxState == 'indeterminate';
+    const indeterminate = allCheckboxState === 'indeterminate';
 
     const nameColumn = this.buildColumn({
       i18nKey: 'projectTable.columns.project',

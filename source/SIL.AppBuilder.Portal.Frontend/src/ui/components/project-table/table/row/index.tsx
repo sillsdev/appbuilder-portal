@@ -81,7 +81,7 @@ class Row extends React.Component<IProps> {
     const p = selectedRows && selectedRows.find(r =>
       idFromRecordIdentity(r) === idFromRecordIdentity(row)
     );
-    return p != undefined;
+    return p !== undefined;
   }
 
   render() {
