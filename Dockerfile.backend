@@ -2,7 +2,7 @@
 
 ###############################
 # Dependencies
-FROM microsoft/dotnet:2.1.402-sdk-bionic as dependencies
+FROM microsoft/dotnet:2.1.500-sdk-bionic as dependencies
 WORKDIR /app
 
 COPY source/OptimaJet.DWKit.Application/*.csproj /app/OptimaJet.DWKit.Application/
@@ -33,7 +33,7 @@ RUN dotnet publish -c Release -o out && \
     POSTGRES_PASSWORD=build \
     dotnet ef migrations --msbuildprojectextensionspath /app/out/OptimaJet.DWKit.StarterApplication/obj/ script --idempotent --output "out/scripts/api_migrations.sql"
 
-FROM microsoft/dotnet:2.1.402-sdk-bionic AS runtime-release
+FROM microsoft/dotnet:2.1.500-sdk-bionic AS runtime-release
 WORKDIR /app
 COPY --from=build-release /app/OptimaJet.DWKit.StarterApplication/out ./
 COPY --from=build-release /app/run-api.sh ./
