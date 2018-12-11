@@ -17,6 +17,7 @@ interface IOwnProps {
   projects: ProjectResource[];
   isLoading?: boolean;
   projectPath?: (id: string) => string;
+  showSelection?: boolean
 }
 
 type IProps =
@@ -39,7 +40,8 @@ class Table extends React.Component<IProps> {
       isLoading,
       projectPath,
       selectedRows,
-      toggleRowSelection
+      toggleRowSelection,
+      showSelection
     } = this.props;
 
     const isProjectListEmpty = isEmpty(projects);
@@ -62,7 +64,8 @@ class Table extends React.Component<IProps> {
                 activeProductColumns,
                 projectPath,
                 selectedRows,
-                toggleRowSelection
+                toggleRowSelection,
+                showSelection
               };
 
               return <Row key={index} {...rowProps} />;

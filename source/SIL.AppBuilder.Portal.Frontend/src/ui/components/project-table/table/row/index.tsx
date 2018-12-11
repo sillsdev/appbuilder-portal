@@ -29,6 +29,7 @@ interface IOwnProps {
   group: GroupResource;
   toggleArchiveProject: (project: ProjectResource) => void;
   projectPath?: (id: string) => string;
+  showSelection?: boolean;
 }
 
 type IProps =
@@ -85,7 +86,7 @@ class Row extends React.Component<IProps> {
   }
 
   render() {
-    const { project, projectPath } = this.props;
+    const { project, projectPath, showSelection } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
@@ -101,11 +102,14 @@ class Row extends React.Component<IProps> {
       >
         <div className='flex row-header align-items-center p-t-md p-b-md'>
           <div className='col flex align-items-center flex-grow-xs flex-100 p-l-sm'>
-            <Checkbox
-              className='m-r-sm'
-              onClick={this.onSelect(project)}
-              checked={this.inRowSelection(project)}
-            />
+            {
+              showSelection &&
+              <Checkbox
+                className='m-r-sm'
+                onClick={this.onSelect(project)}
+                checked={this.inRowSelection(project)}
+              />
+            }
             <Link to={clickPath}>{projectName}</Link>
           </div>
 

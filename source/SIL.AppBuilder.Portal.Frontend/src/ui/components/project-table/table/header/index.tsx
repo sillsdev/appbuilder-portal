@@ -15,6 +15,7 @@ import { ProjectResource } from '@data';
 
 interface IOwnProps {
   projects: ProjectResource[];
+  showSelection?: boolean;
 }
 
 type IProps =
@@ -76,7 +77,7 @@ class Header extends React.Component<IProps> {
 
   render() {
 
-    const { allCheckboxState } = this.props;
+    const { allCheckboxState, showSelection } = this.props;
 
     const checked = allCheckboxState === ALL_CHECKBOX_STATE.ALL;
     const indeterminate = allCheckboxState === ALL_CHECKBOX_STATE.INDETERMINATE;
@@ -91,11 +92,14 @@ class Header extends React.Component<IProps> {
     return (
       <div className='flex header grid m-b-md'>
         <div className='flex align-items-center justify-content-space-evenly flex-grow-xs p-sm'>
-          <Checkbox
-            onClick={this.toggleSelectAll}
-            checked={checked}
-            indeterminate={indeterminate}
+          {
+            showSelection &&
+            <Checkbox
+              onClick={this.toggleSelectAll}
+              checked={checked}
+              indeterminate={indeterminate}
             />
+          }
           { nameColumn }
           { this.buildHeaderTitles() }
           <div className='flex align-items-center p-r-md line-height-0'>

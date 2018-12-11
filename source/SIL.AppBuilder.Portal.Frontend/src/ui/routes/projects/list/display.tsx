@@ -62,7 +62,8 @@ export default class Display extends React.Component<IProps> {
       activeProjectColumns, possibleColumns,
       selectedRows, toggleRowSelection,
       toggleAllRowSelection, rowCount,
-      allCheckboxState
+      allCheckboxState,
+      showSelection: true
     };
 
     const headerProps = {
