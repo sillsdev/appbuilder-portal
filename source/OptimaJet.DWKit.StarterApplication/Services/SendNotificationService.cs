@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using I18Next.Net.Plugins;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Utility;
@@ -35,7 +36,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             NotificationRepository = notificationRepository;
 
         }
-        public async Task SendNotificationToOrgAdminsAsync(Organization organization, String message, object subs)
+        public async Task SendNotificationToOrgAdminsAndOwnerAsync(Organization organization, User owner, String message, Dictionary<string, object> subs)
+        {
+            await SendNotificationToOrgAdminsAsync(organization, message, subs);
+            await SendNotificationToUserAsync(owner, message, subs, false);
+        }
+        public async Task SendNotificationToOrgAdminsAsync(Organization organization, String message, Dictionary<string, object> subs)
         {
             var orgAdmins = UserRolesRepository.Get()
                 .Include(ur => ur.User)
@@ -44,10 +50,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .ToList();
             foreach (UserRole orgAdmin in orgAdmins)
             {
-                await SendNotificationToUserAsync(orgAdmin.User, message, subs);
+                await SendNotificationToUserAsync(orgAdmin.User, message, subs, true);
             }
         }
-        public async Task SendNotificationToSuperAdminsAsync(String message, object subs)
+        public async Task SendNotificationToSuperAdminsAsync(String message, Dictionary<string, object> subs)
         {
             var superAdmins = UserRolesRepository.Get()
                 .Include(ur => ur.User)
@@ -56,16 +62,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .ToList();
             foreach (UserRole superAdmin in superAdmins)
             {
-                await SendNotificationToUserAsync(superAdmin.User, message, subs);
+                await SendNotificationToUserAsync(superAdmin.User, message, subs, true);
             }
         }
-        public async Task SendNotificationToUserAsync(User user, String message, object subs)
+        public async Task SendNotificationToUserAsync(User user, String message, Dictionary<string, object> subs, bool sendEmailOverride = false)
         {
+            var locale = user.LocaleOrDefault();
+            var translated = await Translator.TranslateAsync(locale, "notifications", message, subs);
+            var sendEmail = true;
+            if (!sendEmailOverride && (user.EmailNotification != null))
+            {
+                sendEmail = (bool)user.EmailNotification;
+            }
             var notification = new Notification
             {
-                MessageId = message,
                 UserId = user.Id,
-                MessageSubstitutions = subs
+                Message = translated,
+                SendEmail = sendEmail
             };
             var updatedNotification = await NotificationRepository.CreateAsync(notification);
             await HubContext.Clients.User(user.ExternalId).SendAsync("Notification", updatedNotification.Id);
@@ -90,12 +103,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 SendEmailAsync(notification).Wait();
             }
         }
+
         protected async Task SendEmailAsync(Notification notification)
         {
             var locale = notification.User.LocaleOrDefault();
             var subject = await Translator.TranslateAsync(locale, "notifications", "notifications.subject", null);
-            var subsDict = notification.MessageSubstitutions as Dictionary<string, object>;
-            var message = await Translator.TranslateAsync(locale, "notifications", notification.MessageId, subsDict);
             notification.DateEmailSent = DateTime.UtcNow;
             await NotificationRepository.UpdateAsync(notification);
             var email = new Email
@@ -105,7 +117,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 ContentTemplate = "Notification",
                 ContentModel = new
                 {
-                    Message = message
+                    Message = notification.Message
                 }
             };
             var result = EmailRepository.CreateAsync(email).Result;
