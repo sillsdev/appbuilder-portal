@@ -92,7 +92,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var notifications = NotificationRepository.Get()
                                                     .Where(n => n.DateEmailSent == null
                                                            && n.DateRead == null
-                                                           && n.User.EmailNotification == true
+                                                           && n.SendEmail == true
                                                            && now.Subtract((DateTime)n.DateCreated).TotalMinutes > sendNotificationEmailMinutes
                                                            && now.Subtract((DateTime)n.DateCreated).TotalMinutes < dontSendNotificationEmailMinutes
                                                           )
