@@ -1,11 +1,16 @@
 import * as React from 'react';
+import { compose } from 'recompose';
+
+import { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/with-logout';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
-
 import FocusPanel from '@ui/components/focus-panel';
-import { compose } from 'redux';
-import { withLogout, IProvidedProps as ILogoutProps } from '@data';
 
-class OrgMembershipRequired extends React.Component<ILogoutProps & i18nProps> {
+type IProps =
+  & ILogoutProps
+  & i18nProps;
+
+class OrgMembershipRequired extends React.Component<IProps> {
   render() {
     const { t, logout } = this.props;
 
@@ -21,7 +26,7 @@ class OrgMembershipRequired extends React.Component<ILogoutProps & i18nProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, {}>(
   withTranslations,
   withLogout
 )(OrgMembershipRequired);
