@@ -91,7 +91,7 @@ class Navigation extends React.Component<IProps & i18nProps> {
           <RequireRole roleName={ROLE.OrganizationAdmin}>
             <MenuItem
               name={t('sidebar.organizationSettings')}
-              to={`/organizations/${currentOrganizationId}/settings`}
+              to={`/organizations/${currentOrganizationId}/settings/basic-info`}
               onClick={closeSidebar}
             />
           </RequireRole>

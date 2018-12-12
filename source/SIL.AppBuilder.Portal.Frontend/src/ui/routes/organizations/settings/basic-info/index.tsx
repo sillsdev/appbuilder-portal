@@ -6,7 +6,7 @@ import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { OrganizationAttributes, OrganizationResource } from '@data/models/organization';
 
-export const pathName = '/organizations/:orgId/settings';
+export const pathName = '/organizations/:orgId/settings/basic-info';
 
 export interface IState {
   name: string;

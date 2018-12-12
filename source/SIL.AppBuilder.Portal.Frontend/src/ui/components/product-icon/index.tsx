@@ -1,5 +1,5 @@
 import * as React from 'react';
-import AndriodIcon from '@material-ui/icons/Android';
+import AndroidIcon from '@material-ui/icons/Android';
 import WebIcon from '@material-ui/icons/Web';
 import MissingIcon from '@material-ui/icons/ErrorOutline';
 
@@ -25,7 +25,7 @@ const DEFAULT_COLOR = { color: '#9b9b9b' };
 
 const iconMap = {
   android: (selected, size) =>
-    <AndriodIcon style={styles('android',selected, size)} />,
+    <AndroidIcon style={styles('android',selected, size)} />,
   html: (selected, size) =>
     <WebIcon style={styles('html', selected, size)} />,
   [undefined]: () => <MissingIcon />
