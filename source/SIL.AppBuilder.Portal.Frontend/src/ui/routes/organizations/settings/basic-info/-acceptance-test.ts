@@ -32,11 +32,11 @@ describe('Acceptance | Organization Settings', () => {
           included: []
         });
 
-        await visit('/organizations/1/settings/basic-info');
+        await visit('/organizations/1/settings');
       });
 
       it.always('is not redirected', () => {
-        expect(location().pathname).to.eq('/organizations/1/settings/basic-info');
+        expect(location().pathname).to.eq('/organizations/1/settings');
       });
 
       describe('the user clicks the save button', () => {

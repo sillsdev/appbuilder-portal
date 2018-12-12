@@ -24,6 +24,7 @@ class Navigation extends React.Component<IProps> {
             text: t('admin.settings.navigation.workflowdefinitions')
           }
         ]}
+        exactRoutes={false}
       />
     );
   }

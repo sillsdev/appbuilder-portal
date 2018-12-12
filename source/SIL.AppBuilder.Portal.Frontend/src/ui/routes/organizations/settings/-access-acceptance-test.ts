@@ -15,7 +15,7 @@ describe('Acceptance | Accessing Organization Settings', () => {
   setupRequestInterceptor();
 
   describe('the current user is an org admin of the current organization', () => {
-    const url = '/organizations/1/settings/basic-info';
+    const url = '/organizations/1/settings';
     const organization = {
       type: 'organizations',
       id: 1,
@@ -37,7 +37,7 @@ describe('Acceptance | Accessing Organization Settings', () => {
   });
 
   describe('the current user is a super admin', () => {
-    const url = '/organizations/1/settings/basic-info';
+    const url = '/organizations/1/settings';
     useFakeAuthentication();
 
     beforeEach(async function() {
@@ -58,7 +58,7 @@ describe('Acceptance | Accessing Organization Settings', () => {
   });
 
   describe('the current user is an org admin of a different org', () => {
-    const url = '/organizations/1/settings/basic-info';
+    const url = '/organizations/1/settings';
     const organization = {
       type: 'organizations',
       id: 2,
@@ -95,7 +95,7 @@ describe('Acceptance | Accessing Organization Settings', () => {
   });
 
   describe('the current user is an app builder', () => {
-    const url = '/organizations/1/settings/basic-info';
+    const url = '/organizations/1/settings';
     const organization = {
       type: 'organizations',
       id: 1,
