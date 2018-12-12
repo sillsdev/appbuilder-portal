@@ -24,12 +24,12 @@ INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "Work
 (5,	'kalaam_android_website',	'1',	'Kalaam Default Workflow for Publishing to a Kalaam Website', 'Kalaam_Default_AppBuilders_Android_Site',	'Kalaam_Default_AppBuilders_Android_Site', NULL);
 
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
-(2,     'android_amazon_app',  1,      'Android App in Amazon App Store',   2),
-(3,     'android_scripture_earth',  1,      'Android App in Scripture Earth',   3),
-(4,	'android_s3', 1,	'Android App uploaded to S3', 4),
-(5,	'android_kalaam_site', 1, 'Android App uploaded to Kalaam Site', 5),
-(6,	'android_rab_s3', 2,	'Android Reading App uploaded to S3', 4),
-(7,	'android_dab_s3', 3,	'Android Dictionary App uploaded to S3', 4);
+(2,     'Android App in Amazon App Store',  1,      'Build an Android App from Scripture App Builder project and publish to Amazon App Store',   2),
+(3,     'Android App in Scripture Earth',  1,      'Build an Android App from Scripture App Builder project and publish to Scripture Earth',   3),
+(4,	'Android App uploaded to S3', 1,	'Build an Android App from Scripture App Build project and uploaded to S3', 4),
+(5,	'Android App uploaded to Kalaam Site', 1, 'Build an Android App from Scripture App Builder project and uploaded to a Kalaam Site', 5),
+(6,	'Android Reading App uploaded to S3', 2,	'Build an Android App from a Reading App Builder project and uploaded to S3', 4),
+(7,	'Android Dictionary App uploaded to S3', 3,	'Build an Android App from a Dictionary App Builder project uploaded to S3', 4);
 
 
 INSERT INTO "OrganizationProductDefinitions" ("OrganizationId", "ProductDefinitionId") VALUES
