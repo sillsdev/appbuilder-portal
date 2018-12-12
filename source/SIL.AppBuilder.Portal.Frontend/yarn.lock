@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@aspnet/signalr@^1.0.4":
+"@aspnet/signalr@^1.0.4", "@aspnet/signalr@~1.0.0":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@aspnet/signalr/-/signalr-1.0.4.tgz#ab685e59152539e4a49c5c71bb767ce25e7d4900"
 
@@ -339,6 +339,12 @@
 "@sinonjs/samsam@^2.1.2":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@sinonjs/samsam/-/samsam-2.1.2.tgz#16947fce5f57258d01f1688fdc32723093c55d3f"
+
+"@ssv/signalr-client@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@ssv/signalr-client/-/signalr-client-0.8.1.tgz#aa996f7ca433435b9b718096879a85b57a3eceb5"
+  dependencies:
+    "@aspnet/signalr" "~1.0.0"
 
 "@types/auth0-js@*", "@types/auth0-js@^8.11.2":
   version "8.11.7"

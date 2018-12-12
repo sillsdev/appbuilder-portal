@@ -93,8 +93,9 @@ if (isDevelopment) {
     overlay: true,
     progress: true,
     proxy: [{
-      context: ['/api', '/ui', '/configapi', '/account', '/data', '/workflow'],
-      target: `http://${process.env.API_HOST}`
+      context: ['/api', '/ui', '/configapi', '/account', '/data', '/workflow', '/hubs'],
+      target: `http://${process.env.API_HOST}`,
+      ws: true
     }]
   }
 }

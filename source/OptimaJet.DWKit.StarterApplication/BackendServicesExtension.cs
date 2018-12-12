@@ -50,6 +50,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
             services.AddScoped<IEntityRepository<Organization>, OrganizationRepository>();
             services.AddScoped<IEntityRepository<OrganizationInviteRequest>, OrganizationInviteRequestRepository>();
+            services.AddScoped<IEntityRepository<Notification>, NotificationRepository>();
             services.AddScoped<IEntityRepository<Product,Guid>, ProductRepository>();
 
             // services
@@ -63,6 +64,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<OrganizationMembership>, OrganizationMembershipService>();
 
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
+
 
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();

@@ -229,17 +229,17 @@ const schemaDefinition: SchemaSettings = {
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
       }
     },
-    notification: {
-      keys: { remoteId: {} },
-      attributes: {
-        title: { type: 'string' },
-        description: { type: 'string' },
-        time: { type: 'date' },
-        link: { type: 'string' },
-        isViewed: { type: 'boolean' },
-        show: { type: 'boolean' }
-      }
-    },
+    // notification: {
+    //   keys: { remoteId: {} },
+    //   attributes: {
+    //     title: { type: 'string' },
+    //     description: { type: 'string' },
+    //     time: { type: 'date' },
+    //     link: { type: 'string' },
+    //     isViewed: { type: 'boolean' },
+    //     show: { type: 'boolean' }
+    //   }
+    // },
     role: {
       keys: { remoteId: {} },
       attributes: {
@@ -307,7 +307,8 @@ const schemaDefinition: SchemaSettings = {
         assignedTasks: { type: 'hasMany', model: 'userTask', inverse: 'assigned' },
         projects: { type: 'hasMany', model: 'project', inverse: 'owner' },
         userRoles: { type: 'hasMany', model: 'userRole', inverse: 'user'},
-        groups: { type: 'hasMany', model: 'group', inverse: 'users'}
+        groups: { type: 'hasMany', model: 'group', inverse: 'users'},
+        notifications: { type: 'hasMany', model: 'notification', inverse: 'user'},
       }
     },
     workflowDefinition: {
@@ -324,6 +325,19 @@ const schemaDefinition: SchemaSettings = {
         storeType: { type: 'hasOne', model: 'storeType', inverse: 'workflowDefinitions' },
       }
     },
+    notification: {
+      keys: { remoteId: {} },
+      attributes: {
+        messageId: { type: 'string' },
+        dateRead: { type: 'date' },
+        dateEmailSent: { type: 'date' },
+        dateCreated: { type: 'date' },
+        dateUpdated: { type: 'date' },
+      },
+      relationships: {
+        user: { type: 'hasOne', model: 'user', inverse: 'notifications' }
+      }
+    }
   }
 };
 

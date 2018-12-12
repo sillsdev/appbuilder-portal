@@ -11,9 +11,8 @@ const mapNetworkToProps = (passedProps) => {
   return {
     notifications: [
       q => q
-        .findRecords(NOTIFICATION)
-        .sort('-time', '-isViewed'),
-      { ...defaultOptions(), devOnly: true }
+        .findRecords(NOTIFICATION),
+      { ...defaultOptions() }
     ]
   };
 };
@@ -21,8 +20,7 @@ const mapNetworkToProps = (passedProps) => {
 const mapRecordsToProps = (passedProps) => {
   return {
     notifications: q => q
-      .findRecords(NOTIFICATION)
-      .sort('-time', '-isViewed'),
+      .findRecords(NOTIFICATION),
   };
 };
 
@@ -45,7 +43,7 @@ export function withData(WrappedComponent) {
       const { notifications } = this.props;
 
       return notifications &&
-        notifications.reduce((memo, notification) => memo && notification.attributes.isViewed, true);
+        notifications.reduce((memo, notification) => memo && notification.attributes.dateRead !== null, true);
     }
 
     isThereAtLeastOneNotificationToShow = () => {
@@ -58,7 +56,7 @@ export function withData(WrappedComponent) {
     render() {
       const dataProps = {
         haveAllNotificationsBeenSeen: this.haveAllNotificationsBeenSeen(),
-        isThereAtLeastOneNotificationToShow: this.isThereAtLeastOneNotificationToShow(),
+        isThereAtLeastOneNotificationToShow: true,
       };
 
       return <WrappedComponent { ...this.props } {...dataProps} />;
