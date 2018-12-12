@@ -18,8 +18,8 @@ const styles = (type, selected,size) => {
   return {
     ...color,
     ...fontSize
-  }
-}
+  };
+};
 
 const DEFAULT_COLOR = { color: '#9b9b9b' };
 
