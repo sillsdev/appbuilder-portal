@@ -114,17 +114,25 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         private bool CheckConnection(SystemStatus systemEntry)
         {
-            if (systemEntry.BuildEngineUrl is null || systemEntry.BuildEngineApiAccessToken is null)
+            try
             {
+                if (systemEntry.BuildEngineUrl is null || systemEntry.BuildEngineApiAccessToken is null)
+                {
+                    return false;
+                }
+                BuildEngineApi.SetEndpoint(systemEntry.BuildEngineUrl, systemEntry.BuildEngineApiAccessToken);
+                var response = BuildEngineApi.SystemCheck();
+                if (response == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
                 return false;
             }
-            BuildEngineApi.SetEndpoint(systemEntry.BuildEngineUrl, systemEntry.BuildEngineApiAccessToken);
-            var response = BuildEngineApi.SystemCheck();
-            if (response == System.Net.HttpStatusCode.OK)
+            catch
             {
-                return true;
+                // Exception can be thrown in cases where the url is bad
+                return false;
             }
-            return false;
         }
         protected async Task sendStatusUpdateNotificationAsync(SystemStatus systemEntry)
         {

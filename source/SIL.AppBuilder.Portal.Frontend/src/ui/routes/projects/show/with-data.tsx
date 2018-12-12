@@ -20,7 +20,7 @@ const mapNetworkToProps = (passedProps) => {
     cacheKey: `project-${id}`,
     project: [q => buildFindRecord(q, PROJECT, id), buildOptions({
       include: [
-        'products.product-artifacts',
+        'products.product-builds.product-artifacts',
         'organization.organization-product-definitions.product-definition',
         GROUP,
         'owner',

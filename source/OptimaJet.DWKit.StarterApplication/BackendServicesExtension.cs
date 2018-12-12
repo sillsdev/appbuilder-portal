@@ -57,6 +57,8 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<Project>, ProjectService>();
             services.AddScoped<IResourceService<Product, Guid>, ProductService>();
             services.AddScoped<IResourceService<GroupMembership>, GroupMembershipService>();
+            services.AddScoped<IResourceService<OrganizationMembership>, OrganizationMembershipService>();
+
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
 
             services.AddScoped<UserRepository>();
@@ -70,6 +72,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<GroupService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
+            services.AddScoped<OrganizationMembershipService>();
 
             return services;
         }
@@ -104,6 +107,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<BuildEngineProjectService>();
             services.AddScoped<BuildEngineProductService>();
             services.AddScoped<BuildEngineBuildService>();
+            services.AddScoped<BuildEngineReleaseService>();
 
             services.AddHangfire(config =>
                                  config.UsePostgreSqlStorage(configuration["ConnectionStrings:default"]));

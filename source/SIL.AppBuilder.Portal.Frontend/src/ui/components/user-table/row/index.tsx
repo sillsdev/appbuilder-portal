@@ -67,7 +67,7 @@ class Row extends React.Component<IProps> {
 
   render() {
     const { user, t, roles, organizations } = this.props;
-    const { givenName, familyName, isLocked } = attributesFor(user);
+    const { givenName, familyName, isLocked, email } = attributesFor(user);
     const userId = idFromRecordIdentity(user);
 
     const firstName = givenName || `(${t('profile.firstName')})`;
@@ -75,7 +75,7 @@ class Row extends React.Component<IProps> {
     const isActive = !isLocked;
 
     return (
-      <tr data-test-user-row>
+      <tr data-test-user-row={email}>
         <td>
           <Link data-test-user-table-username to={`/users/${userId}/edit`}>
             {firstName} {lastName}

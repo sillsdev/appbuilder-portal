@@ -12,7 +12,7 @@ export function withPublicProject<T>(idGetter: (props: T) => string) {
           'group',
           'owner',
           'products.product-definition.type',
-          'products.product-artifacts',
+          'products.product-builds.product-artifacts',
         ],
         fields: {
           // owner: 'name,email',

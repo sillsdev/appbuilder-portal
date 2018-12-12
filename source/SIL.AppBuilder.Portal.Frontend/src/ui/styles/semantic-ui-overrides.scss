@@ -209,6 +209,14 @@ Dropdown Menu
   }
 }
 
+.ui.dropdown.is-large {
+  color: $blue-highlight;
+  .text {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+}
+
 /***********************************
 Table
 ************************************/

@@ -1,4 +1,5 @@
 import { visit, location } from '@bigtest/react';
+import Convergence from '@bigtest/convergence';
 import { expect } from 'chai';
 import app from './pages/app';
 
@@ -19,7 +20,10 @@ export function wait(ms: number): Promise<void> {
 export async function visitTheHomePage() {
   await visit('/');
 
-  expect(location().pathname).to.eq('/tasks');
+  new Convergence()
+    .when(() => app.headers)
+    .do(() => expect(location().pathname).to.eq('/tasks'))
+    .run();
 }
 
 export async function openOrgSwitcher() {

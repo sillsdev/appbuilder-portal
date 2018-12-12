@@ -161,6 +161,7 @@
     "reassign": "Reassign"
   },
   "projects": {
+    "latestBuild": "Latest Build ({version})",
     "switcher": {
       "myProjects": "My Projects ({numProjects})",
       "archived": "Archived ({numProjects})",
@@ -306,6 +307,13 @@
     "noneFound": "No users matching the selected criteria were found.",
     "noRoles": "No roles assigned",
     "title": "Manage Users",
+    "addUser": {
+      "placeholder": "Enter an email",
+      "button": "Add User",
+      "modalTitle": "Add User",
+      "modalAddButton": "Add",
+      "error": "No user was found with that email address. Please ask them to create an account."
+    },
     "table": {
       "columns": {
         "name": "Name",

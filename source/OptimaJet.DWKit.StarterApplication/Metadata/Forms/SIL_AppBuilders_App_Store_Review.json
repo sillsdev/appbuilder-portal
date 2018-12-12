@@ -16,7 +16,8 @@
         ]
       }
     },
-    "blockSetState": true
+    "blockSetState": true,
+    "style-marginBottom": ""
   },
   {
     "key": "form_2",
@@ -28,6 +29,14 @@
         "label": "Comment",
         "fluid": true,
         "rows": "2"
+      },
+      {
+        "key": "staticcontent_hr",
+        "data-buildertype": "staticcontent",
+        "content": "<hr style=\"height:5px;\"/>",
+        "isHtml": true,
+        "style-customcss": "",
+        "style-source": "height:5px;"
       }
     ]
   },
@@ -121,9 +130,24 @@
         "readOnly": true
       },
       {
+        "key": "header_2",
+        "data-buildertype": "header",
+        "content": "Artifacts",
+        "size": "small"
+      },
+      {
         "key": "gridview_1",
         "data-buildertype": "gridview",
         "columns": [
+          {
+            "key": "buildid",
+            "name": "BuildId",
+            "type": "number",
+            "width": 100,
+            "sortable": true,
+            "filterable": false,
+            "resizable": false
+          },
           {
             "key": "type",
             "name": "Type",
@@ -165,7 +189,8 @@
             "targets": [],
             "parameters": []
           }
-        }
+        },
+        "defaultSort": "buildid DESC"
       }
     ]
   }

@@ -7,76 +7,78 @@ import {
   ProductDefinitionResource,
   ProductArtifactResource,
   ProductResource,
+  ProductBuildResource,
   attributesFor
 } from '@data';
 import Artifact from './artifact';
 import EmptyLabel from '@ui/components/labels/empty';
-import { isEmpty } from '@lib/collection';
+import { isEmpty, compareVia } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import Header from './header';
+import ResourceSelect from '@ui/components/inputs/resource-select';
+
+import Artifacts from './artifacts';
 
 interface IExpectedProps {
   product: ProductResource;
 }
 
 interface IOwnProps {
-  productDefinition: ProductDefinitionResource;
-  artifacts: ProductArtifactResource[];
+  productBuilds: ProductBuildResource[];
 }
 
 interface IState {
-  areArtifactsVisible: boolean;
+  activeVersion: ProductBuildResource;
 }
 
 type IProps =
   & IOwnProps
   & i18nProps;
 
-class ProductArtifact extends React.Component<IProps, IState> {
-  state = { areArtifactsVisible: false };
+class Builds extends React.Component<IProps, IState> {
+  constructor(props) {
+    super(props);
 
-  toggleShowArtifacts = () => {
-    this.setState({ areArtifactsVisible: !this.state.areArtifactsVisible });
+    const { productBuilds } = props;
+
+    this.state = {
+      activeVersion: productBuilds[0]
+    };
+  }
+
+  changeSelectedBuild = (productBuild) => {
+    this.setState({ activeVersion: productBuild });
   }
 
   render() {
-    const { artifacts, t } = this.props;
-    const { areArtifactsVisible } = this.state;
+    const { artifacts, t, product, productBuilds } = this.props;
+    const { activeVersion } = this.state;
+
+    const sortedBuilds = productBuilds
+      .sort(compareVia(build => attributesFor(build).version));
 
     return (
-      <div data-test-product-artifacts className='product-artifact w-100 m-b-lg'>
-        <Header {...this.props} onClick={this.toggleShowArtifacts} isCollapsed={areArtifactsVisible} />
+      <div data-test-build>
+        <ResourceSelect
+          items={sortedBuilds}
+          labelField={(build: ProductBuildResource) => {
+            const version = attributesFor(build).version;
 
-        {areArtifactsVisible && (
-          <div data-test-artifact-list-container>
-            <EmptyLabel
-              className='m-t-lg m-l-lg m-b-lg'
-              condition={!isEmpty(artifacts)}
-              label={t('project.products.noArtifacts')}
-            >
-              <div className='flex p-l-md p-t-sm p-b-sm p-r-md gray-text bold'>
-                <div className='flex-70'>
-                  <span>{t('project.products.filename')}</span>
-                </div>
-                <div className='flex flex-30'>
-                  <div className='flex-grow'>
-                    <span>{t('project.products.updated')}</span>
-                  </div>
-                  <div className='flex-30 text-align-right'>
-                    <span className='m-r-md'>{t('project.products.size')}</span>
-                  </div>
-                  <div className='flex-10'/>
-                </div>
-              </div>
+            if (build === sortedBuilds[0]) {
+              return t('projects.latestBuild', { version });
+            }
 
-              { artifacts.map((artifact, i) =>
-                <Artifact key={i} artifact={artifact}/>
-              )}
+            return version;
+          }}
+          value={activeVersion}
+          onChange={this.changeSelectedBuild}
+          className='is-large p-b-md'
+        />
 
-            </EmptyLabel>
-          </div>
-        )}
+        <Artifacts
+          product={product}
+          productBuild={activeVersion}
+        />
       </div>
     );
 
@@ -90,8 +92,7 @@ export default compose<IProps, IExpectedProps>(
     const { product } = passedProps;
 
     return {
-      productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
-      artifacts: q => q.findRelatedRecords(product, 'artifacts')
+      productBuilds: q => q.findRelatedRecords(product, 'productBuilds'),
     };
   })
-)(ProductArtifact);
+)(Builds);

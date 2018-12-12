@@ -28,9 +28,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public OrganizationMembership CurrentUserMembership3 { get; set; }
         public OrganizationMembership CurrentUserMembership4 { get; set; }
         public OrganizationMembership CurrentUserMembership5 { get; set; }
+        public OrganizationMembership CurrentUserMembership6 { get; set; }
         public User user1 { get; private set; }
         public User user2 { get; private set; }
         public User user3 { get; private set; }
+        public User user4 { get; set; }
         public Organization org1 { get; private set; }
         public Organization org2 { get; private set; }
         public Organization org3 { get; private set; }
@@ -41,6 +43,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public GroupMembership groupMembership1 { get; set; }
         public GroupMembership groupMembership2 { get; set; }
         public GroupMembership groupMembership3 { get; set; }
+        public GroupMembership groupMembership4 { get; set; }
         public ApplicationType type1 { get; set; }
         public Project project1 { get; set; }
         public Project project2 { get; set; }
@@ -75,6 +78,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Name = "Test Testenson3",
                 GivenName = "Test3",
                 FamilyName = "Testenson3"
+            });
+            user4 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id3",
+                Email = "test-email3@test.test",
+                Name = "Test Testenson3",
+                GivenName = "Test3",
+                FamilyName = "Testenson3",
+                PublishingKey = "invalidkey"
             });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {
@@ -128,6 +140,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 UserId = user3.Id,
                 OrganizationId = org1.Id
             });
+            CurrentUserMembership6 = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user4.Id,
+                OrganizationId = org1.Id
+            });
 
             group1 = AddEntity<AppDbContext, Group>(new Group
             {
@@ -163,9 +180,14 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 UserId = user2.Id,
                 GroupId = group1.Id
             });
-            groupMembership2 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            groupMembership3 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
             {
                 UserId = user3.Id,
+                GroupId = group1.Id
+            });
+            groupMembership4 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user4.Id,
                 GroupId = group1.Id
             });
             type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
@@ -553,6 +575,36 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                             {
                                 type = "users",
                                 id = user3.Id.ToString()
+                            }
+                        }
+                    }
+                }
+            };
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+
+            var response = await Patch("/api/projects/" + project1.Id.ToString(), content);
+
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        }
+        [Fact]
+        public async Task Patch_Owner_Bad_Publishing_Key()
+        {
+            BuildTestData();
+            var content = new
+            {
+                data = new
+                {
+                    type = "projects",
+                    id = project1.Id.ToString(),
+                    relationships = new
+                    {
+                        owner = new
+                        {
+                            data = new
+                            {
+                                type = "users",
+                                id = user4.Id.ToString()
                             }
                         }
                     }

@@ -20,7 +20,7 @@
     "webpack:analyze": "./node_modules/.bin/webpack-bundle-analyzer dist/stats.json",
     "analyze": "yarn webpack:build:analyze && yarn webpack:analyze",
     "karma:start": "yarn karma start ./tests/karma.conf.js --fail-on-empty-test-suite",
-    "karam:debug": "yarn karama start ./tests/karma.conf.js --fail-on-empty-test-suite --browsers ChromeDebug",
+    "karma:debug": "yarn karma start ./tests/karma.conf.js --fail-on-empty-test-suite --browsers ChromeDebug",
     "test:watch": "yarn karma:start",
     "test:watch:headless": "CI=true yarn karma:start",
     "test:watch:detached": "DETACHED=true yarn karma:start",
@@ -63,7 +63,7 @@
     "react-dropzone-component": "^3.2.0",
     "react-i18next": "^8.3.8",
     "react-notify-toast": "^0.5.0",
-    "react-orbitjs": "github:NullVoxPopuli/react-orbitjs#869efe1bec6fde7593e6a64a523c0e4c4f1df0da",
+    "react-orbitjs": "github:NullVoxPopuli/react-orbitjs#c1f47d604a56be00a2986740ca841181db225f09",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
@@ -173,5 +173,9 @@
     "webpack-dev-server": "^3.1.4",
     "webpack-node-externals": "^1.7.2",
     "whatwg-fetch": "^3.0.0"
+  },
+  "resolutions": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
   }
 }

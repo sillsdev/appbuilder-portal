@@ -2,25 +2,22 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
-import { ProductResource } from '@data';
+import { ProductResource, ProjectResource } from '@data';
 import ProductArtifact from '@ui/components/product-artifact';
 
 import './styles.scss';
+
+interface IExpectedProps {
+  project: ProjectResource;
+}
 
 interface IOwnProps {
   products: ProductResource[];
 }
 
 type IProps =
+  & IExpectedProps
   & IOwnProps;
-
-const mapRecordsToProps = (passedProps) => {
-  const { project } = passedProps;
-
-  return {
-    products: q => q.findRelatedRecords(project, 'products')
-  };
-};
 
 class Files extends React.Component<IProps> {
 
@@ -40,6 +37,13 @@ class Files extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withOrbit(mapRecordsToProps)
+export default compose<IProps, IExpectedProps>(
+
+  withOrbit((passedProps: IExpectedProps) => {
+    const { project } = passedProps;
+
+    return {
+      products: q => q.findRelatedRecords(project, 'products')
+    };
+  })
 )(Files);

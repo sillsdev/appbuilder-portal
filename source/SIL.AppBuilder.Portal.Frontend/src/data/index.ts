@@ -25,6 +25,7 @@ export {
 } from './helpers';
 
 export { withLoader } from './containers/with-loader';
+export { withError } from './containers/with-error';
 export { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/with-logout';
 
 export { queryApi as query } from './query';
@@ -49,6 +50,7 @@ export { ORGANIZATION_PRODUCT_DEFINITIONS_TYPE, OrganizationProductDefinitionRes
 export { STORES_TYPE, StoreResource } from './models/store';
 export { ORGANIZATION_STORES_TYPE, OrganizationStoreResource } from './models/organization-store';
 export { STORE_TYPES_TYPE, StoreTypeResource } from './models/store-type';
+export { PRODUCT_BUILD_TYPE, ProductBuildResource } from './models/product-build';
 export { PRODUCT_ARTIFACTS_TYPE, ProductArtifactResource } from './models/product-artifact';
 export { WORKFLOW_DEFINITIONS_TYPE, WorkflowDefinitionResource} from './models/workflow-definition';
 

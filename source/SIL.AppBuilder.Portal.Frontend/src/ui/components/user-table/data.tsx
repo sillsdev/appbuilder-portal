@@ -21,6 +21,7 @@ import { IProvidedProps as IActionProps } from '@data/containers/resources/user/
 
 
 interface IOwnProps {
+  refetch: () => Promise<void>;
   users: UserResource[];
   groups: GroupResource[];
   currentOrganization: OrganizationResource;
@@ -57,12 +58,14 @@ export function withData(WrappedComponent) {
         users,
         organizationMemberships,
         currentOrganization,
+        refetch,
         ...otherProps
       } = this.props;
 
       const usersToDisplay = users || [];
 
       const dataProps = {
+        refetch,
         users: usersToDisplay.filter(user => {
           return (
             // TODO: need a way to test against the joined organization

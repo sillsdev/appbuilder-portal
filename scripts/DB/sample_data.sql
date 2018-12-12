@@ -8,7 +8,8 @@ INSERT INTO "Users" ("Name", "Email", "ExternalId", "FamilyName", "GivenName", "
 ( 	'Preston Sego (dt)', 'psego@developertown.com', 'google-oauth2|111802484969448690930', 'Sego (dt)', 'Preston', '0', NULL, NULL, NULL),
 (	'Bill Dyck', 'bill_dyck@sil.org',	'google-oauth2|102643649500459434996', 'Dyck',	'Bill',	'0',	NULL, NULL, NULL),
 (	'Loren Hawthorne', 'loren_hawthrone@sil.org',	'google-oauth2|116603781884964961816', 'Loren',	'Hawthorne',	'0',	NULL, NULL, NULL),
-(	'liztabor19+1@gmail.com', 'liztabor19+1@gmail.com',	'auth0|5b86fb131a8ed52ad10259e5', 'Liz',	'tabor',	'0',	NULL, NULL, NULL);
+(	'liztabor19+1@gmail.com', 'liztabor19+1@gmail.com',	'auth0|5b86fb131a8ed52ad10259e5', 'Liz',	'tabor',	'0',	NULL, NULL, NULL),
+(	'other@sil.org', 'other@sil.org',	'auth0|5c07e78511bf6d2f2ce0fcff', 'Other'	, 'SIL', '0',	NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId") VALUES
 (	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1),
@@ -95,7 +96,9 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	8,  3), -- bill_dyck@sil.org - Kalaam
 (	9,  1), -- loren_hawthorne@sil.org - SIL
 (	10,  1), -- liztabor19+1@gmail.com - SIL
-(	10,  2); -- liztabor19+1@gmail.com - DT
+(	10,  2), -- liztabor19+1@gmail.com - DT
+(	11,  1); -- other@sil.org - SIL
+
 
 
 
@@ -118,6 +121,7 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	9,	3,	1), -- loren_hawthorne@sil.org - AppBuilder - SIL
 (	7,	1,	2), -- psego@developertown.com - SuperAdmin - DT
 (	5,	1,	2), -- ltabor@developertown.com - SuperAdmin - DT
+(	5,	2,	2), -- ltabor@developertown.com - OrgAdmin - DT
 (	1,	2,	2), -- chris_hubbard@sil.org - OrgAdmin - DT
 (	3,	3,	2), -- lt.sego@gmail.com - AppBuilder - DT
 (	4,	3,	2), -- gian.corzo@gmail.com - AppBuilder - DT
@@ -126,7 +130,8 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	2,	2,	3), -- david_moore1@sil.org - OrgAdmin - Kalaam
 (	6,	3,	3), -- chris.kalaam@gmail.com - AppBuilder - Kalaam
 (	10,	3,	1), -- liztabor19+1@gmail.com - AppBuilder - SIL
-(	10,	3,	2); -- liztabor19+1@gmail.com - AppBuilder - DT
+(	10,	3,	2), -- liztabor19+1@gmail.com - AppBuilder - DT
+(	11,	3,	1); -- other@sil.org - AppBuilder - SIL
 
 
 INSERT INTO "Projects"
@@ -171,7 +176,7 @@ VALUES
   ( 'moaNT Mwan', 1, 'scriptureappbuilder-AMG-moa-moaNT-Mwan', 8, 5, 1, 'moa', now(), now(), null, true, true),
   ( 'ktjNT Kroumen Plapo', 1, 'scriptureappbuilder-AMG-ktj-ktjNT-Kroumen-Plapo', 8, 5, 1, 'ktj', now(), now(), null, true, true),
   ( 'ktjNT Kroumen Plapo', 1, '', 8, 5, 1, 'ktj', now(), now(), null, true, true),
-  ( 'Easter strory - Carpathian Romani', 1, 'scriptureappbuilder-RMA-rmc-Easter-strory---Carpathian-Romani', 1, 1, 1, 'rmc', now(), now(), null, true, true),
+  ( 'Easter strory - Carpathian Romani', 1, 'scriptureappbuilder-RMA-rmc-Easter-strory---Carpathian-Romani', 11, 1, 1, 'rmc', now(), now(), null, true, true),
   ( 'zpvNT Zapoteco Chichicapan', 1, 'scriptureappbuilder-MXB-zpv-zpvNT-Zapoteco-Chichicapan', 9, 3, 1, 'zpv', now(), now(), null, true, true),
   ( 'ziaNT Zia', 1, 'scriptureappbuilder-AMG-zia-ziaNT-Zia', 8, 5, 1, 'zia', now(), now(), null, true, true),
   ( 'yuwNT Yau', 1, 'scriptureappbuilder-AMG-yuw-yuwNT-Yau', 8, 5, 1, 'yuw', now(), now(), null, true, true),
@@ -181,10 +186,10 @@ VALUES
   ( 'niyNT Ndruna', 1, 'scriptureappbuilder-AMG-niy-niyNT-Ndruna', 8, 5, 1, 'niy', now(), now(), null, true, true),
   ( 'essNT Yupik', 1, 'scriptureappbuilder-AMG-ess-essNT-Yupik', 8, 5, 1, 'ess', now(), now(), null, true, true),
   ( 'kcgNT Tyap', 1, 'scriptureappbuilder-AMG-kcg-kcgNT-Tyap', 8, 5, 1, 'kcg', now(), now(), null, true, true),
-  ( 'Genesis 37-50 – Joseph''s story', 1, 'scriptureappbuilder-RMA-rmy-Genesis-37-50--Josephs-story', 1, 1, 1, 'rmy', now(), now(), null, true, true),
-  ( 'Genesis 11:27—25:18 – Abraham''s story', 1, 'scriptureappbuilder-RMA-rmy-Genesis-11272518--Abrahams-story', 1, 1, 1, 'rmy', now(), now(), null, true, true),
+  ( 'Genesis 37-50 – Joseph''s story', 1, 'scriptureappbuilder-RMA-rmy-Genesis-37-50--Josephs-story', 11, 1, 1, 'rmy', now(), now(), null, true, true),
+  ( 'Genesis 11:27—25:18 – Abraham''s story', 1, 'scriptureappbuilder-RMA-rmy-Genesis-11272518--Abrahams-story', 11, 1, 1, 'rmy', now(), now(), null, true, true),
   ( 'xavPB Xavante', 1, 'scriptureappbuilder-AMG-xav-xavPB-Xavante', 8, 5, 1, 'xav', now(), now(), null, true, true),
-  ( 'Ya ehel Meknengan ni impatudek tu', 1, 'scriptureappbuilder-ASA-ify-Ya-ehel-Meknengan-ni-impatudek-tu', 1, 1, 1, 'ify', now(), now(), null, true, true),
+  ( 'Ya ehel Meknengan ni impatudek tu', 1, 'scriptureappbuilder-ASA-ify-Ya-ehel-Meknengan-ni-impatudek-tu', 11, 1, 1, 'ify', now(), now(), null, true, true),
   ( 'gamNT Kandawo', 1, 'scriptureappbuilder-AMG-gam-gamNT-Kandawo', 8, 5, 1, 'gam', now(), now(), null, true, true),
   ( 'eriNT Ogea', 1, 'scriptureappbuilder-AMG-eri-eriNT-Ogea', 8, 5, 1, 'eri', now(), now(), null, true, true),
   ( 'crlNT Cree Northern East', 1, 'scriptureappbuilder-AMG-crl-crlNT-Cree-Northern-East', 8, 5, 1, 'crl', now(), now(), null, true, true),
@@ -204,15 +209,15 @@ VALUES
   ( 'ekaNT Ekajuk', 1, 'scriptureappbuilder-AMG-eka-ekaNT-Ekajuk', 8, 5, 1, 'eka', now(), now(), null, true, true),
   ( 'annBC Obolo', 1, 'scriptureappbuilder-AMG-ann-annBC-Obolo', 8, 5, 1, 'ann', now(), now(), null, true, true),
   ( 'annBP Obolo', 1, 'scriptureappbuilder-AMG-ann-annBP-Obolo', 8, 5, 1, 'ann', now(), now(), null, true, true),
-  ( 'Sech Hadròih', 1, 'scriptureappbuilder-SIL-hre-Sech-Hadroih', 1, 1, 1, 'hre', now(), now(), null, true, true),
+  ( 'Sech Hadròih', 1, 'scriptureappbuilder-SIL-hre-Sech-Hadroih', 11, 1, 1, 'hre', now(), now(), null, true, true),
   ( 'tbkNT Tagbanwa Calamian', 1, 'scriptureappbuilder-AMG-tbk-tbkNT-Tagbanwa-Calamian', 8, 5, 1, 'tbk', now(), now(), null, true, true),
   ( 'tswNT Tsishingini', 1, 'scriptureappbuilder-AMG-tsw-tswNT-Tsishingini', 8, 5, 1, 'tsw', now(), now(), null, true, true),
   ( 'kdlNT Tsikimba', 1, 'scriptureappbuilder-AMG-kdl-kdlNT-Tsikimba', 8, 5, 1, 'kdl', now(), now(), null, true, true),
   ( 'iqwNT Ikwo', 1, 'scriptureappbuilder-AMG-iqw-iqwNT-Ikwo', 8, 5, 1, 'iqw', now(), now(), null, true, true),
   ( 'ezaB Ezaa', 1, 'scriptureappbuilder-AMG-eza-ezaB-Ezaa', 8, 5, 1, 'eza', now(), now(), null, true, true),
   ( 'iriNT Rigwe', 1, 'scriptureappbuilder-AMG-iri-iriNT-Irigwe', 8, 5, 1, 'iri', now(), now(), null, true, true),
-  ( 'Chadian Arabic New Testament Arabic Script with Audio', 1, 'scriptureappbuilder-CHB-SHU-Chadian-Arabic-New-Testament-Arabic-Script-with-Audio', 1, 1, 1, 'SHU', now(), now(), null, true, true),
-  ( 'Chadian Arabic New Testament with Audio', 1, 'scriptureappbuilder-CHB-SHU-Chadian-Arabic-New-Testament-with-Audio', 1, 1, 1, 'SHU', now(), now(), null, true, true),
+  ( 'Chadian Arabic New Testament Arabic Script with Audio', 1, 'scriptureappbuilder-CHB-SHU-Chadian-Arabic-New-Testament-Arabic-Script-with-Audio', 11, 1, 1, 'SHU', now(), now(), null, true, true),
+  ( 'Chadian Arabic New Testament with Audio', 1, 'scriptureappbuilder-CHB-SHU-Chadian-Arabic-New-Testament-with-Audio', 11, 1, 1, 'SHU', now(), now(), null, true, true),
   ( 'izzB Izii', 1, 'scriptureappbuilder-AMG-izz-izzB-Izii', 8, 5, 1, 'izz', now(), now(), null, true, true),
   ( 'dyiB Djimini', 1, 'scriptureappbuilder-AMG-dyi-dyiB-Djimini', 8, 5, 1, 'dyi', now(), now(), null, true, true),
   ( 'cbiPB Chachi', 1, 'scriptureappbuilder-AMG-cbi-cbiPB-Chachi', 8, 5, 1, 'cbi', now(), now(), null, true, true),
@@ -223,7 +228,7 @@ VALUES
   ( 'jivNT Shuar', 1, 'scriptureappbuilder-AMG-jiv-jivNT-Shuar', 8, 5, 1, 'jiv', now(), now(), null, true, true),
   ( 'aucNT Waorani', 1, 'scriptureappbuilder-AMG-auc-aucNT-Waorani', 8, 5, 1, 'auc', now(), now(), null, true, true),
   ( 'qxlNT Salasaca Quichua', 1, 'scriptureappbuilder-AMG-qxl-qxlNT-Salasaca-Quichua', 8, 5, 1, 'qxl', now(), now(), null, true, true),
-  ( 'Northern Thai New Testament App', 1, 'scriptureappbuilder-THG-nod-Northern-Thai-New-Testament-App', 1, 1, 1, 'nod', now(), now(), null, true, true),
+  ( 'Northern Thai New Testament App', 1, 'scriptureappbuilder-THG-nod-Northern-Thai-New-Testament-App', 11, 1, 1, 'nod', now(), now(), null, true, true),
   ( 'pmaPB Paama Bible', 1, 'scriptureappbuilder-AMA-pma-pmaPB-Paama-Bible', 8, 5, 1, 'pma', now(), now(), null, true, true),
   ( 'ykaNT Yakan', 1, 'scriptureappbuilder-AMA-yka-ykaNT-Yakan', 8, 5, 1, 'yka', now(), now(), null, true, true),
   ( 'Translation for Translators', 1, 'scriptureappbuilder-SIL-eng-Translation-for-Translators', 1, 1, 1, 'eng', now(), now(), null, true, true),
@@ -240,7 +245,7 @@ VALUES
   ( 'vivNT Iduna', 1, 'scriptureappbuilder-AMA-viv-vivNT-Iduna', 8, 5, 1, 'viv', now(), now(), null, true, true),
   ( 'werNT Weri', 1, 'scriptureappbuilder-AMA-wer-werNT-Weri', 8, 5, 1, 'wer', now(), now(), null, true, true),
   ( 'wajNT Waffa', 1, 'scriptureappbuilder-AMA-waj-wajNT-Waffa', 8, 5, 1, 'waj', now(), now(), null, true, true),
-  ( 'O lil karing ăl galateni', 1, 'scriptureappbuilder-RMA-RMY-O-lil-karing-l-galateni', 1, 1, 1, 'RMY', now(), now(), null, true, true),
+  ( 'O lil karing ăl galateni', 1, 'scriptureappbuilder-RMA-RMY-O-lil-karing-l-galateni', 11, 1, 1, 'RMY', now(), now(), null, true, true),
   ( 'uvlNT Lote', 1, 'scriptureappbuilder-AMA-uvl-uvlNT-Lote', 8, 5, 1, 'uvl', now(), now(), null, true, true),
   ( 'usaPB Usarufa', 1, 'scriptureappbuilder-AMA-usa-usaPB-Usarufa', 8, 5, 1, 'usa', now(), now(), null, true, true),
   ( 'ubuNNT Umbu-Ungu No Penge', 1, 'scriptureappbuilder-AMA-ubu-ubuNNT-Umbu-Ungu-No-Penge', 8, 5, 1, 'ubu', now(), now(), null, true, true),
@@ -249,7 +254,7 @@ VALUES
   ( 'ubrPB Ubir', 1, 'scriptureappbuilder-AMA-ubr-ubrPB-Ubir', 8, 5, 1, 'ubr', now(), now(), null, true, true),
   ( 'tucTPB Tuam Saveeng', 1, 'scriptureappbuilder-AMA-tuc-tucTPB-Tuam-Saveeng', 8, 5, 1, 'tuc', now(), now(), null, true, true),
   ( 'tucOPB Oov Saveeng', 1, 'scriptureappbuilder-AMA-tuc-tucOPB-Oov-Saveeng', 8, 5, 1, 'tuc', now(), now(), null, true, true),
-  ( '2017-07-07-TestApp', 1, 'scriptureappbuilder-SIL-iso-2017-07-07-TestApp', 1, 1, 1, 'iso', now(), now(), null, true, true),
+  ( '2017-07-07-TestApp', 1, 'scriptureappbuilder-SIL-iso-2017-07-07-TestApp', 11, 1, 1, 'iso', now(), now(), null, true, true),
   ( 'qucTNT Q''iche'' (trad orth)', 1, 'scriptureappbuilder-AMA-quc-qucTNT-Qiche-trad-orth', 8, 5, 1, 'quc', now(), now(), null, true, true),
   ( 'uspNT Uspanteco', 1, 'scriptureappbuilder-AMA-usp-uspNT-Uspanteco', 8, 5, 1, 'usp', now(), now(), null, true, true),
   ( 'jacB Jacalteco Popti', 1, 'scriptureappbuilder-AMA-jac-jacB-Jacalteco-Popti', 8, 5, 1, 'jac', now(), now(), null, true, true),
@@ -460,8 +465,8 @@ VALUES
   ( 'apeNT Bukiyip', 1, 'scriptureappbuilder-AMA-ape-apeNT-Bukiyip', 8, 5, 1, 'ape', now(), now(), null, true, true),
   ( 'aonNT Bumbita Arapesh', 1, 'scriptureappbuilder-AMA-aon-aonNT-Bumbita-Arapesh', 8, 5, 1, 'aon', now(), now(), null, true, true),
   ( 'tkePB Takwane', 1, 'scriptureappbuilder-AMA-tke-tkePB-Takwane', 8, 5, 1, 'tke', now(), now(), null, true, true),
-  ( 'Kriol Ruth text-audio', 1, 'scriptureappbuilder-AAB-rop-Kriol-Ruth-text-audio', 1, 1, 1, 'rop', now(), now(), null, true, true),
-  ( 'sylNT Asmani Kitab', 1, 'scriptureappbuilder-ASO-syl-sylNT-Asmani-Kitab', 1, 1, 1, 'syl', now(), now(), null, true, true),
+  ( 'Kriol Ruth text-audio', 1, 'scriptureappbuilder-AAB-rop-Kriol-Ruth-text-audio', 11, 1, 1, 'rop', now(), now(), null, true, true),
+  ( 'sylNT Asmani Kitab', 1, 'scriptureappbuilder-ASO-syl-sylNT-Asmani-Kitab', 11, 1, 1, 'syl', now(), now(), null, true, true),
   ( 'aojFNT Filifita', 1, 'scriptureappbuilder-AMA-aoj-aojFNT-Filifita', 8, 5, 1, 'aoj', now(), now(), null, true, true),
   ( 'abtWNT Wosara-Kamu (Ambulas)', 1, 'scriptureappbuilder-AMA-abt-abtWNT-Wosara-Kamu-Ambulas', 8, 5, 1, 'abt', now(), now(), null, true, true),
   ( 'aojMNT Mufian', 1, 'scriptureappbuilder-AMA-aoj-aojMNT-Mufian', 8, 5, 1, 'aoj', now(), now(), null, true, true),
@@ -546,7 +551,7 @@ VALUES
   ( 'cluPB Caluyanun', 1, 'scriptureappbuilder-AMA-clu-cluPB-Caluyanun', 8, 5, 1, 'clu', now(), now(), null, true, true),
   ( 'zaoNT Zapoteco Ozolotepec', 1, 'scriptureappbuilder-AMA-zao-zaoNT-Zapoteco-Ozolotepec', 9, 3, 1, 'zao', now(), now(), null, true, true),
   ( 'bqjPB Bandial', 1, 'scriptureappbuilder-AMA-bqj-bqjPB-Bandial', 8, 5, 1, 'bqj', now(), now(), null, true, true),
-  ( 'Alkitab Tii', 1, 'scriptureappbuilder-AAB-txq-Alkitab-Tii', 1, 1, 1, 'txq', now(), now(), null, true, true),
+  ( 'Alkitab Tii', 1, 'scriptureappbuilder-AAB-txq-Alkitab-Tii', 11, 1, 1, 'txq', now(), now(), null, true, true),
   ( 'rugB Roviana Bible', 1, 'scriptureappbuilder-AMA-rug-rugB-Roviana-Bible', 8, 5, 1, 'rug', now(), now(), null, true, true),
   ( 'poeNT Popoloca Atzingo', 1, 'scriptureappbuilder-AMA-poe-poeNT-Popoloca-Atzingo', 9, 3, 1, 'poe', now(), now(), null, true, true),
   ( 'tnkNT Kwamera', 1, 'scriptureappbuilder-AMA-tnk-tnkNT-Kwamera', 8, 5, 1, 'tnk', now(), now(), null, true, true),
@@ -568,11 +573,11 @@ VALUES
   ( 'bprNT Koronadal Blaan', 1, 'scriptureappbuilder-AMA-bpr-bprNT-Koronadal-Blaan', 8, 5, 1, 'bpr', now(), now(), null, true, true),
   ( 'cgcPB Kagayanen', 1, 'scriptureappbuilder-AMA-cgc-cgcPB-Kagayanen', 8, 5, 1, 'cgc', now(), now(), null, true, true),
   ( 'anvNT Denya', 1, 'scriptureappbuilder-AMA-anv-anvNT-Denya', 8, 5, 1, 'anv', now(), now(), null, true, true),
-  ( 'Nooni Bible', 1, 'scriptureappbuilder-CMB-nhu-Nooni-Bible', 1, 1, 1, 'nhu', now(), now(), null, true, true),
+  ( 'Nooni Bible', 1, 'scriptureappbuilder-CMB-nhu-Nooni-Bible', 11, 1, 1, 'nhu', now(), now(), null, true, true),
   ( 'trsNT Triqui Chicahuaxtla', 1, 'scriptureappbuilder-AMA-trs-trsNT-Triqui-Chicahuaxtla', 9, 3, 1, 'trs', now(), now(), null, true, true),
   ( 'nlvNT Nahuatl Orizaba', 1, 'scriptureappbuilder-AMA-nlv-nlvNT-Nahuatl-Orizaba', 8, 5, 1, 'nlv', now(), now(), null, true, true),
   ( 'cyaNT Chatino Nopala', 1, 'scriptureappbuilder-AMA-cya-cyaNT-Chatino-Nopala', 9, 3, 1, 'cya', now(), now(), null, true, true),
-  ( 'จี่วีดม้าม้า', 1, 'scriptureappbuilder-THG-bzi-', 1, 1, 1, 'bzi', now(), now(), null, true, true),
+  ( 'จี่วีดม้าม้า', 1, 'scriptureappbuilder-THG-bzi-', 11, 1, 1, 'bzi', now(), now(), null, true, true),
   ( 'bzdPB Bribri', 1, 'scriptureappbuilder-AMA-bzd-bzdPB-Bribri', 8, 5, 1, 'bzd', now(), now(), null, true, true),
   ( 'miyNT Mixteco Costa Guerrero - Ayutla', 1, 'scriptureappbuilder-MXB-miy-miyNT-Mixteco-Costa-Guerrero---Ayutla', 9, 3, 1, 'miy', now(), now(), null, true, true),
   ( 'zaiNT Zapoteco Istmo', 1, 'scriptureappbuilder-AMA-zai-zaiNT-Zapoteco-Istmo', 9, 3, 1, 'zai', now(), now(), null, true, true),
@@ -603,23 +608,23 @@ VALUES
   ( 'tikNT Tikar', 1, 'scriptureappbuilder-AMA-tik-tikNT-Tikar', 8, 5, 1, 'tik', now(), now(), null, true, true),
   ( 'guoNT Guyabero', 1, 'scriptureappbuilder-AMA-guo-guoNT-Guyabero', 8, 5, 1, 'guo', now(), now(), null, true, true),
   ( 'bmrNT Muinane', 1, 'scriptureappbuilder-AMA-bmr-bmrNT-Muinane', 8, 5, 1, 'bmr', now(), now(), null, true, true),
-  ( 'Kuku Yalanji Bible Portions', 1, 'scriptureappbuilder-AAB-wmt-Kuku-Yalanji-Bible-Portions', 1, 1, 1, 'wmt', now(), now(), null, true, true),
-  ( 'Walmajarri Bible Portions', 1, 'scriptureappbuilder-AAB-wmt-Walmajarri-Bible-Portions', 1, 1, 1, 'wmt', now(), now(), null, true, true),
-  ( 'Yumplatok Baibol', 1, 'scriptureappbuilder-AAB-tcs-Yumplatok-Baibol', 1, 1, 1, 'tcs', now(), now(), null, true, true),
-  ( 'Minar Poelayzimayl', 1, 'scriptureappbuilder-AAB-mwp-Minar-Poelayzimayl', 1, 1, 1, 'mwp', now(), now(), null, true, true),
-  ( 'Alkitab Kupang', 1, 'scriptureappbuilder-AAB-mkn-Alkitab-Kupang', 1, 1, 1, 'mkn', now(), now(), null, true, true),
-  ( 'Alkitab Tetun', 1, 'scriptureappbuilder-AAB-tdt-Alkitab-Tetun', 1, 1, 1, 'tdt', now(), now(), null, true, true),
-  ( 'Alkitab Helong', 1, 'scriptureappbuilder-AAB-heg-Alkitab-Helong', 1, 1, 1, 'heg', now(), now(), null, true, true),
-  ( 'Alkitab Dhao', 1, 'scriptureappbuilder-AAB-nfa-Alkitab-Dhao', 1, 1, 1, 'nfa', now(), now(), null, true, true),
-  ( 'Alkitab Amarasi', 1, 'scriptureappbuilder-AAB-aaz-Alkitab-Amarasi', 1, 1, 1, 'aaz', now(), now(), null, true, true),
+  ( 'Kuku Yalanji Bible Portions', 1, 'scriptureappbuilder-AAB-wmt-Kuku-Yalanji-Bible-Portions', 11, 1, 1, 'wmt', now(), now(), null, true, true),
+  ( 'Walmajarri Bible Portions', 1, 'scriptureappbuilder-AAB-wmt-Walmajarri-Bible-Portions', 11, 1, 1, 'wmt', now(), now(), null, true, true),
+  ( 'Yumplatok Baibol', 1, 'scriptureappbuilder-AAB-tcs-Yumplatok-Baibol', 11, 1, 1, 'tcs', now(), now(), null, true, true),
+  ( 'Minar Poelayzimayl', 1, 'scriptureappbuilder-AAB-mwp-Minar-Poelayzimayl', 11, 1, 1, 'mwp', now(), now(), null, true, true),
+  ( 'Alkitab Kupang', 1, 'scriptureappbuilder-AAB-mkn-Alkitab-Kupang', 11, 1, 1, 'mkn', now(), now(), null, true, true),
+  ( 'Alkitab Tetun', 1, 'scriptureappbuilder-AAB-tdt-Alkitab-Tetun', 11, 1, 1, 'tdt', now(), now(), null, true, true),
+  ( 'Alkitab Helong', 1, 'scriptureappbuilder-AAB-heg-Alkitab-Helong', 11, 1, 1, 'heg', now(), now(), null, true, true),
+  ( 'Alkitab Dhao', 1, 'scriptureappbuilder-AAB-nfa-Alkitab-Dhao', 11, 1, 1, 'nfa', now(), now(), null, true, true),
+  ( 'Alkitab Amarasi', 1, 'scriptureappbuilder-AAB-aaz-Alkitab-Amarasi', 11, 1, 1, 'aaz', now(), now(), null, true, true),
   ( 'guhNT Guahibo', 1, 'scriptureappbuilder-AMA-guh-guhNT-Guahibo', 8, 5, 1, 'guh', now(), now(), null, true, true),
   ( 'desNT Desano', 1, 'scriptureappbuilder-AMA-des-desNT-Desano', 8, 5, 1, 'des', now(), now(), null, true, true),
   ( 'cuiNT Cuiba', 1, 'scriptureappbuilder-AMA-cui-cuiNT-Cuiba', 8, 5, 1, 'cui', now(), now(), null, true, true),
   ( 'cubNT Cubeo', 1, 'scriptureappbuilder-AMA-cub-cubNT-Cubeo', 8, 5, 1, 'cub', now(), now(), null, true, true),
   ( 'coeNT Koreguaje', 1, 'scriptureappbuilder-AMA-coe-coeNT-Koreguaje', 8, 5, 1, 'coe', now(), now(), null, true, true),
-  ( 'Warlpiri Bible', 1, 'scriptureappbuilder-AAB-wbp-Warlpiri-Bible', 1, 1, 1, 'wbp', now(), now(), null, true, true),
-  ( 'Wangurri Mark', 1, 'scriptureappbuilder-AAB-dhg-Wangurri-Mark', 1, 1, 1, 'dhg', now(), now(), null, true, true),
-  ( 'Maung Mark', 1, 'scriptureappbuilder-AAB-mph-Maung-Mark', 1, 1, 1, 'mph', now(), now(), null, true, true),
+  ( 'Warlpiri Bible', 1, 'scriptureappbuilder-AAB-wbp-Warlpiri-Bible', 11, 1, 1, 'wbp', now(), now(), null, true, true),
+  ( 'Wangurri Mark', 1, 'scriptureappbuilder-AAB-dhg-Wangurri-Mark', 11, 1, 1, 'dhg', now(), now(), null, true, true),
+  ( 'Maung Mark', 1, 'scriptureappbuilder-AAB-mph-Maung-Mark', 11, 1, 1, 'mph', now(), now(), null, true, true),
   ( 'amuNT Amuzgo Guerrero', 1, 'scriptureappbuilder-AMA-amu-amuNT-Amuzgo-Guerrero', 9, 3, 1, 'amu', now(), now(), null, true, true),
   ( 'otmNT Otomi sierra oriente', 1, 'scriptureappbuilder-MXB-otm-otmNT-Otomi-sierra-oriente', 9, 3, 1, 'otm', now(), now(), null, true, true),
   ( 'kyuNT Kayah Li', 1, 'scriptureappbuilder-AMA-kyu-kyuNT-Kayah-Li', 8, 5, 1, 'kyu', now(), now(), null, true, true),
@@ -637,7 +642,7 @@ VALUES
   ( 'aaiNT Miniafia (Arifama)', 1, 'scriptureappbuilder-AMA-aai-aaiNT-Miniafia-Arifama', 8, 5, 1, 'aai', now(), now(), null, true, true),
   ( 'nhxMeca Nahuatl Mecayapan', 1, 'scriptureappbuilder-MXB-nhx-nhxMeca', 9, 3, 1, 'nhx', now(), now(), null, true, true),
   ( 'nhxTata Nahuatl Tatahuicapan', 1, 'scriptureappbuilder-MXB-nhx-nhxTata-Nahuatl-Tatahuicapan', 9, 3, 1, 'nhx', now(), now(), null, true, true),
-  ( 'Hre New Testament', 1, 'scriptureappbuilder-SIL-hre-Hre-New-Testament', 1, 1, 1, 'hre', now(), now(), null, true, true),
+  ( 'Hre New Testament', 1, 'scriptureappbuilder-SIL-hre-Hre-New-Testament', 11, 1, 1, 'hre', now(), now(), null, true, true),
   ( 'kdePB Makonde Bible', 1, 'scriptureappbuilder-AMA-kde-kdePB-Makonde-Bible', 8, 5, 1, 'kde', now(), now(), null, true, true),
   ( 'cakWNT Kaqchikel Occidental', 1, 'scriptureappbuilder-AMA-cak-cakWNT-Kaqchikel-Occidental', 8, 5, 1, 'cak', now(), now(), null, true, true),
   ( 'mjcNT Mixteco SJ Colorado', 1, 'scriptureappbuilder-MXB-mcj-mjcNT-Mixteco-SJ-Colorado', 9, 3, 1, 'mcj', now(), now(), null, true, true),
@@ -661,7 +666,7 @@ VALUES
   ( 'qufNT Quechua Lambayeque', 1, 'scriptureappbuilder-AMA-quf-qufNT-Quechua-Lambayeque', 8, 5, 1, 'quf', now(), now(), null, true, true),
   ( 'qubB Quechua Huallaga Bible', 1, 'scriptureappbuilder-AMA-qub-qubB-Quechua-Huallaga-Bible', 8, 5, 1, 'qub', now(), now(), null, true, true),
   ( 'cntNT Chinanteco Tepetotutla', 1, 'scriptureappbuilder-MXB-cnt-cntNT-Chinanteco-Tepetotutla', 9, 3, 1, 'cnt', now(), now(), null, true, true),
-  ( 'Fulfulde Maasina New Testament', 1, 'scriptureappbuilder-SIL-ffm-Fulfulde-Maasina-New-Testament', 1, 1, 1, 'ffm', now(), now(), null, true, true),
+  ( 'Fulfulde Maasina New Testament', 1, 'scriptureappbuilder-SIL-ffm-Fulfulde-Maasina-New-Testament', 11, 1, 1, 'ffm', now(), now(), null, true, true),
   ( 'tcaBNT Ticuna Brazil', 1, 'scriptureappbuilder-AMA-tca-tcaBNT-Ticuna-Brazil', 8, 5, 1, 'tca', now(), now(), null, true, true),
   ( 'kyzNT Kayabi', 1, 'scriptureappbuilder-AMA-kyz-kyzNT-Kayabi', 8, 5, 1, 'kyz', now(), now(), null, true, true),
   ( 'xavNT Xavante', 1, 'scriptureappbuilder-AMA-xav-xavNT-Xavante', 8, 5, 1, 'xav', now(), now(), null, true, true),

@@ -1,0 +1,560 @@
+[
+  {
+    "key": "workflowbar",
+    "data-buildertype": "workflowbar",
+    "events": {
+      "onCommandClick": {
+        "active": true,
+        "actions": [
+          "workflowExecuteCommand"
+        ]
+      },
+      "onSetStateClick": {
+        "active": true,
+        "actions": [
+          "workflowSetState"
+        ]
+      }
+    },
+    "blockSetState": true
+  },
+  {
+    "key": "form_2",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "textarea_comment",
+        "data-buildertype": "textarea",
+        "label": "Comment",
+        "fluid": true,
+        "rows": "2"
+      },
+      {
+        "key": "staticcontent_hr",
+        "data-buildertype": "staticcontent",
+        "content": "<hr style=\"height:5px;\"/>",
+        "isHtml": true
+      }
+    ]
+  },
+  {
+    "key": "form_1",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "header_1",
+        "data-buildertype": "header",
+        "content": "Create App Entry",
+        "size": "medium"
+      },
+      {
+        "key": "staticcontent_instructions",
+        "data-buildertype": "staticcontent",
+        "content": "<h3>Instructions</h3>\n<ul>\n<li>Save the APK file by clicking on the entry with type <em>apk</em> in the <em>Artifacts</em> grid view.</li>\n<li>Go to <a href=\"https://play.google.com/apps/publish/\" target=\"_blank\">Google Play Developer Console</a> and sign in.</li>\n<li>Click <strong>CREATE APPLICATION</strong> and  complete the following items:</li>\n<ul>\n<li>Set the <strong>Default language</strong> to <em>Store Listing Language</em> shown below.</li>\n<li>Set the <strong>Title</strong> to <em>Project Name</em> shown below.</li>\n<li>Click <strong>CREATE</strong>.</li>\n</ul>\n<li>Select <strong>App releases</strong> in the menu at the left.</li>\n<li>On the right, click <strong>MANAGE</strong> in the <strong>Production</strong> section under <strong>Production track</strong> and complete the following items: \n<ul>\n<li>Click <strong>CREATE RELEASE</strong>.</li>\n<li>Click <strong>OPT OUT</strong> to <strong>App signing by Google Play</strong> and Click <strong>CONFIRM</strong>.</li>\n<li>Click <strong>BROWSE FILES</strong> and select the downloaded APK.</li>\n</ul>\n</ul>",
+        "isHtml": true,
+        "style-marginBottom": ""
+      },
+      {
+        "key": "formgroup_2",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_project_name",
+            "data-buildertype": "input",
+            "label": "Project Name",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-width": "",
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_project_description",
+            "data-buildertype": "input",
+            "label": "Project Description",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-source": "",
+            "style-width": "",
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16",
+        "style-marginTop": "15px"
+      },
+      {
+        "key": "formgroup_1",
+        "data-buildertype": "formgroup",
+        "widths": "equal",
+        "children": [
+          {
+            "key": "dropdown_store",
+            "data-buildertype": "dropdown",
+            "label": "Store",
+            "fluid": true,
+            "selection": true,
+            "data-elements": [
+              {
+                "key": 1,
+                "value": 1,
+                "text": "Wycliffe USA"
+              },
+              {
+                "key": 2,
+                "value": 2,
+                "text": "Internet Publishing Service"
+              },
+              {
+                "key": 3,
+                "value": 3,
+                "text": "Indigitous Hack"
+              }
+            ]
+          },
+          {
+            "key": "dropdown_language",
+            "data-buildertype": "dropdown",
+            "label": "Store Listing Language",
+            "fluid": true,
+            "selection": true,
+            "data-elements": [
+              {
+                "key": 1,
+                "value": 20,
+                "text": "English (United States) - en-US"
+              },
+              {
+                "key": 2,
+                "value": 62,
+                "text": "Spanish (Latin America) - es-419"
+              },
+              {
+                "key": 3,
+                "value": 53,
+                "text": "Portuguese (Brazil) - pt-BR"
+              },
+              {
+                "key": 4,
+                "value": 1,
+                "text": "Afrikaans – af"
+              },
+              {
+                "key": 5,
+                "value": 2,
+                "text": "Amharic – am"
+              },
+              {
+                "key": 6,
+                "value": 3,
+                "text": "Arabic – ar"
+              },
+              {
+                "key": 7,
+                "value": 4,
+                "text": "Armenian – hy-AM"
+              },
+              {
+                "key": 8,
+                "value": 5,
+                "text": "Azerbaijani – az-AZ"
+              },
+              {
+                "key": 9,
+                "value": 6,
+                "text": "Basque – eu-ES"
+              },
+              {
+                "key": 10,
+                "value": 7,
+                "text": "Belarusian – be"
+              },
+              {
+                "key": 11,
+                "value": 8,
+                "text": "Bengali – bn-BD"
+              },
+              {
+                "key": 12,
+                "value": 9,
+                "text": "Bulgarian – bg"
+              },
+              {
+                "key": 13,
+                "value": 10,
+                "text": "Burmese – my-MM"
+              },
+              {
+                "key": 14,
+                "value": 11,
+                "text": "Catalan – ca"
+              },
+              {
+                "key": 15,
+                "value": 12,
+                "text": "Chinese (Simplified) – zh-CN"
+              },
+              {
+                "key": 16,
+                "value": 13,
+                "text": "Chinese (Traditional) – zh-TW"
+              },
+              {
+                "key": 17,
+                "value": 14,
+                "text": "Croatian – hr"
+              },
+              {
+                "key": 18,
+                "value": 15,
+                "text": "Czech – cs-CZ"
+              },
+              {
+                "key": 19,
+                "value": 16,
+                "text": "Danish – da-DK"
+              },
+              {
+                "key": 20,
+                "value": 17,
+                "text": "Dutch – nl-NL"
+              },
+              {
+                "key": 21,
+                "value": 18,
+                "text": "English – en-AU"
+              },
+              {
+                "key": 22,
+                "value": 19,
+                "text": "English (United Kingdom) – en-GB"
+              },
+              {
+                "key": 23,
+                "value": 21,
+                "text": "Estonian – et"
+              },
+              {
+                "key": 24,
+                "value": 22,
+                "text": "Filipino – fil"
+              },
+              {
+                "key": 25,
+                "value": 23,
+                "text": "Finnish – fi-FI"
+              },
+              {
+                "key": 26,
+                "value": 24,
+                "text": "French – fr-FR"
+              },
+              {
+                "key": 27,
+                "value": 25,
+                "text": "French (Canada) – fr-CA"
+              },
+              {
+                "key": 28,
+                "value": 26,
+                "text": "Galician – gl-ES"
+              },
+              {
+                "key": 29,
+                "value": 27,
+                "text": "Georgian – ka-GE"
+              },
+              {
+                "key": 30,
+                "value": 28,
+                "text": "German – de-DE"
+              },
+              {
+                "key": 31,
+                "value": 29,
+                "text": "Greek – el-GR"
+              },
+              {
+                "key": 32,
+                "value": 30,
+                "text": "Hebrew – iw-IL"
+              },
+              {
+                "key": 33,
+                "value": 31,
+                "text": "Hindi – hi-IN"
+              },
+              {
+                "key": 34,
+                "value": 32,
+                "text": "Hungarian – hu-HU"
+              },
+              {
+                "key": 35,
+                "value": 33,
+                "text": "Icelandic – is-IS"
+              },
+              {
+                "key": 36,
+                "value": 34,
+                "text": "Indonesian – id"
+              },
+              {
+                "key": 37,
+                "value": 35,
+                "text": "Italian – it-IT"
+              },
+              {
+                "key": 38,
+                "value": 36,
+                "text": "Japanese – ja-JP"
+              },
+              {
+                "key": 39,
+                "value": 37,
+                "text": "Kannada – kn-IN"
+              },
+              {
+                "key": 40,
+                "value": 38,
+                "text": "Khmer – km-KH"
+              },
+              {
+                "key": 41,
+                "value": 39,
+                "text": "Korean (South Korea) – ko-KR"
+              },
+              {
+                "key": 42,
+                "value": 40,
+                "text": "Kyrgyz – ky-KG"
+              },
+              {
+                "key": 43,
+                "value": 41,
+                "text": "Lao – lo-LA"
+              },
+              {
+                "key": 44,
+                "value": 42,
+                "text": "Latvian – lv"
+              },
+              {
+                "key": 45,
+                "value": 43,
+                "text": "Lithuanian – lt"
+              },
+              {
+                "key": 46,
+                "value": 44,
+                "text": "Macedonian – mk-MK"
+              },
+              {
+                "key": 47,
+                "value": 45,
+                "text": "Malay – ms"
+              },
+              {
+                "key": 48,
+                "value": 46,
+                "text": "Malayalam – ml-IN"
+              },
+              {
+                "key": 49,
+                "value": 47,
+                "text": "Marathi – mr-IN"
+              },
+              {
+                "key": 50,
+                "value": 48,
+                "text": "Mongolian – mn-MN"
+              },
+              {
+                "key": 51,
+                "value": 49,
+                "text": "Nepali – ne-NP"
+              },
+              {
+                "key": 52,
+                "value": 50,
+                "text": "Norwegian – no-NO"
+              },
+              {
+                "key": 53,
+                "value": 51,
+                "text": "Persian – fa"
+              },
+              {
+                "key": 54,
+                "value": 52,
+                "text": "Polish – pl-PL"
+              },
+              {
+                "key": 55,
+                "value": 54,
+                "text": "Portuguese (Portugal) – pt-PT"
+              },
+              {
+                "key": 56,
+                "value": 55,
+                "text": "Romanian – ro"
+              },
+              {
+                "key": 57,
+                "value": 56,
+                "text": "Romansh – rm"
+              },
+              {
+                "key": 58,
+                "value": 57,
+                "text": "Russian – ru-RU"
+              },
+              {
+                "key": 59,
+                "value": 58,
+                "text": "Serbian – sr"
+              },
+              {
+                "key": 60,
+                "value": 59,
+                "text": "Sinhala – si-LK"
+              },
+              {
+                "key": 61,
+                "value": 60,
+                "text": "Slovak – sk"
+              },
+              {
+                "key": 62,
+                "value": 61,
+                "text": "Slovenian – sl"
+              },
+              {
+                "key": 63,
+                "value": 63,
+                "text": "Spanish (Spain) – es-ES"
+              },
+              {
+                "key": 64,
+                "value": 64,
+                "text": "Spanish (United States) – es-US"
+              },
+              {
+                "key": 65,
+                "value": 65,
+                "text": "Swahili – sw"
+              },
+              {
+                "key": 66,
+                "value": 66,
+                "text": "Swedish – sv-SE"
+              },
+              {
+                "key": 67,
+                "value": 67,
+                "text": "Tamil – ta-IN"
+              },
+              {
+                "key": 68,
+                "value": 68,
+                "text": "Telugu – te-IN"
+              },
+              {
+                "key": 69,
+                "value": 69,
+                "text": "Thai – th"
+              },
+              {
+                "key": 70,
+                "value": 70,
+                "text": "Turkish – tr-TR"
+              },
+              {
+                "key": 71,
+                "value": 71,
+                "text": "Ukrainian – uk"
+              },
+              {
+                "key": 72,
+                "value": 72,
+                "text": "Vietnamese – vi"
+              },
+              {
+                "key": 73,
+                "value": 73,
+                "text": "Zulu – zu"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "header_2",
+        "data-buildertype": "header",
+        "content": "Artifacts",
+        "size": "small"
+      },
+      {
+        "key": "gridview_1",
+        "data-buildertype": "gridview",
+        "columns": [
+          {
+            "key": "buildid",
+            "name": "BuildId",
+            "type": "number",
+            "width": 100,
+            "sortable": true,
+            "filterable": false,
+            "resizable": false
+          },
+          {
+            "key": "type",
+            "name": "Type",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "width": 150
+          },
+          {
+            "key": "size",
+            "name": "Size",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "type": "number",
+            "width": 100
+          },
+          {
+            "key": "link",
+            "name": "Link",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "type": "link"
+          }
+        ],
+        "events": {
+          "onRowDblClick": {
+            "active": false,
+            "actions": [],
+            "targets": [],
+            "parameters": []
+          },
+          "onRowClick": {
+            "actions": [
+              "openArtifactLink"
+            ],
+            "active": true,
+            "targets": [],
+            "parameters": []
+          }
+        },
+        "defaultSort": "buildid DESC",
+        "autoHeight": false,
+        "minHeight": "",
+        "pageSize": ""
+      }
+    ]
+  }
+]
