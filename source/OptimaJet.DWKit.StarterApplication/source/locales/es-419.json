@@ -4,5 +4,8 @@
     "buildengineConnected": "Build Engine for organization {{orgName}} status change: connected",
     "buildengineDisconnected": "Build Engine for organization {{orgName}} status change: disconnected",
     "projectFailedBuildEngine": "Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}."
+  },
+  "organizationInvites": {
+    "subject": "[Scriptoria] Organization Invite Request"
   }
 }
