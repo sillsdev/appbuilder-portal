@@ -9,18 +9,13 @@ import { withCollectionDataActions } from '@data/containers/resources/notificati
 
 const mapNetworkToProps = (passedProps) => {
   return {
-    notifications: [
-      q => q
-        .findRecords(NOTIFICATION),
-      { ...defaultOptions() }
-    ]
+    notifications: [q => q.findRecords(NOTIFICATION), {...defaultOptions()}]
   };
 };
 
 const mapRecordsToProps = (passedProps) => {
   return {
-    notifications: q => q
-      .findRecords(NOTIFICATION),
+    notifications: q => q.findRecords(NOTIFICATION),
   };
 };
 

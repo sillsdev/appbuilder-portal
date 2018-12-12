@@ -54,8 +54,7 @@ class Row extends React.Component<IProps> {
       message,
       dateCreated,
       dateRead,
-      messageSubstitutions,
-    } = this.props.notification.attributes;
+    } = notification.attributes;
 
     const isViewed = dateRead !== null;
 

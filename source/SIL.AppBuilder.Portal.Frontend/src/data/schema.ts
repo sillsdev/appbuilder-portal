@@ -229,17 +229,6 @@ const schemaDefinition: SchemaSettings = {
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
       }
     },
-    // notification: {
-    //   keys: { remoteId: {} },
-    //   attributes: {
-    //     title: { type: 'string' },
-    //     description: { type: 'string' },
-    //     time: { type: 'date' },
-    //     link: { type: 'string' },
-    //     isViewed: { type: 'boolean' },
-    //     show: { type: 'boolean' }
-    //   }
-    // },
     role: {
       keys: { remoteId: {} },
       attributes: {
@@ -328,11 +317,12 @@ const schemaDefinition: SchemaSettings = {
     notification: {
       keys: { remoteId: {} },
       attributes: {
-        messageId: { type: 'string' },
+        message: { type: 'string' },
         dateRead: { type: 'date' },
         dateEmailSent: { type: 'date' },
         dateCreated: { type: 'date' },
         dateUpdated: { type: 'date' },
+        sendEmail: { type: 'boolean' },
       },
       relationships: {
         user: { type: 'hasOne', model: 'user', inverse: 'notifications' }
