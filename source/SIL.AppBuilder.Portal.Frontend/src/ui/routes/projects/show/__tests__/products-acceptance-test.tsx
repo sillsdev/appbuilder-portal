@@ -115,7 +115,7 @@ describe('Acceptance | Project View | Products', () => {
       const productList = page.productsInteractor.itemsText();
       const productsText = productList.map(item => item.text);
 
-      expect(productsText).to.contain('Publish Android app to S3');
+      expect(productsText).to.contain('android_s3');
     });
 
     describe('manage products', () => {
@@ -129,8 +129,8 @@ describe('Acceptance | Project View | Products', () => {
       it('has render product definitions',() => {
         const items = page.productsInteractor.modalInteractor.multiSelectInteractor.itemsText();
         const itemTexts = items.map(item => item.text);
-        expect(itemTexts).to.contain('Publish Android app to S3');
-        expect(itemTexts).to.contain('Publish Android App to Google Play');
+        expect(itemTexts).to.contain('android_s3');
+        expect(itemTexts).to.contain('android_amazon_app');
       });
 
       it.always('project product is selected',() => {
@@ -147,8 +147,8 @@ describe('Acceptance | Project View | Products', () => {
         it('product is added to product list', () => {
           const productList = page.productsInteractor.itemsText();
           const productsText = productList.map(item => item.text);
-          expect(productsText).to.contain('Publish Android app to S3');
-          expect(productsText).to.contain('Publish Android App to Google Play');
+          expect(productsText).to.contain('android_s3');
+          expect(productsText).to.contain('android_amazon_app');
         }).timeout(2000);
 
         it('project product is selected',() => {
@@ -180,8 +180,8 @@ describe('Acceptance | Project View | Products', () => {
         it('product is added to product list', () => {
           const productList = page.productsInteractor.itemsText();
           const productsText = productList.map(item => item.text);
-          expect(productsText).to.contain('Publish Android app to S3');
-          expect(productsText).to.contain('Publish Android App to Google Play');
+          expect(productsText).to.contain('android_s3');
+          expect(productsText).to.contain('android_amazon_app');
         }).timeout(4000);
 
         it('project product is selected',() => {
