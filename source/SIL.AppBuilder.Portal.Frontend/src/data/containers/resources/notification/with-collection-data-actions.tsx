@@ -45,7 +45,7 @@ export function withCollectionDataActions<T>(WrappedComponent) {
 
           return operations;
         },
-        { ...defaultOptions(), devOnly: true }
+        { ...defaultOptions() }
       );
 
       this.setState({ clearCount: this.state.clearCount + 1 });

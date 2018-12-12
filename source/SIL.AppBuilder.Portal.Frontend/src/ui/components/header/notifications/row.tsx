@@ -30,17 +30,19 @@ class Row extends React.Component<IProps> {
     this.setState({ visible: !this.state.visible });
   }
 
-  markAsSeen = (e) => {
+  markAsSeen = (e: React.SyntheticEvent) => {
     const { markAsSeen } = this.props;
 
+    e.stopPropagation();
     e.preventDefault();
 
     markAsSeen();
   }
 
-  clear = (e) => {
+  clear = (e: React.SyntheticEvent) => {
     const { clear } = this.props;
 
+    e.stopPropagation();
     e.preventDefault();
 
     clear();

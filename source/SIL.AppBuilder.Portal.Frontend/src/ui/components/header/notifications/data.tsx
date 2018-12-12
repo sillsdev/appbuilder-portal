@@ -61,7 +61,7 @@ export function withData(WrappedComponent) {
   return compose(
     query(mapNetworkToProps),
     withLoader(({ notifications }) => !notifications),
+    withOrbit(mapRecordsToProps),
     withCollectionDataActions,
-    withOrbit(mapRecordsToProps)
   )(DataWrapper);
 }
