@@ -59,7 +59,6 @@ class OrganizationForm extends React.Component<IProps, IState> {
       publicByDefault
     } = attributesFor(organization);
 
-    debugger;
     this.state = {
       name: name || '',
       websiteUrl: websiteUrl || '',
