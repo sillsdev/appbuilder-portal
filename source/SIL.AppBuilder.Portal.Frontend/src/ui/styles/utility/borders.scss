@@ -16,6 +16,10 @@
     border: 1px solid $blue-highlight !important;
   }
 
+  .blue-light-bottom-border#{$modifier} {
+    border-bottom: 1px solid $blue-highlight !important;
+  }
+
   .page-heading-border#{$modifier} {
     border-bottom: 1px solid $border-color;
   }
