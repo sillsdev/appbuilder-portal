@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
@@ -9,7 +8,6 @@ import {
 import { userIsAppBuilderOf, userIsOrgAdminOf } from 'tests/helpers/factories/user';
 import app from 'tests/helpers/pages/app';
 
-import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import i18n from '@translations';
 
 describe('Acceptance | Accessing Organization Settings', () => {

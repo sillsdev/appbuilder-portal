@@ -59,7 +59,8 @@ class List extends React.Component<IProps> {
                 flex align-items-center
                 justify-content-space-between
                 w-100-xs-only flex-100 m-b-sm
-                multi-select-item'
+                round-border-4 light-gray-text
+                pointer thin-border p-sm'
             >
               <div
                 data-test-org-edit-group-button

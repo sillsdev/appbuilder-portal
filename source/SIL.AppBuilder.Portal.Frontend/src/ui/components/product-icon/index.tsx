@@ -1,5 +1,5 @@
 import * as React from 'react';
-import AndriodIcon from '@material-ui/icons/Android';
+import AndroidIcon from '@material-ui/icons/Android';
 import WebIcon from '@material-ui/icons/Web';
 import MissingIcon from '@material-ui/icons/ErrorOutline';
 
@@ -11,11 +11,23 @@ const colorStyles = {
   html: { color: '#f5a623' }
 };
 
+const styles = (type, selected,size) => {
+  const color = selected ? colorStyles[type] : DEFAULT_COLOR;
+  const fontSize = size ? { fontSize: `${size}px` } : '';
+
+  return {
+    ...color,
+    ...fontSize
+  };
+};
+
 const DEFAULT_COLOR = { color: '#9b9b9b' };
 
 const iconMap = {
-  android: (selected) => <AndriodIcon style={selected ? colorStyles.android : DEFAULT_COLOR} />,
-  html: (selected) => <WebIcon style={selected ? colorStyles.html : DEFAULT_COLOR} />,
+  android: (selected, size) =>
+    <AndroidIcon style={styles('android',selected, size)} />,
+  html: (selected, size) =>
+    <WebIcon style={styles('html', selected, size)} />,
   [undefined]: () => <MissingIcon />
 };
 
@@ -23,19 +35,20 @@ const iconMap = {
 export interface IProps {
   product: ProductDefinitionResource | ProductResource;
   selected?: boolean;
+  size?: number;
 }
 
 export default class ProductIcon extends React.Component<IProps> {
 
   render() {
 
-    const { product, selected } = this.props;
+    const { product, selected, size } = this.props;
 
     const { name } = attributesFor(product);
     const lowerName = name && name.toLowerCase();
     const closestKey = Object.keys(iconMap)
       .find(key => lowerName && lowerName.includes(key));
 
-    return iconMap[closestKey](selected) || <WebIcon />;
+    return iconMap[closestKey](selected, size);
   }
 }

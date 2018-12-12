@@ -66,8 +66,8 @@ describe('Acceptance | Organization Settings | Product view', () => {
       const productList = multiSelect.itemsText();
       const productDefinitionText = productList.map(item => item.text);
 
-      expect(productDefinitionText).to.contain('first fake product description');
-      expect(productDefinitionText).to.contain('fake product description');
+      expect(productDefinitionText).to.contain('first fake product definition');
+      expect(productDefinitionText).to.contain('Fake product definition');
     });
 
     describe('with product definition list',() => {
