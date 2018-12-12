@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
@@ -66,12 +67,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     // If the build engine isn't available, there is no point in continuing
                     // Notifications for this are handled by the monitor
                     // Throw exception to retry
-                    var messageParms = new
+                    var messageParms = new Dictionary<string, object>()
                     {
-                        orgName = project.Organization.Name,
-                        projectName = project.Name
+                        { "orgName", project.Organization.Name },
+                        { "projectName", project.Name }
                     };
-                    await SendNotificationService.SendNotificationToOrgAdminsAsync(project.Organization,
+                    await SendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(project.Organization, project.Owner,
                                                                                    "notifications.projectFailedBuildEngine",
                                                                                    messageParms);
                     throw new Exception("Connection not available");
