@@ -80,10 +80,18 @@ namespace OptimaJet.DWKit.StarterApplication.Models
             return userRole != null;
         }
 
-        [NotMapped]
-        public string LocaleOrDefault
+        public string LocaleOrDefault()
         {
-            get => Locale ?? (CultureInfo.CurrentCulture.Name ?? "en-US");
+            var locale = "en-US";
+            if (!String.IsNullOrEmpty(Locale))
+            {
+                locale = Locale;
+            }
+            else if ((CultureInfo.CurrentCulture != null) && !String.IsNullOrEmpty(CultureInfo.CurrentCulture.Name))
+            {
+                locale = CultureInfo.CurrentCulture.Name;
+            }
+            return locale;
         }
     }
 }
