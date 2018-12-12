@@ -29,10 +29,10 @@ export function withCollectionDataActions<T>(WrappedComponent) {
 
     markAllAsViewed = async () => {
       const { notifications, dataStore } = this.props;
-
+      const date = new Date().toISOString();
       await dataStore.update(t =>
-        notifications.map(notification => t.replaceAttribute(notification, 'isViewed', true)),
-        { ...defaultOptions(), devOnly: true });
+        notifications.map(notification => t.replaceAttribute(notification, 'dateRead', date)),
+        { ...defaultOptions() });
     }
 
     clearAll = async () => {
