@@ -9,7 +9,8 @@ INSERT INTO "Users" ("Name", "Email", "ExternalId", "FamilyName", "GivenName", "
 (	'Bill Dyck', 'bill_dyck@sil.org',	'google-oauth2|102643649500459434996', 'Dyck',	'Bill',	'0',	NULL, NULL, NULL),
 (	'Loren Hawthorne', 'loren_hawthrone@sil.org',	'google-oauth2|116603781884964961816', 'Loren',	'Hawthorne',	'0',	NULL, NULL, NULL),
 (	'liztabor19+1@gmail.com', 'liztabor19+1@gmail.com',	'auth0|5b86fb131a8ed52ad10259e5', 'Liz',	'tabor',	'0',	NULL, NULL, NULL),
-(	'other@sil.org', 'other@sil.org',	'auth0|5c07e78511bf6d2f2ce0fcff', 'Other'	, 'SIL', '0',	NULL, NULL, NULL);
+(	'other@sil.org', 'other@sil.org',	'auth0|5c07e78511bf6d2f2ce0fcff', 'Other'	, 'SIL', '0',	NULL, NULL, NULL),
+(	'Nate Canada', 'ncanada@developertown.com',	'google-oauth2|107093754016949028816', 'Nate', 	'Canada',	'0',	NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId") VALUES
 (	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1),
@@ -97,7 +98,8 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	9,  1), -- loren_hawthorne@sil.org - SIL
 (	10,  1), -- liztabor19+1@gmail.com - SIL
 (	10,  2), -- liztabor19+1@gmail.com - DT
-(	11,  1); -- other@sil.org - SIL
+(	11,  1), -- other@sil.org - SIL
+(	12,	2); -- ncanada@developertown.com - DT
 
 
 
@@ -111,7 +113,8 @@ INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 ( 3,  14),
 ( 7,  14),
 ( 7,   1),
-( 5,  14);
+( 5,  14),
+( 12,  14);
 
 INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	1,	1,	1), -- chris_hubbard@sil.org - SuperAdmin - SIL
@@ -131,7 +134,9 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	6,	3,	3), -- chris.kalaam@gmail.com - AppBuilder - Kalaam
 (	10,	3,	1), -- liztabor19+1@gmail.com - AppBuilder - SIL
 (	10,	3,	2), -- liztabor19+1@gmail.com - AppBuilder - DT
-(	11,	3,	1); -- other@sil.org - AppBuilder - SIL
+(	11,	3,	1), -- other@sil.org - AppBuilder - SIL
+(	12,	1,	2), -- ncanada@developertown.com - SuperAdmin - DT
+(	12,	2,	2); -- ncanada@developertown.com - OrgAdmin - DT
 
 
 INSERT INTO "Projects"
