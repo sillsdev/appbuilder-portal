@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
+import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { withData as withOrbit } from 'react-orbitjs';
 
@@ -61,12 +62,26 @@ class Row extends React.Component<IProps & IProvidedProps> {
       return column;
     });
   }
+
+  get hasArchiveStyle() {
+    const { project, location } = this.props;
+    const { dateArchived } = attributesFor(project);
+
+    if (!dateArchived) {
+      return false;
+    }
+
+    // if we are on the archived projects screen, we _don't_ want
+    // all of the projects to be faded
+    return !location.pathname.match(/\/projects\/archived/);
+  }
+
   render() {
     const { project, projectPath } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
-    const { name: projectName, dateArchived } = attributesFor(project);
+    const { name: projectName } = attributesFor(project);
 
     const clickPath = projectPath ? projectPath(projectId) : `/projects/${projectId}`;
 
@@ -74,7 +89,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
       <div
         data-test-project-row
         className='m-b-md with-shadow'
-        style={{ opacity: dateArchived ? 0.5 : 1 }}
+        style={{ opacity: this.hasArchiveStyle ? 0.5 : 1 }}
       >
         <div className='flex row-header grid align-items-center p-l-md p-r-md'>
           <div className='col flex-grow-xs flex-100'>
@@ -99,6 +114,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
 }
 
 export default compose(
+  withRouter,
   withOrbit(({ project }) => ({
     // subscribes this component sub-tree to updates for the project
     // this is what enables the row to fade when a project is archived.
