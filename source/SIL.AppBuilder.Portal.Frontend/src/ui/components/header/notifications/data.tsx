@@ -47,14 +47,13 @@ export function withData(WrappedComponent) {
     isThereAtLeastOneNotificationToShow = () => {
       const { notifications } = this.props;
 
-      return notifications &&
-        notifications.reduce((memo, notification) => memo || notification.attributes.show, false);
+      return notifications.length > 0;
     }
 
     render() {
       const dataProps = {
         haveAllNotificationsBeenSeen: this.haveAllNotificationsBeenSeen(),
-        isThereAtLeastOneNotificationToShow: true,
+        isThereAtLeastOneNotificationToShow: this.isThereAtLeastOneNotificationToShow(),
       };
 
       return <WrappedComponent { ...this.props } {...dataProps} />;
