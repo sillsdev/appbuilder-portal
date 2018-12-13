@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 
-import { TEMP_DEFAULT_PAGE_SIZE } from '@data';
 import { PaginationFooter } from '@data/containers/api';
 import { ISortProps } from '@data/containers/api/sorting';
 import { IPaginateProps } from '@data/containers/api/pagination';
@@ -53,7 +51,8 @@ export default class Display extends React.Component<IProps> {
       projects, isLoading,
       toggleSort, isAscending, sortProperty,
       columns, selectedColumns,
-      toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns
+      toggleColumnSelection, activeProductColumns,
+      activeProjectColumns, possibleColumns
     };
 
     return (
