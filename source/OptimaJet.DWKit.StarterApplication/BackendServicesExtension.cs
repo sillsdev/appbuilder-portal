@@ -38,6 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddJsonApi<AppDbContext>(options => {
                 options.Namespace = "api";
                 options.IncludeTotalRecordCount = true;
+                options.EnableOperations = true;
             });
 
             services.AddHttpContextAccessor();
