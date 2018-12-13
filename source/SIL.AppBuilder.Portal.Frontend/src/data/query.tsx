@@ -5,6 +5,7 @@ import { defaultSourceOptions } from '@data';
 import { ErrorMessage } from '@ui/components/errors';
 import { isEmpty } from '@lib/collection';
 import { timeoutablePromise } from '@lib/promises';
+import { arePropsEqual } from '@lib/collection';
 
 interface IState {
   result: object;
@@ -151,12 +152,4 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
     return withOrbit({})(DataWrapper);
   };
-}
-
-
-// This is a stupid way to 'deeply' compare things.
-// But it kinda works.
-// Functions are omitted from the comparison
-function arePropsEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
 }
