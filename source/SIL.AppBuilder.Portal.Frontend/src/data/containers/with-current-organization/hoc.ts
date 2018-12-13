@@ -31,11 +31,11 @@ export const withCurrentOrganization = compose<IProps, IProvidedProps>(
       withData((passedProps: IProps) => {
         const { currentOrganizationId: id } = passedProps;
 
-        if (!id || id === '') return {};
+        if (!id || id === '') { return {}; }
 
         return {
           organization: q => buildFindRecord(q, 'organization', id)
-        }
+        };
       }),
       // this loader should hopefully never be visible because
       // the organization should already be present from the current user
