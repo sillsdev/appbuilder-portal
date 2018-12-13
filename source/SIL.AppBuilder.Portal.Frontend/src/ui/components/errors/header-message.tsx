@@ -1,4 +1,5 @@
 import * as React from 'react';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { parseError } from './parse-error';
 
@@ -24,7 +25,7 @@ export default class ErrorHeaderMessage extends React.Component<IProps> {
 
     return (
       <div className='ui negative message'>
-        {showClose ? <i className='close icon' /> : null }
+        {showClose ? <CloseIcon className='close icon' /> : null }
         <div className='header'>
           {title}
         </div>
