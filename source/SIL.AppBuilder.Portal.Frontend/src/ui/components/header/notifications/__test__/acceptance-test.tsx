@@ -14,8 +14,6 @@ import Page from './-page';
 import {notifications} from './-factory';
 import { PaginationItem } from 'semantic-ui-react';
 
-// TODO: Modify this test when we had real notifications commit from the API
-// TODO: Use real fake data
 describe('Acceptance | Notifications', () => {
   setupApplicationTest();
   setupRequestInterceptor();

@@ -152,7 +152,7 @@
     "karma-webpack-grep": "^1.0.1",
     "mocha": "^5.2.0",
     "node-sass": "^4.9.0",
-    "proxyquire": "^2.0.1",
+    "proxyquire": "^2.1.0",
     "react-test-renderer": "^16.4.0",
     "redux-devtools-extension": "^2.13.5",
     "serve-static": "^1.13.2",
