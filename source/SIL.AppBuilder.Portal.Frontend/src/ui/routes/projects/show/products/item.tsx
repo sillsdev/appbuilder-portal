@@ -55,7 +55,7 @@ class ProductItem extends React.Component<IProps> {
             data-test-project-product-name
             className='m-l-sm fs-16 bold blue-highlight'
           >
-            {description}
+            {name}
           </div>
         </div>
         <div className='w-20-md p-l-xs-md'>

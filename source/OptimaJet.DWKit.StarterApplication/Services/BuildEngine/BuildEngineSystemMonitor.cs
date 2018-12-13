@@ -141,10 +141,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                                                              && (o.BuildEngineApiAccessToken == systemEntry.BuildEngineApiAccessToken));
              foreach (Organization organization in organizations)
             {
-                var messageParms = new {
-                    orgName = organization.Name,
-                    url = organization.BuildEngineUrl,
-                    token = organization.BuildEngineApiAccessToken};
+                var messageParms = new Dictionary<string, object>()
+                {
+                    { "orgName", organization.Name },
+                    { "url", organization.BuildEngineUrl },
+                    { "token", organization.BuildEngineApiAccessToken }
+                };
                 await SendNotificationService.SendNotificationToOrgAdminsAsync(organization,
                                                                                systemEntry.SystemAvailable ? "notifications.buildengineConnected" : "notifications.buildengineDisconnected",
                                                                                messageParms);

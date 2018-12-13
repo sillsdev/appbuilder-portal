@@ -51,10 +51,10 @@ export default class RootPage extends React.Component {
 
             <Route path={openSourcePath} component={OpenSourceRoute} />
 
-            <Workflow />
-
+            <Route path={['/form', '/flow']} component={Workflow} />
 
             <Route component={ErrorRootRoute} />
+
           </Switch>
         </section>
       </div>

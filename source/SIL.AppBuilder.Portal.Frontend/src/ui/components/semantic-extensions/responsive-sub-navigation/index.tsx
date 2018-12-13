@@ -7,6 +7,7 @@ import './navigation.scss';
 
 export interface IProps {
   items: Array<{ to: string, text: string }>;
+  exactRoutes?: boolean;
 }
 
 class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>> {
@@ -18,11 +19,15 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
       return (location.pathname.startsWith(i.to));
     });
 
-    return matchingItem.text || 'Setting Navigation...';
+    return (matchingItem && matchingItem.text) || 'Setting Navigation...';
   }
 
   render() {
-    const { items, location } = this.props;
+    const { items, location, exactRoutes = true } = this.props;
+
+    const shouldUseExactRoutes = exactRoutes ?
+      (to) => location.pathname === to :
+      (to) => location.pathname.startsWith(to);
 
     const menuItems = items.map((i, index) => (
       <NavLink
@@ -30,7 +35,7 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
         key={index}
         className='item'
         activeClassName='active'
-        isActive={() => location.pathname.startsWith(i.to)}
+        isActive={() => shouldUseExactRoutes(i.to)}
       >
         {i.text}
       </NavLink>

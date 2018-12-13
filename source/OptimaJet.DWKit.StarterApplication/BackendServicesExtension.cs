@@ -38,6 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddJsonApi<AppDbContext>(options => {
                 options.Namespace = "api";
                 options.IncludeTotalRecordCount = true;
+                options.EnableOperations = true;
             });
 
             services.AddHttpContextAccessor();
@@ -115,7 +116,6 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped(typeof(IOrganizationInviteRequestService), typeof(OrganizationInviteRequestService));
             services.Configure<OrganizationInviteRequestSettings>(options =>
             {
-                options.SuperAdminEmail = GetVarOrDefault("SUPERADMIN_EMAIL", "chris_hubbard@sil.org");
                 options.BaseUrl = GetVarOrDefault("UI_URL", "http://localhost:9091");
             });
 

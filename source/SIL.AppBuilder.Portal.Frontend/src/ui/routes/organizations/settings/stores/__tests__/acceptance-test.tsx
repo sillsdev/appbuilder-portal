@@ -36,14 +36,14 @@ describe('Acceptance | Organization Settings | Store view', () => {
           id: 2,
           type: 'stores',
           attributes: {
-            name: 'Store name',
+            name: 'Store name 1',
             description: 'Store description 1'
           }
         }, {
           id: 3,
           type: 'stores',
           attributes: {
-            name: 'Store name',
+            name: 'Store name 2',
             description: 'Store description 2'
           }
         }],
@@ -64,8 +64,8 @@ describe('Acceptance | Organization Settings | Store view', () => {
       const storeList = multiSelect.itemsText();
       const storeText = storeList.map(item => item.text);
 
-      expect(storeText).to.contain('Store description 1');
-      expect(storeText).to.contain('Store description 2');
+      expect(storeText).to.contain('Store name 1');
+      expect(storeText).to.contain('Store name 2');
     });
 
     describe('with store list', () => {

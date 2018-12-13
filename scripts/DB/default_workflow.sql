@@ -2,7 +2,7 @@ INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "Work
 (1,	'sil_android_google_play',	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1);
 
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
-(1,	'android_google_play',	1,	'Android App to Google Play',	1);
+(1,	'Android App to Google Play',	1,	'Build an Android App from a Scripture App Builder project and publish to a Google Play Store',	1);
 
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
 ('SIL_Default_AppBuilders_Android_GooglePlay',	'<Process>

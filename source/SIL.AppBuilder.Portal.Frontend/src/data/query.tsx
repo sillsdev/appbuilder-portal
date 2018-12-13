@@ -5,6 +5,7 @@ import { defaultSourceOptions } from '@data';
 import { ErrorMessage } from '@ui/components/errors';
 import { isEmpty } from '@lib/collection';
 import { timeoutablePromise } from '@lib/promises';
+import { areCollectionsRoughlyEqual } from '@lib/collection';
 
 interface IState {
   result: object;
@@ -122,7 +123,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
       isFetchNeeded = () => {
         const result = map(this.props);
 
-        if (arePropsEqual(result, this.mapResult)) {
+        if (areCollectionsRoughlyEqual(result, this.mapResult)) {
           return false;
         }
 
@@ -151,12 +152,4 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
     return withOrbit({})(DataWrapper);
   };
-}
-
-
-// This is a stupid way to 'deeply' compare things.
-// But it kinda works.
-// Functions are omitted from the comparison
-function arePropsEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
 }

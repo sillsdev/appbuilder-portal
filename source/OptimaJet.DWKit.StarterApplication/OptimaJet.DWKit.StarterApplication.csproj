@@ -105,7 +105,6 @@
     <Compile Remove="Services\Contracts\ICurrentUserMembershipsContext.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Remove="Templates\Notification.cshtml" />
     <Content Remove="source\locales\es-419.json" />
     <Content Remove="source\locales\fr-FR.json" />
   </ItemGroup>

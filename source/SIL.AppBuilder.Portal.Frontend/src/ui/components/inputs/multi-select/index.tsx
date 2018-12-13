@@ -66,28 +66,37 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
           return (
             <div
               key={index}
-              className={`flex align-items-center w-100-xs-only
-              flex-100 m-b-sm multi-select-item
-              ${ isSelected && 'blue-light-border'}`}
+              className={`flex flex-column align-items-center
+              w-100 m-b-sm round-border-4 light-gray-text pointer
+              ${ isSelected ? 'blue-light-border' : 'thin-border'}`}
               data-test-item
               onClick={this.onChange(element)}
             >
-              <Checkbox
-                data-test-item-checkbox
-                className='m-r-md'
-                value={element.id}
-                checked={isSelected}
-              />
-              {
-                displayProductIcon &&
-                <ProductIcon product={element} selected={isSelected} />
-              }
-              <span
-                data-test-item-text
-                className={`p-l-sm-xs ${isSelected && 'black-text'}`}
+              <div
+                className={`flex flex-row align-items-center
+                w-100 p-sm bg-lightest-gray fs-14 round-border-4
+                ${ isSelected ? 'blue-light-bottom-border' : 'thin-bottom-border'}`}
               >
-                {attributesFor(element).description}
-              </span>
+                <Checkbox
+                  data-test-item-checkbox
+                  className='m-r-sm'
+                  value={element.id}
+                  checked={isSelected}
+                />
+                {
+                  displayProductIcon &&
+                  <ProductIcon product={element} selected={isSelected} size={19} />
+                }
+                <span
+                  data-test-item-text
+                  className={`p-l-xs-xs ${isSelected && 'black-text'}`}
+                >
+                  {attributesFor(element).name}
+                </span>
+              </div>
+              <div className='w-100 p-sm p-t-md p-b-md fs-11'>
+                <span>{attributesFor(element).description}</span>
+              </div>
             </div>
           );
         })
