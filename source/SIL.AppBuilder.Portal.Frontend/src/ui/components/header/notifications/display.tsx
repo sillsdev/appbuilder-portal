@@ -58,6 +58,7 @@ class Notifications extends React.Component<IProps> {
 
         <div
           data-test-notification-trigger
+          data-test-notification-active={!haveAllNotificationsBeenSeen}
           style={{ position: 'relative' }}
           onClick={this.toggle}
         >

@@ -18,15 +18,24 @@ export default class NotificationsSocketClient implements SocketClient{
 
   connection: HubConnection<NotificationHub> = null;
   dataStore = null;
-  init(hubFactory: HubConnectionFactory, dataStore: Store ){
-    hubFactory.create({key: 'notifications', endpointUri: '/hubs/notifications'});
+  init(hubFactory: HubConnectionFactory, dataStore: Store) {
+    hubFactory.create({ key: 'notifications', endpointUri: '/hubs/notifications' });
     this.dataStore = dataStore;
     this.connection = hubFactory.get<NotificationHub>('notifications');
+
+  }
+
+  start(){
     this.connection$$ = this.connection.connect()
-                      .subscribe(() => {
-                        console.log('notifications signalr hub connected');
-                      });
+    .subscribe(() => console.log('notifications signalr hub connected'),
+      err => console.error('connect subscription has error', err),
+      () => console.log('completed'));
     this.onNotification$$ = this.connection.on<number>(NOTIFICATION_METHOD).subscribe(this.onNotification.bind(this));
+  }
+  stop(){
+    this.onNotification$$.unsubscribe();
+    this.connection$$.unsubscribe();
+    this.connection.disconnect();
   }
 
   onNotification(id: number){

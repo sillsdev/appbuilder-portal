@@ -19,6 +19,13 @@ class SocketManager extends React.Component<IProps>{
     const { dataStore } = props;
     this.notificationsClient.init(this.hubFactory, dataStore);
   }
+  componentDidMount(){
+    this.notificationsClient.start();
+  }
+
+  componentWillUnmount(){
+    this.notificationsClient.stop();
+  }
 
   render(){
     return (<React.Fragment>{this.props.children}</React.Fragment>);
