@@ -27,6 +27,7 @@ export interface IProps {
   group: GroupResource;
   toggleArchiveProject: (project: ProjectResource) => void;
   projectPath?: (id: string) => string;
+  showProjectActions: boolean;
 }
 
 class Row extends React.Component<IProps & IProvidedProps> {
@@ -62,7 +63,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
     });
   }
   render() {
-    const { project, projectPath } = this.props;
+    const { project, projectPath, showProjectActions } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
@@ -76,7 +77,7 @@ class Row extends React.Component<IProps & IProvidedProps> {
         className='m-b-md with-shadow'
         style={{ opacity: dateArchived ? 0.5 : 1 }}
       >
-        <div className='flex row-header grid align-items-center p-l-md p-r-md'>
+        <div className='flex row-header grid align-items-center p-md'>
           <div className='col flex-grow-xs flex-100'>
             <Link to={clickPath}>{projectName}</Link>
           </div>
@@ -87,9 +88,9 @@ class Row extends React.Component<IProps & IProvidedProps> {
             </div>
           ))}
 
-          <div className='action'>
+          {showProjectActions &&
             <RowActions project={project} />
-          </div>
+          }
         </div>
 
         <Products { ...this.props } />
