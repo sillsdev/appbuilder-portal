@@ -5,7 +5,7 @@ import { defaultSourceOptions } from '@data';
 import { ErrorMessage } from '@ui/components/errors';
 import { isEmpty } from '@lib/collection';
 import { timeoutablePromise } from '@lib/promises';
-import { arePropsEqual } from '@lib/collection';
+import { areCollectionsRoughlyEqual } from '@lib/collection';
 
 interface IState {
   result: object;
@@ -123,7 +123,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
       isFetchNeeded = () => {
         const result = map(this.props);
 
-        if (arePropsEqual(result, this.mapResult)) {
+        if (areCollectionsRoughlyEqual(result, this.mapResult)) {
           return false;
         }
 

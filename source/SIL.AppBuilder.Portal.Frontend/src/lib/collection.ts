@@ -44,6 +44,6 @@ export function compareVia(accessor: any, invert?: boolean) {
 // This is a stupid way to 'deeply' compare things.
 // But it kinda works.
 // Functions are omitted from the comparison
-export function arePropsEqual(a, b) {
+export function areCollectionsRoughlyEqual(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
