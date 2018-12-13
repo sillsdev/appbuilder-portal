@@ -15,65 +15,24 @@ using Microsoft.Extensions.Logging;
 using JsonApiDotNetCore.Data;
 using System.Linq;
 
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class NotificationsController : BaseController<Notification>
+    //this class is used to force a notification... could be removed.
+    public class NotificationTestController : Controller
     {
-        public NotificationsController(
-            IJsonApiContext jsonApiContext,
-            IResourceService<Notification> resourceService,
-            ICurrentUserContext currentUserContext,
-            OrganizationService organizationService,
-            UserService userService)
-            : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
+        private readonly IHubContext<ScriptoriaHub> _hubContext;
+        public NotificationTestController(IHubContext<ScriptoriaHub> hubContext)
         {
+            _hubContext = hubContext;
         }
 
-        public override Task<IActionResult> GetAsync()
+        [HttpPost]
+        [HttpPatch]
+        public async Task<IActionResult> Index([FromBody] Dictionary<string, object> data)
         {
-            return base.GetAsync();
-        }
-    }
-
-        //public class NotificationTestController : Controller
-        //{
-        //    private readonly IHubContext<ScriptoriaHub> _hubContext;
-        //    public NotificationTestController(IHubContext<ScriptoriaHub> hubContext)
-        //    {
-        //        _hubContext = hubContext;
-        //    }
-
-        //    [HttpPost]
-        //    [HttpPatch]
-        //    public async Task<IActionResult> Index([FromBody] IDictionary<string, string> body)
-        //    {
-        //        await _hubContext.Clients.All.SendAsync("TestNotification");
-        //        return NoContent();
-        //    }   
-        //}
-    }
-
-
-namespace OptimaJet.DWKit.StarterApplication.Repositories
-{
-    public class NotificationRepository : BaseRepository<Notification>
-    {
-        public NotificationRepository(
-            ILoggerFactory loggerFactory,
-            IJsonApiContext jsonApiContext,
-            CurrentUserRepository currentUserRepository,
-            IDbContextResolver contextResolver
-        ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
-        {
-        }
-
-        public override IQueryable<Notification> Get()
-        {
-            return base.Get().Where(n => n.User == CurrentUser);
+            await _hubContext.Clients.All.SendAsync("Notification", data["id"]);
+            return NoContent();
         }
     }
 }

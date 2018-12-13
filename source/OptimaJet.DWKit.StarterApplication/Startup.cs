@@ -183,9 +183,9 @@ namespace OptimaJet.DWKit.StarterApplication
                 routes.MapRoute("account", "account/{action}",
                     defaults: new { controller = "Account", action = "Index" });
 
-                //routes.MapRoute(name: "notifications", 
-                    //template: "notification/test", 
-                    //defaults: new { controller = "NotificationTest", action = "Index" });
+                routes.MapRoute(name: "notifications",
+                    template: "notification/test",
+                    defaults: new { controller = "NotificationTest", action = "Index" });
 
                 // Fallback
                 routes.MapRoute(

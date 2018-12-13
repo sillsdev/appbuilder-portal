@@ -5,6 +5,7 @@ import { I18nextProvider } from 'react-i18next';
 
 import { DataProvider } from '@data';
 import { ReduxProvider } from '@store';
+import { SocketManager } from '@sockets';
 import { ScrollToTop } from '@lib/routing';
 import RootRoute from './routes/root';
 
@@ -36,13 +37,15 @@ export default class Application extends React.Component<IProps> {
     return (
       <I18nextProvider i18n={i18n}>
         <DataProvider>
-          <ReduxProvider initialState={initialState || {}}>
-            <Router { ...routerProps }>
-              <ScrollToTop>
-                <RootRoute />
-              </ScrollToTop>
-            </Router>
-          </ReduxProvider>
+          <SocketManager>
+            <ReduxProvider initialState={initialState || {}}>
+              <Router { ...routerProps }>
+                <ScrollToTop>
+                  <RootRoute />
+                </ScrollToTop>
+              </Router>
+            </ReduxProvider>
+          </SocketManager>
         </DataProvider>
       </I18nextProvider>
     );
