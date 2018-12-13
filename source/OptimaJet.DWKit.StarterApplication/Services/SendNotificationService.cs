@@ -80,7 +80,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 UserId = user.Id,
                 Message = translated,
                 SendEmail = sendEmail,
-                MessageSubstitutions = subs
+                MessageSubstitutions = subs,
+                MessageId = messageId
             };
             var updatedNotification = await NotificationRepository.CreateAsync(notification);
             await HubContext.Clients.User(user.ExternalId).SendAsync("Notification", updatedNotification.Id);
