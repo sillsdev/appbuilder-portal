@@ -45,6 +45,7 @@ class RowActions extends React.Component<IProps> {
       <Dropdown
         className='project-actions'
         pointing='top right'
+        data-test-row-actions
         icon={null}
         trigger={<MoreVerticalIcon />}
       >
