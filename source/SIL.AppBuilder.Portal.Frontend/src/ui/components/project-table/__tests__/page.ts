@@ -7,10 +7,6 @@ import {
   Interactor
 } from '@bigtest/interactor';
 
-@interactor class RowInteractor {
-  isRowActionPresent = isPresent('[data-test-row-actions]');
-}
-
 
 class ProjectTable {
   constructor(selector?: string) { }
@@ -24,7 +20,9 @@ class ProjectTable {
   isEmptyTextPresent = isPresent('[data-test-project-list-empty]');
   emptyText = text('[data-test-project-list-empty]');
 
-  rows = collection('[data-test-project-row]', RowInteractor);
+  rows = collection('[data-test-project-row]', {
+    isRowActionPresent: isPresent('[data-test-row-actions]');
+  });
 
   isSortingUp = isPresent('[data-test-up-arrow]');
   isSortingDown = isPresent('[data-test-down-arrow]');
