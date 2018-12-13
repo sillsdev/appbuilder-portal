@@ -72,8 +72,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             var serializedParm = JsonConvert.SerializeObject(notificationParm);
             notification1 = AddEntity<AppDbContext, Notification>(new Notification
             {
+                MessageId = "buildengineConnected",
+                MessageSubstitutionsJson = serializedParm,
                 Message = "Build Engine for organization SIL International status change: connected",
-                UserId = user1.Id,
+                UserId = user1.Id
             });
             //notification2 = new Notification
             //{
@@ -102,7 +104,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             };
 
             var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
-            await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "notifications.buildengineConnected", notificationParm);
+            await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "buildengineConnected", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
             Assert.Equal("Build Engine for organization SIL International status change: connected", modifiedNotifications[1].Message);
@@ -121,7 +123,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             var emails = ReadTestData<AppDbContext, Email>();
             Assert.Single(emails);
             var email = emails[0];
-            Assert.Equal("[Scriptoria] Test Notification", email.Subject);
+            Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
             Assert.Equal("{\"Message\":\"Build Engine for organization SIL International status change: connected\"}", email.ContentModelJson);
         }
         [Fact]
@@ -134,7 +136,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "projectName", "Test project" }
             };
             var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
-            await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "notifications.projectFailedBuildEngine", notificationParm);
+            await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "projectFailedBuildEngine", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
             Assert.Equal("Failed to create project Test project. Could not connect to build engine for organization SIL International.", modifiedNotifications[1].Message);

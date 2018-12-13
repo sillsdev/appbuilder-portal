@@ -1,9 +1,21 @@
 {
   "notifications": {
-    "subject":  "[Scriptoria] Notification",
-    "buildengineConnected": "Build Engine for organization {{orgName}} status change: connected",
-    "buildengineDisconnected":  "Build Engine for organization {{orgName}} status change: disconnected",
-    "projectFailedBuildEngine":  "Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}."
+    "body": {
+      "userTaskAdded": "Dear {{to}}:  A new task has been assigned to you by Scriptoria.  {{activityName}} for {{productName}} - {{project}} by {{originator}}.  Comment: {{comment}}",
+      "buildengineConnected": "Build Engine for organization {{orgName}} status change: connected",
+      "buildengineDisconnected": "Build Engine for organization {{orgName}} status change: disconnected",
+      "projectFailedBuildEngine": "Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}."
+    },
+    "subject": {
+      "buildengineConnected": "Scriptoria: {{orgName}} Build Engine Connected",
+      "buildengineDisconnected": "Scriptoria: {{orgName}} Build Engine Disconnected",
+      "projectFailedBuildEngine": "Scriptoria: Create Project {{projectName}} Failed"
+    },
+    "notification":  {
+      "buildengineConnected": "Build Engine for organization {{orgName}} status change: connected",
+      "buildengineDisconnected": "Build Engine for organization {{orgName}} status change: disconnected",
+      "projectFailedBuildEngine": "Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}."
+    }
   },
   "organizationInvites": {
     "subject": "[Scriptoria] Organization Invite Request"

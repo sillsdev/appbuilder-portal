@@ -9,6 +9,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class Notification : Identifiable, ITrackDate
     {
+        [Attr("message-id")]
+        public String MessageId { get; set; }
+
         [HasOne("user", Link.None)]
         public virtual User User { get; set; }
 
@@ -28,6 +31,20 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("message")]
         public String Message { get; set; }
+
+        [Attr("message-substitutions"), NotMapped]
+        public object MessageSubstitutions { get; set; }
+
+        private const string EMPTY_JSON = "{}";
+        public string MessageSubstitutionsJson
+        {
+            get => (MessageSubstitutions == null)
+                ? EMPTY_JSON
+                : JsonConvert.SerializeObject(MessageSubstitutions);
+            set => MessageSubstitutions = string.IsNullOrWhiteSpace(value)
+                ? new Dictionary<string, object>()
+                : JObject.Parse(value).ToObject<Dictionary<string, object>>();
+        }
 
         [Attr("send-email")]
         public bool SendEmail { get; set; } = true;
