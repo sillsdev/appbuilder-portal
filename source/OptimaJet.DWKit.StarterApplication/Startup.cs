@@ -183,6 +183,7 @@ namespace OptimaJet.DWKit.StarterApplication
                 routes.MapRoute("account", "account/{action}",
                     defaults: new { controller = "Account", action = "Index" });
 
+                //test notification route... TODO: remove in future when no longer needed for manual testing.
                 routes.MapRoute(name: "notifications",
                     template: "notification/test",
                     defaults: new { controller = "NotificationTest", action = "Index" });
