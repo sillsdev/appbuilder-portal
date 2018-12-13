@@ -7,15 +7,18 @@ import { TYPE_NAME as NOTIFICATION, NotificationAttributes } from '@data/models/
 import { query, defaultOptions, NOTIFICATIONS_TYPE, withLoader } from '@data';
 import { withCollectionDataActions } from '@data/containers/resources/notification/with-collection-data-actions';
 
+
+const notificationsQuery = (q) => q.findRecords(NOTIFICATION).sort('-dateCreated', '-dateRead');
+
 const mapNetworkToProps = (passedProps) => {
   return {
-    notifications: [q => q.findRecords(NOTIFICATION), {...defaultOptions()}]
+    notifications: [notificationsQuery, {...defaultOptions()}]
   };
 };
 
 const mapRecordsToProps = (passedProps) => {
   return {
-    notifications: q => q.findRecords(NOTIFICATION),
+    notifications: notificationsQuery,
   };
 };
 
