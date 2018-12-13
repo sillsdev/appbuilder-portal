@@ -77,8 +77,6 @@ export function withCurrentUser(opts = {}) {
 
       componentDidMount() {
         this.fetchCurrentUser();
-
-
       }
 
       componentDidUpdate(previousProps, previousState) {
@@ -152,7 +150,6 @@ export function withCurrentUser(opts = {}) {
         } catch (e) {
           this.setState({ error: e, networkFetchComplete: true });
         }
-
       }
 
       render() {

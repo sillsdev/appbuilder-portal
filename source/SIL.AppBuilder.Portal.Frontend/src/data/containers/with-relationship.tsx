@@ -149,4 +149,3 @@ async function retriveDirectRelationship(dataStore: Store, sourceModel: Resource
   throw new Error('not implemented');
 
 }
-
