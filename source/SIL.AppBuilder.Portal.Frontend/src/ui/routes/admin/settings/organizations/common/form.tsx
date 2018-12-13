@@ -65,7 +65,7 @@ class OrganizationForm extends React.Component<IProps, IState> {
       buildEngineUrl: buildEngineUrl || '',
       buildEngineApiAccessToken: buildEngineApiAccessToken || '',
       logoUrl: logoUrl || '',
-      publicByDefault: publicByDefault || false,
+      publicByDefault: publicByDefault !== undefined ? publicByDefault : true,
       owner: owner || null,
       ownerError: ''
     };

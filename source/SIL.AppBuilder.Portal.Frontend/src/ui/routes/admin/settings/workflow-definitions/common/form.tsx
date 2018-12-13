@@ -65,7 +65,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       description: description || '',
       workflowScheme: workflowScheme || '',
       workflowBusinessFlow: workflowBusinessFlow || '',
-      enabled: enabled || false,
+      enabled: enabled !== undefined ? enabled : true,
       storeType: storeType || null,
       storeTypeError: ''
     };
