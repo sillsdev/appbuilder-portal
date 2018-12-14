@@ -81,7 +81,7 @@
     "navGroups": "Grupos",
     "navInfrastructure": "Infraestructura",
     "infrastructureTitle": "Infraestructura",
-    "useSilInfrastructureTitle": "Use la infraestructura de compilación AWS de SIL International",
+    "useDefaultBuildEngineTitle": "Use la infraestructura de compilación AWS de SIL International",
     "groupsTitle": "Grupos",
     "noGroups": "Su organización no tiene grupos",
     "addGroupButton": "Agregar grupo",

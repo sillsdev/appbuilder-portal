@@ -39,7 +39,7 @@ export const projectOne = {
         'build-engine-url': 'https://buildengine.gtis.guru:8443',
         'build-engine-api-access-token': 'NS7kCjCRNFPmCGMCs3cQ',
         'logo-url': 'https://www.developertown.com/wp-content/uploads/2018/01/DT-PoundHouse-Blue.png',
-        'use-sil-build-infrastructure': true,
+        'use-default-build-engine': true,
         'public-by-default': true
       },
       relationships: {

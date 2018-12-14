@@ -1335,7 +1335,7 @@
         },
         {
           "id": "91f15fbd-a667-4035-904d-a546b8763eaf",
-          "name": "UseSilBuildInfrastructure",
+          "name": "UseDefaultBuildEngine",
           "type": "Boolean",
           "typeId": 0,
           "isNullable": true,

@@ -61,7 +61,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 Url = organization.BuildEngineUrl,
                 ApiAccessToken = organization.BuildEngineApiAccessToken
             };
-            if (organization.UseSilBuildInfrastructure.GetValueOrDefault())
+            if (organization.UseDefaultBuildEngine.GetValueOrDefault())
             {
                 var defaultEndpoint = GetDefaultEndpoint();
                 if (defaultEndpoint.IsValid()) return defaultEndpoint;

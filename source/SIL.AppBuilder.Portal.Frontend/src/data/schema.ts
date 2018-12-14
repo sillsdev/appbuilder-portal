@@ -25,7 +25,7 @@ const schemaDefinition: SchemaSettings = {
         logoUrl: { type: 'string' },
 
         publicByDefault: { type: 'boolean' },
-        useSilBuildInfrastructure: { type: 'boolean' },
+        useDefaultBuildEngine: { type: 'boolean' },
 
         // note, that the Build Engine API access token probably should
         // never be *received* from the Scriptura API

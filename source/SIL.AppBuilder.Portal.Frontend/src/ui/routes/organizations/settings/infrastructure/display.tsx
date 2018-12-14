@@ -24,12 +24,12 @@ class InfrastructureDisplay extends React.Component<IProps & i18nProps> {
 
     const { organization } = props;
     const {
-      useSilBuildInfrastructure,
+      useDefaultBuildEngine,
       buildEngineUrl, buildEngineApiAccessToken
     } = attributesFor(organization);
 
     this.state = {
-      useSilBuildInfrastructure,
+      useDefaultBuildEngine,
       buildEngineUrl,
       buildEngineApiAccessToken
     };
@@ -45,7 +45,7 @@ class InfrastructureDisplay extends React.Component<IProps & i18nProps> {
     const { mut, toggle } = this;
     const { organization, t } = this.props;
     const {
-      useSilBuildInfrastructure,
+      useDefaultBuildEngine,
       buildEngineUrl, buildEngineApiAccessToken
     } = this.state;
 
@@ -59,15 +59,15 @@ class InfrastructureDisplay extends React.Component<IProps & i18nProps> {
 
         <div className='flex-row align-items-center p-l-lg p-r-lg m-b-lg'>
           <div>
-            <h3>{t('org.useSilInfrastructureTitle')}</h3>
+            <h3>{t('org.useDefaultBuildEngineTitle')}</h3>
           </div>
           <Checkbox toggle className='m-l-lg'
-            checked={useSilBuildInfrastructure}
-            onChange={toggle('useSilBuildInfrastructure')}
+            checked={useDefaultBuildEngine}
+            onChange={toggle('useDefaultBuildEngine')}
             />
         </div>
 
-        { !useSilBuildInfrastructure && (<>
+        { !useDefaultBuildEngine && (<>
 
           <Form.Field className='m-b-md'>
             <label>{t('org.buildEngineUrl')}</label>

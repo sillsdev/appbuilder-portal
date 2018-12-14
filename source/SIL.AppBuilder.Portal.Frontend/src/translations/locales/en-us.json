@@ -93,7 +93,7 @@
     "groupDeleted": "Group deleted",
     "navInfrastructure": "Infrastructure",
     "infrastructureTitle": "Infrastructure",
-    "useSilInfrastructureTitle": "Use SIL International's AWS Build Infrastructure",
+    "useDefaultBuildEngineTitle": "Use Default Build Engine",
     "groupsTitle": "Groups",
     "noGroups": "Your organization has no groups",
     "addGroupButton": "Add Group",

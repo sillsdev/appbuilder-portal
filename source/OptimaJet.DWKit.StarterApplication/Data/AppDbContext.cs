@@ -92,7 +92,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasDefaultValue(true);
 
             orgEntity
-                .Property(o => o.UseSilBuildInfrastructure)
+                .Property(o => o.UseDefaultBuildEngine)
                 .HasDefaultValue(true);
             orgEntity
                 .Property(o => o.PublicByDefault)
