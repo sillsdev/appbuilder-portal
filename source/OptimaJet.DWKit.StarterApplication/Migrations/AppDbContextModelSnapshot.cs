@@ -693,7 +693,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Notification", b =>
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

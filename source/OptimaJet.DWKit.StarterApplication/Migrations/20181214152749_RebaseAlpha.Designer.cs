@@ -11,8 +11,8 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20181211214345_changeNotifications")]
-    partial class changeNotifications
+    [Migration("20181214152749_RebaseAlpha")]
+    partial class RebaseAlpha
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -113,7 +113,13 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("Message");
 
-                    b.Property<bool>("SendEmail");
+                    b.Property<string>("MessageId");
+
+                    b.Property<string>("MessageSubstitutionsJson");
+
+                    b.Property<bool>("SendEmail")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
 
                     b.Property<int>("UserId");
 
@@ -689,7 +695,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Notification", b =>
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
