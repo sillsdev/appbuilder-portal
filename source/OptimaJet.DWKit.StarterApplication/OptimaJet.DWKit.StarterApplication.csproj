@@ -20,10 +20,6 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Project</StartAction>
-    <EnvironmentVariables>
-      <Variable name="ASPNETCORE_ENVIRONMENT" value="Development" />
-      <Variable name="ASPNETCORE_ENVIRONMENT" value="Development" />
-    </EnvironmentVariables>
     <LaunchBrowser>false</LaunchBrowser>
     <ApplicationURL>http://localhost:5000</ApplicationURL>
   </PropertyGroup>
@@ -60,7 +56,7 @@
     <PackageReference Include="Auth0.ManagementApi" Version="5.8.0" />
     <PackageReference Include="RestSharp" Version="106.3.1" />
     <PackageReference Include="FluentEmail.Core" Version="2.5.1" />
-    <PackageReference Include="FluentEmail.Razor" Version="2.5.0" />
+    <PackageReference Include="FluentEmail.Razor" Version="2.5.2" />
     <PackageReference Include="SparkPostDotNet" Version="0.3.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.6.20" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.4.8.2" />
@@ -78,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="wwwroot\js\login.js" />
+    <None Remove="Templates\Notification.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
@@ -107,5 +104,15 @@
   <ItemGroup>
     <Content Remove="source\locales\es-419.json" />
     <Content Remove="source\locales\fr-FR.json" />
+    <Content Remove="Templates\Notification.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\Notification.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Templates\Notification.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </None>
   </ItemGroup>
 </Project>
