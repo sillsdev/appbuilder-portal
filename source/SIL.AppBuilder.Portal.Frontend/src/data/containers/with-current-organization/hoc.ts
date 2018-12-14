@@ -19,9 +19,13 @@ export const withCurrentOrganization = compose<IProps, IProvidedProps>(
     ({ data }: State) => {
       return { currentOrganizationId: data.currentOrganizationId };
     },
-    (dispatch) => {
+    (dispatch, ownProps) => {
+      const {history} = ownProps;
       return {
-        setCurrentOrganizationId: (id: string) => dispatch(setCurrentOrganization(id))
+        setCurrentOrganizationId: (id: string) => {
+          dispatch(setCurrentOrganization(id));
+          history.push('/tasks');
+        },
       };
     }
   ),
