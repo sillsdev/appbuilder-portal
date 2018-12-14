@@ -62,6 +62,13 @@ function runstuff {
       runstuff bootstrap:dev
     ;;
 
+    bootstrap:alpha)
+      runstuff bootstrap:dwkit
+      runstuff bootstrap:api
+      runstuff bootstrap:orgs
+      runstuff bootstrap:dev
+    ;;
+
     bootstrap:dwkit)
       echo "api must not be running in order to run the initial db scripts ..."
       runstuff dc stop api
@@ -102,6 +109,13 @@ function runstuff {
         && echo "DB setup with sample data"
     ;;
     
+    bootstrap:orgs)
+      echo "Adding sample data..."
+
+      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_organizations.sql" \
+        && echo "DB setup with default organizations data"
+    ;;
+
     bootstrap:dev)
       # add something like the following to scripts/DB/dev.sql
       # UPDATE "Users"
@@ -192,6 +206,8 @@ function print_help {
   echo ""
   echo "bootstrap      : runs initial scripts for project setup"
   echo "bootstrap:dwkit"
+  echo "bootstrap:alpha"
+  echo "bootstrap:orgs"
   echo "bootstrap:api"
   echo "bootstrap:sample"
   echo "db:migrations  : run Entity Framework migrations command"
