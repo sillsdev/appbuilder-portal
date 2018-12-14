@@ -68,6 +68,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("user-roles", Link.None)]
         public virtual List<UserRole> UserRoles { get; set; }
 
+        [HasMany("notifications", Link.None)]
+        public virtual List<Notification> Notifications { get; set; }
+
         [NotMapped]
         public IEnumerable<int> OrganizationIds => OrganizationMemberships?.Select(o => o.OrganizationId);
 

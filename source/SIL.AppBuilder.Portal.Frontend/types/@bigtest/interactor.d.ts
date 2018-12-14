@@ -1,6 +1,6 @@
 export function interactor<T>(WrappedClass: T) : Interactor & T;
 export function text(selector: string) : any;
-export function clickable(selector: string): () => Promise<Interactor>;
+export function clickable(selector?: string): () => Promise<Interactor>;
 export function findAll(selector: string): HTMLElement[];
 export function isPresent(selector: string): boolean;
 export function selectable(selector: string): (text: string) => Promise<void>;
@@ -17,7 +17,7 @@ export class Interactor {
   isVisible: boolean;
   isPresent: boolean;
   text: string;
-  $$(selector): this;
+  $$(selector): [HTMLElement];
   when<T>(condition: (element?: HTMLElement) => T): this;
   scoped(selector?: string): Interactor;
   do<T>(doFn: (element: Interactor) => void);

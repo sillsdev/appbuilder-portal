@@ -30,17 +30,19 @@ class Row extends React.Component<IProps> {
     this.setState({ visible: !this.state.visible });
   }
 
-  markAsSeen = (e) => {
+  markAsSeen = (e: React.SyntheticEvent) => {
     const { markAsSeen } = this.props;
 
+    e.stopPropagation();
     e.preventDefault();
 
     markAsSeen();
   }
 
-  clear = (e) => {
+  clear = (e: React.SyntheticEvent) => {
     const { clear } = this.props;
 
+    e.stopPropagation();
     e.preventDefault();
 
     clear();
@@ -51,17 +53,14 @@ class Row extends React.Component<IProps> {
     const { notification } = this.props;
 
     const {
-      title,
-      description,
-      time,
-      isViewed
-    } = attributesFor(notification);
+      message,
+      dateCreated,
+      dateRead,
+    } = notification.attributes;
+
+    const isViewed = dateRead !== null;
 
     const viewState = isViewed ? 'seen' : 'not-seen';
-
-    if (!notification.attributes.show) {
-      return null;
-    }
 
     return (
       <div
@@ -77,12 +76,10 @@ class Row extends React.Component<IProps> {
         >
           <CloseIcon />
         </a>
-
-        <h4 className='title'>{title}</h4>
-        <p className={!isViewed ? 'bold' : ''}>{description}</p>
-        <p className='time'>
-          <TimezoneLabel dateTime={time} />
-        </p>
+        <p className={!isViewed ? 'bold' : ''}>{message}</p>
+        <div className='time'>
+          <TimezoneLabel dateTime={dateCreated} />
+        </div>
       </div>
     );
 

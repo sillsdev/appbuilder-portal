@@ -125,6 +125,7 @@ const setup = function(config) {
   this.mockGet(401, '/users/current-user');
 
   this.mockGet(200, '/user-tasks', { "data": [] });
+  this.mockGet(200, ('/notifications'), { "data": []});
 
   this.mockGet(200, '/roles', {
     "data":[{

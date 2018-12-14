@@ -7,22 +7,18 @@ import { TYPE_NAME as NOTIFICATION, NotificationAttributes } from '@data/models/
 import { query, defaultOptions, NOTIFICATIONS_TYPE, withLoader } from '@data';
 import { withCollectionDataActions } from '@data/containers/resources/notification/with-collection-data-actions';
 
+
+const notificationsQuery = (q) => q.findRecords(NOTIFICATION).sort('-dateCreated', '-dateRead');
+
 const mapNetworkToProps = (passedProps) => {
   return {
-    notifications: [
-      q => q
-        .findRecords(NOTIFICATION)
-        .sort('-time', '-isViewed'),
-      { ...defaultOptions(), devOnly: true }
-    ]
+    notifications: [notificationsQuery, {...defaultOptions()}]
   };
 };
 
 const mapRecordsToProps = (passedProps) => {
   return {
-    notifications: q => q
-      .findRecords(NOTIFICATION)
-      .sort('-time', '-isViewed'),
+    notifications: notificationsQuery,
   };
 };
 
@@ -45,14 +41,13 @@ export function withData(WrappedComponent) {
       const { notifications } = this.props;
 
       return notifications &&
-        notifications.reduce((memo, notification) => memo && notification.attributes.isViewed, true);
+        notifications.reduce((memo, notification) => memo && notification.attributes.dateRead !== null, true);
     }
 
     isThereAtLeastOneNotificationToShow = () => {
       const { notifications } = this.props;
 
-      return notifications &&
-        notifications.reduce((memo, notification) => memo || notification.attributes.show, false);
+      return notifications.length > 0;
     }
 
     render() {
@@ -68,7 +63,7 @@ export function withData(WrappedComponent) {
   return compose(
     query(mapNetworkToProps),
     withLoader(({ notifications }) => !notifications),
+    withOrbit(mapRecordsToProps),
     withCollectionDataActions,
-    withOrbit(mapRecordsToProps)
   )(DataWrapper);
 }
