@@ -109,10 +109,4 @@
   <ItemGroup>
     <Content Include="Templates\Notification.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Templates\Notification.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </None>
-  </ItemGroup>
 </Project>
