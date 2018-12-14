@@ -1,9 +1,9 @@
 ﻿{
   "notifications": {
     "body": {
-      "buildengineConnected": "Build Engine for organization {{orgName}} status change: connected",
-      "buildengineDisconnected": "Build Engine for organization {{orgName}} status change: disconnected",
-      "projectFailedBuildEngine": "Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}."
+      "buildengineConnected": "<p>Build Engine for organization {{orgName}} status change: connected</p>",
+      "buildengineDisconnected": "<p>Build Engine for organization {{orgName}} status change: disconnected</p>",
+      "projectFailedBuildEngine": "<p>Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}.</p>"
     },
     "subject": {
       "buildengineConnected": "Scriptoria: {{orgName}} Build Engine Connected",
