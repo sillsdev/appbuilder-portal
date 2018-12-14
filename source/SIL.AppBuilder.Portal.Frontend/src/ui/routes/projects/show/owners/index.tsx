@@ -86,6 +86,7 @@ class Owners extends React.Component<IProps> {
                 selected={ownerId}
                 groupId={groupId}
                 restrictToGroup={true}
+                scopeToOrganization={organization}
                 onChange={this.updateOwner} />
             </div>
           </div>

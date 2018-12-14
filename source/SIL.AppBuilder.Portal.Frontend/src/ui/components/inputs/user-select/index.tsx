@@ -5,7 +5,5 @@ import { withCurrentUser } from '@data/containers/with-current-user';
 import { withData } from './with-data';
 
 export default compose(
-  withCurrentUser(),
   withData
 )(Display);
-

@@ -115,7 +115,7 @@ type RelationshipArgs =
 | [ResourceObject, string, string]
 | [ResourceObject, string];
 
-async function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs) {
+export async function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs) {
   const sourceModel = relationshipArgs[0];
   const relationshipPath = relationshipArgs.slice(1) as [string, string] | [string];
 
