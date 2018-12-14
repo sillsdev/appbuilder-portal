@@ -12,7 +12,6 @@ import {
 
 import Page from './-page';
 import {notifications} from './-factory';
-import { PaginationItem } from 'semantic-ui-react';
 
 describe('Acceptance | Notifications', () => {
   setupApplicationTest();
@@ -99,10 +98,6 @@ describe('Acceptance | Notifications', () => {
         it('indicates no unread messages', () => {
           expect(page.hasUnreadNotificationsIndicator).to.be.false;
         });
-      });
-
-      describe("realtime notification", () => {
-
       });
     });
   });

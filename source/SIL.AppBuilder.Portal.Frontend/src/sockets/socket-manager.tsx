@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { compose } from 'recompose';
-import { HubConnectionFactory, HubConnection } from "@ssv/signalr-client";
+import { HubConnectionFactory } from "@ssv/signalr-client";
 
 import NotificationsClient from './notifications';
 
