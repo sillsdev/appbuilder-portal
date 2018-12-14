@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { defaultOptions, ProjectResource } from '@data';
+import { defaultOptions, ProjectResource, firstError, pushPayload } from '@data';
+import { patch as authenticatedPatch, tryParseJson } from '@lib/fetch';
 
 import { idFromRecordIdentity } from '@data/store-helpers';
-import { defaultHeaders } from '@lib/fetch';
-
-import { api as apiEnv } from '@env';
-
+import { ServerError } from '@data/errors/server-error';
+import { withTranslations, i18nProps } from '@lib/i18n';
 import {
   withMomentTimezone,
   IProvidedProps as TimezoneProps
@@ -20,52 +19,79 @@ export interface IProvidedProps {
 
 type IProps =
   & WithDataProps
+  & i18nProps
   & TimezoneProps;
 
 export function withBulkActions(WrappedComponent) {
 
   class DataWrapper extends React.Component<IProps> {
 
-    bulkArchive = (projects: ProjectResource[]) => {
-      const { dataStore, moment } = this.props;
+    bulkArchive = async (projects: ProjectResource[]) => {
+      const { dataStore, updateStore, moment, t } = this.props;
 
-      // return dataStore.update(q =>
-      //   projects.map(p => {
-      //     debugger;
-      //     const id = idFromRecordIdentity(p);
-      //     return q.replaceAttribute({
-      //       type: 'project',
-      //       id
-      //     }, 'dateArchived', moment().format('YYYY-MM-DD HH:mm:ss'));
-      //   }),
-      //   defaultOptions()
-      // );
-
-      const baseUrl = apiEnv.host ? `http://${apiEnv.host}` : '/';
-
-      //Hardcode test
-      const headers = {
-        ...defaultHeaders()
-      };
       const data = {
-        operations: [{
-          "op": "update",
-          "data": {
-            id: "11",
-            type: "project",
+        operations: projects.map(p => ({
+          op: 'update',
+          data: {
+            id: idFromRecordIdentity(p),
+            type: 'projects',
             attributes: {
               "date-archived": moment().format('YYYY-MM-DD HH:mm:ss')
             }
           }
-        }]
+        }))
+      };
+
+      const response = await authenticatedPatch(
+        '/api/operations',
+        {
+          data,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      // TODO: refactor this into a function
+      const status = response.status;
+      const unauthorized = status === 401;
+
+      if (status === 403 || status === 401) {
+
+        let errorJson = {};
+        try {
+          errorJson = await tryParseJson(response);
+        } catch (e) {
+          // body is not json
+          console.error('response body is not json', e);
+        }
+        const errorTitle = firstError(errorJson).title;
+        const defaultMessage = unauthorized ?
+          t('errors.notAuthorized') :
+          t('errors.userForbidden');
+
+        throw new Error(errorTitle || defaultMessage);
       }
 
-      fetch(`${baseUrl}/JsonApiOperations/PatchAsync`, {
-        method: 'PATCH',
-        headers: headers,
-        body: JSON.stringify(data)
-      });
+      if (status >= 500) {
+        const text = await response.text();
+        throw new ServerError(status, text);
+      }
+
+      const { operations } = await tryParseJson(response);
+
+      console.log(operations);
+
+      const promises = operations &&
+        operations.forEach(({op, data}) => {
+        return pushPayload(updateStore, {data}, 'replaceRecord');
+        });
+
+      await Promise.all(promises);
     }
+
+
 
     bulkReactivate = (projects: ProjectResource[]) => {
       const { dataStore } = this.props;
@@ -90,6 +116,7 @@ export function withBulkActions(WrappedComponent) {
   }
 
   return compose(
+    withTranslations,
     withOrbit({}),
     withMomentTimezone
   )(DataWrapper);

@@ -54,8 +54,13 @@ export default class ReduxProvider extends React.Component<IProps> {
     // persist certain things between reloads
     store.subscribe(() => {
       const currentState = store.getState();
+      const { currentOrganizationId, columnSelections } = currentState.data;
       const toPersist = {
-        data: currentState.data,
+        data: {
+          currentOrganizationId,
+          columnSelections,
+          rowSelections: {}
+        },
         ui: currentState.ui
       };
 

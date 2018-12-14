@@ -71,6 +71,7 @@ export default class Display extends React.Component<IProps> {
       onSearch: this.search,
       projects,
       selectedRows,
+      activeProjectColumns, possibleColumns
     };
 
     return (

@@ -2,7 +2,7 @@ import { schema, keyMap } from './schema';
 import { serializer } from './store';
 import { recordIdentityFrom } from './store-helpers';
 
-export async function pushPayload(updateStore, payload) {
+export async function pushPayload(updateStore, payload, op = 'addRecord') {
   const normalized =  serializer.deserializeDocument(payload);
 
   const datas = buildDatas(normalized);
@@ -13,9 +13,14 @@ export async function pushPayload(updateStore, payload) {
 
   assignIdsToResources(resources);
 
+  console.log(resources);
+
   await updateStore(
-    q => resources.map(
-      resource => q.addRecord(resource)), { skipRemote: true });
+    q => resources.map(resource => {
+      return q[op](resource);
+    }),
+    { skipRemote: true }
+  );
 }
 
 function buildIncluded(normalized) {

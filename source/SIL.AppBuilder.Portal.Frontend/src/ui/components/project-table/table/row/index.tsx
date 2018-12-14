@@ -31,6 +31,7 @@ interface IOwnProps {
   toggleArchiveProject: (project: ProjectResource) => void;
   projectPath?: (id: string) => string;
   showSelection?: boolean;
+  showProjectActions: boolean;
 }
 
 type IProps =
@@ -100,7 +101,7 @@ class Row extends React.Component<IProps> {
   }
 
   render() {
-    const { project, projectPath, showSelection } = this.props;
+    const { project, projectPath, showSelection, showProjectActions } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
@@ -134,7 +135,9 @@ class Row extends React.Component<IProps> {
           ))}
 
           <div className='flex align-items-center p-r-md line-height-0'>
-            <RowActions project={project} />
+            {showProjectActions &&
+              <RowActions project={project} />
+            }
           </div>
         </div>
 

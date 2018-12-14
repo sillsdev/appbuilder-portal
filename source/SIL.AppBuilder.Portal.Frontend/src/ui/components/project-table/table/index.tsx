@@ -18,6 +18,7 @@ interface IOwnProps {
   isLoading?: boolean;
   projectPath?: (id: string) => string;
   showSelection?: boolean;
+  showProjectActions?: boolean;
 }
 
 type IProps =
@@ -29,8 +30,11 @@ type IProps =
 
 class Table extends React.Component<IProps> {
 
-  render() {
+  static defaultProps = {
+    showProjectActions: true
+  };
 
+  render() {
     const {
       projects,
       selectedColumns,
@@ -41,7 +45,8 @@ class Table extends React.Component<IProps> {
       projectPath,
       selectedRows,
       toggleRowSelection,
-      showSelection
+      showSelection,
+      showProjectActions
     } = this.props;
 
     const isProjectListEmpty = isEmpty(projects);
@@ -65,7 +70,8 @@ class Table extends React.Component<IProps> {
                 projectPath,
                 selectedRows,
                 toggleRowSelection,
-                showSelection
+                showSelection,
+                showProjectActions
               };
 
               return <Row key={index} {...rowProps} />;
