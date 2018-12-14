@@ -35,4 +35,5 @@ FROM nginx:1.15.3-alpine AS release
 COPY --from=build /src/_html_tmp /usr/share/nginx/html
 COPY source/run-nginx.sh /usr/local/bin
 COPY source/config/nginx.conf etc/nginx/conf.d/default.conf.template
+COPY source/config/dwkit.conf etc/nginx/conf.d/dwkit.conf.template
 CMD ["/usr/local/bin/run-nginx.sh"]
