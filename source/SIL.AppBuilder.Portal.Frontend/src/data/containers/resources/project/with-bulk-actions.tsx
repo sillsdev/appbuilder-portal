@@ -26,21 +26,8 @@ export function withBulkActions(WrappedComponent) {
 
   class DataWrapper extends React.Component<IProps> {
 
-    bulkArchive = async (projects: ProjectResource[]) => {
-      const { dataStore, updateStore, moment, t } = this.props;
-
-      const data = {
-        operations: projects.map(p => ({
-          op: 'update',
-          data: {
-            id: idFromRecordIdentity(p),
-            type: 'projects',
-            attributes: {
-              "date-archived": moment().format('YYYY-MM-DD HH:mm:ss')
-            }
-          }
-        }))
-      };
+    doOperation = async (data) => {
+      const { updateStore, t } = this.props;
 
       const response = await authenticatedPatch(
         '/api/operations',
@@ -81,30 +68,52 @@ export function withBulkActions(WrappedComponent) {
 
       const { operations } = await tryParseJson(response);
 
-      console.debug(operations);
-
-      const promises = operations.forEach(async ({op, data}) => {
-        await pushPayload(updateStore, {data}, 'replaceRecord');
+      const promises = operations.forEach(async ({ op, data }) => {
+        await pushPayload(updateStore, { data }, 'replaceRecord');
       });
 
       try {
         await Promise.all(promises);
-      } catch(e) {
+      } catch (e) {
         console.log(e);
       }
     }
 
+    bulkArchive = async (projects: ProjectResource[]) => {
 
+      const { moment } = this.props;
+
+      const data = {
+        operations: projects.map(p => ({
+          op: 'update',
+          data: {
+            id: idFromRecordIdentity(p),
+            type: 'projects',
+            attributes: {
+              "date-archived": moment().format('YYYY-MM-DD HH:mm:ss')
+            }
+          }
+        }))
+      };
+
+      this.doOperation(data);
+    }
 
     bulkReactivate = (projects: ProjectResource[]) => {
-      const { dataStore } = this.props;
+      const data = {
+        operations: projects.map(p => ({
+          op: 'update',
+          data: {
+            id: idFromRecordIdentity(p),
+            type: 'projects',
+            attributes: {
+              "date-archived": null
+            }
+          }
+        }))
+      };
 
-      return dataStore.update(q =>
-        projects.map(p =>
-          q.replaceAttribute(p, 'dateArchived', null)
-        ),
-        defaultOptions()
-      );
+      this.doOperation(data);
     }
 
     render() {

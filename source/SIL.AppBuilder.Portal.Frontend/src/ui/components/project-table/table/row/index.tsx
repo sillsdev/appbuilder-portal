@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withRouter } from 'react-router';
+import { withRouter, RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { withData as withOrbit } from 'react-orbitjs';
 import { Checkbox } from 'semantic-ui-react';
@@ -37,7 +37,8 @@ interface IOwnProps {
 type IProps =
   & IOwnProps
   & ITableColumns
-  & ITableRows;
+  & ITableRows
+  & RouteComponentProps;
 
 class Row extends React.Component<IProps> {
 
@@ -87,17 +88,17 @@ class Row extends React.Component<IProps> {
     return p !== undefined;
   }
 
-  get hasArchiveStyle() {
+  get hasDimmStyle() {
     const { project, location } = this.props;
     const { dateArchived } = attributesFor(project);
 
-    if (!dateArchived) {
-      return false;
-    }
+    const isInArchiveLocation = location.pathname.match(/\/projects\/archived/);
 
-    // if we are on the archived projects screen, we _don't_ want
-    // all of the projects to be faded
-    return !location.pathname.match(/\/projects\/archived/);
+    if (!isInArchiveLocation) {
+      return dateArchived !== null;
+    } else {
+      return dateArchived === null;
+    }
   }
 
   render() {
@@ -113,7 +114,7 @@ class Row extends React.Component<IProps> {
       <div
         data-test-project-row
         className='m-b-md with-shadow'
-        style={{ opacity: this.hasArchiveStyle ? 0.5 : 1 }}
+        style={{ opacity: this.hasDimmStyle ? 0.5 : 1 }}
       >
         <div className='flex row-header align-items-center p-t-md p-b-md'>
           <div className='col flex align-items-center flex-grow-xs flex-100 p-l-sm'>

@@ -74,6 +74,7 @@ export function withTableRows(options: IOptions) {
   }
 
   const equalIds = (a, b) => idFromRecordIdentity(a) === idFromRecordIdentity(b);
+  const notEqualIds = (a, b) => idFromRecordIdentity(a) !== idFromRecordIdentity(b);
 
   return InnerComponent => {
 
@@ -92,7 +93,7 @@ export function withTableRows(options: IOptions) {
         const isRowInSelection = selectedRows.find(r => equalIds(r, row));
 
         if (isRowInSelection) {
-          newSelection = selectedRows.filter((r) => equalIds(r,row));
+          newSelection = selectedRows.filter((r) => notEqualIds(r,row));
         } else {
           newSelection = [...selectedRows, row];
         }

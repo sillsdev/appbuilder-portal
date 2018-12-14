@@ -27,6 +27,7 @@
     "general": "General Information",
     "notAvailable": "Not Available",
     "archive": "Archive",
+    "reactivate": "Reactivate",
     "build": "Build / Rebuild"
   },
   "auth": {

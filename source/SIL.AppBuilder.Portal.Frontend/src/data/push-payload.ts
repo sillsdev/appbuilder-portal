@@ -5,17 +5,12 @@ import { recordIdentityFrom } from './store-helpers';
 export async function pushPayload(updateStore, payload, op = 'addRecord') {
   const normalized =  serializer.deserializeDocument(payload);
 
-  console.log(normalized);
-
   const datas = buildDatas(normalized);
   const included = buildIncluded(normalized);
   const resources = datas.concat(included);
 
   fixRelationships(resources);
-
   assignIdsToResources(resources);
-
-  console.debug(resources);
 
   await updateStore(
     q => resources.map(resource => {

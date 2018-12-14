@@ -2,7 +2,8 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import CaretDown from '@material-ui/icons/KeyboardArrowDown';
 import { Dropdown, Popup } from 'semantic-ui-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router';
 
 import * as toast from '@lib/toast';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
@@ -12,6 +13,8 @@ import {
   withBulkActions,
   IProvidedProps as IBulkActions
 } from '@data/containers/resources/project/with-bulk-actions';
+
+import { PROJECT_ROUTES } from './routes';
 
 import './styles.scss';
 
@@ -25,6 +28,7 @@ type IProps =
   & IOwnProps
   & IRowProps
   & IBulkActions
+  & RouteComponentProps
   & i18nProps;
 
 class Header extends React.Component<IProps> {
@@ -40,14 +44,27 @@ class Header extends React.Component<IProps> {
     }
   }
 
+  onBulkReactivate = async () => {
+    const { selectedRows, bulkReactivate } = this.props;
+
+    try {
+      await bulkReactivate(selectedRows);
+      toast.success('Selected projects reactivated');
+    } catch (e) {
+      toast.error(e);
+    }
+  }
+
   onBulkBuild = () => {
-    const { selectedRows } = this.props;
     toast.error("Not implemented yet");
   }
 
   render() {
 
-    const { t, filter, onSearch } = this.props;
+    const { t, filter, onSearch, location } = this.props;
+    const isInOwnProject = location.pathname.endsWith(PROJECT_ROUTES.OWN);
+    const isInOrganizastionProject = location.pathname.endsWith(PROJECT_ROUTES.ORGANIZATION);
+    const isInArchivedProject= location.pathname.endsWith(PROJECT_ROUTES.ARCHIVED);
 
     const dropdownText = {
       'my-projects': t('projects.switcher.dropdown.myProjects'),
@@ -72,19 +89,31 @@ class Header extends React.Component<IProps> {
             inline
           >
             <Dropdown.Menu>
-              <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} as={NavLink} to='/projects/own'/>
-              <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} as={NavLink} to='/projects/organization' />
-              <Dropdown.Item text={t('projects.switcher.dropdown.archived')} as={NavLink} to='/projects/archived' />
+              <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} as={NavLink} to={PROJECT_ROUTES.OWN}/>
+              <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} as={NavLink} to={PROJECT_ROUTES.ORGANIZATION} />
+              <Dropdown.Item text={t('projects.switcher.dropdown.archived')} as={NavLink} to={PROJECT_ROUTES.ARCHIVED} />
             </Dropdown.Menu>
           </Dropdown>
         </div>
         <div className='flex align-items-center'>
-          <button
-            className='ui button basic blue m-r-md'
-            onClick={this.onBulkArchive}
-          >
-            {t('common.archive')}
-          </button>
+          {
+            (isInOwnProject || isInOrganizastionProject) &&
+              <button
+                className='ui button basic blue m-r-md'
+                onClick={this.onBulkArchive}
+              >
+                {t('common.archive')}
+              </button>
+          }
+          {
+            isInArchivedProject &&
+              <button
+                className='ui button basic blue m-r-md'
+                onClick={this.onBulkReactivate}
+              >
+                {t('common.reactivate')}
+              </button>
+          }
           <button
             className='ui button basic blue m-r-md'
             onClick={this.onBulkBuild}
@@ -118,5 +147,6 @@ class Header extends React.Component<IProps> {
 
 export default compose<IOwnProps, IOwnProps>(
   withTranslations,
+  withRouter,
   withBulkActions
 )(Header);
