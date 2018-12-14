@@ -42,6 +42,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         private async Task SyncDatabaseTablesAsync()
         {
             var organizations = await OrganizationRepository.GetListAsync();
+            var defaultOrganization = GetOrganizationDefaultSettings();
+            if (defaultOrganization != null) { organizations.Add(defaultOrganization); }
             var statuses = await SystemStatusRepository.GetListAsync();
             var removeList = statuses.Except(organizations, new BuildEngineReferenceComparer()).ToList();
             var addList = organizations.Except(statuses, new BuildEngineReferenceComparer()).ToList();
@@ -58,6 +60,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 };
                 await SystemStatusRepository.CreateAsync(newEntry);
             }
+        }
+        private Organization GetOrganizationDefaultSettings()
+        {
+            var defaultEndPoint = BuildEngineServiceBase.GetDefaultEndpoint();
+            if (defaultEndPoint.IsValid())
+            {
+                return new Organization
+                {
+                    BuildEngineUrl = defaultEndPoint.Url,
+                    BuildEngineApiAccessToken = defaultEndPoint.ApiAccessToken
+                };
+            }
+            return null;
         }
         private async Task CheckSystemStatusesAsync()
         {
