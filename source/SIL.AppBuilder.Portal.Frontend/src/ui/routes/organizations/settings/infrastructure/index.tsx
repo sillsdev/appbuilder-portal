@@ -24,12 +24,12 @@ class InfrastructureRoute extends React.Component<IProps> {
   update = (attributes) => {
     const { updateOrganization } = this.props;
     const {
-      useSilBuildInfrastructure,
+      useDefaultBuildEngine,
       buildEngineUrl, buildEngineApiAccessToken
     } = attributes;
 
     updateOrganization({
-      useSilBuildInfrastructure,
+      useDefaultBuildEngine,
       buildEngineUrl,
       buildEngineApiAccessToken
     });

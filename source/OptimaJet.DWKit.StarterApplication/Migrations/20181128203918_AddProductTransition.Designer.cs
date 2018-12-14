@@ -143,7 +143,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(true);
 
-                    b.Property<bool?>("UseSilBuildInfrastructure")
+                    b.Property<bool?>("UseDefaultBuildEngine")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(true);
 

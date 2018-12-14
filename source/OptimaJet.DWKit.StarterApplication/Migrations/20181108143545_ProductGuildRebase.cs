@@ -224,7 +224,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     BuildEngineUrl = table.Column<string>(nullable: true),
                     BuildEngineApiAccessToken = table.Column<string>(nullable: true),
                     LogoUrl = table.Column<string>(nullable: true),
-                    UseSilBuildInfrastructure = table.Column<bool>(nullable: true, defaultValue: true),
+                    UseDefaultBuildEngine = table.Column<bool>(nullable: true, defaultValue: true),
                     PublicByDefault = table.Column<bool>(nullable: true, defaultValue: true),
                     OwnerId = table.Column<int>(nullable: false)
                 },

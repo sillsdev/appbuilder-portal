@@ -32,7 +32,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
                         {"website-url", "http://test.org"},
                         {"build-engine-url", "http://buildengine.com"},
                         {"build-engine-api-access-token", "4323864"},
-                        {"use-sil-build-infrastructure", "false"},
+                        {"use-default-build-engine", "false"},
                         {"public-by-default", "false"}
                     }
                 }
@@ -43,7 +43,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
             var org = await Deserialize<Organization>(response);
 
             Assert.Equal(CurrentUser.Id, org.OwnerId);
-            Assert.False(org.UseSilBuildInfrastructure);
+            Assert.False(org.UseDefaultBuildEngine);
             Assert.False(org.PublicByDefault);
         }
         [Fact]
@@ -62,7 +62,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
                         {"website-url", "http://test.org"},
                         {"build-engine-url", "http://buildengine.com"},
                         {"build-engine-api-access-token", "4323864"},
-                        {"use-sil-build-infrastructure", "true"},
+                        {"use-default-build-engine", "true"},
                         {"public-by-default", "true"}
                     }
                 }
@@ -73,7 +73,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
             var org = await Deserialize<Organization>(response);
 
             Assert.Equal(CurrentUser.Id, org.OwnerId);
-            Assert.True(org.UseSilBuildInfrastructure);
+            Assert.True(org.UseDefaultBuildEngine);
             Assert.True(org.PublicByDefault);
         }
 
@@ -102,7 +102,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
             var org = await Deserialize<Organization>(response);
 
             Assert.Equal(CurrentUser.Id, org.OwnerId);
-            Assert.True(org.UseSilBuildInfrastructure);
+            Assert.True(org.UseDefaultBuildEngine);
             Assert.True(org.PublicByDefault);
 
         }
@@ -122,7 +122,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
                         {"website-url", "http://test.org"},
                         {"build-engine-url", "http://buildengine.com"},
                         {"build-engine-api-access-token", "4323864"},
-                        {"use-sil-build-infrastructure", "false"},
+                        {"use-default-build-engine", "false"},
                         {"public-by-default", "false"}
                     },
                     relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
@@ -140,7 +140,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
             var org = await Deserialize<Organization>(response);
 
             Assert.Equal(user2.Id, org.OwnerId);
-            Assert.False(org.UseSilBuildInfrastructure);
+            Assert.False(org.UseDefaultBuildEngine);
             Assert.False(org.PublicByDefault);
             var orgs = ReadTestData<AppDbContext, Organization>();
             Assert.Equal(4, orgs.Count);

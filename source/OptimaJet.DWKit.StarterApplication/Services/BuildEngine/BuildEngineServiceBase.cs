@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using SIL.AppBuilder.BuildEngineApiClient;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -37,13 +39,34 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected bool SetBuildEngineEndpoint(Organization organization)
         {
-            if (organization.BuildEngineUrl is null || organization.BuildEngineApiAccessToken is null)
-            {
-                return false;
-            }
+            var endpoint = GetBuildEngineEndpoint(organization);
+            if (!endpoint.IsValid()) { return  false; }
             BuildEngineApi.SetEndpoint(organization.BuildEngineUrl, organization.BuildEngineApiAccessToken);
             return true;
         }
 
+        public static BuildEngineEndpoint GetDefaultEndpoint()
+        {
+            return new BuildEngineEndpoint
+            {
+                Url = GetVarOrDefault("DEFAULT_BUILDENGINE_URL", null),
+                ApiAccessToken = GetVarOrDefault("DEFAULT_BUILDENGINE_API_ACCESS_TOKEN", null)
+            };
+
+        }
+        public static BuildEngineEndpoint GetBuildEngineEndpoint(Organization organization)
+        {
+            var endpoint = new BuildEngineEndpoint
+            {
+                Url = organization.BuildEngineUrl,
+                ApiAccessToken = organization.BuildEngineApiAccessToken
+            };
+            if (organization.UseDefaultBuildEngine.GetValueOrDefault())
+            {
+                var defaultEndpoint = GetDefaultEndpoint();
+                if (defaultEndpoint.IsValid()) return defaultEndpoint;
+            }
+            return endpoint;
+        }
     }
 }

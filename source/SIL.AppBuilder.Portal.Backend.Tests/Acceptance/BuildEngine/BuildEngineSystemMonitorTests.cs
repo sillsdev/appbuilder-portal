@@ -53,6 +53,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WebsiteUrl = "https://testorg1.org",
                 BuildEngineUrl = "https://buildengine.testorg1",
                 BuildEngineApiAccessToken = "5161678",
+                UseDefaultBuildEngine = false,
                 OwnerId = CurrentUser.Id
 
             });
@@ -62,6 +63,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WebsiteUrl = "https://testorg2.org",
                 BuildEngineUrl = "https://buildengine.testorg3",
                 BuildEngineApiAccessToken = "5161678",
+                UseDefaultBuildEngine = false,
                 OwnerId = CurrentUser.Id
 
             });
@@ -71,6 +73,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WebsiteUrl = "https://testorg3.org",
                 BuildEngineUrl = "https://buildengine.testorg3",
                 BuildEngineApiAccessToken = "5161678",
+                UseDefaultBuildEngine = false,
                 OwnerId = CurrentUser.Id
 
             });
@@ -80,6 +83,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WebsiteUrl = "https://testorg3.org",
                 BuildEngineUrl = "https://buildengine.testorg3",
                 BuildEngineApiAccessToken = "4323864",
+                UseDefaultBuildEngine = false,
                 OwnerId = CurrentUser.Id
 
             });
