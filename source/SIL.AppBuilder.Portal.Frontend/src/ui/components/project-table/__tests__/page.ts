@@ -21,7 +21,7 @@ class ProjectTable {
   emptyText = text('[data-test-project-list-empty]');
 
   rows = collection('[data-test-project-row]', {
-    isRowActionPresent: isPresent('[data-test-row-actions]');
+    isRowActionPresent: isPresent('[data-test-row-actions]'),
   });
 
   isSortingUp = isPresent('[data-test-up-arrow]');

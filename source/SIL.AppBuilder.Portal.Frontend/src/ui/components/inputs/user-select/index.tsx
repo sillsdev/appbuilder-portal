@@ -1,9 +1,9 @@
 import { compose } from 'recompose';
 
 import Display from './display';
-import { withCurrentUser } from '@data/containers/with-current-user';
 import { withData } from './with-data';
+import { IProps, IOwnProps } from './types';
 
-export default compose(
+export default compose<IProps, IOwnProps>(
   withData
 )(Display);

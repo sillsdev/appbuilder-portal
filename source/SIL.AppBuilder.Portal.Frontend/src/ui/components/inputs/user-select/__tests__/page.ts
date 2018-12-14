@@ -31,4 +31,3 @@ import {
   }
 
   export default new UserSelectInteractor('[data-test-user-select]');
-

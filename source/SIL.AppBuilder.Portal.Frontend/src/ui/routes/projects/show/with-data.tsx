@@ -23,7 +23,8 @@ const mapNetworkToProps = (passedProps) => {
         'products.product-builds.product-artifacts',
         'organization.organization-product-definitions.product-definition',
         GROUP,
-        'owner',
+        'owner.group-memberships.group',
+        'owner.organization-memberships.organization',
         REVIEWERS,
         'type'
       ]

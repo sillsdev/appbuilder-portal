@@ -23,6 +23,7 @@ export class ProjectInteractor {
   isPublic = isPresent('[data-test-project-settings-project-visibility].checked');
   isProductModalPresent = isPresent('[data-test-project-product-popup]');
 
+  hasUserSelect = isPresent('[data-test-user-select]');
   groupSelect = groupInteractor;
   userSelect = userInteractor;
   reviewers = reviewerInteractor;

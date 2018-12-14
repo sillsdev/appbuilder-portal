@@ -1,6 +1,7 @@
 
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
+import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 
 import {
@@ -109,6 +110,7 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
 
     beforeEach(async function() {
       await visit('/projects/1');
+      await when(() => page.hasUserSelect);
     });
 
     it('defaults to the project owner', () => {
@@ -125,6 +127,7 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
 
     beforeEach(async function() {
       await visit('/projects/1');
+      await when(() => page.hasUserSelect);
     });
 
     it('defaults to the project owner', () => {
