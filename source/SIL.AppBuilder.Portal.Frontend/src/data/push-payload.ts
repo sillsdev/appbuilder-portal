@@ -5,6 +5,8 @@ import { recordIdentityFrom } from './store-helpers';
 export async function pushPayload(updateStore, payload, op = 'addRecord') {
   const normalized =  serializer.deserializeDocument(payload);
 
+  console.log(normalized);
+
   const datas = buildDatas(normalized);
   const included = buildIncluded(normalized);
   const resources = datas.concat(included);
@@ -13,7 +15,7 @@ export async function pushPayload(updateStore, payload, op = 'addRecord') {
 
   assignIdsToResources(resources);
 
-  console.log(resources);
+  console.debug(resources);
 
   await updateStore(
     q => resources.map(resource => {
@@ -40,14 +42,13 @@ function fixRelationships(resources) {
   resources.forEach(resource => {
     Object.keys(resource.relationships || {}).forEach(relationName => {
       const relation = resource.relationships[relationName] || {};
-      const data = relation.data;
 
-      if (!data) {
-        return;
+      if (!relation.data) {
+        relation.data = [];
       }
 
-      const isHasMany = Array.isArray(data);
-      const datas = isHasMany ? data : [data];
+      const isHasMany = Array.isArray(relation.data);
+      const datas = isHasMany ? relation.data : [relation.data];
 
       datas.forEach((d, index) => {
         const recordIdentity = recordIdentityFrom(d.id, d.type);

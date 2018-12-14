@@ -81,7 +81,7 @@ export function withBulkActions(WrappedComponent) {
 
       const { operations } = await tryParseJson(response);
 
-      console.log(operations);
+      console.debug(operations);
 
       const promises = operations &&
         operations.forEach(({op, data}) => {
