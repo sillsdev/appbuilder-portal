@@ -34,6 +34,7 @@ class Header extends React.Component<IProps> {
 
     try {
       await bulkArchive(selectedRows);
+      toast.success('Selected projects archived');
     }catch(e) {
       toast.error(e);
     }

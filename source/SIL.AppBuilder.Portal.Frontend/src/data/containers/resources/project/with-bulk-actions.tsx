@@ -83,12 +83,15 @@ export function withBulkActions(WrappedComponent) {
 
       console.debug(operations);
 
-      const promises = operations &&
-        operations.forEach(({op, data}) => {
-        return pushPayload(updateStore, {data}, 'replaceRecord');
-        });
+      const promises = operations.forEach(async ({op, data}) => {
+        await pushPayload(updateStore, {data}, 'replaceRecord');
+      });
 
-      await Promise.all(promises);
+      try {
+        await Promise.all(promises);
+      } catch(e) {
+        console.log(e);
+      }
     }
 
 
