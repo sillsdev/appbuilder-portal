@@ -166,7 +166,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     { "token", organization.BuildEngineApiAccessToken }
                 };
                 await SendNotificationService.SendNotificationToOrgAdminsAsync(organization,
-                                                                               systemEntry.SystemAvailable ? "notifications.buildengineConnected" : "notifications.buildengineDisconnected",
+                                                                               systemEntry.SystemAvailable ? "buildengineConnected" : "buildengineDisconnected",
                                                                                messageParms);
             }
         }

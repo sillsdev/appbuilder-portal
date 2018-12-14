@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
-    public partial class ProductGuildRebase : Migration
+    public partial class RebaseAlpha : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -211,6 +211,33 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         principalTable: "StoreTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    MessageId = table.Column<string>(nullable: true),
+                    UserId = table.Column<int>(nullable: false),
+                    DateRead = table.Column<DateTime>(nullable: true),
+                    DateEmailSent = table.Column<DateTime>(nullable: true),
+                    DateCreated = table.Column<DateTime>(nullable: true),
+                    DateUpdated = table.Column<DateTime>(nullable: true),
+                    Message = table.Column<string>(nullable: true),
+                    MessageSubstitutionsJson = table.Column<string>(nullable: true),
+                    SendEmail = table.Column<bool>(nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -491,6 +518,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     WorkflowBuildId = table.Column<int>(nullable: false),
                     DateBuilt = table.Column<DateTime>(nullable: true),
                     WorkflowPublishId = table.Column<int>(nullable: false),
+                    WorkflowComment = table.Column<string>(nullable: true),
                     DatePublished = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
@@ -544,24 +572,47 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductArtifacts",
+                name: "ProductBuilds",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     ProductId = table.Column<Guid>(nullable: false),
-                    ArtifactType = table.Column<string>(nullable: true),
-                    Url = table.Column<string>(nullable: true),
-                    FileSize = table.Column<long>(nullable: true),
-                    ContentType = table.Column<string>(nullable: true),
+                    BuildId = table.Column<int>(nullable: false),
+                    Version = table.Column<string>(nullable: true),
                     DateCreated = table.Column<DateTime>(nullable: true),
                     DateUpdated = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductArtifacts", x => x.Id);
+                    table.PrimaryKey("PK_ProductBuilds", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductArtifacts_Products_ProductId",
+                        name: "FK_ProductBuilds_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductTransitions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    ProductId = table.Column<Guid>(nullable: false),
+                    WorkflowUserId = table.Column<Guid>(nullable: true),
+                    AllowedUserNames = table.Column<string>(nullable: true),
+                    InitialState = table.Column<string>(nullable: true),
+                    DestinationState = table.Column<string>(nullable: true),
+                    Command = table.Column<string>(nullable: true),
+                    DateTransition = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductTransitions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductTransitions_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -578,6 +629,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     ProductId = table.Column<Guid>(nullable: false),
                     ActivityName = table.Column<string>(nullable: true),
                     Status = table.Column<string>(nullable: true),
+                    Comment = table.Column<string>(nullable: true),
                     DateCreated = table.Column<DateTime>(nullable: true),
                     DateUpdated = table.Column<DateTime>(nullable: true)
                 },
@@ -598,6 +650,38 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProductArtifacts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    ProductId = table.Column<Guid>(nullable: false),
+                    ProductBuildId = table.Column<int>(nullable: false),
+                    ArtifactType = table.Column<string>(nullable: true),
+                    Url = table.Column<string>(nullable: true),
+                    FileSize = table.Column<long>(nullable: true),
+                    ContentType = table.Column<string>(nullable: true),
+                    DateCreated = table.Column<DateTime>(nullable: true),
+                    DateUpdated = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductArtifacts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductArtifacts_ProductBuilds_ProductBuildId",
+                        column: x => x.ProductBuildId,
+                        principalTable: "ProductBuilds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductArtifacts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_GroupMemberships_GroupId",
                 table: "GroupMemberships",
@@ -612,6 +696,11 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 name: "IX_Groups_OwnerId",
                 table: "Groups",
                 column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrganizationMemberships_OrganizationId",
@@ -649,8 +738,18 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 column: "StoreId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductArtifacts_ProductBuildId",
+                table: "ProductArtifacts",
+                column: "ProductBuildId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductArtifacts_ProductId",
                 table: "ProductArtifacts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductBuilds_ProductId",
+                table: "ProductBuilds",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -682,6 +781,11 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 name: "IX_Products_StoreLanguageId",
                 table: "Products",
                 column: "StoreLanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductTransitions_ProductId",
+                table: "ProductTransitions",
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_GroupId",
@@ -763,6 +867,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 name: "GroupMemberships");
 
             migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
                 name: "OrganizationInviteRequests");
 
             migrationBuilder.DropTable(
@@ -781,6 +888,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 name: "ProductArtifacts");
 
             migrationBuilder.DropTable(
+                name: "ProductTransitions");
+
+            migrationBuilder.DropTable(
                 name: "Reviewers");
 
             migrationBuilder.DropTable(
@@ -791,6 +901,9 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserTasks");
+
+            migrationBuilder.DropTable(
+                name: "ProductBuilds");
 
             migrationBuilder.DropTable(
                 name: "Roles");

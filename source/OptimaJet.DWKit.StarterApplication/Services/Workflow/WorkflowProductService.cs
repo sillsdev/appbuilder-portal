@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
         public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
+        public SendNotificationService SendNotificationService { get; }
         public WorkflowRuntime Runtime { get; }
 
         public WorkflowProductService(
@@ -35,6 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             IJobRepository<UserTask> taskRepository,
             IJobRepository<User> userRepository,
             IJobRepository<ProductTransition> productTransitionRepository,
+            SendNotificationService sendNotificationService,
             WorkflowRuntime runtime
         )
         {
@@ -42,6 +45,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             TaskRepository = taskRepository;
             UserRepository = userRepository;
             ProductTransitionRepository = productTransitionRepository;
+            SendNotificationService = sendNotificationService;
             Runtime = runtime;
         }
 
@@ -123,7 +127,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             await Runtime.PreExecuteFromCurrentActivityAsync(args.ProcessId);
 
             // Find the Product assoicated with the ProcessId
-            var product = await ProductRepository.Get().Where(p => p.Id == args.ProcessId).FirstOrDefaultAsync();
+            var product = await ProductRepository.Get()
+                 .Where(p => p.Id == args.ProcessId)
+                 .Include(p => p.ProductDefinition)
+                 .Include(p => p.Project)
+                 .ThenInclude(pr => pr.Owner)
+                 .FirstOrDefaultAsync();
             if (product == null)
             {
                 Log.Error($"Could find Product for ProcessId={args.ProcessId}");
@@ -148,7 +157,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 };
                 task = await TaskRepository.CreateAsync(task);
 
-                // TODO: SendNotification to User
+                var messageParms = new Dictionary<string, object>()
+                {
+                    { "activityName", task.ActivityName },
+                    { "project", product.Project.Name },
+                    { "productName", product.ProductDefinition.Name},
+                    { "fromActivity", args.PreviousActivityName ?? "" },
+                    { "status", task.Status },
+                    { "originator", user.Name},
+                    { "to", product.Project.Owner.Name},
+                    { "comment", task.Comment ?? ""}
+                };
+                await SendNotificationService.SendNotificationToUserAsync( product.Project.Owner,
+                                                                           "userTaskAdded",
+                                                                           messageParms);
+
                 Log.Information($"Notification: user={user.Name}, command={args.ExecutingCommand}, fromActivity:{args.PreviousActivityName}, toActivity:{args.CurrentState}, comment:{product.WorkflowComment}");
             }
 

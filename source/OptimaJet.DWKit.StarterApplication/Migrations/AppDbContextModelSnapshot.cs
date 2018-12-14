@@ -111,7 +111,13 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("Message");
 
-                    b.Property<bool>("SendEmail");
+                    b.Property<string>("MessageId");
+
+                    b.Property<string>("MessageSubstitutionsJson");
+
+                    b.Property<bool>("SendEmail")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
 
                     b.Property<int>("UserId");
 
@@ -687,7 +693,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Notification", b =>
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
