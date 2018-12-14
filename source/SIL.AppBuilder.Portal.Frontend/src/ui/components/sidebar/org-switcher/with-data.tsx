@@ -12,7 +12,7 @@ import { debounce } from '@lib/debounce';
 import { IProvidedProps as IReduxProps } from './with-redux';
 import { IGivenProps } from './types';
 import { SearchResults } from 'semantic-ui-react';
-
+import { withRelationships } from '@data/containers/with-relationship';
 
 function mapNetworkToProps(passedProps) {
   const { applyFilter } = passedProps;
@@ -121,14 +121,21 @@ export function withData(WrappedComponent) {
         { attribute: 'scope-to-current-user', value: 'isnull:' }
       ]
     }),
-    withOrbit(() => ({
-      organizations: q => q.findRecords(ORGANIZATION)
-    })),
-    // if something doesn't have attributes, it hasn't been fetched from the remote
-    mapProps((props: IProps) => ({
-      ...props,
-      organizations: props.organizations.filter(o => o.attributes)
-    })),
+    withCurrentUser(),
+    withRelationships((props: ICurrentUserProps) => {
+      const { currentUser } = props;
+      return {
+        organizations: [currentUser, 'organizationMemberships', 'organization'],
+      };
+    }),
+// if something doesn't have attributes, it hasn't been fetched from the remote
+    mapProps((props: IProps) => {
+      const organizations = props.organizations ? props.organizations.filter(o => o.attributes) : [];
+      return {
+        ...props,
+        organizations
+      };
+    }),
     withLoader(({ organizations }) => !organizations),
   )(DataWrapper);
 }
