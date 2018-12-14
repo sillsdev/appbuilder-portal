@@ -124,7 +124,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
             Assert.Single(emails);
             var email = emails[0];
             Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
-            Assert.Equal("{\"Message\":\"Build Engine for organization SIL International status change: connected\"}", email.ContentModelJson);
+            Assert.Equal("{\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\"}", email.ContentModelJson);
         }
         [Fact]
         public async Task Test_Multiple_Substitutions()

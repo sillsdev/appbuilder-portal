@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using I18Next.Net.Plugins;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Utility;
-using OptimaJet.DWKit.StarterApplication.Utility.Extensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
@@ -121,13 +118,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 To = notification.User.Email,
                 Subject = subject,
-                ContentTemplate = "Notification",
+                ContentTemplate = "Notification.txt",
                 ContentModel = new
                 {
-                    Message = notification.Message
+                    Message = body
                 }
             };
-            var result = EmailRepository.CreateAsync(email).Result;
+            var result = await EmailRepository.CreateAsync(email);
         }
     }
 }
