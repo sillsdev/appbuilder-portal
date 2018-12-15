@@ -123,7 +123,7 @@ export function withData(WrappedComponent) {
       return (users && groupMemberships && currentUsersGroupMemberships);
     }
 
-    /**
+    /*
      * Disabled if:
      * - !( the Enabled if list )
      * - User is not in the group that the project is in
@@ -133,7 +133,7 @@ export function withData(WrappedComponent) {
      * - User owns project
      * - User is org admin
      * - User is super admin
-     **/
+     */
     get isDisabled() {
       // roleInOrganization(...)
       const { currentUser } = this.props;

@@ -316,7 +316,7 @@ describe('Acceptance | User groups', () => {
 
       it('renders two organizations groups',() => {
         expect(userTable.groupDropdownText).to.equal('Fake group, Another Fake group, SIL fake group');
-      });
+      }).timeout(2000);
 
     });
   });

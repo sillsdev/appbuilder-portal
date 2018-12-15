@@ -72,7 +72,7 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
         relationships: {
           ['group-memberships']: {
             data: [ { id: 6, type: 'group-membership' } ]
-          }
+          },
         }
       },
       { type: 'users' , id: 4,
@@ -138,11 +138,10 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
       expect(page.userSelect.isDisabled).to.be.false;
     });
 
-    it('shows all the users within the group', () => {
+    it('shows all the users within the group that are in the org', () => {
       const options = page.userSelect.options();
       const optionsText = options.map(o => o.text).join();
 
-      expect(optionsText).to.contain('first3 last3');
       expect(optionsText).to.contain('fake fake');
       expect(optionsText).to.contain('first last');
     });
