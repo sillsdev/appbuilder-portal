@@ -26,13 +26,13 @@ export function withBulkActions(WrappedComponent) {
 
   class DataWrapper extends React.Component<IProps> {
 
-    doOperation = async (data) => {
+    doOperation = async (operationData) => {
       const { updateStore, t } = this.props;
 
       const response = await authenticatedPatch(
         '/api/operations',
         {
-          data,
+          data: operationData,
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

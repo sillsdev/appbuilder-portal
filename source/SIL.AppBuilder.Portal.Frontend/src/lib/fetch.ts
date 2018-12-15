@@ -50,7 +50,7 @@ export function patch(url: string, options: any = {}) {
     method: 'PATCH',
     body: JSON.stringify(data),
     ...restOptions
-  })
+  });
 }
 
 export function destroy(url: string, options: any = {}) {
