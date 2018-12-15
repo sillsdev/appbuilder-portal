@@ -19,19 +19,34 @@ using System.Linq;
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     //this class is used to force a notification... could be removed.
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificationTestController : Controller
     {
         private readonly IHubContext<ScriptoriaHub> _hubContext;
-        public NotificationTestController(IHubContext<ScriptoriaHub> hubContext)
+        private readonly UserService _userService;
+        private readonly IResourceService<Notification> _notificationService;
+        public NotificationTestController(IHubContext<ScriptoriaHub> hubContext,
+            UserService userService,
+            IResourceService<Notification> notificationService)
         {
             _hubContext = hubContext;
+            _userService = userService;
+            _notificationService = notificationService;
         }
 
         [HttpPost]
         [HttpPatch]
         public async Task<IActionResult> Index([FromBody] Dictionary<string, object> data)
         {
-            await _hubContext.Clients.All.SendAsync("Notification", data["id"]);
+            var message = data["message"] as string;
+            var user = _userService.GetCurrentUser().Result;
+            var notification = new Notification()
+            {
+                User = user,
+                Message = message
+            };
+            notification =  await _notificationService.CreateAsync(notification);
+            await _hubContext.Clients.User(user.ExternalId).SendAsync("Notification", notification.Id);
             return NoContent();
         }
     }
