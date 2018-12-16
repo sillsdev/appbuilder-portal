@@ -4,6 +4,7 @@ import Store from '@orbit/store';
 
 import {defaultOptions} from '@data';
 import { buildFindRecord } from '@data/store-helpers';
+import { getToken } from '@lib/auth0';
 const NOTIFICATION_METHOD = "Notification";
 
 interface NotificationHub{
@@ -19,7 +20,13 @@ export default class NotificationsSocketClient implements SocketClient{
   connection: HubConnection<NotificationHub> = null;
   dataStore = null;
   init(hubFactory: HubConnectionFactory, dataStore: Store) {
-    hubFactory.create({ key: 'notifications', endpointUri: '/hubs/notifications' });
+    hubFactory.create({
+      key: 'notifications',
+      endpointUri: '/hubs/notifications',
+      options: {
+        accessTokenFactory:() => `${getToken()}`
+      }
+    });
     this.dataStore = dataStore;
     this.connection = hubFactory.get<NotificationHub>('notifications');
 
