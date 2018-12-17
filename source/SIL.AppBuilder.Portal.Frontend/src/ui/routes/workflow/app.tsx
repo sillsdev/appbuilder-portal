@@ -45,11 +45,11 @@ function resetFormState() {
   // TaskA -> form is shown
   // TaskB -> TaskA's form is shown
   // Refresh -> TaskB's form is shown
-  Store.dispatch(({ type: 'APP/FORM/CLEAR' }));
+  Store.resetForm();
 }
 
 
-export default class App extends React.Component {
+export default class App extends React.Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {
@@ -78,13 +78,6 @@ export default class App extends React.Component {
       eventFunc: this.actionsFetch.bind(this),
       getAdditionalDataForControl: this.additionalFetch.bind(this, undefined)
     };
-
-    const state = Store.getState();
-
-    let user = state.app.user;
-    if (user === undefined) {
-      user = {};
-    }
 
     return (
       <div className="p-lg flex-column flex-grow dwkit-form-container align-items-center" key={this.state.pagekey}>

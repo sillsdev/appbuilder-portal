@@ -25,7 +25,9 @@ export default class NotificationsSocketClient implements SocketClient{
       key: 'notifications',
       endpointUri: '/hubs/notifications',
       options: {
-        accessTokenFactory:() => `${getToken()}`,
+        accessTokenFactory:() => {
+          return `${getToken()}`;
+        },
         logger: LogLevel.Trace,
         // tslint:disable-next-line:no-bitwise
         transport: HttpTransportType.WebSockets | HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling
@@ -40,6 +42,7 @@ export default class NotificationsSocketClient implements SocketClient{
     .subscribe(() => console.log('notifications signalr hub connected'),
       err => console.error('connect subscription has error', err),
       () => console.log('completed'));
+
     this.onNotification$$ = this.connection.on<number>(NOTIFICATION_METHOD).subscribe(this.onNotification.bind(this));
   }
   stop(){
@@ -50,6 +53,7 @@ export default class NotificationsSocketClient implements SocketClient{
 
   onNotification(id: number){
     const idString = id.toString();
+
     this.dataStore.query(q => buildFindRecord(q, 'notification', idString), {...defaultOptions()})
       .catch((err) => {
         console.error(`unable to retrieve notification for id: ${idString}`, err);
