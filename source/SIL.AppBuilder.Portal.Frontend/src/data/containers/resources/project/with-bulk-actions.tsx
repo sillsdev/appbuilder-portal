@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { defaultOptions, ProjectResource, firstError, pushPayload } from '@data';
+import { ProjectResource, firstError, pushPayload, PUSH_PAYLOAD_OPERATION } from '@data';
 import { patch as authenticatedPatch, tryParseJson } from '@lib/fetch';
 
 import { idFromRecordIdentity } from '@data/store-helpers';
@@ -34,8 +34,8 @@ export function withBulkActions(WrappedComponent) {
         {
           data: operationData,
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Accept': 'application/vnd.api+json',
+            'Content-Type': 'application/vnd.api+json'
           }
         }
       );
@@ -69,7 +69,11 @@ export function withBulkActions(WrappedComponent) {
       const { operations } = await tryParseJson(response);
 
       const promises = operations.forEach(async ({ op, data }) => {
-        await pushPayload(updateStore, { data }, 'replaceRecord');
+        await pushPayload(
+          updateStore,
+          { data },
+          PUSH_PAYLOAD_OPERATION.REPLACE_RECORD
+        );
       });
 
       try {

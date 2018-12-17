@@ -1,8 +1,9 @@
 import { schema, keyMap } from './schema';
 import { serializer } from './store';
 import { recordIdentityFrom } from './store-helpers';
+import { PUSH_PAYLOAD_OPERATION } from './push-payload-operations';
 
-export async function pushPayload(updateStore, payload, op = 'addRecord') {
+export async function pushPayload(updateStore, payload, op = PUSH_PAYLOAD_OPERATION.ADD_RECORD) {
   const normalized =  serializer.deserializeDocument(payload);
 
   const datas = buildDatas(normalized);
