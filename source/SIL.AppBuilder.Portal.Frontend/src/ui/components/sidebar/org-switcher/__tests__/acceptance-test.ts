@@ -242,6 +242,10 @@ describe('Acceptance | Organization Switcher', () => {
 
         expect(app.isOrgSwitcherVisible).to.be.false;
       });
+
+      it('visits the tasks page', () => {
+        expect(location()).to.have.property('pathname', '/tasks');
+      });
     });
   });
 

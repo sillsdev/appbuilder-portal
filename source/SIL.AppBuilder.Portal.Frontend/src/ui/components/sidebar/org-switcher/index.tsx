@@ -6,12 +6,12 @@ import { withCurrentOrganization, IProvidedProps as WithCurrentOrgProps } from '
 import { withCurrentUser } from '@data/containers/with-current-user';
 import { withData } from './with-data';
 import { withTranslations } from '@lib/i18n';
-import { withRedux } from './with-redux';
+import { withRouter } from 'react-router-dom';
 
 export default compose<IGivenProps, {}>(
   withCurrentUser(),
+  withRouter,
   withTranslations,
-  withRedux,
   withCurrentOrganization,
   withProps(({ currentOrganizationId }: WithCurrentOrgProps) => ({
     allOrgsSelected: '' === currentOrganizationId

@@ -221,6 +221,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         await switcher.selectAllOrg();
 
         expect(app.selectedOrg).to.equal("All Organizations");
+        await visit('/users');
       });
 
       describe('Renders users page', () => {
@@ -243,6 +244,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
             await switcher.chooseOrganization("SIL International");
 
             expect(app.selectedOrg).to.equal("SIL International");
+            await visit('/users');
           });
 
           it('Only display the users that belong to the selected organization', () => {
