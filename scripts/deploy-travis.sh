@@ -2,6 +2,9 @@
 # $1 - current version (e.g. commit sha)
 # $2 - branch
 
+echo "TRAVIS_COMMIT_RANGE=" $TRAVIS_COMMIT_RANGE
+
+git diff --name-only $TRAVIS_COMMIT_RANGE
 
 REPO_PORTAL_NGINX=appbuilder-portal-nginx
 REPO_PORTAL_API=appbuilder-portal-api
@@ -20,6 +23,9 @@ ECS_CLUSTER=aps-stg
 #  master)  ECS_CLUSTER=aps-prd ;;
 #  *)       ECS_CLUSTER=aps-stg ;;
 #esac 
+
+
+exit 1
 
 
 docker --version # document the version travis is using
