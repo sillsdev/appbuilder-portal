@@ -26,15 +26,12 @@
     font-weight: bold;
   }
 
-  .grid {
-    .action {
-      width: 24px;
-      padding: .92857143em 0 !important;
-      text-align: center;
-
-      i {
-        margin: 0 !important;
-      }
+  .ui.multiple.dropdown {
+    .text {
+      display: none;
+    }
+    i {
+      margin: 0;
     }
   }
 

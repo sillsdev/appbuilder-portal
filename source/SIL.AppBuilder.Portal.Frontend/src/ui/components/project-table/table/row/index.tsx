@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withRouter } from 'react-router';
+import { withRouter, RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { withData as withOrbit } from 'react-orbitjs';
+import { Checkbox } from 'semantic-ui-react';
 
 import {
   attributesFor,
@@ -16,22 +17,31 @@ import {
 
 import RowActions from './row-actions';
 
-import { IProvidedProps } from '../with-table-columns';
+import { IProvidedProps as ITableColumns } from '../with-table-columns';
+import { IProvidedProps as ITableRows } from '../with-table-rows';
 import { COLUMN_KEY } from '../column-data';
 
 import Products from './products';
 
-export interface IProps {
+interface IOwnProps {
   project: ProjectResource;
   organization: OrganizationResource;
   owner: UserResource;
   group: GroupResource;
   toggleArchiveProject: (project: ProjectResource) => void;
   projectPath?: (id: string) => string;
+  showSelection?: boolean;
   showProjectActions: boolean;
 }
 
-class Row extends React.Component<IProps & IProvidedProps> {
+type IProps =
+  & IOwnProps
+  & ITableColumns
+  & ITableRows
+  & RouteComponentProps;
+
+class Row extends React.Component<IProps> {
+
   getActiveProjectColumns = () => {
     const { project, organization, owner, group, activeProjectColumns } = this.props;
 
@@ -64,21 +74,35 @@ class Row extends React.Component<IProps & IProvidedProps> {
     });
   }
 
-  get hasArchiveStyle() {
+  onSelect = row => e => {
+    e.preventDefault();
+    const { toggleRowSelection } = this.props;
+    toggleRowSelection(row);
+  }
+
+  inRowSelection = row => {
+    const { selectedRows } = this.props;
+    const p = selectedRows && selectedRows.find(r =>
+      idFromRecordIdentity(r) === idFromRecordIdentity(row)
+    );
+    return p !== undefined;
+  }
+
+  get hasDimmStyle() {
     const { project, location } = this.props;
     const { dateArchived } = attributesFor(project);
 
-    if (!dateArchived) {
-      return false;
-    }
+    const isInArchiveLocation = location.pathname.match(/\/projects\/archived/);
 
-    // if we are on the archived projects screen, we _don't_ want
-    // all of the projects to be faded
-    return !location.pathname.match(/\/projects\/archived/);
+    if (!isInArchiveLocation) {
+      return dateArchived !== null;
+    } else {
+      return dateArchived === null;
+    }
   }
 
   render() {
-    const { project, projectPath, showProjectActions } = this.props;
+    const { project, projectPath, showSelection, showProjectActions } = this.props;
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
@@ -90,10 +114,18 @@ class Row extends React.Component<IProps & IProvidedProps> {
       <div
         data-test-project-row
         className='m-b-md with-shadow'
-        style={{ opacity: this.hasArchiveStyle ? 0.5 : 1 }}
+        style={{ opacity: this.hasDimmStyle ? 0.5 : 1 }}
       >
-        <div className='flex row-header grid align-items-center p-md'>
-          <div className='col flex-grow-xs flex-100'>
+        <div className='flex row-header align-items-center p-t-md p-b-md'>
+          <div className='col flex align-items-center flex-grow-xs flex-100 p-l-sm'>
+            {
+              showSelection &&
+              <Checkbox
+                className='m-r-sm'
+                onClick={this.onSelect(project)}
+                checked={this.inRowSelection(project)}
+              />
+            }
             <Link to={clickPath}>{projectName}</Link>
           </div>
 
@@ -103,9 +135,11 @@ class Row extends React.Component<IProps & IProvidedProps> {
             </div>
           ))}
 
-          {showProjectActions &&
-            <RowActions project={project} />
-          }
+          <div className='flex align-items-center p-r-md line-height-0'>
+            {showProjectActions &&
+              <RowActions project={project} />
+            }
+          </div>
         </div>
 
         <Products { ...this.props } />

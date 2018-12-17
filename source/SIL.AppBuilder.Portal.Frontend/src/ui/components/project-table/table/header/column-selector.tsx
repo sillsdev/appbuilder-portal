@@ -20,7 +20,6 @@ class ColumnSelector extends React.Component<IColumnProps & i18nProps> {
 
     const { t, selectedColumns } = this.props;
 
-
     return (
       <Dropdown
         data-test-project-table-columns-selector

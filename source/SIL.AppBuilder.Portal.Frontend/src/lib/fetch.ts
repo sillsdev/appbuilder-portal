@@ -43,6 +43,16 @@ export function post(url: string, options: any = {}) {
   });
 }
 
+export function patch(url: string, options: any = {}) {
+  const { data, ...restOptions } = options;
+
+  return authenticatedFetch(url, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    ...restOptions
+  });
+}
+
 export function destroy(url: string, options: any = {}) {
   return authenticatedFetch(url, { method: 'DELETE', ...options });
 }

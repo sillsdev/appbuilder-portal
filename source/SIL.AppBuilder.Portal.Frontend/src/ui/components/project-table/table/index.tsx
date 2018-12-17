@@ -11,16 +11,20 @@ import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import LoadingWrapper from '@ui/components/loading-wrapper';
 
+import { IProvidedProps as ITableRows } from './with-table-rows';
+
 interface IOwnProps {
   projects: ProjectResource[];
   isLoading?: boolean;
   projectPath?: (id: string) => string;
+  showSelection?: boolean;
   showProjectActions?: boolean;
 }
 
 type IProps =
   & IOwnProps
   & ITableColumns
+  & ITableRows
   & ISortProps
   & i18nProps;
 
@@ -39,6 +43,9 @@ class Table extends React.Component<IProps> {
       t,
       isLoading,
       projectPath,
+      selectedRows,
+      toggleRowSelection,
+      showSelection,
       showProjectActions
     } = this.props;
 
@@ -61,6 +68,9 @@ class Table extends React.Component<IProps> {
                 activeProjectColumns,
                 activeProductColumns,
                 projectPath,
+                selectedRows,
+                toggleRowSelection,
+                showSelection,
                 showProjectActions
               };
 

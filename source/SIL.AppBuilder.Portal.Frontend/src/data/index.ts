@@ -31,6 +31,7 @@ export { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/wit
 export { queryApi as query } from './query';
 
 export { pushPayload } from './push-payload';
+export { PUSH_PAYLOAD_OPERATION } from './push-payload-operations';
 
 export { TASKS_TYPE, TaskResource } from './models/task';
 export { ROLE_TYPE, RoleResource } from './models/role';

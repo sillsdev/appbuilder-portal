@@ -81,6 +81,10 @@ Inputs
   background-color: $checkbox-background-color;
 }
 
+/***********************************
+Checkbox
+************************************/
+
 .ui.checkbox:not(.toggle) .box:before,
 .ui.checkbox:not(.toggle) label:before {
   border-radius: 1px;
@@ -103,6 +107,31 @@ Inputs
 
 .ui.checkbox:not(.toggle) input:checked ~ .box:before,
 .ui.checkbox:not(.toggle) input:checked ~ label:before {
+  background: $blue-highlight;
+  border-color: $blue-highlight;
+}
+
+/***********************************
+Checkbox indeterminate
+************************************/
+
+.ui.checkbox input:indeterminate ~ .box:after,
+.ui.checkbox input:indeterminate ~ label:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 3.5px;
+    left: 0.5px;
+    width: 10px;
+    height: 0px;
+    border: solid 2px $white;
+    border-right: none;
+    border-top: none;
+    transform: translate(3px, 4px);
+}
+
+.ui.checkbox:not(.toggle) input:indeterminate ~ .box:before,
+.ui.checkbox:not(.toggle) input:indeterminate ~ label:before {
   background: $blue-highlight;
   border-color: $blue-highlight;
 }

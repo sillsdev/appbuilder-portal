@@ -1,8 +1,9 @@
 import { schema, keyMap } from './schema';
 import { serializer } from './store';
 import { recordIdentityFrom } from './store-helpers';
+import { PUSH_PAYLOAD_OPERATION } from './push-payload-operations';
 
-export async function pushPayload(updateStore, payload) {
+export async function pushPayload(updateStore, payload, op = PUSH_PAYLOAD_OPERATION.ADD_RECORD) {
   const normalized =  serializer.deserializeDocument(payload);
 
   const datas = buildDatas(normalized);
@@ -10,12 +11,14 @@ export async function pushPayload(updateStore, payload) {
   const resources = datas.concat(included);
 
   fixRelationships(resources);
-
   assignIdsToResources(resources);
 
   await updateStore(
-    q => resources.map(
-      resource => q.addRecord(resource)), { skipRemote: true });
+    q => resources.map(resource => {
+      return q[op](resource);
+    }),
+    { skipRemote: true }
+  );
 }
 
 function buildIncluded(normalized) {
@@ -35,14 +38,13 @@ function fixRelationships(resources) {
   resources.forEach(resource => {
     Object.keys(resource.relationships || {}).forEach(relationName => {
       const relation = resource.relationships[relationName] || {};
-      const data = relation.data;
 
-      if (!data) {
-        return;
+      if (!relation.data) {
+        relation.data = [];
       }
 
-      const isHasMany = Array.isArray(data);
-      const datas = isHasMany ? data : [data];
+      const isHasMany = Array.isArray(relation.data);
+      const datas = isHasMany ? relation.data : [relation.data];
 
       datas.forEach((d, index) => {
         const recordIdentity = recordIdentityFrom(d.id, d.type);
