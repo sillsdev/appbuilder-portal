@@ -1,5 +1,9 @@
 import * as React from 'react';
+import { compose } from 'recompose';
 import { withRouter } from 'react-router';
+
+import { requireAuth } from '@lib/auth';
+import { withLayout } from '@ui/components/layout';
 
 import { PageLoader as Loader } from '@ui/components/loaders';
 import { ErrorBoundary } from '@ui/components/errors';
@@ -24,7 +28,11 @@ class Deps extends React.Component {
   }
 }
 
-export default withRouter(props => {
+export default compose(
+  requireAuth,
+  withLayout,
+  withRouter
+)((props) => {
   const { location: { pathname } } = props;
   const dwKitPaths = ['/form', '/flow'];
   const isMatch = dwKitPaths
