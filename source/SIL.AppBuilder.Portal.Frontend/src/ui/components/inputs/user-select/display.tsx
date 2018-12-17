@@ -4,25 +4,15 @@ import { Dropdown } from 'semantic-ui-react';
 import { attributesFor } from '@data';
 import { name } from '@data/models/user';
 
-import { IProvidedProps as IDataProps } from './with-data';
-
-interface IOwnProps {
-  selected: Id;
-  onChange: (userId: Id) => void;
-  disableSelection?: boolean;
-  groupId: Id;
-  restrictToGroup: boolean;
-}
-
-type IProps =
-& IOwnProps
-& IDataProps;
+import { IProps } from './types';
 
 export default class UserSelectDisplay extends React.Component<IProps> {
   onSelect = (e, { value }) => {
     e.preventDefault();
 
-    const { onChange } = this.props;
+    const { onChange, selected } = this.props;
+
+    if (value === selected) { return; }
 
     onChange(value);
   }
@@ -41,15 +31,12 @@ export default class UserSelectDisplay extends React.Component<IProps> {
         };
       });
 
-    const selectedUser = users.find(user => user.id === selected);
-    const selectedText = name(attributesFor(selectedUser));
-
     return (
       <Dropdown
         data-test-user-select
         disabled={disableSelection || false}
         options={userOptions}
-        text={selectedText}
+        value={selected}
         onChange={this.onSelect}
       />
     );

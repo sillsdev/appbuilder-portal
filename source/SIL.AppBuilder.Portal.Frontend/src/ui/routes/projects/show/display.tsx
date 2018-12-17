@@ -35,52 +35,6 @@ type IProps =
   & i18nProps;
 
 class Display extends React.Component<IProps> {
-
-  renderTabPanes = () => {
-    const { t, project } = this.props;
-
-    const tabPanes = [{
-      menuItem: (
-        <Menu.Item
-          key={1}
-          className='bold p-b-sm p-l-md p-r-md uppercase'
-          data-test-project-files-tab
-          name={t('project.overview')}
-        />
-      ),
-      render: () =>
-        <Tab.Pane attached={false}>
-          <div className='flex-lg p-b-xxl-lg'>
-            <div className='flex-grow p-r-lg-lg'>
-              <Details project={project} />
-              <Products project={project} />
-              <Settings project={project} />
-            </div>
-            <div className='thin-border w-50-lg m-t-lg-xs-only m-t-lg-sm-only'>
-              <Owners project={project} />
-              <Reviewers project={project} />
-            </div>
-          </div>
-        </Tab.Pane>
-
-    }, {
-      menuItem: (
-        <Menu.Item
-          key={2}
-          className='bold p-d-sm  p-l-md p-r-md uppercase'
-          data-test-project-files-tab
-          name={t('project.productFiles')}
-        />
-      ),
-      render: () =>
-        <Tab.Pane attached={false}>
-          <Files project={project} />
-        </Tab.Pane>
-    }];
-
-    return tabPanes;
-  }
-
   toggleArchivedProject = (e) => {
     e.preventDefault();
 
@@ -142,7 +96,48 @@ class Display extends React.Component<IProps> {
           </div>
         </div>
 
-        <Tab menu={{ text: true }} panes={this.renderTabPanes()} className='tabs' />
+        <Tab
+          menu={{ text: true }}
+          className='tabs'
+          panes={[{
+            menuItem: (
+              <Menu.Item
+                key={1}
+                className='bold p-b-sm p-l-md p-r-md uppercase'
+                data-test-project-files-tab
+                name={t('project.overview')}
+              />
+            ),
+            render: () =>
+              <Tab.Pane attached={false}>
+                <div className='flex-lg p-b-xxl-lg'>
+                  <div className='flex-grow p-r-lg-lg'>
+                    <Details project={project} />
+                    <Products project={project} />
+                    <Settings project={project} />
+                  </div>
+                  <div className='thin-border w-50-lg m-t-lg-xs-only m-t-lg-sm-only'>
+                    <Owners project={project} />
+                    <Reviewers project={project} />
+                  </div>
+                </div>
+              </Tab.Pane>
+
+          }, {
+            menuItem: (
+              <Menu.Item
+                key={2}
+                className='bold p-d-sm  p-l-md p-r-md uppercase'
+                data-test-project-files-tab
+                name={t('project.productFiles')}
+              />
+            ),
+            render: () =>
+              <Tab.Pane attached={false}>
+                <Files project={project} />
+              </Tab.Pane>
+          }]}
+        />
       </div>
     );
   }

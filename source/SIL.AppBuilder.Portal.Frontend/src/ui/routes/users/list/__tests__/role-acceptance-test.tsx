@@ -100,7 +100,7 @@ describe('Acceptance | User List | Role Management', () => {
         const expected = i18n.t('users.noRoles');
 
         expect(actual).to.equal(expected);
-      });
+      }).timeout(2000);
 
       describe('add one role back', () => {
         beforeEach(function() {

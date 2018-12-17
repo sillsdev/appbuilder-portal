@@ -23,7 +23,7 @@ export interface UserAttributes extends AttributesObject {
 
 
 export function name(attrs: UserAttributes) {
-  return `${attrs.givenName} ${attrs.familyName}`;
+  return attrs.name || `${attrs.givenName} ${attrs.familyName}`;
 }
 
 export type UserResource = ResourceObject<USERS_TYPE, UserAttributes>;
