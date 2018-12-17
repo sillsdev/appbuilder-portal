@@ -21,11 +21,13 @@ export const setRowSelection = (tableName: string, rows: any[]): SetRowSelection
 export const reducer = (state: State, action: SetRowSelectionAction) => {
   const { tableName, rows } = action.payload;
 
+  const nextSelection = (state.rowSelections || {})[tableName] || {};
+
   return {
     ...state,
     rowSelections: {
       [tableName]: {
-        ...state.rowSelections[tableName],
+        ...nextSelection,
         rows
       }
     }
