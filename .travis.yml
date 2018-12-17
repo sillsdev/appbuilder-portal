@@ -96,4 +96,4 @@ jobs:
         - sudo apt-get -qqy update
         - sudo apt-get install -y python2.7
         - time ( sudo ./run clean:api )
-        - time ./scripts/deploy-travis.sh $TRAVIS_COMMIT $TRAVIS_BRANCH
+        - time ./scripts/deploy-travis.sh $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_RANGE

@@ -1,10 +1,11 @@
 #!/bin/bash
 # $1 - current version (e.g. commit sha)
 # $2 - branch
+# $3 - commit range
 
-echo "TRAVIS_COMMIT_RANGE=" $TRAVIS_COMMIT_RANGE
+echo "TRAVIS_COMMIT_RANGE=" $3
 
-git diff --name-only $TRAVIS_COMMIT_RANGE
+git diff --name-only $3
 
 REPO_PORTAL_NGINX=appbuilder-portal-nginx
 REPO_PORTAL_API=appbuilder-portal-api

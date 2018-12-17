@@ -10,6 +10,8 @@ export interface ProductBuildAttributes extends AttributesObject {
   contentType: string;
   dateCreated: string;
   dateUpdated: string;
+
+
 }
 
 export type ProductBuildResource = ResourceObject<PRODUCT_BUILD_TYPE, ProductBuildAttributes>;
