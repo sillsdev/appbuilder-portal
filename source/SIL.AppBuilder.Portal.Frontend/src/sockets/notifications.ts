@@ -1,5 +1,6 @@
 import SocketClient from './socket-client';
 import {HubConnectionFactory, HubConnection} from '@ssv/signalr-client';
+import { LogLevel, HttpTransportType } from '@aspnet/signalr';
 import Store from '@orbit/store';
 
 import {defaultOptions} from '@data';
@@ -24,12 +25,13 @@ export default class NotificationsSocketClient implements SocketClient{
       key: 'notifications',
       endpointUri: '/hubs/notifications',
       options: {
-        accessTokenFactory:() => `${getToken()}`
+        accessTokenFactory:() => `${getToken()}`,
+        logger: LogLevel.Trace,
+        transport: HttpTransportType.None
       }
     });
     this.dataStore = dataStore;
     this.connection = hubFactory.get<NotificationHub>('notifications');
-
   }
 
   start(){
