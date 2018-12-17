@@ -49,10 +49,15 @@ export class App extends React.Component {
     };
 
     const me = this;
+    Store.dispatch(Thunks.userinfo.fetch(function (){
+      me.forceUpdate();
+    }));
 
     window.DWKitApp = this;
     window.DWKitApp.API = API;
     this.onFetchStarted();
+    SignalRConnector.Connect(Store);
+
   }
 
   render() {
@@ -124,6 +129,10 @@ export class App extends React.Component {
   onRefresh = () => {
     this.onFetchStarted();
     Store.resetForm();
+    this.setState({
+      pagekey: this.state.pagekey + 1
+    });
+    SignalRConnector.Connect(Store);
   }
 
   actionsFetch = (args) => {
@@ -143,4 +152,3 @@ export default compose(
   requireAuth,
   withLayout,
 )(App);
-
