@@ -7,7 +7,7 @@ import { withData as withOrbit } from 'react-orbitjs';
 import {
   withDataActions,
   IProvidedProps as IProductDefinitionProps
-} from '@data/containers/resources/organization/with-data-actions';
+} from '@data/containers/resources/product-definition/with-data-actions';
 
 import ProductDefinitionForm from '../common/form';
 

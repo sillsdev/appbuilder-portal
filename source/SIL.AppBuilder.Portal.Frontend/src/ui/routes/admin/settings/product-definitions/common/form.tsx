@@ -71,16 +71,17 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
     const { name, type, workflow } = this.state;
     const { t } = this.props;
 
-    const nameError = isEmpty(name) ? t('admin.settings.productDefinition.emptyName'): '';
-    const typeError = isEmpty(type) ? t('admin.settings.productDefinition.emptyType') : '';
-    const workflowError = isEmpty(workflow) ? t('admin.settings.productDefinition.emptyWorkflow') : '';
+    const nameError = isEmpty(name) ? t('admin.settings.productDefinitions.emptyName'): '';
+    const typeError = isEmpty(type) ? t('admin.settings.productDefinitions.emptyType') : '';
+    const workflowError = isEmpty(workflow) ? t('admin.settings.productDefinitions.emptyWorkflow') : '';
+
     this.setState({
       nameError,
       typeError,
       workflowError
     });
 
-    return !isEmpty(type) && !isEmpty(workflow) && !isEmpty(nameError);
+    return !isEmpty(type) && !isEmpty(workflow) && !isEmpty(name);
   }
 
   submit = async (e) => {
@@ -195,7 +196,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                     {
                       workflows.map((w, i) => {
                         const { name: fullName } = attributesFor(w);
-                        return <Dropdown.Item key={i} text={fullName} onClick={this.typeSelection(w)} />;
+                        return <Dropdown.Item key={i} text={fullName} onClick={this.workflowSelection(w)} />;
                       })
                     }
                   </Dropdown.Menu>

@@ -380,7 +380,12 @@
         "edit": "Edit Product Definition",
         "description": "Description",
         "type": "Application Type",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "addSuccess": "Product Definition added",
+        "editSuccess": "Product Definition updated",
+        "emptyName": "Name cannot be empty",
+        "emptyType": "Need to select an Application Type",
+        "emptyWorkflow": "Nedd to select a Workflow definition"
       }
     }
   }

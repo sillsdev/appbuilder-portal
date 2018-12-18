@@ -827,3 +827,18 @@ VALUES
   ( 'acaPNT Achagua', 1, 'scriptureappbuilder-AMA-aca-acaPNT-Achagua', 8, 5, 1, 'aca', now(), now(), null, true, true),
   ( 'Kalaam Media 1', 1, 'The Sogdian Bible was translated by Mike Davis and his team that has been working in Central Asia since 1986.', 2, 2 , 3, 'English', now(), now(), null, true, true);
 
+/* Fix sequences ids */
+SELECT SETVAL('"ApplicationTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "ApplicationTypes";
+SELECT SETVAL('"Roles_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "Roles";
+SELECT SETVAL('"StoreTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "StoreTypes";
+SELECT SETVAL('"Stores_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "Stores";
+SELECT SETVAL('"StoreLanguages_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "StoreLanguages";
+SELECT SETVAL('"ProductDefinitions_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "ProductDefinitions";
+SELECT SETVAL('"WorkflowDefinitions_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "WorkflowDefinitions";
