@@ -63,8 +63,6 @@ export default compose(
         <ErrorBoundary>
           <>
             <Deps />
-            <script type='text/javascript' src='/ui/form/businessobjects.js' />
-            <script type='text/javascript' src='/js/GlobalUserActions.js' />
             <LazyWorkflowApp />
           </>
         </ErrorBoundary>

@@ -3,8 +3,6 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { compose } from 'recompose';
 import { HubConnectionFactory } from "@ssv/signalr-client";
 
-import { withCurrentUser } from '@data/containers/with-current-user';
-
 import NotificationsClient from './notifications';
 
 interface IOwnProps {
@@ -35,10 +33,5 @@ class SocketManager extends React.Component<IProps>{
 }
 
 export default compose(
-  // currentUser is not used, but we need
-  // the tree to re-render upon validation of the
-  // authentication token
-  // TODO: consume the current user context when that PR is merged.
-  // withCurrentUserContext(),
   withOrbit({})
 )(SocketManager);
