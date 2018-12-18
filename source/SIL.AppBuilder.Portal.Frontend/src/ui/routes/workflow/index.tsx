@@ -10,6 +10,19 @@ import { ErrorBoundary } from '@ui/components/errors';
 
 export const pathName = '/workflow';
 
+async function appendScriptToHead(path: string) {
+  const response = await fetch(path);
+  const text = await response.text();
+
+  const head = document.querySelector('head');
+  const script = document.createElement('script') ;
+
+  script.setAttribute('type', 'text/javascript');
+  script.innerHTML = text;
+
+  head.appendChild(script);
+}
+
 class Deps extends React.Component {
   async componentDidMount() {
     const $ = await import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.js');
@@ -21,6 +34,9 @@ class Deps extends React.Component {
     import(/* webpackChunkName: "workflow/Chart" */ '@assets/vendor/dwkit/Chart.min.js');
     import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.auto-complete.min.js');
     import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.loadingModal.min.js');
+
+    // runtime dependencies...
+    await appendScriptToHead('/ui/form/businessobjects.js');
   }
 
   render() {
@@ -47,6 +63,8 @@ export default compose(
         <ErrorBoundary>
           <>
             <Deps />
+            <script type='text/javascript' src='/ui/form/businessobjects.js' />
+            <script type='text/javascript' src='/js/GlobalUserActions.js' />
             <LazyWorkflowApp />
           </>
         </ErrorBoundary>
