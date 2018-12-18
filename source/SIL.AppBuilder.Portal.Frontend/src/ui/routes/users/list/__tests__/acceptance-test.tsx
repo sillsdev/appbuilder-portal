@@ -71,7 +71,7 @@ describe('Acceptance | Disable User', () => {
 
           it("user locked", () => {
             expect(userTable.isUserActive).to.equal(false);
-          });
+          }).timeout(2000);
         });
       });
     });
