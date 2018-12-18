@@ -122,7 +122,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
   workflowSelection = workflow => e => {
     this.setState({
       workflow
-    })
+    });
   }
 
   render() {
@@ -173,9 +173,9 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                 >
                   <Dropdown.Menu>
                     {
-                      types.map((t, i) => {
-                        const { name: fullName } = attributesFor(t);
-                        return <Dropdown.Item key={i} text={fullName} onClick={this.typeSelection(t)} />;
+                      types.map((tp, i) => {
+                        const { name: fullName } = attributesFor(tp);
+                        return <Dropdown.Item key={i} text={fullName} onClick={this.typeSelection(tp)} />;
                       })
                     }
                   </Dropdown.Menu>
