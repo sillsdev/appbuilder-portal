@@ -27,7 +27,7 @@ export default class NotificationsSocketClient implements SocketClient{
       options: {
         accessTokenFactory:() => `${getToken()}`,
         logger: LogLevel.Trace,
-        transport: HttpTransportType.None
+        transport: HttpTransportType.WebSockets | HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling
       }
     });
     this.dataStore = dataStore;
