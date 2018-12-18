@@ -11,8 +11,8 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20181214152749_RebaseAlpha")]
-    partial class RebaseAlpha
+    [Migration("20181218181213_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
