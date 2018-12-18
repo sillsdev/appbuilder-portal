@@ -27,6 +27,7 @@ export default class NotificationsSocketClient implements SocketClient{
       options: {
         accessTokenFactory:() => `${getToken()}`,
         logger: LogLevel.Trace,
+        // tslint:disable-next-line:no-bitwise
         transport: HttpTransportType.WebSockets | HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling
       }
     });
