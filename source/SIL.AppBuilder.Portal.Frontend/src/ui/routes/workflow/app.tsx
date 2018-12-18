@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { Route } from 'react-router-dom';
+import { Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import { DWKitForm } from "@assets/vendor/dwkit/optimajet-form.js";
 import {
   ApplicationRouter, NotificationComponent, FormContent,
@@ -39,36 +39,45 @@ window.Pace = {
   stop() { },
 };
 
+function resetFormState() {
+  // Without this, the form state becomes stale between
+  // viewings of different tasks' forms.
+  // TaskA -> form is shown
+  // TaskB -> TaskA's form is shown
+  // Refresh -> TaskB's form is shown
+  Store.resetForm();
+}
 
 
-export class App extends React.Component {
+export default class App extends React.Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {
       pagekey: 0
     };
 
+    resetFormState();
+
     const me = this;
+    Store.dispatch(Thunks.userinfo.fetch(function (){
+      me.forceUpdate();
+    }));
 
     window.DWKitApp = this;
     window.DWKitApp.API = API;
     this.onFetchStarted();
+    SignalRConnector.Connect(Store);
+  }
+
+  componentWillUnmount() {
+    resetFormState();
   }
 
   render() {
-    const { currentUser } = this.props;
-
     const sectorprops = {
       eventFunc: this.actionsFetch.bind(this),
       getAdditionalDataForControl: this.additionalFetch.bind(this, undefined)
     };
-
-    const state = Store.getState();
-
-    let user = state.app.user;
-    if (user === undefined) {
-      user = {};
-    }
 
     return (
       <div className="p-lg flex-column flex-grow dwkit-form-container align-items-center" key={this.state.pagekey}>
@@ -80,29 +89,48 @@ export class App extends React.Component {
               onFetchStarted={this.onFetchStarted}
               onFetchFinished={this.onFetchFinished} />
 
-            <Route path='/form' render={(props) => {
-              return (
-                <div className='flex-row flex-grow form-layout-wrapper'>
-                  <FormContent className='flex-grow' { ...props } />
-                </div>
-              );
-            }} />
+            <Switch>
+              <Route path='/form' render={(props) => {
+                return (
+                  <div className='flex-row flex-grow form-layout-wrapper'>
+                    <FormContent className='flex-grow' { ...props } />
+                  </div>
+                );
+              }} />
 
-            <Route path='/form-dashboard' render={(props) => {
-              return (
-                <div className='flex-row flex-grow form-layout-wrapper'>
-                  <FormContent className='flex-grow' { ...props } formName='dashboard' />
-                </div>
-              );
-            }} />
+              <Route path='/form-dashboard' render={(props) => {
+                return (
+                  <div className='flex-row flex-grow form-layout-wrapper'>
+                    <FormContent className='flex-grow' { ...props } formName='dashboard' />
+                  </div>
+                );
+              }} />
 
-            <Route path='/flow' render={(props) => {
-              return (
-                <div className='flex-row flex-grow form-layout-wrapper'>
-                  <FlowContent className='flex-grow' { ...props } />
-                </div>
-              );
-            }} />
+              <Route path='/flow' render={(props) => {
+                return (
+                  <div className='flex-row flex-grow form-layout-wrapper'>
+                    <FlowContent className='flex-grow' { ...props } />
+                  </div>
+                );
+              }} />
+
+              <Route exact path='/' render={() => {
+                return <Redirect to='/tasks' />;
+              }} />
+
+              <Route nomatch render={(props) => {
+                if (props.match.path === '/' || props.match.path === '/tasks') {
+                  // the parent route will handle this scenario
+                  return null;
+                }
+
+                // Hack for back button (from DWKit's original code)
+                const url = window.location.href;
+                history.back();
+                window.location.href = url;
+                return null;
+              }}/>
+            </Switch>
           </>
         </Provider>
       </div>
@@ -124,6 +152,10 @@ export class App extends React.Component {
   onRefresh = () => {
     this.onFetchStarted();
     Store.resetForm();
+    this.setState({
+      pagekey: this.state.pagekey + 1
+    });
+    SignalRConnector.Connect(Store);
   }
 
   actionsFetch = (args) => {
@@ -138,9 +170,3 @@ export class App extends React.Component {
     ));
   }
 }
-
-export default compose(
-  requireAuth,
-  withLayout,
-)(App);
-
