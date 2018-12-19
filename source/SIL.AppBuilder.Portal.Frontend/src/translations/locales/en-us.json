@@ -340,7 +340,8 @@
       "navigation": {
         "organizations": "Organizations",
         "workflowdefinitions": "Workflow Definitions",
-        "productDefinitions": "Product Definitions"
+        "productDefinitions": "Product Definitions",
+        "storeTypes": "Store Types"
       },
       "organizations": {
         "title": "Organizations",
@@ -383,6 +384,20 @@
         "workflow": "Workflow",
         "addSuccess": "Product Definition added",
         "editSuccess": "Product Definition updated",
+        "emptyName": "Name cannot be empty",
+        "emptyType": "Need to select an Application Type",
+        "emptyWorkflow": "Nedd to select a Workflow definition"
+      },
+      "storeTypes": {
+        "title": "Store Types",
+        "name": "Product definition Name",
+        "add": "Add Store Type",
+        "edit": "Edit Store Type",
+        "description": "Description",
+        "type": "Application Type",
+        "workflow": "Workflow",
+        "addSuccess": "Store Type added",
+        "editSuccess": "Store Type updated",
         "emptyName": "Name cannot be empty",
         "emptyType": "Need to select an Application Type",
         "emptyWorkflow": "Nedd to select a Workflow definition"
