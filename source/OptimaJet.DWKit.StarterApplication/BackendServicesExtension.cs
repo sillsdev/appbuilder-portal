@@ -198,8 +198,6 @@ namespace OptimaJet.DWKit.StarterApplication
 
                 options.AddPolicy("Authenticated", defaultAuthorizationPolicyBuilder.Build());
 
-
-                options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
             });
 
             return services;
