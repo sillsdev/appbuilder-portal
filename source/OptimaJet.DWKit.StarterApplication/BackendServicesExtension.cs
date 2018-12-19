@@ -23,6 +23,7 @@ using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using OptimaJet.Workflow.Core.Runtime;
+using Serilog;
 using SparkPostDotNet;
 using SparkPostDotNet.Core;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
@@ -165,11 +166,13 @@ namespace OptimaJet.DWKit.StarterApplication
                     {
                         // Add the access_token as a claim, as we may actually need it
                         var accessToken = context.SecurityToken as JwtSecurityToken;
-
+                        ClaimsIdentity identity = context.Principal.Identity as ClaimsIdentity;
+                        if (!identity.HasClaim("email_verified", "true"))
+                        {
+                            context.Fail("Email address is not validated");
+                        }
                         if (accessToken != null)
                         {
-                            ClaimsIdentity identity = context.Principal.Identity as ClaimsIdentity;
-
                             if (identity != null)
                             {
                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));

@@ -11,7 +11,8 @@ INSERT INTO "Users" (
 (	'Loren Hawthorne',        'loren_hawthrone@sil.org',	 'google-oauth2|116603781884964961816', 'Loren',	      'Hawthorne', '0',	NULL, NULL, NULL),
 (	'liztabor19@gmail.com',   'liztabor19@gmail.com',	     'google-oauth2|104286798726238637666', 'Liz',	        'Tabor',	   '0',	NULL, NULL, NULL),
 (	'other@sil.org',          'other@sil.org',	           'auth0|5c07e78511bf6d2f2ce0fcff',      'Other'	,       'SIL',       '0',	NULL, NULL, NULL),
-(	'Nate Canada',            'ncanada@developertown.com', 'google-oauth2|107093754016949028816', 'Nate', 	      'Canada',	   '0',	NULL, NULL, NULL);
+(	'Nate Canada',            'ncanada@developertown.com', 'google-oauth2|107093754016949028816', 'Nate', 	      'Canada',	   '0',	NULL, NULL, NULL),
+(   'Jon Nolen',              'jnolen@developertown.com',  'google-oauth2|113544451794352875093', 'Jon',  	      'Nolen', 	   '0', NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId", "UseDefaultBuildEngine") VALUES
 (	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false),
@@ -100,7 +101,8 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	10,  1), -- liztabor19+1@gmail.com - SIL
 (	10,  2), -- liztabor19+1@gmail.com - DT
 (	11,  1), -- other@sil.org - SIL
-(	12,	2); -- ncanada@developertown.com - DT
+(	12,	2), -- ncanada@developertown.com - DT
+( 13, 2); -- jnolen@developertown.com - DT
 
 
 
@@ -137,7 +139,8 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	10,	3,	2), -- liztabor19+1@gmail.com - AppBuilder - DT
 (	11,	3,	1), -- other@sil.org - AppBuilder - SIL
 (	12,	1,	2), -- ncanada@developertown.com - SuperAdmin - DT
-(	12,	2,	2); -- ncanada@developertown.com - OrgAdmin - DT
+(	12,	2,	2), -- ncanada@developertown.com - OrgAdmin - DT
+(	13,	2,	2); -- jnolen@developertown.com - OrgAdmin - DT
 
 
 INSERT INTO "Projects"

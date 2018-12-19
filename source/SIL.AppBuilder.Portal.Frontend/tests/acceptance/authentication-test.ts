@@ -14,6 +14,16 @@ describe('Acceptance | Authentication', () => {
   setupApplicationTest();
   setupRequestInterceptor();
 
+  describe('authenticated with user that does not have a verified email', () => {
+    beforeEach(async () => {
+      setToken(fakeAuth0JWT({email_verified: false}));
+      await visit('/tasks');
+    });
+    it('redirects to verify email', () => {
+      expect(location().pathname).to.equal('/verify-email');
+    });
+  });
+
   describe('is authenticated', () => {
     beforeEach(function() {
       const { server } = this.polly;
