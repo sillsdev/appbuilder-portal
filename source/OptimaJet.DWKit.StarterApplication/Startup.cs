@@ -22,7 +22,6 @@ using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using React.AspNet;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
-using Microsoft.AspNetCore.SignalR;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using Microsoft.AspNetCore.Http;
 using Serilog;

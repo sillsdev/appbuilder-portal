@@ -3,7 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 
 import NotFoundRoute, { pathName as notFoundPath } from './not-found';
 import OrgMembershipRequired, { pathName as orgRequiredPath } from './org-membership-required';
-
+import VerifyEmail, { pathName as verifyEmailPath} from './verify-email';
 export const NotFound = NotFoundRoute;
 
 export default class ErrorsRootRoute extends React.Component {
@@ -12,7 +12,7 @@ export default class ErrorsRootRoute extends React.Component {
       <Switch>
           <Route exact path={notFoundPath} component={NotFoundRoute} />
           <Route exact path={orgRequiredPath} component={OrgMembershipRequired} />
-
+          <Route exact path={verifyEmailPath} component={VerifyEmail} />
           <Route component={NotFoundRoute} />
       </Switch>
     );
