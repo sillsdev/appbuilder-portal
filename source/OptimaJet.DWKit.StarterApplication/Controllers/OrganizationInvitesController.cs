@@ -12,7 +12,7 @@ using OptimaJet.DWKit.StarterApplication.Utility.Extensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OrganizationInvitesController : BaseController<OrganizationInvite>
     {
         public OrganizationInvitesController(

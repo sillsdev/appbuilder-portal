@@ -19,7 +19,7 @@ using System.Linq;
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     //this class is used to force a notification... could be removed.
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificationTestController : Controller
     {
         private readonly IHubContext<ScriptoriaHub> _hubContext;

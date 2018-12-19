@@ -8,7 +8,7 @@ using OptimaJet.DWKit.StarterApplication.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GroupMembershipsController : JsonApiController<GroupMembership>
     {
         public GroupMembershipsController(

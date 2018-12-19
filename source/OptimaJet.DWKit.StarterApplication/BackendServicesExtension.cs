@@ -10,7 +10,6 @@ using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -192,15 +191,20 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddAuthorization(options =>
             {
-
-                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-                      .RequireAuthenticatedUser();
-
-                options.AddPolicy("Authenticated", defaultAuthorizationPolicyBuilder.Build());
-
+                options.AddPolicy("Authenticated",
+                    policy => policy
+                        .AddAuthenticationSchemes(
+                            JwtBearerDefaults.AuthenticationScheme,
+                            CookieAuthenticationDefaults.AuthenticationScheme
+                        ).RequireAuthenticatedUser()
+                );
             });
+
 
             return services;
         }
+
+
+
     }
 }

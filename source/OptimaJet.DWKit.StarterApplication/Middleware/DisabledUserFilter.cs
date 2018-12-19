@@ -55,11 +55,11 @@ namespace OptimaJet.DWKit.StarterApplication.Middleware
             if (context.Controller.GetType().IsDefined(typeof(AuthorizeAttribute), true))
             {
                 var attr = (AuthorizeAttribute)context.Controller.GetType()
-                    .GetCustomAttributes(true)
-                    .FirstOrDefault(a => a.GetType().IsAssignableFrom(typeof(AuthorizeAttribute)));
+        		.GetCustomAttributes(true)
+        		.Where(a => a.GetType().IsAssignableFrom(typeof(AuthorizeAttribute)))
+        		.FirstOrDefault();
+                retval = (attr.AuthenticationSchemes.Contains(JwtBearerDefaults.AuthenticationScheme));
 
-                //DefaultPolicy on authorization included JWT, so if this is the default AuthorizeAttribute, then jwt is included.
-                retval = (attr.IsDefaultAuthorizeAttribute() || attr.AuthenticationSchemes.Contains(JwtBearerDefaults.AuthenticationScheme));
             }
             return retval;
         }
@@ -80,15 +80,6 @@ namespace OptimaJet.DWKit.StarterApplication.Middleware
                 Content = errors.GetJson()
             };
         }
-    }
 
-    public static class AuthorizeAttributeExtensions
-    {
-        public static bool IsDefaultAuthorizeAttribute(this AuthorizeAttribute attr)
-        {
-            return attr.AuthenticationSchemes == null &&
-                attr.Policy == null &&
-                attr.Roles == null;
-        }
     }
 }
