@@ -7,7 +7,7 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class ProductsController : BaseController<Product, Guid>
     {
         public ProductsController(

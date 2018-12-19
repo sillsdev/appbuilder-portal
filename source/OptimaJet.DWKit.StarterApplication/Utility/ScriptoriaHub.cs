@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace OptimaJet.DWKit.StarterApplication.Utility
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class ScriptoriaHub : Hub
     {
         public ScriptoriaHub()

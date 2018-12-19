@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     [Route("api/operations")]
     public class OperationsController : JsonApiOperationsController
     {

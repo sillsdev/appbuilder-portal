@@ -9,7 +9,7 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class OrganizationProductDefinitionsController : JsonApiController<OrganizationProductDefinition>
     {
         public OrganizationProductDefinitionsController(IJsonApiContext jsonApiContext,

@@ -10,7 +10,7 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class GroupsController : BaseController<Group>
     {
         public IOrganizationContext OrganizationContext { get; set; }

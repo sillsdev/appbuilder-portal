@@ -7,8 +7,7 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    // TODO: for getting, require user-id filter
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class UserTasksController : BaseController<UserTask>
     {
         public UserTasksController(

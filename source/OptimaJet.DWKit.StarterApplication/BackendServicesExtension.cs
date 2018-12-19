@@ -10,6 +10,7 @@ using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,7 @@ using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using OptimaJet.Workflow.Core.Runtime;
+using Serilog;
 using SparkPostDotNet;
 using SparkPostDotNet.Core;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
@@ -165,11 +167,13 @@ namespace OptimaJet.DWKit.StarterApplication
                     {
                         // Add the access_token as a claim, as we may actually need it
                         var accessToken = context.SecurityToken as JwtSecurityToken;
-
+                        ClaimsIdentity identity = context.Principal.Identity as ClaimsIdentity;
+                        if (!identity.HasClaim("email_verified", "true"))
+                        {
+                            context.Fail("Email address is not validated");
+                        }
                         if (accessToken != null)
                         {
-                            ClaimsIdentity identity = context.Principal.Identity as ClaimsIdentity;
-
                             if (identity != null)
                             {
                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));
@@ -188,20 +192,17 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Authenticated",
-                    policy => policy
-                        .AddAuthenticationSchemes(
-                            JwtBearerDefaults.AuthenticationScheme,
-                            CookieAuthenticationDefaults.AuthenticationScheme
-                        ).RequireAuthenticatedUser()
-                );
-            });
 
+                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                      .RequireAuthenticatedUser();
+
+                options.AddPolicy("Authenticated", defaultAuthorizationPolicyBuilder.Build());
+
+
+                options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+            });
 
             return services;
         }
-
-
-
     }
 }

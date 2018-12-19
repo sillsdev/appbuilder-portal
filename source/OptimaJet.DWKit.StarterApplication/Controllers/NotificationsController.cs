@@ -13,7 +13,7 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class NotificationsController : BaseController<Notification>
     {
         public NotificationsController(
