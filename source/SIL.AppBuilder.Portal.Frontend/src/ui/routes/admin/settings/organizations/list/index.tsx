@@ -8,8 +8,6 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { addOrganizationPathName } from '../index';
 import OrganizationItem from './item';
 import { compareVia } from '@lib/collection';
-import { OrganizationAttributes } from '@data/models/organization';
-
 
 interface IOwnProps {
   organizations: OrganizationResource[];

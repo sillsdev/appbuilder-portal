@@ -339,7 +339,8 @@
       "title": "Admin settings",
       "navigation": {
         "organizations": "Organizations",
-        "workflowdefinitions": "Workflow Definitions"
+        "workflowdefinitions": "Workflow Definitions",
+        "productDefinitions": "Product Definitions"
       },
       "organizations": {
         "title": "Organizations",
@@ -371,6 +372,20 @@
         "workflowAdded": "Workflow Definition added",
         "workflowUpdated": "Workflow Definition updated",
         "emptyStoreType": "Need to select a store type for this workflow definition"
+      },
+      "productDefinitions": {
+        "title": "Product Definitions",
+        "name": "Product definition Name",
+        "add": "Add Product Definition",
+        "edit": "Edit Product Definition",
+        "description": "Description",
+        "type": "Application Type",
+        "workflow": "Workflow",
+        "addSuccess": "Product Definition added",
+        "editSuccess": "Product Definition updated",
+        "emptyName": "Name cannot be empty",
+        "emptyType": "Need to select an Application Type",
+        "emptyWorkflow": "Nedd to select a Workflow definition"
       }
     }
   }

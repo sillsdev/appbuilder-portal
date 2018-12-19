@@ -22,6 +22,10 @@ class Navigation extends React.Component<IProps> {
           {
             to: '/admin/settings/workflow-definitions',
             text: t('admin.settings.navigation.workflowdefinitions')
+          },
+          {
+            to: '/admin/settings/product-definitions',
+            text: t('admin.settings.navigation.productDefinitions')
           }
         ]}
         exactRoutes={false}
