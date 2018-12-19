@@ -1,16 +1,17 @@
-INSERT INTO "Users" ("Name", "Email", "ExternalId", "FamilyName", "GivenName", "IsLocked", "Locale", "Phone", "Timezone") VALUES
-(	'Chris Hubbard',	'chris_hubbard@sil.org',	'google-oauth2|116747902156680384840',	'Hubbard',	'Chris',	'0',	NULL,	NULL,	NULL),
-(	'David Moore',	'david_moore1@sil.org',	'google-oauth2|114981819181509824425',	'Moore',	'David',	'0',	NULL,	NULL,	NULL),
-(	'Preston Sego (gmail)',	'lt.sego@gmail.com',	'google-oauth2|106685378104908547147',	'Sego (gmail)',	'Preston',	'0',	NULL,	NULL,	NULL),
-(	'Giancarlo Corzo',	'gian.corzo@gmail.com',	'google-oauth2|105409413471872324118',	'Corzo',	'Giancarlo',	'0',	NULL,	NULL,	NULL),
-(	'Liz Tabor',	'ltabor@developertown.com',	'google-oauth2|113420589826662049605',	'Tabor',	'Liz',	'0',	NULL,	NULL,	NULL),
-(	'Chris Hubbard (Kalaam)',	'chris.kalaam@gmail.com',	'auth0|5b578f6197af652b19f9bb41',	'Hubbard',	'Chris',	'0',	NULL,	NULL,	NULL),
-( 	'Preston Sego (dt)', 'psego@developertown.com', 'google-oauth2|111802484969448690930', 'Sego (dt)', 'Preston', '0', NULL, NULL, NULL),
-(	'Bill Dyck', 'bill_dyck@sil.org',	'google-oauth2|102643649500459434996', 'Dyck',	'Bill',	'0',	NULL, NULL, NULL),
-(	'Loren Hawthorne', 'loren_hawthrone@sil.org',	'google-oauth2|116603781884964961816', 'Loren',	'Hawthorne',	'0',	NULL, NULL, NULL),
-(	'liztabor19+1@gmail.com', 'liztabor19+1@gmail.com',	'auth0|5b86fb131a8ed52ad10259e5', 'Liz',	'tabor',	'0',	NULL, NULL, NULL),
-(	'other@sil.org', 'other@sil.org',	'auth0|5c07e78511bf6d2f2ce0fcff', 'Other'	, 'SIL', '0',	NULL, NULL, NULL),
-(	'Nate Canada', 'ncanada@developertown.com',	'google-oauth2|107093754016949028816', 'Nate', 	'Canada',	'0',	NULL, NULL, NULL);
+INSERT INTO "Users" (
+  "Name",                   "Email",                     "ExternalId",                          "FamilyName",   "GivenName", "IsLocked", "Locale", "Phone", "Timezone") VALUES
+(	'Chris Hubbard',	        'chris_hubbard@sil.org',	   'google-oauth2|116747902156680384840',	'Hubbard',	    'Chris',	   '0',	NULL,	NULL,	NULL),
+(	'David Moore',	          'david_moore1@sil.org',	     'google-oauth2|114981819181509824425',	'Moore',	      'David',	   '0',	NULL,	NULL,	NULL),
+(	'Preston Sego (gmail)',	  'lt.sego@gmail.com',	       'google-oauth2|106685378104908547147',	'Sego (gmail)',	'Preston',	 '0',	NULL,	NULL,	NULL),
+(	'Giancarlo Corzo',	      'gian.corzo@gmail.com',	     'google-oauth2|105409413471872324118',	'Corzo',	      'Giancarlo', '0',	NULL,	NULL,	NULL),
+(	'Liz Tabor (dt)',         'ltabor@developertown.com',	 'google-oauth2|113420589826662049605',	'Tabor',	      'Liz',	     '0',	NULL,	NULL,	NULL),
+(	'Chris Hubbard (Kalaam)',	'chris.kalaam@gmail.com',	   'auth0|5b578f6197af652b19f9bb41',	    'Hubbard',	    'Chris',	   '0',	NULL,	NULL,	NULL),
+( 'Preston Sego (dt)',      'psego@developertown.com',   'google-oauth2|111802484969448690930', 'Sego (dt)',    'Preston',   '0', NULL, NULL, NULL),
+(	'Bill Dyck',              'bill_dyck@sil.org',	       'google-oauth2|102643649500459434996', 'Dyck',	        'Bill',	     '0',	NULL, NULL, NULL),
+(	'Loren Hawthorne',        'loren_hawthrone@sil.org',	 'google-oauth2|116603781884964961816', 'Loren',	      'Hawthorne', '0',	NULL, NULL, NULL),
+(	'liztabor19@gmail.com',   'liztabor19@gmail.com',	     'google-oauth2|104286798726238637666', 'Liz',	        'Tabor',	   '0',	NULL, NULL, NULL),
+(	'other@sil.org',          'other@sil.org',	           'auth0|5c07e78511bf6d2f2ce0fcff',      'Other'	,       'SIL',       '0',	NULL, NULL, NULL),
+(	'Nate Canada',            'ncanada@developertown.com', 'google-oauth2|107093754016949028816', 'Nate', 	      'Canada',	   '0',	NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId", "UseDefaultBuildEngine") VALUES
 (	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false),
