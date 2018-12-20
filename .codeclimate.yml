@@ -1,0 +1,9 @@
+version: "2"         # required to adjust maintainability checks
+checks:
+  # Duplication overrides -- affects all languages
+  similar-code:
+    config:
+      threshold: 4
+  identical-code:
+    config:
+      threshold: 4
