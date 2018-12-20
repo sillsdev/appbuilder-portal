@@ -3,7 +3,12 @@ checks:
   # Duplication overrides -- affects all languages
   similar-code:
     config:
-      threshold: 40
+      threshold: 75
   identical-code:
     config:
-      threshold: 80
+      threshold: 100
+plugins:
+  duplication:
+    enabled: true
+    config:
+      count_threshold: 4
