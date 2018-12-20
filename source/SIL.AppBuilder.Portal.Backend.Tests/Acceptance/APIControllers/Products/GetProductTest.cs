@@ -13,6 +13,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public GetProductTest(TestFixture<NoAuthStartup> fixture) : base(fixture)
         {
         }
+
         [Fact]
         public async Task Get_Product_With_An_OrganizationHeader()
         {
