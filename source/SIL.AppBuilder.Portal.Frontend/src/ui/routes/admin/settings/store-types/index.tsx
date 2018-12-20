@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import List from './list';
-// import AddStoreTypeForm from './new';
-// import EditStoreTypeForm from './edit';
+import AddStoreTypeForm from './new';
+import EditStoreTypeForm from './edit';
 
 import { Switch, Route } from 'react-router-dom';
 
@@ -16,8 +16,8 @@ class StoreTypeRoute extends React.Component {
       <div className='sub-page-content' data-test-admin-store-types>
         <Switch>
           <Route exact path={listPathName} component={List} />
-          {/* <Route path={addStoreTypePathName} component={AddStoreTypeForm} />
-          <Route path={editStoreTypePathName} component={EditStoreTypeForm} /> */}
+          <Route path={addStoreTypePathName} component={AddStoreTypeForm} />
+          <Route path={editStoreTypePathName} component={EditStoreTypeForm} />
         </Switch>
       </div>
     );
