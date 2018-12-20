@@ -26,35 +26,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-// TODO: find a better way to implemented this using CSS
-const SM_BREAKPOINT = 768;
-
 class Layout extends React.Component<IOwnProps> {
-
-  updateSidebar = () => {
-
-    const { showSidebar, isSidebarVisible } = this.props;
-
-    if (window.innerWidth > SM_BREAKPOINT && !isSidebarVisible) {
-      showSidebar();
-    } else {
-      // intentionally do not save this state (by not using redux)
-      // this is more for dev purposes where we are constantly
-      // resizing the browser
-      // (not using dispatch makes this a one-off)
-      hideSidebarInStore();
-    }
-  }
-
-  componentDidMount() {
-    this.updateSidebar();
-    window.addEventListener('resize', this.updateSidebar);
-  }
-
-  componentWillUnmount = () => {
-    window.removeEventListener('resize', this.updateSidebar);
-  }
-
   render() {
     const { hideSidebar, isSidebarVisible } = this.props;
 
