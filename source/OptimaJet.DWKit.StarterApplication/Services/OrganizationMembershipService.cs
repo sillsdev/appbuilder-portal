@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Forms.GroupMemberships;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -40,7 +41,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             User userForEmail = UserRepository.Get()
                 .Where(p => p.Email == membership.Email)
-                .DefaultIfEmpty(null)
+                .Include(u => u.UserRoles)
                 .FirstOrDefault();
 
             if (userForEmail == null) return null;
