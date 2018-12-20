@@ -32,7 +32,11 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             if (membership.Email != null)
             {
                 OrganizationMembership result = await organizationMembershipService.CreateByEmail(membership);
-                return result == null ? StatusCode(StatusCodes.Status422UnprocessableEntity) : (IActionResult)Ok(result);
+                if (result == null) {
+                    return StatusCode(StatusCodes.Status422UnprocessableEntity);
+                }
+
+                return Created($"{HttpContext.Request.Path}/{result.Id}", result);
             }
             else
             {
