@@ -26,6 +26,10 @@ class Navigation extends React.Component<IProps> {
           {
             to: '/admin/settings/product-definitions',
             text: t('admin.settings.navigation.productDefinitions')
+          },
+          {
+            to: '/admin/settings/store-types',
+            text: t('admin.settings.navigation.storeTypes')
           }
         ]}
         exactRoutes={false}
