@@ -3,7 +3,7 @@ checks:
   # Duplication overrides -- affects all languages
   similar-code:
     config:
-      threshold: 4
+      threshold: 40
   identical-code:
     config:
-      threshold: 4
+      threshold: 80
