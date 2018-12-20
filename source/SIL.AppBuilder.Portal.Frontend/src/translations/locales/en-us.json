@@ -312,8 +312,8 @@
     "title": "Manage Users",
     "addUser": {
       "placeholder": "Enter an email",
-      "button": "Add User",
-      "modalTitle": "Add User",
+      "button": "Add User to {organization}",
+      "modalTitle": "Add User to {organization}",
       "modalAddButton": "Add",
       "error": "No user was found with that email address. Please ask them to create an account."
     },
