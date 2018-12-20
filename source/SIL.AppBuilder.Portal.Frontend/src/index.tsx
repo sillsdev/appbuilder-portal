@@ -4,6 +4,8 @@ import * as ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
 
 import './ui/styles/app.scss';
+import './public/assets/images/favicon.png';
+import './public/assets/images/favicon.ico';
 
 import Application from './ui/application';
 
