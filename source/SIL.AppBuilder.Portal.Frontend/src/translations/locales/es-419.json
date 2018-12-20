@@ -149,7 +149,9 @@
     "notAMemberOfOrg": "No es un miembro de esa organización",
     "orgMembershipRequired": "Se requiere ser miembro de la organización",
     "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
-    "orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página"
+    "orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página",
+    "verifyEmailTitle": "Please verify your email address",
+    "verifyEmailDescription": "\n      In order to use Scriptoria, we need you to verify your email address.\n      <br /><br />\n      Please log into your email and clik the verification link. "
   },
   "tasks": {
     "title": "Mis tareas",
@@ -312,8 +314,8 @@
     "title": "Administrar usuarios",
     "addUser": {
       "placeholder": "Enter an email",
-      "button": "Add User",
-      "modalTitle": "Add User",
+      "button": "Add User to {organization}",
+      "modalTitle": "Add User to {organization}",
       "modalAddButton": "Add",
       "error": "No user was found with that email address. Please ask them to create an account."
     },
@@ -341,7 +343,9 @@
       "title": "Admin settings",
       "navigation": {
         "organizations": "Organizations",
-        "workflowdefinitions": "Workflow Definitions"
+        "workflowdefinitions": "Workflow Definitions",
+        "productDefinitions": "Product Definitions",
+        "storeTypes": "Store Types"
       },
       "organizations": {
         "title": "Organizations",
@@ -373,6 +377,34 @@
         "workflowAdded": "Workflow Definition added",
         "workflowUpdated": "Workflow Definition updated",
         "emptyStoreType": "Need to select a store type for this workflow definition"
+      },
+      "productDefinitions": {
+        "title": "Product Definitions",
+        "name": "Product definition Name",
+        "add": "Add Product Definition",
+        "edit": "Edit Product Definition",
+        "description": "Description",
+        "type": "Application Type",
+        "workflow": "Workflow",
+        "addSuccess": "Product Definition added",
+        "editSuccess": "Product Definition updated",
+        "emptyName": "Name cannot be empty",
+        "emptyType": "Need to select an Application Type",
+        "emptyWorkflow": "Nedd to select a Workflow definition"
+      },
+      "storeTypes": {
+        "title": "Store Types",
+        "name": "Product definition Name",
+        "add": "Add Store Type",
+        "edit": "Edit Store Type",
+        "description": "Description",
+        "type": "Application Type",
+        "workflow": "Workflow",
+        "addSuccess": "Store Type added",
+        "editSuccess": "Store Type updated",
+        "emptyName": "Name cannot be empty",
+        "emptyType": "Need to select an Application Type",
+        "emptyWorkflow": "Nedd to select a Workflow definition"
       }
     }
   }
