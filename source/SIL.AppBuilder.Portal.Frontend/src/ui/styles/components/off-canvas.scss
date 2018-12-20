@@ -79,12 +79,9 @@ $offcanvas-width: 300px;
     }
 
     &.is-sidebar-hidden {
-      min-width: 0;
-      width: 0;
-      .sidebar-wrapper {
-        width: $offcanvas-width;
-        margin-left: -#{$offcanvas-width};
-      }
+      min-width: inherit;
+      width: auto;
+      left: 0;
 
       .sidebar-underlay {
         display: none;
