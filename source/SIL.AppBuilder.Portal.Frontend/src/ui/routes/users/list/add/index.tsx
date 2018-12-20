@@ -13,7 +13,8 @@ import * as toast from '@lib/toast';
 import { ErrorMessage } from '@ui/components/errors';
 
 import UserInput from './user-input';
-
+import { withCurrentOrganization } from '~/data/containers/with-current-organization';
+import { attributesFor } from '@data/helpers';
 interface IOwnProps{
   onUserAdded: () => Promise<void>;
 }
@@ -54,11 +55,11 @@ class AddUserModal extends React.Component<IProps>{
   }
 
   render(){
-    const { t } = this.props;
+    const { t, organization } = this.props;
     const { error } = this.state;
     const toggleModal = this.toggle('isModalOpen');
+    const trigger = (<div data-test-users-adduser-open className='flex align-items-center p-l-lg m-b-sm' onClick={toggleModal}><AddIcon/><div>{t('users.addUser.button', {organization: attributesFor(organization).name})}</div></div>);
     const {isModalOpen} = this.state;
-    const trigger = (<div data-test-users-adduser-open className='flex align-items-center p-l-lg m-b-sm' onClick={toggleModal}><AddIcon/><div>{t('users.addUser.button')}</div></div>);
     return (<Modal
       data-test-users-adduser-modal
       open={isModalOpen}
@@ -66,7 +67,7 @@ class AddUserModal extends React.Component<IProps>{
       className='medium products-modal'
       closeIcon={<CloseIcon className='close-modal' />}
       onClose={toggleModal}>
-        <Modal.Header>Add a User</Modal.Header>
+        <Modal.Header>{t("users.addUser.modalTitle", {organization: attributesFor(organization).name})}</Modal.Header>
         <Modal.Content>
           <UserInput onSubmit={this.onAdd}/>
           { (error) ? (<div data-test-error><ErrorMessage error={error} showClose={false}/></div>) : null }
@@ -77,4 +78,5 @@ class AddUserModal extends React.Component<IProps>{
 
 export default compose(
   withTranslations,
+  withCurrentOrganization,
   withData({}))(AddUserModal);
