@@ -54,14 +54,11 @@ let config = {
     new HtmlWebpackPlugin({
       title: 'Scriptoria',
       meta: {
+        favicon: '/favicon.ico',
         viewport: 'width=device-width,initial-scale=1,shrink-to-fit=no',
       },
     }),
     new ReactRootPlugin(),
-    // source maps!
-    // new webpack.SourceMapDevToolPlugin({
-
-    // }),
     ...plugins
   ],
   optimization: {
