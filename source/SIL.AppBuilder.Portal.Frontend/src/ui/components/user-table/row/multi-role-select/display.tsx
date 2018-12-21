@@ -13,6 +13,7 @@ import { ROLE } from '@data/models/role';
 import { i18nProps } from '@lib/i18n';
 import { RequireRole } from '@ui/components/authorization';
 import ActiveRolesDisplay from './active-roles-display';
+import RoleListByOrganization from './role-list-by-organization';
 import RoleSelect from './role-select';
 
 export interface IOwnProps {
@@ -36,11 +37,18 @@ export default class MultiRoleSelect extends React.Component<IProps> {
       return t('errors.orgMembershipRequired');
     }
 
+    const roleList = (
+      <RoleListByOrganization
+        roles={roles}
+        userRoles={userRoles}
+        organizations={organizations}
+        user={user}
+      />
+    );
+
     if (!editable) {
       return (
-        <span className='p-l-md' data-test-role-no-edit>
-          {roleNames}
-        </span>
+        <div className='p-l-xxs' data-test-role-no-edit>{roleList}</div>
       );
     }
 
@@ -48,7 +56,7 @@ export default class MultiRoleSelect extends React.Component<IProps> {
       <Dropdown
         data-test-role-multi-select
         multiple
-        text={roleNames}
+        trigger={roleList}
         className='w-100 multiDropdown'
       >
         <Dropdown.Menu data-test-role-menu>

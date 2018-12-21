@@ -27,11 +27,11 @@ import MultiRoleSelect from './multi-role-select';
 export interface INeededProps {
   currentUser: UserResource;
   user: UserResource;
-  groups: GroupResource[];
   roles: RoleResource[];
 }
 
 export interface IOwnProps {
+  groups: GroupResource[];
   roles: RoleResource[];
   organizations: OrganizationResource[];
 }

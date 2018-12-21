@@ -13,7 +13,7 @@ import { isEmpty, unique } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import Display from './display';
-import { withCurrentUser } from '@data/containers/with-current-user';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 
 interface INeededProps {
   user: UserResource;
@@ -37,7 +37,7 @@ type IProps =
 
 export default compose<IProps, INeededProps>(
   withTranslations,
-  withCurrentUser(),
+  withCurrentUserContext,
   // share one set of userRoles for the entire list.
   // otherwise the RoleSelect's own withUserRoles will
   // make a call to get the userRoles as a convient default
