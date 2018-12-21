@@ -171,7 +171,6 @@ export function withData(WrappedComponent) {
   }
 
   return compose(
-    withCurrentUserContext,
     // NOTE to future self, somehow the users are getting lost. O.O
     // NOTE: this is hit at least 8 times when a product changes...
     query(() => {
@@ -193,7 +192,8 @@ export function withData(WrappedComponent) {
           }
         ],
       };
-    }, { useRemoteDirectly: true }),
+    }),
+    withCurrentUserContext,
     withOrbit((passedProps: IOwnProps) => {
       const { currentUser } = passedProps;
 
