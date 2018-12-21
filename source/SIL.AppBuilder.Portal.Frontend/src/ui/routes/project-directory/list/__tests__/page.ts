@@ -1,7 +1,8 @@
 import {
   interactor,
   Interactor,
-  text
+  text,
+  isPresent
 } from '@bigtest/interactor';
 
 import orgSelectInteractor from '@ui/components/inputs/organization-select/__tests__/page';
@@ -12,6 +13,7 @@ class Directory {
 
   orgSelect = orgSelectInteractor;
   table = tableInteractor;
+  isLoading = isPresent('.loading-overlay');
 }
 
 export const DirectoryInteractor = interactor(Directory);
