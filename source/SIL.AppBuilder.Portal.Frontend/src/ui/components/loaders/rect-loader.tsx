@@ -1,11 +1,14 @@
 import * as React from 'react';
+import { IAttributeProps } from '@lib/dom';
 
 import './styles.scss';
 
-export default class RectLoader extends React.Component {
+export default class RectLoader extends React.PureComponent<IAttributeProps> {
   render() {
+    const { className, ...attributes } = this.props;
+
     return (
-      <div className="spinner m-t-xxl m-b-xxl">
+      <div className={`spinner ${className}`} { ...attributes}>
         <div className="rect1" />
         <div className="rect2" />
         <div className="rect3" />

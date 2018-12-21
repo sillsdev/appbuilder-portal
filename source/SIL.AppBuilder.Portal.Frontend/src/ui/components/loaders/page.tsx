@@ -2,11 +2,17 @@ import * as React from 'react';
 
 import RectLoader from './rect-loader';
 
-export default class PageLoader extends React.Component {
+interface IProps {
+  loaderProps?: any;
+}
+
+export default class PageLoader extends React.PureComponent<IProps> {
   render() {
+    const loaderProps = this.props.loaderProps || {};
+
     return (
       <div className='flex-row flex-grow justify-content-center align-items-center'>
-        <RectLoader />
+        <RectLoader className='m-t-xxl m-b-xxl' { ...loaderProps }/>
       </div>
     );
   }

@@ -24,6 +24,8 @@ async function newProjectWithSelectedOrg(orgName: string) {
 
   await app.orgSwitcher.chooseOrganization(orgName);
 
+  expect(location().pathname).to.eq('/tasks');
+
   await visit('/projects/new');
 }
 

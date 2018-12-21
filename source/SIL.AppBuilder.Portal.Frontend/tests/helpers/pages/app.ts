@@ -23,6 +23,7 @@ class App {
 
   clickNotificationsBell = clickable('[data-test-header-notification]');
   clickLogout = clickable('[data-test-header-menu] [data-test-logout]');
+  isLogoutPresent = isPresent('[data-test-header-menu] [data-test-logout]');
 
   selectLocale = selectable('[data-test-locale-switcher]');
   myProfileText = text('[data-test-header-avatar] [data-test-profile]');

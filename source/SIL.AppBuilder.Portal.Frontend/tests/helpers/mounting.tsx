@@ -12,6 +12,7 @@ import i18n from '@translations';
 import Application from '@ui/application';
 import { ReduxProvider } from '@store/index';
 import { DataProvider } from '@data/index';
+import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
 import { ScrollToTop } from '@lib/routing';
 
 
@@ -51,13 +52,15 @@ export const mountWithContext = async (Component, props = {}, state = {}, custom
       return (
         <I18nextProvider i18n={i18n}>
           <DataProvider>
-            <ReduxProvider initialState={initialState || {}}>
-              <Router history={history}>
-                <ScrollToTop>
-                  <Component { ...props } />
-                </ScrollToTop>
-              </Router>
-            </ReduxProvider>
+            <CurrentUserProvider>
+              <ReduxProvider initialState={initialState || {}}>
+                <Router history={history}>
+                  <ScrollToTop>
+                    <Component { ...props } />
+                  </ScrollToTop>
+                </Router>
+              </ReduxProvider>
+            </CurrentUserProvider>
           </DataProvider>
         </I18nextProvider>
       );

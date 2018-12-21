@@ -4,7 +4,8 @@ import { visit } from '@bigtest/react';
 import { expect } from 'chai';
 
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication, fakeAuth0Id, wait
+  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication, fakeAuth0Id, wait,
+  switchToOrg
 } from 'tests/helpers';
 
 import app from 'tests/helpers/pages/app';
@@ -238,12 +239,8 @@ describe('Acceptance | User list | Filtering users by organization', () => {
 
         describe('Select a specific organization', () => {
           beforeEach(async function () {
-            await app.openOrgSwitcher();
-            expect(app.isOrgSwitcherVisible).to.be.true;
+            await switchToOrg('SIL International');
 
-            await switcher.chooseOrganization("SIL International");
-
-            expect(app.selectedOrg).to.equal("SIL International");
             await visit('/users');
           });
 

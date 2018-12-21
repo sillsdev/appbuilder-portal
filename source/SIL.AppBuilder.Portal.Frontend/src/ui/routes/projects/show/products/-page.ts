@@ -2,6 +2,7 @@ import {
   clickable,
   text,
   collection,
+  isPresent,
   interactor,
   Interactor,
 } from '@bigtest/interactor';
@@ -13,6 +14,7 @@ class Products {
   clickManageProductButton = clickable('[data-test-project-products-manage-button]');
   itemsText = collection('[data-test-project-product-name]');
   emptyLabel = text('[data-test-project-product-empty-text]');
+  isModalVisible = isPresent('[data-test-project-product-popup]');
 
   modalInteractor = ProductModalInteractor;
 }

@@ -14,7 +14,7 @@ module.exports = function(config) {
   config.set({
     port: TEST_PORT,
     colors: true,
-    logLevel: 'DEBUG',
+    logLevel: 'OFF',
     singleRun: false,
     retryLimit: 20, // hack around concurrency issues....
     concurrency: 1,

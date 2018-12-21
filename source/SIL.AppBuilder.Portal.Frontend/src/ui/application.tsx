@@ -4,9 +4,12 @@ import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
 import { DataProvider } from '@data';
+import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
 import { ReduxProvider } from '@store';
 import { SocketManager } from '@sockets';
 import { ScrollToTop } from '@lib/routing';
+
+import { RouteListener } from './components/route-listener';
 import RootRoute from './routes/root';
 
 import i18n from '../translations';
@@ -37,15 +40,20 @@ export default class Application extends React.Component<IProps> {
     return (
       <I18nextProvider i18n={i18n}>
         <DataProvider>
-          <SocketManager>
-            <ReduxProvider initialState={initialState || {}}>
-              <Router { ...routerProps }>
-                <ScrollToTop>
-                  <RootRoute />
-                </ScrollToTop>
-              </Router>
-            </ReduxProvider>
-          </SocketManager>
+          <CurrentUserProvider>
+            <SocketManager>
+              <ReduxProvider initialState={initialState || {}}>
+                <Router { ...routerProps }>
+                  <>
+                    <RouteListener />
+                    <ScrollToTop>
+                      <RootRoute />
+                    </ScrollToTop>
+                  </>
+                </Router>
+              </ReduxProvider>
+            </SocketManager>
+          </CurrentUserProvider>
         </DataProvider>
       </I18nextProvider>
     );

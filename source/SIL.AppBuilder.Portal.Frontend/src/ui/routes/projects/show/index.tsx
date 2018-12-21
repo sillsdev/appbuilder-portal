@@ -7,7 +7,7 @@ import { ROLE } from '@data/models/role';
 import Display from './display';
 
 import { withAccessRestriction } from './with-access-restriction';
-import { withCurrentUser } from '@data/containers/with-current-user';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { withData } from './with-data';
 import { withTranslations } from '@lib/i18n';
 import { withProjectOperations } from './with-project-operations';
@@ -16,7 +16,7 @@ export const pathName = '/projects/:id';
 
 export default compose(
   withTranslations,
-  withCurrentUser(),
+  withCurrentUserContext,
   withData,
   withProjectOperations,
   // todo - extract this to a more general thing?

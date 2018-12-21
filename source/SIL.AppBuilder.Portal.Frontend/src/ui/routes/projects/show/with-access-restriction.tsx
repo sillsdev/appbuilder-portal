@@ -9,33 +9,51 @@ import {
   relationshipFor,
   isRelatedRecord,
   buildFindRelatedRecords,
-  buildFindRelatedRecord
+  buildFindRelatedRecord,
+  UserResource,
+  ProjectResource,
+  OrganizationResource,
+  withLoader
 } from '@data';
+
+import { withRelationships } from '@data/containers/with-relationship';
+
+interface INeededProps {
+  currentUser: UserResource;
+  project: ProjectResource;
+}
+
+interface IProvidedProps {
+  currentUserOrganizations: OrganizationResource[];
+  projectOrg: OrganizationResource;
+}
 
 // The current user must:
 // - have at least organization membership that matches the
 //   the organization that the project is assigned to
-export function withAccessRestriction(WrappedComponent) {
-  const mapRecordsToProps = (passedProps) => {
-    const { currentUser, project } = passedProps;
+export function withAccessRestriction<TWrappedProps>(WrappedComponent) {
+  return compose<INeededProps, TWrappedProps>(
+    withRelationships(( props: INeededProps ) => {
+      const { currentUser } = props;
 
-    return {
-      // TODO: remove orgMemberships when testing is complete
-      orgMemberships: q => q.findRecords('organizationMembership'),
-      userOrgMemberships: q => buildFindRelatedRecords(q, currentUser, 'organizationMemberships'),
-      projectOrg: q => buildFindRelatedRecord(q, project, 'organization')
-    };
-  };
+      return {
+        currentUserOrganizations: [currentUser, 'organizationMemberships', 'organization'],
+      };
+    }),
+    withOrbit((passedProps: INeededProps) => {
+      const { project } = passedProps;
 
+      return {
+        projectOrg: q => buildFindRelatedRecord(q, project, 'organization')
+      };
+    }),
+    withLoader(({ projectOrg, currentUserOrganizations }) => !projectOrg || !currentUserOrganizations)
+  )(( props: INeededProps & IProvidedProps) => {
+    const { t, currentUserOrganizations, projectOrg } = props;
 
-  const DataWrapper = props => {
-    const { t, userOrgMemberships, projectOrg, orgMemberships } = props;
+    const currentUserOrgIds = currentUserOrganizations.map(o => o.id);
 
-    const userOrgIds = userOrgMemberships.filter(om => {
-      return isRelatedRecord(om, projectOrg);
-    });
-
-    const isAMember = userOrgIds.length > 0;
+    const isAMember = currentUserOrgIds.includes(projectOrg.id);
 
     if (isAMember) {
       return <WrappedComponent { ...props } />;
@@ -44,9 +62,5 @@ export function withAccessRestriction(WrappedComponent) {
     toast.error(t('errors.notAMemberOfOrg'));
 
     return <Redirect push={true} to={'/'} />;
-  };
-
-  return compose(
-    withOrbit(mapRecordsToProps)
-  )(DataWrapper);
+  });
 }

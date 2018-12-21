@@ -4,6 +4,7 @@ import { Dropdown } from 'semantic-ui-react';
 import { OrganizationResource } from '@data';
 import { attributesFor, ORGANIZATIONS_TYPE, idFromRecordIdentity } from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { filterForValidAttributes } from '@lib/dom';
 
 interface IOwnProps {
   className?: string;
@@ -23,7 +24,7 @@ class Display extends React.Component<IProps> {
   }
 
   render() {
-    const { t, organizations, ...otherProps } = this.props;
+    const { t, organizations, defaultValue, ...otherProps } = this.props;
     const organizationOptions = [{ text: t('org.allOrganizations'), value: 'all'}].concat(
       organizations.map(o => ({
         text: attributesFor(o).name || '',
@@ -33,8 +34,9 @@ class Display extends React.Component<IProps> {
 
     const dropdownProps = {
       options: organizationOptions,
-      ...otherProps,
-      onChange: this.onChange
+      onChange: this.onChange,
+      value: defaultValue,
+      ...filterForValidAttributes(otherProps),
     };
 
     return (
@@ -44,4 +46,3 @@ class Display extends React.Component<IProps> {
 }
 
 export default withTranslations(Display);
-

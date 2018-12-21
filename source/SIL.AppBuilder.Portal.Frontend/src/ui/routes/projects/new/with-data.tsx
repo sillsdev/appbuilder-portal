@@ -7,7 +7,7 @@ import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
 
 import {
-  IProvidedProps as WithCurrentUserProps
+  ICurrentUserProps
 } from '@data/containers/with-current-user';
 
 import {
@@ -21,7 +21,7 @@ export interface IProvidedProps {
 }
 
 type IProps =
-  & WithCurrentUserProps
+  & ICurrentUserProps
   & WithCurrentOrganizationProps
   & WithDataProps;
 

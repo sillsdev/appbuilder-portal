@@ -2,9 +2,10 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withRouter, RouterProps } from 'react-router';
 import { Link } from 'react-router-dom';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { requireNoAuth, retrievePath } from '@lib/auth';
+import { withTranslations, i18nProps } from '@lib/i18n';
 import { getDecodedJWT } from '@lib/auth0';
 import { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-organization';
 import AutoMountingLock from './auth0-lock-auto-mount';
@@ -14,8 +15,10 @@ export const pathName = '/login';
 class LoginRoute extends React.Component<RouterProps & i18nProps> {
   state = { data: {}, errors: {} };
 
-  afterLogin = () => {
-    const { history } = this.props;
+  afterLogin = async () => {
+    const { history, currentUserProps: { fetchCurrentUser } } = this.props;
+
+    await fetchCurrentUser();
     history.push(retrievePath(true) || '/tasks');
   }
 
@@ -56,5 +59,6 @@ class LoginRoute extends React.Component<RouterProps & i18nProps> {
 export default compose(
   withRouter,
   requireNoAuth('/'),
-  translate('translations')
+  withTranslations,
+  withCurrentUserContext,
 )(LoginRoute);

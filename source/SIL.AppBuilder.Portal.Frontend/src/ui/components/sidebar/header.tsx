@@ -71,6 +71,6 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
 }
 
 export default compose(
+  withTranslations,
   withCurrentOrganization,
-  withTranslations
 )(SidebarHeader);

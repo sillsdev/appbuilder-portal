@@ -22,6 +22,7 @@ export class ProjectInteractor {
   isAllowDownloadChecked = isPresent('[data-test-project-settings-allow-download].checked');
   isPublic = isPresent('[data-test-project-settings-project-visibility].checked');
   isProductModalPresent = isPresent('[data-test-project-product-popup]');
+  isMultiSelectPresent = isPresent('[data-test-multi-select]');
 
   hasUserSelect = isPresent('[data-test-user-select]');
   groupSelect = groupInteractor;
