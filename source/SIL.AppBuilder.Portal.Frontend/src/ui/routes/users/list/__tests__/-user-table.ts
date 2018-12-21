@@ -7,7 +7,7 @@ import {
 @interactor class UserTalbeUserRoleInteractor extends Interactor {
   open = clickable('[data-test-role-multi-select]');
   isOpen = isPresent('[data-test-role-menu].visible');
-  list = text('[data-test-role-multi-select] > div.text');
+  list = text('[data-test-role-multi-select] > div');
   organizationNames = text('[data-test-organization-name]');
   noEditText = text('[data-test-role-no-edit]');
   chooseUnder(role: string, organization: string) {
