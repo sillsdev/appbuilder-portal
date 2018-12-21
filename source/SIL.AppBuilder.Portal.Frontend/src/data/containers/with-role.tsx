@@ -25,6 +25,7 @@ export interface IOptions<TWrappedProps> {
   componentOnForbidden?: any;
   checkOrganizationOf?: (props: TWrappedProps) => ResourceObject;
   overrideIf?: (props: TWrappedProps) => boolean;
+  passthroughOnForbidden?: boolean;
 }
 
 export interface IOwnProps {
@@ -72,6 +73,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
     checkOrganizationOf,
     overrideIf,
     componentOnForbidden: OnForbidden,
+    passthroughOnForbidden,
     ...extraProps
   } = options;
 
@@ -161,7 +163,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
         // on slower devices
         if (!roleEvaluated) { return null; }
 
-        if (!accessGranted) {
+        if (!accessGranted && !passthroughOnForbidden) {
           if (OnForbidden) {
             return <OnForbidden { ...this.props } error={error} />;
           }
@@ -251,4 +253,3 @@ export async function roleInOrganizationOfResource(currentUser, dataStore, resou
 
   return roleInOrganization(currentUser, dataStore, organization, role);
 }
-

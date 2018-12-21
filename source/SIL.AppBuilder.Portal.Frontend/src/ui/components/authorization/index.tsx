@@ -27,4 +27,3 @@ export function RequireRole(props: IRequireRoleProps & IOptions<{}>) {
 
   return <ComponentWithRoleRequirement />;
 }
-

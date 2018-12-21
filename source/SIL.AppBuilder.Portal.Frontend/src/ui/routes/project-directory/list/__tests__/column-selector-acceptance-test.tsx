@@ -8,8 +8,8 @@ import {
   useFakeAuthentication
 } from 'tests/helpers/index';
 
-import page from '@ui/components/project-table/__tests__/page';
-
+import ProjectTableInteractor from '@ui/components/project-table/__tests__/page';
+const page = new ProjectTableInteractor();
 describe('Acceptance | Project Directory | Column selector', () => {
   setupApplicationTest();
   setupRequestInterceptor();

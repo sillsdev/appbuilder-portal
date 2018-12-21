@@ -16,6 +16,7 @@ interface IState {
 export interface IQueryOptions {
   passthroughError?: boolean;
   useRemoteDirectly?: boolean;
+  mapResultsFn?: (props, result) => Promise<any>;
 }
 
 // Example Usage
@@ -46,8 +47,8 @@ export interface IQueryOptions {
 // TODO: what if we just use orbit directly? do we need react-orbitjs?
 export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
   let map;
-  const opts = options || { passthroughError: false, useRemoteDirectly: false };
-  const { passthroughError, useRemoteDirectly } = opts;
+  const opts = options || { passthroughError: false, useRemoteDirectly: false, mapResultsFn: null };
+  const { passthroughError, useRemoteDirectly, mapResultsFn } = opts;
 
 
   if (typeof mapRecordsToProps !== 'function') {
@@ -62,17 +63,26 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
   return InnerComponent => {
     class DataWrapper extends React.Component<T & WithDataProps, IState> {
       state = { result: {}, error: undefined, isLoading: false };
-
+      // tslint:disable-next-line:variable-name
+      _isMounted: boolean = false;
       mapResult: any = {};
 
       componentDidMount() {
+        this._isMounted = true;
         this.tryFetch();
       }
 
       componentDidUpdate() {
         this.tryFetch();
       }
-
+      componentWillUnmount() {
+        this._isMounted = false;
+      }
+      setState(state, callback?){
+        if (this._isMounted){
+          super.setState(state, callback);
+        }
+      }
       fetchData = async () => {
         const result = map(this.props);
 
@@ -111,8 +121,10 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
         this.setState({ isLoading: true }, async () => {
           try {
-            const result = await this.fetchData();
-
+            let result = await this.fetchData();
+            if (mapResultsFn){
+              result = await mapResultsFn(this.props, result);
+            }
             this.setState({ result, isLoading: false });
           } catch (e) {
             this.setState({ error: e, isLoading: false });

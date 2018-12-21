@@ -1,3 +1,7 @@
+import { attributesFor } from "~/data";
+import { strict } from "assert";
+import { string } from "prop-types";
+
 export function interactor<T>(WrappedClass: T) : Interactor & T;
 export function text(selector?: string) : any;
 export function clickable(selector?: string): () => Promise<Interactor>;
@@ -11,6 +15,7 @@ export function collection(selector: string, interactors?: any): (index?: number
 export function value(selector: string): string;
 export function is(selector: string): boolean;
 export function scoped(selector: string, interactors?: any): Interactor;
+export function attribute(selector: string, otherSelector?: string);
 
 export class Interactor {
   constructor(selector?: string);

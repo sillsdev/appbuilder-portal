@@ -28,7 +28,7 @@ export default compose(
   withLoader(({ error, projects }) => !error && !projects),
   withProps(({projects}) => ({
     tableName: 'organization',
-    rowCount: projects.length
+    rowCount: projects ? projects.length : 0,
   })),
   withTableColumns({
     tableName: 'organization',
