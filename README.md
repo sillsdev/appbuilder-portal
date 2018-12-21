@@ -1,6 +1,7 @@
 # AppBuilder Portal 
 [![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/scriptoria/localized.svg)](https://crowdin.com/project/scriptoria)
+[![Maintainability](https://api.codeclimate.com/v1/badges/71fa3c1c0bf8eca409d2/maintainability)](https://codeclimate.com/github/sillsdev/appbuilder-portal/maintainability)
 
 ## Description
 The `appbuilder-portal` is the portal frontend/backend for the Scriptoria project.  This project provides software to automate the building and publishing of apps (and other related content) to App Stores and websites.
