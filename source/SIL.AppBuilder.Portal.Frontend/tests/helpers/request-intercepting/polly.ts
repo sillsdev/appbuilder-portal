@@ -46,7 +46,6 @@ export function generateRecordingName(context) {
 }
 
 const teardown = async function(context) {
-  // if (!this.polly) { debugger; }
   await this.polly.stop();
 
   Object.defineProperty(context, 'polly', {
