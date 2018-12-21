@@ -33,6 +33,18 @@ export function withCurrentUserContext(InnerComponent) {
   };
 }
 
+// withCurrentUser, in general should not be used.
+// withCurrentUserContext should be how consuming components
+// get access to the currentUser.
+// withCurrentUser includes some response-checking logic around
+// the result of the current user request to handle things like
+// - token expiration
+// - 401
+// - lack of organization membership
+// - any other error
+//
+// this only needs to be used once in the entire component hierarchy.
+// maybe in application.tsx
 export function withCurrentUser(opts = {}) {
   return InnerComponent => props => {
     const Inner = (context) => {
