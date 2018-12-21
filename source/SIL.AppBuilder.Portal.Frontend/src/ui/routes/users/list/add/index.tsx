@@ -58,7 +58,18 @@ class AddUserModal extends React.Component<IProps>{
     const { t, organization } = this.props;
     const { error } = this.state;
     const toggleModal = this.toggle('isModalOpen');
-    const trigger = (<div data-test-users-adduser-open className='flex align-items-center p-l-lg m-b-sm' onClick={toggleModal}><AddIcon/><div>{t('users.addUser.button', {organization: attributesFor(organization).name})}</div></div>);
+    const trigger = (
+      <div
+        data-test-users-adduser-open
+        className='flex align-items-center p-l-lg m-b-sm pointer'
+        onClick={toggleModal}
+      >
+        <AddIcon/>
+        <div>
+          {t('users.addUser.button', {organization: attributesFor(organization).name})}
+        </div>
+      </div>
+    );
     const {isModalOpen} = this.state;
     return (<Modal
       data-test-users-adduser-modal
