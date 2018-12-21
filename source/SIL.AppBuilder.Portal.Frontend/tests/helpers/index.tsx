@@ -1,6 +1,6 @@
 import { visit, location } from '@bigtest/react';
-import Convergence from '@bigtest/convergence';
-import { expect } from 'chai';
+import Convergence, { when } from '@bigtest/convergence';
+import { expect, assert } from 'chai';
 import app from './pages/app';
 
 export { fakeAuth0Id } from './jwt';
@@ -29,9 +29,22 @@ export async function visitTheHomePage() {
 export async function openOrgSwitcher() {
   await visit('/');
 
-  await app.openSidebar();
-  expect(app.isSidebarVisible).to.be.true;
+  if (!app.isSidebarVisible) {
+    await app.openSidebar();
+    await when(() => app.isSidebarVisible);
+  }
 
-  await app.openOrgSwitcher();
-  expect(app.isOrgSwitcherVisible).to.be.true;
+  if (!app.isOrgSwitcherVisible) {
+    await app.openOrgSwitcher();
+    await when(() => app.isOrgSwitcherVisible);
+  }
+}
+
+
+export async function switchToOrg(orgName: string) {
+  await openOrgSwitcher();
+  await app.orgSwitcher.chooseOrganization(orgName);
+  await when(() => app.selectedOrg);
+
+  expect(app.selectedOrg).to.equal(orgName);
 }

@@ -1,16 +1,18 @@
 import * as React from 'react';
 
-import { PageLoader as Loader } from '@ui/components/loaders';
+import { PageLoader, RectLoader } from '@ui/components/loaders';
 
 interface IOptions {
   wrapWith?: React.ComponentClass;
+  forPage?: boolean;
 }
 
 export function withLoader<TWrappedProps>(
   isLoading: (props: TWrappedProps) => boolean,
   options: IOptions = {}
 ) {
-  const { wrapWith: Wrapper } = options;
+  const { wrapWith: Wrapper, forPage } = options;
+  const Loader = forPage ? PageLoader : RectLoader;
 
   return WrappedComponent => {
     class LoadingWrapper extends React.Component<TWrappedProps> {

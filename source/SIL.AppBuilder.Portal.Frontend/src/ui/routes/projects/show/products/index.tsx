@@ -15,10 +15,6 @@ import {
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductModal from './modal';
 import ProductItem from './item';
-import {
-  withDataActions,
-  IProvidedProps as IDataActionsProps
-} from '@data/containers/resources/project/with-data-actions';
 
 import './styles.scss';
 
@@ -29,41 +25,13 @@ interface IOwnProps {
   isEmptyWorkflowProjectUrl: boolean;
 }
 
-interface IPendingUpdates {
-  [itemId: string]: boolean;
-}
-
 type IProps =
   & IOwnProps
-  & i18nProps
-  & IDataActionsProps;
+  & i18nProps;
 
 class Products extends React.Component<IProps> {
-  pendingUpdates: IPendingUpdates = {};
-
-  onSelectionChange = async (item: ProductDefinitionResource) => {
-    if (!this.pendingUpdates[item.id]){
-      this.pendingUpdates[item.id] = true;
-      const { t, updateProduct } = this.props;
-      try {
-        await updateProduct(item);
-        toast.success(t('updated'));
-      } catch (e) {
-        toast.error(e.message);
-      }
-      delete this.pendingUpdates[item.id];
-    }
-  }
-
   render() {
-    const { t, products, organization, isEmptyWorkflowProjectUrl } = this.props;
-
-    const productModalProps = {
-      organization,
-      selected: products,
-      onSelectionChange: this.onSelectionChange,
-      isEmptyWorkflowProjectUrl
-    };
+    const { t, products, organization, isEmptyWorkflowProjectUrl, project } = this.props;
 
     let productList;
 
@@ -106,7 +74,11 @@ class Products extends React.Component<IProps> {
         <div className='m-b-lg'>
           {productList}
         </div>
-        <ProductModal {...productModalProps} />
+        <ProductModal
+          organization={organization}
+          selected={products}
+          project={project}
+        />
       </div>
     );
   }
@@ -119,13 +91,4 @@ export default compose(
     products: q => q.findRelatedRecords(project, 'products'),
   })),
   withLoader(({products}) => !products),
-
-  withDataActions,
-  withProps(({project}) => {
-    return {
-      isEmptyWorkflowProjectUrl: isEmpty(
-        attributesFor(project).workflowProjectUrl
-      )
-    };
-  })
 )(Products);

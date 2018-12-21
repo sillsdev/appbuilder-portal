@@ -9,7 +9,7 @@ import {
 } from '@data';
 
 import { TYPE_NAME as USER } from '@data/models/user';
-import { withCurrentUser } from '@data/containers/with-current-user';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { retrieveRelation } from '@data/containers/with-relationship';
 // import { roleInOrganization } from '@data/containers/with-role';
 
@@ -171,24 +171,29 @@ export function withData(WrappedComponent) {
   }
 
   return compose(
-    withCurrentUser(),
+    withCurrentUserContext,
+    // NOTE to future self, somehow the users are getting lost. O.O
+    // NOTE: this is hit at least 8 times when a product changes...
     query(() => {
       return {
-        users: [q => q.findRecords(USER), {
-                  label: 'Get Users for User Input Select',
-                  sources: {
-                    remote: {
-                      settings: { ...defaultSourceOptions() },
-                      include: [
-                        'group-memberships.group',
-                        'organization-memberships.organization'
-                      ],
-                    }
-                  }
-                }
-              ],
+        cacheKey: 'static',
+        users: [
+          q => q.findRecords(USER),
+          {
+            label: 'Get Users for User Input Select',
+            sources: {
+              remote: {
+                settings: { ...defaultSourceOptions() },
+                include: [
+                  'group-memberships.group',
+                  'organization-memberships.organization'
+                ],
+              }
+            }
+          }
+        ],
       };
-    }),
+    }, { useRemoteDirectly: true }),
     withOrbit((passedProps: IOwnProps) => {
       const { currentUser } = passedProps;
 

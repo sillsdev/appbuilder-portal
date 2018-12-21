@@ -1,6 +1,13 @@
+import { WithDataProps } from 'react-orbitjs';
+import { UserResource, OrganizationResource } from '@data';
+
 export interface IProvidedProps {
   currentOrganizationId: string | number;
   currentOrganization: OrganizationResource;
+}
+
+export interface IWithIntermediateData {
+  currentUserOrganizations: OrganizationResource[];
 }
 
 export interface IReduxProps {

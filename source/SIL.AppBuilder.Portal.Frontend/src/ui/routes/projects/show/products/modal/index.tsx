@@ -1,12 +1,17 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductDefinitionMultiSelect from './multi-select';
-import { ProductResource, ProductDefinitionResource, OrganizationResource } from '@data';
+import { ProductResource, ProductDefinitionResource, OrganizationResource, attributesFor } from '@data';
+import { isEmpty } from '@lib/collection';
+import {
+  withDataActions,
+  IProvidedProps as IDataActionsProps
+} from '@data/containers/resources/project/with-data-actions';
 
 interface IOwnProps {
   organization: OrganizationResource;
@@ -14,6 +19,11 @@ interface IOwnProps {
   onSelectionChange: (item: ProductDefinitionResource) => void;
   isEmptyWorkflowProjectUrl: boolean;
 }
+
+interface IPendingUpdates {
+  [itemId: string]: boolean;
+}
+
 
 type IProps =
   & IOwnProps
@@ -30,18 +40,33 @@ type IProps =
 
   showToast = () => toast.warning(this.props.t('project.products.creationInProgress'));
 
+  pendingUpdates: IPendingUpdates = {};
+
+  onSelectionChange = async (item: ProductDefinitionResource) => {
+    if (!this.pendingUpdates[item.id]){
+      this.pendingUpdates[item.id] = true;
+      const { t, updateProduct } = this.props;
+      try {
+        await updateProduct(item);
+        toast.success(t('updated'));
+      } catch (e) {
+        toast.error(e.message);
+      }
+      delete this.pendingUpdates[item.id];
+    }
+  }
+
   render() {
 
-    const { t, selected, onSelectionChange, organization, isEmptyWorkflowProjectUrl } = this.props;
+    const { t, selected, organization, isEmptyWorkflowProjectUrl } = this.props;
     const { isModalOpen } = this.state;
 
     const toggleModal = isEmptyWorkflowProjectUrl ? this.showToast : this.toggle('isModalOpen');
 
-
     const multiSelectProps = {
       organization,
       selected,
-      onChange: onSelectionChange
+      onChange: this.onSelectionChange
     };
 
     const trigger = (
@@ -85,5 +110,13 @@ type IProps =
 }
 
 export default compose(
-  withTranslations
+  withTranslations,
+  withDataActions,
+  withProps(({project}) => {
+    return {
+      isEmptyWorkflowProjectUrl: isEmpty(
+        attributesFor(project).workflowProjectUrl
+      )
+    };
+  })
 )(ProductModal);

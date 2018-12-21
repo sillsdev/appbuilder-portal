@@ -9,7 +9,7 @@ import {
   attributesFor
 } from '@data';
 
-import ItemActions from './item-actions';
+import ItemActions from './actions';
 import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';

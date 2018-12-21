@@ -38,6 +38,7 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
   return WrappedComponent => {
     class WithRelationship extends React.PureComponent<T & MapFnResult & WithDataProps, IState> {
       state = { isLoading: false, error: undefined, result: {} };
+      isFetchingRelationships = false;
 
       fetchRelationships = async (): Promise<object> => {
         const { dataStore, relationshipsToFind } = this.props;
@@ -61,16 +62,23 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
         return resultingRelationshipProps;
       }
 
-      asyncStarter = async () => {
+      asyncStarter = () => {
+        if (this.isFetchingRelationships) { return; }
         if (this.state.isLoading) { return; }
 
         try {
-          this.setState({ isLoading: true, error: undefined });
-          const result = await this.fetchRelationships();
+          this.isFetchingRelationships = true;
+          this.setState({ isLoading: true, error: undefined }, async () => {
+            const result = await this.fetchRelationships();
 
-          this.setState({ result, isLoading: false, error: undefined });
+            this.setState({ result, isLoading: false, error: undefined }, () => {
+              this.isFetchingRelationships = false;
+            });
+          });
         } catch (error) {
-          this.setState({ isLoading: false, error });
+          this.setState({ isLoading: false, error }, () => {
+            this.isFetchingRelationships = false;
+          });
         }
       }
 
@@ -78,10 +86,8 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
         this.asyncStarter();
       }
 
-      componentWillReceiveProps(newProps) {
-        if (newProps.user !== this.props.user) {
-          this.asyncStarter();
-        }
+      componentDidUpdate() {
+        this.asyncStarter();
       }
 
       render() {

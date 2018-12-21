@@ -19,7 +19,6 @@ import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-source';
 
 import ErrorRootRoute from '@ui/routes/errors';
-
 import Workflow from './workflow';
 
 export default class RootPage extends React.Component {

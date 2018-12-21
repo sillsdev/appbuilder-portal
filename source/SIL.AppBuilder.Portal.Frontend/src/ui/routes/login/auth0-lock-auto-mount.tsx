@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as uuid from 'uuid';
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { getAuth0LockInstance, setToken, showLock, hideLock } from '@lib/auth0';
 
@@ -9,7 +9,7 @@ export interface IProps {
   afterLogin: () => void;
 }
 
-class Lock extends React.Component<IProps & InjectedTranslateProps> {
+class Lock extends React.Component<IProps & i18nProps> {
   state = { loggedIn : false };
   lockRef: any;
   lockId: any;
@@ -62,6 +62,6 @@ class Lock extends React.Component<IProps & InjectedTranslateProps> {
   }
 }
 
-export default compose(
-  translate('translations')
+export default compose<IProps & i18nProps, IProps>(
+  withTranslations
 )(Lock);
