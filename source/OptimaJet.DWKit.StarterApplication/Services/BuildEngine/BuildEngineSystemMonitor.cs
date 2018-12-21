@@ -41,9 +41,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         private async Task SyncDatabaseTablesAsync()
         {
+            // UseDefaultBuildEngine=null should be considered false
             var organizations = await OrganizationRepository
                 .Get()
-                .Where(o => o.UseDefaultBuildEngine != null && o.UseDefaultBuildEngine.Value == false)
+                .Where(o => o.UseDefaultBuildEngine == null || o.UseDefaultBuildEngine.Value == false)
                 .ToListAsync();
             var defaultOrganization = GetOrganizationDefaultSettings();
             if (defaultOrganization != null) { organizations.Add(defaultOrganization); }

@@ -83,7 +83,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WebsiteUrl = "https://testorg3.org",
                 BuildEngineUrl = "https://buildengine.testorg3",
                 BuildEngineApiAccessToken = "4323864",
-                UseDefaultBuildEngine = false,
+                UseDefaultBuildEngine = null, // null should be considered false
                 OwnerId = CurrentUser.Id
 
             });
