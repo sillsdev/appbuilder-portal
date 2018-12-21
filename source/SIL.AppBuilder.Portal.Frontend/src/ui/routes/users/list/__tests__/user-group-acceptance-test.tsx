@@ -93,7 +93,11 @@ describe('Acceptance | User groups', () => {
     });
 
     it('two groups are selected', () => {
-      expect(userTable.groupDropdownText).to.equal('Fake group, Another Fake group');
+      const text = userTable.groupDropdownText;
+
+      expect(text).to.not.include('None');
+      expect(text).to.include('Fake group');
+      expect(text).to.include('Another Fake group');
     });
 
     describe('remove user from all groups',() => {
@@ -109,7 +113,11 @@ describe('Acceptance | User groups', () => {
       });
 
       it('None is displayed',() => {
-        expect(userTable.groupDropdownText).to.equal('None');
+        const text = userTable.groupDropdownText;
+
+        expect(text).to.include('None');
+        expect(text).to.not.include('Fake group');
+        expect(text).to.not.include('Another Fake group');
       });
 
       describe('add one group back', () => {
@@ -133,7 +141,10 @@ describe('Acceptance | User groups', () => {
         });
 
         it('First group is displayed', () => {
-          expect(userTable.groupDropdownText).to.equal('Fake group');
+          const text = userTable.groupDropdownText;
+          expect(text).to.not.include('None');
+          expect(text).to.include('Fake group');
+          expect(text).to.not.include('Another Fake group');
         });
 
       });
@@ -315,7 +326,11 @@ describe('Acceptance | User groups', () => {
       });
 
       it('renders two organizations groups',() => {
-        expect(userTable.groupDropdownText).to.equal('Fake group, Another Fake group, SIL fake group');
+        const text = userTable.groupDropdownText;
+
+        expect(text).to.include('Fake group');
+        expect(text).to.include('Another Fake group');
+        expect(text).to.include('SIL fake group');
       }).timeout(2000);
 
     });
