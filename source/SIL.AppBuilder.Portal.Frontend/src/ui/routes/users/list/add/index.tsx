@@ -55,8 +55,8 @@ class AddUserModal extends React.Component<IProps>{
   }
 
   render(){
-    const { t, organization } = this.props;
-    const { error } = this.state;
+    const { t, currentOrganization } = this.props;
+    const { error, isModalOpen } = this.state;
     const toggleModal = this.toggle('isModalOpen');
     const trigger = (
       <div
@@ -66,11 +66,11 @@ class AddUserModal extends React.Component<IProps>{
       >
         <AddIcon/>
         <div>
-          {t('users.addUser.button', {organization: attributesFor(organization).name})}
+          {t('users.addUser.button', {organization: attributesFor(currentOrganization).name})}
         </div>
       </div>
     );
-    const {isModalOpen} = this.state;
+
     return (<Modal
       data-test-users-adduser-modal
       open={isModalOpen}
@@ -78,7 +78,7 @@ class AddUserModal extends React.Component<IProps>{
       className='medium products-modal'
       closeIcon={<CloseIcon className='close-modal' />}
       onClose={toggleModal}>
-        <Modal.Header>{t("users.addUser.modalTitle", {organization: attributesFor(organization).name})}</Modal.Header>
+        <Modal.Header>{t("users.addUser.modalTitle", {organization: attributesFor(currentOrganization).name})}</Modal.Header>
         <Modal.Content>
           <UserInput onSubmit={this.onAdd}/>
           { (error) ? (<div data-test-error><ErrorMessage error={error} showClose={false}/></div>) : null }
@@ -90,4 +90,5 @@ class AddUserModal extends React.Component<IProps>{
 export default compose(
   withTranslations,
   withCurrentOrganization,
-  withData({}))(AddUserModal);
+  withData({})
+)(AddUserModal);
