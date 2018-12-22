@@ -9,7 +9,7 @@ import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as GROUP } from '@data/models/group';
 import { TYPE_NAME as PROJECT } from '@data/models/project';
 
-import { withCurrentUser } from '@data/containers/with-current-user';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { withLoader } from '@data/containers/with-loader';
 import { withNetwork as withProjects } from '@data/containers/resources/project/list';
 import { withPagination, withFiltering } from '@data/containers/api';
@@ -32,7 +32,7 @@ const mapDispatchToProps = (dispatch) => ({
 export default compose (
   withTranslations,
   connect(null, mapDispatchToProps),
-  withCurrentUser(),
+  withCurrentUserContext,
   withFiltering(() => ({
     requiredFilters: [
       { attribute: 'date-archived', value: 'isnull:' }

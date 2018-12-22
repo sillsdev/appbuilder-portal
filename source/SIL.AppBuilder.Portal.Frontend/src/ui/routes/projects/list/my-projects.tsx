@@ -1,7 +1,7 @@
 import { compose, withProps } from 'recompose';
 
 import { idFromRecordIdentity } from '@data';
-import { withCurrentUser } from '@data/containers/with-current-user';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { withSorting } from '@data/containers/api/sorting';
 import { withPagination } from '@data/containers/api/pagination';
 import { withFiltering } from '@data/containers/api/with-filtering';
@@ -16,7 +16,7 @@ import Display from './display';
 export const pathName = '/projects/own';
 
 export default compose(
-  withCurrentUser(),
+  withCurrentUserContext,
   withCurrentOrganization,
   withSorting({ defaultSort: 'name' }),
   withPagination(),

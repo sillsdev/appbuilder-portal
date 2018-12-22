@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withTranslations, i18nProps } from '@lib/i18n';
-import { withCurrentUser, IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
+import { ICurrentUserProps, withCurrentUserContext } from '@data/containers/with-current-user';
 import { attributesFor } from '@data';
 import * as fileSizeFormatter from 'pretty-bytes';
 
@@ -34,5 +33,5 @@ class FileSize extends React.PureComponent<IProps> {
 }
 
 export default compose(
-  withCurrentUser()
+  withCurrentUserContext
 )(FileSize);
