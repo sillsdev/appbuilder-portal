@@ -11,7 +11,10 @@ import { OrganizationResource } from '../models/organization';
 import { UserResource } from '../models/user';
 import { RoleResource, ROLE } from '../models/role';
 import { isRelatedTo, attributesFor } from '../helpers';
-import { withCurrentUser, IProvidedProps as ICurrentUserProps } from './with-current-user';
+import {
+  withCurrentUserContext,
+  ICurrentUserProps
+} from './with-current-user';
 import { withCurrentOrganization, IProvidedProps as IOrganziationProps } from './with-current-organization';
 
 export interface IOptions<TWrappedProps> {
@@ -133,6 +136,12 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
       }
 
       resolveAccess = async () => {
+        // The UI should not be in charge of actively denying
+        // access if something dynamic causes authorization to be
+        // denied
+        if (this.state.roleEvaluated) { return; }
+        if (this.state.accessGranted) { return; }
+
         try {
           const result = await this.doesUserHaveAccess();
 
@@ -184,7 +193,7 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
       withTranslations,
       withOrbit({}),
       withRouter,
-      withCurrentUser(),
+      withCurrentUserContext,
       withCurrentOrganization
     )( AuthorizationWrapper );
   };

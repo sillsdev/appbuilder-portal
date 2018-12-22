@@ -1,5 +1,6 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
+import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 
 import {
@@ -93,7 +94,11 @@ describe('Acceptance | User groups', () => {
     });
 
     it('two groups are selected', () => {
-      expect(userTable.groupDropdownText).to.equal('Fake group, Another Fake group');
+      const text = userTable.row(0).activeGroups().map(g => g.text).join('');
+
+      expect(text).to.not.include('None');
+      expect(text).to.include('Fake group');
+      expect(text).to.include('Another Fake group');
     });
 
     describe('remove user from all groups',() => {
@@ -109,7 +114,11 @@ describe('Acceptance | User groups', () => {
       });
 
       it('None is displayed',() => {
-        expect(userTable.groupDropdownText).to.equal('None');
+        const text = userTable.groupDropdownText;
+
+        expect(text).to.include('None');
+        expect(text).to.not.include('Fake group');
+        expect(text).to.not.include('Another Fake group');
       });
 
       describe('add one group back', () => {
@@ -133,7 +142,10 @@ describe('Acceptance | User groups', () => {
         });
 
         it('First group is displayed', () => {
-          expect(userTable.groupDropdownText).to.equal('Fake group');
+          const text = userTable.row(0).activeGroups().map(g => g.text).join('');
+          expect(text).to.not.include('None');
+          expect(text).to.include('Fake group');
+          expect(text).to.not.include('Another Fake group');
         });
 
       });
@@ -312,10 +324,18 @@ describe('Acceptance | User groups', () => {
 
       beforeEach(async function () {
         await visit('/users');
+        await when(() => {
+          return document.querySelectorAll('[data-test-groups-active]').length === 2;
+        });
       });
 
       it('renders two organizations groups',() => {
-        expect(userTable.groupDropdownText).to.equal('Fake group, Another Fake group, SIL fake group');
+        userTable = new UserTableInteractor();
+        const text = userTable.row(0).activeGroups().map(g => g.text).join('');
+
+        expect(text).to.include('Fake group');
+        expect(text).to.include('Another Fake group');
+        expect(text).to.include('SIL fake group');
       }).timeout(2000);
 
     });

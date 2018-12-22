@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import * as toast from '@lib/toast';
+import { i18nProps } from '@lib/i18n';
 import {
   hasRelationship,
   relationshipFor,
@@ -48,7 +49,7 @@ export function withAccessRestriction<TWrappedProps>(WrappedComponent) {
       };
     }),
     withLoader(({ projectOrg, currentUserOrganizations }) => !projectOrg || !currentUserOrganizations)
-  )(( props: INeededProps & IProvidedProps) => {
+  )(( props: INeededProps & IProvidedProps & i18nProps) => {
     const { t, currentUserOrganizations, projectOrg } = props;
 
     const currentUserOrgIds = currentUserOrganizations.map(o => o.id);

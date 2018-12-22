@@ -7,7 +7,7 @@ import {
 @interactor class UserTalbeUserRoleInteractor extends Interactor {
   open = clickable('[data-test-role-multi-select]');
   isOpen = isPresent('[data-test-role-menu].visible');
-  list = text('[data-test-role-multi-select] > div.text');
+  list = text('[data-test-role-multi-select] > div');
   organizationNames = text('[data-test-organization-name]');
   noEditText = text('[data-test-role-no-edit]');
   chooseUnder(role: string, organization: string) {
@@ -62,7 +62,13 @@ import {
   groupDropdownText = text('[data-test-group-multi-select] > div');
   groupDropdownOrganizationName = collection('[data-test-group-multi-organization-name]');
 
-  row = collection('[data-test-user-row]', UserTableRowInteractor);
+  row = collection('[data-test-user-row]', {
+    activeGroupsText: text('[data-test-groups-active]'),
+    activeGroups: collection('[data-test-groups-active]', {
+      text: text(),
+    }),
+    role: scoped('[data-test-role-selector]', UserTalbeUserRoleInteractor),
+  });
 
   containsUserByEmail(email: string): boolean {
     return this.scoped(`[data-test-user-row='${email}']`).isPresent;

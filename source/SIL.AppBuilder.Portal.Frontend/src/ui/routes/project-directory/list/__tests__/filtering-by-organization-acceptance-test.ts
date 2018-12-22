@@ -1,5 +1,6 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
+import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 
 import {
@@ -17,6 +18,8 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
+  let requestCount = 0;
+
   beforeEach(function () {
     const { server } = this.polly;
 
@@ -27,7 +30,9 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
         res.status(200);
         res.headers['Content-Type'] = 'application/vnd.api+json';
 
-        if (!req.query['filter[organization-id]']) {
+        requestCount++;
+
+        if (!req.query.filter['organization-id']) {
           res.json(threeProjects);
 
         } else {
@@ -76,9 +81,16 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       let rows;
 
       beforeEach(async function() {
+        requestCount = 0;
+
         await page.orgSelect.choose('DeveloperTown');
-        await wait(500);
+        await when(() => !page.isLoading);
+
         rows = page.table.rows();
+      });
+
+      it('makes only one request to get the updated projects list', () => {
+        expect(requestCount).to.equal(1);
       });
 
       it('The selected organization is changed', () => {
@@ -100,6 +112,7 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       });
 
       xit('the count in the header is updated', () => {
+        // orbit.js currently does not have a way to access request-meta
         expect(page.header).to.include('(2)');
       });
     });

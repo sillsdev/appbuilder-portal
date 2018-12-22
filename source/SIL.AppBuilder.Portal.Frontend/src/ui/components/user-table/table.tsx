@@ -25,7 +25,6 @@ type IProps =
 
 export default class Table extends React.Component<IProps> {
   render() {
-
     const { users, roles, currentUser, t } = this.props;
 
     return (

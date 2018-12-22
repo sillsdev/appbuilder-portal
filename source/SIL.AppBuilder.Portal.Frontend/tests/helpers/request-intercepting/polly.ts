@@ -71,9 +71,13 @@ const setup = function(config) {
         context: window
       }
     },
+    persisterOptions: {
+      keepUnusedRequests: false,
+    },
     // logging: true,
     recordFailedRequests: false,
     recordIfMissing: false,
+    recordIfExpired: false,
     matchRequestsBy: {
       order: false,
       // headers: false,
@@ -92,6 +96,7 @@ const setup = function(config) {
   };
 
   this.polly = new Polly(name, pollyConfig);
+  this.polly.configure(pollyConfig);
 
   Orbit.fetch = window.fetch.bind(window);
 
