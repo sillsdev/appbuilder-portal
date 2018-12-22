@@ -62,7 +62,13 @@ import {
   groupDropdownText = text('[data-test-group-multi-select] > div');
   groupDropdownOrganizationName = collection('[data-test-group-multi-organization-name]');
 
-  row = collection('[data-test-user-row]', UserTableRowInteractor);
+  row = collection('[data-test-user-row]', {
+    activeGroupsText: text('[data-test-groups-active]'),
+    activeGroups: collection('[data-test-groups-active]', {
+      text: text(),
+    }),
+    role: scoped('[data-test-role-selector]', UserTalbeUserRoleInteractor),
+  });
 
   containsUserByEmail(email: string): boolean {
     return this.scoped(`[data-test-user-row='${email}']`).isPresent;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { attributesFor  } from '@data';
+import { attributesFor } from '@data';
 
 import ActiveGroupsDisplay from './active-groups-display';
 
@@ -13,9 +13,10 @@ export default ({ organizations, user, groups }) => {
     };
 
     return (
-      <div key={index}>
-        <span className='bold fs-11'>{organizationName}</span><br />
-        <ActiveGroupsDisplay { ...groupProps } />
+      <div data-test-groups-active key={index}>
+        <span className="bold fs-11">{organizationName}</span>
+        <br />
+        <ActiveGroupsDisplay {...groupProps} />
       </div>
     );
   });

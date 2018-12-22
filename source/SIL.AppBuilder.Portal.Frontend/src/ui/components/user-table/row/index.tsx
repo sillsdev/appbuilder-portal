@@ -75,7 +75,7 @@ class Row extends React.Component<IProps> {
     const isActive = !isLocked;
 
     return (
-      <tr data-test-user-row={email}>
+      <tr data-test-user-row={email || 'no-email-given'}>
         <td>
           <Link data-test-user-table-username to={`/users/${userId}/edit`}>
             {firstName} {lastName}

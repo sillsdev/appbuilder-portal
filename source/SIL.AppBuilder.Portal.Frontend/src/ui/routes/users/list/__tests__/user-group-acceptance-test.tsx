@@ -1,5 +1,6 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
+import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 
 import {
@@ -93,7 +94,7 @@ describe('Acceptance | User groups', () => {
     });
 
     it('two groups are selected', () => {
-      const text = userTable.groupDropdownText;
+      const text = userTable.row(0).activeGroups().map(g => g.text).join('');
 
       expect(text).to.not.include('None');
       expect(text).to.include('Fake group');
@@ -141,7 +142,7 @@ describe('Acceptance | User groups', () => {
         });
 
         it('First group is displayed', () => {
-          const text = userTable.groupDropdownText;
+          const text = userTable.row(0).activeGroups().map(g => g.text).join('');
           expect(text).to.not.include('None');
           expect(text).to.include('Fake group');
           expect(text).to.not.include('Another Fake group');
@@ -323,10 +324,14 @@ describe('Acceptance | User groups', () => {
 
       beforeEach(async function () {
         await visit('/users');
+        await when(() => {
+          return document.querySelectorAll('[data-test-groups-active]').length === 2;
+        });
       });
 
       it('renders two organizations groups',() => {
-        const text = userTable.groupDropdownText;
+        userTable = new UserTableInteractor();
+        const text = userTable.row(0).activeGroups().map(g => g.text).join('');
 
         expect(text).to.include('Fake group');
         expect(text).to.include('Another Fake group');

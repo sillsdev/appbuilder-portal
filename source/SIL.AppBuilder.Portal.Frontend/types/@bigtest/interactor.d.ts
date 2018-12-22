@@ -1,5 +1,5 @@
 export function interactor<T>(WrappedClass: T) : Interactor & T;
-export function text(selector: string) : any;
+export function text(selector?: string) : any;
 export function clickable(selector?: string): () => Promise<Interactor>;
 export function findAll(selector: string): HTMLElement[];
 export function isPresent(selector: string): boolean;
