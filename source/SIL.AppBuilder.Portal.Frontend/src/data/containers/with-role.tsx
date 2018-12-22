@@ -133,6 +133,11 @@ export function withRole<TWrappedProps extends {}>(role: ROLE, givenOptions?: IO
       }
 
       resolveAccess = async () => {
+        // The UI should not be in charge of actively denying
+        // access if something dynamic causes authorization to be
+        // denied
+        if (this.state.accessGranted) { return; }
+
         try {
           const result = await this.doesUserHaveAccess();
 

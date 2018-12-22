@@ -57,6 +57,5 @@ export function withProjectOperations(WrappedComponent) {
 
   return compose(
     withDataActions,
-    withTranslations
   )(DataWrapper);
 }

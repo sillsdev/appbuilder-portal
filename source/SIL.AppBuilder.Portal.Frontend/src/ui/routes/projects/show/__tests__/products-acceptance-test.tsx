@@ -151,7 +151,7 @@ describe('Acceptance | Project View | Products', () => {
           expect(productsText).to.contain('android_amazon_app');
         }).timeout(2000);
 
-        xit('project product is selected',() => {
+        it('project product is selected',() => {
           const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
           expect(selector.items(0).isChecked).to.be.true;
           expect(selector.items(1).isChecked).to.be.true;
@@ -184,7 +184,7 @@ describe('Acceptance | Project View | Products', () => {
           expect(productsText).to.contain('android_amazon_app');
         }).timeout(4000);
 
-        xit('project product is selected',() => {
+        it('project product is selected',() => {
           const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
           expect(selector.items(0).isChecked).to.be.true;
           expect(selector.items(1).isChecked).to.be.true;
@@ -201,7 +201,7 @@ describe('Acceptance | Project View | Products', () => {
               });
             await when(() => !page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).isChecked);
           });
-          xit('is only requested one additional time.', () => {
+          it('is only requested one additional time.', () => {
             expect(requestCount).to.equal(2);
           }).timeout(4000);
         });

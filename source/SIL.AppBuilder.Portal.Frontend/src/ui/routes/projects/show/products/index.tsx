@@ -83,7 +83,6 @@ class Products extends React.Component<IProps> {
     );
   }
 }
-
 export default compose(
   withTranslations,
   withOrbit(({project}) => ({
