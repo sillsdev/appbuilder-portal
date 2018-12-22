@@ -6,7 +6,7 @@ import { withRouter, RouteComponentProps, NavLink  } from 'react-router-dom';
 
 import { getPictureUrl } from '@lib/auth0';
 import { UserAttributes } from '@data/models/user';
-import { USERS_TYPE, idFromRecordIdentity } from '@data';
+import { USERS_TYPE, idFromRecordIdentity, withLoader } from '@data';
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { withLogout, ILogoutProps } from '@data';
 import { withTranslations, i18nProps } from '@lib/i18n';
@@ -70,6 +70,7 @@ class UserDropdown extends React.Component<IProps> {
 export default compose(
   withRouter,
   withCurrentUserContext,
+  withLoader(({ currentUser }) => !currentUser),
   withTranslations,
   withLogout
 )(UserDropdown);
