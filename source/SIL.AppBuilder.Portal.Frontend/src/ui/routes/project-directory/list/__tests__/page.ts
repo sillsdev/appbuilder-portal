@@ -6,7 +6,9 @@ import {
 } from '@bigtest/interactor';
 
 import orgSelectInteractor from '@ui/components/inputs/organization-select/__tests__/page';
-import tableInteractor from '@ui/components/project-table/__tests__/page';
+import ProjectTableInteractor from '@ui/components/project-table/__tests__/page';
+
+const tableInteractor = new ProjectTableInteractor();
 
 class Directory {
   header = text('[data-test-directory-header]');

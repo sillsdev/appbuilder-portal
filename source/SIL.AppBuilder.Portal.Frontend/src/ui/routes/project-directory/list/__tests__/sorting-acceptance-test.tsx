@@ -1,3 +1,4 @@
+import { when } from '@bigtest/convergence';
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
@@ -8,43 +9,52 @@ import {
   useFakeAuthentication
 } from 'tests/helpers/index';
 
-import app from 'tests/helpers/pages/app';
-import page from '@ui/components/project-table/__tests__/page';
-import pagination from '@data/containers/api/pagination-footer/page';
+import ProjectTableInteractor from '@ui/components/project-table/__tests__/page';
+
 import { zeroProjects, fullPageOfProjects, moreThanOnePageOfProjects } from './scenarios';
 
+const page = new ProjectTableInteractor();
 function navigateTo(path: string) {
   beforeEach(async function () {
-    await visit(path);
-
-    expect(location().pathname).to.equal(path);
+    visit(path);
+    await when( () => expect(location().pathname).to.equal(path));
+    await when( () => page.isPresent);
   });
 }
 
 const screens = [{
   path: '/directory',
-  name: 'Project Directory'
+  name: 'Project Directory',
+  config: {},
 }, {
   path: '/projects/own',
-  name: 'My Projects'
+  name: 'My Projects',
+  config: {},
 }, {
   path: '/projects/archived',
   name: 'Archived Projects',
+  config: {
+    data: { currentOrganizationId: '1'}
+  },
 }, {
   path: '/projects/organization',
-  name: 'Organization Projects'
+  name: 'Organization Projects',
+  config: {
+    data: { currentOrganizationId: '1'}
+  },
 }];
 
 describe('Acceptance | Sorting', () => {
-  setupApplicationTest();
   setupRequestInterceptor();
-  useFakeAuthentication();
 
   beforeEach(function () {
     this.mockGet(200, 'product-definitions', { data: [] });
   });
 
   screens.forEach(screen => {
+    setupApplicationTest(screen.config);
+    useFakeAuthentication();
+
     describe(`on the ${screen.name} page`, () => {
 
       describe('there are 0 projects', () => {

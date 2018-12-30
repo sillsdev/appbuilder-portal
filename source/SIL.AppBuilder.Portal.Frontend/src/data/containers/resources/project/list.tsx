@@ -8,8 +8,10 @@ import { ISortProps } from '@data/containers/api/sorting';
 import { IProvidedProps as IOrgProps } from '@data/containers/with-current-organization';
 
 import { query } from '@data';
-
-
+import { roleInOrganizationOfResource } from '@data/containers/with-role';
+import { attributesFor } from '~/data/helpers';
+import { idFromRecordIdentity } from '~/data/store-helpers';
+import { ROLE } from '@models/role';
 export interface IOwnProps {
   projects: ProjectResource[];
   isLoading: boolean;
@@ -68,10 +70,37 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       };
     }
 
+    async function mapResultsFn(props, result) {
+      const { dataStore, currentUser } = props;
+      const { projects } = result;
+
+      if (projects && projects.length === 0) {
+        return result;
+      }
+
+      const currentUserId = idFromRecordIdentity(currentUser);
+      const promises = projects.map( p => {
+        const isOwner = attributesFor(p).ownerId === currentUserId;
+        if (isOwner) {
+          return Promise.resolve(isOwner);
+        }
+        return roleInOrganizationOfResource(currentUser, dataStore, p, ROLE.OrganizationAdmin);
+      });
+
+      const canArchive = await Promise.all(promises);
+      const projectResult = projects.map((p, idx) => {
+        p.currentUserCanArchive = canArchive[idx];
+        return p;
+      });
+
+      return Promise.resolve({ ...result, projects: projectResult });
+    }
+
     return compose(
             query(mapNetworkToProps, {
               passthroughError: true,
-              useRemoteDirectly: true
+              useRemoteDirectly: true,
+              mapResultsFn
             }),
     )(WrappedComponent);
   };

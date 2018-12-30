@@ -112,7 +112,7 @@ class Row extends React.Component<IProps> {
 
     return (
       <div
-        data-test-project-row
+        data-test-project-row={projectId}
         className='m-b-md with-shadow'
         style={{ opacity: this.hasDimmStyle ? 0.5 : 1 }}
       >
@@ -120,7 +120,7 @@ class Row extends React.Component<IProps> {
           <div className='col flex align-items-center flex-grow-xs flex-100 p-l-sm'>
             {
               showSelection &&
-              <Checkbox
+              <Checkbox data-test-selector
                 className='m-r-sm'
                 onClick={this.onSelect(project)}
                 checked={this.inRowSelection(project)}

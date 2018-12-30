@@ -26,7 +26,7 @@ export default compose(
   withNetwork(),
   withLoader(({ error, projects }) => !error && !projects),
   withProps(({ projects }) => {
-    const projectFiltered = projects.filter(resource => resource.type === PROJECT);
+    const projectFiltered = projects ? projects.filter(resource => resource.type === PROJECT) : [];
     return {
       projects: projectFiltered,
       tableName: 'archived',

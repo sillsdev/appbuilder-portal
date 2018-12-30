@@ -75,7 +75,7 @@ export default class Display extends React.Component<IProps> {
     };
 
     return (
-      <>
+      <div data-test-project-list>
         <Header {...headerProps}/>
         <ProjectTable { ...tableProps } />
         {(
@@ -83,9 +83,7 @@ export default class Display extends React.Component<IProps> {
             <PaginationFooter className='m-t-lg' { ...this.props } />
           </div>
         )}
-      </>
+      </div>
     );
   }
 }
-
-

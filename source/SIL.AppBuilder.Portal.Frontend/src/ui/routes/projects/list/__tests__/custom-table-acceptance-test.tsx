@@ -1,3 +1,4 @@
+import { when } from '@bigtest/convergence';
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
@@ -8,41 +9,27 @@ import {
   useFakeAuthentication
 } from 'tests/helpers/index';
 
-import page from '@ui/components/project-table/__tests__/page';
+import PageInteractor from './-page-interactor';
+
+import * as ProjectsFactory from './-factory';
 
 describe('Acceptance | My Projects | Column selector', () => {
+  let pageInteractor;
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
   beforeEach(function () {
+
     this.mockGet(200, 'product-definitions', { data: [] });
-    this.mockGet(200, 'projects', {
-      data: [{
-        type: 'projects',
-        id: '1',
-        attributes: {
-          'name': 'Dummy project',
-          'date-archived': null,
-          'language': 'English',
-          'owner-id': 1
-        },
-        relationships: {
-          organization: { data: { id: 1, type: 'organizations' } },
-          group: { data: { id: 1, type: 'groups' } },
-          owner: { data: { id: 1, type: 'users' } }
-        }
-      }],
-      included: [
-        { type: 'organizations', id: 1, attributes: { name: 'Dummy organization' } },
-        { type: 'groups', id: 1, attributes: { name: 'Some Group' } }
-      ]
-    });
+    this.mockGet(200, 'projects', {...ProjectsFactory.projectsResponse});
   });
 
   describe('navigates to my project page', () => {
     beforeEach(async function () {
+      pageInteractor = new PageInteractor();
       await visit('/projects/own');
+      await when(() => pageInteractor.isPresent);
     });
 
     it('is in directory page', () => {
@@ -52,11 +39,11 @@ describe('Acceptance | My Projects | Column selector', () => {
     describe('Default columns are selected', () => {
 
       beforeEach(async function () {
-        await page.clickColumnSelector();
+        await pageInteractor.projectTable.clickColumnSelector();
       });
 
       it('default options are selected', () => {
-        const items = page.selectedItems();
+        const items = pageInteractor.projectTable.selectedItems();
         const itemsText = items.map(i => i.text);
 
         expect(itemsText).to.contain('Owner');

@@ -1,5 +1,6 @@
 import {
   interactor,
+  attribute,
   clickable,
   collection,
   text,
@@ -7,10 +8,23 @@ import {
   Interactor
 } from '@bigtest/interactor';
 
+import { find } from 'lodash';
+import { attributesFor } from '~/data';
+// tslint:disable:max-classes-per-file
+
+class ProjectRow {
+  constructor(selector?: string) { }
+  static defaultScope = '[data-test-project-row]';
+  isRowActionPresent = isPresent('[data-test-row-actions]');
+  select = clickable('[data-test-selector]');
+  projectId = attribute('data-test-project-row');
+}
+
+export const ProjectRowInteractor = interactor(ProjectRow);
 
 class ProjectTable {
   constructor(selector?: string) { }
-
+  static defaultScope = '[data-test-project-table]';
   clickColumnSelector = clickable('[data-test-project-table-columns-selector]');
   selectedItems = collection('[data-test-project-table-columns-selector-item].checked');
   clickOwnerColumn = clickable('[data-test-project-table-columns-selector-item]:first-child');
@@ -20,9 +34,7 @@ class ProjectTable {
   isEmptyTextPresent = isPresent('[data-test-project-list-empty]');
   emptyText = text('[data-test-project-list-empty]');
 
-  rows = collection('[data-test-project-row]', {
-    isRowActionPresent: isPresent('[data-test-row-actions]'),
-  });
+  rows = collection(ProjectRowInteractor.defaultScope, ProjectRowInteractor);
 
   isSortingUp = isPresent('[data-test-up-arrow]');
   isSortingDown = isPresent('[data-test-down-arrow]');
@@ -41,10 +53,14 @@ class ProjectTable {
         return el;
       }).do(el => el.click());
   }
+
+  rowForProjectId(projectId: number) {
+    return find(this.rows(), (r) => parseInt(r.projectId, 10) === projectId);
+  }
 }
 
 export const ProjectTableInteractor = interactor(ProjectTable);
 
 export type TInteractor = ProjectTable & Interactor;
 
-export default new (ProjectTableInteractor as any)('[data-test-project-table]') as TInteractor;
+export default ProjectTableInteractor;
