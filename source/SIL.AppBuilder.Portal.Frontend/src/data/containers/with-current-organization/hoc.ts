@@ -27,9 +27,11 @@ export const withCurrentOrganization = compose<IProps, IProvidedProps>(
       const { history } = ownProps;
 
       return {
-        setCurrentOrganizationId: (id: string) => {
+        setCurrentOrganizationId: (id: string, defaultNav: boolean = true) => {
           dispatch(setCurrentOrganization(id));
-          history.push('/tasks');
+          if (defaultNav){
+            history.push('/tasks');
+          }
         },
       };
     }
