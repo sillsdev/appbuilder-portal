@@ -28,6 +28,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public UserRole ur2 { get; set; }
         public UserRole ur3 { get; set; }
         public UserRole ur4 { get; set; }
+        public String DefaultBuildEngineUrl { get; set; }
+        public String DefaultBuildEngineApiAccessToken { get; set; }
 
         public BuildEngineSystemMonitorTests(TestFixture<BuildEngineStartup> fixture) : base(fixture)
         {
@@ -121,7 +123,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 BuildEngineUrl = "https://testorg4.org",
                 BuildEngineApiAccessToken = "5161678"
             });
-
+            DefaultBuildEngineUrl = "https://default-buildengine:8443";
+            DefaultBuildEngineApiAccessToken = "default_token";
+            Environment.SetEnvironmentVariable("DEFAULT_BUILDENGINE_URL", DefaultBuildEngineUrl);
+            Environment.SetEnvironmentVariable("DEFAULT_BUILDENGINE_API_ACCESS_TOKEN", DefaultBuildEngineApiAccessToken);
         }
         [Fact]
         public void MonitorSystem_Available()
@@ -134,7 +139,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             buildEngineService.CheckBuildEngineStatus();
 
             var systemStatuses = ReadTestData<AppDbContext, SystemStatus>();
-            Assert.Equal(3, systemStatuses.Count);
+            Assert.Equal(4, systemStatuses.Count);
 
             var systemStatus1 = systemStatuses[0];
             Assert.True(systemStatus1.SystemAvailable);
@@ -158,7 +163,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             buildEngineService.CheckBuildEngineStatus();
 
             var systemStatuses = ReadTestData<AppDbContext, SystemStatus>();
-            Assert.Equal(3, systemStatuses.Count);
+            Assert.Equal(4, systemStatuses.Count);
 
             var systemStatus1 = systemStatuses[0];
             Assert.False(systemStatus1.SystemAvailable);
