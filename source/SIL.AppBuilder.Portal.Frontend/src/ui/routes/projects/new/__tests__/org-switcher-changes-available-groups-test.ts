@@ -7,7 +7,7 @@ import {
   setupApplicationTest, setupRequestInterceptor, useFakeAuthentication,
   fakeAuth0Id
 } from 'tests/helpers/index';
-import { openOrgSwitcher } from 'tests/helpers';
+import { openOrgSwitcher, visitTheHomePage } from 'tests/helpers';
 import { applicationTypesData } from 'tests/helpers/fixtures';
 import i18n from '@translations/index';
 
@@ -42,6 +42,7 @@ describe('Acceptance | Project New | group select', () => {
     userInTwoOrganizationsAndNoGroups();
 
     beforeEach(async function() {
+      await visitTheHomePage();
       await openOrgSwitcher();
       await app.orgSwitcher.selectAllOrg();
 
@@ -59,6 +60,7 @@ describe('Acceptance | Project New | group select', () => {
       userInTwoOrganizationsAndNoGroups();
 
       beforeEach(async function() {
+        await visitTheHomePage();
         await newProjectWithSelectedOrg('DeveloperTown');
       });
 
@@ -72,6 +74,7 @@ describe('Acceptance | Project New | group select', () => {
       userInTwoOrganizationsButOnlyOneGroup();
 
       beforeEach(async function() {
+        await visitTheHomePage();
         await newProjectWithSelectedOrg('SIL');
       });
 

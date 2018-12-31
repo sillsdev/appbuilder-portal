@@ -44,10 +44,15 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
   }
 
   toggleOrgSwitcher = () => {
-    const {toggleOrgSwitcher: toggle, organizations} = this.props;
-    if (organizations && organizations.length > 1) {
+    const {toggleOrgSwitcher: toggle} = this.props;
+    if (this.hasMoreThanOneOrg) {
       toggle();
     }
+  }
+
+  get hasMoreThanOneOrg() {
+    const {organizations} = this.props;
+    return (organizations && organizations.length > 1);
   }
 
   render() {
@@ -86,7 +91,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
             {logoUrl}
           </span>
           <span className='bold blue-highlight'>{orgName}</span>
-          { icon }
+          { this.hasMoreThanOneOrg ? icon : null }
         </div>
         <button
           data-test-sidebar-close-button

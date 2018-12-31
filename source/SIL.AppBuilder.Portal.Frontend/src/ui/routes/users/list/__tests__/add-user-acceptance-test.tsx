@@ -8,7 +8,9 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 import page from './-page';
 
 describe('Acceptance | User list | Add User', () => {
-  setupApplicationTest();
+  setupApplicationTest({
+    data: { currentOrganizationId: '1'}
+  });
   setupRequestInterceptor();
   useFakeAuthentication();
   let usersData;
@@ -71,12 +73,29 @@ describe('Acceptance | User list | Add User', () => {
 
             newUsersData.data = [...newUsersData.data];
             newUsersData.data.push(newUser);
-            this.mockGet(200, '/users', newUsersData);
+            this.mockGet(200, '/users', newUsersData, (srv, req, res) => {
+              console.log('second request for user data received.');
+              console.dir(newUsersData);
+            });
             this.mockPost(201, "/organization-memberships", {
               data:{
                 type: "organization-memberships",
                 id: 42,
                 attributes: {}
+              },
+              relationships: {
+                organization: {
+                  data: {
+                    type: "organizations",
+                    id: "1"
+                  }
+                },
+                user: {
+                  data: {
+                    type: "users",
+                    id: "2"
+                  }
+                }
               }
             });
 
