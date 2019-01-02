@@ -78,9 +78,10 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
         return result;
       }
 
-      const currentUserId = idFromRecordIdentity(currentUser);
+      const currentUserId = parseInt(idFromRecordIdentity(currentUser), 10);
       const promises = projects.map( p => {
-        const isOwner = attributesFor(p).ownerId === currentUserId;
+        const projectOwnerId = parseInt(attributesFor(p).ownerId, 10);
+        const isOwner = projectOwnerId === currentUserId;
         if (isOwner) {
           return Promise.resolve(isOwner);
         }
