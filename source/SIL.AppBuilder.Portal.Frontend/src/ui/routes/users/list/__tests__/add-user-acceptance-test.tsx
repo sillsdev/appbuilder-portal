@@ -73,10 +73,7 @@ describe('Acceptance | User list | Add User', () => {
 
             newUsersData.data = [...newUsersData.data];
             newUsersData.data.push(newUser);
-            this.mockGet(200, '/users', newUsersData, (srv, req, res) => {
-              console.log('second request for user data received.');
-              console.dir(newUsersData);
-            });
+            this.mockGet(200, '/users', newUsersData);
             this.mockPost(201, "/organization-memberships", {
               data:{
                 type: "organization-memberships",

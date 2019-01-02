@@ -242,8 +242,8 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         describe('Select a specific organization', () => {
           beforeEach(async function () {
             await switchToOrg('SIL International');
-            console.log('switched to org!');
             await when(() => location().pathname === '/tasks');
+
             visit('/users');
             await when(() => location().pathname === '/users');
             await when(() => userTable.isPresent);
