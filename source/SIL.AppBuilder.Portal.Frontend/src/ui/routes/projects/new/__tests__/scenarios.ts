@@ -54,7 +54,6 @@ export function userInTwoOrganizationsAndNoGroups() {
       ...organizations
     ]
   });
-
 }
 
 export function userInTwoOrganizationsButOnlyOneGroup() {

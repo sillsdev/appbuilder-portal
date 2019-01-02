@@ -27,13 +27,10 @@ export async function visitTheHomePage() {
 }
 
 export async function openOrgSwitcher() {
-  await visit('/');
-
   if (!app.isSidebarVisible) {
     await app.openSidebar();
     await when(() => app.isSidebarVisible);
   }
-
   if (!app.isOrgSwitcherVisible) {
     await app.openOrgSwitcher();
     await when(() => app.isOrgSwitcherVisible);
@@ -45,6 +42,5 @@ export async function switchToOrg(orgName: string) {
   await openOrgSwitcher();
   await app.orgSwitcher.chooseOrganization(orgName);
   await when(() => app.selectedOrg);
-
   expect(app.selectedOrg).to.equal(orgName);
 }

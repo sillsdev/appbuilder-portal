@@ -1,6 +1,8 @@
 
+import { when } from '@bigtest/convergence';
+
 import { describe, it, beforeEach } from '@bigtest/mocha';
-import { visit } from '@bigtest/react';
+import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
 import {
@@ -13,9 +15,7 @@ import switcher from '@ui/components/sidebar/org-switcher/__tests__/page';
 import UserTableInteractor from './-user-table';
 let userTable = null;
 describe('Acceptance | User list | Filtering users by organization', () => {
-  setupApplicationTest({
-    data: { currentOrganizationId: '1'}
-  });
+  setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication({
     data: {
@@ -26,6 +26,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         ['organization-memberships']: {
           data: [
             { id: 1, type: 'organization-memberships' },
+            { id: 4, type: 'organization-memberships' }
           ]
         },
         ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
@@ -222,7 +223,8 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         await switcher.selectAllOrg();
 
         expect(app.selectedOrg).to.equal("All Organizations");
-        await visit('/users');
+        visit('/users');
+        await when( () => userTable.isPresent);
       });
 
       describe('Renders users page', () => {
@@ -240,8 +242,11 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         describe('Select a specific organization', () => {
           beforeEach(async function () {
             await switchToOrg('SIL International');
+            await when(() => location().pathname === '/tasks');
 
-            await visit('/users');
+            visit('/users');
+            await when(() => location().pathname === '/users');
+            await when(() => userTable.isPresent);
           });
 
           it('Only display the users that belong to the selected organization', () => {

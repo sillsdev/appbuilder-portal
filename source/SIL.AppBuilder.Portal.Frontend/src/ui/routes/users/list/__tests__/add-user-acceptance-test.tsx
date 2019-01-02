@@ -8,7 +8,9 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 import page from './-page';
 
 describe('Acceptance | User list | Add User', () => {
-  setupApplicationTest();
+  setupApplicationTest({
+    data: { currentOrganizationId: '1'}
+  });
   setupRequestInterceptor();
   useFakeAuthentication();
   let usersData;
@@ -77,6 +79,20 @@ describe('Acceptance | User list | Add User', () => {
                 type: "organization-memberships",
                 id: 42,
                 attributes: {}
+              },
+              relationships: {
+                organization: {
+                  data: {
+                    type: "organizations",
+                    id: "1"
+                  }
+                },
+                user: {
+                  data: {
+                    type: "users",
+                    id: "2"
+                  }
+                }
               }
             });
 
