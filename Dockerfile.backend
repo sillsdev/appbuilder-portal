@@ -42,6 +42,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Copy build-release files
 WORKDIR /app
 COPY --from=build-release /app/OptimaJet.DWKit.StarterApplication/out ./
+COPY --from=build-release /app/OptimaJet.DWKit.StarterApplication/Templates ./Templates
 COPY --from=build-release /app/run-api.sh ./
 COPY scripts/DB/*.sql scripts/DB/PostgreSQL/*.sql /app/scripts/
 # Install dependencies
