@@ -24,11 +24,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         protected bool BuildEngineLinkAvailable(Organization organization)
         {
+            var endpoint = GetBuildEngineEndpoint(organization);
             var systemStatus = SystemStatusRepository.Get()
-                 .Where(ss => (ss.BuildEngineApiAccessToken == organization.BuildEngineApiAccessToken)
-                        && (ss.BuildEngineUrl == organization.BuildEngineUrl))
+                 .Where(ss => (ss.BuildEngineApiAccessToken == endpoint.ApiAccessToken)
+                        && (ss.BuildEngineUrl == endpoint.Url))
                  .FirstOrDefaultAsync().Result;
-
+                        
             if (systemStatus == null)
             {
                 // TODO: Send Notification
@@ -41,7 +42,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             var endpoint = GetBuildEngineEndpoint(organization);
             if (!endpoint.IsValid()) { return  false; }
-            BuildEngineApi.SetEndpoint(organization.BuildEngineUrl, organization.BuildEngineApiAccessToken);
+            BuildEngineApi.SetEndpoint(endpoint.Url, endpoint.ApiAccessToken);
             return true;
         }
 

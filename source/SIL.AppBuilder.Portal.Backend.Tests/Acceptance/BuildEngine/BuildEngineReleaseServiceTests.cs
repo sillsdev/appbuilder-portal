@@ -57,6 +57,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WebsiteUrl = "https://testorg1.org",
                 BuildEngineUrl = "https://buildengine.testorg1",
                 BuildEngineApiAccessToken = "replace",
+                UseDefaultBuildEngine = false
 
             });
             CurrentUserMembership = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
