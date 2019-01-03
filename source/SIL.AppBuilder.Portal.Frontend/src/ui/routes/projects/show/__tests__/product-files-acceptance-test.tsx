@@ -7,7 +7,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './page';
 
-describe.only('Acceptance | Project View | Product Files', () => {
+describe('Acceptance | Project View | Product Files', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
