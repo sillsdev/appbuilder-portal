@@ -2,7 +2,7 @@ INSERT INTO "Users" ("Name", "Email", "ExternalId", "FamilyName", "GivenName", "
 ( 'Chris Hubbard', 'chris_hubbard@sil.org', 'google-oauth2|116747902156680384840', 'Hubbard', 'Chris', '0', NULL, NULL, NULL),
 ( 'David Moore', 'david_moore1@sil.org', 'google-oauth2|114981819181509824425', 'Moore', 'David', '0', NULL, NULL, NULL),
 ( 'Bill Dyck', 'bill_dyck@sil.org', 'google-oauth2|102643649500459434996', 'Dyck', 'Bill', '0', NULL, NULL, NULL),
-( 'Loren Hawthorne', 'loren_hawthrone@sil.org', 'google-oauth2|116603781884964961816', 'Loren', 'Hawthorne', '0', NULL, NULL, NULL),
+( 'Loren Hawthorne', 'loren_hawthorne@sil.org', 'google-oauth2|116603781884964961816', 'Loren', 'Hawthorne', '0', NULL, NULL, NULL),
 ( 'Chris Hubbard (Kalaam)', 'chris.kalaam@gmail.com', 'auth0|5b578f6197af652b19f9bb41', 'Hubbard', 'Chris', '0', NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "LogoUrl", "OwnerId") VALUES
