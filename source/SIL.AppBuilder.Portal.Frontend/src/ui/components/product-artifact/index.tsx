@@ -2,17 +2,12 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
-import ProductIcon from '@ui/components/product-icon';
 import {
-  ProductDefinitionResource,
-  ProductArtifactResource,
   ProductResource,
   ProductBuildResource,
   attributesFor
 } from '@data';
-import Artifact from './artifact';
-import EmptyLabel from '@ui/components/labels/empty';
-import { isEmpty, compareVia } from '@lib/collection';
+import { compareVia } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import ResourceSelect from '@ui/components/inputs/resource-select';
@@ -38,9 +33,7 @@ type IProps =
 class Builds extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
-
     const { productBuilds } = props;
-
     this.state = {
       activeVersion: productBuilds[0]
     };
@@ -51,14 +44,11 @@ class Builds extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { artifacts, t, product, productBuilds } = this.props;
+    const { t, product, productBuilds, productDefinition } = this.props;
     const { activeVersion } = this.state;
-
     const sortedBuilds = productBuilds
       .sort(compareVia(build => attributesFor(build).version));
-
-    return (
-      <div data-test-build>
+    return (<div data-test-build>
         <ResourceSelect
           items={sortedBuilds}
           labelField={(build: ProductBuildResource) => {
@@ -74,14 +64,11 @@ class Builds extends React.Component<IProps, IState> {
           onChange={this.changeSelectedBuild}
           className='is-large p-b-md'
         />
-
         <Artifacts
           product={product}
           productBuild={activeVersion}
         />
-      </div>
-    );
-
+      </div>);
   }
 
 }
@@ -90,9 +77,8 @@ export default compose<IProps, IExpectedProps>(
   withTranslations,
   withOrbit((passedProps: IExpectedProps) => {
     const { product } = passedProps;
-
     return {
-      productBuilds: q => q.findRelatedRecords(product, 'productBuilds'),
+      productBuilds: q => q.findRelatedRecords(product, 'productBuilds')
     };
   })
 )(Builds);

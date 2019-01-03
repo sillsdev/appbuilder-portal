@@ -28,6 +28,10 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
   render() {
     const { items, labelField, value, onChange, ...other } = this.props;
 
+    if (!items || items.length === 0){
+      return <Dropdown data-test-resource-select disabled text='No Builds Yet'/>;
+    }
+
     const options = items.map(i => {
       let label;
       const attributes = attributesFor(i);

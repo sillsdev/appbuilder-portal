@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, defaultProps, branch } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import ProductIcon from '@ui/components/product-icon';
@@ -88,12 +88,21 @@ class ProductArtifact extends React.Component<IProps, IState> {
 
 export default compose<IProps, IExpectedProps>(
   withTranslations,
-  withOrbit((passedProps: IExpectedProps) => {
-    const { productBuild, product } = passedProps;
-
+  withOrbit( props => {
+    const {product} = props;
     return {
       productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
-      artifacts: q => q.findRelatedRecords(productBuild, 'productArtifacts'),
     };
-  })
+  }),
+  branch( props => !!props.productBuild,
+    withOrbit((passedProps: IExpectedProps) => {
+      const { productBuild, product } = passedProps;
+      return {
+        artifacts: q => q.findRelatedRecords(productBuild, 'productArtifacts'),
+      };
+    }),
+    defaultProps({
+      artifacts: [],
+    })
+  )
 )(ProductArtifact);
