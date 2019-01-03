@@ -40,14 +40,14 @@ export default class Users extends React.Component<IProps> {
   }
 
   render() {
-    const { t, isLoading, roles } = this.props;
+    const { t, isLoading, roles, allOrgsSelected } = this.props;
     const addUserProps = { t, roles };
     return (
       <div className='ui container users' data-test-manageusers>
         <div className='flex justify-content-space-between'>
           <div className="page-heading flex align-items-center">
             <h1>{t('users.title')}</h1>
-            <AddUser {...addUserProps} onUserAdded={this.onUserAdded}/>
+            { !allOrgsSelected ? <AddUser {...addUserProps} onUserAdded={this.onUserAdded}/> : null }
           </div>
           <div className='flex align-items-center'>
             <DebouncedSearch
