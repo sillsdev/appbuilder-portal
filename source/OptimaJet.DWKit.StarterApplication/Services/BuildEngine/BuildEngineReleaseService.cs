@@ -8,73 +8,101 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using SIL.AppBuilder.BuildEngineApiClient;
 using System.Threading.Tasks;
+using Hangfire.Server;
+using System.Collections.Generic;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineReleaseService : BuildEngineServiceBase
     {
+        private readonly SendNotificationService sendNotificationService;
+
         public IRecurringJobManager RecurringJobManager { get; }
         public IJobRepository<Product, Guid> ProductRepository { get; }
  
         public BuildEngineReleaseService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
+            SendNotificationService sendNotificationService,
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<SystemStatus> systemStatusRepository
-        ) : base(buildEngineApi, systemStatusRepository)
+        ) : base(buildEngineApi, sendNotificationService, systemStatusRepository)
         {
             RecurringJobManager = recurringJobManager;
+            this.sendNotificationService = sendNotificationService;
             ProductRepository = productRepository;
         }
-        public void CreateRelease(Guid productId, string channel)
+        public void CreateRelease(Guid productId, string channel, PerformContext context)
         {
-            CreateReleaseAsync(productId, channel).Wait();
+            CreateReleaseAsync(productId, channel, context).Wait();
         }
         public void CheckRelease(Guid productId)
         {
             CheckReleaseAsync(productId).Wait();
         }
-        public async Task CreateReleaseAsync(Guid productId, string channel)
+        public async Task CreateReleaseAsync(Guid productId, string channel, PerformContext context)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
+                                                 .Include(p => p.ProductDefinition)
                                                  .Include(p => p.Project)
                                                  .ThenInclude(pr => pr.Organization)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Owner)
                                                  .FirstOrDefaultAsync();
             if ((product == null) || (product.WorkflowJobId == 0) || (product.WorkflowBuildId == 0))
             {
                 // Can't find the product record associated with
                 // this process or there is no job created for this product.
                 // Exception will trigger retry
-                // TODO: Send notification record
                 // Don't send exception because there doesn't seem to be a point in retrying
+                var messageParms = new Dictionary<string, object>
+                {
+                    { "productId", productId.ToString() }
+                };
+                await sendNotificationService.SendNotificationToSuperAdminsAsync("releaseProductRecordNotFound",
+                                                                               messageParms);
+
                 return;
 
             }
             if (!BuildEngineLinkAvailable(product.Project.Organization))
             {
                 // If the build engine isn't available, there is no point in continuing
-                // Notifications for this are handled by the monitor
                 // Throw exception to retry
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", product.Project.Name },
+                        { "productName", product.ProductDefinition.Name}
+                    };
+                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "releaseFailedUnableToConnect", messageParms);
                 throw new Exception("Connection not available");
             }
-            await CreateBuildEngineReleaseAsync(product, channel);
+            await CreateBuildEngineReleaseAsync(product, channel, context);
             return;
         }
         public async Task CheckReleaseAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
-                                     .Where(p => p.Id == productId)
-                                     .Include(p => p.Project)
-                                     .ThenInclude(pr => pr.Organization)
-                                     .FirstOrDefaultAsync();
+                                                 .Where(p => p.Id == productId)
+                                                 .Include(p => p.ProductDefinition)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Organization)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Owner)
+                                                 .FirstOrDefaultAsync();
             if (product == null)
             {
                 // Can't find the product record associated with
                 // this process or there is no job created for this product.
                 // Exception will trigger retry
-                // TODO: Send notification record
                 // Don't send exception because there doesn't seem to be a point in retrying
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "productId", productId.ToString()}
+                    };
+                await sendNotificationService.SendNotificationToSuperAdminsAsync("releaseProductRecordNotFound",
+                                                                               messageParms);
                 ClearRecurringJob(productId);
                 return;
 
@@ -121,7 +149,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             }
         }
 
-        protected async Task CreateBuildEngineReleaseAsync(Product product, string channel)
+        protected async Task CreateBuildEngineReleaseAsync(Product product, string channel, PerformContext context)
         {
             var release = new Release
             {
@@ -144,7 +172,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             }
             else
             {
-                // TODO: Send Notification
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", product.Project.Name },
+                        { "productName", product.ProductDefinition.Name}
+                    };
+                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "releaseFailedUnableToCreate", messageParms);
                 // Throw Exception to force retry
                 throw new Exception("Create release failed");
             }
@@ -162,7 +195,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     }
                     else
                     {
-                        ReleaseCreationFailed(product, buildEngineRelease);
+                        await ReleaseCreationFailedAsync(product, buildEngineRelease);
                     }
                 }
             }
@@ -174,10 +207,25 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             product.DatePublished = DateTime.UtcNow;
             await ProductRepository.UpdateAsync(product);
+            var messageParms = new Dictionary<string, object>()
+            {
+                { "projectName", product.Project.Name },
+                { "productName", product.ProductDefinition.Name}
+            };
+            await sendNotificationService.SendNotificationToUserAsync(product.Project.Owner, "releaseCompletedSuccessfully", messageParms);
         }
-        protected void ReleaseCreationFailed(Product product, ReleaseResponse buildEngineRelease)
+        protected async Task ReleaseCreationFailedAsync(Product product, ReleaseResponse buildEngineRelease)
         {
             ClearRecurringJob(product.Id);
+            var messageParms = new Dictionary<string, object>()
+            {
+                { "projectName", product.Project.Name },
+                { "productName", product.ProductDefinition.Name},
+                { "releaseStatus", buildEngineRelease.Status },
+                { "releaseError", buildEngineRelease.Error },
+                { "buildEngineUrl", product.Project.Organization.BuildEngineUrl }
+            };
+            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "releaseFailed", messageParms);
         }
         protected ReleaseResponse GetBuildEngineRelease(Product product)
         {

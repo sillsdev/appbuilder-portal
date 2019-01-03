@@ -553,7 +553,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 It.Is<Job>(job =>
                            job.Method.Name == "UpdateProject" &&
                            job.Type == typeof(BuildEngineProjectService) &&
-                           job.Args.Count == 1),
+                           job.Args.Count == 2),
                 It.IsAny<EnqueuedState>()));
 
         }

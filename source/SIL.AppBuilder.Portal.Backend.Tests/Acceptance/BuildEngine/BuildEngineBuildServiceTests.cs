@@ -13,6 +13,9 @@ using Job = Hangfire.Common.Job;
 using Hangfire;
 using System.Collections.Generic;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
+using OptimaJet.DWKit.StarterApplication.Services;
+using Hangfire.Server;
+using System.Threading;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {
@@ -144,18 +147,35 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Product_Not_FoundAsync()
         {
             BuildTestData();
+            var roleSA = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.SuperAdmin
+            });
+            var userRole1 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleSA.Id
+            });
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            await buildBuildService.CreateBuildAsync(Guid.NewGuid());
-            // TODO: Verify notification
+            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
+            await buildBuildService.CreateBuildAsync(Guid.NewGuid(), null);
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == CurrentUser.ExternalId)));
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Build_Connection_UnavailableAsync()
         {
             BuildTestData(false);
+            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Single(notifications);
+            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildFailedUnableToConnect", notifications[0].MessageId);
         }
+
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Build_CreateAsync()
         {
@@ -174,7 +194,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Error = ""
             };
             mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>())).Returns(buildResponse);
-            await buildBuildService.CreateBuildAsync(product1.Id);
+            await buildBuildService.CreateBuildAsync(product1.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
@@ -281,7 +301,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Equal(modifiedArtifact1.ContentType, modifiedApk.ContentType);
             Assert.Equal(modifiedArtifact1.FileSize, modifiedApk.FileSize);
             var modifiedProductBuilds = ReadTestData<AppDbContext, ProductBuild>();
-            Assert.Equal(1, modifiedProductBuilds.Count);
+            Assert.Single(modifiedProductBuilds);
             var build = modifiedProductBuilds.First();
             Assert.Equal("4.7.6", build.Version);
         }
@@ -364,6 +384,23 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
             var status = await buildBuildService.GetStatusAsync(product2.Id);
             Assert.Equal(BuildEngineStatus.Failure, status);
+        }
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task Build_CreateAsync_Exception()
+        {
+            BuildTestData();
+            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var mockRecurringTaskManager = Mock.Get(buildBuildService.RecurringJobManager);
+            mockRecurringTaskManager.Reset();
+            mockBuildEngine.Reset();
+            mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>())).Returns<BuildResponse>(null);
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, null));
+            mockBuildEngine.Verify(x => x.SetEndpoint(
+                It.Is<String>(u => u == org1.BuildEngineUrl),
+                It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
+            ));
+            Assert.Equal("Create build failed", ex.Message);
         }
     }
 }

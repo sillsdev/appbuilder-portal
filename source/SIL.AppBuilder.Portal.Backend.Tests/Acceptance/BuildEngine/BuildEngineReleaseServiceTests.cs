@@ -148,7 +148,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildReleaseService.CreateReleaseAsync(product1.Id, "production"));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildReleaseService.CreateReleaseAsync(product1.Id, "production", null));
             Assert.Equal("Connection not available", ex.Message);
         }
         [Fact(Skip = skipAcceptanceTest)]
@@ -173,7 +173,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             {
                 Channel = "production"
             };
-            await buildReleaseService.CreateReleaseAsync(product1.Id, "production");
+            await buildReleaseService.CreateReleaseAsync(product1.Id, "production", null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)

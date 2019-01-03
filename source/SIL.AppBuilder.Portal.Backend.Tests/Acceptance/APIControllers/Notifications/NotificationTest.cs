@@ -77,15 +77,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 Message = "Build Engine for organization SIL International status change: connected",
                 UserId = user1.Id
             });
-            //notification2 = new Notification
-            //{
-            //    MessageId = "notifications.buildengineConnected",
-            //    UserId = user1.Id,
-            //    User = user1,
-            //    MessageSubstitutionsJson = serializedParm,
-            //    DateCreated = DateTime.UtcNow.AddMinutes(-100),
-            //    DateUpdated = DateTime.UtcNow.AddMinutes(-100)
-            //};
         }
         public NotificationTest(TestFixture<BuildEngineStartup> fixture) : base(fixture)
         {

@@ -134,7 +134,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
-            await buildProductService.ManageProductAsync(Guid.NewGuid());
+            await buildProductService.ManageProductAsync(Guid.NewGuid(), null);
             // TODO: Verify notification
         }
         [Fact (Skip = skipAcceptanceTest)]
@@ -152,7 +152,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockBuildEngine.Setup(x => x.CreateJob(It.IsAny<BuildEngineJob>())).Returns(jobResponse);
             systemStatus1.SystemAvailable = true;
 
-            await buildProductService.ManageProductAsync(product1.Id);
+            await buildProductService.ManageProductAsync(product1.Id, null);
 
             var products = ReadTestData<AppDbContext, Product>();
             var modifiedProduct = products.First(p => p.Id == product1.Id);
@@ -165,7 +165,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
             var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
             systemStatus1.SystemAvailable = false;
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProductService.ManageProductAsync(product1.Id));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProductService.ManageProductAsync(product1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
 
         }

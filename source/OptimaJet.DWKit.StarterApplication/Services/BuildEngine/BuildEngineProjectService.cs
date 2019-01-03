@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
@@ -18,7 +19,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected IJobRepository<Project> ProjectRepository;
 
         public IRecurringJobManager RecurringJobManager { get; set; }
-        public SendNotificationService SendNotificationService { get; }
+        public SendNotificationService SendNotificationSvc { get; }
 
         public BuildEngineProjectService(
             IRecurringJobManager recurringJobManager,
@@ -26,23 +27,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             SendNotificationService sendNotificationService,
             IJobRepository<Project> projectRepository,
             IJobRepository<SystemStatus> systemStatusRepository
-        ) : base(buildEngineApi, systemStatusRepository)
+        ) : base(buildEngineApi, sendNotificationService, systemStatusRepository)
         {
             RecurringJobManager = recurringJobManager;
-            SendNotificationService = sendNotificationService;
+            SendNotificationSvc = sendNotificationService;
             ProjectRepository = projectRepository;
         }
 
-        public void ManageProject(int projectId)
+        public void ManageProject(int projectId, PerformContext context)
         {
             // Hangfire methods cannot be async, hence the Wait
-            ManageProjectAsync(projectId).Wait();
+            ManageProjectAsync(projectId, context).Wait();
         }
-        public void UpdateProject(int projectId)
+        public void UpdateProject(int projectId, PerformContext context)
         {
-            UpdateProjectAsync(projectId).Wait();
+            UpdateProjectAsync(projectId, context).Wait();
         }
-        public async Task ManageProjectAsync(int projectId)
+        public async Task ManageProjectAsync(int projectId, PerformContext context)
         {
             var project = await ProjectRepository.Get()
                 .Where(p => p.Id == projectId)
@@ -55,8 +56,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             {
                 // Can't find the project record whose creation should have
                 // triggered this process.  Exception will trigger retry
-                // TODO: Send notification record
                 // Don't send exception because there doesn't seem to be a point in retrying
+                var messageParms = new Dictionary<string, object>()
+                {
+                    { "projectId", projectId.ToString() }
+                };
+                await SendNotificationSvc.SendNotificationToSuperAdminsAsync("projectRecordNotFound",
+                                                                               messageParms);
                 ClearAndExit(projectId);
                 return;
             }
@@ -68,16 +74,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     // Notifications for this are handled by the monitor
                     // Throw exception to retry
                     var messageParms = new Dictionary<string, object>()
-                    {
-                        { "orgName", project.Organization.Name },
-                        { "projectName", project.Name }
-                    };
-                    await SendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(project.Organization, project.Owner,
-                                                                                   "notifications.projectFailedBuildEngine",
-                                                                                   messageParms);
+                        {
+                            { "orgName", project.Organization.Name },
+                            { "projectName", project.Name }
+                        };
+                    await SendNotificationOnFinalRetryAsync(context, project.Organization, project.Owner, "projectFailedBuildEngine", messageParms);
                     throw new Exception("Connection not available");
                 }
-                await CreateBuildEngineProjectAsync(project);
+                await CreateBuildEngineProjectAsync(project, context);
                 return;
             }
             else
@@ -92,7 +96,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             }
         }
 
-        protected async Task CreateBuildEngineProjectAsync(Project project)
+        protected async Task CreateBuildEngineProjectAsync(Project project, PerformContext context)
         {
             var buildEngineProject = new BuildEngineProject
             {
@@ -113,12 +117,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 // Set state to active?
                 project.WorkflowProjectId = projectResponse.Id;
                 await ProjectRepository.UpdateAsync(project);
-                var monitorJob = Job.FromExpression<BuildEngineProjectService>(service => service.ManageProject(project.Id));
+                var monitorJob = Job.FromExpression<BuildEngineProjectService>(service => service.ManageProject(project.Id, null));
                 RecurringJobManager.AddOrUpdate(GetHangfireToken(project.Id), monitorJob, "* * * * *");
             }
             else
             {
-                // TODO: Send Notification
+                if (IsFinalRetry(context))
+                {
+                    var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", project.Name }
+                    };
+                    await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(project.Organization, project.Owner,
+                                                                                   "projectFailedUnableToCreate",
+                                                                                   messageParms);
+                }
                 // Throw Exception to force retry
                 throw new Exception("Create project failed");
             }
@@ -129,6 +142,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             if ((buildEngineProject == null) || (buildEngineProject.Id == 0))
             {
                 // Attempt to get project failed, retry in one minute
+                // This is normal since it will take some time for the build engine
+                // to actually create the project
                 return;
             }
             if (buildEngineProject.Status == "completed")
@@ -139,11 +154,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 }
                 else
                 {
-                    ProjectCreationFailed(project, buildEngineProject);
+                    await ProjectCreationFailedAsync(project, buildEngineProject);
                 }
             }
             return;
         }
+        /// <summary>
+        /// Retrieve the project information from the build engine.
+        /// </summary>
+        /// <returns> The project information from the build engine or null if 
+        ///           unable to connect to the build engine. </returns>
+        /// <param name="project">Project record from the database </param>
         protected ProjectResponse GetBuildEngineProject(Project project)
         {
             if (!SetBuildEngineEndpoint(project.Organization))
@@ -157,10 +178,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             project.WorkflowProjectUrl = projectResponse.Url;
             await ProjectRepository.UpdateAsync(project);
+            var messageParms = new Dictionary<string, object>()
+            {
+                { "projectName", project.Name }
+            };
+            await SendNotificationSvc.SendNotificationToUserAsync(project.Owner, "projectCreatedSuccessfully", messageParms);
             ClearAndExit(project.Id);
         }
-        protected void ProjectCreationFailed(Project project, ProjectResponse projectResponse)
+        protected async Task ProjectCreationFailedAsync(Project project, ProjectResponse projectResponse)
         {
+            var messageParms = new Dictionary<string, object>()
+            {
+                { "projectName", project.Name },
+                { "projectStatus", projectResponse.Status },
+                { "projectError", projectResponse.Error },
+                { "buildEngineUrl", project.Organization.BuildEngineUrl }
+            };
+            await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(project.Organization, project.Owner, "projectCreationFailed", messageParms);
             ClearAndExit(project.Id);
         }
         // This method will kill the current recurring job if it exists
@@ -209,7 +243,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     return BuildEngineStatus.Unavailable;
             }
         }
-        public async Task UpdateProjectAsync(int projectId)
+        public async Task UpdateProjectAsync(int projectId, PerformContext context)
         {
             var project = await ProjectRepository.Get()
                 .Where(p => p.Id == projectId)
@@ -220,8 +254,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             {
                 // Can't find the project record whose creation should have
                 // triggered this process.  Exception will trigger retry
-                // TODO: Send notification record
                 // Don't send exception because there doesn't seem to be a point in retrying
+                var messageParms = new Dictionary<string, object>()
+                {
+                    { "projectId", projectId.ToString() }
+                };
+                await SendNotificationSvc.SendNotificationToSuperAdminsAsync("projectRecordNotFound",
+                                                                               messageParms);
                 ClearAndExit(projectId);
                 return;
             }
@@ -230,9 +269,47 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 UserId = project.Owner.Email,
                 PublishingKey = project.Owner.PublishingKey,
             };
+            if (!BuildEngineLinkAvailable(project.Organization))
+            {
+                if (IsFinalRetry(context))
+                {
+                    var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", project.Name }
+                    };
+                    await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(project.Organization, project.Owner,
+                                                                                   "projectUpdateFailedBuildEngine",
+                                                                                   messageParms);
+                }
+                // Throw Exception to force retry
+                throw new Exception("Connection not available");
+            }
+
             if (SetBuildEngineEndpoint(project.Organization))
             {
                 var projectResponse = BuildEngineApi.UpdateProject(project.WorkflowProjectId, buildEngineProject);
+                if (projectResponse.Status == "completed" && projectResponse.Result == "SUCCESS")
+                {
+                    var messageParms = new Dictionary<string, object>()
+                    {
+                        {"projectName", project.Name}
+                    };
+                    await SendNotificationSvc.SendNotificationToUserAsync(project.Owner, "projectUpdateComplete",
+                                                                                   messageParms);
+                }
+                else
+                {
+                    var messageParms = new Dictionary<string, object>()
+                    {
+                        {"projectName", project.Name},
+                        {"buildEngineProjectId", project.WorkflowProjectId.ToString()},
+                        {"status", projectResponse.Status ?? "null"},
+                        {"result", projectResponse.Result ?? "null"}
+                    };
+                    await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(project.Organization, project.Owner, "projectUpdateFailed",
+                                                                                   messageParms);
+
+                }
             }
         }
     }

@@ -182,7 +182,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            await buildProjectService.ManageProjectAsync(999);
+            await buildProjectService.ManageProjectAsync(999, null);
             // TODO: Verify notification
         }
         [Fact(Skip = skipAcceptanceTest)]
@@ -190,7 +190,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
 
         }
@@ -199,7 +199,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(true, "4323864");
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
         }
         [Fact(Skip = skipAcceptanceTest)]
@@ -226,7 +226,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Url = ""
             };
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns(projectResponse);
-            await buildProjectService.ManageProjectAsync(project1.Id);
+            await buildProjectService.ManageProjectAsync(project1.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
@@ -292,7 +292,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns((ProjectResponse)null);
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Create project failed", ex.Message);
          }
         [Fact(Skip = skipAcceptanceTest)]
@@ -311,7 +311,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
             };
             mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
-            await buildProjectService.ManageProjectAsync(project3.Id);
+            await buildProjectService.ManageProjectAsync(project3.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
@@ -339,7 +339,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
             };
             mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
-            await buildProjectService.ManageProjectAsync(project3.Id);
+            await buildProjectService.ManageProjectAsync(project3.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
@@ -405,7 +405,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
             };
             mockBuildEngine.Setup(x => x.UpdateProject(It.IsAny<int>(),It.IsAny<BuildEngineProject>())).Returns(projectResponse);
-            await buildProjectService.UpdateProjectAsync(project2.Id);
+            await buildProjectService.UpdateProjectAsync(project2.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
