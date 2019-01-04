@@ -10,7 +10,7 @@ interface IProps<T> {
   labelField: MaybeFunction<string, T>;
   value: T;
   onChange: (selected: T) => void;
-
+  noResourcesLabel: string;
   // dom / props for semantic
   className?: string;
 }
@@ -26,7 +26,11 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
   }
 
   render() {
-    const { items, labelField, value, onChange, ...other } = this.props;
+    const { noResourcesLabel, items, labelField, value, onChange, ...other } = this.props;
+
+    if (!items || items.length === 0){
+      return <Dropdown data-test-resource-select disabled text={noResourcesLabel}/>;
+    }
 
     const options = items.map(i => {
       let label;

@@ -164,6 +164,7 @@
     "reassign": "Reassign"
   },
   "projects": {
+    "noBuilds": "No Builds Yet",
     "latestBuild": "Latest Build ({version})",
     "switcher": {
       "myProjects": "My Projects ({numProjects})",

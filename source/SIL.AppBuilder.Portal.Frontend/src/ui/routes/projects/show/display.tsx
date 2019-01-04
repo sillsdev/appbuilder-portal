@@ -104,7 +104,7 @@ class Display extends React.Component<IProps> {
               <Menu.Item
                 key={1}
                 className='bold p-b-sm p-l-md p-r-md uppercase'
-                data-test-project-files-tab
+                data-test-project-overview-tab
                 name={t('project.overview')}
               />
             ),
