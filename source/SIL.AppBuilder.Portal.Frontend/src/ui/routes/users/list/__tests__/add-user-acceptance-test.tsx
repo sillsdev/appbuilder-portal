@@ -1,13 +1,15 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { when } from '@bigtest/convergence';
-import { visit, location } from '@bigtest/react';
+import { visit } from '@bigtest/react';
 import { expect } from 'chai';
+import { fakeAuth0Id } from 'tests/helpers/jwt';
+import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
 import page from './-page';
 
-describe('Acceptance | User list | Add User', () => {
+describe.only('Acceptance | User list | Add User', () => {
   setupRequestInterceptor();
   let usersData;
   let user;
@@ -41,7 +43,62 @@ describe('Acceptance | User list | Add User', () => {
       setupApplicationTest({
         data: {currentOrganizationId: ''}
       });
-      useFakeAuthentication();
+      useFakeAuthentication({
+        data: {
+          id: 1,
+          type: 'users',
+          attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+          relationships: {
+            ['organization-memberships']: {
+              data: [
+                { id: 1, type: 'organization-memberships' },
+                { id: 2, type: 'organization-memberships' },
+              ]
+            },
+            ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
+          }
+        },
+        included: [
+          {
+            id: 1,
+            type: 'organization-memberships',
+            attributes: {},
+            relationships: {
+              user: { data: { id: 1, type: 'users' } },
+              organization: { data: { id: 1, type: 'organizations' } }
+            }
+          },
+          {
+            id: 2,
+            type: 'organization-memberships',
+            attributes: {},
+            relationships: {
+              user: { data: { id: 1, type: 'users' } },
+              organization: { data: { id: 2, type: 'organizations' } }
+            }
+          },
+          {
+            type: 'organizations',
+            id: 1,
+            attributes: { name: 'DeveloperTown' }
+          },
+          {
+            type: 'organizations',
+            id: 2,
+            attributes: { name: 'SIL' }
+          },
+          {
+            id: 1,
+            type: 'groups' ,
+            attributes: { name: 'Some Group' },
+            relationships: {
+              organization: { data: { id: 1, type: 'organizations' } }
+            }
+          },
+          userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 1 }),
+          roles.superAdmin,
+        ]
+      });
       beforeEach(async () => {
         visit('/users');
         await when(() => page.isVisible);
