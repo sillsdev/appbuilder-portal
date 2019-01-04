@@ -207,7 +207,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project4.Id));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project4.Id, null));
             Assert.Equal("Connection not available", ex.Message);
         }
         [Fact(Skip = skipAcceptanceTest)]
@@ -263,7 +263,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Url = ""
             };
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns(projectResponse);
-            await buildProjectService.ManageProjectAsync(project4.Id);
+            await buildProjectService.ManageProjectAsync(project4.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == DefaultBuildEngineUrl),
                 It.Is<String>(t => t == DefaultBuildEngineApiAccessToken)
