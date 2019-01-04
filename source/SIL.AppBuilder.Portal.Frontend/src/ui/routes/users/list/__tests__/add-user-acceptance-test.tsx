@@ -9,7 +9,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './-page';
 
-describe.only('Acceptance | User list | Add User', () => {
+describe('Acceptance | User list | Add User', () => {
   setupRequestInterceptor();
   let usersData;
   let user;
