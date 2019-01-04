@@ -168,7 +168,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     { "to", product.Project.Owner.Name},
                     { "comment", task.Comment ?? ""}
                 };
-                await SendNotificationService.SendNotificationToUserAsync( product.Project.Owner,
+                await SendNotificationService.SendNotificationToUserAsync( user,
                                                                            "userTaskAdded",
                                                                            messageParms);
 
