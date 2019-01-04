@@ -99,7 +99,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 if (givenName == null)
                 {
                     var auth = AuthType;
-                    if (string.Compare(auth, "auth0", StringComparison.Ordinal) == 0)
+                    if (auth.StartsWith("auth0", StringComparison.Ordinal))
                     {
                         try
                         {
@@ -127,7 +127,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 if (familyName == null)
                 {
                     var auth = AuthType;
-                    if (string.Compare(auth, "auth0", StringComparison.Ordinal) == 0)
+                    if (auth.StartsWith("auth0", StringComparison.Ordinal))
                     {
                         try
                         {
