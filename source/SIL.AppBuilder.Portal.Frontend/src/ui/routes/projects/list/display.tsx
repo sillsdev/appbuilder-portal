@@ -40,6 +40,12 @@ export default class Display extends React.Component<IProps> {
     updateFilter({ attribute: 'search-term', value: term });
   }
 
+  afterBulkAction = () => {
+    if (this.props.refetch) {
+      this.props.refetch();
+    }
+  }
+
   render() {
     const {
       tableName, projects,
@@ -71,7 +77,8 @@ export default class Display extends React.Component<IProps> {
       onSearch: this.search,
       projects,
       selectedRows,
-      activeProjectColumns, possibleColumns
+      activeProjectColumns, possibleColumns,
+      onBulkActionComplete: this.afterBulkAction,
     };
 
     return (

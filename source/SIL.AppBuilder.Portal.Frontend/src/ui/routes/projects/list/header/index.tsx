@@ -26,6 +26,7 @@ import { idFromRecordIdentity } from '~/data/store-helpers';
 interface IOwnProps {
   filter: string;
   onSearch: (term: string) => any;
+  onBulkActionComplete: () => void;
 }
 
 type IProps =
@@ -46,6 +47,7 @@ class Header extends React.Component<IProps> {
     }catch(e) {
       toast.error(e);
     }
+    this.afterBulkAction();
   }
 
   onBulkReactivate = async () => {
@@ -56,6 +58,13 @@ class Header extends React.Component<IProps> {
       toast.success('Selected projects reactivated');
     } catch (e) {
       toast.error(e);
+    }
+    this.afterBulkAction();
+  }
+
+  afterBulkAction = () => {
+    if (this.props.onBulkActionComplete) {
+      this.props.onBulkActionComplete();
     }
   }
 
@@ -75,12 +84,12 @@ class Header extends React.Component<IProps> {
     return this.props.location.pathname.endsWith(PROJECT_ROUTES.OWN);
   }
 
-  get isInOrganizastionProject(){
+  get isInOrganizationProject(){
     return this.props.location.pathname.endsWith(PROJECT_ROUTES.ORGANIZATION);
   }
 
   get isInActiveProject(){
-    return this.isInOrganizastionProject || this.isInOwnProject;
+    return this.isInOrganizationProject || this.isInOwnProject;
   }
 
   get isInArchivedProject() {
