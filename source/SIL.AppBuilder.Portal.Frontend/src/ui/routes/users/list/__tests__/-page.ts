@@ -2,7 +2,8 @@
 import {
   clickable,
   interactor,
-  Interactor
+  Interactor,
+  scoped
 } from '@bigtest/interactor';
 
 import UserTableInteractor from './-user-table';
@@ -13,6 +14,7 @@ export class UsersPageInteractor {
   userTable = new UserTableInteractor();
   addUserModal = AddUserModalInteractor;
   addUser = clickable('[data-test-users-adduser-open]');
+  addUserButton = scoped('[data-test-users-adduser-open]');
 }
 
 const i = interactor(UsersPageInteractor);

@@ -1,49 +1,124 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { when } from '@bigtest/convergence';
-import { visit, location } from '@bigtest/react';
+import { visit } from '@bigtest/react';
 import { expect } from 'chai';
+import { fakeAuth0Id } from 'tests/helpers/jwt';
+import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
 import page from './-page';
 
 describe('Acceptance | User list | Add User', () => {
-  setupApplicationTest({
-    data: { currentOrganizationId: '1'}
-  });
   setupRequestInterceptor();
-  useFakeAuthentication();
   let usersData;
   let user;
-  describe('from users page', () => {
-    beforeEach(async function() {
-      user = {
-        type: 'users',
-        id: '1',
-        attributes: {
-          name: "Fake user",
-          email: 'el-fake-o@fake.com',
-          'is-locked': false
-        }
-      };
-      usersData = {
-        data: [user]
-      };
-      this.mockGet(200, '/users', usersData);
+  beforeEach(async function () {
+    user = {
+      type: 'users',
+      id: '1',
+      attributes: {
+        name: "Fake user",
+        email: 'el-fake-o@fake.com',
+        'is-locked': false
+      }
+    };
+    usersData = {
+      data: [user]
+    };
+    this.mockGet(200, '/users', usersData);
 
-      this.mockGet(200,'/groups', {
-        data: [{
-          type: 'groups',
-          id: '2',
-          attributes: {
-            name: 'Fake group'
+    this.mockGet(200, '/groups', {
+      data: [{
+        type: 'groups',
+        id: '2',
+        attributes: {
+          name: 'Fake group'
+        }
+      }]
+    });
+  });
+
+  describe('in all orgs context', () => {
+      setupApplicationTest({
+        data: {currentOrganizationId: ''}
+      });
+      useFakeAuthentication({
+        data: {
+          id: 1,
+          type: 'users',
+          attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+          relationships: {
+            ['organization-memberships']: {
+              data: [
+                { id: 1, type: 'organization-memberships' },
+                { id: 2, type: 'organization-memberships' },
+              ]
+            },
+            ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
           }
-        }]
+        },
+        included: [
+          {
+            id: 1,
+            type: 'organization-memberships',
+            attributes: {},
+            relationships: {
+              user: { data: { id: 1, type: 'users' } },
+              organization: { data: { id: 1, type: 'organizations' } }
+            }
+          },
+          {
+            id: 2,
+            type: 'organization-memberships',
+            attributes: {},
+            relationships: {
+              user: { data: { id: 1, type: 'users' } },
+              organization: { data: { id: 2, type: 'organizations' } }
+            }
+          },
+          {
+            type: 'organizations',
+            id: 1,
+            attributes: { name: 'DeveloperTown' }
+          },
+          {
+            type: 'organizations',
+            id: 2,
+            attributes: { name: 'SIL' }
+          },
+          {
+            id: 1,
+            type: 'groups' ,
+            attributes: { name: 'Some Group' },
+            relationships: {
+              organization: { data: { id: 1, type: 'organizations' } }
+            }
+          },
+          userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 1 }),
+          roles.superAdmin,
+        ]
+      });
+      beforeEach(async () => {
+        visit('/users');
+        await when(() => page.isVisible);
+        await when(() => page.userTable.isVisible);
       });
 
+      it.always('should not show add users button', () => {
+        expect(page.addUserButton.isPresent).to.be.false;
+      });
+  });
+
+  describe('in current org context', () => {
+    setupApplicationTest({
+      data: { currentOrganizationId: '1'}
+    });
+    useFakeAuthentication();
+    beforeEach(async () => {
       await visit('/users');
-      await when(() => page.isVisible );
-      await when(() => page.userTable.isVisible );
+      await when(() => page.isVisible);
+      await when(() => page.userTable.isVisible);
     });
 
     describe('clicking add user', () => {
@@ -55,15 +130,15 @@ describe('Acceptance | User list | Add User', () => {
       });
 
       describe("add a user", () => {
-        beforeEach( async () => {
+        beforeEach(async () => {
           await when(() => page.addUserModal.isVisible);
         });
 
         describe("when user exists in system", () => {
           const existingEmail = "existing@foo.com";
-          beforeEach( async function() {
-            const newUsersData = {...usersData};
-            const newUser = {...user};
+          beforeEach(async function () {
+            const newUsersData = { ...usersData };
+            const newUser = { ...user };
             newUser.id = '2';
             newUser.attributes = {
               name: "John Doe",
@@ -75,7 +150,7 @@ describe('Acceptance | User list | Add User', () => {
             newUsersData.data.push(newUser);
             this.mockGet(200, '/users', newUsersData);
             this.mockPost(201, "/organization-memberships", {
-              data:{
+              data: {
                 type: "organization-memberships",
                 id: 42,
                 attributes: {}
@@ -109,17 +184,32 @@ describe('Acceptance | User list | Add User', () => {
         });
 
         describe("when user does not exists in system", () => {
-          const existingEmail = "missing@foo.com";
-          beforeEach( async function() {
+          const nonExistingEmail = "missing@foo.com";
+          beforeEach(async function () {
 
             this.mockPost(422, '/organization-memberships');
-            await page.addUserModal.enterEmail(existingEmail);
+            await page.addUserModal.enterEmail(nonExistingEmail);
             await page.addUserModal.submit();
           });
 
           it("shows error", () => {
             expect(page.addUserModal.hasError("No user was found")).to.be.true;
           });
+
+          describe('clears error on close', () => {
+            beforeEach(async () => {
+              await page.addUser();
+
+              await when(() => !page.addUserModal.isPresent);
+              await page.addUser();
+              await when(() => page.addUserModal.isVisible);
+            });
+
+            it.always('has cleared the error', () => {
+              expect(page.addUserModal.hasError('No user was found')).to.be.false;
+            });
+          });
+
         });
       });
     });
