@@ -120,24 +120,24 @@ class Header extends React.Component<IProps> {
         </div>
         <div className='flex align-items-center'>
           {
-            this.isInActiveProject && this.canArchiveOrReactivate &&
-              <button
+            this.isInActiveProject && this.canArchiveOrReactivate ?
+              (<button
                 data-test-archive-button
                 className='ui button basic blue m-r-md'
                 onClick={this.onBulkArchive}
               >
                 {t('common.archive')}
-              </button>
+              </button>) : null
           }
           {
-            this.isInArchivedProject && this.canArchiveOrReactivate &&
-              <button
+            this.isInArchivedProject && this.canArchiveOrReactivate ?
+              (<button
                 data-test-reactivate-button
                 className='ui button basic blue m-r-md'
                 onClick={this.onBulkReactivate}
               >
                 {t('common.reactivate')}
-              </button>
+              </button>) : null
           }
           <button
             className='ui button basic blue m-r-md'
