@@ -63,6 +63,7 @@ class Builds extends React.Component<IProps, IState> {
           value={activeVersion}
           onChange={this.changeSelectedBuild}
           className='is-large p-b-md'
+          noResourcesLabel={t('projects.noBuilds')}
         />
         <Artifacts
           product={product}
