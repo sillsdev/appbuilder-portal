@@ -133,7 +133,8 @@
                     "value": 3,
                     "text": "Indigitous Hack"
                   }
-                ]
+                ],
+                "other-required": true
               },
               {
                 "key": "dropdown_language",
@@ -507,7 +508,8 @@
                     "value": 73,
                     "text": "Zulu – zu"
                   }
-                ]
+                ],
+                "other-required": true
               }
             ]
           }
