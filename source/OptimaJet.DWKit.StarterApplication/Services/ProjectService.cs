@@ -91,7 +91,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // If the owner is changing, call the build engine to update the project iam permissions
             if (resource.OwnerId != 0)
             {
-                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.UpdateProject(project.Id));
+                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.UpdateProject(project.Id, null));
             }
             return project;
         }
@@ -111,7 +111,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             if (project != null)
             {
-                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.ManageProject(project.Id));
+                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.ManageProject(project.Id, null));
             }
             return project;
         }

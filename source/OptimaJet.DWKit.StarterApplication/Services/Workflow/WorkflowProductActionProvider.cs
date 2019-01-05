@@ -162,7 +162,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 Product product = await GetProductForProcess(processInstance, productRepository);
                 if (product.WorkflowJobId == 0) 
                 {
-                    BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ManageProduct(product.Id));
+                    BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ManageProduct(product.Id, null));
                     Log.Information($"BuildEngineCreateProduct: productId={product.Id}, projectName={product.Project.Name}");
                 }
                 else
@@ -182,8 +182,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowBuildId = 0;
                     await productRepository.UpdateAsync(product);
-                    BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id));
-                    Log.Information($"BuildEngineBuildProduct: productId={product.Id}, projectName={product.Project.Name}");
+                    BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id, null));
+                    Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
                 }
                 else 
                 {
@@ -203,7 +203,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowPublishId = 0;
                     await productRepository.UpdateAsync(product);
-                    BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, channel));
+                    BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, channel, null));
                     Log.Information($"BuildEnginePublishProduct: productId={product.Id}, projectName={product.Project.Name}");
                 }
                 else
