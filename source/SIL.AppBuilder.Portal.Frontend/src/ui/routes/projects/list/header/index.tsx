@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import CaretDown from '@material-ui/icons/KeyboardArrowDown';
 import { Dropdown, Popup } from 'semantic-ui-react';
-import { NavLink, withRouter } from 'react-router-dom';
+import { NavLink, withRouter, Link } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { every } from 'lodash';
 
@@ -10,6 +10,8 @@ import * as toast from '@lib/toast';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { IRowProps } from '@ui/components/project-table';
+import { RequireOrganization } from '@ui/components/authorization';
+
 import {
   withBulkActions,
   IProvidedProps as IBulkActions
@@ -112,67 +114,87 @@ class Header extends React.Component<IProps> {
     );
 
     return (
-      <div className='flex justify-content-space-between p-t-md-xs p-b-md-xs' data-test-project-action-header>
-        <div>
-          <Dropdown
-            className='project-switcher'
-            trigger={trigger}
-            icon={null}
-            inline
-          >
-            <Dropdown.Menu>
-              <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} as={NavLink} to={PROJECT_ROUTES.OWN}/>
-              <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} as={NavLink} to={PROJECT_ROUTES.ORGANIZATION} />
-              <Dropdown.Item text={t('projects.switcher.dropdown.archived')} as={NavLink} to={PROJECT_ROUTES.ARCHIVED} />
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-        <div className='flex align-items-center'>
-          {
-            this.isInActiveProject && this.canArchiveOrReactivate ?
-              (<button
-                data-test-archive-button
-                className='ui button basic blue m-r-md'
-                onClick={this.onBulkArchive}
-              >
-                {t('common.archive')}
-              </button>) : null
-          }
-          {
-            this.isInArchivedProject && this.canArchiveOrReactivate ?
-              (<button
-                data-test-reactivate-button
-                className='ui button basic blue m-r-md'
-                onClick={this.onBulkReactivate}
-              >
-                {t('common.reactivate')}
-              </button>) : null
-          }
-          <button
-            className='ui button basic blue m-r-md'
-            onClick={this.onBulkBuild}
-          >
-            {t('common.build')}
-          </button>
+      <div className='flex-col p-t-md-xs' data-test-project-action-header>
+        <div className='flex justify-content-space-between p-b-md-xs'>
+          <div>
+            <Dropdown
+              className='project-switcher'
+              trigger={trigger}
+              icon={null}
+              inline
+            >
+              <Dropdown.Menu>
+                <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} as={NavLink} to={PROJECT_ROUTES.OWN}/>
+                <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} as={NavLink} to={PROJECT_ROUTES.ORGANIZATION} />
+                <Dropdown.Item text={t('projects.switcher.dropdown.archived')} as={NavLink} to={PROJECT_ROUTES.ARCHIVED} />
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
           <div className='flex align-items-center'>
+            <div className='flex align-items-center'>
+              <Popup
+                basic
+                hoverable
+                trigger={<div>
+                  <DebouncedSearch
+                    className='search-component'
+                    placeholder={t('common.search')}
+                    onSubmit={onSearch}
+                  />
+                </div>}
+                position='bottom center'>
 
-            <Popup
-              basic
-              hoverable
-              trigger={<div>
-                <DebouncedSearch
-                  className='search-component'
-                  placeholder={t('common.search')}
-                  onSubmit={onSearch}
-                />
-              </div>}
-              position='bottom center'>
+                <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
 
-              <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
-
-            </Popup>
+              </Popup>
+            </div>
           </div>
         </div>
+
+        <div className='flex justify-content-space-between p-b-md-xs'>
+          <div>
+            {
+              this.isInActiveProject && this.canArchiveOrReactivate ?
+                (<button
+                  data-test-archive-button
+                  className='ui button basic blue m-r-md'
+                  onClick={this.onBulkArchive}
+                >
+                  {t('common.archive')}
+                </button>) : null
+            }
+            {
+              this.isInArchivedProject && this.canArchiveOrReactivate ?
+                (<button
+                  data-test-reactivate-button
+                  className='ui button basic blue m-r-md'
+                  onClick={this.onBulkReactivate}
+                >
+                  {t('common.reactivate')}
+                </button>) : null
+            }
+            <button
+              className='ui button basic blue m-r-md'
+              onClick={this.onBulkBuild}
+            >
+              {t('common.build')}
+            </button>
+          </div>
+
+          <RequireOrganization
+            WithOrganization={() => (
+              <Link className='ui button basic blue m-r-md' to={'/projects/new'}>
+                {t('sidebar.addProject')}
+              </Link>
+            )}
+            Fallback={() => (
+              <button className='ui button disabled basic blue m-r-md' disabled>
+                {t('sidebar.addProject')}
+              </button>
+            )}
+          />
+
+          </div>
       </div>
     );
   }

@@ -2,6 +2,11 @@ import * as React from 'react';
 
 import { ROLE } from '@data/models/role';
 import { withRole, IOptions } from '@data/containers/with-role';
+import {
+  withCurrentOrganization,
+  IProvidedProps as ICurrentOrgProps,
+} from '~/data/containers/with-current-organization';
+import { compose } from 'recompose';
 
 interface IRequireRoleProps {
   roleName: ROLE;
@@ -21,9 +26,29 @@ interface IRequireRoleProps {
  * rendering alternative components are possible
  */
 export function RequireRole(props: IRequireRoleProps & IOptions<{}>) {
-  const { roleName, render, children, ...options  } = props;
+  const { roleName, render, children, ...options } = props;
   const ComponentToRender = render || (() => children);
   const ComponentWithRoleRequirement = withRole(roleName, options)(ComponentToRender);
 
   return <ComponentWithRoleRequirement />;
 }
+
+interface IRequireOrgProps {
+  WithOrganization: any;
+  Fallback: any;
+}
+
+export const RequireOrganization = compose<IRequireOrgProps & ICurrentOrgProps, IRequireOrgProps>(
+  withCurrentOrganization
+)(props => {
+  const { WithOrganization, Fallback, ...otherProps } = props;
+
+  const { currentOrganizationId } = otherProps;
+  const allOrgsSelected = '' === currentOrganizationId;
+
+  if (allOrgsSelected) {
+    return <Fallback />;
+  }
+
+  return <WithOrganization {...otherProps} />;
+});

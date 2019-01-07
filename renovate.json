@@ -1,0 +1,20 @@
+{
+  "labels": [
+    "dependency upgrade"
+  ],
+  "extends": [
+    "config:base"
+  ],
+  "automerge": false,
+  "packageRules": [
+    {
+        "paths": ["source/SIL.AppBuilder.Portal.Frontend/package.json"],
+        "rangeStrategy": "replace"
+    },
+    {
+        "packagePatterns": ["Dockerfile"],
+        "enabled": false
+    }
+    
+  ]
+}
