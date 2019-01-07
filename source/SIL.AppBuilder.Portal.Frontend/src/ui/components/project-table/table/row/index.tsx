@@ -151,9 +151,6 @@ class Row extends React.Component<IProps> {
 export default compose(
   withRouter,
   withOrbit(({ project }) => ({
-    // subscribes this component sub-tree to updates for the project
-    // this is what enables the row to fade when a project is archived.
-    project: q => q.findRecord(project),
     organization: q => q.findRelatedRecord(project, 'organization'),
     owner: q => q.findRelatedRecord(project, 'owner'),
     group: q => q.findRelatedRecord(project, 'group'),

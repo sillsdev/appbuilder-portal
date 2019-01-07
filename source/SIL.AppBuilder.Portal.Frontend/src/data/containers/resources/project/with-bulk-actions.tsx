@@ -68,8 +68,8 @@ export function withBulkActions(WrappedComponent) {
 
       const { operations } = await tryParseJson(response);
 
-      const promises = operations.forEach(async ({ op, data }) => {
-        await pushPayload(
+      const promises = operations.map(({ op, data }) => {
+        return pushPayload(
           updateStore,
           { data },
           PUSH_PAYLOAD_OPERATION.REPLACE_RECORD
