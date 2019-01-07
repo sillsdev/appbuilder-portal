@@ -10,7 +10,7 @@ import { ROLE }  from '@data/models/role';
 import { withRole } from '@data/containers/with-role';
 import { UserAttributes } from '@data/models/user';
 import {
-  withCurrentUser, IProvidedProps as ICurrentUserProps
+  ICurrentUserProps, withCurrentUserContext
 } from '@data/containers/with-current-user';
 
 import EditProfileForm from './form';
@@ -70,7 +70,7 @@ class Profile extends React.Component<IProps> {
 // TODO: if no permission to edit, redirect to view
 export default compose(
   withTranslations,
-  withCurrentUser(),
+  withCurrentUserContext,
   withData,
   withRole(ROLE.OrganizationAdmin, {
     redirectTo: '/',

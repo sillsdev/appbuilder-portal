@@ -8,7 +8,7 @@ import { attributesFor } from "@data/helpers";
 import { UserAttributes } from "@data/models/user";
 import { ResourceObject } from "jsonapi-typescript";
 import { USERS_TYPE, update } from "@data";
-import { withCurrentUser } from "@data/containers/with-current-user";
+import { withCurrentUserContext } from "@data/containers/with-current-user";
 
 export interface IOwnProps {
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
@@ -63,5 +63,5 @@ class LocaleSelect extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
-  withCurrentUser(),
+  withCurrentUserContext,
 )(LocaleSelect);

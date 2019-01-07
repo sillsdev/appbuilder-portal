@@ -1,7 +1,7 @@
 import { compose } from 'recompose';
 
 import { withTranslations } from '@lib/i18n' ;
-import { withCurrentUser } from '@data/containers/with-current-user';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { withCurrentOrganization, requireOrganizationToBeSelected } from '@data/containers/with-current-organization';
 
 import { withData } from './with-data';
@@ -13,7 +13,7 @@ export const pathName = '/projects/new';
 
 export default compose(
   withTranslations,
-  withCurrentUser(),
+  withCurrentUserContext,
   withCurrentOrganization,
   requireOrganizationToBeSelected,
   withData,
