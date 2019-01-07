@@ -8,10 +8,7 @@ import * as prettyMs from 'pretty-ms';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import ProductIcon from '@ui/components/product-icon';
-import { RectLoader as Loader } from '@ui/components/loaders';
-import { ResourceObject } from 'jsonapi-typescript';
 import {
-  withLoader,
   attributesFor,
   idFromRecordIdentity,
   TaskResource, WorkflowDefinitionResource,
@@ -20,36 +17,49 @@ import {
 } from '@data';
 
 export interface IOwnProps {
-  userTask: TaskResource;
   product: ProductResource;
   productDefinition: ProductDefinitionResource;
   project: ProjectResource;
   assignedTo: UserResource;
   workflow: WorkflowDefinitionResource;
+}
+
+export interface INeededProps {
+  userTask: TaskResource;
   cellClasses: string;
   cellSecondaryClasses: string;
 }
 
 export type IProps =
+  & INeededProps
   & RouteComponentProps
   & IOwnProps
   & i18nProps;
 
 class TaskRow extends React.Component<IProps> {
-  didClickRow = (e: MouseEvent) => {
+  didClickRow = (e: React.MouseEvent<HTMLTableRowElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const { workflow, product, history, userTask } = this.props;
+    const { workflow, product, history } = this.props;
     const { workflowBusinessFlow } = attributesFor(workflow);
     const id = idFromRecordIdentity(product);
 
     history.push(`/flow/${workflowBusinessFlow}/${id}`);
   }
 
+  didClickProjectName = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { history, project } = this.props;
+
+    history.push(`/projects/${idFromRecordIdentity(project)}`);
+  }
+
   render() {
     const {
-      t, userTask, product, project, assignedTo,
+      t, userTask, project, assignedTo,
       productDefinition,
       cellClasses, cellSecondaryClasses
     } = this.props;
@@ -63,9 +73,9 @@ class TaskRow extends React.Component<IProps> {
     const { name: productName } = attributesFor(productDefinition);
 
     return (
-      <tr onClick={this.didClickRow}>
+      <tr className='pointer' onClick={this.didClickRow}>
         <td>
-          <Link to={`/projects/${project.id}`}>{projectName}</Link>
+          <a href={`/projects/${idFromRecordIdentity(project)}`} onClick={this.didClickProjectName}>{projectName}</a>
         </td>
         <td className={cellSecondaryClasses}>
           <div className='flex align-items-center'>
@@ -86,7 +96,7 @@ class TaskRow extends React.Component<IProps> {
   }
 }
 
-export default compose(
+export default compose<INeededProps, IProps>(
   withTranslations,
   withRouter,
   withOrbit(({ userTask }) => {
