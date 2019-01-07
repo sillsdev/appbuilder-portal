@@ -25,6 +25,8 @@ export const DEFAULT_STATE = {
 };
 
 export const reducers = (state: State, action: any): State => {
+  // default state can't be empty, due to how the state is accessed throughout the app
+  // (no emptiness checking)
   if (action.type === APP_RESET) {
     return DEFAULT_STATE;
   }
