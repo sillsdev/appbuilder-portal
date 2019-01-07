@@ -31,7 +31,7 @@ class Artifact extends React.PureComponent<IProps> {
           </div>
 
           <FileSize size={fileSize} className='flex-30 text-align-right p-r-md' />
-          <a href={url} download className='download flex-10'>
+          <a href={url} download target='_blank' className='download flex-10'>
             <VerticalAlignBottomIcon />
           </a>
         </div>
