@@ -31,6 +31,7 @@ class ColumnSelector extends React.Component<IColumnProps & i18nProps> {
         multiple
         className='columns-dropdown'
         button={true}
+        direction={'left'}
         icon={<TriggerIcon />}
       >
         <Dropdown.Menu className='columns'>
