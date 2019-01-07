@@ -20,7 +20,7 @@ export const APP_RESET = 'sil/APP_RESET';
 
 export const reducers = (state: State, action: any) => {
   if (action.type === APP_RESET) {
-    return undefined;
+    return {};
   }
 
   return combineReducers({
