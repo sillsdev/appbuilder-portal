@@ -1,4 +1,4 @@
-export const storageKey = 'currentOrganizationId';
+const storageKey = 'currentOrganizationId';
 
 export function getCurrentOrganizationId(): string {
   return localStorage.getItem(storageKey);
