@@ -2,13 +2,15 @@ import { combineReducers } from 'redux';
 
 import {
   reducer as uiReducer,
-  State as UIState
+  State as UIState,
+  initialState as uiState,
 } from './user-interface';
 
 
 import {
   reducer as dataReducer,
-  State as DataState
+  State as DataState,
+  initialState as dataState,
 } from './data';
 
 export interface State {
@@ -17,10 +19,14 @@ export interface State {
 }
 
 export const APP_RESET = 'sil/APP_RESET';
+export const DEFAULT_STATE = {
+  ui: uiState,
+  data: dataState,
+};
 
-export const reducers = (state: State, action: any) => {
+export const reducers = (state: State, action: any): State => {
   if (action.type === APP_RESET) {
-    return {};
+    return DEFAULT_STATE;
   }
 
   return combineReducers({

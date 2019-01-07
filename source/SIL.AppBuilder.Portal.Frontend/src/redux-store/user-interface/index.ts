@@ -12,7 +12,7 @@ import {
   reducer as hideReducer
 } from './actions/hide-sidebar';
 
-export { State } from './shared';
+export { State, initialState } from './shared';
 export { showSidebar } from './actions/show-sidebar';
 export { hideSidebar } from './actions/hide-sidebar';
 
