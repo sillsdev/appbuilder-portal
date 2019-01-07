@@ -18,13 +18,8 @@ class ColumnSelector extends React.Component<IColumnProps & i18nProps> {
   }
 
   render() {
-
     const { t, selectedColumns } = this.props;
-    // button={
-    //   <button className='ui button icon secondary m-r-none'>
-    //     <TriggerIcon />
-    //   </button>
-    // }
+
     return (
       <Dropdown
         data-test-project-table-columns-selector
