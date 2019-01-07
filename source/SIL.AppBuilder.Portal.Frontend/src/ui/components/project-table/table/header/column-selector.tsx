@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Dropdown, Checkbox } from 'semantic-ui-react';
+import TriggerIcon from '@material-ui/icons/Add';
 
 import { IProvidedProps as IColumnProps } from '../with-table-columns';
 import { possibleColumns, COLUMN_KEY } from '../column-data';
@@ -17,7 +18,6 @@ class ColumnSelector extends React.Component<IColumnProps & i18nProps> {
   }
 
   render() {
-
     const { t, selectedColumns } = this.props;
 
     return (
@@ -25,7 +25,9 @@ class ColumnSelector extends React.Component<IColumnProps & i18nProps> {
         data-test-project-table-columns-selector
         multiple
         className='columns-dropdown'
-        direction='left'
+        button={true}
+        direction={'left'}
+        icon={<TriggerIcon />}
       >
         <Dropdown.Menu className='columns'>
           {
