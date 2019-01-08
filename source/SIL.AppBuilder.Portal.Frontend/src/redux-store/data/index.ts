@@ -22,7 +22,7 @@ import {
 
 
 
-export { State, Column } from './shared';
+export { State, Column, initialState } from './shared';
 export { setCurrentOrganization } from './actions/set-current-organization';
 export { setColumnSelection } from './actions/set-column-selection';
 export { setRowSelection } from './actions/set-row-selection';
