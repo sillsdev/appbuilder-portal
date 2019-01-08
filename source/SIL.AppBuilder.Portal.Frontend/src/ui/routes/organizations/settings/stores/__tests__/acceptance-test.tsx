@@ -70,6 +70,9 @@ describe('Acceptance | Organization Settings | Store view', () => {
 
     describe('with store list', () => {
 
+      // managing stores has been made read-only for now.
+      // this is because we currently don't have a way to show which stores
+      // show up for which organizations.
       beforeEach(function () {
         this.mockPost(201, '/organization-stores', {
           data: {
@@ -91,7 +94,7 @@ describe('Acceptance | Organization Settings | Store view', () => {
         });
 
 
-        it('first store is selected', () => {
+        xit('first store is selected', () => {
           expect(multiSelect.items(0).isChecked).to.be.true;
           expect(multiSelect.items(1).isChecked).to.be.false;
         });
@@ -107,7 +110,7 @@ describe('Acceptance | Organization Settings | Store view', () => {
             await storeList[0].click();
           });
 
-          it('no store is selected', () => {
+          xit('no store is selected', () => {
             expect(true).to.be.true;
             expect(multiSelect.items(0).isChecked).to.be.false;
             expect(multiSelect.items(1).isChecked).to.be.false;
