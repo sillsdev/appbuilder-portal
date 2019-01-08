@@ -148,7 +148,7 @@ export default compose(
   query(({match: { params: { orgId } } }) => ({
     cacheKey: [`org-${orgId}`],
     organization: [q => buildFindRecord(q, TYPE_NAME, orgId), buildOptions({
-      include: ['organization-product-definitions.product-definition', 'groups']
+      include: ['organization-product-definitions.product-definition', 'groups', 'organization-stores.store']
     })],
   })),
   withLoader(({ organization }) => !organization),
