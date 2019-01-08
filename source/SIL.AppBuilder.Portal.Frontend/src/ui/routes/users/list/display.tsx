@@ -11,6 +11,7 @@ import UserTable from '@ui/components/user-table/table';
 import { IProps as IUserDataProps } from '@ui/components/user-table/data';
 import { LoadingWrapper } from '@ui/components/loading-wrapper';
 import AddUser from './add';
+import InviteUser from './invitations';
 interface IOwnProps {
 }
 
@@ -47,7 +48,7 @@ export default class Users extends React.Component<IProps> {
         <div className='flex justify-content-space-between'>
           <div className="page-heading flex align-items-center">
             <h1>{t('users.title')}</h1>
-            { !allOrgsSelected ? <AddUser {...addUserProps} onUserAdded={this.onUserAdded}/> : null }
+            { !allOrgsSelected ? <InviteUser {...addUserProps}/> : null }
           </div>
           <div className='flex align-items-center'>
             <DebouncedSearch

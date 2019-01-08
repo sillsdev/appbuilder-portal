@@ -24,6 +24,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var userRoleEntity = modelBuilder.Entity<UserRole>();
             var orgEntity = modelBuilder.Entity<Organization>();
             var orgMemberEntity = modelBuilder.Entity<OrganizationMembership>();
+            var orgMemberInvitesEntity = modelBuilder.Entity<OrganizationMembershipInvite>();
             var projectEntity = modelBuilder.Entity<Project>();
             var orgProductDefinitionEntity = modelBuilder.Entity<OrganizationProductDefinition>();
             var orgInviteEntity = modelBuilder.Entity<OrganizationInvite>();
@@ -66,6 +67,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasMany(o => o.Groups)
                 .WithOne(g => g.Owner)
                 .HasForeignKey(g => g.OwnerId);
+
 
             userEntity
                 .Property(u => u.ProfileVisibility)
@@ -169,6 +171,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationInvite> OrganizationInvites { get; set; }
         public DbSet<OrganizationMembership> OrganizationMemberships { get; set; }
+        public DbSet<OrganizationMembershipInvite> OrganizationMembershipInvites { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<GroupMembership> GroupMemberships { get; set; }
