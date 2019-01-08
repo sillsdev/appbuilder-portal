@@ -11,7 +11,7 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190108152026_AddOrganizationMembershipInvites")]
+    [Migration("20190108171723_AddOrganizationMembershipInvites")]
     partial class AddOrganizationMembershipInvites
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -225,7 +225,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<DateTime?>("DateUpdated");
 
-                    b.Property<string>("Email");
+                    b.Property<string>("Email")
+                        .IsRequired();
 
                     b.Property<DateTime>("Expires");
 
@@ -235,7 +236,10 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int?>("OrganizationMembershipId");
 
-                    b.Property<Guid?>("Token");
+                    b.Property<Guid?>("Token")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.HasKey("Id");
 
@@ -758,7 +762,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "InvitedBy")
                         .WithMany()
                         .HasForeignKey("InvitedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Organization", "Organization")
                         .WithMany()

@@ -14,10 +14,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Token = table.Column<Guid>(
-                        nullable: false,
-                        defaultValueSql: "uuid_generate_v4()"),
-
+                    Token = table.Column<Guid>(nullable: false, defaultValueSql: "uuid_generate_v4()"),
                     Email = table.Column<string>(nullable: false),
                     Expires = table.Column<DateTime>(nullable: false),
                     InvitedById = table.Column<int>(nullable: false),
@@ -34,7 +31,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         column: x => x.InvitedById,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrganizationMembershipInvites_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
@@ -42,7 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrganizationMembershipInvites_OrganizationMemberships_OrganizationMembershipId",
+                        name: "FK_OrganizationMembershipInvites_OrganizationMemberships_Organ~",
                         column: x => x.OrganizationMembershipId,
                         principalTable: "OrganizationMemberships",
                         principalColumn: "Id",

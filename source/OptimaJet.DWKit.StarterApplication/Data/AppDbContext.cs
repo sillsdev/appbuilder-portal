@@ -68,6 +68,10 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .WithOne(g => g.Owner)
                 .HasForeignKey(g => g.OwnerId);
 
+            orgMemberInvitesEntity.Property(o => o.Token)
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .IsRequired()
+                .ValueGeneratedOnAdd();
 
             userEntity
                 .Property(u => u.ProfileVisibility)

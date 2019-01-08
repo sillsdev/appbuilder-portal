@@ -223,7 +223,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<DateTime?>("DateUpdated");
 
-                    b.Property<string>("Email");
+                    b.Property<string>("Email")
+                        .IsRequired();
 
                     b.Property<DateTime>("Expires");
 
@@ -233,7 +234,10 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int?>("OrganizationMembershipId");
 
-                    b.Property<Guid?>("Token");
+                    b.Property<Guid?>("Token")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.HasKey("Id");
 
