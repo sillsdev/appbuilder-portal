@@ -1,0 +1,14 @@
+﻿@{
+    var url = $"{Model.BaseUrl}/invitation/{Model.Token}";
+}
+<html>
+<body>
+    <h2>You've been invited to join @Model.OrganizationName</h2>
+    <p>
+      @Model.InvitedBy has invited you to join Scriptoria, please follow the
+      link below and create an account (or login with your existing Scriptoria
+      account).
+    </p>
+    <p>Link: <a href="@url">Join @Model.OrganizationName</a></p>
+</body>
+</html>
