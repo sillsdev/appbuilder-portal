@@ -31,6 +31,20 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             this.CurrentUserRepository = currentUserRepository;
         }
 
+        public override IQueryable<UserTask> Filter(IQueryable<UserTask> query, FilterQuery filterQuery)
+        {            
+            if (filterQuery.Has(ORGANIZATION_HEADER)) 
+            {
+                var orgIds = CurrentUser.OrganizationIds.OrEmpty();
+
+
+                return this.FilterByOrganization(query, filterQuery, allowedOrganizationIds: orgIds);
+            }
+
+            return base.Filter(query, filterQuery);
+
+        }
+
         public override IQueryable<UserTask> Get() 
         {
             var currentUser = this.CurrentUserRepository.GetCurrentUser().Result;
@@ -39,6 +53,35 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             return base
                 .Get()
                 .Where(ut => ut.UserId == id);
+        }
+
+        private IQueryable<UserTask> GetAllInOrganizationIds(IQueryable<UserTask> query, IEnumerable<int> orgIds)
+        {
+            return query.Where(userTask => orgIds.Contains(userTask.Product.Project.OrganizationId));
+        }
+        private IQueryable<UserTask> GetByOrganizationId(IQueryable<UserTask> query, int organizationId)
+        {
+            return query.Where(userTask => userTask.Product.Project.OrganizationId == organizationId);
+        }
+
+        private IQueryable<UserTask> FilterByOrganization(
+            IQueryable<UserTask> query, 
+            FilterQuery filterQuery,
+            IEnumerable<int> allowedOrganizationIds
+        )
+        {
+            int specifiedOrgId;
+            var hasSpecifiedOrgId = int.TryParse(filterQuery.Value, out specifiedOrgId);
+
+            if (hasSpecifiedOrgId) {
+
+                query = GetAllInOrganizationIds(query, allowedOrganizationIds);
+                query = GetByOrganizationId(query, specifiedOrgId);
+
+                return query;
+            }
+            
+            return GetAllInOrganizationIds(query, allowedOrganizationIds);
         }
     }
 }
