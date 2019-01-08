@@ -32,7 +32,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         }
 
         public override IQueryable<UserTask> Filter(IQueryable<UserTask> query, FilterQuery filterQuery)
-        {            
+        {         
+            var all = query.ToList();
+
+
             if (filterQuery.Has(ORGANIZATION_HEADER)) 
             {
                 var orgIds = CurrentUser.OrganizationIds.OrEmpty();
