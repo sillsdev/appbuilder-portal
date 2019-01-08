@@ -76,9 +76,11 @@ export default compose<IProps, INeededProps>(
       roleNames: result
     };
   }),
-  withProps(({currentUser, user}) => {
+  withProps(({currentUser, user, roleNames}) => {
+    const isSuperAdmin = roleNames.includes('SuperAdmin');
+
     return {
-      editable: currentUser.id !== user.id
+      editable: isSuperAdmin || currentUser.id !== user.id
     };
   })
 )(Display);
