@@ -35,11 +35,9 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         {         
             var all = query.ToList();
 
-
             if (filterQuery.Has(ORGANIZATION_HEADER)) 
             {
                 var orgIds = CurrentUser.OrganizationIds.OrEmpty();
-
 
                 return this.FilterByOrganization(query, filterQuery, allowedOrganizationIds: orgIds);
             }
