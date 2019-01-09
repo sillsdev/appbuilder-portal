@@ -102,7 +102,9 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	10,  2), -- liztabor19+1@gmail.com - DT
 (	11,  1), -- other@sil.org - SIL
 (	12,	2), -- ncanada@developertown.com - DT
-( 13, 2); -- jnolen@developertown.com - DT
+( 13, 2), -- jnolen@developertown.com - DT
+(	5,	1); -- ltabor@developertown.com - SIL
+
 
 
 
