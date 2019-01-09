@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using Newtonsoft.Json;
-using System.Net;
+using Serilog;
 using Hangfire.Server;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
@@ -24,6 +24,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         public IJobRepository<Product, Guid> ProductRepository { get; }
         public IJobRepository<ProductArtifact> ProductArtifactRepository { get; }
         public IJobRepository<ProductBuild> ProductBuildRepository { get; }
+        public IJobRepository<StoreLanguage> LanguageRepository { get; }
 
         public BuildEngineBuildService(
             IRecurringJobManager recurringJobManager,
@@ -34,6 +35,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<ProductArtifact> productArtifactRepository,
             IJobRepository<ProductBuild> productBuildRepository,
+            IJobRepository<StoreLanguage> languageRepository,
             IJobRepository<SystemStatus> systemStatusRepository
         ) : base(buildEngineApi, sendNotificationService, systemStatusRepository)
         {
@@ -44,6 +46,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ProductRepository = productRepository;
             ProductArtifactRepository = productArtifactRepository;
             ProductBuildRepository = productBuildRepository;
+            LanguageRepository = languageRepository;
         }
         public void CreateBuild(Guid productId, PerformContext context)
         {
@@ -220,6 +223,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected async Task BuildCompletedAsync(Product product, BuildResponse buildEngineBuild)
         {
+            Log.Information($"BuildCompletedAsync: product={product.Id}, response:Id={buildEngineBuild.Id},Status={buildEngineBuild.Status},Result={buildEngineBuild.Result},Date={buildEngineBuild.Updated}");
             DateTime? mostRecentArtifactDate = new DateTime(2018, 10, 1);
             ClearRecurringJob(product.Id);
             if (buildEngineBuild.Artifacts != null)
@@ -229,7 +233,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     .FirstOrDefaultAsync();
                 foreach(KeyValuePair<string, string> entry in buildEngineBuild.Artifacts)
                 {
-                    var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product.Id, productBuild);
+                    Log.Information($"Artifact: key={entry.Key}, value={entry.Value}");
+                    var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product, productBuild);
                     if ((artifactModifiedDate != null) && (artifactModifiedDate > mostRecentArtifactDate))
                     {
                         mostRecentArtifactDate = artifactModifiedDate;
@@ -269,28 +274,75 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             return "CreateBuildMonitor" + productId.ToString();
         }
-        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, Guid productId, ProductBuild productBuild)
+        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, Product product, ProductBuild productBuild)
         {
             var productArtifact = new ProductArtifact
             {
-                ProductId = productId,
+                ProductId = product.Id,
                 ProductBuildId = productBuild.Id,
                 ArtifactType = key,
                 Url = value
             };
             var updatedArtifact = WebRequestWrapper.GetFileInfo(productArtifact);
-            await ProductArtifactRepository.CreateAsync(updatedArtifact);
-
-#pragma warning disable RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
-            if (key == "version" && updatedArtifact.ContentType == "application/json")
-#pragma warning restore RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
+            var existingArtifact = await ProductArtifactRepository
+                .Get().Where(a => a.ProductId == product.Id && a.ProductBuildId == productBuild.Id && a.ArtifactType == key && a.Url == value)
+                .FirstOrDefaultAsync();
+            if (existingArtifact != null)
             {
-                var contents = WebClient.DownloadString(value);
-                var version = JsonConvert.DeserializeObject<Dictionary<string, string>>(contents);
-                if (version.ContainsKey("version"))
+                // Not sure why we are getting multiple of these, but we don't want multiple entries.
+                // Should we ignore it or update?  Update for now.
+                Log.Information($"Updating Artifact: Id={existingArtifact.Id}");
+                updatedArtifact.Id = existingArtifact.Id;
+                await ProductArtifactRepository.UpdateAsync(updatedArtifact);
+            }
+            else
+            {
+                var newArtifact = await ProductArtifactRepository.CreateAsync(updatedArtifact);
+                Log.Information($"Created Artifact: Id={newArtifact.Id}");
+            }
+
+            // On version.json, update the ProductBuild.Version
+            if (key == "version" && updatedArtifact.ContentType == "application/json")
+            {
+                try
                 {
-                    productBuild.Version = version["version"];
-                    await ProductBuildRepository.UpdateAsync(productBuild);
+                    var contents = WebClient.DownloadString(value);
+                    var version = JsonConvert.DeserializeObject<Dictionary<string, object>>(contents);
+                    if (version.ContainsKey("version"))
+                    {
+                        productBuild.Version = version["version"] as String;
+                        await ProductBuildRepository.UpdateAsync(productBuild);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"Parsing {key}: {value}");
+                }
+            }
+
+            // On play-listing-manifest.json, update the Project.DefaultLanguage
+            if (key == "play-listing-manifest" && updatedArtifact.ContentType == "application/json")
+            {
+                try
+                {
+                    var contents = WebClient.DownloadString(value);
+                    var manifest = JsonConvert.DeserializeObject<Dictionary<string, object>>(contents);
+                    if (manifest.ContainsKey("default-language"))
+                    {
+                        var languageName = manifest["default-language"] as String;
+                        StoreLanguage storeLanguage = await LanguageRepository.Get().Where(lang => lang.Name == languageName).FirstOrDefaultAsync();
+                        if (storeLanguage != null)
+                        {
+                            product.StoreLanguageId = storeLanguage.Id;
+                            await ProductRepository.UpdateAsync(product);
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"Parsing {key}: {value}");
+
                 }
             }
 
