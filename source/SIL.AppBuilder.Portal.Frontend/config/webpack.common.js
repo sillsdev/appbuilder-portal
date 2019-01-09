@@ -45,7 +45,8 @@ const moduleRules = [
   { test: /\.ttf$/, loader: 'ignore-loader' },
   { test: /\.woff$/, loader: 'ignore-loader' },
   { test: /\.woff2$/, loader: 'ignore-loader' },
-  { test: /\.eot$/, loader: 'ignore-loader' }
+  { test: /\.eot$/, loader: 'ignore-loader' },
+  { test: /favicon.(ico|png)$/, loader: 'file-loader?name=[name].[ext]' },
 ];
 
 const resolver = {
@@ -64,7 +65,9 @@ const plugins = [
     "AUTH0_CLIENT_ID",
     "AUTH0_SCOPE",
     "API_HOST",
-    "HAS_API"
+    "HAS_API",
+    "NODE_ENV",
+    "IS_TESTING",
   ])
 ];
 

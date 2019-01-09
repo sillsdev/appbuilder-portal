@@ -1,211 +1,55 @@
+import { when } from '@bigtest/convergence';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
+import scenarios, { threeOrgs, lotsOfOrgs, oneOrg} from './scenarios';
 
 import {
-  setupApplicationTest, useFakeAuthentication,
-  setupRequestInterceptor, fakeAuth0Id
+  setupApplicationTest,
+  setupRequestInterceptor,
 } from 'tests/helpers/index';
 
 import app from 'tests/helpers/pages/app';
 import switcher from './page';
 
-async function makeOrgSwitcherVisible() {
-  await visit('/');
-  expect(location().pathname).to.eq('/');
+async function visitRootPageAndOpenSidebar() {
+  visit('/');
+  await when(() => expect(location().pathname).to.eq('/'));
 
   await app.openSidebar();
-  expect(app.isSidebarVisible).to.be.true;
-
-  await app.openOrgSwitcher();
-  expect(app.isOrgSwitcherVisible).to.be.true;
+  await when( () => expect(app.isSidebarVisible).to.be.true);
 }
-const lotsOfOrgs = [
-  {
-    type: 'organizations', id: 1,
-    attributes: {
-      name: 'SIL International'
-    }
-  }, {
-    type: 'organizations', id: 2,
-    attributes: {
-      name: 'DeveloperTown'
-    }
-  }, {
-    type: 'organizations', id: 3,
-    attributes: {
-      name: 'Kalaam Media'
-    }
-  }, {
-    type: 'organizations', id: 4,
-    attributes: {
-      name: 'The Ember Learning Team'
-    }
-  }, {
-    type: 'organizations', id: 5,
-    attributes: {
-      name: 'Blizzard Entertainment'
-    }
-  }, {
-    type: 'organizations', id: 5,
-    attributes: {
-      name: 'Linkedin'
-    }
-  }
-];
 
-const threeOrgs = [
-  {
-    type: 'organizations', id: 1,
-    attributes: {
-      name: 'SIL International'
-    }
-  }, {
-    type: 'organizations', id: 2,
-    attributes: {
-      name: 'DeveloperTown'
-    }
-  }, {
-    type: 'organizations', id: 3,
-    attributes: {
-      name: 'Kalaam Media'
-    }
-  }
-];
-
-const scenarios = {
-  userIsInLotsOfOrganizations() {
-    useFakeAuthentication({
-      data: {
-        id: 1,
-        type: 'users',
-        attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
-        relationships: {
-          ['organization-memberships']: {
-            data: [
-              { id: 1, type: 'organization-memberships' },
-            ]
-          }
-        }
-      },
-      included: [
-        {
-          id: 1,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
-        },
-        {
-          id: 2,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 2, type: 'organizations' } }
-          }
-        },
-        {
-          id: 3,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 3, type: 'organizations' } }
-          }
-        },
-        {
-          id: 4,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 4, type: 'organizations' } }
-          }
-        },
-        {
-          id: 5,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 4, type: 'organizations' } }
-          }
-        },
-        {
-          id: 1,
-          type: 'groups' ,
-          attributes: { name: 'Some Group' },
-          relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
-        },
-        ...lotsOfOrgs
-      ]
-    });
-  },
-  userIsIn3Organizations() {
-    useFakeAuthentication({
-      data: {
-        id: 1,
-        type: 'users',
-        attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
-        relationships: {
-          ['organization-memberships']: {
-            data: [
-              { id: 1, type: 'organization-memberships' },
-            ]
-          }
-        }
-      },
-      included: [
-        {
-          id: 1,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
-        },
-        {
-          id: 2,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 2, type: 'organizations' } }
-          }
-        },
-        {
-          id: 3,
-          type: 'organization-memberships',
-          attributes: {},
-          relationships: {
-            user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 3, type: 'organizations' } }
-          }
-        },
-        {
-          id: 1,
-          type: 'groups' ,
-          attributes: { name: 'Some Group' },
-          relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
-        },
-        ...threeOrgs
-      ]
-    });
-  }
-};
+async function makeOrgSwitcherVisible() {
+  await visitRootPageAndOpenSidebar();
+  await app.openOrgSwitcher();
+  await when(() => expect(app.isOrgSwitcherVisible).to.be.true);
+}
 
 describe('Acceptance | Organization Switcher', () => {
   setupApplicationTest();
   setupRequestInterceptor();
+  describe('The Current user is a member of a single organization', () => {
+    scenarios.userIsInOneOrganization();
 
+    beforeEach( async () => {
+      await visitRootPageAndOpenSidebar();
+    });
+
+    it('automatically selects the one organization', () => {
+      expect(app.selectedOrg).to.eql(oneOrg[0].attributes.name);
+    });
+
+    describe('interacting with org switcher', () => {
+      beforeEach(async () => {
+        await app.openOrgSwitcher();
+      });
+
+      it.always('is disabled.', () => {
+        expect(app.isOrgSwitcherVisible).to.be.false;
+      });
+    });
+  });
   describe('The Current User is a member of multiple organizations', () => {
     scenarios.userIsIn3Organizations();
 
@@ -241,6 +85,10 @@ describe('Acceptance | Organization Switcher', () => {
         // expect(switcher.selectedOrg).to.equal("SIL International");
 
         expect(app.isOrgSwitcherVisible).to.be.false;
+      });
+
+      it('visits the tasks page', () => {
+        expect(location()).to.have.property('pathname', '/tasks');
       });
     });
   });

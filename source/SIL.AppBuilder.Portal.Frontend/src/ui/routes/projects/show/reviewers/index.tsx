@@ -47,9 +47,17 @@ class Reviewers extends React.Component<IProps> {
 
     return (
       <div data-test-project-reviewers className='reviewers'>
-        <div className='flex justify-content-space-around header align-items-center'>
-          <h4 className='flex-grow'>{t('project.side.reviewers.title')}</h4>
-          <a data-test-project-reviewers-toggler href='#' onClick={this.toggleAddForm}>{text}</a>
+        <div className='flex justify-content-space-around thin-bottom-border align-items-center p-md'>
+          <h4 className='flex-grow m-none'>
+            {t('project.side.reviewers.title')}
+          </h4>
+          <a
+            data-test-project-reviewers-toggler
+            href='#'
+            onClick={this.toggleAddForm}
+          >
+            {text}
+          </a>
         </div>
         { isAddFormVisible && <AddReviewerForm project={project} /> }
         <div className='list'>

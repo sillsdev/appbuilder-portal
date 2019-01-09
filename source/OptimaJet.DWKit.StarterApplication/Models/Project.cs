@@ -29,6 +29,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasOne("organization")]
         public virtual Organization Organization { get; set; }
+        [Attr("organization-id")]
         public int OrganizationId { get; set; }
 
         [Attr("language")]

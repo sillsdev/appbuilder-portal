@@ -1,20 +1,21 @@
 
+import { when } from '@bigtest/convergence';
+
 import { describe, it, beforeEach } from '@bigtest/mocha';
-import { visit } from '@bigtest/react';
+import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication, fakeAuth0Id, wait
+  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication, fakeAuth0Id, wait,
+  switchToOrg
 } from 'tests/helpers';
 
 import app from 'tests/helpers/pages/app';
 import switcher from '@ui/components/sidebar/org-switcher/__tests__/page';
-import page from './page';
-
+import UserTableInteractor from './-user-table';
+let userTable = null;
 describe('Acceptance | User list | Filtering users by organization', () => {
-  setupApplicationTest({
-    data: { currentOrganizationId: '1'}
-  });
+  setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication({
     data: {
@@ -25,8 +26,10 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         ['organization-memberships']: {
           data: [
             { id: 1, type: 'organization-memberships' },
+            { id: 4, type: 'organization-memberships' }
           ]
-        }
+        },
+        ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
       }
     },
     included: [
@@ -65,6 +68,19 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         relationships: {
           organization: { data: { id: 1, type: 'organizations' } }
         }
+      },
+      {
+        id: 1, type: 'user-roles',
+        attributes: { roleName: 'SuperAdmin' },
+        relationships: {
+          ['user']: { data: { id: 1, type: 'users' } },
+          ['role']: { data: { id: 1, type: 'roles' } },
+          ['organization']: { data: { id: 1, type: 'organizations' } }
+        }
+      },
+      {
+        id: 1, type: 'roles',
+        attributes: { roleName: 'SuperAdmin' }
       }
     ]
   });
@@ -85,6 +101,13 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         if (allOrganizations) {
           res.json({
             data: [{
+              id: 1,
+              type: 'users',
+              attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+              relationships: {
+                ['organization-memberships']: { data: [ { id: 1, type: 'organization-memberships' }]}
+              }
+            }, {
               type: 'users',
               id: 2,
               attributes: { familyName: 'fake', givenName: 'One' },
@@ -102,6 +125,15 @@ describe('Acceptance | User list | Filtering users by organization', () => {
               },
             }],
             included: [
+              {
+                id: 1,
+                type: 'organization-memberships',
+                attributes: {},
+                relationships: {
+                  user: { data: { id: 1, type: 'users' } },
+                  organization: { data: { id: 1, type: 'organizations' } }
+                }
+              },
               {
                 id: 2, type: 'organization-memberships',
                 attributes: {},
@@ -134,6 +166,13 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         } else if (selectedOrganization) {
           res.json({
             data: [{
+              id: 1,
+              type: 'users',
+              attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+              relationships: {
+                ['organization-memberships']: { data: [ { id: 1, type: 'organization-memberships' }]}
+              }
+            }, {
               type: 'users',
               id: 2,
               attributes: { familyName: 'fake', givenName: 'One' },
@@ -143,6 +182,15 @@ describe('Acceptance | User list | Filtering users by organization', () => {
               }
             }],
             included: [
+              {
+                id: 1,
+                type: 'organization-memberships',
+                attributes: {},
+                relationships: {
+                  user: { data: { id: 1, type: 'users' } },
+                  organization: { data: { id: 1, type: 'organizations' } }
+                }
+              },
               {
                 id: 2, type: 'organization-memberships',
                 attributes: {},
@@ -168,19 +216,22 @@ describe('Acceptance | User list | Filtering users by organization', () => {
     describe('Select all organizations',() => {
       beforeEach(async function () {
         await visit('/users');
+        userTable = new UserTableInteractor();
 
         await app.openSidebar();
         await app.openOrgSwitcher();
         await switcher.selectAllOrg();
 
         expect(app.selectedOrg).to.equal("All Organizations");
+        visit('/users');
+        await when( () => userTable.isPresent);
       });
 
       describe('Renders users page', () => {
         it('Should see all users', () => {
-          expect(page.usernames().length).to.equal(3);
+          expect(userTable.usernames().length).to.equal(3);
 
-          const usernames = page.usernames();
+          const usernames = userTable.usernames();
           const text = usernames.map(u => u.text).join();
 
           expect(text).to.include('fake fake');
@@ -190,18 +241,18 @@ describe('Acceptance | User list | Filtering users by organization', () => {
 
         describe('Select a specific organization', () => {
           beforeEach(async function () {
-            await app.openOrgSwitcher();
-            expect(app.isOrgSwitcherVisible).to.be.true;
+            await switchToOrg('SIL International');
+            await when(() => location().pathname === '/tasks');
 
-            await switcher.chooseOrganization("SIL International");
-
-            expect(app.selectedOrg).to.equal("SIL International");
+            visit('/users');
+            await when(() => location().pathname === '/users');
+            await when(() => userTable.isPresent);
           });
 
           it('Only display the users that belong to the selected organization', () => {
-            expect(page.usernames().length).to.equal(2);
+            expect(userTable.usernames().length).to.equal(2);
 
-            const usernames = page.usernames();
+            const usernames = userTable.usernames();
             const text = usernames.map(u => u.text).join();
 
             expect(text).to.include('fake fake');

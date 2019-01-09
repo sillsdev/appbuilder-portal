@@ -6,32 +6,33 @@ using SIL.AppBuilder.BuildEngineApiClient;
 using BuildEngineJob = SIL.AppBuilder.BuildEngineApiClient.Job;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Threading.Tasks;
-using Hangfire;
+using Hangfire.Server;
+using System.Collections.Generic;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineProductService: BuildEngineServiceBase
     {
+        private readonly SendNotificationService sendNotificationService;
+
         public BuildEngineProductService(
             IBuildEngineApi buildEngineApi,
-            IJobRepository<Product> productRepository,
+            SendNotificationService sendNotificationService,
+            IJobRepository<Product, Guid> productRepository,
             IJobRepository<SystemStatus> systemStatusRepository
-        ) : base(buildEngineApi, systemStatusRepository)
+        ) : base(buildEngineApi, sendNotificationService, systemStatusRepository)
         {
+            this.sendNotificationService = sendNotificationService;
             ProductRepository = productRepository;
         }
 
-        public IJobRepository<Product> ProductRepository { get; }
+        public IJobRepository<Product, Guid> ProductRepository { get; }
 
-        public static void CreateBuildEngineProduct(int productId)
+        public void ManageProduct(Guid productId, PerformContext context)
         {
-            BackgroundJob.Enqueue<BuildEngineProductService>(service => service.ManageProduct(productId));
+            ManageProductAsync(productId, null).Wait();
         }
-        public void ManageProduct(int productId)
-        {
-            ManageProductAsync(productId).Wait();
-        }
-        public async Task ManageProductAsync(int productId)
+        public async Task ManageProductAsync(Guid productId, PerformContext context)
         {
             var product = await ProductRepository.Get()
                               .Where(p => p.Id == productId)
@@ -39,26 +40,56 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                                     .ThenInclude(pr => pr.Type)
                               .Include(p => p.Project)
                                     .ThenInclude(pr => pr.Organization)
+                              .Include(p => p.Project)
+                                    .ThenInclude(pr => pr.Owner)
                               .Include(p => p.Store)
                               .FirstOrDefaultAsync();
             if (product == null)
             {
-                // TODO: Send notification record
                 // Don't send exception because if the record is not there
                 // there doesn't seem much point in retrying
+                var messageParms = new Dictionary<string, object>
+                {
+                    { "productId", productId.ToString() }
+                };
+                await sendNotificationService.SendNotificationToSuperAdminsAsync("productRecordNotFound",
+                                                                               messageParms);
                 return;
             }
             if (!BuildEngineLinkAvailable(product.Project.Organization))
             {
                 // If the build engine isn't available, there is no point in continuing
                 // Notifications for this are handled by the monitor
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", product.Project.Name },
+                        { "productName", product.ProductDefinition.Name}
+                    };
+                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "productFailedUnableToConnect", messageParms);
                 // Throw exception to retry
                 throw new Exception("Connection not available");
             }
-            await CreateBuildEngineProductAsync(product);
-
+            if (!ProjectUrlSet(product.Project))
+            {
+                // If the Project URL is not set yet, then don't try to create the job.
+                // Throw exception to retry
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", product.Project.Name },
+                        { "productName", product.ProductDefinition.Name}
+                    };
+                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "productProjectUrlNotSet", messageParms);
+                throw new Exception("Project URL not set");
+            }
+            await CreateBuildEngineProductAsync(product, context);
         }
-        protected async Task CreateBuildEngineProductAsync(Product product)
+
+        private bool ProjectUrlSet(Models.Project project)
+        {
+            return !String.IsNullOrEmpty(project.WorkflowProjectUrl);
+        }
+
+        protected async Task CreateBuildEngineProductAsync(Product product, PerformContext context)
         {
             var buildEngineJob = new BuildEngineJob
             {
@@ -67,17 +98,32 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 AppId = product.Project.Type.Name,
                 PublisherId = product.Store.Name
             };
-            SetBuildEngineEndpoint(product.Project.Organization);
-            var jobResponse = BuildEngineApi.CreateJob(buildEngineJob);
+            JobResponse jobResponse = null;
+            if (SetBuildEngineEndpoint(product.Project.Organization))
+            {
+                jobResponse = BuildEngineApi.CreateJob(buildEngineJob);
+            }
             if ((jobResponse != null) && (jobResponse.Id != 0))
             {
                 product.WorkflowJobId = jobResponse.Id;
                 await ProductRepository.UpdateAsync(product);
+                var messageParms = new Dictionary<string, object>()
+            {
+                { "projectName", product.Project.Name },
+                { "productName", product.ProductDefinition.Name}
+            };
+                await sendNotificationService.SendNotificationToUserAsync(product.Project.Owner, "productCreatedSuccessfully", messageParms);
                 return;
             }
             else
             {
-                // TODO: Send Notification
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", product.Project.Name },
+                        { "productName", product.ProductDefinition.Name},
+                        { "buildEngineUrl", product.Project.Organization.BuildEngineUrl }
+                    };
+                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "productCreationFailed", messageParms);
                 throw new Exception("Create job failed");
             }
         }

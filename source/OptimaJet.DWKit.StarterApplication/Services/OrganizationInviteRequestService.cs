@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Bugsnag;
 using Hangfire;
+using I18Next.Net.Plugins;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
@@ -10,42 +13,53 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 {
     public class OrganizationInviteRequestService : IOrganizationInviteRequestService
     {
+        private readonly ITranslator translator;
         protected readonly IJobRepository<OrganizationInviteRequest> requestRepository;
         protected readonly IJobRepository<Email> emailRepository;
+        private readonly IJobRepository<UserRole> userRolesRepository;
         protected readonly OrganizationInviteRequestSettings settings;
-        protected readonly IClient bugsnagClient;
         public OrganizationInviteRequestService(
+            ITranslator translator,
             IOptions<OrganizationInviteRequestSettings> options,
             IJobRepository<OrganizationInviteRequest> requestRepository,
             IJobRepository<Email> emailRepository,
-            IClient bugsnagClient)
+            IJobRepository<UserRole> userRolesRepository)
         {
+            this.translator = translator;
             this.requestRepository = requestRepository;
             this.emailRepository = emailRepository;
-            this.bugsnagClient = bugsnagClient;
+            this.userRolesRepository = userRolesRepository;
             this.settings = options.Value;
         }
 
         public void Process(OrganizationInviteRequestServiceData data)
         {
             var request = requestRepository.GetAsync(data.Id).Result;
-            var email = new Email
+            var superAdmins = userRolesRepository.Get()
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
+                .Where(ur =>  ur.Role.RoleName == RoleName.SuperAdmin)
+                .ToList();
+            foreach (UserRole superAdmin in superAdmins)
             {
-                // TODO: Query Users for Super Admins
-                To = settings.SuperAdminEmail,
-                // TODO: Get localized Subject and Template
-                Subject = "[Scriptoria] Organization Invite Request",
-                ContentTemplate = "OrganizationInviteRequest",
-                ContentModel = new
+                var locale = superAdmin.User.LocaleOrDefault();
+                var subject = translator.TranslateAsync(locale, "organizationInvites", "organizationInvites.subject", null).Result;
+                var email = new Email
                 {
-                    request.Name,
-                    request.OrgAdminEmail,
-                    request.WebsiteUrl,
-                    BaseUrl = settings.BaseUrl
-                }
-            };
-            var result = emailRepository.CreateAsync(email).Result;
-            requestRepository.DeleteAsync(request.Id);
+                    To = superAdmin.User.Email,
+                    Subject = subject,
+                    ContentTemplate = "OrganizationInviteRequest.cshtml",
+                    ContentModel = new
+                    {
+                        request.Name,
+                        request.OrgAdminEmail,
+                        request.WebsiteUrl,
+                        BaseUrl = settings.BaseUrl
+                    }
+                };
+                var result = emailRepository.CreateAsync(email).Result;
+            }
+            var result2 = requestRepository.DeleteAsync(request.Id).Result;
         }
     }
 }

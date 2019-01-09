@@ -11,17 +11,18 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
 {
     public class UpdateForm : BaseProductForm
     {
-        IEntityRepository<Product> ProductRepository;
+        IEntityRepository<Product, Guid> ProductRepository;
         ProjectRepository ProjectRepository;
         IEntityRepository<ProductDefinition> ProductDefinitionRepository;
         IEntityRepository<Store> StoreRepository;
         public UpdateForm(UserRepository userRepository,
-            IEntityRepository<Product> productRepository,
+                          IEntityRepository<Product, Guid> productRepository,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
             IEntityRepository<Store> storeRepository,
+            IEntityRepository<UserRole> userRolesRepository,
             ProjectRepository projectRepository,
             IOrganizationContext organizationContext,
-            ICurrentUserContext currentUserContext) : base(userRepository, currentUserContext)
+            ICurrentUserContext currentUserContext) : base(userRepository, userRolesRepository ,currentUserContext)
         {
             ProductRepository = productRepository;
             ProjectRepository = projectRepository;
@@ -31,7 +32,7 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
         }
 
 
-        public bool IsValid(int id, Product product)
+        public bool IsValid(Guid id, Product product)
         {
             CurrentUserOrgIds = CurrentUser.OrganizationIds.OrEmpty();
             var original = ProductRepository.Get()

@@ -4,15 +4,19 @@ import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { defaultSourceOptions } from '@data';
 import { ErrorMessage } from '@ui/components/errors';
 import { isEmpty } from '@lib/collection';
+import { timeoutablePromise } from '@lib/promises';
+import { areCollectionsRoughlyEqual } from '@lib/collection';
 
 interface IState {
   result: object;
   error: any;
+  isLoading: boolean;
 }
 
 export interface IQueryOptions {
   passthroughError?: boolean;
   useRemoteDirectly?: boolean;
+  mapResultsFn?: (props, result) => Promise<any>;
 }
 
 // Example Usage
@@ -40,16 +44,15 @@ export interface IQueryOptions {
 // way to actually make network requests.
 //
 // TODO: tie in to react-orbitjs' cache handling.
-// TODO: investigate why we would use react-orbitjs' cache over orbit's
 // TODO: what if we just use orbit directly? do we need react-orbitjs?
 export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
   let map;
-  const opts = options || { passthroughError: false, useRemoteDirectly: false };
-  const { passthroughError, useRemoteDirectly } = opts;
+  const opts = options || { passthroughError: false, useRemoteDirectly: false, mapResultsFn: null };
+  const { passthroughError, useRemoteDirectly, mapResultsFn } = opts;
 
 
   if (typeof mapRecordsToProps !== 'function') {
-    map = (props) => ({
+    map = (/* props */) => ({
       cacheKey: 'default-cache-key',
       ...mapRecordsToProps
     });
@@ -59,62 +62,95 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
 
   return InnerComponent => {
     class DataWrapper extends React.Component<T & WithDataProps, IState> {
-      state = { result: {}, error: undefined };
-
+      state = { result: {}, error: undefined, isLoading: false };
+      // tslint:disable-next-line:variable-name
+      _isMounted: boolean = false;
       mapResult: any = {};
 
-      // TODO: find a non-hacky way to achieve this behavior
-      //       calling fetchData every render is bad, and could cause
-      //       infinite loops if cache is not properly maintained...
-      //
-      // NOTE: componentWillUpdate / componentWillReceiveProps
-      //       were removed...
-      //
-      // this needs concurrency handling
-      // "take latest" "take last" etc
+      componentDidMount() {
+        this._isMounted = true;
+        this.tryFetch();
+      }
+
+      componentDidUpdate() {
+        this.tryFetch();
+      }
+      componentWillUnmount() {
+        this._isMounted = false;
+      }
+      setState(state, callback?){
+        if (this._isMounted){
+          super.setState(state, callback);
+        }
+      }
       fetchData = async () => {
         const result = map(this.props);
-
-        if (arePropsEqual(result, this.mapResult)) {
-          return;
-        }
-
-        this.mapResult = result;
 
         const { dataStore, sources: { remote } } = this.props;
         const querier = useRemoteDirectly ? remote : dataStore;
 
         const responses = {};
-        const requestPromises = Object.keys(result).map(async (key: string) => {
-          if (key === 'cacheKey') { return; }
-
+        const resultingKeys = Object.keys(result).filter(k => k !== 'cacheKey');
+        const requestPromises = resultingKeys.map(async (key: string) => {
           const query = result[key];
           const args = typeof query === 'function' ? [query] : query;
 
-          const queryResult = await querier.query(...args);
+          try {
+            const queryResult = await querier.query(...args);
+            responses[key] = queryResult;
 
-          responses[key] = queryResult;
+            return Promise.resolve(queryResult);
+          } catch(e) {
+            if (querier === remote) {
+              querier.requestQueue.skip();
+            }
 
-          return queryResult;
+            return Promise.reject(e);
+          }
         });
 
-        try {
-          await Promise.all(requestPromises);
-        } catch (e) {
-          console.error('responses:', responses, 'error:', e);
-          this.setState({ error: e });
+        if (requestPromises.length > 0) {
+          await timeoutablePromise(5000, Promise.all(requestPromises));
         }
 
-        this.setState({ result: responses });
+        return responses;
+      }
+
+      tryFetch = async (force: boolean = false) => {
+        if (!this.isFetchNeeded() && !force) { return; }
+
+        this.setState({ isLoading: true }, async () => {
+          try {
+            let result = await this.fetchData();
+            if (mapResultsFn){
+              result = await mapResultsFn(this.props, result);
+            }
+            this.setState({ result, isLoading: false });
+          } catch (e) {
+            this.setState({ error: e, isLoading: false });
+          }
+        });
+      }
+
+      isFetchNeeded = () => {
+        const result = map(this.props);
+
+        if (areCollectionsRoughlyEqual(result, this.mapResult)) {
+          return false;
+        }
+
+        this.mapResult = result;
+
+        return true;
       }
 
       render() {
-        this.fetchData();
-
-        const { result, error } = this.state;
+        const { result, error, isLoading } = this.state;
         const dataProps = {
           ...result,
-          error
+          error,
+          isLoading,
+          refetch: this.tryFetch.bind(this, true),
         };
 
         if (!passthroughError && error) {
@@ -122,18 +158,10 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         }
 
 
-        return <InnerComponent { ...dataProps } { ...this.props } />;
+        return <InnerComponent { ...this.props } { ...dataProps } />;
       }
     }
 
     return withOrbit({})(DataWrapper);
   };
-}
-
-
-// This is a stupid way to 'deeply' compare things.
-// But it kinda works.
-// Functions are omitted from the comparison
-function arePropsEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
 }

@@ -1,6 +1,7 @@
 # AppBuilder Portal 
 [![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/scriptoria/localized.svg)](https://crowdin.com/project/scriptoria)
+[![Maintainability](https://api.codeclimate.com/v1/badges/71fa3c1c0bf8eca409d2/maintainability)](https://codeclimate.com/github/sillsdev/appbuilder-portal/maintainability)
 
 ## Description
 The `appbuilder-portal` is the portal frontend/backend for the Scriptoria project.  This project provides software to automate the building and publishing of apps (and other related content) to App Stores and websites.
@@ -48,6 +49,17 @@ Running Locally:
 ```
 docker run -p 8080:80 nginx-$CURRENT_VERSION
 docker run -p 3000:7081 api-$CURRENT_VERSION
+
+
+# to connect to an api container running from docker-compose
+# get the container id from
+docker ls
+
+docker run -it \
+    -p 9091:80 \
+    -e "API_URL=http://api.docker:7081" \
+    --network appbuilder-portal_default \
+    --link 93a93b14287a:api.docker nginx-$CURRENT_VERSION
 ```
 
 ## Production

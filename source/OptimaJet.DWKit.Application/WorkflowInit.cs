@@ -23,13 +23,16 @@ namespace OptimaJet.DWKit.Application
         public static WorkflowRuntime Runtime => LazyRuntime.Value;
 
         public static string ConnectionString { get; set;}
+        public static IWorkflowRuleProvider RuleProvider { get; set; }
+        public static IWorkflowActionProvider ActionProvider { get; set; }
+        public static ITimerManager TimerManager { get; set; }
 
         private static WorkflowRuntime InitWorkflowRuntime()
         {
             var runtime = DWKitRuntime.CreateWorkflowRuntime()
-                .WithActionProvider(new ActionProvider())
-                .WithRuleProvider(new RuleProvider())
-                .WithTimerManager(new TimerManager());
+                .WithActionProvider(ActionProvider ??  new ActionProvider())
+                .WithRuleProvider(RuleProvider ?? new RuleProvider())
+                .WithTimerManager(TimerManager ?? new TimerManager());
             
             //events subscription
             //runtime.ProcessActivityChanged +=  (sender, args) => {  ActivityChanged(args, runtime).Wait(); };
@@ -50,6 +53,11 @@ namespace OptimaJet.DWKit.Application
                 return;
 
             //TODO change Document transition history and WorkflowInbox
+        }
+        
+        public static void ForceInit()
+        {
+            var r = Runtime;
         }
     }
 }

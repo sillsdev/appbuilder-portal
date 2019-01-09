@@ -27,6 +27,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public OrganizationMembership CurrentUserMembership { get; set; }
         public OrganizationMembership CurrentUserMembership2 { get; set; }
         public OrganizationMembership CurrentUserMembership3 { get; set; }
+        public OrganizationMembership CurrentUserMembership4 { get; set; }
+        public OrganizationMembership CurrentUserMembership5 { get; set; }
         public User user1 { get; private set; }
         public User user2 { get; private set; }
         public User user3 { get; private set; }
@@ -38,6 +40,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public Group group3 { get; set; }
         public Group group4 { get; set; }
         public GroupMembership groupMembership1 { get; set; }
+        public GroupMembership groupMembership2 { get; set; }
+        public GroupMembership groupMembership3 { get; set; }
         public ApplicationType type1 { get; set; }
         public Project project1 { get; set; }
         public Project project2 { get; set; }
@@ -53,7 +57,26 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Email = "test-email1@test.test",
                 Name = "Test Testenson1",
                 GivenName = "Test1",
+                FamilyName = "Testenson1",
+                PublishingKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTF+wTVdaMDYmgeAZd7voe/b5MEHJWBXQDik14sqqj0aXtwV4+qxPU2ptqcjGpRk3ynmxp9i6Venw1JVf39iDFhWgd7VGBA7QEfApRm1v1FRI0wuN user1@user1MBP.local"
+
+            });
+            user2 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id1",
+                Email = "test-email1@test.test",
+                Name = "Test Testenson1",
+                GivenName = "Test1",
                 FamilyName = "Testenson1"
+            });
+            user3 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id1",
+                Email = "test-email1@test.test",
+                Name = "Test Testenson1",
+                GivenName = "Test1",
+                FamilyName = "Testenson1",
+                PublishingKey = "invalidkey"
             });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {
@@ -97,6 +120,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 UserId = user1.Id,
                 OrganizationId = org3.Id
             });
+            CurrentUserMembership4 = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user2.Id,
+                OrganizationId = org1.Id
+            });
+            CurrentUserMembership5 = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user3.Id,
+                OrganizationId = org1.Id
+            });
             group1 = AddEntity<AppDbContext, Group>(new Group
             {
                 Name = "TestGroup1",
@@ -124,6 +157,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             groupMembership1 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
             {
                 UserId = CurrentUser.Id,
+                GroupId = group1.Id
+            });
+            groupMembership2 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user2.Id,
+                GroupId = group1.Id
+            });
+            groupMembership3 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user3.Id,
                 GroupId = group1.Id
             });
             type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
@@ -373,8 +416,156 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
 
         }
+        [Fact]
+        public async Task Create_Project_CurrentUser_SuperAdmin()
+        {
+            BuildTestData();
+            var roleSA = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.SuperAdmin
+            });
+            var userRole1 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleSA.Id
+            });
 
+            var content = new
+            {
+                data = new
+                {
+                    type = "projects",
+                    attributes = new
+                    {
+                        name = "project5",
+                        description = "description",
+                        language = "eng-US"
+                    },
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                        { "id", user1.Id.ToString() }
+                                }}}},
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organizations" },
+                                    { "id", org3.Id.ToString() }
+                            }}}},
+                            {"group", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "groups" },
+                                    { "id", group4.Id.ToString() }
+                            }}}},
+                            {"type", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "application-types" },
+                                    { "id", type1.Id.ToString() }
+                            }}}}
+                        }
+                }
+            };
+            var response = await Post("/api/projects/", content);
 
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        }
+        [Fact]
+        public async Task Create_Project_No_Publishing_Key()
+        {
+            BuildTestData();
+
+            var content = new
+            {
+                data = new
+                {
+                    type = "projects",
+                    attributes = new
+                    {
+                        name = "project5",
+                        type = "scriptureappbuilder",
+                        description = "description",
+                        language = "eng-US"
+                    },
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                        { "id", user2.Id.ToString() }
+                                }}}},
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organizations" },
+                                    { "id", org1.Id.ToString() }
+                            }}}},
+                            {"group", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "groups" },
+                                    { "id", group1.Id.ToString() }
+                            }}}},
+                            {"type", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "application-types" },
+                                    { "id", type1.Id.ToString() }
+                            }}}}
+                        }
+                }
+            };
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+
+            var response = await Post("/api/projects/", content);
+
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        }
+        [Fact]
+        public async Task Create_Project_Bad_Publishing_Key()
+        {
+            BuildTestData();
+
+            var content = new
+            {
+                data = new
+                {
+                    type = "projects",
+                    attributes = new
+                    {
+                        name = "project5",
+                        type = "scriptureappbuilder",
+                        description = "description",
+                        language = "eng-US"
+                    },
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "users" },
+                                    { "id", user3.Id.ToString() }
+                                }}}},
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organizations" },
+                                    { "id", org1.Id.ToString() }
+                            }}}},
+                            {"group", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "groups" },
+                                    { "id", group1.Id.ToString() }
+                            }}}},
+                            {"type", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "application-types" },
+                                    { "id", type1.Id.ToString() }
+                            }}}}
+                        }
+                }
+            };
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+
+            var response = await Post("/api/projects/", content);
+
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        }
     }
 }
 

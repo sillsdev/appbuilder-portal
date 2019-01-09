@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using JsonApiDotNetCore.Internal;
+using JsonApiDotNetCore.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
-using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Forms.Projects
 {
@@ -17,7 +15,8 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Projects
         protected int InitialOrganizationId { get; set; }
         public BaseProjectForm(
             UserRepository userRepository,
-            ICurrentUserContext currentUserContext) : base(userRepository, currentUserContext)
+            IEntityRepository<UserRole> userRolesRepository,
+            ICurrentUserContext currentUserContext) : base(userRepository, userRolesRepository, currentUserContext)
         {
         }
 
@@ -40,9 +39,19 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Projects
                 AddError(message);
             }
             // The current user should be a member of the organization
-            if (!CurrentUserOrgIds.Contains(Organization.Id))
+            if ((!CurrentUserOrgIds.Contains(Organization.Id)) && (!IsCurrentUserSuperAdmin()))
             {
                 var message = ("The current user is not a member of the project organization");
+                AddError(message);
+            }
+            if (ProjectOwner.PublishingKey == null)
+            {
+                var message = ("The project owner's publishing key is not set");
+                AddError(message);
+            }
+            else if (!ValidPublishingKey(ProjectOwner.PublishingKey))
+            {
+                var message = ("The project owner's publishing key is not valid");
                 AddError(message);
             }
         }

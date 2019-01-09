@@ -23,8 +23,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("logo-url")]
         public string LogoUrl { get; set; }
 
-        [Attr("use-sil-build-infrastructure")]
-        public bool? UseSilBuildInfrastructure { get; set; } = true;
+        [Attr("use-default-build-engine")]
+        public bool? UseDefaultBuildEngine { get; set; } = true;
 
         [Attr("public-by-default")]
         public bool? PublicByDefault { get; set; } = true;
@@ -44,6 +44,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasMany("organization-stores", Link.None)]
         public virtual List<OrganizationStore> OrganizationStores { get; set; }
+
+        [HasMany("user-roles", Link.None)]
+        public virtual List<UserRole> UserRoles { get; set; }
 
         [NotMapped]
         public IEnumerable<int> ProductDefinitionIds => OrganizationProductDefinitions?.Select(pd => pd.ProductDefinitionId);

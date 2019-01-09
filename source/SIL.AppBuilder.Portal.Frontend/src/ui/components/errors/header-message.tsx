@@ -1,4 +1,5 @@
 import * as React from 'react';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { parseError } from './parse-error';
 
@@ -8,20 +9,23 @@ export interface IProps {
   //
   // TODO: it may be handy to support an array of errors as well
   error?: any;
+  showClose?: boolean;
 }
 
 export default class ErrorHeaderMessage extends React.Component<IProps> {
   render() {
     const { error } = this.props;
-
+    let {showClose} = this.props;
     if (!error || error.length === 0) { return null; }
+
+    showClose = (showClose === undefined ? true : showClose);
 
     // title is required, but body is not.
     const { title, body } = parseError(error);
 
     return (
       <div className='ui negative message'>
-        <i className='close icon' />
+        {showClose ? <CloseIcon className='close icon' /> : null }
         <div className='header'>
           {title}
         </div>

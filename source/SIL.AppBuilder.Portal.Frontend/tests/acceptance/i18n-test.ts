@@ -32,7 +32,7 @@ describe('Acceptance | i18n', () => {
     });
 
     afterEach(() => {
-      i18n.default.changeLanguage('en-US');
+      i18n.changeLanguage('en-US');
     });
 
     describe('to english', () => {

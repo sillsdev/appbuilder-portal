@@ -12,8 +12,8 @@ export interface OrganizationAttributes extends AttributesObject {
   websiteUrl?: string;
   buildEngineUrl?: string;
   buildEngineApiAccessToken?: string;
-  makePrivateByDefault?: boolean;
-  useSilBuildInfrastructure?: boolean;
+  publicByDefault?: boolean;
+  useDefaultBuildEngine?: boolean;
   logoUrl?: string;
 }
 

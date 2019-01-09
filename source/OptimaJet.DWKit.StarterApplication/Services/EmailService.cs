@@ -42,7 +42,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 return;
             }
 
-            var templateFile = $"{Directory.GetCurrentDirectory()}/Templates/{email.ContentTemplate}.cshtml";
+            var templateFile = $"{Directory.GetCurrentDirectory()}/Templates/{email.ContentTemplate}";
             var fluentEmail = emailFactory.Create()
                 .To(email.To)
                 .CC(email.Cc)

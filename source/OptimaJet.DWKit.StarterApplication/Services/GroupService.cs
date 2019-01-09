@@ -19,6 +19,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public IJsonApiContext JsonApiContext { get; }
         public ICurrentUserContext CurrentUserContext { get; }
         public UserRepository UserRepository { get; }
+        public IEntityRepository<UserRole> UserRolesRepository { get; }
         public GroupRepository GroupRepository { get; }
 
         public GroupService(
@@ -27,12 +28,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ICurrentUserContext currentUserContext,
             UserRepository userRepository,
             IEntityRepository<Group> groupRepository,
+            IEntityRepository<UserRole> userRolesRepository,
             ILoggerFactory loggerFactory) : base(jsonApiContext, groupRepository, loggerFactory)
         {
             OrganizationContext = organizationContext;
             JsonApiContext = jsonApiContext;
             CurrentUserContext = currentUserContext;
             UserRepository = userRepository;
+            UserRolesRepository = userRolesRepository;
             GroupRepository = (GroupRepository)groupRepository;
         }
 
@@ -53,6 +56,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var updateForm = new UpdateForm(UserRepository,
                                              GroupRepository,
                                              OrganizationContext,
+                                             UserRolesRepository,
                                              CurrentUserContext);
             if (!updateForm.IsValid(id, resource))
             {

@@ -42,6 +42,11 @@ export function isTokenExpired(jwt = getDecodedJWT()) {
   return isExpired;
 }
 
+export function hasVerifiedEmail(): boolean{
+  const decodedToken = getDecodedJWT();
+  return decodedToken ? decodedToken.email_verified : false;
+}
+
 export function getDecodedJWT(): Auth0JWT | undefined {
   const token = getToken();
 

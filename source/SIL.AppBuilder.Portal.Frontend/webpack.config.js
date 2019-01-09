@@ -33,10 +33,11 @@ checkEnvVar('AUTH0_CONNECTION');
 
 let config = {
   mode: isProduction ? 'production' : 'development',
-  devtool: isProduction ? 'none' : 'inline-source-map',
+  devtool: isProduction ? 'none' : 'eval-source-map',
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),
+    // WorkflowApp: locate('src/ui/routes/workflow/app.tsx'),
   },
   module: {
     rules: moduleRules
@@ -53,27 +54,17 @@ let config = {
     new HtmlWebpackPlugin({
       title: 'Scriptoria',
       meta: {
+        favicon: '/favicon.ico',
         viewport: 'width=device-width,initial-scale=1,shrink-to-fit=no',
       },
     }),
     new ReactRootPlugin(),
-    // source maps!
-    // new webpack.SourceMapDevToolPlugin({
-
-    // }),
     ...plugins
   ],
   optimization: {
     runtimeChunk: 'single',
     splitChunks: {
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          enforce: true,
-          chunks: 'all'
-        }
-      }
+      chunks: 'all',
     }
   }
 };
@@ -99,8 +90,9 @@ if (isDevelopment) {
     overlay: true,
     progress: true,
     proxy: [{
-      context: ['/api', '/ui', '/configapi'],
-      target: `http://${process.env.API_HOST}`
+      context: ['/api', '/ui', '/configapi', '/account', '/data', '/workflow', '/hubs'],
+      target: `http://${process.env.API_HOST}`,
+      ws: true
     }]
   }
 }

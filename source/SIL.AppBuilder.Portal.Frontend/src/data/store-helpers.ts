@@ -1,6 +1,7 @@
 import Store from '@orbit/store';
 import { QueryBuilder, QueryOrExpression } from '@orbit/data';
 import { camelize } from '@orbit/utils';
+import * as qs from 'querystring';
 
 import { ResourceObject, AttributesObject } from 'jsonapi-typescript';
 
@@ -14,6 +15,7 @@ export interface IBuildNewOptions<TAttrs, TRelationships> {
 
 export interface IQueryOptions {
   include?: string[];
+  fields?: { [key: string]: string[] | any };
   settings?: any;
 }
 
@@ -64,9 +66,19 @@ export function inverseRelationshipOf(modelName: string, relationshipName) {
 
 export function buildOptions(options: IQueryOptions = {}, label?: string) {
   const maybeInclude: any = {};
+  let fieldSettings: any = {};
 
   if (options.include) {
     maybeInclude.include = options.include;
+  }
+
+
+  if (options.fields) {
+    fieldSettings = {
+      params: {
+        fields: options.fields
+      },
+    };
   }
 
   return {
@@ -75,9 +87,11 @@ export function buildOptions(options: IQueryOptions = {}, label?: string) {
       remote: {
         settings: {
           ...defaultSourceOptions(),
-          ...(options.settings || {})
+          ...(options.settings || {}),
+          ...fieldSettings,
         },
-        ...maybeInclude
+        ...maybeInclude,
+
       }
     }
   };
@@ -89,16 +103,19 @@ export async function update<TAttrs, TRelationships>(
   resource: any,
   options: IBuildNewOptions<TAttrs, TRelationships>
 ) {
+  const recordOptions = buildRecordOptions(options);
+
   await store.update(
     q => q.replaceRecord({
       id: resource.id,
       type: resource.type,
-      ...options
+      ...recordOptions
     }),
     defaultOptions()
   );
 }
 
+// TODO: iterate over the relationships, and ensure that the remote id is used
 export async function create<TAttrs, TRelationships>(
   store: Store,
   type: string,
@@ -121,28 +138,38 @@ export async function create<TAttrs, TRelationships>(
 //   }
 // });
 export function buildNew<TAttrs, TRelationships>(type: string, options: IBuildNewOptions<TAttrs, TRelationships>) {
+  const recordOptions = buildRecordOptions(options);
+  return {
+    type,
+    ...recordOptions
+  };
+}
+
+export function buildRecordOptions<TAttrs, TRelationships>(options: IBuildNewOptions<TAttrs, TRelationships>) {
   const attributes = options.attributes || {};
   const relationMap = options.relationships || {};
+  const relationships = buildRelationships(relationMap);
 
-  const relationships = Object.keys(relationMap).reduce((result, relationName) => {
+  return {
+    attributes,
+    relationships
+  };
+}
+
+export function buildRelationships<TRelationships>(relationMap: TRelationships) {
+  return Object.keys(relationMap).reduce((result, relationName) => {
     const relationInfo = relationMap[relationName];
     const relationData =
       Array.isArray(relationInfo)
-        ? relationInfo.map(info => recordIdentityFrom(info.id, info.type))
-        : recordIdentityFrom(relationInfo.id, relationInfo.type);
+        ? relationInfo.map(info => remoteIdentityFrom(info))
+        : remoteIdentityFrom(relationInfo);
 
     result[relationName] = {
-      data:relationData
+      data: relationData
     };
 
     return result;
   }, {});
-
-  return {
-    type,
-    attributes,
-    relationships
-  };
 }
 
 interface IOrbitTracking {
@@ -180,6 +207,16 @@ export function idFromRecordIdentity<TType extends string = '', TAttrs extends A
 
 export function recordIdentityFrom(id: string, type: string) {
   return recordIdentityFromKeys({ keys: { remoteId: id }, type });
+}
+
+export function remoteIdentityFrom(resource: any) {
+  if (!resource.keys) {
+    // the returned id is a local id
+    // resource id becomes the keys.remoteId
+    return recordIdentityFrom(resource.id, resource.type);
+  }
+
+  return resource;
 }
 
 export interface IIdentityFromKeys {

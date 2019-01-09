@@ -1,5 +1,7 @@
 import { visit, location } from '@bigtest/react';
-import { expect } from 'chai';
+import Convergence, { when } from '@bigtest/convergence';
+import { expect, assert } from 'chai';
+import app from './pages/app';
 
 export { fakeAuth0Id } from './jwt';
 export { useFakeAuthentication } from './auth';
@@ -18,5 +20,27 @@ export function wait(ms: number): Promise<void> {
 export async function visitTheHomePage() {
   await visit('/');
 
-  expect(location().pathname).to.eq('/tasks');
+  new Convergence()
+    .when(() => app.headers)
+    .do(() => expect(location().pathname).to.eq('/tasks'))
+    .run();
+}
+
+export async function openOrgSwitcher() {
+  if (!app.isSidebarVisible) {
+    await app.openSidebar();
+    await when(() => app.isSidebarVisible);
+  }
+  if (!app.isOrgSwitcherVisible) {
+    await app.openOrgSwitcher();
+    await when(() => app.isOrgSwitcherVisible);
+  }
+}
+
+
+export async function switchToOrg(orgName: string) {
+  await openOrgSwitcher();
+  await app.orgSwitcher.chooseOrganization(orgName);
+  await when(() => app.selectedOrg);
+  expect(app.selectedOrg).to.equal(orgName);
 }

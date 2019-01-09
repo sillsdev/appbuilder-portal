@@ -1,9 +1,5 @@
-import * as React from 'react';
 import { compose, withProps } from 'recompose';
-import { withData as withCache } from 'react-orbitjs';
 
-import { TEMP_DEFAULT_PAGE_SIZE } from '@data';
-import { PaginationFooter } from '@data/containers/api';
 import { withSorting } from '@data/containers/api/sorting';
 import { withPagination } from '@data/containers/api/pagination';
 import { withFiltering } from '@data/containers/api/with-filtering';
@@ -11,7 +7,7 @@ import { withLoader } from '@data/containers/with-loader';
 import { withNetwork } from '@data/containers/resources/project/list';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 
-import { withTableColumns, COLUMN_KEY } from '@ui/components/project-table';
+import { withTableColumns, withTableRows, COLUMN_KEY } from '@ui/components/project-table';
 
 import { TYPE_NAME as PROJECT } from '@data/models/project';
 
@@ -30,9 +26,9 @@ export default compose(
   }),
   withNetwork(),
   withLoader(({ error, projects }) => !error && !projects),
-  withProps(({ projects }) => ({
-    projects: projects.filter(resource => resource.type === PROJECT),
-    tableName: 'organization'
+  withProps(({projects}) => ({
+    tableName: 'organization',
+    rowCount: projects ? projects.length : 0,
   })),
   withTableColumns({
     tableName: 'organization',
@@ -43,4 +39,7 @@ export default compose(
       COLUMN_KEY.PRODUCT_UPDATED_ON
     ]
   }),
+  withTableRows({
+    tableName: 'organization'
+  })
 )(Display);

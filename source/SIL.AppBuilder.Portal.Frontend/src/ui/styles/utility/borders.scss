@@ -4,16 +4,28 @@
     border: solid 2px $panel-border-color;
   }
 
+  .thin-border#{$modifier} {
+    border: 1px solid $border-color;
+  }
+
+  .thin-inverted-border#{$modifier} {
+    border: 1px solid $inverted-border-color !important;
+  }
+
+  .blue-light-border#{$modifier} {
+    border: 1px solid $blue-highlight !important;
+  }
+
+  .blue-light-bottom-border#{$modifier} {
+    border-bottom: 1px solid $blue-highlight !important;
+  }
+
   .page-heading-border#{$modifier} {
     border-bottom: 1px solid $border-color;
   }
 
   .thin-bottom-border#{$modifier} {
-    border-bottom: 1px solid $border-color;
-  }
-
-  .round-border {
-    border-radius: 50%;
+    border-bottom: 1px solid $border-color !important;
   }
 
   @each $position in $positions {
@@ -34,6 +46,17 @@
   }
 }
 
+.round-border {
+  border-radius: 50%;
+}
+
+.round-border-4 {
+  border-radius: 4px;
+}
+
+.round-border-8 {
+  border-radius: 8px;
+}
 
 
 @each $breakpoint in map-keys($grid-breakpoints) {

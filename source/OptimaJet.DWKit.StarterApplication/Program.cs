@@ -30,7 +30,7 @@ namespace OptimaJet.DWKit.StarterApplication
                 .WriteTo.Console()
                 .CreateLogger();
 
-            BuildWebHost(args).Run();
+                BuildWebHost(args).Run();
         }
 
         public static IWebHost BuildWebHost(string[] args)

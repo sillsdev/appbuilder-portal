@@ -1,9 +1,6 @@
 import * as React from 'react';
-import { Route, Link, Switch } from 'react-router-dom';
+import { Route, Link, Switch, withRouter } from 'react-router-dom';
 import Notifications from 'react-notify-toast';
-
-
-import { withAuthLayout as withLayout } from '@lib/routing';
 
 import IndexRoute, { pathName as rootPath } from '@ui/routes/index';
 import LoginRoute, { pathName as loginPath } from '@ui/routes/login';
@@ -22,6 +19,7 @@ import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-source';
 
 import ErrorRootRoute from '@ui/routes/errors';
+import Workflow from './workflow';
 
 export default class RootPage extends React.Component {
   render() {
@@ -43,7 +41,7 @@ export default class RootPage extends React.Component {
             <Route exact path={requestOrgAccessPath} component={RequestOrgAccessRoute} />
             <Route path={requestOrgAccessSuccessPath} component={RequestOrgAccessSuccessRoute} />
 
-            <Route path={organizationsPath} component={withLayout(OrganizationsRoute)} />
+            <Route path={organizationsPath} component={OrganizationsRoute} />
 
             <Route path={directoryPath} component={DirectoryRoute} />
             <Route path={projectsPath} component={ProjectsRoute} />
@@ -52,7 +50,11 @@ export default class RootPage extends React.Component {
 
             <Route path={openSourcePath} component={OpenSourceRoute} />
 
+            <Route path={'/form'} component={Workflow} />
+            <Route path={'/flow'} component={Workflow} />
+
             <Route component={ErrorRootRoute} />
+
           </Switch>
         </section>
       </div>

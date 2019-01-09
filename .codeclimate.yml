@@ -1,0 +1,48 @@
+version: "2"         # required to adjust maintainability checks
+checks:
+  # Duplication overrides -- affects all languages
+  similar-code:
+    config:
+      threshold: 75
+  identical-code:
+    config:
+      threshold: 100
+plugins:
+  duplication:
+    enabled: true
+    config:
+      count_threshold: 4
+exclude_patterns:
+ - "config/"
+ - "db/"
+ - "dist/"
+ - "features/"
+ - "**/node_modules/"
+ - "script/"
+ - "**/spec/"
+ - "**/test/"
+ - "**/tests/"
+ - "Tests/"
+ - "**/vendor/"
+ - "**/*_test.go"
+ - "**/*.d.ts"
+ - "**/*.csproj"
+ - "**/src/public/*"
+ - "**/wwwroot/*"
+ - "**/Migrations/*"
+ - "Dockerfile"
+ - "*config"
+ - "source/OptimaJet.DWKit.StarterApplication/wwwroot"
+ - "**/*-test*"
+ - "**/*-page*"
+ - "**/-modal*"
+ - "**/__test__/*"
+ - "**/__tests__/*"
+ - "**/*.Test/*"
+ - "**/*.Tests/*"
+ - "**/*.Test*"
+ - "**/*.Tests*"
+ - "**/*Test.cs"
+ - "**/webpack*"
+ - "**/AppDbContext.cs"
+ - "**/schema.ts"

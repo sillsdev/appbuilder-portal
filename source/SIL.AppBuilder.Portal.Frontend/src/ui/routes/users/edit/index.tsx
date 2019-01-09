@@ -1,17 +1,17 @@
 import * as React from 'react';
-
-import { compose } from 'recompose';
-import { InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { Container } from 'semantic-ui-react';
-import { WithDataProps } from 'react-orbitjs';
-import { ResourceObject } from 'jsonapi-typescript';
-
-import { withTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
+import { compose } from 'recompose';
+import { WithDataProps } from 'react-orbitjs';
 
-import { USERS_TYPE, update } from '@data';
+import { withTranslations, i18nProps } from '@lib/i18n';
+
+import { UserResource, update } from '@data';
+import { ROLE }  from '@data/models/role';
+import { withRole } from '@data/containers/with-role';
 import { UserAttributes } from '@data/models/user';
-import { withCurrentUser } from '@data/containers/with-current-user';
+import {
+  withCurrentUser, IProvidedProps as ICurrentUserProps
+} from '@data/containers/with-current-user';
 
 import EditProfileForm from './form';
 import { withData } from './with-data';
@@ -21,14 +21,14 @@ import './profile.scss';
 export const pathName = '/users/:id/edit';
 
 export interface IOwnProps {
-  user: ResourceObject<USERS_TYPE, UserAttributes>;
-  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
+  user: UserResource;
 }
 
 export type IProps =
   & IOwnProps
   & WithDataProps
-  & i18nProps;
+  & i18nProps
+  & ICurrentUserProps;
 
 class Profile extends React.Component<IProps> {
 
@@ -37,26 +37,32 @@ class Profile extends React.Component<IProps> {
 
     try {
       await update(dataStore, user, { attributes });
-
       toast.success(t('profile.updated'));
-
     } catch (e) {
       toast.error(e);
     }
   }
 
   render() {
+
     const { t, user } = this.props;
+    const editProfileProps = {
+      user,
+      onSubmit: this.updateProfile
+    };
 
     return (
-      <Container className='profile'>
-        <h1 className='title'>{t('profile.title')}: { user && user.attributes.givenName }</h1>
+      <div className='ui container profile'>
+        <h1 className='fs-36 bold gray-text page-heading-border p-t-lg p-b-md m-b-lg'>
+          {t('profile.title')}: { user && user.attributes.givenName }
+        </h1>
         <div>
-          <h2>{t('profile.general')}</h2>
-
-          <EditProfileForm user={user} onSubmit={this.updateProfile} />
+          <h2 className='fs-21 bold gray-text m-b-lg'>
+            {t('profile.general')}
+          </h2>
+          <EditProfileForm {...editProfileProps} />
         </div>
-      </Container>
+      </div>
     );
   }
 }
@@ -66,4 +72,11 @@ export default compose(
   withTranslations,
   withCurrentUser(),
   withData,
+  withRole(ROLE.OrganizationAdmin, {
+    redirectTo: '/',
+    overrideIf: (props: IProps) => {
+      const { currentUser, user } = props;
+      return currentUser.id === user.id;
+    }
+  }),
 )(Profile);

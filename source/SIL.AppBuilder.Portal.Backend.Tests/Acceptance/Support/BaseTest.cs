@@ -62,6 +62,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             return await MakeRequest(request, organizationId, addOrgHeader, allOrgs);
         }
 
+        public async Task<HttpResponseMessage> Delete(string url)
+        {
+            var httpMethod = new HttpMethod("DELETE");
+            var request = new HttpRequestMessage(httpMethod, url);
+            return await MakeRequest(request, "", false);
+        }
+
         public async Task<HttpResponseMessage> Post(string url, object content, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
         {
             var httpMethod = new HttpMethod("POST");
@@ -167,12 +174,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
         #region Data Helpers
 
-        public Tuple<User, OrganizationMembership> NeedsConfiguredCurrentUser()
+        public Tuple<User, OrganizationMembership, Organization> NeedsConfiguredCurrentUser()
         {
             var currentUser = NeedsCurrentUser();
-            var membership = NeedsDefaultOrganization(currentUser);
+            var tuple = NeedsDefaultOrganization(currentUser);
 
-            return Tuple.Create(currentUser, membership);
+            return Tuple.Create(currentUser, tuple.Item1, tuple.Item2);
         }
 
         public User NeedsCurrentUser()
@@ -185,7 +192,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
                 Email = testUserData.Email,
                 GivenName = testUserData.GivenName,
                 FamilyName = testUserData.FamilyName,
-                Name = testUserData.Name
+                Name = testUserData.Name,
+                PublishingKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTF+wTVdaMDYmgeAZd7voe/b5MEHJWBXQDik14sqqj0aXtwV4+qxPU2ptqcjGpRk3ynmxp9i6Venw1JVf39iDFhWgd7VGBA7QEfApRm1v1FRI0wuN test@testMBP.local"
             };
 
             NeedsTestData<AppDbContext, User>(new List<User> {
@@ -195,7 +203,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             return user;
         }
 
-        public OrganizationMembership NeedsDefaultOrganization(User forUser)
+        public Tuple<OrganizationMembership, Organization> NeedsDefaultOrganization(User forUser)
         {
 
             var organization = AddEntity<AppDbContext, Organization>(new Organization
@@ -209,7 +217,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
                 OrganizationId = organization.Id
             });
 
-            return membership;
+            return Tuple.Create(membership, organization);
         }
 
         protected TEntity AddEntity<TDbContext, TEntity>(TEntity obj)

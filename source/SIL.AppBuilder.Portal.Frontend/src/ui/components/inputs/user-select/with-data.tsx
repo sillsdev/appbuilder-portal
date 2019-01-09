@@ -1,117 +1,169 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { ResourceObject } from 'jsonapi-typescript';
 
-import { GroupMembershipAttributes } from '@data/models/group-membership';
+import {
+  query, defaultSourceOptions, OrganizationResource,
+  UserResource,
+  GroupMembershipResource
+} from '@data';
+
+import { TYPE_NAME as USER } from '@data/models/user';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
+import { retrieveRelation } from '@data/containers/with-relationship';
+// import { roleInOrganization } from '@data/containers/with-role';
+
 import { PageLoader as Loader } from '@ui/components/loaders';
-import { query, defaultSourceOptions, relationshipFor, USERS_TYPE, GROUP_MEMBERSHIPS_TYPE, isRelatedRecord, isRelatedTo, idFromRecordIdentity, recordIdentityFrom } from '@data';
-import { TYPE_NAME as USER, UserAttributes } from '@data/models/user';
-import { withCurrentUser } from '@data/containers/with-current-user';
-
 
 export interface IProvidedProps {
-  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
+  users: UserResource[];
   disableSelection: true;
 }
 
 interface IOwnProps {
-  users: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
-  groupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
-  currentUsersGroupMemberships: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
-  usersFromCache: Array<ResourceObject<USERS_TYPE, UserAttributes>>;
-  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
+  users: UserResource[];
+  groupMemberships: GroupMembershipResource[];
+  currentUsersGroupMemberships: GroupMembershipResource[];
+  usersFromCache: UserResource[];
+  currentUser: UserResource;
   selected: Id;
   groupId: Id;
   restrictToGroup: boolean;
+  scopeToOrganization?: OrganizationResource;
 }
 
 type IProps =
   & IOwnProps
   & WithDataProps;
 
+interface IState {
+  users?: UserResource[];
+}
+
 export function withData(WrappedComponent) {
-  const mapNetworkToProps = (passedProps) => {
-    return {
-      users: [
-        q => q.findRecords(USER), {
-          label: 'Get Users for User Input Select',
-          sources: {
-            remote: {
-              settings: { ...defaultSourceOptions() },
-              include: ['group-memberships'],
-            }
-          }
-        }
-      ]
-    };
-  };
+  class DataWrapper extends React.Component<IProps, IState> {
+    isFilteringUsers = false;
+    state: IState = {};
 
-  const mapRecordsToProps = (passedProps) => {
-    const { type, id } = passedProps.currentUser;
-
-    return {
-      currentUsersGroupMemberships: q => q.findRelatedRecords({ type, id }, 'groupMemberships'),
-      groupMemberships: q => q.findRecords('groupMembership')
-    };
-  };
-
-  class DataWrapper extends React.Component<IProps> {
-    render() {
+    determineAvailableUsers = async () => {
       const {
+        dataStore,
         users,
-        currentUser,
         selected,
         groupId,
-        groupMemberships,
+        scopeToOrganization,
         restrictToGroup,
-        currentUsersGroupMemberships,
-        ...otherProps
       } = this.props;
 
-      if (!users || !groupMemberships || !currentUsersGroupMemberships) {
+      // remove users who _can't_ be assigned to this project
+      // due to not having organization overlap
+      const filtered = [];
+      const promises = (users || []).map(async user => {
+        let isInOrganization = true;
+        let isInGroup = true;
+
+        if (scopeToOrganization) {
+          const organizationId = scopeToOrganization.id;
+          const organizations = await retrieveRelation(dataStore, [user, 'organizationMemberships', 'organization']);
+          const ids = (organizations || []).map(o => o && o.id);
+
+          isInOrganization = ids.includes(organizationId);
+        }
+
+        if (restrictToGroup && groupId) {
+          const groups = await retrieveRelation(dataStore, [user, 'groupMemberships', 'group']);
+          const ids = (groups || []).map(g => g && g.id);
+
+          isInGroup = ids.includes(groupId);
+        }
+
+        if (isInOrganization && isInGroup) {
+          filtered.push(user);
+        }
+      });
+
+      await Promise.all(promises);
+
+      // ensure the project owner is in the list
+      const isOwnerInList = filtered.find(user => user.id === selected);
+
+      if( (!isOwnerInList)) {
+        const owner = users.find(user => user.id === selected);
+        filtered.push(owner);
+      }
+
+      return filtered;
+    }
+
+    tryGetUsers = async () => {
+      if (this.isFilteringUsers) { return; }
+      if (this.state.users) { return; }
+
+      this.isFilteringUsers = true;
+      const users = await this.determineAvailableUsers();
+
+      this.setState({ users }, () => this.isFilteringUsers = false);
+    }
+
+    componentDidMount() {
+      if (!this.hasRequiredData) { return; }
+
+      this.tryGetUsers();
+    }
+
+    componentDidUpdate() {
+      if (!this.hasRequiredData) { return; }
+
+      this.tryGetUsers();
+    }
+
+    get hasRequiredData() {
+      const { users, groupMemberships, currentUsersGroupMemberships } = this.props;
+
+      return (users && groupMemberships && currentUsersGroupMemberships);
+    }
+
+    /*
+     * Disabled if:
+     * - !( the Enabled if list )
+     * - User is not in the group that the project is in
+     *   - consequently, user will not be in the project's organization
+     *
+     * Enabled if:
+     * - User owns project
+     * - User is org admin
+     * - User is super admin
+     */
+    get isDisabled() {
+      // roleInOrganization(...)
+      const { currentUser } = this.props;
+      const { users } = this.state;
+
+      const userIds = users.map(u => u.id);
+
+      // if the currentUser is not on the list,
+      // they cannot change it
+      const currentUserIsAllowed = userIds.includes(currentUser.id);
+
+      return !currentUserIsAllowed;
+    }
+
+    render() {
+      const { selected, ...otherProps } = this.props;
+
+      if (!this.hasRequiredData) {
         return <Loader />;
       }
 
-      let filteredUsers = users;
-      let disableSelection = false;
+      const { users } = this.state;
 
-      if (restrictToGroup) {
-        const groupMembershipsForGroup = groupMemberships.filter(gm => {
-          const isRelated = isRelatedTo(gm, 'group', `${groupId}`);
-
-          return isRelated;
-        });
-
-        const validMembershipIds = groupMembershipsForGroup
-          .filter(gm => gm)
-          .map(gm => gm.id);
-
-        filteredUsers = users.filter(user => {
-          if (idFromRecordIdentity(user as any) === selected) {
-            return true;
-          }
-
-          const relation = relationshipFor(user, 'groupMemberships');
-          const belongsToGroup = (relation.data || []).find(gm => {
-            return validMembershipIds.includes(gm.id);
-          });
-
-          return belongsToGroup;
-        });
-
-        const relevantGroupMembershipsForCurrentUser = currentUsersGroupMemberships.filter(gm => {
-          return gm && validMembershipIds.includes(gm.id);
-        });
-
-        disableSelection = relevantGroupMembershipsForCurrentUser.length < 1;
-      }
+      if (users === undefined) { return <Loader />; }
 
       const props = {
         ...otherProps,
         selected,
-        users: filteredUsers,
-        disableSelection
+        users,
+        disableSelection: this.isDisabled
       };
 
       return <WrappedComponent { ...props } />;
@@ -119,8 +171,36 @@ export function withData(WrappedComponent) {
   }
 
   return compose(
-    withCurrentUser(),
-    query(mapNetworkToProps),
-    withOrbit(mapRecordsToProps),
+    // NOTE to future self, somehow the users are getting lost. O.O
+    // NOTE: this is hit at least 8 times when a product changes...
+    query(() => {
+      return {
+        cacheKey: 'static',
+        users: [
+          q => q.findRecords(USER),
+          {
+            label: 'Get Users for User Input Select',
+            sources: {
+              remote: {
+                settings: { ...defaultSourceOptions() },
+                include: [
+                  'group-memberships.group',
+                  'organization-memberships.organization'
+                ],
+              }
+            }
+          }
+        ],
+      };
+    }),
+    withCurrentUserContext,
+    withOrbit((passedProps: IOwnProps) => {
+      const { currentUser } = passedProps;
+
+      return {
+        currentUsersGroupMemberships: q => q.findRelatedRecords(currentUser, 'groupMemberships'),
+        groupMemberships: q => q.findRecords('groupMembership')
+      };
+    }),
   )(DataWrapper);
 }

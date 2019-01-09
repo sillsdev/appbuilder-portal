@@ -6,7 +6,7 @@ import { titleize } from 'inflected';
 import { attributesFor } from '@data/helpers';
 
 import ProductIcon from '@ui/components/product-icon';
-import { ProductResource, ProductDefinitionResource } from '@data/models/product';
+import { ProductResource, ProductDefinitionResource } from '@data';
 
 import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
@@ -42,16 +42,16 @@ class ProductItem extends React.Component<IProps> {
     return activeProductColumns.map((column) => {
       switch(column.id) {
         case COLUMN_KEY.PRODUCT_BUILD_DATE:
-          column.value = moment.tz(buildDate, timezone).format('L');
+          column.value = moment(buildDate).tz(timezone).format('L');
           break;
         case COLUMN_KEY.PRODUCT_BUILD_VERSION:
           column.value = buildVersion || '-';
           break;
         case COLUMN_KEY.PRODUCT_CREATED_ON:
-          column.value = moment.tz(createdOn, timezone).format('L');
+          column.value = moment(createdOn).tz(timezone).format('L');
           break;
         case COLUMN_KEY.PRODUCT_UPDATED_ON:
-          column.value = moment.tz(updatedOn, timezone).format('L');
+          column.value = moment(updatedOn).tz(timezone).format('L');
           break;
         default:
           column.value = 'active column not recognized';
@@ -62,7 +62,7 @@ class ProductItem extends React.Component<IProps> {
   }
 
   humanReadableName = () => {
-    const { t, productDefinition } = this.props;
+    const { productDefinition } = this.props;
     const { name } = attributesFor(productDefinition);
 
     const readableName = titleize(name);
@@ -71,7 +71,7 @@ class ProductItem extends React.Component<IProps> {
   }
 
   render() {
-    const { product, productDefinition, activeProjectColumns } = this.props;
+    const { productDefinition, activeProjectColumns } = this.props;
 
     const activeProductColumns = this.getActiveProductColumns();
 
@@ -79,9 +79,9 @@ class ProductItem extends React.Component<IProps> {
     padding = Math.max(0, padding);
 
     return (
-      <div className='flex flex-column-xxs flex-row-xs grid product'>
+      <div className='flex flex-column-xxs flex-row-xs grid product p-b-sm p-t-sm'>
         <div className='col flex align-items-center w-100-xs-only flex-100 p-l-md p-r-md'>
-          <ProductIcon product={productDefinition} />
+          <ProductIcon product={productDefinition} selected={true} />
           <span className='p-l-sm-xs'>{this.humanReadableName()}</span>
         </div>
 

@@ -12,7 +12,7 @@ type IProps =
   & IOwnProps
   & IDataProps;
 
-export default class GroupSelectDisplay extends React.Component<IProps> {
+export default class ApplicationTypeSelectDisplay extends React.Component<IProps> {
 
   componentDidMount() {
 

@@ -42,7 +42,7 @@ class LocaleSelect extends React.Component<IProps> {
     const { currentUser, i18n } = this.props;
     const attributes = attributesFor(currentUser) as UserAttributes;
     const userLocale = attributes.locale;
-    const { default: { options, language } } = i18n;
+    const { options, language } = i18n;
     const languages = Object.keys(options.resources);
 
     const selected = userLocale || language;

@@ -24,8 +24,8 @@ const schemaDefinition: SchemaSettings = {
         buildEngineUrl: { type: 'string' },
         logoUrl: { type: 'string' },
 
-        makePrivateByDefault: { type: 'boolean' },
-        useSilBuildInfrastructure: { type: 'boolean' },
+        publicByDefault: { type: 'boolean' },
+        useDefaultBuildEngine: { type: 'boolean' },
 
         // note, that the Build Engine API access token probably should
         // never be *received* from the Scriptura API
@@ -45,7 +45,8 @@ const schemaDefinition: SchemaSettings = {
         userMemberships: { type: 'hasMany', model: 'organization-membership', inverse: 'organization' },
         groups: { type: 'hasMany', model: 'group', inverse: 'owner' },
         organizationProductDefinitions: { type: 'hasMany', model: 'organizationProductDefinition', inverse: 'organization'},
-        organizationStores: { type: 'hasMany', model: 'organizationStore', inverse: 'organization' }
+        organizationStores: { type: 'hasMany', model: 'organizationStore', inverse: 'organization' },
+        userRoles: { type: 'hasMany', model: 'userRole', inverse: 'organization' },
       }
     },
     organizationMembership: {
@@ -94,11 +95,11 @@ const schemaDefinition: SchemaSettings = {
         allowDownloads: { type: 'boolean' },
         location: { type: 'string' },
         isPublic: { type: 'boolean' },
+        workflowProjectUrl: { type: 'string'},
         // filter keys
         ownerId: { type: 'string' }
       },
       relationships: {
-        tasks: { type: 'hasMany', model: 'task', inverse: 'project'},
         products: { type: 'hasMany', model: 'product', inverse: 'project' },
         organization: { type: 'hasOne', model: 'organization', inverse: 'projects'},
         owner: { type: 'hasOne', model: 'user', inverse: 'projects' },
@@ -130,8 +131,21 @@ const schemaDefinition: SchemaSettings = {
         productDefinition: { type: 'hasOne', model: 'productDefinition', inverse: 'products' },
         store: { type: 'hasOne', model: 'store', inverse: 'products' },
         storeLanguage: { type: 'hasOne', model: 'storeLanguage', inverse: 'products' },
-        artifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'product' },
-        tasks: { type: 'hasMany', model: 'task', inverse: 'project' }, // TODO: doesn't exist in DB
+        productBuilds: { type: 'hasMany', model: 'productBuild', inverse: 'product'},
+        productArtifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'product' },
+        tasks: { type: 'hasMany', model: 'userTask', inverse: 'product' },
+      }
+    },
+    productBuild: {
+      keys: { remoteId: {} },
+      attributes: {
+        version: {type: 'string' },
+        dateCreated: { type: 'string' },
+        dateUpdated: { type: 'string' }
+      },
+      relationships: {
+        product: { type: 'hasOne', model: 'product', inverse: 'productBuilds' },
+        productArtifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'productBuild' }
       }
     },
     productArtifact: {
@@ -145,7 +159,8 @@ const schemaDefinition: SchemaSettings = {
         dateUpdated: { type: 'string' }
       },
       relationships: {
-        product: { type: 'hasOne', model: 'product', inverse: 'artifacts' }
+        product: { type: 'hasOne', model: 'product', inverse: 'productArtifacts' },
+        productBuild: { type: 'hasOne', model: 'productBuild', inverse: 'productArtifacts' }
       }
     },
     productDefinition: {
@@ -157,7 +172,8 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         products: { type: 'hasMany', model: 'product', inverse: 'productDefinition' },
         organizationProductDefinitions: { type: 'hasMany', model: 'organizationProductDefinition', inverse: 'productDefinition'},
-        type: { type: 'hasOne', model: 'applicationType', inverse: 'productDefinitions' }
+        type: { type: 'hasOne', model: 'applicationType', inverse: 'productDefinitions' },
+        workflow: { type: 'hasOne', model: 'workflowDefinition', inverse: 'productDefinitions' },
       }
     },
     store: {
@@ -192,45 +208,52 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         stores: { type: 'hasMany', model: 'store', inverse: 'storeType'},
         storeLanguages: { type: 'hasMany', model: 'storeLanguage', inverse: 'storeType' },
+        workflowDefinitions: { type: 'hasMany', model: 'workflowDefinition', inverse: 'storeType'}
 
       }
     },
-    task: {
+    userTask: {
       keys: { remoteId: {} },
       attributes: {
+        activityName: { type: 'string' },
+        comment: { type: 'string' },
         status: { type: 'string' },
+        dateCreated: { type: 'string' },
+        dateUpdated: { type: 'string' },
+
+        // Not yet implemented -- post MVP
         waitTime: { type: 'number' }
       },
       relationships: {
-        project: { type: 'hasOne', model: 'project', inverse: 'tasks'},
         product: { type: 'hasOne', model: 'product', inverse: 'tasks'},
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' }
-      }
-    },
-    notification: {
-      keys: { remoteId: {} },
-      attributes: {
-        title: { type: 'string' },
-        description: { type: 'string' },
-        time: { type: 'date' },
-        link: { type: 'string' },
-        isViewed: { type: 'boolean' },
-        show: { type: 'boolean' }
       }
     },
     role: {
       keys: { remoteId: {} },
       attributes: {
-        name: { type: 'string'}
+        roleName: { type: 'string'}
       },
       relationships: {
-        users: { type: 'hasMany', model: 'user', inverse: 'role'}
+        userRoles: { type: 'hasMany', model: 'userRole', inverse: 'role' }
+      }
+    },
+    userRole: {
+      keys: { remoteId: {} },
+      attributes: {
+        roleName: { type: 'string' },
+      },
+      relationships: {
+        user: { type: 'hasOne', model: 'user', inverse: 'userRoles' },
+        role: { type: 'hasOne', model: 'role', inverse: 'userRoles' },
+        organization: { type: 'hasOne', model: 'organization', inverse: 'userRoles' }
       }
     },
     group: {
       keys: { remoteId: {} },
       attributes: {
-        name: { type: 'string' }
+        name: { type: 'string' },
+        abbreviation: { type: 'string' }
       },
       relationships: {
         groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'group' },
@@ -260,6 +283,7 @@ const schemaDefinition: SchemaSettings = {
         isLocked: { type: 'boolean' },
         profileVisibility: { type: 'number' },
         emailNotification: { type: 'boolean'},
+        publishingKey: { type: 'string'},
         timezone: { type: 'string' },
         localization: { type: 'string' },
         decimalSeparator: { type: 'string' },
@@ -269,10 +293,39 @@ const schemaDefinition: SchemaSettings = {
         organizationMemberships: { type: 'hasMany', model: 'organizationMembership', inverse: 'user' },
         groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'user' },
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
-        assignedTasks: { type: 'hasMany', model: 'task', inverse: 'assigned' },
+        assignedTasks: { type: 'hasMany', model: 'userTask', inverse: 'assigned' },
         projects: { type: 'hasMany', model: 'project', inverse: 'owner' },
-        role: { type: 'hasOne', model: 'role', inverse: 'users'},
-        groups: { type: 'hasMany', model: 'group', inverse: 'users'}
+        userRoles: { type: 'hasMany', model: 'userRole', inverse: 'user'},
+        groups: { type: 'hasMany', model: 'group', inverse: 'users'},
+        notifications: { type: 'hasMany', model: 'notification', inverse: 'user'},
+      }
+    },
+    workflowDefinition: {
+      keys: { remoteId: {} },
+      attributes: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        enabled: { type: 'boolean' },
+        workflowBusinessFlow: { type: 'string' },
+        workflowScheme: { type: 'string' }
+      },
+      relationships: {
+        productDefinitions: { type: 'hasMany', model: 'productDefinition', inverse: 'workflow' },
+        storeType: { type: 'hasOne', model: 'storeType', inverse: 'workflowDefinitions' },
+      }
+    },
+    notification: {
+      keys: { remoteId: {} },
+      attributes: {
+        message: { type: 'string' },
+        dateRead: { type: 'date' },
+        dateEmailSent: { type: 'date' },
+        dateCreated: { type: 'date' },
+        dateUpdated: { type: 'date' },
+        sendEmail: { type: 'boolean' },
+      },
+      relationships: {
+        user: { type: 'hasOne', model: 'user', inverse: 'notifications' }
       }
     }
   }

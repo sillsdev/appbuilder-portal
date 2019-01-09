@@ -1,24 +1,30 @@
-using Microsoft.AspNetCore.Builder;
+using System;
 using AspNetCore.RouteAnalyzer;
+using Bugsnag;
+using Bugsnag.AspNet.Core;
+using Hangfire;
+using I18Next.Net.AspNetCore;
+using I18Next.Net.Backends;
+using I18Next.Net.Extensions;
 using JsonApiDotNetCore.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OptimaJet.DWKit.Application;
-using React.AspNet;
+using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Data;
-using Bugsnag.AspNet.Core;
 using OptimaJet.DWKit.StarterApplication.Middleware;
-using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
-using Hangfire;
-using System;
-using Bugsnag;
-using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using React.AspNet;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
+using OptimaJet.DWKit.StarterApplication.Repositories;
+using Microsoft.AspNetCore.Http;
+using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -84,6 +90,17 @@ namespace OptimaJet.DWKit.StarterApplication
                 // or the jwt token scheme
                 // options.Filters.Add(new AuthorizeFilter("Authenticated"));
             });
+            services.AddSingleton<ITranslationBackend>(s => new ScriptoriaI18NextFileBackend("source/locales"));
+            services.AddI18NextLocalization(i18n => i18n
+                                            .IntegrateToAspNetCore()
+                                            .AddBackend(new ScriptoriaI18NextFileBackend("source/locales"))
+                                            .UseDefaultLanguage("en-us"));
+            services.AddMvc()
+                // Enable view localization and register required I18Next services
+                .AddI18NextViewLocalization();
+
+            services.AddSignalR(o => { o.EnableDetailedErrors = true; });
+            services.AddSingleton<IUserIdProvider, ScriptoriaIdProvider>();
 
             services.AddApiServices();
             services.AddContextServices();
@@ -118,8 +135,8 @@ namespace OptimaJet.DWKit.StarterApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, 
-                                      IHostingEnvironment env, 
+        public virtual void Configure(IApplicationBuilder app,
+                                      IHostingEnvironment env,
                                       ILoggerFactory loggerFactory,
                                       IServiceScopeFactory serviceScopeFactory,
                                       IServiceProvider serviceProvider)
@@ -136,7 +153,12 @@ namespace OptimaJet.DWKit.StarterApplication
             GlobalJobFilters.Filters.Add(
                 new ErrorReportingJobFilter(serviceProvider.GetService<IClient>()));
             app.UseHangfireServer();
-            app.UseHangfireDashboard();
+            var useDashBoard = GetVarOrDefault("HANGFIRE_USE_DASHBOARD", ""); 
+            if (!String.IsNullOrEmpty(useDashBoard))
+            {
+                Log.Information("Using Hangfire Dashboard");
+                app.UseHangfireDashboard();
+            }
 
             if (env.IsDevelopment())
             {
@@ -144,7 +166,7 @@ namespace OptimaJet.DWKit.StarterApplication
                 app.UseBrowserLink();
             }
 
-
+            app.UseRequestLocalization(options => options.AddSupportedCultures("es-419", "en-US", "fr-FR"));
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
@@ -160,17 +182,29 @@ namespace OptimaJet.DWKit.StarterApplication
                 routes.MapRoute("account", "account/{action}",
                     defaults: new { controller = "Account", action = "Index" });
 
+                //test notification route... TODO: remove in future when no longer needed for manual testing.
+                routes.MapRoute(name: "notifications",
+                    template: "notification/test",
+                    defaults: new { controller = "NotificationTest", action = "Index" });
+
                 // Fallback
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=StarterApplication}/{action=Index}/");
             });
 
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ScriptoriaHub>("/hubs/notifications");
+            });
 
             app.UseJsonApi();
 
+            SendNotificationService.HubContext = (IHubContext<ScriptoriaHub>)app.ApplicationServices.GetService(typeof(IHubContext<ScriptoriaHub>));
+
             app.UseBuildEngine(Configuration);
             app.UseWorkflow(Configuration);
+            app.UseNotifications(Configuration);
         }
     }
 }

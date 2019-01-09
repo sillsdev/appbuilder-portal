@@ -8,11 +8,11 @@ using OptimaJet.DWKit.StarterApplication.Services;
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ProductsController : BaseController<Product>
+    public class ProductsController : BaseController<Product, Guid>
     {
         public ProductsController(
             IJsonApiContext jsonApiContext,
-            IResourceService<Product> resourceService,
+            IResourceService<Product, Guid> resourceService,
             ICurrentUserContext currentUserContext,
             OrganizationService organizationService,
             UserService userService)

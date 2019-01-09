@@ -19,7 +19,7 @@ class Products extends React.Component<IProps> {
     padding = Math.max(0, padding);
 
     return (
-      <div className='products-grid p-t-sm p-b-md'>
+      <div className='products-grid p-t-sm'>
         { hasProducts && (
           <>
             <div className='flex grid products-header flex-grow'>
@@ -48,7 +48,7 @@ class Products extends React.Component<IProps> {
         ) }
 
         { !hasProducts && (
-          <div className='flex grid products-header flex-grow'>
+          <div className='flex grid products-header flex-grow p-md'>
             <div className='col flex-grow-xs product-xs-only flex-100'>
               {t('projectTable.noProducts')}
             </div>

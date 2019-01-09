@@ -29,11 +29,13 @@ PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d 
 if [ "$DB_BOOTSTRAP" -eq "1" ]; then
   # Create tables required by api
   PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f /app/scripts/application_types.sql
-  PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f /app/scripts/stores.sql
+    -f /app/scripts/bootstrap.sql
   PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
     -f /app/scripts/default_workflow.sql
+  if [ -n "$DB_BOOTSTRAP_FILE" ]; then
+    PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
+      -f /app/scripts/$DB_BOOTSTRAP_FILE
+  fi
 fi
 
 if [ "$DB_SAMPLEDATA" -eq "1" ]; then

@@ -59,28 +59,47 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
     return (
       <div data-test-multi-select>
       {
-        list.map((element, index) => (
-          <div
-            key={index}
-            className='col flex align-items-center w-100-xs-only flex-100 m-b-sm multi-select-item'
-            data-test-item
-            onClick={this.onChange(element)}
-          >
-            <Checkbox
-              data-test-item-checkbox
-              className='m-r-md'
-              value={element.id}
-              checked={this.inSelectedList(element)}
-            />
-            { displayProductIcon ? <ProductIcon product={element} /> : null }
-            <span
-              data-test-item-text
-              className='p-l-sm-xs'
+        list.map((element, index) => {
+
+          const isSelected = this.inSelectedList(element);
+
+          return (
+            <div
+              key={index}
+              className={`flex flex-column align-items-center
+              w-100 m-b-sm round-border-4 light-gray-text pointer
+              ${ isSelected ? 'blue-light-border' : 'thin-border'}`}
+              data-test-item
+              onClick={this.onChange(element)}
             >
-              {attributesFor(element).description}
-            </span>
-          </div>
-        ))
+              <div
+                className={`flex flex-row align-items-center
+                w-100 p-sm bg-lightest-gray fs-14 round-border-4
+                ${ isSelected ? 'blue-light-bottom-border' : 'thin-bottom-border'}`}
+              >
+                <Checkbox
+                  data-test-item-checkbox
+                  className='m-r-sm'
+                  value={element.id}
+                  checked={isSelected}
+                />
+                {
+                  displayProductIcon &&
+                  <ProductIcon product={element} selected={isSelected} size={19} />
+                }
+                <span
+                  data-test-item-text
+                  className={`p-l-xs-xs ${isSelected && 'black-text'}`}
+                >
+                  {attributesFor(element).name}
+                </span>
+              </div>
+              <div className='w-100 p-sm p-t-md p-b-md fs-11'>
+                <span>{attributesFor(element).description}</span>
+              </div>
+            </div>
+          );
+        })
       }
       </div>
     );

@@ -1,3 +1,4 @@
+import { when } from '@bigtest/convergence';
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
@@ -8,13 +9,14 @@ import {
   useFakeAuthentication
 } from 'tests/helpers/index';
 
-import page from '@ui/components/project-table/__tests__/page';
+import PageInteractor from './-page-interactor';
+import Page from '~/ui/routes/project-directory/show/-page';
 
 describe('Acceptance | Project Table | Empty list', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
-
+  let pageInteractor;
   describe('Render an empty project list page', () => {
 
     beforeEach(function () {
@@ -25,7 +27,9 @@ describe('Acceptance | Project Table | Empty list', () => {
     });
 
     beforeEach(async function () {
+      pageInteractor = new PageInteractor();
       await visit('/projects/own');
+      await when(() => pageInteractor.isPresent);
     });
 
     it('is in my own projects page', () => {
@@ -33,8 +37,8 @@ describe('Acceptance | Project Table | Empty list', () => {
     });
 
     it('is project list empty', () => {
-      expect(page.isEmptyTextPresent).to.be.true;
-      expect(page.emptyText).to.equal('No projects found');
+      expect(pageInteractor.projectTable.isEmptyTextPresent).to.be.true;
+      expect(pageInteractor.projectTable.emptyText).to.equal('No projects found');
     });
   });
 
@@ -68,6 +72,7 @@ describe('Acceptance | Project Table | Empty list', () => {
 
       beforeEach(async function () {
         await visit('/projects/own');
+        await when(() => pageInteractor.isPresent);
       });
 
       it('is in my project page', () => {
@@ -75,7 +80,7 @@ describe('Acceptance | Project Table | Empty list', () => {
       });
 
       it('empty text is not displayed when project list exist',() => {
-        expect(page.isEmptyTextPresent).to.be.false;
+        expect(pageInteractor.projectTable.isEmptyTextPresent).to.be.false;
       });
 
     });

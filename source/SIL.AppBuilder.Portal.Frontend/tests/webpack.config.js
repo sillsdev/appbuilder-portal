@@ -28,13 +28,15 @@ module.exports = {
   mode: environment,
   devtool: 'inline-source-map',
   context: process.cwd(),
-  entry: locate('tests/index.ts'),
+  entry: {
+    test: locate('tests/index.ts'),
+  },
   module: {
     rules: moduleRules
   },
   resolve: resolver,
   output: {
-    filename: 'test-bundle.js',
+    filename: 'test-bundle-[name].js',
     path: process.cwd() + '/dist'
   },
   plugins: [

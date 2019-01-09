@@ -36,6 +36,14 @@ export default class Display extends React.Component<IProps, IState> {
 
   state: IState = { disableSubmit: false, isPublic: true };
 
+  componentDidUpdate(prevProps) {
+    const hasOrgChanged = prevProps.currentOrganizationId !== this.props.currentOrganizationId;
+
+    if (hasOrgChanged) {
+      this.setState({ groupId: undefined });
+    }
+  }
+
   areAllRequiredFieldsPresent = () => {
     const { name, groupId, language, typeId } = this.state;
 
@@ -67,7 +75,7 @@ export default class Display extends React.Component<IProps, IState> {
       history.push(`/projects/${id}`);
 
     } catch (e) {
-      toast.error(t('errors.generic', { errorMessage: e.message }));
+      toast.error(e);
     }
 
     this.setState({ disableSubmit: false });

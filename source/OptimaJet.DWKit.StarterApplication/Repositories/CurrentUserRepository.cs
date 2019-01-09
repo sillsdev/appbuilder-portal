@@ -4,6 +4,7 @@ using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
@@ -49,6 +50,14 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                 .Include(user => user.UserRoles)
                 .FirstOrDefaultAsync();
 
+            try {
+                await DWKitRuntime.Security.SignInAsync(currentUser.Email, remember: false);
+            } catch (System.Exception e) {
+                // do nothing for now, we want normal JWT sign in to work always
+                // if there is an exeption, it means the users
+                // have not yet been sync'd
+            }
+            
             return currentUser;
         }
     }

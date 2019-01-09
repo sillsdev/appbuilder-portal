@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
@@ -67,6 +68,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("user-roles", Link.None)]
         public virtual List<UserRole> UserRoles { get; set; }
 
+        [HasMany("notifications", Link.None)]
+        public virtual List<Notification> Notifications { get; set; }
+
         [NotMapped]
         public IEnumerable<int> OrganizationIds => OrganizationMemberships?.Select(o => o.OrganizationId);
 
@@ -77,6 +81,20 @@ namespace OptimaJet.DWKit.StarterApplication.Models
                 .FirstOrDefault();
 
             return userRole != null;
+        }
+
+        public string LocaleOrDefault()
+        {
+            var locale = "en-US";
+            if (!String.IsNullOrEmpty(Locale))
+            {
+                locale = Locale;
+            }
+            else if ((CultureInfo.CurrentCulture != null) && !String.IsNullOrEmpty(CultureInfo.CurrentCulture.Name))
+            {
+                locale = CultureInfo.CurrentCulture.Name;
+            }
+            return locale;
         }
     }
 }

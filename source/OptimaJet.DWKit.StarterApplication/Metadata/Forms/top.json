@@ -4,5 +4,29 @@
     "data-buildertype": "container",
     "style-source": "clear:both;",
     "style-customcss": "dwkit-application-top"
+  },
+  {
+    "key": "breadcrumb_1",
+    "data-buildertype": "breadcrumb",
+    "items": [
+      {
+        "text": "My Tasks",
+        "url": "/",
+        "active": true
+      }
+    ],
+    "events": {
+      "onItemClick": {
+        "active": true,
+        "actions": [
+          "redirect"
+        ]
+      }
+    },
+    "style-marginBottom": "15px"
+  },
+  {
+    "key": "container_1",
+    "data-buildertype": "container"
   }
 ]

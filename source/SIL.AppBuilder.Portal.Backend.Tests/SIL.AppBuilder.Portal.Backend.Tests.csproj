@@ -43,8 +43,19 @@
     <Folder Include="Acceptance\APIControllers\Organizations\" />
     <Folder Include="Acceptance\APIControllers\OrganizationInviteRequests\" />
     <Folder Include="Acceptance\BuildEngine\" />
+    <Folder Include="Acceptance\APIControllers\GroupMemberships\" />
+    <Folder Include="Acceptance\APIControllers\Notifications\" />
+    <Folder Include="Acceptance\Support\TestClasses\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Acceptance\APIControllers\ProjectsTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="wwwroot\locales\en-us.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="source\locales\en-us.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

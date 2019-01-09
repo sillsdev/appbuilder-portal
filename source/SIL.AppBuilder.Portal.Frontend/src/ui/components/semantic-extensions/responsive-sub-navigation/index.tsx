@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menu, Dropdown }  from 'semantic-ui-react';
+import { Dropdown }  from 'semantic-ui-react';
 import { NavLink, withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 
@@ -7,6 +7,7 @@ import './navigation.scss';
 
 export interface IProps {
   items: Array<{ to: string, text: string }>;
+  exactRoutes?: boolean;
 }
 
 class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>> {
@@ -15,27 +16,29 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
     const { items, location } = this.props;
 
     const matchingItem = items.find(i => {
-      return (i.to === location.pathname);
+      return (location.pathname.startsWith(i.to));
     });
 
-    return matchingItem.text || 'Setting Navigation...';
+    return (matchingItem && matchingItem.text) || 'Setting Navigation...';
   }
 
   render() {
-    const { items } = this.props;
+    const { items, location, exactRoutes = true } = this.props;
+
+    const shouldUseExactRoutes = exactRoutes ?
+      (to) => location.pathname === to :
+      (to) => location.pathname.startsWith(to);
 
     const menuItems = items.map((i, index) => (
-
-      <Menu.Item exact
-        key={index}
-        as={NavLink}
+      <NavLink
         to={i.to}
-        activeClassName='active'>
-
+        key={index}
+        className='item'
+        activeClassName='active'
+        isActive={() => shouldUseExactRoutes(i.to)}
+      >
         {i.text}
-
-      </Menu.Item>
-
+      </NavLink>
     ));
 
     return (
@@ -48,14 +51,16 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
             d-xs-flex d-sm-none w-100
             justify-content-space-between
           '>
-          <Dropdown.Menu className='w-100'>{menuItems}</Dropdown.Menu>
+          <Dropdown.Menu className='w-100'>
+            {menuItems}
+          </Dropdown.Menu>
         </Dropdown>
 
 
         {/* The non-mobile menu */}
-        <Menu vertical className='d-xs-none d-sm-block'>
+        <div className='ui menu vertical d-xs-none d-sm-block'>
           {menuItems}
-        </Menu>
+        </div>
       </div>
     );
   }

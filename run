@@ -59,6 +59,14 @@ function runstuff {
       runstuff bootstrap:dwkit
       runstuff bootstrap:api
       runstuff bootstrap:sample
+      runstuff bootstrap:dev
+    ;;
+
+    bootstrap:alpha)
+      runstuff bootstrap:dwkit
+      runstuff bootstrap:api
+      runstuff bootstrap:orgs
+      runstuff bootstrap:dev
     ;;
 
     bootstrap:dwkit)
@@ -89,8 +97,7 @@ function runstuff {
       echo "Running migrations..."
 
       runstuff db:update \
-        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/application_types.sql" \
-        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/stores.sql" \
+        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/bootstrap.sql" \
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_workflow.sql" \
         && echo "DB setup for json:api"
     ;;
@@ -101,6 +108,24 @@ function runstuff {
       ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/sample_data.sql" \
         && echo "DB setup with sample data"
     ;;
+    
+    bootstrap:orgs)
+      echo "Adding sample data..."
+
+      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_organizations.sql" \
+        && echo "DB setup with default organizations data"
+    ;;
+
+    bootstrap:dev)
+      # add something like the following to scripts/DB/dev.sql
+      # UPDATE "Users"
+      # SET "PublishingKey" = 'ssh-rsa ...'
+      # WHERE
+      #   "Id" = X;
+      ${COMPOSE} exec db bash -c "if [ -f /scripts/dev.sql ]; then ${PSQL} -d \$POSTGRES_DB -f /scripts/dev.sql; fi" \
+        && echo "DB setup with dev data"
+    ;;
+
 
 
     ##################
@@ -119,6 +144,9 @@ function runstuff {
         bash -c "dotnet test /app/SIL.AppBuilder.Portal.Backend.Tests/"
     ;;
 
+    ci)
+      ${CI_COMPOSE} $arguments
+    ;;
     ################
     # Host-Machine Utils
 
@@ -178,6 +206,8 @@ function print_help {
   echo ""
   echo "bootstrap      : runs initial scripts for project setup"
   echo "bootstrap:dwkit"
+  echo "bootstrap:alpha"
+  echo "bootstrap:orgs"
   echo "bootstrap:api"
   echo "bootstrap:sample"
   echo "db:migrations  : run Entity Framework migrations command"

@@ -57,8 +57,17 @@ services:
     volumes:
       - ./source/:/app
       - "outdir:/app/out"
-  
-
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - 9091:80
+    links:
+      - api:api.docker
+    environment:
+      - API_URL=http://api.docker:7081
+      - DWKIT_UI_HOST=localhost:7081
   ui:
     build:
       context: ./source/SIL.AppBuilder.Portal.Frontend/

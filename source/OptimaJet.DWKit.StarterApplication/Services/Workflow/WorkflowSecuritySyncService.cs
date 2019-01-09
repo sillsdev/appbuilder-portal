@@ -84,6 +84,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     dwuser.StartTracking();
                     SyncUserToDwUser(user, dwuser);
                     await dwuser.ApplyAsync();
+                    await EnsureSecurityCredentials(user, dwuser);
+
                 }
                 catch (Exception ex)
                 {
@@ -95,7 +97,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private async Task<SecurityUser> CreateDwUser(User user)
         {
-            Guid NewId = Guid.NewGuid();
             var dwuser = new SecurityUser { Id = Guid.NewGuid(), Name = DwUserName(user) };
             await SecurityUser.ApplyAsync(dwuser);
             user.WorkflowUserId = dwuser.Id;
@@ -124,6 +125,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             dwuser.Timezone = user.Timezone;
             dwuser.Localization = user.Locale;
             dwuser.ExternalId = user.ExternalId;
+        }
+
+        private async Task EnsureSecurityCredentials(User user, SecurityUser dwuser)
+        {
+            var filter = OptimaJet.DWKit.Core.Filter.Equals(user.Email, "Login");
+            // TODO: figure out how to use OptimaJet's custom ORM
+            var notFilteredCauseReasons = await SecurityCredential.SelectAsync(filter);
+
+            var existing = notFilteredCauseReasons.FirstOrDefault(cred => cred.Login == user.Email);
+
+            if (existing != null) {
+                return;
+            }
+
+            var credential = new SecurityCredential {
+                Id = Guid.NewGuid(),
+                SecurityUserId = dwuser.Id,
+                Login = user.Email,
+                PasswordHash = "API User",
+                PasswordSalt = "API User"
+            };
+
+            // credential.StartTracking();
+            await SecurityCredential.ApplyAsync(credential);
         }
 
         private Dictionary<Guid, User> GetHashUsers(List<User> users)

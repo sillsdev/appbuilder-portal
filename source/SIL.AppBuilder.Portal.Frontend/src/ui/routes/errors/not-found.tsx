@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { withTranslations } from '@lib/i18n';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 export const pathName = '/not-found';
 
@@ -11,7 +10,7 @@ class NotFoundRoute extends React.Component<i18nProps> {
 
     return (
       <div className='ui text container'>
-        <h1 className='ui header'>{t('errors.notFoundTitle')}</h1>
+        <h1 className='ui header p-t-lg'>{t('errors.notFoundTitle')}</h1>
         <div className='content'>{t('errors.notFoundDescription')}</div>
       </div>
     );

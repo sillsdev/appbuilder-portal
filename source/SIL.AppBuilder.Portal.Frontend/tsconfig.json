@@ -1,23 +1,60 @@
 {
   "compilerOptions": {
+    // Transpilation
+
+    // Support JSX in .tsx files: "React" or "Preserve".
     "jsx": "react",
+
+    // Specify ECMAScript target version:
+    // "ES3" (default), "ES5", "ES6"/"ES2015", "ES2016", "ES2017" or "ESNext".
+    // Note: "ESNext" targets latest supported ES proposed features.
+    //
+    // NOTE: class decorators will not work with anything higher than es5
+    //       unless the class decorator treats classes and functions separately
     "target": "es5",
-    "baseUrl": ".",
-    "allowJs": true,
-    "sourceMap": true,
+
+    // Specify module code generation:
+    // "None", "CommonJS", "AMD", "System", "UMD", "ES6", "ES2015" or "ESNext".
+    // ► Only "AMD" and "System" can be used in conjunction with --outFile.
+    // ► "ES6" and "ES2015" values may be used when targeting "ES5" or lower.
+    "module": "esnext",
+
+    // Emit __importStar and __importDefault helpers for runtime babel
+    // ecosystem compatibility and enable --allowSyntheticDefaultImports
+    // for typesystem compatibility.
+    "esModuleInterop": true,
+
+    // Allow default imports from modules with no default export.
+    // This does not affect code emit, just typechecking.
+    "allowSyntheticDefaultImports": true,
+
     "experimentalDecorators": true,
+    "lib": ["esnext", "dom"],
+    "sourceMap": true,
+
+    // File Inclusion
+    "allowJs": true,
+    "resolveJsonModule": true,
     "moduleResolution": "node",
-    "lib": ["ESNext", "dom"],
+
+    // Pathing
+    "baseUrl": ".",
     "paths": {
+      "~*": ["src*"],
+      "optimajet-app*": ["src/public/assets/vendor/dwkit/dwkit-source/optimajet-app*"],
+      "optimajet-builder*": ["src/public/assets/vendor/dwkit/dwkit-source/optimajet-builder*"],
+      "@assets/*": ["src/public/assets/*"],
       "@data/*": ["src/data/*"],
       "@data": ["src/data/index.ts"],
       "@api/*": ["src/data/api/*"],
       "@models/*": ["src/data/models/*"],
       "@store/*": ["src/redux-store/*"],
       "@store": ["src/redux-store/index.ts"],
+      "@sockets": ["src/sockets/index.ts"],
       "@ui/*": ["src/ui/*"],
       "@lib/*": ["src/lib/*"],
       "@translations/*": ["src/translations/*"],
+      "@translations": ["src/translations/index.tsx"],
       "@env": ["src/env.ts"],
       "tests/*": [ "tests/*" ],
       "vendor/*": [ "src/vendor/*" ],
@@ -33,7 +70,12 @@
   "exclude": [
     "node_modules",
     "build",
-    "src/vendor",
+    // can't exclude vendor files if we want the files to be passed on to webpack
+    //
+    // WE _can_ exclude them if we configure a different loader just for these
+    // and exclude them from the ts-loader
+    // "src/vendor/**/*",
+    // "src/public/**/*",
     "tests/webpack.config.js",
     "tests/karma.conf.js"
   ]

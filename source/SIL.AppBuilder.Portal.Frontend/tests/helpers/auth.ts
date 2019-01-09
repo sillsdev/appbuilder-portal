@@ -4,8 +4,10 @@ import { expect } from 'chai';
 import { fakeAuth0JWT, fakeAuth0Id } from './jwt';
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import { respondWithJsonApi } from './request-intercepting/jsonapi';
+import { roles, userRoleFrom } from './fixtures';
 
 // this requires the request interceptor
+// by default: this user is a super admin
 export function useFakeAuthentication(currentUser?: object) {
   beforeEach(function() {
     setToken(fakeAuth0JWT());
@@ -22,7 +24,8 @@ export function useFakeAuthentication(currentUser?: object) {
             data: [
               { id: 1, type: 'organization-memberships' },
             ]
-          }
+          },
+          ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
         }
       },
       included: [
@@ -47,7 +50,9 @@ export function useFakeAuthentication(currentUser?: object) {
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } }
           }
-        }
+        },
+        userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 1 }),
+        roles.superAdmin,
       ]
     });
   });

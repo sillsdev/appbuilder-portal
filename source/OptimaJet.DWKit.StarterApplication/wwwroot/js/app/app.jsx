@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import { DWKitForm } from "./../../scripts/optimajet-form.js"
 import {ApplicationRouter, NotificationComponent, FormContent, 
-    FlowContent, Thunks, Store, Actions} from './../../scripts/optimajet-app.js'
+    FlowContent, Thunks, Store, Actions, SignalRConnector, StateBindedForm, API} from './../../scripts/optimajet-app.js'
 
 class App extends React.Component {
     constructor(props) {
@@ -19,6 +19,7 @@ class App extends React.Component {
         }));
         
         window.DWKitApp = this;
+        window.DWKitApp.API = API;
         this.onFetchStarted();
     }
     
@@ -87,7 +88,8 @@ class App extends React.Component {
         Store.resetForm();
         this.setState({
             pagekey: this.state.pagekey + 1
-        })
+        });
+        SignalRConnector.Connect(Store);
     }
 
     actionsFetch(args){
@@ -102,6 +104,8 @@ class App extends React.Component {
         ));
     }
 }
+
+SignalRConnector.Connect(Store);
 
 render(<App/>,document.getElementById('content'));
 

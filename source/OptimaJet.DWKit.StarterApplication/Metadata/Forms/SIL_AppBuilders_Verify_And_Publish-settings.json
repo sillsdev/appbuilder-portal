@@ -1,0 +1,183 @@
+{
+  "name": "SIL_AppBuilders_Verify_And_Publish",
+  "lastUpdate": "2018-12-10T11:12:03.866005-05:00",
+  "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
+  "isTemplate": false,
+  "triggers": [],
+  "dataMap": [
+    {
+      "id": "983b5e01-d44f-46c7-0f2c-1582ac4f3b15",
+      "attributeId": "441e60ec-8a68-4c74-bcc4-853a678f11c3",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "9246945b-3a3c-b68b-4900-8e9a6f5c49c4",
+      "attributeId": "37ecc7d1-c69e-4b7b-b611-409fe36392f7",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "f25c57b5-57a9-c9ae-1fb6-8b31443d7981",
+      "attributeId": "7fc91699-2b16-4ab1-a91a-1d0d3401f5e3",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "b940e020-fd98-b2e8-98c4-55e203cfc2e2",
+      "attributeId": "1018080e-7abe-4a87-bd07-721dc54fc6b0",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "8658bc46-5727-cb5c-66a1-efbccdaf5b68",
+      "attributeId": "e079ff30-3aec-49eb-824b-fea61e4da080",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "3cffd67c-ae3d-45ce-41a4-9d5c1f789be3",
+      "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "83f6c693-b19e-489b-b441-cb26df75a73b",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "3cffd67c-ae3d-45ce-41a4-9d5c1f789be3",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "1a379ecc-e57a-bb35-70a7-d262fd1a31d0",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "3cffd67c-ae3d-45ce-41a4-9d5c1f789be3",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "83781ce9-e7c4-cf74-00f1-b88b43178beb",
+      "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "12cdfe93-bff9-59e9-cc88-32a60cd64b5e",
+      "attributeId": "cc8522c4-bc11-4669-a876-3ab71cfeba1f",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "c8ad2e0a-f9fb-ce30-3e15-d30b91c4d652",
+      "attributeId": "8759b596-a767-45c0-9e30-387b41e190c9",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "4a8ded9f-5263-bd33-a374-9834f46187e5",
+      "attributeId": "46ebc3ca-16f9-4cf2-bea0-5d52f30e031e",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "b9483737-4e64-f059-2d3c-1a28dbfb5697",
+      "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
+      "control": "dropdown_store",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "7e06b5a0-05b3-00d2-505a-0be39e9cd1f5",
+      "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
+      "control": "dropdown_language",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "a6aeca77-996b-0cbd-86fe-ca602d25377a",
+      "attributeId": "da31659f-07de-4af3-b377-7ac8109c00fd",
+      "control": "textarea_comment",
+      "isEditable": true,
+      "isLoadable": true
+    }
+  ],
+  "dataColl": [
+    {
+      "id": "fa559eb1-ee66-08bd-9b08-1241b38b97ba",
+      "entityId": "7ad334d2-b660-43d0-8520-9491eb0f0083",
+      "filter": "ProductLatestArtifacts",
+      "control": "gridview_1",
+      "dataMap": [
+        {
+          "id": "19578963-7ea3-e48b-8c15-a202cfd24e54",
+          "attributeId": "34f1138f-019a-48fa-af8f-9dd5258e5abc",
+          "control": "type",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "74a9e4a9-a50c-b2ff-ab85-9e72621d2310",
+          "attributeId": "edabc700-a7b1-42d7-837d-95910c4b254c",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "72916e5c-2f99-aadc-177d-6e466cfecf11",
+          "attributeId": "824bf7e4-6c64-4740-94b8-d68bc88e8f7c",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "b45fb1c4-7136-9b12-2866-4155101588fc",
+          "attributeId": "c8ff77d9-2e65-4975-b9f1-cca2b22c9145",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "2575a73e-39a5-0cf6-3215-ce24a498760c",
+          "attributeId": "ce62ce6e-c4c9-4788-a4ff-797f96ddfc57",
+          "control": "size",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "b9f47796-61a5-873e-96d2-f3d6d5cb2b2d",
+          "attributeId": "e1937119-1b61-499d-8888-28a3c71e0530",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "25bc5287-404c-fe4c-a63b-f2f5fe54853d",
+          "attributeId": "ed9ab792-26ec-4dae-ad54-aa7c9edf36b0",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "e907e836-8aca-9960-365b-0682942a0c9c",
+          "attributeId": "9fe8c791-cafa-448c-9505-22f4d047827a",
+          "control": "link",
+          "isEditable": true,
+          "isLoadable": true
+        },
+        {
+          "id": "f66ad777-620b-03f9-f6ca-f7991d59e92a",
+          "attributeId": "debc9415-a4f2-41a7-a009-4551511ea416",
+          "control": "",
+          "isEditable": true,
+          "isLoadable": false
+        },
+        {
+          "id": "37ef3d7d-2e88-02f1-ad3f-7c96ee80d11c",
+          "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
+          "control": "buildid",
+          "parentId": "25bc5287-404c-fe4c-a63b-f2f5fe54853d",
+          "isEditable": false,
+          "isLoadable": true
+        }
+      ],
+      "readOnly": true
+    }
+  ]
+}

@@ -39,5 +39,5 @@ class ProjectsRoot extends React.Component {
 export default compose(
   requireAuth,
   withLayout,
-  withRouter
+  withRouter,
 )(ProjectsRoot);

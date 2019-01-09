@@ -1,8 +1,12 @@
 import { describe, it, beforeEach, afterEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
+import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 
-import { setupApplicationTest, setupRequestInterceptor, respondWithJsonApi } from 'tests/helpers/index';
+import {
+  setupApplicationTest, setupRequestInterceptor, respondWithJsonApi,
+  wait
+} from 'tests/helpers/index';
 import { fakeAuth0JWT, fakeAuth0Id } from 'tests/helpers/jwt';
 
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
@@ -13,6 +17,16 @@ import app from 'tests/helpers/pages/app';
 describe('Acceptance | Authentication', () => {
   setupApplicationTest();
   setupRequestInterceptor();
+
+  describe('authenticated with user that does not have a verified email', () => {
+    beforeEach(async () => {
+      setToken(fakeAuth0JWT({email_verified: false}));
+      await visit('/tasks');
+    });
+    it('redirects to verify email', () => {
+      expect(location().pathname).to.equal('/verify-email');
+    });
+  });
 
   describe('is authenticated', () => {
     beforeEach(function() {
@@ -53,6 +67,7 @@ describe('Acceptance | Authentication', () => {
     describe('logging out', () => {
       beforeEach(async function() {
         await visit('/tasks');
+        await when(() => app.isLogoutPresent);
         await app.clickLogout();
       });
 

@@ -14,13 +14,16 @@ export interface NotifyOptions {
     text: string;
   };
 }
+
 export function show(msg: string, options: NotifyOptions) {
-  console.debug(msg, options);
-  notify.show(msg, options.type, options.timeout, options.color);
+  try {
+    notify.show(msg, options.type, options.timeout, options.color);
+  } catch (e) {
+    console.error('Something horrible happened', e);
+  }
 }
 
 export function custom(msg: string, options: NotifyOptions) {
-  console.debug(msg, options);
   notify.show(msg, 'custom', options.timeout, options.color);
 }
 

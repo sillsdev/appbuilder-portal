@@ -16,11 +16,12 @@ using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
-    public class ProductService : EntityResourceService<Product>
+    public class ProductService : EntityResourceService<Product, Guid>
     {
-        IEntityRepository<Product> ProductRepository { get; set; }
+        IEntityRepository<Product, Guid> ProductRepository { get; set; }
         IEntityRepository<ProductDefinition> ProductDefinitionRepository { get; set; }
         IEntityRepository<Store> StoreRepository { get; }
+        public IEntityRepository<UserRole> UserRolesRepository { get; }
         IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
@@ -31,18 +32,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public ProductService(
             IJsonApiContext jsonApiContext,
             IOrganizationContext organizationContext,
-            IEntityRepository<Product> productRepository,
+            IEntityRepository<Product, Guid> productRepository,
             UserRepository userRepository,
             ProjectRepository projectRepository,
             ICurrentUserContext currentUserContext,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
             IEntityRepository<Store> storeRepository,
+            IEntityRepository<UserRole> userRolesRepository,
             IBackgroundJobClient hangfireClient,
             ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
         {
             ProductRepository = productRepository;
             ProductDefinitionRepository = productDefinitionRepository;
             StoreRepository = storeRepository;
+            UserRolesRepository = userRolesRepository;
             HangfireClient = hangfireClient;
             UserRepository = userRepository;
             ProjectRepository = projectRepository;
@@ -57,19 +60,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                                OrganizationContext,
                                                JsonApiContext);
         }
-        public override async Task<Product> GetAsync(int id)
+        public override async Task<Product> GetAsync(Guid id)
         {
             var products = await GetAsync();
             return products.SingleOrDefault(p => p.Id == id);
         }
 
-        public override async Task<Product> UpdateAsync(int id, Product resource)
+        public override async Task<Product> UpdateAsync(Guid id, Product resource)
         {
             //If changing organization, validate the change
             var updateForm = new UpdateForm(UserRepository,
                                             ProductRepository,
                                             ProductDefinitionRepository,
                                             StoreRepository,
+                                            UserRolesRepository,
                                             ProjectRepository,
                                             OrganizationContext,
                                             CurrentUserContext);
@@ -90,6 +94,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var createForm = new CreateForm(ProjectRepository,
                                             ProductDefinitionRepository,
                                             StoreRepository,
+                                            UserRolesRepository,
                                             UserRepository,
                                             CurrentUserContext);
             if (!createForm.IsValid(resource))
@@ -102,15 +107,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // TODO: figure out why this throws a NullReferenceException
             // await ProjectRepository.UpdateAsync(result.ProjectId, result.Project);
 
-
-            /* TODO: Enable in next iteration
             if (product != null)
             {
                 HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageNewProduct(product.Id));
             }
-            */
             return product;
         }
 
+        public override async Task<bool> DeleteAsync(Guid id)
+        {
+            var products = await GetAsync();
+            var product = products.SingleOrDefault(p => p.Id == id);
+            if (product != null)
+            {
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageDeletedProduct(product.Id));
+            }
+
+            return await base.DeleteAsync(id);
+        }
     }
 }

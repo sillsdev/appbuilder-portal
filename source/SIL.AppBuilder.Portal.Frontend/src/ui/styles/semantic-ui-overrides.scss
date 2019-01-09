@@ -3,6 +3,7 @@ Top-Level Globals
 ************************************/
 h1, h2, h3, h4 {
   color: $gray;
+  font-family: Montserrat, sans-serif;
 }
 
 hr {
@@ -41,9 +42,16 @@ Buttons
   }
 }
 
+.ui.message > .close.icon {
+  top: 0.5rem;
+}
+
 /***********************************
 Inputs
 ************************************/
+.ui.form {
+  margin-bottom: 1rem;
+}
 
 .ui.form .field {
 
@@ -71,6 +79,61 @@ Inputs
 
 .ui.toggle.checkbox label:before {
   background-color: $checkbox-background-color;
+}
+
+/***********************************
+Checkbox
+************************************/
+
+.ui.checkbox:not(.toggle) .box:before,
+.ui.checkbox:not(.toggle) label:before {
+  border-radius: 1px;
+}
+
+.ui.checkbox:not(.toggle) input:checked ~ .box:after,
+.ui.checkbox:not(.toggle) input:checked ~ label:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0.5px;
+    left: 0.5px;
+    width: 10px;
+    height: 5px;
+    border: solid 2px $white;
+    border-right: none;
+    border-top: none;
+    transform: translate(3px, 4px) rotate(-45deg);
+}
+
+.ui.checkbox:not(.toggle) input:checked ~ .box:before,
+.ui.checkbox:not(.toggle) input:checked ~ label:before {
+  background: $blue-highlight;
+  border-color: $blue-highlight;
+}
+
+/***********************************
+Checkbox indeterminate
+************************************/
+
+.ui.checkbox input:indeterminate ~ .box:after,
+.ui.checkbox input:indeterminate ~ label:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 3.5px;
+    left: 0.5px;
+    width: 10px;
+    height: 0px;
+    border: solid 2px $white;
+    border-right: none;
+    border-top: none;
+    transform: translate(3px, 4px);
+}
+
+.ui.checkbox:not(.toggle) input:indeterminate ~ .box:before,
+.ui.checkbox:not(.toggle) input:indeterminate ~ label:before {
+  background: $blue-highlight;
+  border-color: $blue-highlight;
 }
 
 
@@ -139,6 +202,22 @@ Dropdown Menu
 
   i.dropdown.icon {
     font-size: 1.5rem;
+  }
+}
+
+.ui.dropdown.custom {
+  display: flex;
+
+  .text {
+    flex-grow: 1;
+  }
+}
+
+.ui.dropdown.is-large {
+  color: $blue-highlight;
+  .text {
+    font-size: 1.5rem;
+    font-weight: bold;
   }
 }
 
@@ -215,3 +294,29 @@ Modal
   }
 }
 
+/***********************************
+Tabs
+************************************/
+.tabs {
+
+  .ui.menu {
+    border-bottom: 1px solid #d8d8d8;
+    margin: 1em 0;
+
+    .item.active {
+      color: #0c3855;
+      border-bottom: 4px solid #4a90e2;
+    }
+  }
+
+  .ui.tab {
+    border: 0px;
+    box-shadow: none;
+  }
+
+  @include media-breakpoint-only('xs') {
+    .ui.tab {
+      padding: 0;
+    }
+  }
+}

@@ -1,5 +1,6 @@
 
 export enum COLUMN_KEY {
+  PROJECT_NAME = 'name',
   PROJECT_OWNER = 'owner',
   PROJECT_ORGANIZATION = 'organization',
   PROJECT_LANGUAGE = 'language',

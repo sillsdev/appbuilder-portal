@@ -8,7 +8,11 @@ namespace OptimaJet.DWKit.StarterApplication.Models
     {
         [HasOne("product")]
         public virtual Product Product { get; set; }
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
+
+        [HasOne("product-build")]
+        public virtual ProductBuild ProductBuild { get; set; }
+        public int ProductBuildId { get; set; }
 
         [Attr("artifact-type")]
         public string ArtifactType { get; set; }

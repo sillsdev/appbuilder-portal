@@ -71,12 +71,16 @@ const setup = function(config) {
         context: window
       }
     },
+    persisterOptions: {
+      keepUnusedRequests: false,
+    },
     // logging: true,
     recordFailedRequests: false,
     recordIfMissing: false,
+    recordIfExpired: false,
     matchRequestsBy: {
       order: false,
-      headers: true,
+      // headers: false,
       // url: {
       //   protocol: true,
       //   username: true,
@@ -92,6 +96,7 @@ const setup = function(config) {
   };
 
   this.polly = new Polly(name, pollyConfig);
+  this.polly.configure(pollyConfig);
 
   Orbit.fetch = window.fetch.bind(window);
 
@@ -113,10 +118,48 @@ const setup = function(config) {
     Orbit.fetch = fakeFetch.bind(window);
   };
 
+  this.server = server;
+
   // by default? stub out auth0 so that auth0/lock.js doesn't
   // try to contact auth0 during testing.
   server.options('*anypath').intercept((req, res) => {
     req.headers.Allow = 'OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE';
+  });
+
+  // by default, unless overridden manually, we should force a 401 on current-user
+  this.mockGet(401, '/users/current-user');
+
+  this.mockGet(200, '/user-tasks', { "data": [] });
+  this.mockGet(200, ('/notifications'), { "data": []});
+
+  this.mockGet(200, '/roles', {
+    "data":[{
+      "attributes":{"role-name":"SuperAdmin"},
+      "relationships":{
+        "user-roles":{}
+      },
+      "type":"roles",
+      "id":"1"
+    },{
+      "attributes":{
+        "role-name":"OrganizationAdmin"
+      },
+      "relationships":{
+        "user-roles":{}
+      },
+      "type":"roles",
+      "id":"2"
+    },{
+      "attributes":{
+        "role-name":"AppBuilder"
+      },
+      "relationships":{
+        "user-roles":{}
+      },
+      "type":"roles",
+      "id":"3"
+    }],
+    "meta":{"total-records":3}
   });
 
   // This won't work unless we create a polly adapter for
@@ -132,4 +175,3 @@ const setup = function(config) {
   // });
 
 };
-

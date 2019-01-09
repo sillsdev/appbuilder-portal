@@ -1,6 +1,8 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
+import Convergence from '@bigtest/convergence';
+import i18n from '@translations';
 
 import {
   setupApplicationTest, setupRequestInterceptor, useFakeAuthentication
@@ -19,7 +21,7 @@ describe('Acceptance | Invitations | routing', () => {
     });
 
     it('displays that the path is not found', () => {
-      expect(app.headers).to.contain('Not Found!');
+      expect(app.headers).to.contain(i18n.t('errors.notFoundTitle'));
     });
 
     it('maintains the URL (no redirect)', () => {
@@ -33,7 +35,7 @@ describe('Acceptance | Invitations | routing', () => {
     });
 
     it('displays that the path is not found', () => {
-      expect(app.headers).to.contain('Not Found!');
+      expect(app.headers).to.contain(i18n.t('errors.notFoundTitle'));
     });
 
     it('maintains the URL (no redirect)', () => {
@@ -44,10 +46,13 @@ describe('Acceptance | Invitations | routing', () => {
   describe('navigates to an invitation', () => {
     beforeEach(async () => {
       await visit('/invitations/organization/something');
+
+      await new Convergence()
+        .when(() => app.headers);
     });
 
-    it('should not say that the path was not found', () => {
-      expect(app.headers).to.not.contain('Not Found!');
+    it.always('should not say that the path was not found', () => {
+      expect(app.headers).to.not.contain(i18n.t('errors.notFoundTitle'));
     });
 
     it('should not redirect', () => {

@@ -1,0 +1,52 @@
+[
+  {
+    "key": "container_1",
+    "data-buildertype": "container",
+    "children": [
+      {
+        "key": "form_1",
+        "data-buildertype": "form",
+        "children": [
+          {
+            "key": "header_1",
+            "data-buildertype": "header",
+            "content": "Waiting",
+            "size": "medium"
+          },
+          {
+            "key": "staticcontent_1",
+            "data-buildertype": "staticcontent",
+            "content": "<h3>Scriptoria is Busy</h3>\n<p>Scriptoria is busy working on your product.  You will receive a notification and an entry will be in your <strong>My Tasks</strong> when you have something to do.",
+            "isHtml": true
+          },
+          {
+            "key": "formgroup_2",
+            "data-buildertype": "formgroup",
+            "widths": "custom",
+            "children": [
+              {
+                "key": "input_product_name",
+                "data-buildertype": "input",
+                "label": "Name",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-customcss": "six wide field"
+              },
+              {
+                "key": "input_description",
+                "data-buildertype": "input",
+                "label": "Description",
+                "fluid": true,
+                "onChangeTimeout": 200,
+                "readOnly": true,
+                "style-customcss": "ten wide field"
+              }
+            ],
+            "widthsCustom": "16"
+          }
+        ]
+      }
+    ]
+  }
+]

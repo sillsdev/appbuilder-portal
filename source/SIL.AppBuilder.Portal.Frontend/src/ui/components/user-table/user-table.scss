@@ -4,11 +4,15 @@
     width: 25%;
   }
 
-  .groupDropdown .icon {
+  .multiDropdown {
+    box-sizing: border-box;
+  }
+
+  .multiDropdown .icon {
     display: none;
   }
 
-  .groupDropdown:hover i {
+  .multiDropdown:hover i {
     display: inline-block;
     position: absolute !important;
     right: 5px;
@@ -16,7 +20,7 @@
 
   }
 
-  .groupDropdown:hover {
+  .multiDropdown:hover {
     border-bottom: 1px solid #50b4e5;
   }
 }

@@ -14,21 +14,22 @@ export interface Params {
 
 export interface IProps {
   match: Match<Params>;
-  update: (payload: OrganizationAttributes) => void;
+  updateOrganization: (payload: OrganizationAttributes) => void;
   organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
 
 class InfrastructureRoute extends React.Component<IProps> {
+
   update = (attributes) => {
-    const { update } = this.props;
+    const { updateOrganization } = this.props;
     const {
-      useSilBuildInfrastructure,
+      useDefaultBuildEngine,
       buildEngineUrl, buildEngineApiAccessToken
     } = attributes;
 
-    update({
-      useSilBuildInfrastructure,
+    updateOrganization({
+      useDefaultBuildEngine,
       buildEngineUrl,
       buildEngineApiAccessToken
     });

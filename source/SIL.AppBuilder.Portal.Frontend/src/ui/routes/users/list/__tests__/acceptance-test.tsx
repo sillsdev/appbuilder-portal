@@ -4,8 +4,9 @@ import { expect } from 'chai';
 
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
-import page from './page';
+import UserTableInteractor from './-user-table';
 
+let userTable = null;
 describe('Acceptance | Disable User', () => {
   setupApplicationTest();
   setupRequestInterceptor();
@@ -13,7 +14,7 @@ describe('Acceptance | Disable User', () => {
 
   describe('navigates to users page', () => {
 
-    beforeEach(function () {
+    beforeEach(async function() {
       this.mockGet(200, '/users', {
         data: [{
           type: 'users',
@@ -34,11 +35,11 @@ describe('Acceptance | Disable User', () => {
           }
         }]
       });
+
+      await visit('/users');
+      userTable = new UserTableInteractor();
     });
 
-    beforeEach(async function () {
-      await visit('/users');
-    });
 
     it('is in users page', () => {
       expect(location().pathname).to.equal('/users');
@@ -47,7 +48,7 @@ describe('Acceptance | Disable User', () => {
     describe('an active users exists', () => {
 
       it('active user', () => {
-        expect(page.isUserActive).to.equal(true);
+        expect(userTable.isUserActive).to.equal(true);
       });
 
       describe('locking user', () => {
@@ -65,12 +66,12 @@ describe('Acceptance | Disable User', () => {
 
         describe('toggle is clicked', () => {
           beforeEach(async () => {
-            await page.clickLockUser();
+            await userTable.clickLockUser();
           });
 
           it("user locked", () => {
-            expect(page.isUserActive).to.equal(false);
-          });
+            expect(userTable.isUserActive).to.equal(false);
+          }).timeout(2000);
         });
       });
     });

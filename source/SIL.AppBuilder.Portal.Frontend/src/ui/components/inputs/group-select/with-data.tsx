@@ -1,72 +1,74 @@
-import * as React from 'react';
-import { compose } from 'recompose';
-import { ResourceObject } from 'jsonapi-typescript';
+import { compose, withProps } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import {
-  GROUPS_TYPE, GROUP_MEMBERSHIPS_TYPE, USERS_TYPE,
-  buildFindRelatedRecords,
   withLoader,
-  idsForRelationship,
   recordsWithIdIn,
-  ORGANIZATIONS_TYPE,
   isRelatedTo
 } from '@data';
 
-import { GroupMembershipAttributes } from '@data/models/group-membership';
-import { OrganizationAttributes } from '@data/models/organization';
-import { TYPE_NAME as GROUP, GroupAttributes } from '@data/models/group';
-import { UserAttributes } from '@data/models/user';
+import { OrganizationResource } from '@data/models/organization';
+import { TYPE_NAME as GROUP, GroupResource } from '@data/models/group';
+import { UserResource } from '@data/models/user';
+import { withRelationships } from '@data/containers/with-relationship';
 
 
 
 export interface IProvidedProps {
-  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
+  groups: GroupResource[];
   disableSelection: true;
 }
 
-interface IOwnProps {
-  groups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
-  groupMembershipsForCurrentUser: Array<ResourceObject<GROUP_MEMBERSHIPS_TYPE, GroupMembershipAttributes>>;
+interface IComposedProps {
+  groups: GroupResource[];
+  currentUsersGroups: GroupResource[];
+}
+
+interface INeededProps {
   scopeToCurrentUser?: boolean;
-  scopeToOrganization?: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
-  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
+  scopeToOrganization?: OrganizationResource;
+  currentUser: UserResource;
   selected: Id;
 }
 
+
+
 type IProps =
-  & IOwnProps
+  & INeededProps
+  & IComposedProps
   & WithDataProps;
 
 export function withData(WrappedComponent) {
-  const mapRecordsToProps = (passedProps) => {
-    const { currentUser, project } = passedProps;
-
-    return {
-      // all groups available to the current user should have been fetch with the
-      // current-user payload
+  return compose<IProps, INeededProps>(
+    withOrbit({
+      // all groups available to the current user should
+      // have been fetched with the current-user payload
       groups: q => q.findRecords(GROUP),
-      groupMembershipsForCurrentUser: q => buildFindRelatedRecords(q, currentUser, 'groupMemberships')
-    };
-  };
+    }),
+    withRelationships((props: INeededProps) => {
+      const { currentUser } = props;
 
-  class DataWrapper extends React.Component<IProps> {
-    render() {
+      return {
+        currentUsersGroups: [currentUser, 'groupMemberships', 'group']
+      };
+    }),
+    withLoader(({ currentUsersGroups, groups }) => !currentUsersGroups || !groups),
+    withProps((props: INeededProps & IComposedProps) => {
       const {
-        groupMembershipsForCurrentUser,
-        groups,
-        currentUser,
+        currentUsersGroups, selected,
         scopeToCurrentUser, scopeToOrganization,
-        selected,
-        ...otherProps
-      } = this.props;
+        groups
+       }  = props;
 
-      let availableGroups: Array<ResourceObject<GROUPS_TYPE, GroupAttributes>>;
+      // TODO: we shouldn't need to filter out fasley things
+      //       so, we should make sure withRelationships is returning good data
+      const groupIds = currentUsersGroups.filter(g => !!g).map(g => g.id);
+      const availableGroupIds = [ ...(selected ? [selected] : []), ...groupIds];
 
-      const groupIds = idsForRelationship(groupMembershipsForCurrentUser, 'group');
+      let availableGroups: GroupResource[];
 
       if (scopeToCurrentUser) {
-        availableGroups = recordsWithIdIn(groups, [selected, ...groupIds]);
+        availableGroups = recordsWithIdIn(groups, availableGroupIds);
       } else {
         availableGroups = groups;
       }
@@ -79,24 +81,15 @@ export function withData(WrappedComponent) {
         });
       }
 
-      const disableSelection = (
+      const isSelelectionDisabled = (
         availableGroups.length === 1 ||
-          (availableGroups.length === 2 && groupIds.length === 1)
+       (availableGroups.length === 2 && groupIds.length === 1)
       );
 
-      const props = {
-        ...otherProps,
-        selected,
+      return {
         groups: availableGroups,
-        disableSelection
+        disableSelection: isSelelectionDisabled
       };
-
-      return <WrappedComponent { ...props } />;
-    }
-  }
-
-  return compose(
-    withOrbit(mapRecordsToProps),
-    withLoader(({ groups, groupMembershipsForCurrentUser: gmU }) => !groups || !gmU)
-  )(DataWrapper);
+    })
+  )(WrappedComponent);
 }

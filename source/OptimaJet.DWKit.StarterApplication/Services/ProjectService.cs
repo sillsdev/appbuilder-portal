@@ -26,6 +26,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public ProjectRepository ProjectRepository { get; }
         public CurrentUserRepository CurrentUserRepository { get; }
         public IEntityRepository<Organization> OrganizationRepository { get; set; }
+        public IEntityRepository<UserRole> UserRolesRepository { get; }
 
         public ProjectService(
             IBackgroundJobClient hangfireClient,
@@ -37,6 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             CurrentUserRepository currentUserRepository,
             GroupRepository groupRepository,
             IEntityRepository<Organization> organizationRepository,
+            IEntityRepository<UserRole> userRolesRepository,
             ILoggerFactory loggerFactory) : base(jsonApiContext, projectRepository, loggerFactory)
         {
             OrganizationContext = organizationContext;
@@ -46,6 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             UserRepository = userRepository;
             GroupRepository = groupRepository;
             OrganizationRepository = organizationRepository;
+            UserRolesRepository = userRolesRepository;
             ProjectRepository = (ProjectRepository)projectRepository;
             CurrentUserRepository = currentUserRepository;
         }
@@ -76,14 +79,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                            GroupRepository,
                                            CurrentUserContext,
                                            OrganizationRepository,
+                                           UserRolesRepository,
                                            OrganizationContext,
                                            ProjectRepository);
             if (!updateForm.IsValid(id, resource))
             {
                 throw new JsonApiException(updateForm.Errors);
             }
-            
-            return await base.UpdateAsync(id, resource);
+
+            var project = await base.UpdateAsync(id, resource);
+            // If the owner is changing, call the build engine to update the project iam permissions
+            if (resource.OwnerId != 0)
+            {
+                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.UpdateProject(project.Id, null));
+            }
+            return project;
         }
 
         public override async Task<Project> CreateAsync(Project resource)
@@ -91,6 +101,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var createForm = new CreateForm(UserRepository,
                                            GroupRepository,
                                            CurrentUserContext,
+                                           UserRolesRepository,
                                            OrganizationRepository);
             if (!createForm.IsValid(resource))
             {
@@ -100,7 +111,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             if (project != null)
             {
-                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.ManageProject(project.Id));
+                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.ManageProject(project.Id, null));
             }
             return project;
         }

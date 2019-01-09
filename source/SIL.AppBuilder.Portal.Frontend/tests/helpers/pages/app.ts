@@ -3,15 +3,27 @@ import {
   clickable,
   text,
   selectable,
+  scoped,
   isPresent,
   Interactor
 } from '@bigtest/interactor';
 
+import orgSwitcherInteractor from '@ui/components/sidebar/org-switcher/__tests__/page';
+
 class App {
+  orgSwitcher = orgSwitcherInteractor;
+
   headers = text('h1,h2,h3');
+
+  toast = scoped('#notification-wrapper .toast-notification', {
+    // NOTE: there is no way to tell if this is an error, or a success
+    //       without checking the background color
+    text: text('span'),
+  });
 
   clickNotificationsBell = clickable('[data-test-header-notification]');
   clickLogout = clickable('[data-test-header-menu] [data-test-logout]');
+  isLogoutPresent = isPresent('[data-test-header-menu] [data-test-logout]');
 
   selectLocale = selectable('[data-test-locale-switcher]');
   myProfileText = text('[data-test-header-avatar] [data-test-profile]');
@@ -39,4 +51,4 @@ export const AppInteractor = interactor(App);
 
 export type TAppInteractor = App & Interactor;
 
-export default new (AppInteractor as any)('[data-test-app-container]') as TAppInteractor;
+export default new (AppInteractor as any)('#testing-root') as TAppInteractor;

@@ -12,4 +12,4 @@ export class SidebarInteractor {
   isCloseButtonVisibleInResponsive = hasClass('[data-test-sidebar-close-button]','d-lg-none');
 }
 
-export default new SidebarInteractor('[data-test-app-container]');
+export default new SidebarInteractor();

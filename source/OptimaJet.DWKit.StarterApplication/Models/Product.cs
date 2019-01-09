@@ -4,7 +4,7 @@ using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class Product : Identifiable, ITrackDate
+    public class Product : Identifiable<Guid>, ITrackDate
     {
         [HasOne("project")]
         public virtual Project Project { get; set; }
@@ -40,13 +40,13 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("workflow-publish-id")]
         public int WorkflowPublishId { get; set; }
 
+        [Attr("workflow-comment")]
+        public string WorkflowComment { get; set; }
+
         [Attr("date-published")]
         public DateTime? DatePublished { get; set; }
 
-        [HasMany("product-artifacts", Link.None)]
-        public virtual List<ProductArtifact> ProductArtifacts { get; set; }
-
-        [Attr("workflow-process-Id")]
-        public Guid? WorkflowProcessId { get; set; }
+        [HasMany("product-builds", Link.None)]
+        public virtual List<ProductBuild> ProductBuilds { get; set; }
     }
 }

@@ -7,7 +7,8 @@
           "node_modules",
           "src/vendor",
           "tests/index.ts",
-          "src/translations/locales/*"
+          "src/translations/locales/*",
+          "src/public/**"
         ]
     },
     "extends": [

@@ -2,8 +2,11 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
-import { withTranslations, i18nProps } from '@lib/i18n';
 
+import { ROLE } from '@data/models/role';
+import { RequireRole } from '@ui/components/authorization';
+
+import { withTranslations, i18nProps } from '@lib/i18n';
 import { getCurrentOrganizationId } from '@lib/current-organization';
 
 export interface IProps {
@@ -76,18 +79,31 @@ class Navigation extends React.Component<IProps & i18nProps> {
           onClick={closeSidebar}
         />
 
-        <MenuItem
-          name={t('sidebar.users')}
-          to='/users'
-          onClick={closeSidebar}
-        />
+        <RequireRole roleName={ROLE.OrganizationAdmin}>
+          <MenuItem
+            name={t('sidebar.users')}
+            to='/users'
+            onClick={closeSidebar}
+          />
+        </RequireRole>
 
         { hasSelectedOrg && (
-          <MenuItem
-            name={t('sidebar.organizationSettings')}
-            to={`/organizations/${currentOrganizationId}/settings`}
-            onClick={closeSidebar} />
+          <RequireRole roleName={ROLE.OrganizationAdmin}>
+            <MenuItem
+              name={t('sidebar.organizationSettings')}
+              to={`/organizations/${currentOrganizationId}/settings`}
+              onClick={closeSidebar}
+            />
+          </RequireRole>
         ) }
+
+        <RequireRole roleName={ROLE.SuperAdmin}>
+          <MenuItem
+            name={t('sidebar.adminSettings')}
+            to={`/admin/settings/organizations`}
+            onClick={closeSidebar}
+          />
+        </RequireRole>
 
         <hr />
 

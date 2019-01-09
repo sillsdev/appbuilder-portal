@@ -167,6 +167,46 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Groups
             Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
 
         }
+        // Verify that you can't change the owner to an organization that currentuser
+        // isn't a member of
+        [Fact]
+        public async Task Patch_Owner_SuperAdmin()
+        {
+            BuildTestData();
+            var roleSA = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.SuperAdmin
+            });
+            var userRole1 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = CurrentUser.Id,
+                RoleId = roleSA.Id
+            });
+            var content = new
+            {
+                data = new
+                {
+                    type = "groups",
+                    id = group1.Id.ToString(),
+                    relationships = new
+                    {
+                        owner = new
+                        {
+                            data = new
+                            {
+                                type = "organizations",
+                                id = org3.Id.ToString()
+                            }
+                        }
+                    }
+                }
+            };
+            var response = await Patch("/api/groups/" + group1.Id.ToString(), content);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        }
+
 
     }
 }

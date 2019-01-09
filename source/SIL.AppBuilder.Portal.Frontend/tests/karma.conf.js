@@ -6,13 +6,15 @@ console.log('root path: ', root);
 
 const TEST_PORT = 9876;
 
+process.env.IS_TESTING = 'true';
+
 // process.env.API_HOST = `localhost:${TEST_PORT}`;
 
 module.exports = function(config) {
   config.set({
     port: TEST_PORT,
     colors: true,
-    logLevel: 'DEBUG',
+    logLevel: 'OFF',
     singleRun: false,
     retryLimit: 20, // hack around concurrency issues....
     concurrency: 1,
@@ -23,7 +25,13 @@ module.exports = function(config) {
     reporters: [
       'mocha',
     ],
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'ChromeDebug'],
+    customLaunchers: {
+      ChromeDebug: {
+        base: 'Chrome',
+        flags: [ '--remote-debugging-port=9333']
+      }
+    },
     mime: { 'text/x-typescript': ['ts','tsx'] },
 
     files: [
@@ -40,8 +48,8 @@ module.exports = function(config) {
         'webpack',
       ],
     },
-
     client: {
+      captureConsole: false,
       mocha: {
         reporter: 'html',
         ui: 'bdd',
@@ -78,7 +86,7 @@ module.exports = function(config) {
       'karma-mocha-reporter',
       'karma-chrome-launcher',
       'karma-firefox-launcher',
-    ],
+    ]
   });
 
   if (process.env.DETACHED) {

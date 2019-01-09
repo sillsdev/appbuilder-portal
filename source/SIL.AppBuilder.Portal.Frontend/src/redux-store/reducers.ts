@@ -18,5 +18,5 @@ export interface State {
 
 export const reducers = combineReducers({
   ui: uiReducer,
-  data: dataReducer
+  data: dataReducer,
 });

@@ -9,6 +9,9 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using Newtonsoft.Json;
+using System.Net;
+using Hangfire.Server;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -16,72 +19,108 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
     {
         public IRecurringJobManager RecurringJobManager { get; }
         public WebRequestWrapper WebRequestWrapper { get; }
-        public IJobRepository<Product> ProductRepository { get; }
+        public IWebClient WebClient { get; }
+        public SendNotificationService SendNotificationSvc { get; }
+        public IJobRepository<Product, Guid> ProductRepository { get; }
         public IJobRepository<ProductArtifact> ProductArtifactRepository { get; }
+        public IJobRepository<ProductBuild> ProductBuildRepository { get; }
 
         public BuildEngineBuildService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
             WebRequestWrapper webRequestWrapper,
-            IJobRepository<Product> productRepository,
+            IWebClient webClient,
+            SendNotificationService sendNotificationService,
+            IJobRepository<Product, Guid> productRepository,
             IJobRepository<ProductArtifact> productArtifactRepository,
+            IJobRepository<ProductBuild> productBuildRepository,
             IJobRepository<SystemStatus> systemStatusRepository
-        ) : base(buildEngineApi, systemStatusRepository)
+        ) : base(buildEngineApi, sendNotificationService, systemStatusRepository)
         {
             RecurringJobManager = recurringJobManager;
             WebRequestWrapper = webRequestWrapper;
+            WebClient = webClient;
+            SendNotificationSvc = sendNotificationService;
             ProductRepository = productRepository;
             ProductArtifactRepository = productArtifactRepository;
+            ProductBuildRepository = productBuildRepository;
         }
-        public void CreateBuild(int productId)
+        public void CreateBuild(Guid productId, PerformContext context)
         {
-            CreateBuildAsync(productId).Wait();
+            CreateBuildAsync(productId, context).Wait();
         }
-        public async Task CreateBuildAsync(int productId)
+        public async Task CreateBuildAsync(Guid productId, PerformContext context)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
+                                                 .Include(p => p.ProductDefinition)
                                                  .Include(p => p.Project)
                                                  .ThenInclude(pr => pr.Organization)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Owner)
                                                  .FirstOrDefaultAsync();
             if ((product == null) || (product.WorkflowJobId == 0))
             {
                 // Can't find the product record associated with
                 // this process or there is no job created for this product.
                 // Exception will trigger retry
-                // TODO: Send notification record
                 // Don't send exception because there doesn't seem to be a point in retrying
+                var messageParms = new Dictionary<string, object>
+                {
+                    { "productId", productId.ToString() }
+                };
+                await SendNotificationSvc.SendNotificationToSuperAdminsAsync("buildProductRecordNotFound",
+                                                                               messageParms);
+
                 return;
 
             }
             if (!BuildEngineLinkAvailable(product.Project.Organization))
             {
                 // If the build engine isn't available, there is no point in continuing
-                // Notifications for this are handled by the monitor
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", product.Project.Name },
+                        { "productName", product.ProductDefinition.Name}
+                    };
+                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "buildFailedUnableToConnect", messageParms);
                 // Throw exception to retry
                 throw new Exception("Connection not available");
             }
-            await CreateBuildEngineBuildAsync(product);
-            return;
+
+            // Clear current BuildId used by Workflow
+            product.WorkflowBuildId = 0;
+            await ProductRepository.UpdateAsync(product);
+
+            await CreateBuildEngineBuildAsync(product, context);
         }
-        public void CheckBuild(int productId)
+
+        public void CheckBuild(Guid productId)
         {
             CheckBuildAsync(productId).Wait();
         }
-        public async Task CheckBuildAsync(int productId)
+        public async Task CheckBuildAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
+                                                 .Include(p => p.ProductDefinition)
                                                  .Include(p => p.Project)
                                                  .ThenInclude(pr => pr.Organization)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Owner)
                                                  .FirstOrDefaultAsync();
             if ((product == null) || (product.WorkflowJobId == 0))
             {
                 // Can't find the product record associated with
                 // this process or there is no job created for this product.
                 // Exception will trigger retry
-                // TODO: Send notification record
                 // Don't send exception because there doesn't seem to be a point in retrying
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "productId", productId.ToString()}
+                    };
+                await SendNotificationSvc.SendNotificationToSuperAdminsAsync("buildProductRecordNotFound",
+                                                                               messageParms);
                 ClearRecurringJob(productId);
                 return;
 
@@ -116,21 +155,35 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 }
             }
         }
-        protected async Task CreateBuildEngineBuildAsync(Product product)
+        protected async Task CreateBuildEngineBuildAsync(Product product, PerformContext context)
         {
             await ResetPreviousBuildAsync(product);
-            SetBuildEngineEndpoint(product.Project.Organization);
-            var buildResponse = BuildEngineApi.CreateBuild(product.WorkflowJobId);
+            BuildResponse buildResponse = null;
+            if (SetBuildEngineEndpoint(product.Project.Organization))
+            {
+                buildResponse = BuildEngineApi.CreateBuild(product.WorkflowJobId);
+            }
             if ((buildResponse != null) && (buildResponse.Id != 0))
             {
                 product.WorkflowBuildId = buildResponse.Id;
+                var productBuild = new ProductBuild
+                {
+                    ProductId = product.Id,
+                    BuildId = product.WorkflowBuildId
+                };
+                await ProductBuildRepository.CreateAsync(productBuild);
                 await ProductRepository.UpdateAsync(product);
                 var monitorJob = Job.FromExpression<BuildEngineBuildService>(service => service.CheckBuild(product.Id));
                 RecurringJobManager.AddOrUpdate(GetHangfireToken(product.Id), monitorJob, "* * * * *");
             }
             else
             {
-                // TODO: Send Notification
+                var messageParms = new Dictionary<string, object>()
+                    {
+                        { "projectName", product.Project.Name },
+                        { "productName", product.ProductDefinition.Name}
+                    };
+                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "buildFailedUnableToCreate", messageParms);
                 // Throw Exception to force retry
                 throw new Exception("Create build failed");
             }
@@ -149,7 +202,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     }
                     else
                     {
-                        BuildCreationFailed(product, buildEngineBuild);
+                        await BuildCreationFailedAsync(product, buildEngineBuild);
                     }
                 }
             }
@@ -158,7 +211,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected BuildResponse GetBuildEngineBuild(Product product)
         {
-            SetBuildEngineEndpoint(product.Project.Organization);
+            if (!SetBuildEngineEndpoint(product.Project.Organization))
+            {
+                return null;
+            }
             var buildResponse = BuildEngineApi.GetBuild(product.WorkflowJobId, product.WorkflowBuildId);
             return buildResponse;
         }
@@ -168,45 +224,79 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             if (buildEngineBuild.Artifacts != null)
             {
+                var productBuild = await ProductBuildRepository.Get()
+                    .Where(pb => pb.ProductId == product.Id && pb.BuildId == product.WorkflowBuildId)
+                    .FirstOrDefaultAsync();
                 foreach(KeyValuePair<string, string> entry in buildEngineBuild.Artifacts)
                 {
-                    var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product.Id);
+                    var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product.Id, productBuild);
                     if ((artifactModifiedDate != null) && (artifactModifiedDate > mostRecentArtifactDate))
                     {
                         mostRecentArtifactDate = artifactModifiedDate;
                     }
                 }
+
+                product.DateBuilt = mostRecentArtifactDate;
+                await ProductRepository.UpdateAsync(product);
             }
-            product.DateBuilt = mostRecentArtifactDate;
-            await ProductRepository.UpdateAsync(product);
+            var messageParms = new Dictionary<string, object>()
+            {
+                { "projectName", product.Project.Name },
+                { "productName", product.ProductDefinition.Name}
+            };
+            await SendNotificationSvc.SendNotificationToUserAsync(product.Project.Owner, "buildCompletedSuccessfully", messageParms);
         }
-        protected void BuildCreationFailed(Product product, BuildResponse buildEngineBuild)
+        protected async Task BuildCreationFailedAsync(Product product, BuildResponse buildEngineBuild)
         {
             ClearRecurringJob(product.Id);
+            var messageParms = new Dictionary<string, object>()
+            {
+                { "projectName", product.Project.Name },
+                { "productName", product.ProductDefinition.Name},
+                { "buildStatus", buildEngineBuild.Status },
+                { "buildError", buildEngineBuild.Error },
+                { "buildEngineUrl", product.Project.Organization.BuildEngineUrl }
+            };
+            await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "buildFailed", messageParms);
         }
-        protected void ClearRecurringJob(int productId)
+        protected void ClearRecurringJob(Guid productId)
         {
             var jobToken = GetHangfireToken(productId);
             RecurringJobManager.RemoveIfExists(jobToken);
             return;
         }
-        protected String GetHangfireToken(int productId)
+        protected String GetHangfireToken(Guid productId)
         {
             return "CreateBuildMonitor" + productId.ToString();
         }
-        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, int productId)
+        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, Guid productId, ProductBuild productBuild)
         {
             var productArtifact = new ProductArtifact
             {
                 ProductId = productId,
+                ProductBuildId = productBuild.Id,
                 ArtifactType = key,
                 Url = value
             };
             var updatedArtifact = WebRequestWrapper.GetFileInfo(productArtifact);
             await ProductArtifactRepository.CreateAsync(updatedArtifact);
+
+#pragma warning disable RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
+            if (key == "version" && updatedArtifact.ContentType == "application/json")
+#pragma warning restore RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
+            {
+                var contents = WebClient.DownloadString(value);
+                var version = JsonConvert.DeserializeObject<Dictionary<string, string>>(contents);
+                if (version.ContainsKey("version"))
+                {
+                    productBuild.Version = version["version"];
+                    await ProductBuildRepository.UpdateAsync(productBuild);
+                }
+            }
+
             return updatedArtifact.LastModified;
         }
-        public async Task<BuildEngineStatus> GetStatusAsync(int productId)
+        public async Task<BuildEngineStatus> GetStatusAsync(Guid productId)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)

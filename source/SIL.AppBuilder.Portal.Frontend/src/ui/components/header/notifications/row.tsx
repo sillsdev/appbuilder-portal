@@ -6,7 +6,7 @@ import { attributesFor } from '@data/helpers';
 import { i18nProps } from '@lib/i18n';
 import { NotificationResource } from '@data';
 import { withDataActions, IProvidedProps as IDataProps } from '@data/containers/resources/notification/with-data-actions';
-import { withMomentTimezone, IProvidedProps as ITimeProps } from '@lib/with-moment-timezone';
+import TimezoneLabel from '@ui/components/labels/timezone';
 
 export interface IOwnProps {
   notification: NotificationResource;
@@ -15,8 +15,7 @@ export interface IOwnProps {
 export type IProps =
   & IOwnProps
   & IDataProps
-  & i18nProps
-  & ITimeProps;
+  & i18nProps;
 
 class Row extends React.Component<IProps> {
   state = { visible: false };
@@ -31,17 +30,19 @@ class Row extends React.Component<IProps> {
     this.setState({ visible: !this.state.visible });
   }
 
-  markAsSeen = (e) => {
+  markAsSeen = (e: React.SyntheticEvent) => {
     const { markAsSeen } = this.props;
 
+    e.stopPropagation();
     e.preventDefault();
 
     markAsSeen();
   }
 
-  clear = (e) => {
+  clear = (e: React.SyntheticEvent) => {
     const { clear } = this.props;
 
+    e.stopPropagation();
     e.preventDefault();
 
     clear();
@@ -49,20 +50,17 @@ class Row extends React.Component<IProps> {
 
   render() {
 
-    const { notification, moment, timezone } = this.props;
+    const { notification } = this.props;
 
     const {
-      title,
-      description,
-      time,
-      isViewed
-    } = attributesFor(notification);
+      message,
+      dateCreated,
+      dateRead,
+    } = notification.attributes;
+
+    const isViewed = dateRead !== null;
 
     const viewState = isViewed ? 'seen' : 'not-seen';
-
-    if (!notification.attributes.show) {
-      return null;
-    }
 
     return (
       <div
@@ -78,10 +76,10 @@ class Row extends React.Component<IProps> {
         >
           <CloseIcon />
         </a>
-
-        <h4 className='title'>{title}</h4>
-        <p className={!isViewed ? 'bold' : ''}>{description}</p>
-        <p className='time'>{ moment.tz(time,timezone).fromNow() }</p>
+        <p className={!isViewed ? 'bold' : ''}>{message}</p>
+        <div className='time'>
+          <TimezoneLabel dateTime={dateCreated} />
+        </div>
       </div>
     );
 
@@ -89,6 +87,5 @@ class Row extends React.Component<IProps> {
 }
 
 export default compose(
-  withMomentTimezone,
   withDataActions
 )(Row);

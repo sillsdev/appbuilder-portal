@@ -17,6 +17,8 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         //        both sides in a single fluent builder chain)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasPostgresExtension("uuid-ossp");
+
             var userEntity = modelBuilder.Entity<User>();
             var roleEntity = modelBuilder.Entity<Role>();
             var userRoleEntity = modelBuilder.Entity<UserRole>();
@@ -27,6 +29,8 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var orgInviteEntity = modelBuilder.Entity<OrganizationInvite>();
             var groupMemberEntity = modelBuilder.Entity<GroupMembership>();
             var productEntity = modelBuilder.Entity<Product>();
+            var productBuildEntity = modelBuilder.Entity<ProductBuild>();
+            var notificationEntity = modelBuilder.Entity<Notification>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
@@ -46,13 +50,17 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             roleEntity
                 .HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
-                .HasForeignKey(ur => ur.RoleName);
-
+                .HasForeignKey(ur => ur.RoleId);
 
             orgEntity
                 .HasMany(o => o.OrganizationMemberships)
                 .WithOne(om => om.Organization)
                 .HasForeignKey(om => om.OrganizationId);
+
+            orgEntity
+                .HasMany(o => o.UserRoles)
+                .WithOne(r => r.Organization)
+                .HasForeignKey(r => r.OrganizationId);
 
             orgEntity
                 .HasMany(o => o.Groups)
@@ -85,7 +93,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasDefaultValue(true);
 
             orgEntity
-                .Property(o => o.UseSilBuildInfrastructure)
+                .Property(o => o.UseDefaultBuildEngine)
                 .HasDefaultValue(true);
             orgEntity
                 .Property(o => o.PublicByDefault)
@@ -101,12 +109,29 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasForeignKey(os => os.OrganizationId);
 
             productEntity
-                .HasMany(p => p.ProductArtifacts)
-                .WithOne(pa => pa.Product)
-                .HasForeignKey(pa => pa.ProductId);
+                .HasMany(p => p.ProductBuilds)
+                .WithOne(pb => pb.Product)
+                .HasForeignKey(pb => pb.ProductId);
+
+            productBuildEntity
+                .HasMany(pb => pb.ProductArtifacts)
+                .WithOne(pa => pa.ProductBuild)
+                .HasForeignKey(pa => pa.ProductBuildId);
 
             userEntity
                 .HasIndex(u => u.WorkflowUserId);
+
+            productEntity
+                .Property(p => p.Id)
+                .HasDefaultValueSql("uuid_generate_v4()");
+
+            projectEntity
+                .Property(p => p.WorkflowProjectId)
+                .HasDefaultValue(0);
+
+            notificationEntity
+                .Property(p => p.SendEmail)
+                .HasDefaultValue(true);
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
@@ -161,5 +186,9 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<StoreType> StoreTypes { get; set; }
         public DbSet<OrganizationStore> OrganizationStores { get; set; }
         public DbSet<ProductArtifact> ProductArtifacts { get; set; }
+        public DbSet<UserTask> UserTasks { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<ProductTransition> ProductTransitions { get; set; }
+        public DbSet<ProductBuild> ProductBuilds { get; set; }
     }
 }

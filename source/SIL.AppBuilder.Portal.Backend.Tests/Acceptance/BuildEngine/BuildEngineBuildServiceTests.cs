@@ -13,6 +13,9 @@ using Job = Hangfire.Common.Job;
 using Hangfire;
 using System.Collections.Generic;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
+using OptimaJet.DWKit.StarterApplication.Services;
+using Hangfire.Server;
+using System.Threading;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {
@@ -25,11 +28,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         const string skipAcceptanceTest = null; //"Acceptance Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public User CurrentUser { get; set; }
         public User user1 { get; set; }
+        public User user2 { get; set; }
+        public User user3 { get; set; }
         public OrganizationMembership CurrentUserMembership { get; set; }
         public OrganizationMembership organizationMembership1 { get; set; }
+        public OrganizationMembership organizationMembership2 { get; set; }
         public Organization org1 { get; private set; }
         public Group group1 { get; set; }
         public GroupMembership groupMembership1 { get; set; }
+        public GroupMembership groupMembership2 { get; set; }
         public ApplicationType type1 { get; set; }
         public Project project1 { get; set; }
         public SystemStatus systemStatus1 { get; set; }
@@ -39,10 +46,22 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public WorkflowDefinition workflow1 { get; set; }
         public Store store1 { get; set; }
         public ProductArtifact artifact1 { get; set; }
-
+        public Role roleOA { get; set; }
+        public Role roleSA { get; set; }
+        public UserRole ur1 { get; set; }
+        public UserRole ur2 { get; set; }
         private void BuildTestData(bool available = true)
         {
             CurrentUser = NeedsCurrentUser();
+            roleOA = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.OrganizationAdmin
+            });
+            roleSA = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.SuperAdmin
+            });
+
             user1 = AddEntity<AppDbContext, User>(new User
             {
                 ExternalId = "test-auth0-id1",
@@ -50,6 +69,22 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Name = "Test Testenson1",
                 GivenName = "Test1",
                 FamilyName = "Testenson1"
+            });
+            user2 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id2",
+                Email = "test-email2@test.test",
+                Name = "Test Testenson2",
+                GivenName = "Test2",
+                FamilyName = "Testenson2"
+            });
+            user3 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id3",
+                Email = "test-email3@test.test",
+                Name = "Test Testenson3",
+                GivenName = "Test3",
+                FamilyName = "Testenson3"
             });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {
@@ -69,6 +104,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 UserId = user1.Id,
                 OrganizationId = org1.Id
             });
+            organizationMembership2 = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user2.Id,
+                OrganizationId = org1.Id
+            });
             group1 = AddEntity<AppDbContext, Group>(new Group
             {
                 Name = "TestGroup1",
@@ -78,6 +118,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             groupMembership1 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
             {
                 UserId = user1.Id,
+                GroupId = group1.Id
+            });
+            groupMembership2 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user2.Id,
                 GroupId = group1.Id
             });
             type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
@@ -139,23 +184,51 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WorkflowJobId = 1,
                 WorkflowBuildId = 2
             });
+            ur1 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = user2.Id,
+                RoleId = roleOA.Id,
+                OrganizationId = org1.Id
+            });
+            ur2 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = user3.Id,
+                RoleId = roleSA.Id,
+                OrganizationId = org1.Id
+            });
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Product_Not_FoundAsync()
         {
             BuildTestData();
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            await buildBuildService.CreateBuildAsync(999);
-            // TODO: Verify notification
+            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
+            var productId = Guid.NewGuid();
+            await buildBuildService.CreateBuildAsync(productId, null);
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user3.ExternalId)));
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Single(notifications);
+            var expectedJson = "{\"productId\":\"" + productId.ToString() + "\"}";
+            Assert.Equal(expectedJson, notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildProductRecordNotFound", notifications[0].MessageId);
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Build_Connection_UnavailableAsync()
         {
             BuildTestData(false);
+            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
+            // Verify that notifications are sent to the user and the org admin
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(2, notifications.Count);
+            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildFailedUnableToConnect", notifications[0].MessageId);
         }
+
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Build_CreateAsync()
         {
@@ -174,7 +247,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Error = ""
             };
             mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>())).Returns(buildResponse);
-            await buildBuildService.CreateBuildAsync(product1.Id);
+            await buildBuildService.CreateBuildAsync(product1.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
@@ -192,16 +265,21 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var products = ReadTestData<AppDbContext, Product>();
             var modifiedProduct = products.First(p => p.Id == product1.Id);
             Assert.Equal(2, modifiedProduct.WorkflowBuildId);
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Empty(notifications);
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Build_Check_BuildAsync()
         {
             BuildTestData();
+            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
             var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
             var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
+            var mockWebClient = Mock.Get(buildBuildService.WebClient);
             mockBuildEngine.Reset();
             mockWebRequestWrapper.Reset();
+            mockWebClient.Reset();
             var modifiedArtifact1 = new ProductArtifact
             {
                 ProductId = product1.Id,
@@ -220,11 +298,30 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 FileSize = 1831,
                 LastModified = DateTime.UtcNow
             };
+            var modifiedArtifact3 = new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ArtifactType = "version",
+                Url = "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/version.json",
+                ContentType = "application/json",
+                FileSize = 1831,
+                LastModified = DateTime.UtcNow
+            };
             var artifacts = new Dictionary<string, string>()
             {
                 {"apk", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7.apk"},
-                {"about", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt"}
+                {"about", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt"},
+                {"version", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/version.json"}
             };
+            product2.WorkflowBuildId = 42;
+
+            var productBuild = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product2.Id,
+                BuildId = 42,
+            });
+
+
             var buildResponse = new BuildResponse
             {
                 Id = 2,
@@ -243,18 +340,66 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
                                                                                   a.ArtifactType == "about")))
                                  .Returns(modifiedArtifact2);
+            mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
+                                                                                  a.ArtifactType == "version")))
+                                 .Returns(modifiedArtifact3);
+            mockWebClient.Setup(x => x.DownloadString(It.Is<string>(addr => addr == modifiedArtifact3.Url)))
+                .Returns("{ \"version\" : \"4.7.6\", \"versionName\" : \"4.7\", \"versionCode\" : \"6\" } ");
             await buildBuildService.CheckBuildAsync(product2.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
             var modifiedArtifacts = ReadTestData<AppDbContext, ProductArtifact>();
-            Assert.Equal(2, modifiedArtifacts.Count);
+            Assert.Equal(3, modifiedArtifacts.Count);
             var modifiedApk = modifiedArtifacts.First(a => a.ArtifactType == modifiedArtifact1.ArtifactType);
             Assert.Equal(modifiedArtifact1.Url, modifiedApk.Url);
             Assert.Equal(modifiedArtifact1.ContentType, modifiedApk.ContentType);
             Assert.Equal(modifiedArtifact1.FileSize, modifiedApk.FileSize);
+            var modifiedProductBuilds = ReadTestData<AppDbContext, ProductBuild>();
+            Assert.Single(modifiedProductBuilds);
+            var build = modifiedProductBuilds.First();
+            Assert.Equal("4.7.6", build.Version);
+            // One notification should be sent to owner on successful build
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Single(notifications);
+            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildCompletedSuccessfully", notifications[0].MessageId);
         }
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task Get_Build_Check_Failure()
+        {
+            BuildTestData();
+            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
+            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
+            var mockWebClient = Mock.Get(buildBuildService.WebClient);
+            mockBuildEngine.Reset();
+            mockWebRequestWrapper.Reset();
+            mockWebClient.Reset();
+
+            var buildResponse = new BuildResponse
+            {
+                Id = 2,
+                JobId = 1,
+                Status = "completed",
+                Result = "FAILURE",
+                Error = "Error"
+            };
+
+            mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
+            await buildBuildService.CheckBuildAsync(product2.Id);
+            // Verify that notifications are sent to the user and the org admin
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(2, notifications.Count);
+            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildFailed", notifications[0].MessageId);
+        }
+
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Get_Build_Status_Unavailable()
         {
@@ -334,6 +479,32 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
             var status = await buildBuildService.GetStatusAsync(product2.Id);
             Assert.Equal(BuildEngineStatus.Failure, status);
+        }
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task Build_CreateAsync_Exception()
+        {
+            BuildTestData();
+            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
+            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var mockRecurringTaskManager = Mock.Get(buildBuildService.RecurringJobManager);
+            mockRecurringTaskManager.Reset();
+            mockBuildEngine.Reset();
+            mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>())).Returns<BuildResponse>(null);
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, null));
+            mockBuildEngine.Verify(x => x.SetEndpoint(
+                It.Is<String>(u => u == org1.BuildEngineUrl),
+                It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
+            ));
+            Assert.Equal("Create build failed", ex.Message);
+
+            // Verify that notifications are sent to the user and the org admin
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
+            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(2, notifications.Count);
+            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildFailedUnableToCreate", notifications[0].MessageId);
         }
     }
 }

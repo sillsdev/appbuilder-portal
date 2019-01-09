@@ -1,120 +1,170 @@
 {
   "name": "SIL_AppBuilders_Project_Approval",
-  "lastUpdate": "2018-10-16T16:06:02.0943201+00:00",
-  "entityId": "5d8aafda-47af-4f0c-a296-4bbf20289147",
+  "lastUpdate": "2018-11-28T08:51:15.390629-05:00",
+  "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
-  "schemes": [
-    "SIL_Default_AppBuilders_Android_GooglePlay"
-  ],
+  "schemes": [],
   "dataMap": [
     {
-      "id": "b3e6d075-c794-3eb4-9646-6e9855aa59be",
-      "attributeId": "307a21a1-15b6-4c8d-8dfa-2a846e63ed06",
+      "id": "b2a60f6d-28e0-65f4-197c-1f44fbf1fdee",
+      "attributeId": "441e60ec-8a68-4c74-bcc4-853a678f11c3",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "a9a63871-58e4-b467-dfb1-465ce62da02a",
-      "attributeId": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
-      "control": "input_application_type",
-      "parentId": "b3e6d075-c794-3eb4-9646-6e9855aa59be",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "08bc0995-34f6-ab94-e85c-e422ae7163ac",
-      "attributeId": "5f3c671c-ba68-4b81-b4c9-057a33170c7e",
+      "id": "110f4bcc-986f-9968-f722-0d6ffb7f4610",
+      "attributeId": "37ecc7d1-c69e-4b7b-b611-409fe36392f7",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "c0ab7769-ac2b-eb4a-d71f-374a439c2769",
-      "attributeId": "395c266e-d92c-4af2-88f9-b88af74e8d81",
+      "id": "2abeeaf7-d364-7057-4213-5fe38f3123c1",
+      "attributeId": "7fc91699-2b16-4ab1-a91a-1d0d3401f5e3",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "65478f91-4f76-b119-a5c1-6fa3f3d14011",
-      "attributeId": "87423d9c-0ac8-43af-8f6a-8589b05aeb33",
-      "control": "input_language_code",
-      "parentId": "c0ab7769-ac2b-eb4a-d71f-374a439c2769",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "613a5afc-d461-97cc-ee3f-ec2c98e5abdd",
-      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
-      "control": "input_project_name",
-      "parentId": "c0ab7769-ac2b-eb4a-d71f-374a439c2769",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "8875ac81-1473-7252-2c1d-90291518a671",
-      "attributeId": "72fdb4f4-3d74-438a-a5e6-0ef62a779485",
+      "id": "560fa6f3-f775-bc41-3a35-adf0c36161db",
+      "attributeId": "1018080e-7abe-4a87-bd07-721dc54fc6b0",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "36a7bb8c-7b2a-db82-c534-8105a47132d6",
-      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
-      "control": "input_app_store_account",
-      "parentId": "8875ac81-1473-7252-2c1d-90291518a671",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "e1518ed5-a2ee-4eb8-8b9d-f3f9fca60b07",
-      "attributeId": "668e224f-8a45-4ac7-abef-a865adb707e2",
+      "id": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
+      "attributeId": "e079ff30-3aec-49eb-824b-fea61e4da080",
       "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "2d913eb2-9c63-22f2-8f40-3e277f30ac6b",
-      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
-      "control": "input_default_language",
-      "parentId": "e1518ed5-a2ee-4eb8-8b9d-f3f9fca60b07",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "cae2de9e-130b-e3fb-b515-d78c51b695b6",
-      "attributeId": "ecad7845-104f-4749-95c8-93a3d6c60e13",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "4c4598d1-6495-33a6-c7b3-1a74bf5a54cf",
-      "attributeId": "df55b534-5efe-49c3-8ebb-798db97d306c",
-      "control": "input_email",
-      "parentId": "cae2de9e-130b-e3fb-b515-d78c51b695b6",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "5c5eb2ab-7bb7-1c48-2221-90fa7bcd40fd",
-      "attributeId": "abc789e2-4347-4a67-868f-74bcf3ee3bd4",
-      "control": "input_UserName",
-      "parentId": "cae2de9e-130b-e3fb-b515-d78c51b695b6",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "ba8bc2c3-8aec-ae15-babd-6a042f2f5783",
-      "attributeId": "acc75408-9a2c-4156-9819-12da71c9c299",
-      "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "5ced6867-c274-a6f5-9a1d-50e26b01f938",
+      "id": "03951924-2185-40f1-b4d6-4599424bb39c",
       "attributeId": "4fa02def-abc9-4abf-9cf2-795dcbee93cc",
       "control": "input_product",
-      "parentId": "ba8bc2c3-8aec-ae15-babd-6a042f2f5783",
+      "parentId": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
       "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "269ff72b-2ee4-cf89-0ec1-beefa784074c",
+      "attributeId": "cd802744-15b2-43a9-b66a-48997a8e5a9f",
+      "parentId": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "9a66c58a-775d-8c9c-9203-801d8143cd0f",
+      "attributeId": "409379f4-a53a-4ae9-a43f-28dff1c831be",
+      "parentId": "431d8afb-3f5e-fcb1-8e77-43491d36356c",
+      "isEditable": false,
+      "isLoadable": false
+    },
+    {
+      "id": "da0d1492-0644-de44-114d-1b29205d0892",
+      "attributeId": "0b0199f9-bfa4-4b6d-b288-cf5783aa3a8e",
+      "control": "input_application_type",
+      "parentId": "9a66c58a-775d-8c9c-9203-801d8143cd0f",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "e738604a-ee0f-3db8-6f78-e16c848b6db6",
+      "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "d7e00179-1002-0e5b-5dc5-d347d9e89e32",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "e738604a-ee0f-3db8-6f78-e16c848b6db6",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "0fb780c6-9f57-c4ae-8afa-33430c0056b1",
+      "attributeId": "87423d9c-0ac8-43af-8f6a-8589b05aeb33",
+      "control": "input_language_code",
+      "parentId": "e738604a-ee0f-3db8-6f78-e16c848b6db6",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "9b9f4982-801d-4d12-a202-9232c2dff88c",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "e738604a-ee0f-3db8-6f78-e16c848b6db6",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "2a6f2f1c-1119-2220-7284-d3fc90e03ef4",
+      "attributeId": "c0926290-78d9-4577-be46-a51ef8a9b3e0",
+      "parentId": "e738604a-ee0f-3db8-6f78-e16c848b6db6",
+      "isEditable": false,
+      "isLoadable": false
+    },
+    {
+      "id": "16fe0db1-cc6b-6af6-03e3-a7d7da8c8d28",
+      "attributeId": "df55b534-5efe-49c3-8ebb-798db97d306c",
+      "control": "input_email",
+      "parentId": "2a6f2f1c-1119-2220-7284-d3fc90e03ef4",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "20f34745-29a9-c919-c7dd-717f898f5dc3",
+      "attributeId": "abc789e2-4347-4a67-868f-74bcf3ee3bd4",
+      "control": "input_UserName",
+      "parentId": "2a6f2f1c-1119-2220-7284-d3fc90e03ef4",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "f91cbb3c-d2d1-050b-4efa-b3d0b7ecfb23",
+      "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "7d7a138d-6def-cc77-27e1-6ef1b030208f",
+      "attributeId": "cc8522c4-bc11-4669-a876-3ab71cfeba1f",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "d28d0b46-8cc2-f4cb-a50c-38e5f11cad4e",
+      "attributeId": "8759b596-a767-45c0-9e30-387b41e190c9",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "2ff0ae40-339b-ab19-ed99-98e8f9b42757",
+      "attributeId": "46ebc3ca-16f9-4cf2-bea0-5d52f30e031e",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "6020a864-3ad3-75c7-e4b4-fec32822f8e7",
+      "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
+      "control": "dropdown_store",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "08b08182-26d8-bef9-2f04-482f6f2512a5",
+      "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
+      "control": "dropdown_language",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "21261e24-4a73-19c9-eae6-5e2aedc2e274",
+      "attributeId": "da31659f-07de-4af3-b377-7ac8109c00fd",
+      "control": "textarea_comment",
+      "isEditable": true,
       "isLoadable": true
     }
   ],
   "dataColl": [],
-  "securityGroup": "Organization"
+  "securityGroup": ""
 }

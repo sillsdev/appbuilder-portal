@@ -4,12 +4,15 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import CloseIcon from '@material-ui/icons/Close';
 import { compose } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
+import { withRouter } from 'react-router-dom';
 
+import { idFromRecordIdentity } from '@data';
 import { OrganizationAttributes } from '@data/models/organization';
 import { ORGANIZATIONS_TYPE, attributesFor } from '@data';
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { withTranslations, i18nProps } from '@lib/i18n';
-
+import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
+import { withRelationships } from '@data/containers/with-relationship';
 export interface IProps {
   closeSidebar: () => void;
   className?: string;
@@ -20,10 +23,42 @@ export interface IProps {
 }
 
 class SidebarHeader extends React.Component<IProps & i18nProps> {
+
+  componentDidMount(){
+    this.defaultSelectSingleOrgMembership();
+  }
+
+  componentDidUpdate(){
+    this.defaultSelectSingleOrgMembership();
+  }
+
+  defaultSelectSingleOrgMembership(){
+    const {organizations, currentOrganizationId, setCurrentOrganizationId} = this.props;
+
+    if (organizations) {
+      if (!currentOrganizationId && organizations.length === 1) {
+        const id = idFromRecordIdentity(organizations[0] as any);
+        setCurrentOrganizationId(id, false);
+      }
+    }
+  }
+
+  toggleOrgSwitcher = () => {
+    const {toggleOrgSwitcher: toggle} = this.props;
+    if (this.hasMoreThanOneOrg) {
+      toggle();
+    }
+  }
+
+  get hasMoreThanOneOrg() {
+    const {organizations} = this.props;
+    return (organizations && organizations.length > 1);
+  }
+
   render() {
     const {
       closeSidebar, className,
-      isOrgSwitcherActive, toggleOrgSwitcher,
+      isOrgSwitcherActive,
       currentOrganization: org,
       t
     } = this.props;
@@ -34,7 +69,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
     const bgClass = isOrgSwitcherActive ? 'bg-white' : '';
 
     const logoUrl = orgAttributes.logoUrl ?
-      <img src={orgAttributes.logoUrl} width='32' height='32' style={{ background: 'white' }} /> :
+      <img src={orgAttributes.logoUrl} /> :
       '\u00A0';
 
     return (
@@ -46,11 +81,17 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
         <div
           data-test-org-switcher-toggler
           className='switcher p-l-md no-select flex-row align-items-center'
-          onClick={toggleOrgSwitcher}
+          onClick={this.toggleOrgSwitcher}
         >
-          <span className='list-thumbnail m-r-md'>{logoUrl}</span>
+          <span
+            className={`
+              list-thumbnail m-r-md image-fill-container
+              ${!orgAttributes.logoUrl && 'bg-white'}
+            `}>
+            {logoUrl}
+          </span>
           <span className='bold blue-highlight'>{orgName}</span>
-          { icon }
+          { this.hasMoreThanOneOrg ? icon : null }
         </div>
         <button
           data-test-sidebar-close-button
@@ -65,6 +106,15 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
 }
 
 export default compose(
+  withRouter,
+  withCurrentUserContext,
   withCurrentOrganization,
-  withTranslations
+  withRelationships((props: ICurrentUserProps) => {
+    const { currentUser } = props;
+    return {
+      organizations: [currentUser, 'organizationMemberships', 'organization'],
+    };
+  }),
+  withTranslations,
+
 )(SidebarHeader);

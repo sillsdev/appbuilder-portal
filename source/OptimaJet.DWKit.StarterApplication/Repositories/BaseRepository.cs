@@ -15,6 +15,33 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         protected readonly CurrentUserRepository currentUserRepository;
         protected readonly DbContext dbContext;
 
+        public BaseRepository(ILoggerFactory loggerFactory,
+                              IJsonApiContext jsonApiContext,
+                              CurrentUserRepository currentUserRepository,
+                              IDbContextResolver contextResolver)
+            : base(loggerFactory, jsonApiContext, contextResolver)
+        {
+            this.dbContext = contextResolver.GetContext();
+            this.dbSet = contextResolver.GetDbSet<TEntity>();
+            this.currentUserRepository = currentUserRepository;
+        }
+
+        public User CurrentUser
+        {
+            get
+            {
+                return currentUserRepository.GetCurrentUser().Result;
+            }
+        }
+    }
+
+    public class BaseRepository<TEntity, TId> : DefaultEntityRepository<TEntity, TId>
+        where TEntity : class, IIdentifiable<TId>
+    {
+        protected readonly DbSet<TEntity> dbSet;
+        protected readonly CurrentUserRepository currentUserRepository;
+        protected readonly DbContext dbContext;
+
         public BaseRepository(
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
