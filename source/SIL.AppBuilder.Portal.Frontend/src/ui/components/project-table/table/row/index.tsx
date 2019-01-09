@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router';
+import PrivateIcon from '@material-ui/icons/VisibilityOff';
 import { Link } from 'react-router-dom';
 import { withData as withOrbit } from 'react-orbitjs';
 import { Checkbox } from 'semantic-ui-react';
@@ -106,14 +107,15 @@ class Row extends React.Component<IProps> {
     const projectId = idFromRecordIdentity(project as any);
     const activeProjectColumns = this.getActiveProjectColumns();
 
-    const { name: projectName } = attributesFor(project);
+    const { name: projectName, isPublic } = attributesFor(project);
 
     const clickPath = projectPath ? projectPath(projectId) : `/projects/${projectId}`;
+    const isPrivate = !isPublic;
 
     return (
       <div
         data-test-project-row={projectId}
-        className='m-b-md with-shadow'
+        className={`m-b-md with-shadow ${isPrivate ? 'is-private has-tooltip' : ''}`}
         style={{ opacity: this.hasDimmStyle ? 0.5 : 1 }}
       >
         <div className='flex row-header align-items-center p-t-md p-b-md'>
@@ -136,6 +138,7 @@ class Row extends React.Component<IProps> {
           ))}
 
           <div className='flex align-items-center p-r-md line-height-0'>
+            { isPrivate && <PrivateIcon /> }
             {showProjectActions &&
               <RowActions project={project} />
             }
