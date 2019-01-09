@@ -38,7 +38,9 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
   onSelect = (e, { value }) => {
     e.preventDefault();
 
-    const { onChange } = this.props;
+    const { onChange, selected } = this.props;
+
+    if (value === selected) { return; }
 
     onChange(value);
   }
