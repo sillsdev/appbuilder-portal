@@ -53,4 +53,4 @@ export default ({ project, t, toggleArchive }) => {
       </div>
     </div>
   );
-}
+};
