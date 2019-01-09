@@ -3,12 +3,14 @@ import * as React from 'react';
 import List from './list';
 import AddOrganizationForm from './new';
 import EditOrganizationForm from './edit';
+import StoreSelection from './stores';
 
 import { Switch, Route } from 'react-router-dom';
 
 export const listPathName = '/admin/settings/organizations';
 export const addOrganizationPathName = '/admin/settings/organizations/new';
 export const editOrganizationPathName = '/admin/settings/organizations/:orgId/edit';
+export const storePath = '/admin/settings/organizations/:orgId/stores';
 
 class OrganizationRoute extends React.Component {
 
@@ -19,6 +21,7 @@ class OrganizationRoute extends React.Component {
           <Route exact path={listPathName} component={List} />
           <Route path={addOrganizationPathName} component={AddOrganizationForm} />
           <Route path={editOrganizationPathName} component={EditOrganizationForm} />
+          <Route path={storePath} component={StoreSelection} />
         </Switch>
       </div>
     );

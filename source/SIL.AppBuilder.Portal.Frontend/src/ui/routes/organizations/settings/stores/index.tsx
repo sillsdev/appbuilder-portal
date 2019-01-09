@@ -60,7 +60,9 @@ class StoresRoute extends React.Component<IOwnProps> {
 
     const multiSelectProps = {
       selected: organizationStores,
-      onChange: this.updateOrganizationStore
+      // onChange: this.updateOrganizationStore,
+      onChange: () => null,
+      readOnly: true,
     };
 
     return (

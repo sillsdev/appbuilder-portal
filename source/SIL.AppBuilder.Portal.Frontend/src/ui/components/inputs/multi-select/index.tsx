@@ -15,6 +15,7 @@ interface IOwnProps<T> {
   onChange: (el: T) => void;
   emptyListLabel?: string;
   displayProductIcon?: boolean;
+  readOnly?: boolean;
 }
 
 type IProps<T> =
@@ -43,7 +44,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
 
   render() {
 
-    const { list, emptyListLabel, displayProductIcon, t } = this.props;
+    const { list, emptyListLabel, displayProductIcon, t, readOnly } = this.props;
     const emptyLabel = emptyListLabel || t('common.noResults');
 
     if (isEmpty(list)) {
@@ -81,6 +82,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
                   data-test-item-checkbox
                   className='m-r-sm'
                   value={element.id}
+                  readOnly={readOnly}
                   checked={isSelected}
                 />
                 {

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import CreateIcon from '@material-ui/icons/Create';
+import StoreIcon from '@material-ui/icons/Shop';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import { attributesFor, idFromRecordIdentity, OrganizationResource, UserResource } from '@data';
@@ -58,12 +59,18 @@ class OrganizationItem extends React.Component<IProps> {
             <span>{buildEngineApiAccessToken}</span>
           </div>
         </div>
-        <div>
+        <div className='flex-column'>
           <Link
             className='gray-text'
             to={`/admin/settings/organizations/${idFromRecordIdentity(organization)}/edit`}
           >
             <CreateIcon className='fs-16' />
+          </Link>
+          <Link
+            className='gray-text'
+            to={`/admin/settings/organizations/${idFromRecordIdentity(organization)}/stores`}
+          >
+            <StoreIcon className='fs-16' />
           </Link>
         </div>
       </div>
