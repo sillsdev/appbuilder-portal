@@ -13,15 +13,18 @@ import * as toast from '@lib/toast';
 import { ErrorMessage } from '@ui/components/errors';
 
 import UserInput from './user-input';
-import { withCurrentOrganization } from '~/data/containers/with-current-organization';
+import { withCurrentOrganization, IProvidedProps as ICurrentOrganizationProps } from '@data/containers/with-current-organization';
+import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 import { attributesFor } from '@data/helpers';
-
+import { idFromRecordIdentity } from '@data';
 interface IOwnProps{
 }
 
 export type IProps = IOwnProps
   & i18nProps
-  & WithDataProps;
+  & WithDataProps
+  & ICurrentUserProps
+  & ICurrentOrganizationProps;
 
 @withTemplateHelpers
 class InviteUserModal
@@ -34,7 +37,7 @@ class InviteUserModal
   };
 
   onInvite = async (email: string) => {
-    const {t, dataStore, onUserInvited} = this.props;
+    const {t, dataStore, currentUser } = this.props;
     try {
       this.setState({error: null});
 
@@ -95,6 +98,7 @@ class InviteUserModal
 
 export default compose(
   withTranslations,
+  withCurrentUserContext,
   withCurrentOrganization,
   withData({})
 )(InviteUserModal);

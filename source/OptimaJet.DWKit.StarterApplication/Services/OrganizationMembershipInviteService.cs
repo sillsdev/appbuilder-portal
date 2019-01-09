@@ -14,18 +14,24 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
+    public class InviteExpiredException: Exception { }
+    public class InviteRedeemedException: Exception { }
+
     public class OrganizationMembershipInviteService : EntityResourceService<OrganizationMembershipInvite>
     {
+        private readonly CurrentUserRepository currentUserRepository;
         private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IEntityRepository<OrganizationMembershipInvite> organizationMembershipInviteRepository;
+        private readonly IEntityRepository<OrganizationMembership> organizationMembershipRepository;
         private readonly IJobRepository<Email> emailRepository;
         private readonly ITranslator translator;
         protected readonly OrganizationInviteRequestSettings settings;
 
         public OrganizationMembershipInviteService(
-
+            CurrentUserRepository currentUserRepository,
             IJsonApiContext jsonApiContext,
             IEntityRepository<OrganizationMembershipInvite> organizationMembershipInviteRepository,
+            IEntityRepository<OrganizationMembership> organizationMembershipRepository,
             ILoggerFactory loggerFactory,
             IBackgroundJobClient backgroundJobClient,
             IJobRepository<Email> emailRepository,
@@ -33,8 +39,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             IOptions<OrganizationInviteRequestSettings> options
         ) : base(jsonApiContext, organizationMembershipInviteRepository, loggerFactory)
         {
+            this.currentUserRepository = currentUserRepository;
             this.backgroundJobClient = backgroundJobClient;
             this.organizationMembershipInviteRepository = organizationMembershipInviteRepository;
+            this.organizationMembershipRepository = organizationMembershipRepository;
             this.emailRepository = emailRepository;
             this.settings = options.Value;
             this.translator = translator;
@@ -47,6 +55,42 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             return result;
         }
 
+        public async Task<OrganizationMembership> RedeemAsync(Guid token)
+        {
+            var invite = await organizationMembershipInviteRepository.Get()
+                                    .Include(omi => omi.Organization)
+                                    .Where(omi => omi.Token == token)
+                                    .FirstAsync();
+
+            if (invite.Redeemed)
+            {
+                throw new InviteRedeemedException();
+            }
+
+            if (invite.Expires < DateTime.Today)
+            {
+                throw new InviteExpiredException();
+            }
+
+            var currentUser = await currentUserRepository.GetCurrentUser();
+
+
+            var membership = currentUser.OrganizationMemberships.Find(om => om.OrganizationId == invite.OrganizationId);
+
+            if (membership == null)
+            {
+                membership = await organizationMembershipRepository.CreateAsync(new OrganizationMembership
+                {
+                    Organization = invite.Organization,
+                    User = currentUser
+                });
+            }
+
+            invite.Redeemed = true;
+            await organizationMembershipInviteRepository.UpdateAsync(invite.Id, invite);
+
+            return membership;
+        }
 
         public async Task sendInviteEmail(int inviteId)
         {

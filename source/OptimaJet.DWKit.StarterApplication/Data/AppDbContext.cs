@@ -73,6 +73,15 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .IsRequired()
                 .ValueGeneratedOnAdd();
 
+            orgMemberInvitesEntity.Property(o => o.Expires)
+                .HasDefaultValueSql("current_date + 7")
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+
+            orgMemberInvitesEntity.Property(o => o.Redeemed)
+                .IsRequired()
+                .HasDefaultValue(false);
+
             userEntity
                 .Property(u => u.ProfileVisibility)
                 .HasDefaultValue(ProfileVisibility.Public);

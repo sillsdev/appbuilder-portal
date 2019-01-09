@@ -9,8 +9,6 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class OrganizationMembershipInvite : Identifiable, ITrackDate
     {
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Attr("token")]
         public Guid? Token { get; set; }
 
@@ -18,10 +16,11 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("email")]
         public string Email { get; set; }
 
-        [Required]
         [Attr("expires")]
         public DateTime Expires { get; set; }
 
+        [Attr("redeemed")]
+        public Boolean Redeemed { get; set; }
 
         [HasOne("invited-by", withForeignKey: nameof(InvitedById))]
         public virtual User InvitedBy { get; set; }
@@ -38,17 +37,10 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("organization-id")]
         public int OrganizationId { get; set; }
 
-
         [Attr("date-created")]
         public DateTime? DateCreated { get; set; }
 
         [Attr("date-updated")]
         public DateTime? DateUpdated { get; set; }
-
-        [HasOne("organization-membership")]
-        public virtual OrganizationMembership OrganizationMembership { get; set; }
-
-        [Attr("organization-membership-id")]
-        public int? OrganizationMembershipId { get; set; }
     }
 }

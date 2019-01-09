@@ -226,17 +226,21 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.Property<string>("Email")
                         .IsRequired();
 
-                    b.Property<DateTime>("Expires");
+                    b.Property<DateTime>("Expires")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("current_date + 7");
 
                     b.Property<int>("InvitedById");
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<int?>("OrganizationMembershipId");
+                    b.Property<bool>("Redeemed")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
 
                     b.Property<Guid?>("Token")
                         .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
+                        .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.HasKey("Id");
@@ -244,8 +248,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("InvitedById");
 
                     b.HasIndex("OrganizationId");
-
-                    b.HasIndex("OrganizationMembershipId");
 
                     b.ToTable("OrganizationMembershipInvites");
                 });
@@ -766,10 +768,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.OrganizationMembership", "OrganizationMembership")
-                        .WithMany()
-                        .HasForeignKey("OrganizationMembershipId");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationProductDefinition", b =>

@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
+using JsonApiDotNetCore.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,22 +14,41 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OrganizationMembershipInvitesController : BaseController<OrganizationMembershipInvite>
     {
+        private readonly OrganizationMembershipInviteService organizationMembershipInviteService;
         public OrganizationMembershipInvitesController(
             IJsonApiContext jsonApiContext,
-            IResourceService<OrganizationMembershipInvite> organizationMembershipService,
+            OrganizationMembershipInviteService organizationMembershipInviteService,
             ICurrentUserContext currentUserContext,
             IOrganizationContext organizationContext,
             OrganizationService organizationService,
             UserService userService)
-            : base(jsonApiContext, organizationMembershipService, currentUserContext, organizationService, userService)
+            : base(jsonApiContext, organizationMembershipInviteService, currentUserContext, organizationService, userService)
         {
-
+            this.organizationMembershipInviteService = organizationMembershipInviteService;
+        }
+    
+        public override async Task<IActionResult> PostAsync([FromBody] OrganizationMembershipInvite entity)
+        {
+            entity.InvitedById = CurrentUser.Id;
+            return await base.PostAsync(entity);
         }
 
-
-        public override async Task<IActionResult> PostAsync([FromBody] OrganizationMembershipInvite invite)
+        [HttpPatch("redeem/{token}")]
+        public async Task<IActionResult> RedeemAsync([FromRoute] Guid Token)
         {
-            return await base.PostAsync(invite);
+            try
+            {
+                var membership = await organizationMembershipInviteService.RedeemAsync(Token);
+                return Ok(membership);
+            }
+            catch (InviteExpiredException)
+            {
+                return Error(new JsonApiDotNetCore.Internal.Error(403, "Invite has expired."));
+            }
+            catch (InviteRedeemedException)
+            {
+                return Error(new JsonApiDotNetCore.Internal.Error(403, "Invite has already been redeemed."));
+            }
         }
     }
 }

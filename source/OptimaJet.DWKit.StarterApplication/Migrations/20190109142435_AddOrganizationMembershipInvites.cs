@@ -16,12 +16,12 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Token = table.Column<Guid>(nullable: false, defaultValueSql: "uuid_generate_v4()"),
                     Email = table.Column<string>(nullable: false),
-                    Expires = table.Column<DateTime>(nullable: false),
+                    Expires = table.Column<DateTime>(nullable: false, defaultValueSql: "current_date + 7"),
+                    Redeemed = table.Column<bool>(nullable: false, defaultValue: false),
                     InvitedById = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: true),
-                    DateUpdated = table.Column<DateTime>(nullable: true),
-                    OrganizationMembershipId = table.Column<int>(nullable: true)
+                    DateUpdated = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,19 +31,13 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         column: x => x.InvitedById,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_OrganizationMembershipInvites_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrganizationMembershipInvites_OrganizationMemberships_Organ~",
-                        column: x => x.OrganizationMembershipId,
-                        principalTable: "OrganizationMemberships",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -55,11 +49,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 name: "IX_OrganizationMembershipInvites_OrganizationId",
                 table: "OrganizationMembershipInvites",
                 column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrganizationMembershipInvites_OrganizationMembershipId",
-                table: "OrganizationMembershipInvites",
-                column: "OrganizationMembershipId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
