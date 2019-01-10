@@ -4,6 +4,10 @@ import { UserResource, OrganizationResource } from '@data';
 import {USERS_TYPE } from '@data';
 import { UserAttributes } from '@data/models/user';
 
+export interface IFetchCurrentUserOptions{
+  forceReloadFromServer?: boolean;
+  forceReloadFromCache?: boolean;
+}
 
 export interface ICurrentUserProps {
   currentUser?: UserResource;
@@ -11,7 +15,7 @@ export interface ICurrentUserProps {
     currentUser?: UserResource;
     error?: any;
     isLoading?: boolean;
-    fetchCurrentUser?: () => Promise<void>;
+    fetchCurrentUser?: (opts: IFetchCurrentUserOptions) => Promise<void>;
   };
 }
 
@@ -31,4 +35,3 @@ export interface IState {
   fetchCurrentUser?: () => Promise<void>;
   networkFetchComplete: boolean;
 }
-

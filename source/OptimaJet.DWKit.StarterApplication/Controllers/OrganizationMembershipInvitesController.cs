@@ -43,11 +43,15 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             }
             catch (InviteExpiredException)
             {
-                return Error(new JsonApiDotNetCore.Internal.Error(403, "Invite has expired."));
+                return Error(new JsonApiDotNetCore.Internal.Error(403, "organization-membership.invite.error.expired"));
             }
             catch (InviteRedeemedException)
             {
-                return Error(new JsonApiDotNetCore.Internal.Error(403, "Invite has already been redeemed."));
+                return Error(new JsonApiDotNetCore.Internal.Error(403, "organization-membership.invite.error.redeemed"));
+            }
+            catch (InviteNotFoundExcpetion)
+            {
+                return Error(new JsonApiDotNetCore.Internal.Error(404, "organization-membership.invite.error.not-found"));
             }
         }
     }

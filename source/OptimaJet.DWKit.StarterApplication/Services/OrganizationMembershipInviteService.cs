@@ -16,6 +16,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 {
     public class InviteExpiredException: Exception { }
     public class InviteRedeemedException: Exception { }
+    public class InviteNotFoundExcpetion: Exception { }
 
     public class OrganizationMembershipInviteService : EntityResourceService<OrganizationMembershipInvite>
     {
@@ -60,7 +61,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var invite = await organizationMembershipInviteRepository.Get()
                                     .Include(omi => omi.Organization)
                                     .Where(omi => omi.Token == token)
-                                    .FirstAsync();
+                                    .DefaultIfEmpty(null)
+                                    .FirstOrDefaultAsync();
+
+            if (invite == null)
+            {
+                throw new InviteNotFoundExcpetion();
+            }
 
             if (invite.Redeemed)
             {

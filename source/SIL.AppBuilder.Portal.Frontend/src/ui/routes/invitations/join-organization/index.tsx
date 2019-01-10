@@ -1,45 +1,111 @@
 import * as React from 'react';
 import { match as Match, Redirect } from 'react-router';
 import { compose } from 'recompose';
-import { translate, TransProps as I18nProps } from 'react-i18next';
-import { requireAuth } from '@lib/auth';
+import { withData, WithDataProps, WithData } from 'react-orbitjs';
 
-import PageLoader from '@ui/components/loaders/page';
+import { requireAuth } from '@lib/auth';
+import {patch, tryParseJson} from '@lib/fetch';
+
 import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
 
-export const pathName = '/invitations/:token';
+import { pushPayload, firstError } from '@data';
+import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 
-export interface Params {
+import OrganizationMembershipInvitiationLoading from './display';
+
+export const pathName = '/invitations/organization-membership/:token';
+
+interface Params {
   token: string;
 }
 
-export interface IProps {
+interface IOwnProps {
   match: Match<Params>;
 }
 
-class JoinOrganizationRoute extends React.Component<IProps & I18nProps> {
-  redeemInvitation = async (token) => {
-    try {
-      //todo send redeem token.
+type IProps = IOwnProps & WithDataProps & ICurrentUserProps;
+
+interface IState {
+  isLoading: boolean;
+  error?: Error;
+  organizationMembershipId?: string;
+}
+
+class JoinOrganizationRoute extends React.Component<IProps, IState> {
+  state = {
+    isLoading: true,
+    error: null,
+    organizationMembershipId: null,
+  };
+
+  get token() {
+    return this.props.match.params.token;
+  }
+
+  get hasValidToken(){
+    return this.token && this.token !== '';
+  }
+
+  captureAndThrowError = async (result: any) => {
+    if (result.status === 403 || result.status === 404){
+      let json;
+      try{
+        json = await tryParseJson(result);
+      }
+      catch(error){
+        throw new Error('organization-membership.invite.error.invalid-response');
+      }
+      const error = firstError(json);
+      throw new Error(error.title);
     }
-    catch (err) {
-      //update state with error
+    else{
+      const body = await result.text();
+      const err = new Error('organization-membership.invite.error.unexpected');
+      err.meta = {
+        response: body
+      };
+      throw err;
+    }
+  }
+
+  redeemInvitation = async (token) => {
+    const { updateStore, currentUserProps: { fetchCurrentUser }} = this.props;
+    try {
+      const result = await patch(`/api/organization-membership-invites/redeem/${this.token}`, {
+        headers: {
+          'Accept': 'application/vnd.api+json',
+          'Content-Type': 'application/vnd.api+json'
+        }
+      });
+
+      if (result.status !== 200){
+        await this.captureAndThrowError(result);
+      }
+
+      const json = await tryParseJson(result);
+      await pushPayload(updateStore, json);
+      this.setState({isLoading: false, error: null, organizationMembershipId: json.data.id});
+    }
+    catch (error) {
+      this.setState({isLoading: false, error});
     }
   }
 
   componentDidMount(){
-    const { match, t } = this.props;
-    const { params } = match;
-    if (params.token && params.token !== '') {
-      this.redeemInvitation(params.token);
+    if (this.hasValidToken) {
+      this.redeemInvitation(this.token);
     }
   }
 
   render() {
-    const { match, t } = this.props;
-    const { params } = match;
-    if (params.token && params.token !== '') {
-      return <PageLoader />;
+    const { isLoading, error, organizationMembershipId } = this.state;
+    if (this.hasValidToken) {
+      if (isLoading || error){
+        return <OrganizationMembershipInvitiationLoading error={error}/>;
+      }
+      else{
+        return <Redirect push={true} to={`/invitations/organization-membership/${this.token}/finished/${organizationMembershipId}`}/>;
+      }
     }
     else{
       return <Redirect push={true} to={notFoundPath} />;
@@ -48,6 +114,7 @@ class JoinOrganizationRoute extends React.Component<IProps & I18nProps> {
 }
 
 export default compose(
+  withCurrentUserContext,
+  withData({}),
   requireAuth({redirectOnMissingMemberships: false}),
-  translate('translations')
 )(JoinOrganizationRoute);

@@ -46,4 +46,4 @@ class UserInput extends React.Component<IProps, IState>{
   }
 }
 
-export default compose(withTranslations)(UserInput);
+export default compose(withTranslations)(UserInput) as React.ComponentClass<IOwnProps>;

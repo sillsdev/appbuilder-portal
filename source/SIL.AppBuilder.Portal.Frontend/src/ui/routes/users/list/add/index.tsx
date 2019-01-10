@@ -13,7 +13,7 @@ import * as toast from '@lib/toast';
 import { ErrorMessage } from '@ui/components/errors';
 
 import UserInput from './user-input';
-import { withCurrentOrganization } from '~/data/containers/with-current-organization';
+import { withCurrentOrganization, IProvidedProps as ICurrentOrganizationProps } from '~/data/containers/with-current-organization';
 import { attributesFor } from '@data/helpers';
 interface IOwnProps{
   onUserAdded: () => Promise<void>;
@@ -21,7 +21,8 @@ interface IOwnProps{
 
 export type IProps = IOwnProps
   & i18nProps
-  & WithDataProps;
+  & WithDataProps
+  & ICurrentOrganizationProps;
 
 @withTemplateHelpers
 class AddUserModal extends React.Component<IProps>{
