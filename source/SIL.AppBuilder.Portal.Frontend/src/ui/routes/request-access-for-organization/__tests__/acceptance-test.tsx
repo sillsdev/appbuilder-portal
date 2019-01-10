@@ -66,20 +66,6 @@ describe('Acceptance | Request Access For Organization', () => {
     });
   });
 
-  describe('navigates to /invitations/organization', () => {
-    beforeEach(async function() {
-      await visit('/invitations/organization');
-    });
-
-    it('displays that the path is not found', () => {
-      expect(app.headers).to.contain('Not Found!');
-    });
-
-    it('maintains the URL (no redirect)', () => {
-      expect(location().pathname).to.eq('/invitations/organization');
-    });
-  });
-
   describe('navigates to an invitation', () => {
     beforeEach(async function() {
       await visit('/invitations/organization/something');

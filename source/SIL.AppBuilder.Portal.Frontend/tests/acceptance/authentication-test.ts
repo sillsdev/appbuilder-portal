@@ -82,11 +82,11 @@ describe('Acceptance | Authentication', () => {
 
     describe('navigates to a route that requires authentication', () => {
       beforeEach(async function() {
-        await visit('/invitations');
+        await visit('/tasks');
       });
 
       it('is allowed', () => {
-        expect(location().pathname).to.equal('/invitations');
+        expect(location().pathname).to.equal('/tasks');
       });
     });
 
@@ -118,7 +118,7 @@ describe('Acceptance | Authentication', () => {
 
     describe('navigates to a route that requires authentication', () => {
       beforeEach(async function() {
-        await visit('/invitations');
+        await visit('/tasks');
       });
 
       it('is redirected', () => {

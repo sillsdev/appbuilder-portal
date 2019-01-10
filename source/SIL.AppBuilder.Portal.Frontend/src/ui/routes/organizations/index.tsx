@@ -20,6 +20,6 @@ class OrganizationsRoute extends React.Component {
 }
 
 export default compose(
-  requireAuth,
+  requireAuth(),
   withLayout
 )(OrganizationsRoute);

@@ -29,9 +29,9 @@ describe('Acceptance | Invitations | routing', () => {
     });
   });
 
-  describe('navigates to /invitations/organization', () => {
+  describe('navigates to /invitations/something/something', () => {
     beforeEach(async () => {
-      await visit('/invitations/organization');
+      await visit('/invitations/something/something');
     });
 
     it('displays that the path is not found', () => {
@@ -39,7 +39,7 @@ describe('Acceptance | Invitations | routing', () => {
     });
 
     it('maintains the URL (no redirect)', () => {
-      expect(location().pathname).to.eq('/invitations/organization');
+      expect(location().pathname).to.eq('/invitations/something/something');
     });
   });
 

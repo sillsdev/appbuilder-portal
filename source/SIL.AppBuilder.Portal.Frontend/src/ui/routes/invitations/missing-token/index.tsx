@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { match as Match, Redirect } from 'react-router';
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { translate, TransProps as i18nProps } from 'react-i18next';
+
+import { requireAuth } from '@lib/auth';
+import { withLayout } from '@ui/components/layout';
 
 import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
 
@@ -34,5 +37,7 @@ class CreateOrganizationRoute extends React.Component<IProps & i18nProps> {
 }
 
 export default compose(
+  requireAuth(),
+  withLayout,
   translate('translations')
 )(CreateOrganizationRoute);

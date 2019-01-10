@@ -54,7 +54,6 @@ export default class RootPage extends React.Component {
             <Route path={'/flow'} component={Workflow} />
 
             <Route component={ErrorRootRoute} />
-
           </Switch>
         </section>
       </div>

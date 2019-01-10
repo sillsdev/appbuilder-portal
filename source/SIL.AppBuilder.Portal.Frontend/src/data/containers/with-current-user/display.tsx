@@ -8,7 +8,8 @@ import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
 
 const defaultOptions = {
-  redirectOnFailure: true
+  redirectOnFailure: true,
+  redirectOnMissingMemberships: true,
 };
 
 export function withDisplay(opts = {}) {
@@ -38,7 +39,7 @@ export function withDisplay(opts = {}) {
       } else if (currentUser) {
         const hasMembership = hasRelationship(currentUser, 'organizationMemberships');
 
-        if (hasMembership) {
+        if (hasMembership || !options.redirectOnMissingMemberships) {
           return <InnerComponent />;
         }
 
