@@ -47,14 +47,29 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             if (userForEmail == null) return null;
 
             membership.UserId = userForEmail.Id;
-            var organizationMembership = await this.OrganizationMembershipRepository.CreateAsync(membership);
+            var organizationMembership = await this.MaybeCreateMembership(membership);
 
             await this.MaybeApplyDefaultRole(userForEmail, organizationMembership);
           
             return organizationMembership;
         }
 
+        private async Task<OrganizationMembership> MaybeCreateMembership(OrganizationMembership membership)
+        {
+            var existingMembership = await this.OrganizationMembershipRepository
+                .Get()
+                .Where(om => (
+                    om.UserId == membership.UserId 
+                    && om.OrganizationId == membership.OrganizationId
+                ))
+                .FirstOrDefaultAsync();
 
+            if (existingMembership != null) {
+                return existingMembership;
+            }
+
+            return await this.OrganizationMembershipRepository.CreateAsync(membership);
+        }
 
         private async Task MaybeApplyDefaultRole(User user, OrganizationMembership membership)
         {

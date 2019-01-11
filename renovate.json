@@ -6,15 +6,16 @@
     "config:base"
   ],
   "automerge": false,
+  "enabled": true,
   "packageRules": [
     {
         "paths": ["source/SIL.AppBuilder.Portal.Frontend/package.json"],
-        "rangeStrategy": "replace"
+        "rangeStrategy": "replace",
+        "enabled": true
     },
     {
         "packagePatterns": ["Dockerfile"],
         "enabled": false
     }
-    
   ]
 }

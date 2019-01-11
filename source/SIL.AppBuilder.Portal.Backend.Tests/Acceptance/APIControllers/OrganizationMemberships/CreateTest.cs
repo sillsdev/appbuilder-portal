@@ -153,5 +153,42 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
 
             Assert.Equal(1, user.UserRoles.Count);
         }
+
+        [Fact]
+        public async Task Create_AlreadyHasExistingMembershipAndRole() 
+        {
+            BuildTestData();
+
+            var membershipsBefore = this.GetDbSet<OrganizationMembership>()
+                .ToList().Count();
+
+            var content = new
+            {
+                data = new
+                {
+                    type = "organization-memberships",
+                    attributes = new {
+                      email = user2.Email
+                    },
+                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
+                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
+                                { "data", new Dictionary<string, string>() {
+                                    { "type", "organization" },
+                                    { "id", Organization.Id.ToString() }
+                                }}}},
+                        }
+                }
+            };
+            
+            await Post("/api/organization-memberships/", content);
+            await Post("/api/organization-memberships/", content);
+            await Post("/api/organization-memberships/", content);
+            await Post("/api/organization-memberships/", content);
+
+            var membershipsAfter = this.GetDbSet<OrganizationMembership>()
+                .ToList().Count();
+
+            Assert.Equal(1, membershipsAfter - membershipsBefore);
+        }
     }
 }
