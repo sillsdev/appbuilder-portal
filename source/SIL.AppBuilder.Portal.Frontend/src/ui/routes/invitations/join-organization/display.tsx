@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
+import { Link } from 'react-router-dom';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import {RectLoader} from '@ui/components/loaders';
@@ -13,13 +13,21 @@ export interface IProps {
 
 type IOwnProps = IProps & i18nProps;
 
+const ErrorMessage = (props: { error: string }) => {
+  return (<div>
+    <div data-test-error>{props.error}</div>
+    <div><Link data-test-home-link to="/">Home</Link></div>
+  </div>);
+};
 
 class OrganizationMembershipInvitation extends React.Component<IOwnProps> {
 
   render() {
     const { t, error } = this.props;
     return (<FocusPanel title={t('organization-membership.invite.redemptionTitle')}>
-        { error ? <div>{t(error.message, error.meta)}</div> : <RectLoader/>}
+        <div data-test-organization-membership-invite>
+          { error ? <ErrorMessage error={t(error.message, error.meta)}/> : <RectLoader/>}
+        </div>
       </FocusPanel>);
   }
 }

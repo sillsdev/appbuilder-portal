@@ -35,13 +35,10 @@ class JoinOrganizationFinishedRoute extends React.Component<IProps, IState> {
 
   componentDidMount(){
     const { currentUser } = this.props;
-    console.log('does the user have a relation ship to ', this.props.match.params.organizationMembershipId);
     if (isRelatedTo(currentUser, "organizationMemberships", this.props.match.params.organizationMembershipId)){
-      console.log('found the thing we were hoping to find.');
       this.setState({ isLoading: false });
     }
     else{
-      console.log('updating user from cache.');
       this.updateUserFromCache();
     }
   }
