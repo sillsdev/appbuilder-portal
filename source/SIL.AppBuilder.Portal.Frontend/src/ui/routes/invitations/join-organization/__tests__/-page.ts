@@ -13,6 +13,6 @@ class OrganizationMembershipInvitePageInteractor {
   errorMessage = text('[data-test-error]');
 }
 
-const i = interactor(OrganizationMembershipPageInteractor);
+const i = interactor(OrganizationMembershipInvitePageInteractor);
 export type TOrganizationMembershipInvitePageInteractor = OrganizationMembershipInvitePageInteractor & Interactor;
 export default i as TOrganizationMembershipInvitePageInteractor;

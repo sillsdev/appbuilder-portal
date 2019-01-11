@@ -9,7 +9,7 @@ import {
 
 import UserTableInteractor from './-user-table';
 import InviteUserModalInteractor from './-invite-user-modal';
-import { text } from 'body-parser';
+
 
 export class UsersPageInteractor {
   constructor(selector?: string){}
@@ -17,7 +17,6 @@ export class UsersPageInteractor {
   inviteUserModal = new InviteUserModalInteractor('[data-test-users-invite-user-modal]');
   inviteUser = clickable('[data-test-users-invite-user-open]');
   inviteUserButton = scoped('[data-test-users-invite-user-open]');
-  toastMessage = text('.toast-notification');
 }
 
 const i = interactor(UsersPageInteractor);
