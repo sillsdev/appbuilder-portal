@@ -8,9 +8,11 @@ import {
   Interactor
 } from '@bigtest/interactor';
 
-class AddUserModalInteractor {
+class InviteUserModalInteractor {
+  static defaultScope = '[data-test-users-invite-user-modal]';
+
   enterEmail = fillable('[data-test-email]');
-  submit = clickable('[data-test-add]');
+  submit = clickable('[data-test-invite]');
   hasError(like: string) : boolean {
     const error = this.scoped('[data-test-error]');
     if (!error.isPresent){ return false; }
@@ -18,7 +20,7 @@ class AddUserModalInteractor {
     return likeRegex.test(error.text);
   }
 }
+export type TAddUserModalInteractor = typeof InviteUserModalInteractor & Interactor;
+const i: TAddUserModalInteractor = interactor(InviteUserModalInteractor);
 
-const i = interactor(AddUserModalInteractor);
-export type TAddUserModalInteractor = AddUserModalInteractor & Interactor;
-export default new i('[data-test-users-adduser-modal]') as TAddUserModalInteractor;
+export default i as TAddUserModalInteractor;

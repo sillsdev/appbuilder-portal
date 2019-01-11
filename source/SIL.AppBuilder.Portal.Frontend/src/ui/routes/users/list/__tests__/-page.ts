@@ -3,18 +3,21 @@ import {
   clickable,
   interactor,
   Interactor,
-  scoped
+  scoped,
+  text
 } from '@bigtest/interactor';
 
 import UserTableInteractor from './-user-table';
-import AddUserModalInteractor from './-add-user-modal';
+import InviteUserModalInteractor from './-invite-user-modal';
+import { text } from 'body-parser';
 
 export class UsersPageInteractor {
   constructor(selector?: string){}
   userTable = new UserTableInteractor();
-  addUserModal = AddUserModalInteractor;
-  addUser = clickable('[data-test-users-adduser-open]');
-  addUserButton = scoped('[data-test-users-adduser-open]');
+  inviteUserModal = new InviteUserModalInteractor('[data-test-users-invite-user-modal]');
+  inviteUser = clickable('[data-test-users-invite-user-open]');
+  inviteUserButton = scoped('[data-test-users-invite-user-open]');
+  toastMessage = text('.toast-notification');
 }
 
 const i = interactor(UsersPageInteractor);

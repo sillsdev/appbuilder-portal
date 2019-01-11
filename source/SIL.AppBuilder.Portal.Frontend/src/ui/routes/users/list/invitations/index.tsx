@@ -52,7 +52,7 @@ class InviteUserModal
       this.toggle('isModalOpen')();
     }
     catch(err){
-      this.setState({error: t("users.invite.error")});
+      this.setState({error: t("organization-membership.invite.create.error")});
     }
   }
 
@@ -69,7 +69,7 @@ class InviteUserModal
 
     const trigger = (
       <div
-        data-test-users-adduser-open
+        data-test-users-invite-user-open
         className='flex align-items-center p-l-lg m-b-sm pointer'
         onClick={this.toggleModal}
       >

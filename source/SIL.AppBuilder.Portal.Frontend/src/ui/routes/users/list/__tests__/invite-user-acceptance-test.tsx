@@ -1,6 +1,7 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { when } from '@bigtest/convergence';
 import { visit } from '@bigtest/react';
+import { Interactor }  from '@bigtest/interactor';
 import { expect } from 'chai';
 import { fakeAuth0Id } from 'tests/helpers/jwt';
 import { roles, userRoleFrom } from 'tests/helpers/fixtures';
@@ -8,6 +9,8 @@ import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
 import page from './-page';
+
+//TODO: rename after tests are fixed.
 
 describe('Acceptance | User list | Add User', () => {
   setupRequestInterceptor();
@@ -105,8 +108,8 @@ describe('Acceptance | User list | Add User', () => {
         await when(() => page.userTable.isVisible);
       });
 
-      it.always('should not show add users button', () => {
-        expect(page.addUserButton.isPresent).to.be.false;
+      it.always('should not show invite user button', () => {
+        expect(page.inviteUserButton.isPresent).to.be.false;
       });
   });
 
@@ -123,90 +126,87 @@ describe('Acceptance | User list | Add User', () => {
 
     describe('clicking add user', () => {
       beforeEach(async () => {
-        await page.addUser();
+        await page.inviteUser();
       });
       it('opens modal', () => {
-        expect(page.addUserModal.isVisible).to.be.true;
+        expect(page.inviteUserModal.isVisible).to.be.true;
       });
 
-      describe("add a user", () => {
+      describe("invite a user", () => {
         beforeEach(async () => {
-          await when(() => page.addUserModal.isVisible);
+          await when(() => page.inviteUserModal.isVisible);
         });
 
-        describe("when user exists in system", () => {
+        describe("successuful invite", () => {
           const existingEmail = "existing@foo.com";
           beforeEach(async function () {
-            const newUsersData = { ...usersData };
-            const newUser = { ...user };
-            newUser.id = '2';
-            newUser.attributes = {
-              name: "John Doe",
-              email: existingEmail,
-              'is-locked': false
-            };
-
-            newUsersData.data = [...newUsersData.data];
-            newUsersData.data.push(newUser);
-            this.mockGet(200, '/users', newUsersData);
-            this.mockPost(201, "/organization-memberships", {
-              data: {
-                type: "organization-memberships",
-                id: 42,
-                attributes: {}
-              },
-              relationships: {
-                organization: {
-                  data: {
-                    type: "organizations",
-                    id: "1"
+            this.mockPost(201, "/organization-membership-invites", {
+              "data": {
+                "attributes": {
+                  "token": "5a27a5eb-2719-4cff-99cb-bfdf1a89bf0e",
+                  "email": "jon.nolen@gmail.com",
+                  "expires": "2019-01-18T00:00:00",
+                  "redeemed": false,
+                  "invited-by-id": 13,
+                  "organization-id": 2,
+                  "date-created": "2019-01-11T14:28:38.195038Z",
+                  "date-updated": "2019-01-11T14:28:38.195038Z"
+                },
+                "relationships": {
+                  "invited-by": {
+                    "data": {
+                      "type": "users",
+                      "id": "13"
+                    }
+                  },
+                  "organization": {
+                    "data": {
+                      "type": "organizations",
+                      "id": "2"
+                    }
                   }
                 },
-                user: {
-                  data: {
-                    type: "users",
-                    id: "2"
-                  }
-                }
+                "type": "organization-membership-invites",
+                "id": "9"
               }
             });
 
-            await page.addUserModal.enterEmail(existingEmail);
-            await page.addUserModal.submit();
+            await page.inviteUserModal.enterEmail(existingEmail);
+            await page.inviteUserModal.submit();
           });
 
           it("closes modal", () => {
-            expect(page.addUserModal.isPresent).to.be.false;
+            expect(page.inviteUserModal.isPresent).to.be.false;
           });
-          it("user is displayed in users table", () => {
-            expect(page.userTable.containsUserByEmail(existingEmail)).to.be.true;
+          it("toasts success", () => {
+            const toastMessage = new Interactor('.toast-notification').text;
+            expect(toastMessage).to.equal(`Invite sent to ${existingEmail}.`);
           });
         });
 
-        describe("when user does not exists in system", () => {
+        describe("unsuccessful invite", () => {
           const nonExistingEmail = "missing@foo.com";
           beforeEach(async function () {
-
-            this.mockPost(422, '/organization-memberships');
-            await page.addUserModal.enterEmail(nonExistingEmail);
-            await page.addUserModal.submit();
+            this.mockPost(422, '/organization-membership-invites');
+            await page.inviteUserModal.enterEmail(nonExistingEmail);
+            await page.inviteUserModal.submit();
           });
 
           it("shows error", () => {
-            expect(page.addUserModal.hasError("No user was found")).to.be.true;
+            expect(page.inviteUserModal.hasError('Error occured while trying to invite user.')).to.be.true;
           });
 
           describe('clears error on close', () => {
             beforeEach(async () => {
-              await page.addUser();
+              await page.inviteUser();
 
-              await when(() => !page.addUserModal.isPresent);
-              await page.addUser();
-              await when(() => page.addUserModal.isVisible);
+              await when(() => !page.inviteUserModal.isPresent);
+              await page.inviteUser();
+              await when(() => page.inviteUserModal.isVisible);
             });
 
             it.always('has cleared the error', () => {
-              expect(page.addUserModal.hasError('No user was found')).to.be.false;
+              expect(page.inviteUserModal.hasError('Error occured while trying to invite user.')).to.be.false;
             });
           });
 

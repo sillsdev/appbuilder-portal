@@ -37,7 +37,7 @@ class UserInput extends React.Component<IProps, IState>{
           onChange={this.didType} />
       </div>
       <button
-        data-test-add
+        data-test-invite
         className='large ui button'
         onClick={this.onSubmit} >
         {t("organization-membership.invite.create.send-invite-button")}
