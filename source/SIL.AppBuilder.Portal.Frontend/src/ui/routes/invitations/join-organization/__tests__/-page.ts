@@ -1,13 +1,12 @@
 
 import {
-  clickable,
   interactor,
   Interactor,
   scoped,
   text,
 } from '@bigtest/interactor';
 
-export class OrganizationMembershipPageInteractor {
+class OrganizationMembershipInvitePageInteractor {
   constructor(selector?: string){}
 
   homeLink = scoped('[data-test-home-link]');
@@ -15,5 +14,5 @@ export class OrganizationMembershipPageInteractor {
 }
 
 const i = interactor(OrganizationMembershipPageInteractor);
-export type TUsersPageInteractor = OrganizationMembershipPageInteractor & Interactor;
-export default i as TUsersPageInteractor;
+export type TOrganizationMembershipInvitePageInteractor = OrganizationMembershipInvitePageInteractor & Interactor;
+export default i as TOrganizationMembershipInvitePageInteractor;

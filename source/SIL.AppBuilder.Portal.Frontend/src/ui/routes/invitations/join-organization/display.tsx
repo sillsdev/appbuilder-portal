@@ -13,10 +13,10 @@ export interface IProps {
 
 type IOwnProps = IProps & i18nProps;
 
-const ErrorMessage = (props: { error: string }) => {
+const ErrorMessage = (props: { error: string; homeLinkText: string; }) => {
   return (<div>
     <div data-test-error>{props.error}</div>
-    <div><Link data-test-home-link to="/">Home</Link></div>
+    <div><Link data-test-home-link to="/">{props.homeLinkText}</Link></div>
   </div>);
 };
 
@@ -26,7 +26,7 @@ class OrganizationMembershipInvitation extends React.Component<IOwnProps> {
     const { t, error } = this.props;
     return (<FocusPanel title={t('organization-membership.invite.redemptionTitle')}>
         <div data-test-organization-membership-invite>
-          { error ? <ErrorMessage error={t(error.message, error.meta)}/> : <RectLoader/>}
+          { error ? <ErrorMessage error={t(error.message, error.meta)} homeLinkText={t('home')}/> : <RectLoader/>}
         </div>
       </FocusPanel>);
   }
