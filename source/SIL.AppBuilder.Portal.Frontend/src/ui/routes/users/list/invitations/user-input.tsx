@@ -32,7 +32,7 @@ class UserInput extends React.Component<IProps, IState>{
       <div className="large ui input">
         <input data-test-email
           type='text'
-          placeholder={t("users.invite.placeholder")}
+          placeholder={t("organization-membership.invite.create.email-input-placeholder")}
           value={email}
           onChange={this.didType} />
       </div>
@@ -40,10 +40,10 @@ class UserInput extends React.Component<IProps, IState>{
         data-test-add
         className='large ui button'
         onClick={this.onSubmit} >
-        {t("users.invite.modalAddButton")}
+        {t("organization-membership.invite.create.send-invite-button")}
       </button>
     </div>);
   }
 }
 
-export default compose(withTranslations)(UserInput);
+export default compose(withTranslations)(UserInput) as React.ComponentClass<IProps>;

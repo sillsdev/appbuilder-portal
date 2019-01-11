@@ -48,8 +48,8 @@ class InviteUserModal
           "organizationId": getCurrentOrganizationId(),
         }
       }), defaultOptions());
+      toast.success(t('organization-membership.invite.create.success', {email}));
       this.toggle('isModalOpen')();
-      toast.success(t('users.invite.success', {email}), {});
     }
     catch(err){
       this.setState({error: t("users.invite.error")});
@@ -75,19 +75,19 @@ class InviteUserModal
       >
         <AddIcon/>
         <div>
-          {t('users.invite.button', {organization: attributesFor(currentOrganization).name})}
+          {t('organization-membership.invite.create.invite-user-button-title', {organization: attributesFor(currentOrganization).name})}
         </div>
       </div>
     );
 
     return (<Modal
-      data-test-users-adduser-modal
+      data-test-users-invite-user-modal
       open={isModalOpen}
       trigger={trigger}
       className='medium products-modal'
       closeIcon={<CloseIcon className='close-modal' />}
       onClose={this.toggleModal}>
-        <Modal.Header>{t("users.invite.modalTitle", {organization: attributesFor(currentOrganization).name})}</Modal.Header>
+        <Modal.Header>{t("organization-membership.invite.create.invite-user-modal-title", {organization: attributesFor(currentOrganization).name})}</Modal.Header>
         <Modal.Content>
           <UserInput onSubmit={this.onInvite}/>
           { (error) ? (<div data-test-error><ErrorMessage error={error} showClose={false}/></div>) : null }

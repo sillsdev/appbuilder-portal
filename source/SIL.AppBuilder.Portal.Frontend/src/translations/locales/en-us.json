@@ -413,8 +413,16 @@
         "expired": "Invitation has expired",
         "redeemed": "Invitation has already been redeemed",
         "not-found": "Invitation was not found",
-        "unexpected": "Unexpected error occured: {{response}}",
+        "unexpected": "Unexpected error occured: {response}",
         "invalid-response": "We've received an invalid response... please refresh the page to try again."
+      },
+      "create": {
+        "success": "Invite sent to {email}.",
+        "error": "Error occured while trying to invite user.",
+        "invite-user-button-title": "Invite User",
+        "invite-user-modal-title": "Invite User",
+        "email-input-placeholder": "Enter email address",
+        "send-invite-button": "Send Invite"
       },
       "redemptionTitle": "Looking up invitation..."
     }
