@@ -10,9 +10,7 @@ import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } 
 
 import page from './-page';
 
-//TODO: rename after tests are fixed.
-
-describe('Acceptance | User list | Add User', () => {
+describe('Acceptance | User list | Invite User', () => {
   setupRequestInterceptor();
   let usersData;
   let user;
