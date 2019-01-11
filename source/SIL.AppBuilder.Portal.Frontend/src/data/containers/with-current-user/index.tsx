@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-export { ICurrentUserProps } from './types';
+import { ICurrentUserProps } from './types';
 import { withFetcher } from './fetcher';
 import { withDisplay } from './display';
 
-import { ICurrentUserProps } from './types';
+export { ICurrentUserProps } from './types';
 
 const CurrentUserContext = React.createContext<ICurrentUserProps>({
   currentUser: undefined,
