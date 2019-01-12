@@ -19,29 +19,33 @@ class UserInput extends React.Component<IProps, IState>{
     const email = e.target.value;
     this.setState({ email });
   }
-  onSubmit = (e: React.MouseEvent<HTMLInputElement>) => {
+  onSubmit = (e: any) => {
+    e.preventDefault();
     const {onSubmit, t} = this.props;
     const {email} = this.state;
     onSubmit(email);
+    return false;
   }
 
   public render() {
     const {t} = this.props;
     const {email} = this.state;
     return (<div className="flex justify-content-space-between">
-      <div className="large ui input">
-        <input data-test-email
-          type='text'
-          placeholder={t("organization-membership.invite.create.email-input-placeholder")}
-          value={email}
-          onChange={this.didType} />
-      </div>
-      <button
-        data-test-invite
-        className='large ui button'
-        onClick={this.onSubmit} >
-        {t("organization-membership.invite.create.send-invite-button")}
-      </button>
+      <form onSubmit={this.onSubmit}>
+        <div className="large ui input">
+          <input data-test-email
+            type='text'
+            placeholder={t("organization-membership.invite.create.email-input-placeholder")}
+            value={email}
+            onChange={this.didType} />
+        </div>
+        <button
+          data-test-invite
+          className='large ui button'
+          onClick={this.onSubmit} >
+          {t("organization-membership.invite.create.send-invite-button")}
+        </button>
+      </form>
     </div>);
   }
 }
