@@ -6,9 +6,10 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import {RectLoader} from '@ui/components/loaders';
 import FocusPanel from '@ui/components/focus-panel';
 
+import { RedeemOrganizationMembershipInviteError } from '@data/errors/redeem-organization-membership-invite-error';
 
 export interface IProps {
-  error: Error;
+  error: RedeemOrganizationMembershipInviteError;
 }
 
 type IOwnProps = IProps & i18nProps;

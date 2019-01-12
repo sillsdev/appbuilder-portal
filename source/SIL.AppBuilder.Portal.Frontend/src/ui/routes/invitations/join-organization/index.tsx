@@ -10,7 +10,7 @@ import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
 
 import { pushPayload, firstError } from '@data';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
-
+import { RedeemOrganizationMembershipInviteError } from '@data/errors/redeem-organization-membership-invite-error';
 import OrganizationMembershipInvitiationLoading from './display';
 
 export const pathName = '/invitations/organization-membership/:token';
@@ -53,18 +53,14 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
         json = await tryParseJson(result);
       }
       catch(error){
-        throw new Error('organization-membership.invite.error.invalid-response');
+        throw new RedeemOrganizationMembershipInviteError('organization-membership.invite.error.invalid-response');
       }
       const error = firstError(json);
-      throw new Error(error.title);
+      throw new RedeemOrganizationMembershipInviteError(error.title);
     }
     else{
       const body = await result.text();
-      const err = new Error('organization-membership.invite.error.unexpected');
-      err.meta = {
-        response: body
-      };
-      throw err;
+      throw new RedeemOrganizationMembershipInviteError('organization-membership.invite.error.unexpected', {response: body});
     }
   }
 
