@@ -87,5 +87,8 @@
   },
   "organizationInvites": {
     "subject": "[Scriptoria] Organization Invite Request"
+  },
+  "organizationMembershipInvites": {
+    "subject": "You are invited to join {{organizationName}} at Scriptoria"
   }
 }
