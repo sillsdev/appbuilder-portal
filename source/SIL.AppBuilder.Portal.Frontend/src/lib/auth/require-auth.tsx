@@ -8,32 +8,31 @@ import * as toast from '@lib/toast';
 import { requireAuthHelper } from './require-auth-helper';
 import { storePath } from './return-to';
 
-export function requireAuth(Component) {
-  // this.displayName = 'RequireAuth';
+export function requireAuth(opts = {}){
+  return (Component) => {
+    // this.displayName = 'RequireAuth';
 
-  const checkForAuth = (propsWithRouting: RouterProps) => {
-    const authenticated = isLoggedIn();
+    const checkForAuth = (propsWithRouting: RouterProps) => {
+      const authenticated = isLoggedIn();
 
-    if (authenticated) {
-      const emailVerified = hasVerifiedEmail();
-      if (! emailVerified) {
-        return <Redirect push={false} to={'/verify-email'}/>;
+      if (authenticated) {
+        const emailVerified = hasVerifiedEmail();
+        if (!emailVerified) {
+          return <Redirect push={false} to={'/verify-email'} />;
+        }
+        const WithUser = withCurrentUser(opts)(Component);
+
+        return <WithUser {...propsWithRouting} />;
       }
-      const WithUser = withCurrentUser()(Component);
 
-      return <WithUser { ...propsWithRouting } />;
-    }
+      const attemptedLocation = propsWithRouting.history.location.pathname;
 
-    const attemptedLocation = propsWithRouting.history.location.pathname;
+      storePath(attemptedLocation);
+      return <Redirect push={true} to={'/login'} />;
+    };
 
-    storePath(attemptedLocation);
-
-    // toast.error('You must be logged in to do that');
-
-    return <Redirect push={true} to={'/login'} />;
+    return requireAuthHelper(checkForAuth);
   };
-
-  return requireAuthHelper(checkForAuth);
 }
 
 requireAuth.displayName = 'RequireAuth';

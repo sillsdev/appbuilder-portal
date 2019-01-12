@@ -45,7 +45,7 @@ class Deps extends React.Component {
 }
 
 export default compose(
-  requireAuth,
+  requireAuth(),
   withLayout,
   withRouter
 )((props) => {

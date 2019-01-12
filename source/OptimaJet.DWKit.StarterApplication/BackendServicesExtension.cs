@@ -63,6 +63,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<Product, Guid>, ProductService>();
             services.AddScoped<IResourceService<GroupMembership>, GroupMembershipService>();
             services.AddScoped<IResourceService<OrganizationMembership>, OrganizationMembershipService>();
+            services.AddScoped<IResourceService<OrganizationMembershipInvite>, OrganizationMembershipInviteService>();
 
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
 
@@ -79,6 +80,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
             services.AddScoped<OrganizationMembershipService>();
+            services.AddScoped<OrganizationMembershipInviteService>();
 
             return services;
         }

@@ -25,6 +25,6 @@ class DirectoryRoutes extends React.PureComponent {
 }
 
 export default compose(
-  requireAuth,
+  requireAuth(),
   withLayout,
 )(DirectoryRoutes);

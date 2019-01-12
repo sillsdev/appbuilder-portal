@@ -3,28 +3,25 @@ import { Switch, Route } from 'react-router-dom';
 import { compose } from 'recompose';
 
 import { requireAuth } from '@lib/auth';
-import NotFoundRoute from '@ui/routes/errors/not-found';
-
 import { withLayout } from '@ui/components/layout';
+
+import NotFoundRoute from '@ui/routes/errors/not-found';
 import CreateOrganizationRoute, { pathName as createPath } from './create-organization';
 import MissingTokenRoute, { pathName as missingTokenPath } from './missing-token';
-
+import JoinOrganizationRoute, { pathName as joinOrganizationPath } from './join-organization';
+import JoinOrganizationFinishedRoute, {pathName as joinOrganizationFinishedPath } from './join-organization/finished';
 export const pathName = '/invitations';
 
-class InvitationsRoute extends React.Component {
+export default class InvitationsRoute extends React.Component {
   render() {
     return (
       <Switch>
-        <Route path={createPath} component={CreateOrganizationRoute} />
-        <Route path={missingTokenPath} component={MissingTokenRoute} />
-
+        <Route exact path={createPath} component={CreateOrganizationRoute} />
+        <Route exact path={missingTokenPath} component={MissingTokenRoute} />
+        <Route exact path={joinOrganizationPath} component={JoinOrganizationRoute} />
+        <Route exact path={joinOrganizationFinishedPath} component={JoinOrganizationFinishedRoute} />
         <Route component={NotFoundRoute} />
       </Switch>
     );
   }
 }
-
-export default compose(
-  requireAuth,
-  withLayout
-)(InvitationsRoute);

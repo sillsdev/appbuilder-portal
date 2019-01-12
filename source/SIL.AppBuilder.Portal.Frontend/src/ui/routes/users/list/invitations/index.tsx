@@ -13,19 +13,22 @@ import * as toast from '@lib/toast';
 import { ErrorMessage } from '@ui/components/errors';
 
 import UserInput from './user-input';
-import { withCurrentOrganization, IProvidedProps as ICurrentOrganizationProps } from '~/data/containers/with-current-organization';
+import { withCurrentOrganization, IProvidedProps as ICurrentOrganizationProps } from '@data/containers/with-current-organization';
+import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 import { attributesFor } from '@data/helpers';
+import { idFromRecordIdentity } from '@data';
 interface IOwnProps{
-  onUserAdded: () => Promise<void>;
 }
 
 export type IProps = IOwnProps
   & i18nProps
   & WithDataProps
+  & ICurrentUserProps
   & ICurrentOrganizationProps;
 
 @withTemplateHelpers
-class AddUserModal extends React.Component<IProps>{
+class InviteUserModal
+ extends React.Component<IProps>{
   toggle: Toggle;
 
   state = {
@@ -33,25 +36,23 @@ class AddUserModal extends React.Component<IProps>{
     error: null,
   };
 
-  onAdd = async (email: string) => {
-    const {dataStore, onUserAdded, t} = this.props;
+  onInvite = async (email: string) => {
+    const {t, dataStore, currentUser } = this.props;
     try {
       this.setState({error: null});
 
       await dataStore.update(q => q.addRecord({
-        type: "organizationMembership",
+        type: "organizationMembershipInvite",
         attributes: {
           email,
           "organizationId": getCurrentOrganizationId(),
         }
       }), defaultOptions());
-
-      await onUserAdded();
+      toast.success(t('organization-membership.invite.create.success', {email}));
       this.toggle('isModalOpen')();
-      toast.success(`User for email address ${email} added to organization.`, { });
     }
     catch(err){
-      this.setState({error: t("users.addUser.error")});
+      this.setState({error: t("organization-membership.invite.create.error")});
     }
   }
 
@@ -68,27 +69,27 @@ class AddUserModal extends React.Component<IProps>{
 
     const trigger = (
       <div
-        data-test-users-adduser-open
+        data-test-users-invite-user-open
         className='flex align-items-center p-l-lg m-b-sm pointer'
         onClick={this.toggleModal}
       >
         <AddIcon/>
         <div>
-          {t('users.addUser.button', {organization: attributesFor(currentOrganization).name})}
+          {t('organization-membership.invite.create.invite-user-button-title', {organization: attributesFor(currentOrganization).name})}
         </div>
       </div>
     );
 
     return (<Modal
-      data-test-users-adduser-modal
+      data-test-users-invite-user-modal
       open={isModalOpen}
       trigger={trigger}
       className='medium products-modal'
       closeIcon={<CloseIcon className='close-modal' />}
       onClose={this.toggleModal}>
-        <Modal.Header>{t("users.addUser.modalTitle", {organization: attributesFor(currentOrganization).name})}</Modal.Header>
+        <Modal.Header>{t("organization-membership.invite.create.invite-user-modal-title", {organization: attributesFor(currentOrganization).name})}</Modal.Header>
         <Modal.Content>
-          <UserInput onSubmit={this.onAdd}/>
+          <UserInput onSubmit={this.onInvite}/>
           { (error) ? (<div data-test-error><ErrorMessage error={error} showClose={false}/></div>) : null }
         </Modal.Content>
       </Modal>);
@@ -97,6 +98,7 @@ class AddUserModal extends React.Component<IProps>{
 
 export default compose(
   withTranslations,
+  withCurrentUserContext,
   withCurrentOrganization,
   withData({})
-)(AddUserModal);
+)(InviteUserModal);

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { requireNoAuth, retrievePath } from '@lib/auth';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { getDecodedJWT } from '@lib/auth0';
+import { hasVerifiedEmail } from '@lib/auth0';
 import { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-organization';
 import AutoMountingLock from './auth0-lock-auto-mount';
 
@@ -17,9 +17,13 @@ class LoginRoute extends React.Component<RouterProps & i18nProps> {
 
   afterLogin = async () => {
     const { history, currentUserProps: { fetchCurrentUser } } = this.props;
-
-    await fetchCurrentUser();
-    history.push(retrievePath(true) || '/tasks');
+    if (!hasVerifiedEmail()) {
+      history.push('/verify-email');
+    }
+    else{
+      await fetchCurrentUser();
+      history.push(retrievePath(true) || '/tasks');
+    }
   }
 
   render() {

@@ -14,7 +14,7 @@ export const pathName = '/tasks';
 export default compose(
   withTranslations,
   withLayout,
-  requireAuth,
+  requireAuth(),
   withUserTaskList(),
   withError('error', ({ error }) => error),
   withLoader(({ userTasks }) => !userTasks),

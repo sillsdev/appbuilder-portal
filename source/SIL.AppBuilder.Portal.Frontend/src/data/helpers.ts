@@ -89,10 +89,12 @@ export function isRelatedTo(payload: any, relationshipName: string, id: string):
   const relationData = relation.data || {} as ResourceLinkage;
 
   if (Array.isArray(relationData)) {
-    return !!relationData.find(r => r.id === id);
+    return !!relationData.find(r => {
+      return r.id === id || idFromRecordIdentity(r) === id;
+    });
   }
 
-  return relationData.id === id;
+  return relationData.id === id || idFromRecordIdentity(relationData) === id;
 }
 
 export function isRelatedRecord<TType extends string = ''>(payload: any, record: ResourceObject<TType>) {

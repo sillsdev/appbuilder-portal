@@ -23,7 +23,7 @@ class AdminRoute extends React.Component {
 
 
 export default compose(
-  requireAuth,
+  requireAuth(),
   withRole(ROLE.SuperAdmin, {
     redirectTo: '/'
   }),

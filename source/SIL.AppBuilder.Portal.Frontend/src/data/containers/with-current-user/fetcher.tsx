@@ -17,7 +17,7 @@ import { attributesFor } from '@data/helpers';
 import { ServerError } from '@data/errors/server-error';
 import { CurrentUserFetchError } from '@data/errors/current-user-fetch-error';
 
-import { IProps, IState } from './types';
+import { IProps, IState, IFetchCurrentUserOptions } from './types';
 
 
 const cacheQuery = () => {
@@ -66,6 +66,7 @@ export function withFetcher() {
   return InnerComponent => {
     class WrapperClass extends React.Component<IProps & WithDataProps & i18nProps, IState> {
       makingRequest: boolean;
+      forceComponentUpdate: boolean = false;
 
       constructor(props) {
         super(props);
@@ -86,8 +87,11 @@ export function withFetcher() {
       }
 
       shouldComponentUpdate(nProps, nState) {
+        if (this.forceComponentUpdate) {
+          this.forceComponentUpdate = false;
+          return true;
+        }
         const { currentUser } = this.state;
-
         // if we have a currentUser from cache, and the currentUser
         // matches the auth0Id we have from the JWT, then don't
         // make a network request.
@@ -116,36 +120,51 @@ export function withFetcher() {
         return (auth0IdFromJWT !== existingId);
       }
 
-      fetchCurrentUser = async () => {
+      fetchCurrentUser = async (options: IFetchCurrentUserOptions = { forceReloadFromCache: false, forceReloadFromServer: false}) => {
+        let { forceReloadFromServer, forceReloadFromCache} = options;
+        forceReloadFromCache = forceReloadFromCache || false;
+        forceReloadFromServer = forceReloadFromServer || false;
+
+        if (forceReloadFromCache || forceReloadFromServer){
+          this.forceComponentUpdate = true;
+        }
+
         const { updateStore, t, dataStore }  = this.props;
         const { currentUser } = this.state;
 
         if (this.makingRequest) { return; }
-        if (currentUser && !this.didTokenChange) { return; }
+        let needsUpdate = true;
+        if (currentUser && !this.didTokenChange) {
+          needsUpdate = false;
+        }
         if (!getAuth0Id()) { return; }
 
         try {
-          this.makingRequest = true;
+          if(needsUpdate || forceReloadFromServer) {
+            this.makingRequest = true;
 
-          const response = await authenticatedGet([
-            '/api/users/current-user',
-            '?include=organization-memberships.organization,group-memberships.group,user-roles.role'
-          ].join(''));
+            const response = await authenticatedGet([
+              '/api/users/current-user',
+              '?include=organization-memberships.organization,group-memberships.group,user-roles.role'
+            ].join(''));
 
-          const json = await handleResponse(response, t);
+            const json = await handleResponse(response, t);
 
-          await pushPayload(updateStore, json);
-
-          const usersFromCache = await dataStore.cache.query(cacheQuery());
-          const currentFromCache = usersFromCache[0];
-
-          if (!currentFromCache) {
-            throw new CurrentUserFetchError('fetch was made, but user was not found in cache');
+            await pushPayload(updateStore, json);
           }
 
-          this.setState({ currentUser: currentFromCache, isLoading: false, networkFetchComplete: true }, () => {
-            this.makingRequest = false;
-          });
+          if (needsUpdate || forceReloadFromServer || forceReloadFromCache) {
+            const usersFromCache = await dataStore.cache.query(cacheQuery());
+            const currentFromCache = usersFromCache[0];
+
+            if (!currentFromCache) {
+              throw new CurrentUserFetchError('fetch was made, but user was not found in cache');
+            }
+
+            this.setState({ currentUser: currentFromCache, isLoading: false, networkFetchComplete: true }, () => {
+              this.makingRequest = false;
+            });
+          }
         } catch (e) {
           this.setState({ error: e, networkFetchComplete: true, isLoading: false }, () => {
             this.makingRequest = false;

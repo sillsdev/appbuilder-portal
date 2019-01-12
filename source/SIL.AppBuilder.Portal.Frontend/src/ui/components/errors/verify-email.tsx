@@ -17,10 +17,9 @@ class VerifyEmail extends React.Component<IProps> {
     return (
       <FocusPanel title={t('errors.verifyEmailTitle')}>
         <div dangerouslySetInnerHTML={{ __html: t('errors.verifyEmailDescription') }} />
-
-          <button className='ui button m-t-lg' data-test-logout onClick={logout}>
-            {t('header.signOut')}
-          </button>
+        <button className='ui button m-t-lg' data-test-logout onClick={logout}>
+          {t('header.signOut')}
+        </button>
       </FocusPanel>
     );
   }

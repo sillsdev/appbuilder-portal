@@ -28,7 +28,7 @@ class UsersRoot extends React.Component {
 }
 
 export default compose(
-  requireAuth,
+  requireAuth(),
   withLayout,
   withRouter
 )(UsersRoot);

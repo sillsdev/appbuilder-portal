@@ -57,6 +57,14 @@ const schemaDefinition: SchemaSettings = {
         organization: { type: 'hasOne', model: 'organization', inverse: 'userMemberships' },
       }
     },
+    organizationMembershipInvite: {
+      keys: { remoteId: {} },
+      attributes: {},
+      relationships: {
+        invitedBy: { type: 'hasOne', model: 'user'},
+        organization: { type: 'hasOne', model: 'organization' },
+      }
+    },
     groupMembership: {
       keys: { remoteId: {} },
       attributes: {},

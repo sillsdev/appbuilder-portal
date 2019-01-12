@@ -7,11 +7,6 @@ import {
   FlowContent, Thunks, Store, Actions, SignalRConnector, StateBindedForm, API
 } from '@assets/vendor/dwkit/optimajet-app.js';
 
-import { compose } from 'recompose';
-import { requireAuth } from '@lib/auth';
-import { withCurrentUser } from '~/data/containers/with-current-user';
-import { withLayout } from '@ui/components/layout';
-import { attributesFor } from '~/data';
 import * as toast from '@lib/toast';
 
 import '~/global-config';
