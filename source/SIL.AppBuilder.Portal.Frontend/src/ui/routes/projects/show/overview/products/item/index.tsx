@@ -13,6 +13,7 @@ import ItemActions from './actions';
 import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {
   includeHeader?: boolean;
@@ -37,7 +38,7 @@ class ProductItem extends React.Component<IProps> {
 
     const { product, productDefinition, t, includeHeader } = this.props;
     const { description, name } = attributesFor(productDefinition);
-    const { dateUpdated, datePublished } = attributesFor(product);
+    const { dateUpdated, datePublished, publishLink } = attributesFor(product);
 
     return (
       <div
@@ -57,6 +58,12 @@ class ProductItem extends React.Component<IProps> {
           >
             {name}
           </div>
+          {!isEmpty(publishLink) &&
+            <div
+            >
+              <a href={publishLink}>Link</a>
+             </div>
+          }
         </div>
         <div className='w-20-md p-l-xs-md'>
           <span className='d-md-none m-r-sm bold'>
