@@ -9,6 +9,7 @@ export interface ProductAttributes extends AttributesObject {
   dateUpdated: string;
   datePublished: string;
   dateBuilt: string;
+  publishLink: string;
 }
 
 export type ProductResource = ResourceObject<PRODUCTS_TYPE, ProductAttributes>;

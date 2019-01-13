@@ -125,6 +125,7 @@ const schemaDefinition: SchemaSettings = {
         dateCreated: { type: 'string'},
         dateUpdated: { type: 'string'},
         datePublished: { type: 'string'},
+        publishLink: { type: 'string'},
       },
       relationships: {
         project: { type: 'hasOne', model: 'project', inverse: 'products' },
