@@ -441,6 +441,7 @@ describe('Acceptance | Project View | Products', () => {
 
     beforeEach(async function () {
       await visit('/projects/1');
+      await when( () => page.productsInteractor.products().length === 2 );
     });
 
     it('navigates to project detail page', () => {
@@ -448,11 +449,11 @@ describe('Acceptance | Project View | Products', () => {
     });
 
     it('shows the icon link for a product with a link', () => {
-      expect(page.productsInteractor.products(1).hasProductLink);
+      expect(page.productsInteractor.products(0).hasProductLink).to.equal(true);
     });
 
     it('does not shows the icon link for a product without a link', () => {
-      expect(!page.productsInteractor.products(2).hasProductLink);
+      expect(page.productsInteractor.products(1).hasProductLink).to.equal(false);
     });
   });
 
