@@ -10,11 +10,12 @@ import {
 } from '@data';
 
 import ItemActions from './actions';
+import LaunchIcon from '@material-ui/icons/Launch';
 import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
-import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
-import LaunchIcon from '@material-ui/icons/Launch';
+import { withTranslations, i18nProps } from '@lib/i18n';
+
 
 interface IOwnProps {
   includeHeader?: boolean;
