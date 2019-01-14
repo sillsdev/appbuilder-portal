@@ -63,9 +63,11 @@ class ProductItem extends React.Component<IProps> {
             {name}
           </div>
           {!isEmpty(publishLink) &&
-            <IconButton component={Link} to={publishLink} target='_blank'>
-              <LaunchIcon/>
-            </IconButton>
+            <div data-test-project-product-publishlink>
+              <IconButton component={Link} to={publishLink} target='_blank'>
+                <LaunchIcon/>
+              </IconButton>
+            </div>
           }
         </div>
         <div className='w-20-md p-l-xs-md'>
