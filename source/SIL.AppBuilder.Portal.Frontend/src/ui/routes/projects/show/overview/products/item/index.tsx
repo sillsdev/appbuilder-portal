@@ -14,6 +14,7 @@ import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
+import LaunchIcon from '@material-ui/icons/Launch';
 
 interface IOwnProps {
   includeHeader?: boolean;
@@ -59,9 +60,8 @@ class ProductItem extends React.Component<IProps> {
             {name}
           </div>
           {!isEmpty(publishLink) &&
-            <div
-            >
-              <a href={publishLink}>Link</a>
+            <div className='m-l-md'>
+              <a href={publishLink} target='_blank'><LaunchIcon/></a>
              </div>
           }
         </div>

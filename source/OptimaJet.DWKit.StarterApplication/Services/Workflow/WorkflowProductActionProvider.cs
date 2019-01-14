@@ -333,7 +333,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     if (packageNameFile != null)
                     {
                         var webClient = scope.ServiceProvider.GetRequiredService<IWebClient>();
-                        var packageName = webClient.DownloadString(packageNameFile.Url);
+                        var packageName = webClient.DownloadString(packageNameFile.Url).TrimEnd();
                         if (packageName != null)
                         {
                             product.PublishLink = "https://play.google.com/store/apps/details?id=" + packageName;
