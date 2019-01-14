@@ -14,7 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import LaunchIcon from '@material-ui/icons/Launch';
 import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
