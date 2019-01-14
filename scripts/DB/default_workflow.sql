@@ -1,8 +1,23 @@
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
-(1,	'sil_android_google_play',	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1);
+(1,	'sil_android_google_play',	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1)
+ON CONFLICT ("Id")
+DO UPDATE SET 
+	"Name" = excluded."Name", 
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId";
+
 
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
-(1,	'Android App to Google Play',	1,	'Build an Android App from a Scripture App Builder project and publish to a Google Play Store',	1);
+(1,	'Android App to Google Play',	1,	'Build an Android App from a Scripture App Builder project and publish to a Google Play Store',	1)
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"TypeId" = excluded."TypeId",
+	"Description" = excluded."Description",
+	"WorkflowId" = excluded."WorkflowId";
 
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
 ('SIL_Default_AppBuilders_Android_GooglePlay',	'<Process>
@@ -463,4 +478,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer X="288" Y="842" />
     </Transition>
   </Transitions>
-</Process>');
+</Process>')
+ON CONFLICT("Code") DO UPDATE SET
+	"Scheme" = excluded."Scheme";
