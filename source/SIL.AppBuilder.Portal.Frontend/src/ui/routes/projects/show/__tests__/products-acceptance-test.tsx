@@ -356,4 +356,105 @@ describe('Acceptance | Project View | Products', () => {
     });
   });
 
+  describe('Show product list', () => {
+
+    beforeEach(function() {
+      this.mockGet(200, 'users', { data: [] });
+      this.mockGet(200, '/groups', { data: [] });
+      this.mockGet(200, 'projects/1', {
+        data: {
+          type: 'projects',
+          id: 1,
+          attributes: {
+            name: 'Fake project',
+            workflowProjectUrl: 'project.url'
+          },
+          relationships: {
+            organization: { data: { id: 1, type: 'organizations' } },
+            group: { data: { id: 1, type: 'groups' } },
+            owner: { data: { id: 2, type: 'users' } },
+            reviewers: { data: [] },
+            products: { data: [] }
+          }
+        },
+        included: [
+          { type: 'organizations', id: 1, },
+          { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
+          { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
+          {
+            type: 'products', id: 1,
+            attributes: {
+              'date-created': '2018-10-20T16:19:09.878193',
+              'date-updated': '2018-10-20T16:19:09.878193',
+              'date-built': '2018-10-30T14:19:09.878193',
+              'date-published': '2018-10-30T16:19:09.878193',
+              'publish-link': 'https://play.google.com/store/apps/details?id=org.wycliffe.app.eng.bible.t4t'
+            },
+            relationships: {
+              'product-definition': { data: { type: 'product-definitions', id: 1 } },
+              project: { data: { type: 'projects', id: 1 } }
+            }
+          }, {
+            type: 'products', id: 2,
+            attributes: {
+              'date-created': '2018-10-20T16:19:09.878193',
+              'date-updated': '2018-10-20T16:19:09.878193',
+              'date-built': '2018-10-30T14:19:09.878193',
+              'date-published': null,
+              'publish-link': null
+            },
+            relationships: {
+              'product-definition': { data: { type: 'product-definitions', id: 2 } },
+              project: { data: { type: 'projects', id: 1 } }
+            }
+          }, {
+            type: 'organization-product-definitions', id: 1,
+            attributes: {},
+            relationships: {
+              organization: { data: { type: 'organization', id: 1 } },
+              'product-definition': { data: { type: 'product-definitions', id: 1 } }
+            }
+          }, {
+            type: 'organization-product-definitions', id: 2,
+            attributes: {},
+            relationships: {
+              organization: { data: { type: 'organization', id: 1 } },
+              'product-definition': { data: { type: 'product-definitions', id: 2 } }
+            }
+          }, {
+            type: 'product-definitions', id: 1,
+            attributes: {
+              description: 'Publish Android app to S3',
+              name: 'android_s3'
+            }
+          }, {
+            type: 'product-definitions', id: 2,
+            attributes: {
+              description: 'Publish Android App to Google Play',
+              name: 'android_amazon_app'
+            }
+          }
+
+        ]
+      });
+    });
+
+    beforeEach(async function () {
+      await visit('/projects/1');
+      await when( () => page.productsInteractor.products().length === 2 );
+    });
+
+    it('navigates to project detail page', () => {
+      expect(location().pathname).to.equal('/projects/1');
+    });
+
+    it('shows the icon link for a product with a link', () => {
+      expect(page.productsInteractor.products(0).hasProductLink).to.equal(true);
+    });
+
+    it('does not shows the icon link for a product without a link', () => {
+      expect(page.productsInteractor.products(1).hasProductLink).to.equal(false);
+    });
+  });
+
 });

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OptimaJet.DWKit.StarterApplication.Data;
@@ -10,9 +11,10 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190111231603_AddProductPublishLink")]
+    partial class AddProductPublishLink
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,44 +214,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("OrganizationMemberships");
-                });
-
-            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationMembershipInvite", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("DateCreated");
-
-                    b.Property<DateTime?>("DateUpdated");
-
-                    b.Property<string>("Email")
-                        .IsRequired();
-
-                    b.Property<DateTime>("Expires")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("current_date + 7");
-
-                    b.Property<int>("InvitedById");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<bool>("Redeemed")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid?>("Token")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("uuid_generate_v4()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InvitedById");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("OrganizationMembershipInvites");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationProductDefinition", b =>
@@ -756,19 +720,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "User")
                         .WithMany("OrganizationMemberships")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.OrganizationMembershipInvite", b =>
-                {
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.User", "InvitedBy")
-                        .WithMany()
-                        .HasForeignKey("InvitedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

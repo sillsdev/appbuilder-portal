@@ -15,6 +15,7 @@ using Hangfire;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.Core;
+using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
@@ -46,6 +47,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncActions.Add("BuildEngine_CreateProduct", BuildEngineCreateProductAsync);
             _asyncActions.Add("BuildEngine_BuildProduct", BuildEngineBuildProductAsync);
             _asyncActions.Add("BuildEngine_PublishProduct", BuildEnginePublishProductAsync);
+            _asyncActions.Add("GooglePlay_UpdatePublishLink", GooglePlay_UpdatPublishLinkAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
             //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync); 
@@ -313,6 +315,39 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
+        private async Task GooglePlay_UpdatPublishLinkAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+
+                var productBuildRepository = scope.ServiceProvider.GetRequiredService < IJobRepository<ProductBuild> >();
+                ProductBuild productBuild = await productBuildRepository.Get()
+                    .Where(pb => pb.ProductId == product.Id)
+                    .Include(pb => pb.ProductArtifacts)
+                    .FirstOrDefaultAsync();
+                if (productBuild != null)
+                {
+                    var packageNameFile = productBuild.ProductArtifacts.Where(pa => pa.ArtifactType == "package_name").FirstOrDefault();
+                    if (packageNameFile != null)
+                    {
+                        var webClient = scope.ServiceProvider.GetRequiredService<IWebClient>();
+                        var packageName = webClient.DownloadString(packageNameFile.Url).TrimEnd();
+                        if (packageName != null)
+                        {
+                            product.PublishLink = "https://play.google.com/store/apps/details?id=" + packageName;
+                            await productRepository.UpdateAsync(product);
+                        }
+                    }
+                }
+
+                var owner = product?.Project.Owner;
+
+                //TODO: Send Notification to user
+                Log.Information($"SendNotification: auth0Id={owner.ExternalId}, name={owner.Name}");
+            }
+        }
 
         #region Implementation of IWorkflowActionProvider
 

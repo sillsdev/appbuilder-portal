@@ -10,9 +10,14 @@ import {
 } from '@data';
 
 import ItemActions from './actions';
+import IconButton from '@material-ui/core/IconButton';
+import LaunchIcon from '@material-ui/icons/Launch';
 import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
+import { Link } from 'react-router-dom';
+import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
+
 
 interface IOwnProps {
   includeHeader?: boolean;
@@ -37,7 +42,7 @@ class ProductItem extends React.Component<IProps> {
 
     const { product, productDefinition, t, includeHeader } = this.props;
     const { description, name } = attributesFor(productDefinition);
-    const { dateUpdated, datePublished } = attributesFor(product);
+    const { dateUpdated, datePublished, publishLink } = attributesFor(product);
 
     return (
       <div
@@ -57,6 +62,13 @@ class ProductItem extends React.Component<IProps> {
           >
             {name}
           </div>
+          {!isEmpty(publishLink) &&
+            <div data-test-project-product-publishlink>
+              <IconButton component={Link} to={publishLink} target='_blank'>
+                <LaunchIcon/>
+              </IconButton>
+            </div>
+          }
         </div>
         <div className='w-20-md p-l-xs-md'>
           <span className='d-md-none m-r-sm bold'>

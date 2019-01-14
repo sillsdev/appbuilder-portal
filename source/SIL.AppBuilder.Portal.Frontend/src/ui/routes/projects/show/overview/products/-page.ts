@@ -16,6 +16,10 @@ class Products {
   emptyLabel = text('[data-test-project-product-empty-text]');
   isModalVisible = isPresent('[data-test-project-product-popup]');
 
+  products = collection('[data-test-project-product-item]', {
+    hasProductLink: isPresent('[data-test-project-product-publishlink]')
+  });
+
   modalInteractor = ProductModalInteractor;
 }
 
