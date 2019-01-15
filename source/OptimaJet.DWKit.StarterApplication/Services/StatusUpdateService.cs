@@ -32,7 +32,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var id = messageObj.id.Value as string;
             var groupName = "/" + tableName + "/" + id;
             await HubContext.Clients.Group(groupName).SendAsync("StatusUpdate", message);
-            Console.WriteLine("***** SendStatusUpdate Group: " + groupName + " Message: " + message);
         }
         public void ListenForNotifications(string connectionString)
         {
@@ -53,7 +52,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         {
             string message = e.AdditionalInformation.ToString();
             SendStatusUpdateAsync(message).Wait();
-            Console.WriteLine("**** Status notification " + message + " sent *****");
         }
 
     }
