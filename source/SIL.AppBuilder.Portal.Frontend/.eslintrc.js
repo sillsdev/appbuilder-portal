@@ -1,58 +1,71 @@
-const path = require('path');
-
-module.exports = (dirname) => ({
-  "env": {
-    "browser": true,
-    "es6": true
-  },
-  "extends": [
-    "typescript",
-    "typescript/react",
-  ],
-  "parser": "typescript-eslint-parser",
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true,
+module.exports = {
+  root: true,
+  parser: "typescript-eslint-parser",
+  parserOptions: {
+    // parser: "typescript-eslint-parser",
+    ecmaFeatures: {
+      jsx: true,
+      modules: true,
     },
-    "ecmaVersion": 2018,
-    "sourceType": "module"
+    ecmaVersion: 2018,
+    sourceType: "module"
   },
-  "plugins": [
+  env: {
+    browser: true,
+  },
+  plugins: [
+    'prettier',
+    'typescript',
   ],
-  "settings": {
-  },
+  extends: [
+    // 'typescript', // does not work...
+    'eslint:recommended',
+    'prettier',
+    'tslint-eslint-rules'
+  ],
 
   // 0 = off, 1 = warn, 2 = error
-  "rules": {
+  rules: {
     // style
     "padded-blocks": ["error", "never"],
-    "indent": [
-      "error",
-       2
-    ],
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "semi": [
-      "error",
-      "always"
-    ],
+    "linebreak-style": ["error", "unix"],
+    "space-in-parens": ["error", "never"],
 
     // web api usage
-    "no-console": 1,
+    "no-console": 'warn',
 
     // typescript
-    "typescript/explicit-function-return-type": 0,
+    "typescript/explicit-function-return-type": 'off',
+
+    'no-undef': 'off',
+    'no-unused-vars': 'off',
 
     // imports
-    "import/prefer-default-export": 0,
+    "import/prefer-default-export": 'off',
 
     // docs
-    "require-jsdoc": 0,
+    "require-jsdoc": 'off',
+
+    // handled by prettier
+    'prettier/prettier': 'error',
+    "semi": 'off',
+    "quotes": 'off',
+    "indent": 'off',
   },
-});
+  overrides: [
+    // node files
+    {
+      files: [
+        'config/**/*.js',
+      ],
+      parserOptions: {
+        sourceType: 'script',
+        ecmaVersion: 2015
+      },
+      env: {
+        browser: false,
+        node: true
+      }
+    }
+  ]
+};
