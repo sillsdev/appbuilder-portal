@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Route, Link, Switch, withRouter } from 'react-router-dom';
 import Notifications from 'react-notify-toast';
+import { ToastContainer } from 'react-toastify';
 
 import IndexRoute, { pathName as rootPath } from '@ui/routes/index';
 import LoginRoute, { pathName as loginPath } from '@ui/routes/login';
@@ -26,7 +27,8 @@ export default class RootPage extends React.Component {
     return (
       <div className='app-container flex-column align-items-stretch'>
         <div className='ui container'>
-          <Notifications />
+          {/* <Notifications /> */}
+          <ToastContainer draggable={false} />
         </div>
 
         <section className='flex flex-grow'>

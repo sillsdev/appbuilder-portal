@@ -101,11 +101,13 @@ class Header extends React.Component<IProps> {
   render() {
     const { t, filter, onSearch, location } = this.props;
     const dropdownText = {
+      'all-projects': t('projects.switcher.dropdown.all'),
       'my-projects': t('projects.switcher.dropdown.myProjects'),
       'organization': t('projects.switcher.dropdown.orgProjects'),
-      'archived': t('projects.switcher.dropdown.archived')
+      'archived': t('projects.switcher.dropdown.archived'),
     };
 
+    console.log(filter);
     const trigger = (
       <>
         <div className='text'>{dropdownText[filter]}</div>
@@ -124,9 +126,10 @@ class Header extends React.Component<IProps> {
               inline
             >
               <Dropdown.Menu>
-                <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} as={NavLink} to={PROJECT_ROUTES.OWN}/>
-                <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} as={NavLink} to={PROJECT_ROUTES.ORGANIZATION} />
-                <Dropdown.Item text={t('projects.switcher.dropdown.archived')} as={NavLink} to={PROJECT_ROUTES.ARCHIVED} />
+                <Dropdown.Item text={t('projects.switcher.dropdown.all')} as={NavLink} to={PROJECT_ROUTES.ALL} />
+                <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} className='m-l-md' as={NavLink} to={PROJECT_ROUTES.OWN}/>
+                <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} className='m-l-md' as={NavLink} to={PROJECT_ROUTES.ORGANIZATION} />
+                <Dropdown.Item text={t('projects.switcher.dropdown.archived')} className='m-l-lg' as={NavLink} to={PROJECT_ROUTES.ARCHIVED} />
               </Dropdown.Menu>
             </Dropdown>
           </div>

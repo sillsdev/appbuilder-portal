@@ -34,14 +34,20 @@ const screens = [{
   path: '/projects/archived',
   name: 'Archived Projects',
   config: {
-    data: { currentOrganizationId: '1'}
+    data: { currentOrganizationId: '1' }
   },
 }, {
   path: '/projects/organization',
   name: 'Organization Projects',
   config: {
-    data: { currentOrganizationId: '1'}
-  },
+    data: { currentOrganizationId: '1' }
+  }
+}, {
+  path: '/projects/all',
+  name: 'All Projects',
+  config: {
+    data: { currentOrganizationId: '1' }
+  }
 }];
 
 describe('Acceptance | Sorting', () => {

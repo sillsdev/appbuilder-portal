@@ -4,7 +4,9 @@ import {
   text,
   selectable,
   scoped,
+  hasClass,
   isPresent,
+  collection,
   Interactor
 } from '@bigtest/interactor';
 
@@ -15,10 +17,15 @@ class App {
 
   headers = text('h1,h2,h3');
 
-  toast = scoped('#notification-wrapper .toast-notification', {
-    // NOTE: there is no way to tell if this is an error, or a success
-    //       without checking the background color
-    text: text('span'),
+  toast = scoped('.Toastify__toast-container', {
+    text: text('.Toastify__toast'),
+    messages: collection('.Toastify__toast', {
+      text: text(),
+      isSuccess: hasClass('Toastify__toast--success'),
+      isWarning: hasClass('Toastify__toast--warning'),
+      isError: hasClass('Toastify__toast--error'),
+      isInfo: hasClass('Toastify__toast--info'),
+    }),
   });
 
   clickNotificationsBell = clickable('[data-test-header-notification]');

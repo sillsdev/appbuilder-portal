@@ -9,6 +9,7 @@ import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
 
 import page from './-page';
+import appPage from 'tests/helpers/pages/app';
 
 describe('Acceptance | User list | Invite User', () => {
   setupRequestInterceptor();
@@ -171,14 +172,18 @@ describe('Acceptance | User list | Invite User', () => {
 
             await page.inviteUserModal.enterEmail(existingEmail);
             await page.inviteUserModal.submit();
+            await when(() => appPage.toast.text);
           });
 
           it("closes modal", () => {
             expect(page.inviteUserModal.isPresent).to.be.false;
           });
+
           it("toasts success", () => {
-            const toastMessage = new Interactor('.toast-notification').text;
-            expect(toastMessage).to.equal(`Invite sent to ${existingEmail}.`);
+            const toast = appPage.toast.messages(0);
+
+            expect(toast.text).to.include(`Invite sent to ${existingEmail}.`);
+            expect(toast.isSuccess).to.equal(true);
           });
         });
 

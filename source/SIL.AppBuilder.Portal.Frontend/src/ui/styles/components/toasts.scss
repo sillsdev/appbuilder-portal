@@ -1,11 +1,23 @@
-.toast-notification {
-  // position: sticky !important;
-  width: 75% !important;
-  top: 75px !important;
+.Toastify__toast--warning {
+  color: white;
+  font-weight: bold;
+  background: #DEB333;
+}
 
-  > span {
-    width: 100% !important;
-    font-weight: bold;
-    border-radius:4px !important;
-  }
+.Toastify__toast--success {
+  color: white;
+  font-weight: bold;
+  background: #27CE5E;
+}
+
+.Toastify__toast--error {
+  color: white;
+  font-weight: bold;
+  background: #FC5757;
+}
+
+.Toastify__toast--info {
+  color: white;
+  font-weight: bold;
+  background: #19BAD7;
 }

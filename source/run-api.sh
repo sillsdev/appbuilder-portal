@@ -19,7 +19,7 @@ if [ "$DB_BOOTSTRAP" -eq "1" ]; then
   PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
     -f /app/scripts/DWKitScript.sql
   PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f /app/scripts/Workflow_CreatePersistenceObjects.sql 
+    -f /app/scripts/Workflow_CreatePersistenceObjects.sql
 fi
 
 # run api migrations
@@ -33,7 +33,7 @@ PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d 
 # Create triggers
 PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
     -f /app/scripts/default_trigger.sql
-  
+
 if [ "$DB_BOOTSTRAP" -eq "1" ]; then
   # Create tables required by api
   PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \

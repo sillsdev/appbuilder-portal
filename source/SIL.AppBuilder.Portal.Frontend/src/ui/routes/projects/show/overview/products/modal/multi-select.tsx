@@ -1,7 +1,14 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
 
-import { OrganizationResource, ProductDefinitionResource, ProjectResource } from '@data';
+import {
+  OrganizationResource,
+  ProductDefinitionResource,
+  ProjectResource,
+  withLoader,
+  attributesFor,
+} from '@data';
+
 import {
   withDataActions,
   IProvidedProps as IDataActionsProps,
@@ -9,6 +16,7 @@ import {
 
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { compareVia } from '@lib/collection';
 
 import { MultiSelect } from '@ui/components/inputs/multi-select';
 import { withRelationships } from '@data/containers/with-relationship';
@@ -33,11 +41,15 @@ export default compose<IProps, INeededProps>(
       list: [organization, 'organizationProductDefinitions', 'productDefinition'],
     };
   }),
-  withProps(({ t }: i18nProps) => ({
-    selectedItemJoinsWith: 'productDefinition',
-    emptyListLabel: t('project.products.popup.empty'),
-    displayProductIcon: true,
-  }))
+  withLoader(({ list }) => !list),
+  withProps(({ t, list }: i18nProps & { list: ProductDefinitionResource[] }) => {
+    return {
+      selectedItemJoinsWith: 'productDefinition',
+      emptyListLabel: t('project.products.popup.empty'),
+      displayProductIcon: true,
+      list: list.sort(compareVia(pd => attributesFor(pd).name)),
+    };
+  })
 )(
   class extends React.Component<IProps> {
     pendingUpdates: IPendingUpdates = {};
