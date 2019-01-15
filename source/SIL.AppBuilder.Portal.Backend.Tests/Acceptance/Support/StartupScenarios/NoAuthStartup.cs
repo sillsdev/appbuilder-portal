@@ -70,6 +70,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 services.AddScoped(typeof(IJobRepository<,>), typeof(JobRepository<,>));
                 services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
 
+                services.AddScoped<IHubContext<ScriptoriaHub>>(s => hubContext.Object);
 
                 services.AddScoped<IBackgroundJobClient>(s => backgroundJobClient.Object);
 
@@ -78,7 +79,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 
                 this.ConfiguredServices = services;
 
-                SendNotificationService.HubContext = hubContext.Object;
             }
         }
 }

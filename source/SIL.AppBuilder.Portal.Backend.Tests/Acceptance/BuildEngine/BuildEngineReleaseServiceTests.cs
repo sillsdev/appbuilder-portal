@@ -202,8 +202,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Release_Connection_UnavailableAsync()
         {
             BuildTestData(false);
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockNotificationService = Mock.Get(buildReleaseService.sendNotificationService.HubContext);
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildReleaseService.CreateReleaseAsync(product1.Id, "production", null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify that notifications are sent to the user and the org admin
@@ -264,8 +264,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Release_Check_ReleaseAsync()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockNotificationService = Mock.Get(buildReleaseService.sendNotificationService.HubContext);
             var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
             var releaseResponse = new ReleaseResponse
@@ -302,8 +302,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Get_Release_Check_Failure()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockNotificationService = Mock.Get(buildReleaseService.sendNotificationService.HubContext);
             var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
 

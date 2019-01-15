@@ -14,7 +14,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 {
     public class SendNotificationService
     {
-        public static IHubContext<ScriptoriaHub> HubContext { get; set; }
+        public IHubContext<ScriptoriaHub> HubContext { get; }
         public ITranslator Translator { get; }
         public IJobRepository<Email> EmailRepository { get; }
         public IJobRepository<UserRole> UserRolesRepository { get; }
@@ -24,6 +24,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ITranslator translator,
             IJobRepository<Email> emailRepository,
             IJobRepository<UserRole> userRolesRepository,
+            IHubContext<ScriptoriaHub> hubContext,
             IJobRepository<Notification> notificationRepository
         )
         {
@@ -31,6 +32,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             EmailRepository = emailRepository;
             UserRolesRepository = userRolesRepository;
             NotificationRepository = notificationRepository;
+            HubContext = hubContext;
 
         }
         public async Task SendNotificationToOrgAdminsAndOwnerAsync(Organization organization, User owner, String messageId, Dictionary<string, object> subs)
@@ -103,7 +105,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 SendEmailAsync(notification).Wait();
             }
         }
-
         protected async Task SendEmailAsync(Notification notification)
         {
             var locale = notification.User.LocaleOrDefault();

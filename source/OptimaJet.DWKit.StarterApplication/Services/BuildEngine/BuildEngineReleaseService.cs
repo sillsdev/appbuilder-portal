@@ -15,7 +15,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineReleaseService : BuildEngineServiceBase
     {
-        private readonly SendNotificationService sendNotificationService;
+        public SendNotificationService sendNotificationService;
 
         public IRecurringJobManager RecurringJobManager { get; }
         public IJobRepository<Product, Guid> ProductRepository { get; }

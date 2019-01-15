@@ -200,11 +200,10 @@ namespace OptimaJet.DWKit.StarterApplication
 
             app.UseJsonApi();
 
-            SendNotificationService.HubContext = (IHubContext<ScriptoriaHub>)app.ApplicationServices.GetService(typeof(IHubContext<ScriptoriaHub>));
-
             app.UseBuildEngine(Configuration);
             app.UseWorkflow(Configuration);
             app.UseNotifications(Configuration);
+            app.UseStatusUpdates(Configuration);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
     public class BuildEngineProductService: BuildEngineServiceBase
     {
-        private readonly SendNotificationService sendNotificationService;
+        public readonly SendNotificationService sendNotificationService;
 
         public BuildEngineProductService(
             IBuildEngineApi buildEngineApi,
