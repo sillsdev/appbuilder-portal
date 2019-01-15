@@ -202,7 +202,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
+            var mockNotificationService = Mock.Get(buildBuildService.SendNotificationSvc.HubContext);
             var productId = Guid.NewGuid();
             await buildBuildService.CreateBuildAsync(productId, null);
             mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user3.ExternalId)));
@@ -216,8 +216,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Build_Connection_UnavailableAsync()
         {
             BuildTestData(false);
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockNotificationService = Mock.Get(buildBuildService.SendNotificationSvc.HubContext);
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify that notifications are sent to the user and the org admin
@@ -272,8 +272,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Build_Check_BuildAsync()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockNotificationService = Mock.Get(buildBuildService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
             var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
             var mockWebClient = Mock.Get(buildBuildService.WebClient);
@@ -371,8 +371,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Get_Build_Check_Failure()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockNotificationService = Mock.Get(buildBuildService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
             var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
             var mockWebClient = Mock.Get(buildBuildService.WebClient);
@@ -484,8 +484,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Build_CreateAsync_Exception()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockNotificationService = Mock.Get(buildBuildService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
             var mockRecurringTaskManager = Mock.Get(buildBuildService.RecurringJobManager);
             mockRecurringTaskManager.Reset();

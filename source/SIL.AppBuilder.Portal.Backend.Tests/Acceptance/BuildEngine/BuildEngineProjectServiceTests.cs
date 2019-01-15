@@ -237,7 +237,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
+            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             await buildProjectService.ManageProjectAsync(999, null);
             // Verify notification sent to Super Admin
             mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user3.ExternalId)));
@@ -252,7 +252,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
+            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify notification sent to OrgAdmin and User
@@ -268,8 +268,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Project_Connection_Not_Found()
         {
             BuildTestData(true, "4323864");
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify notification sent to OrgAdmin and User
@@ -284,8 +284,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Project_DefaultConnection_Not_Found()
         {
             BuildTestData(false);
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project4.Id, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify notification sent to OrgAdmin and User (no org admin for this project defined)
@@ -377,8 +377,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Project_Create_Project_FailedAsync()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns((ProjectResponse)null);
@@ -396,8 +396,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Project_Completed()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             var projectResponse = new ProjectResponse
@@ -431,8 +431,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Project_Failed()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             var projectResponse = new ProjectResponse
@@ -505,8 +505,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Project_Update_ProjectAsync()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             var projectResponse = new ProjectResponse

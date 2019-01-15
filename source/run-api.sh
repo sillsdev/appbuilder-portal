@@ -30,6 +30,10 @@ PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d 
 PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
   -f /app/scripts/default_workflow.sql
 
+# Create triggers
+PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
+    -f /app/scripts/default_trigger.sql
+  
 if [ "$DB_BOOTSTRAP" -eq "1" ]; then
   # Create tables required by api
   PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \

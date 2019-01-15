@@ -188,8 +188,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Product_Not_FoundAsync()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
+            var mockNotificationService = Mock.Get(buildProductService.sendNotificationService.HubContext);
             var productId = Guid.NewGuid();
             await buildProductService.ManageProductAsync(productId, null);
             mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user3.ExternalId)));
@@ -204,7 +204,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
+            var mockNotificationService = Mock.Get(buildProductService.sendNotificationService.HubContext);
             var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
 
             var jobResponse = new JobResponse
@@ -231,8 +231,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public async Task Product_Connection_UnavailableAsync()
         {
             BuildTestData();
-            var mockNotificationService = Mock.Get(SendNotificationService.HubContext);
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
+            var mockNotificationService = Mock.Get(buildProductService.sendNotificationService.HubContext);
             var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
             systemStatus1.SystemAvailable = false;
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProductService.ManageProductAsync(product1.Id, null));

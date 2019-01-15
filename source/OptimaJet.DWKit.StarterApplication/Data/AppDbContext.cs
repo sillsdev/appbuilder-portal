@@ -152,7 +152,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
         private void AddTimestamps()
         {
-            var entries = ChangeTracker.Entries().Where(e => e.Entity is ITrackDate && e.State == EntityState.Added || e.State == EntityState.Modified);
+            var entries = ChangeTracker.Entries().Where(e => e.Entity is ITrackDate && (e.State == EntityState.Added || e.State == EntityState.Modified));
             DateTime now = DateTime.UtcNow;
             foreach (var entry in entries)
             {
