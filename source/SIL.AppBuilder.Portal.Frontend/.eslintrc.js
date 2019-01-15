@@ -16,12 +16,12 @@ module.exports = {
   plugins: [
     'prettier',
     'typescript',
+    'import',
   ],
   extends: [
     // 'typescript', // does not work...
     'eslint:recommended',
     'prettier',
-    'tslint-eslint-rules'
   ],
 
   // 0 = off, 1 = warn, 2 = error
@@ -42,6 +42,11 @@ module.exports = {
 
     // imports
     "import/prefer-default-export": 'off',
+    "import/order": ["error", {
+      "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+      "newlines-between": "always",
+    }],
+    'import/exports-last': 'off', // not auto-fixable
 
     // docs
     "require-jsdoc": 'off',
