@@ -1,8 +1,3 @@
-DROP TRIGGER IF EXISTS project_notify ON "Projects";
-CREATE TRIGGER project_notify AFTER INSERT OR UPDATE OR DELETE ON "Projects"
-FOR EACH ROW EXECUTE PROCEDURE notify_trigger();
-
-
 -- Trigger notification for messaging to PG Notify
 CREATE OR REPLACE FUNCTION notify_trigger() RETURNS trigger AS $trigger$
 DECLARE
@@ -36,3 +31,7 @@ BEGIN
   RETURN rec;
 END;
 $trigger$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS project_notify ON "Projects";
+CREATE TRIGGER project_notify AFTER INSERT OR UPDATE OR DELETE ON "Projects"
+FOR EACH ROW EXECUTE PROCEDURE notify_trigger();
