@@ -15,6 +15,8 @@ import {
   idFromRecordIdentity,
 } from '@data';
 
+import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
+
 import { IProvidedProps as ITableColumns } from '../with-table-columns';
 import { IProvidedProps as ITableRows } from '../with-table-rows';
 import { COLUMN_KEY } from '../column-data';
@@ -33,13 +35,21 @@ interface IOwnProps {
   showProjectActions: boolean;
 }
 
-type IProps = IOwnProps & ITableColumns & ITableRows & RouteComponentProps;
+type IProps = IOwnProps & ITableColumns & ITableRows & RouteComponentProps & TimeProps;
 
 class Row extends React.Component<IProps> {
   getActiveProjectColumns = () => {
-    const { project, organization, owner, group, activeProjectColumns } = this.props;
+    const {
+      project,
+      organization,
+      owner,
+      group,
+      activeProjectColumns,
+      moment,
+      timezone,
+    } = this.props;
 
-    const { language } = attributesFor(project);
+    const { language, dateUpdated } = attributesFor(project);
     const { name: orgName } = attributesFor(organization);
     const { givenName, familyName } = attributesFor(owner);
     const { name: groupName } = attributesFor(group);
@@ -59,6 +69,11 @@ class Row extends React.Component<IProps> {
           break;
         case COLUMN_KEY.PROJECT_ORGANIZATION:
           column.value = orgName;
+          break;
+        case COLUMN_KEY.PROJECT_DATE_UPDATED:
+          column.value = moment(dateUpdated)
+            .tz(timezone)
+            .format('LLL');
           break;
         default:
           column.value = 'active column not recognized';
@@ -144,6 +159,7 @@ class Row extends React.Component<IProps> {
 
 export default compose(
   withRouter,
+  withMomentTimezone,
   withOrbit(({ project }) => ({
     organization: (q) => q.findRelatedRecord(project, 'organization'),
     owner: (q) => q.findRelatedRecord(project, 'owner'),

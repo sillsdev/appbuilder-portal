@@ -4,11 +4,12 @@ export enum COLUMN_KEY {
   PROJECT_ORGANIZATION = 'organization',
   PROJECT_LANGUAGE = 'language',
   PROJECT_GROUP = 'group',
+  PROJECT_DATE_UPDATED = 'dateUpdated',
 
   PRODUCT_BUILD_VERSION = 'buildVersion',
   PRODUCT_BUILD_DATE = 'buildDate',
   PRODUCT_CREATED_ON = 'createdOn',
-  PRODUCT_UPDATED_ON = 'updatedOn',
+  // PRODUCT_UPDATED_ON = 'updatedOn'
 }
 
 export const possibleColumnsByType = {
@@ -17,12 +18,13 @@ export const possibleColumnsByType = {
       id: COLUMN_KEY.PROJECT_OWNER,
       i18nKey: 'projectTable.columns.owner',
       propertyPath: 'owner.name',
-      // sortable: true
+      sortable: true,
     },
     [COLUMN_KEY.PROJECT_ORGANIZATION]: {
       id: COLUMN_KEY.PROJECT_ORGANIZATION,
       i18nKey: 'projectTable.columns.organization',
       propertyPath: 'organization.name',
+      sortable: true,
     },
     [COLUMN_KEY.PROJECT_LANGUAGE]: {
       id: COLUMN_KEY.PROJECT_LANGUAGE,
@@ -34,6 +36,13 @@ export const possibleColumnsByType = {
       id: COLUMN_KEY.PROJECT_GROUP,
       i18nKey: 'projectTable.columns.group',
       propertyPath: 'group.name',
+      sortable: true,
+    },
+    [COLUMN_KEY.PROJECT_DATE_UPDATED]: {
+      id: COLUMN_KEY.PROJECT_DATE_UPDATED,
+      i18nKey: 'projectTable.columns.updatedOn',
+      propertyPath: 'dateUpdated',
+      sortable: true,
     },
   },
   product: {
@@ -52,11 +61,11 @@ export const possibleColumnsByType = {
       i18nKey: 'projectTable.columns.createdOn',
       propertyPath: 'product[].createdOn',
     },
-    [COLUMN_KEY.PRODUCT_UPDATED_ON]: {
-      id: COLUMN_KEY.PRODUCT_UPDATED_ON,
-      i18nKey: 'projectTable.columns.updatedOn',
-      propertyPath: 'product[].updatedOn',
-    },
+    // [COLUMN_KEY.PRODUCT_UPDATED_ON]: {
+    //   id: COLUMN_KEY.PRODUCT_UPDATED_ON,
+    //   i18nKey: 'projectTable.columns.updatedOn',
+    //   propertyPath: 'product[].updatedOn'
+    // }
   },
 };
 
