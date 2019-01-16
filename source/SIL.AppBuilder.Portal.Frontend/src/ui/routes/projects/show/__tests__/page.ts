@@ -50,7 +50,10 @@ export class ProjectInteractor {
   userSelect = userInteractor;
   reviewers = reviewerInteractor;
   detailsInteractor = detailsInteratctor;
+
+  // TODO: don't use interactor in the name, it's an implementation detail
   productsInteractor = productsInteractor;
+  productsList = productsInteractor;
 }
 
 export default new ProjectInteractor('[data-test-project]');

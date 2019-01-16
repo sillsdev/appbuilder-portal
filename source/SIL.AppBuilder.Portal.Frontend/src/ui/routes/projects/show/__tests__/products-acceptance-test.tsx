@@ -134,27 +134,32 @@ describe('Acceptance | Project View | Products', () => {
       });
 
       it.always('project product is selected',() => {
-        const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
-        expect(selector.items(0).isChecked).to.be.true;
-        expect(selector.items(1).isChecked).to.be.false;
+        const selector = page.productsList.modal.multiSelect;
+
+        expect(selector.itemNamed('android_s3').isChecked).to.equal(true);
+        expect(selector.itemNamed('android_amazon_app').isChecked).to.equal(false);
       });
 
       describe("select a new product", () => {
         beforeEach(async function () {
-          await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+          await when(() => page.productsList.modal.isVisible);
+          await page.productsList.modal.multiSelect.itemNamed('android_amazon_app').toggle();
+          await when(() => page.productsList.products().length === 2);
         });
 
         it('product is added to product list', () => {
-          const productList = page.productsInteractor.itemsText();
+          const productList = page.productsList.itemsText();
           const productsText = productList.map(item => item.text);
+
           expect(productsText).to.contain('android_s3');
           expect(productsText).to.contain('android_amazon_app');
         }).timeout(2000);
 
         it('project product is selected',() => {
-          const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
-          expect(selector.items(0).isChecked).to.be.true;
-          expect(selector.items(1).isChecked).to.be.true;
+          const selector = page.productsList.modal.multiSelect;
+
+          expect(selector.itemNamed('android_s3').isChecked).to.equal(true);
+          expect(selector.itemNamed('android_amazon_app').isChecked).to.equal(true);
         }).timeout(2000);
       });
 
@@ -168,9 +173,10 @@ describe('Acceptance | Project View | Products', () => {
               await server.timeout(1000);
             }
           };
-          await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
-          await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
-          await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+
+          await page.productsList.modal.multiSelect.itemNamed('android_amazon_app').toggle();
+          await page.productsList.modal.multiSelect.itemNamed('android_amazon_app').toggle();
+          await page.productsList.modal.multiSelect.itemNamed('android_amazon_app').toggle();
         });
 
         it("is only requested once.", () => {
@@ -180,26 +186,28 @@ describe('Acceptance | Project View | Products', () => {
         it('product is added to product list', () => {
           const productList = page.productsInteractor.itemsText();
           const productsText = productList.map(item => item.text);
+
           expect(productsText).to.contain('android_s3');
           expect(productsText).to.contain('android_amazon_app');
         }).timeout(4000);
 
         it('project product is selected',() => {
-          const selector = page.productsInteractor.modalInteractor.multiSelectInteractor;
-          expect(selector.items(0).isChecked).to.be.true;
-          expect(selector.items(1).isChecked).to.be.true;
+          const selector = page.productsList.modal.multiSelect;
+
+          expect(selector.itemNamed('android_s3').isChecked).to.equal(true);
+          expect(selector.itemNamed('android_amazon_app').isChecked).to.equal(true);
         }).timeout(4000);
 
         describe('and on deselect', () => {
           beforeEach(async () => {
             await new Convergence()
-              .when(() => page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).isChecked)
+              .when(() => page.productsList.modal.multiSelect.itemNamed('android_amazon_app').isChecked)
               .do(async () => {
-                await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
-                await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
-                await page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).click();
+                await page.productsList.modal.multiSelect.itemNamed('android_amazon_app').toggle();
+                await page.productsList.modal.multiSelect.itemNamed('android_amazon_app').toggle();
+                await page.productsList.modal.multiSelect.itemNamed('android_amazon_app').toggle();
               });
-            await when(() => !page.productsInteractor.modalInteractor.multiSelectInteractor.items(1).isChecked);
+            await when(() => page.productsList.modal.multiSelect.itemNamed('android_amazon_app').isChecked);
           });
           it('is only requested one additional time.', () => {
             expect(requestCount).to.equal(2);
@@ -449,11 +457,11 @@ describe('Acceptance | Project View | Products', () => {
     });
 
     it('shows the icon link for a product with a link', () => {
-      expect(page.productsInteractor.products(0).hasProductLink).to.equal(true);
+      expect(page.productsList.productNamed('android_s3').hasProductLink).to.equal(true);
     });
 
     it('does not shows the icon link for a product without a link', () => {
-      expect(page.productsInteractor.products(1).hasProductLink).to.equal(false);
+      expect(page.productsList.productNamed('android_amazon_app').hasProductLink).to.equal(false);
     });
   });
 
