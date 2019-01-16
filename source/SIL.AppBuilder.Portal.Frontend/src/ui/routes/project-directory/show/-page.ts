@@ -6,7 +6,7 @@ import {
   isPresent,
   collection,
   scoped,
-  Interactor
+  Interactor,
 } from '@bigtest/interactor';
 
 class Page {

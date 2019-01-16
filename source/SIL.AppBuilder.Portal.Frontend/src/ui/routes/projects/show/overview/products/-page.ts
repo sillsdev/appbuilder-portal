@@ -10,7 +10,6 @@ import {
 import ProductModalInteractor from './-modal';
 
 class Products {
-
   clickManageProductButton = clickable('[data-test-project-products-manage-button]');
   itemsText = collection('[data-test-project-product-name]');
   emptyLabel = text('[data-test-project-product-empty-text]');
@@ -18,11 +17,11 @@ class Products {
 
   products = collection('[data-test-project-product-item]', {
     name: text('[data-test-project-product-name]'),
-    hasProductLink: isPresent('[data-test-project-product-publishlink]')
+    hasProductLink: isPresent('[data-test-project-product-publishlink]'),
   });
 
   productNamed(named: string) {
-    const item = this.products().find(p => p.name.includes(named));
+    const item = this.products().find((p) => p.name.includes(named));
 
     if (!item) {
       throw new Error(`cannot find product named: ${named}`);

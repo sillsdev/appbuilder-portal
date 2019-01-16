@@ -1,22 +1,21 @@
-
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication,
-  fakeAuth0Id
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
+  fakeAuth0Id,
 } from 'tests/helpers/index';
 import { openOrgSwitcher, visitTheHomePage } from 'tests/helpers';
 import { applicationTypesData } from 'tests/helpers/fixtures';
 import i18n from '@translations/index';
-
 import app from 'tests/helpers/pages/app';
-import page from './page';
 
+import page from './page';
 import {
   userInTwoOrganizationsButOnlyOneGroup,
-  userInTwoOrganizationsAndNoGroups
+  userInTwoOrganizationsAndNoGroups,
 } from './scenarios';
 
 async function newProjectWithSelectedOrg(orgName: string) {

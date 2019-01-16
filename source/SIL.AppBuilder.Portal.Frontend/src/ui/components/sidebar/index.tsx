@@ -27,8 +27,8 @@ class Sidebar extends React.Component<IProps> {
     return (
       <div
         data-test-sidebar
-        className={`sidebar bg-white border-right-dark border-top-dark ${className}`}>
-
+        className={`sidebar bg-white border-right-dark border-top-dark ${className}`}
+      >
         <Header
           className='thin-bottom-border'
           closeSidebar={closeSidebar}
@@ -36,10 +36,9 @@ class Sidebar extends React.Component<IProps> {
           toggleOrgSwitcher={orgSwitchToggler}
         />
 
-        { !isOrgSwitcherActive && <Navigation closeSidebar={closeSidebar}/> }
+        {!isOrgSwitcherActive && <Navigation closeSidebar={closeSidebar} />}
 
-        { isOrgSwitcherActive && <OrgSwitcher toggle={orgSwitchToggler} /> }
-
+        {isOrgSwitcherActive && <OrgSwitcher toggle={orgSwitchToggler} />}
       </div>
     );
   }

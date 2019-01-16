@@ -2,11 +2,10 @@ import * as React from 'react';
 import { DataProvider } from 'react-orbitjs';
 import Store from '@orbit/store';
 import Coordinator from '@orbit/coordinator';
-
 import PageLoader from '@ui/components/loaders/page';
+import { Source } from '@orbit/data';
 
 import { createStore } from './store';
-import { Source } from '@orbit/data';
 
 interface IState {
   store: Store;
@@ -32,7 +31,9 @@ export default class APIProvider extends React.Component<{}, IState> {
   render() {
     const { store, sources } = this.state;
 
-    if (!store) { return <PageLoader />; }
+    if (!store) {
+      return <PageLoader />;
+    }
 
     return (
       <DataProvider dataStore={store} sources={sources}>

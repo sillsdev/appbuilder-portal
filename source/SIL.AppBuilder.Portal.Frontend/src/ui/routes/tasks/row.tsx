@@ -4,10 +4,9 @@ import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { Button, Card, Label } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
 import * as prettyMs from 'pretty-ms';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
-
 import ProductIcon from '@ui/components/product-icon';
+
 import {
   attributesFor,
   idFromRecordIdentity,
@@ -45,7 +44,7 @@ class TaskRow extends React.Component<IProps> {
     const id = idFromRecordIdentity(product);
 
     history.push(`/flow/${workflowBusinessFlow}/${id}`);
-  }
+  };
 
   didClickProjectName = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -54,7 +53,7 @@ class TaskRow extends React.Component<IProps> {
     const { history, project } = this.props;
 
     history.push(`/projects/${idFromRecordIdentity(project)}`);
-  }
+  };
 
   render() {
     const {
@@ -79,15 +78,15 @@ class TaskRow extends React.Component<IProps> {
           onClick={this.didClickRow}
         >
           <td>
-            <div className="flex align-items-center m-b-sm" onClick={this.didClickRow}>
+            <div className='flex align-items-center m-b-sm' onClick={this.didClickRow}>
               <ProductIcon product={productDefinition} selected={true} />
-              <span className="p-l-sm-xs">{productName}</span>
+              <span className='p-l-sm-xs'>{productName}</span>
             </div>
-            <Label className="grey m-l-lg uppercase">{status}</Label>
+            <Label className='grey m-l-lg uppercase'>{status}</Label>
           </td>
           <td>
             <a
-              className="clickable"
+              className='clickable'
               href={`/projects/${idFromRecordIdentity(project)}`}
               onClick={this.didClickProjectName}
             >
@@ -97,8 +96,8 @@ class TaskRow extends React.Component<IProps> {
           <td>{waitTime && prettyMs(waitTime)}</td>
         </tr>
         {comment && (
-          <tr data-test-comment className="no-top-border">
-            <td style={{ paddingTop: 0 }} className="fs-12 no-top-border" colSpan={5}>
+          <tr data-test-comment className='no-top-border'>
+            <td style={{ paddingTop: 0 }} className='fs-12 no-top-border' colSpan={5}>
               <span className='p-l-lg block'>{comment}</span>
             </td>
           </tr>
@@ -113,15 +112,15 @@ export default compose<INeededProps, IProps>(
   withRouter,
   withOrbit(({ userTask }) => {
     return {
-      product: q => q.findRelatedRecord(userTask, 'product'),
-      assignedTo: q => q.findRelatedRecord(userTask, 'assigned'),
+      product: (q) => q.findRelatedRecord(userTask, 'product'),
+      assignedTo: (q) => q.findRelatedRecord(userTask, 'assigned'),
     };
   }),
   withOrbit(({ product }) => ({
-    project: q => q.findRelatedRecord(product, 'project'),
-    productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
+    project: (q) => q.findRelatedRecord(product, 'project'),
+    productDefinition: (q) => q.findRelatedRecord(product, 'productDefinition'),
   })),
   withOrbit(({ productDefinition }) => ({
-    workflow: q => q.findRelatedRecord(productDefinition, 'workflow'),
+    workflow: (q) => q.findRelatedRecord(productDefinition, 'workflow'),
   }))
 )(TaskRow);

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Switch, Route } from 'react-router-dom';
-
 import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
 import { NotFound } from '@ui/routes/errors';
@@ -26,5 +25,5 @@ class DirectoryRoutes extends React.PureComponent {
 
 export default compose(
   requireAuth(),
-  withLayout,
+  withLayout
 )(DirectoryRoutes);

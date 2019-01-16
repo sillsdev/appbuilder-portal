@@ -11,12 +11,10 @@ export function userIsOrgAdminOf(organizationResource) {
       attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
       relationships: {
         ['organization-memberships']: {
-          data: [
-            { id: 1, type: 'organization-memberships' },
-          ]
+          data: [{ id: 1, type: 'organization-memberships' }],
         },
-        ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
-      }
+        ['user-roles']: { data: [{ id: 1, type: 'user-roles' }] },
+      },
     },
     included: [
       {
@@ -25,24 +23,24 @@ export function userIsOrgAdminOf(organizationResource) {
         attributes: {},
         relationships: {
           user: { data: { id: 1, type: 'users' } },
-          organization: { data: { id: orgId, type: 'organizations' } }
-        }
+          organization: { data: { id: orgId, type: 'organizations' } },
+        },
       },
       {
         type: 'organizations',
         id: 1,
-        attributes: { name: 'DeveloperTown' }
+        attributes: { name: 'DeveloperTown' },
       },
       {
         id: 1,
-        type: 'groups' ,
+        type: 'groups',
         attributes: { name: 'Some Group' },
         relationships: {
-          organization: { data: { id: orgId, type: 'organizations' } }
-        }
+          organization: { data: { id: orgId, type: 'organizations' } },
+        },
       },
       userRoleFrom(roles.orgAdmin, { id: 1, userId: 1, orgId }),
       roles.orgAdmin,
-    ]
+    ],
   };
 }

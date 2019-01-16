@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import { Redirect } from 'react-router-dom';
-import { hasRelationship } from '@data';
-import * as toast from '@lib/toast';
 
+import { hasRelationship } from '@data';
+
+import * as toast from '@lib/toast';
 import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
 
@@ -15,10 +16,10 @@ const defaultOptions = {
 export function withDisplay(opts = {}) {
   const options = {
     ...defaultOptions,
-    ...opts
+    ...opts,
   };
 
-  return InnerComponent => {
+  return (InnerComponent) => {
     const template = ({ currentUserProps: { error, currentUser, isLoading } }) => {
       if (error) {
         if (error.status && error.status >= 500) {

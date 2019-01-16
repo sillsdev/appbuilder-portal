@@ -1,6 +1,7 @@
 import { visit, location } from '@bigtest/react';
 import Convergence, { when } from '@bigtest/convergence';
 import { expect, assert } from 'chai';
+
 import app from './pages/app';
 
 export { fakeAuth0Id } from './jwt';
@@ -31,12 +32,12 @@ export async function openOrgSwitcher() {
     await app.openSidebar();
     await when(() => app.isSidebarVisible);
   }
+
   if (!app.isOrgSwitcherVisible) {
     await app.openOrgSwitcher();
     await when(() => app.isOrgSwitcherVisible);
   }
 }
-
 
 export async function switchToOrg(orgName: string) {
   await openOrgSwitcher();

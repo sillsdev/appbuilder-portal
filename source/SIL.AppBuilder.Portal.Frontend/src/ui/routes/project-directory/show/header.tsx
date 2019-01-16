@@ -1,12 +1,11 @@
 import * as React from 'react';
 
 import { ProjectResource, attributesFor } from '@data';
+
 import { i18nProps, withTranslations } from '@lib/i18n';
 import TimezoneLabel from '@ui/components/labels/timezone';
 
-type IProps =
-  & { project: ProjectResource }
-  & i18nProps;
+type IProps = { project: ProjectResource } & i18nProps;
 
 class Header extends React.PureComponent<IProps> {
   render() {

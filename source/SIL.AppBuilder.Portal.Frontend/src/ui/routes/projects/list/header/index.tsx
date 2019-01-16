@@ -5,16 +5,14 @@ import { Dropdown, Popup } from 'semantic-ui-react';
 import { NavLink, withRouter, Link } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { every } from 'lodash';
-
 import * as toast from '@lib/toast';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { IRowProps } from '@ui/components/project-table';
 import { RequireOrganization } from '@ui/components/authorization';
-
 import {
   withBulkActions,
-  IProvidedProps as IBulkActions
+  IProvidedProps as IBulkActions,
 } from '@data/containers/resources/project/with-bulk-actions';
 import { withRole, IProvidedProps as IRoleProps } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
@@ -23,6 +21,7 @@ import { PROJECT_ROUTES } from './routes';
 
 import './styles.scss';
 import { attributesFor } from '~/data';
+
 import { idFromRecordIdentity } from '~/data/store-helpers';
 
 interface IOwnProps {
@@ -31,26 +30,20 @@ interface IOwnProps {
   onBulkActionComplete: () => void;
 }
 
-type IProps =
-  & IOwnProps
-  & IRowProps
-  & IBulkActions
-  & RouteComponentProps
-  & i18nProps;
+type IProps = IOwnProps & IRowProps & IBulkActions & RouteComponentProps & i18nProps;
 
 class Header extends React.Component<IProps> {
-
   onBulkArchive = async () => {
     const { selectedRows, bulkArchive } = this.props;
 
     try {
       await bulkArchive(selectedRows);
       toast.success('Selected projects archived');
-    }catch(e) {
+    } catch (e) {
       toast.error(e);
     }
     this.afterBulkAction();
-  }
+  };
 
   onBulkReactivate = async () => {
     const { selectedRows, bulkReactivate } = this.props;
@@ -62,17 +55,17 @@ class Header extends React.Component<IProps> {
       toast.error(e);
     }
     this.afterBulkAction();
-  }
+  };
 
   afterBulkAction = () => {
     if (this.props.onBulkActionComplete) {
       this.props.onBulkActionComplete();
     }
-  }
+  };
 
   onBulkBuild = () => {
-    toast.error("Not implemented yet");
-  }
+    toast.error('Not implemented yet');
+  };
 
   get canArchiveOrReactivate() {
     const { selectedRows } = this.props;
@@ -82,15 +75,15 @@ class Header extends React.Component<IProps> {
     });
   }
 
-  get isInOwnProject(){
+  get isInOwnProject() {
     return this.props.location.pathname.endsWith(PROJECT_ROUTES.OWN);
   }
 
-  get isInOrganizationProject(){
+  get isInOrganizationProject() {
     return this.props.location.pathname.endsWith(PROJECT_ROUTES.ORGANIZATION);
   }
 
-  get isInActiveProject(){
+  get isInActiveProject() {
     return this.isInOrganizationProject || this.isInOwnProject;
   }
 
@@ -103,8 +96,8 @@ class Header extends React.Component<IProps> {
     const dropdownText = {
       'all-projects': t('projects.switcher.dropdown.all'),
       'my-projects': t('projects.switcher.dropdown.myProjects'),
-      'organization': t('projects.switcher.dropdown.orgProjects'),
-      'archived': t('projects.switcher.dropdown.archived'),
+      organization: t('projects.switcher.dropdown.orgProjects'),
+      archived: t('projects.switcher.dropdown.archived'),
     };
 
     console.log(filter);
@@ -119,17 +112,31 @@ class Header extends React.Component<IProps> {
       <div className='flex-col p-t-md-xs' data-test-project-action-header>
         <div className='flex justify-content-space-between p-b-md-xs'>
           <div>
-            <Dropdown
-              className='project-switcher'
-              trigger={trigger}
-              icon={null}
-              inline
-            >
+            <Dropdown className='project-switcher' trigger={trigger} icon={null} inline>
               <Dropdown.Menu>
-                <Dropdown.Item text={t('projects.switcher.dropdown.all')} as={NavLink} to={PROJECT_ROUTES.ALL} />
-                <Dropdown.Item text={t('projects.switcher.dropdown.myProjects')} className='m-l-md' as={NavLink} to={PROJECT_ROUTES.OWN}/>
-                <Dropdown.Item text={t('projects.switcher.dropdown.orgProjects')} className='m-l-md' as={NavLink} to={PROJECT_ROUTES.ORGANIZATION} />
-                <Dropdown.Item text={t('projects.switcher.dropdown.archived')} className='m-l-lg' as={NavLink} to={PROJECT_ROUTES.ARCHIVED} />
+                <Dropdown.Item
+                  text={t('projects.switcher.dropdown.all')}
+                  as={NavLink}
+                  to={PROJECT_ROUTES.ALL}
+                />
+                <Dropdown.Item
+                  text={t('projects.switcher.dropdown.myProjects')}
+                  className='m-l-md'
+                  as={NavLink}
+                  to={PROJECT_ROUTES.OWN}
+                />
+                <Dropdown.Item
+                  text={t('projects.switcher.dropdown.orgProjects')}
+                  className='m-l-md'
+                  as={NavLink}
+                  to={PROJECT_ROUTES.ORGANIZATION}
+                />
+                <Dropdown.Item
+                  text={t('projects.switcher.dropdown.archived')}
+                  className='m-l-lg'
+                  as={NavLink}
+                  to={PROJECT_ROUTES.ARCHIVED}
+                />
               </Dropdown.Menu>
             </Dropdown>
           </div>
@@ -138,17 +145,18 @@ class Header extends React.Component<IProps> {
               <Popup
                 basic
                 hoverable
-                trigger={<div>
-                  <DebouncedSearch
-                    className='search-component'
-                    placeholder={t('common.search')}
-                    onSubmit={onSearch}
-                  />
-                </div>}
-                position='bottom center'>
-
+                trigger={
+                  <div>
+                    <DebouncedSearch
+                      className='search-component'
+                      placeholder={t('common.search')}
+                      onSubmit={onSearch}
+                    />
+                  </div>
+                }
+                position='bottom center'
+              >
                 <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
-
               </Popup>
             </div>
           </div>
@@ -156,30 +164,25 @@ class Header extends React.Component<IProps> {
 
         <div className='flex justify-content-space-between p-b-md-xs'>
           <div>
-            {
-              this.isInActiveProject && this.canArchiveOrReactivate ?
-                (<button
-                  data-test-archive-button
-                  className='ui button basic blue m-r-md'
-                  onClick={this.onBulkArchive}
-                >
-                  {t('common.archive')}
-                </button>) : null
-            }
-            {
-              this.isInArchivedProject && this.canArchiveOrReactivate ?
-                (<button
-                  data-test-reactivate-button
-                  className='ui button basic blue m-r-md'
-                  onClick={this.onBulkReactivate}
-                >
-                  {t('common.reactivate')}
-                </button>) : null
-            }
-            <button
-              className='ui button basic blue m-r-md'
-              onClick={this.onBulkBuild}
-            >
+            {this.isInActiveProject && this.canArchiveOrReactivate ? (
+              <button
+                data-test-archive-button
+                className='ui button basic blue m-r-md'
+                onClick={this.onBulkArchive}
+              >
+                {t('common.archive')}
+              </button>
+            ) : null}
+            {this.isInArchivedProject && this.canArchiveOrReactivate ? (
+              <button
+                data-test-reactivate-button
+                className='ui button basic blue m-r-md'
+                onClick={this.onBulkReactivate}
+              >
+                {t('common.reactivate')}
+              </button>
+            ) : null}
+            <button className='ui button basic blue m-r-md' onClick={this.onBulkBuild}>
               {t('common.build')}
             </button>
           </div>
@@ -196,12 +199,10 @@ class Header extends React.Component<IProps> {
               </button>
             )}
           />
-
-          </div>
+        </div>
       </div>
     );
   }
-
 }
 
 export default compose<IOwnProps, IOwnProps>(

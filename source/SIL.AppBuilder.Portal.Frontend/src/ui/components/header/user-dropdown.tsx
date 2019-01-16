@@ -2,13 +2,16 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
 import { ResourceObject } from 'jsonapi-typescript';
-import { withRouter, RouteComponentProps, NavLink  } from 'react-router-dom';
-
+import { withRouter, RouteComponentProps, NavLink } from 'react-router-dom';
 import { getPictureUrl } from '@lib/auth0';
 import { UserAttributes } from '@data/models/user';
+
 import { USERS_TYPE, idFromRecordIdentity, withLoader } from '@data';
+
 import { withCurrentUserContext } from '@data/containers/with-current-user';
+
 import { withLogout, ILogoutProps } from '@data';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './header.scss';
@@ -18,11 +21,7 @@ interface IOwnProps {
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
 }
 
-export type IProps =
-  & IOwnProps
-  & RouteComponentProps<{}>
-  & i18nProps
-  & ILogoutProps;
+export type IProps = IOwnProps & RouteComponentProps<{}> & i18nProps & ILogoutProps;
 
 class UserDropdown extends React.Component<IProps> {
   render() {
@@ -52,15 +51,13 @@ class UserDropdown extends React.Component<IProps> {
           <a
             className='item'
             target='_blank'
-            href='http://software.sil.org/scriptureappbuilder/service/help/'>
+            rel='noopener noreferrer'
+            href='http://software.sil.org/scriptureappbuilder/service/help/'
+          >
             {t('header.help')}
           </a>
 
-          <Dropdown.Item
-            data-test-logout
-            text={t('header.signOut')}
-            onClick={logout}/>
-
+          <Dropdown.Item data-test-logout text={t('header.signOut')} onClick={logout} />
         </Dropdown.Menu>
       </Dropdown>
     );

@@ -1,18 +1,14 @@
-declare module "@pollyjs/adapter-fetch";
-declare module "@pollyjs/adapter-xhr";
-declare module "@pollyjs/core";
+declare module '@pollyjs/adapter-fetch';
+declare module '@pollyjs/adapter-xhr';
+declare module '@pollyjs/core';
 
-type Troolean =
-| boolean
-| undefined;
+type Troolean = boolean | undefined;
 
-type Id =
-| string
-| number;
+type Id = string | number;
 
 type MaybeFunction<T, TProps> = T | ((props: TProps) => T);
 
-declare module "public/images/*";
+declare module 'public/images/*';
 
 interface Auth0JWT {
   alg: string;
@@ -33,6 +29,4 @@ interface Auth0JWT {
 
 type FnParams<TParams, TResult> = (passedProps: TParams) => TResult;
 
-type FnOrObject<TParams, TResult> =
-  | TResult
-  | FnParams<TParams, TResult>;
+type FnOrObject<TParams, TResult> = TResult | FnParams<TParams, TResult>;

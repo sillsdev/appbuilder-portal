@@ -1,4 +1,5 @@
 import { WithDataProps } from 'react-orbitjs';
+
 import { UserResource, OrganizationResource } from '@data';
 
 export interface IProvidedProps {
@@ -15,11 +16,6 @@ export interface IReduxProps {
   setCurrentOrganizationId: (id: string) => void;
 }
 
-export type IDataProps =
-  & { error?: Error, organization?: OrganizationResource }
-  & WithDataProps;
+export type IDataProps = { error?: Error; organization?: OrganizationResource } & WithDataProps;
 
-export type IProps =
-  & IProvidedProps
-  & IDataProps
-  & IReduxProps;
+export type IProps = IProvidedProps & IDataProps & IReduxProps;

@@ -1,14 +1,14 @@
 import * as React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
 import List from './list';
 import AddWorkflowDefinitionForm from './new';
 import EditWorkflowDefinitionForm from './edit';
 
-import { Switch, Route } from 'react-router-dom';
-
 export const listPathName = '/admin/settings/workflow-definitions';
 export const addWorkflowDefinitionPathName = '/admin/settings/workflow-definitions/new';
-export const editWorkflowDefinitionPathName = '/admin/settings/workflow-definitions/:workflowDefinitionId/edit';
+export const editWorkflowDefinitionPathName =
+  '/admin/settings/workflow-definitions/:workflowDefinitionId/edit';
 
 class WorkflowDefinitionRoute extends React.Component {
   render() {

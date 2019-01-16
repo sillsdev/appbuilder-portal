@@ -3,7 +3,9 @@ import { match as Match } from 'react-router';
 import { OrganizationAttributes } from '@data/models/organization';
 
 import Display from './display';
+
 import { ResourceObject } from 'jsonapi-typescript';
+
 import { ORGANIZATIONS_TYPE } from '@data';
 
 export const pathName = '/organizations/:orgId/settings/infrastructure';
@@ -18,31 +20,26 @@ export interface IProps {
   organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
 }
 
-
 class InfrastructureRoute extends React.Component<IProps> {
-
   update = (attributes) => {
     const { updateOrganization } = this.props;
-    const {
-      useDefaultBuildEngine,
-      buildEngineUrl, buildEngineApiAccessToken
-    } = attributes;
+    const { useDefaultBuildEngine, buildEngineUrl, buildEngineApiAccessToken } = attributes;
 
     updateOrganization({
       useDefaultBuildEngine,
       buildEngineUrl,
-      buildEngineApiAccessToken
+      buildEngineApiAccessToken,
     });
-  }
+  };
 
   render() {
     const { organization } = this.props;
     const displayProps = {
       organization,
-      onChange: this.update
+      onChange: this.update,
     };
 
-    return <Display { ...displayProps } />;
+    return <Display {...displayProps} />;
   }
 }
 

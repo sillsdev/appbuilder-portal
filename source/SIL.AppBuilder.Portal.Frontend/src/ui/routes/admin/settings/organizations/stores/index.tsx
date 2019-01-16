@@ -2,8 +2,8 @@ import * as React from 'react';
 import { match as Match, withRouter } from 'react-router';
 import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import { OrganizationAttributes } from '@data/models/organization';
+
 import {
   OrganizationResource,
   OrganizationStoreResource,
@@ -16,7 +16,6 @@ import {
 
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
-
 import StoreMultiSelect from '@ui/components/inputs/store-multi-select';
 
 import { withDataActions } from '~/data/containers/resources/organization/with-data-actions';
@@ -42,7 +41,7 @@ export default compose<IProps, IOwnProps>(
   withRouter,
   query(({ match: { params: { orgId } } }) => ({
     organization: [
-      q => buildFindRecord(q, 'organization', orgId),
+      (q) => buildFindRecord(q, 'organization', orgId),
       buildOptions({
         include: ['organization-stores.store'],
       }),
@@ -53,14 +52,14 @@ export default compose<IProps, IOwnProps>(
     const { organization } = passedProps;
 
     return {
-      organizationStores: q => q.findRelatedRecords(organization, 'organizationStores'),
+      organizationStores: (q) => q.findRelatedRecords(organization, 'organizationStores'),
     };
   }),
   withLoader(({ organizationStores }) => !organizationStores),
   withDataActions,
   withProps(({ t, updateStore }) => {
     return {
-      updateOrganizationStore: async st => {
+      updateOrganizationStore: async (st) => {
         try {
           await updateStore(st);
           toast.success(t('updated'));
@@ -77,9 +76,9 @@ export default compose<IProps, IOwnProps>(
   };
 
   return (
-    <div className="sub-page-content" data-test-org-settings-stores>
-      <h2 className="bold m-b-md">{t('org.storesTitle')}</h2>
-      <h3 className="p-b-md">{t('org.storeSelectTitle')}</h3>
+    <div className='sub-page-content' data-test-org-settings-stores>
+      <h2 className='bold m-b-md'>{t('org.storesTitle')}</h2>
+      <h3 className='p-b-md'>{t('org.storeSelectTitle')}</h3>
       <StoreMultiSelect {...multiSelectProps} />
     </div>
   );

@@ -1,9 +1,10 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
 } from 'tests/helpers/index';
 import { userIsAppBuilderOf, userIsOrgAdminOf } from 'tests/helpers/factories/user';
 import app from 'tests/helpers/pages/app';
@@ -20,8 +21,8 @@ describe('Acceptance | Accessing Organization Settings', () => {
       type: 'organizations',
       id: 1,
       attributes: {
-        name: 'Some Organization'
-      }
+        name: 'Some Organization',
+      },
     };
 
     useFakeAuthentication(userIsOrgAdminOf(organization));
@@ -43,11 +44,12 @@ describe('Acceptance | Accessing Organization Settings', () => {
     beforeEach(async function() {
       this.mockGet(200, '/organizations/1', {
         data: {
-          id: 1, type: 'organizations',
+          id: 1,
+          type: 'organizations',
           attributes: {
-            name: 'Not org admin of this one'
-          }
-        }
+            name: 'Not org admin of this one',
+          },
+        },
       });
       await visit(url);
     });
@@ -63,8 +65,8 @@ describe('Acceptance | Accessing Organization Settings', () => {
       type: 'organizations',
       id: 2,
       attributes: {
-        name: 'Some Organization'
-      }
+        name: 'Some Organization',
+      },
     };
 
     useFakeAuthentication(userIsOrgAdminOf(organization));
@@ -72,11 +74,12 @@ describe('Acceptance | Accessing Organization Settings', () => {
     beforeEach(async function() {
       this.mockGet(200, '/organizations/1', {
         data: {
-          id: 1, type: 'organizations',
+          id: 1,
+          type: 'organizations',
           attributes: {
-            name: 'Not org admin of this one'
-          }
-        }
+            name: 'Not org admin of this one',
+          },
+        },
       });
 
       await visit(url);
@@ -91,7 +94,6 @@ describe('Acceptance | Accessing Organization Settings', () => {
 
       expect(app.toast.text).to.include(expected);
     });
-
   });
 
   describe('the current user is an app builder', () => {
@@ -100,8 +102,8 @@ describe('Acceptance | Accessing Organization Settings', () => {
       type: 'organizations',
       id: 1,
       attributes: {
-        name: 'Some Organization'
-      }
+        name: 'Some Organization',
+      },
     };
 
     useFakeAuthentication(userIsAppBuilderOf(organization));
@@ -120,6 +122,5 @@ describe('Acceptance | Accessing Organization Settings', () => {
 
       expect(app.toast.text).to.include(expected);
     });
-
   });
 });

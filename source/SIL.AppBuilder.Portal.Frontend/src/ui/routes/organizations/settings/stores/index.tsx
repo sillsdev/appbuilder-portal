@@ -2,13 +2,9 @@ import * as React from 'react';
 import { match as Match } from 'react-router';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import { OrganizationAttributes } from '@data/models/organization';
-import {
-  OrganizationResource,
-  OrganizationStoreResource,
-  StoreResource
-} from '@data';
+
+import { OrganizationResource, OrganizationStoreResource, StoreResource } from '@data';
 
 import StoreMultiSelect from '@ui/components/inputs/store-multi-select';
 import { withTranslations, i18nProps } from '@lib/i18n';
@@ -27,33 +23,29 @@ export interface IProps {
   organizationStores: OrganizationStoreResource[];
 }
 
-type IOwnProps =
-  & IProps
-  & i18nProps;
+type IOwnProps = IProps & i18nProps;
 
 const mapRecordsToProps = (passedProps) => {
   const { organization } = passedProps;
 
   return {
-    organizationStores: q => q.findRelatedRecords(organization, 'organizationStores')
+    organizationStores: (q) => q.findRelatedRecords(organization, 'organizationStores'),
   };
 };
 
 class StoresRoute extends React.Component<IOwnProps> {
-
   togglePrivacy = () => {
     const { update, organization } = this.props;
     const { makePrivateByDefault } = organization.attributes;
 
     update({ makePrivateByDefault: !makePrivateByDefault });
-  }
+  };
 
   updateOrganizationStore = (store) => {
-
     const { updateOrganizationStore } = this.props;
 
     updateOrganizationStore(store);
-  }
+  };
 
   render() {
     const { organizationStores, t } = this.props;
@@ -77,5 +69,5 @@ class StoresRoute extends React.Component<IOwnProps> {
 
 export default compose(
   withTranslations,
-  withOrbit(mapRecordsToProps),
+  withOrbit(mapRecordsToProps)
 )(StoresRoute);

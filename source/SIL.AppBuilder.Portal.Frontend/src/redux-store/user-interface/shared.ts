@@ -5,7 +5,5 @@ export interface State {
 }
 
 export const initialState: State = {
-  isSidebarVisible: false
+  isSidebarVisible: false,
 };
-
-

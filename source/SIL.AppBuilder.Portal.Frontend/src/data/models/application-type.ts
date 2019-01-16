@@ -1,4 +1,4 @@
-import { AttributesObject, ResourceObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type APPLICATION_TYPES_TYPE = 'application-types';
 export const TYPE_NAME = 'application-type';
@@ -9,4 +9,7 @@ export interface ApplicationTypeAttributes extends AttributesObject {
   description: string;
 }
 
-export type ApplicationTypeResource = ResourceObject<APPLICATION_TYPES_TYPE, ApplicationTypeAttributes>;
+export type ApplicationTypeResource = ResourceObject<
+  APPLICATION_TYPES_TYPE,
+  ApplicationTypeAttributes
+>;

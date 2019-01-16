@@ -1,70 +1,83 @@
-import {
-  useFakeAuthentication,
-  fakeAuth0Id
-} from 'tests/helpers/index';
-
+import { useFakeAuthentication, fakeAuth0Id } from 'tests/helpers/index';
 import { beforeEach } from '@bigtest/mocha';
 
 export const lotsOfOrgs = [
   {
-    type: 'organizations', id: 1,
+    type: 'organizations',
+    id: 1,
     attributes: {
-      name: 'SIL International'
-    }
-  }, {
-    type: 'organizations', id: 2,
+      name: 'SIL International',
+    },
+  },
+  {
+    type: 'organizations',
+    id: 2,
     attributes: {
-      name: 'DeveloperTown'
-    }
-  }, {
-    type: 'organizations', id: 3,
+      name: 'DeveloperTown',
+    },
+  },
+  {
+    type: 'organizations',
+    id: 3,
     attributes: {
-      name: 'Kalaam Media'
-    }
-  }, {
-    type: 'organizations', id: 4,
+      name: 'Kalaam Media',
+    },
+  },
+  {
+    type: 'organizations',
+    id: 4,
     attributes: {
-      name: 'The Ember Learning Team'
-    }
-  }, {
-    type: 'organizations', id: 5,
+      name: 'The Ember Learning Team',
+    },
+  },
+  {
+    type: 'organizations',
+    id: 5,
     attributes: {
-      name: 'Blizzard Entertainment'
-    }
-  }, {
-    type: 'organizations', id: 5,
+      name: 'Blizzard Entertainment',
+    },
+  },
+  {
+    type: 'organizations',
+    id: 5,
     attributes: {
-      name: 'Linkedin'
-    }
-  }
+      name: 'Linkedin',
+    },
+  },
 ];
 
 export const threeOrgs = [
   {
-    type: 'organizations', id: 1,
+    type: 'organizations',
+    id: 1,
     attributes: {
-      name: 'SIL International'
-    }
-  }, {
-    type: 'organizations', id: 2,
+      name: 'SIL International',
+    },
+  },
+  {
+    type: 'organizations',
+    id: 2,
     attributes: {
-      name: 'DeveloperTown'
-    }
-  }, {
-    type: 'organizations', id: 3,
+      name: 'DeveloperTown',
+    },
+  },
+  {
+    type: 'organizations',
+    id: 3,
     attributes: {
-      name: 'Kalaam Media'
-    }
-  }
+      name: 'Kalaam Media',
+    },
+  },
 ];
 
 export const oneOrg = [
-    {
-      type: 'organizations', id: 1,
-      attributes: {
-        name: 'SIL International'
-      }
+  {
+    type: 'organizations',
+    id: 1,
+    attributes: {
+      name: 'SIL International',
     },
+  },
 ];
 
 export default {
@@ -76,11 +89,9 @@ export default {
         attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
         relationships: {
           ['organization-memberships']: {
-            data: [
-              { id: 1, type: 'organization-memberships' },
-            ]
-          }
-        }
+            data: [{ id: 1, type: 'organization-memberships' }],
+          },
+        },
       },
       included: [
         {
@@ -89,24 +100,24 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
         },
         {
           id: 1,
-          type: 'groups' ,
+          type: 'groups',
           attributes: { name: 'Some Group' },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
         },
         ...oneOrg,
-      ]
+      ],
     });
 
     beforeEach(function() {
       this.mockGet(200, '/organizations', {
-        data: [...oneOrg]
+        data: [...oneOrg],
       });
     });
   },
@@ -118,11 +129,9 @@ export default {
         attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
         relationships: {
           ['organization-memberships']: {
-            data: [
-              { id: 1, type: 'organization-memberships' },
-            ]
-          }
-        }
+            data: [{ id: 1, type: 'organization-memberships' }],
+          },
+        },
       },
       included: [
         {
@@ -131,8 +140,8 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
         },
         {
           id: 2,
@@ -140,8 +149,8 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 2, type: 'organizations' } }
-          }
+            organization: { data: { id: 2, type: 'organizations' } },
+          },
         },
         {
           id: 3,
@@ -149,8 +158,8 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 3, type: 'organizations' } }
-          }
+            organization: { data: { id: 3, type: 'organizations' } },
+          },
         },
         {
           id: 4,
@@ -158,8 +167,8 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 4, type: 'organizations' } }
-          }
+            organization: { data: { id: 4, type: 'organizations' } },
+          },
         },
         {
           id: 5,
@@ -167,19 +176,19 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 4, type: 'organizations' } }
-          }
+            organization: { data: { id: 4, type: 'organizations' } },
+          },
         },
         {
           id: 1,
-          type: 'groups' ,
+          type: 'groups',
           attributes: { name: 'Some Group' },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
         },
-        ...lotsOfOrgs
-      ]
+        ...lotsOfOrgs,
+      ],
     });
   },
   userIsIn3Organizations() {
@@ -190,11 +199,9 @@ export default {
         attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
         relationships: {
           ['organization-memberships']: {
-            data: [
-              { id: 1, type: 'organization-memberships' },
-            ]
-          }
-        }
+            data: [{ id: 1, type: 'organization-memberships' }],
+          },
+        },
       },
       included: [
         {
@@ -203,8 +210,8 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
         },
         {
           id: 2,
@@ -212,8 +219,8 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 2, type: 'organizations' } }
-          }
+            organization: { data: { id: 2, type: 'organizations' } },
+          },
         },
         {
           id: 3,
@@ -221,19 +228,19 @@ export default {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 3, type: 'organizations' } }
-          }
+            organization: { data: { id: 3, type: 'organizations' } },
+          },
         },
         {
           id: 1,
-          type: 'groups' ,
+          type: 'groups',
           attributes: { name: 'Some Group' },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
         },
-        ...threeOrgs
-      ]
+        ...threeOrgs,
+      ],
     });
-  }
+  },
 };

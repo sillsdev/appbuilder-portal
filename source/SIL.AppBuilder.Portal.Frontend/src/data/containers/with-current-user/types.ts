@@ -1,10 +1,12 @@
 import { SingleResourceDoc, ResourceObject } from 'jsonapi-typescript';
 
 import { UserResource, OrganizationResource } from '@data';
-import {USERS_TYPE } from '@data';
+
+import { USERS_TYPE } from '@data';
+
 import { UserAttributes } from '@data/models/user';
 
-export interface IFetchCurrentUserOptions{
+export interface IFetchCurrentUserOptions {
   forceReloadFromServer?: boolean;
   forceReloadFromCache?: boolean;
 }

@@ -6,13 +6,10 @@ interface IOwnProps {
   className: string;
 }
 
-type IProps =
-  & IOwnProps;
+type IProps = IOwnProps;
 
 class Empty extends React.Component<IProps> {
-
   render() {
-
     const { children, condition, label, className } = this.props;
 
     if (!condition) {
@@ -20,9 +17,7 @@ class Empty extends React.Component<IProps> {
     }
 
     return children;
-
   }
-
 }
 
 export default Empty;

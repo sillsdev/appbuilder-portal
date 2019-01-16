@@ -7,9 +7,8 @@ import {
   hasClass,
   isPresent,
   collection,
-  Interactor
+  Interactor,
 } from '@bigtest/interactor';
-
 import orgSwitcherInteractor from '@ui/components/sidebar/org-switcher/__tests__/page';
 
 class App {
@@ -35,7 +34,6 @@ class App {
   selectLocale = selectable('[data-test-locale-switcher]');
   myProfileText = text('[data-test-header-avatar] [data-test-profile]');
 
-
   openSidebar = clickable('[data-test-header-sidebar-button]');
   isSidebarVisible = isPresent('.is-sidebar-visible [data-test-sidebar]');
   openOrgSwitcher = clickable('[data-test-org-switcher-toggler]');
@@ -47,7 +45,7 @@ class App {
   isLoaderVisible = isPresent('.spinner');
 
   waitForDoneLoading = new Interactor('.spinner')
-    .when<boolean>(spinner => {
+    .when<boolean>((spinner) => {
       return !spinner;
     })
     .do(() => console.log('spinner gone'))

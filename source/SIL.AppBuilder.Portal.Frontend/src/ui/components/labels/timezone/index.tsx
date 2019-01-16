@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Popup } from 'semantic-ui-react';
-
-import {
-  withMomentTimezone,
-  IProvidedProps as TimezoneProps
-} from '@lib/with-moment-timezone';
+import { withMomentTimezone, IProvidedProps as TimezoneProps } from '@lib/with-moment-timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
@@ -14,15 +10,10 @@ interface IOwnProps {
   className?: string;
 }
 
-type IProps =
-  & IOwnProps
-  & TimezoneProps
-  & i18nProps;
+type IProps = IOwnProps & TimezoneProps & i18nProps;
 
 class Timezone extends React.PureComponent<IProps> {
-
   render() {
-
     const { dateTime, emptyLabel, moment, timezone, className } = this.props;
     let dateTimeZ = dateTime;
 
@@ -35,15 +26,9 @@ class Timezone extends React.PureComponent<IProps> {
     }
     const dateTimeTZ = moment(dateTimeZ).tz(timezone);
 
-    const trigger = (
-      <span className={className}>
-        {dateTimeTZ.fromNow(true)}
-      </span>
-    );
+    const trigger = <span className={className}>{dateTimeTZ.fromNow(true)}</span>;
 
-    return (
-      <Popup trigger={trigger} content={dateTimeTZ.format('MMMM Do YYYY, h:mm:ss')}/>
-    );
+    return <Popup trigger={trigger} content={dateTimeTZ.format('MMMM Do YYYY, h:mm:ss')} />;
   }
 }
 

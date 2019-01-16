@@ -14,12 +14,12 @@ export interface State {
     [tableName: string]: {
       rows: any[];
       allCheckboxState: string;
-    }
+    };
   };
 }
 
 export const initialState: State = {
   currentOrganizationId: '',
   columnSelections: {},
-  rowSelections: {}
+  rowSelections: {},
 };

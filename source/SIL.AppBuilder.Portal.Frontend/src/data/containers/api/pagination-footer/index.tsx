@@ -1,14 +1,11 @@
 import * as React from 'react';
 import * as pick from 'lodash/pick';
 import Pagination from 'semantic-ui-react/dist/commonjs/addons/Pagination';
-
 import { GENERIC_ATTRIBUTES, IAttributeProps } from '@lib/dom';
 
 import { IPaginateProps } from '../pagination';
 
-type IProps =
-& IPaginateProps
-& IAttributeProps;
+type IProps = IPaginateProps & IAttributeProps;
 
 export class PaginationFooter extends React.Component<IProps, {}> {
   onPageChange = (e, options) => {
@@ -16,7 +13,7 @@ export class PaginationFooter extends React.Component<IProps, {}> {
     const { setOffset } = this.props;
 
     setOffset(activePage);
-  }
+  };
 
   render() {
     // TODO: figure out how to get total pages from the response
@@ -26,7 +23,7 @@ export class PaginationFooter extends React.Component<IProps, {}> {
 
     return (
       <Pagination
-        { ...attributeProps }
+        {...attributeProps}
         data-test-pagination-footer
         totalPages={1000}
         boundaryRange={0}

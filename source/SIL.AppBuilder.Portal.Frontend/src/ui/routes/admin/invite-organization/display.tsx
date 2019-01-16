@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
-
 import { tomorrow } from '@lib/date';
-
 import { OrganizationInviteAttributes } from '@data/models/organization-invite';
 
 import './styles.scss';
@@ -21,7 +19,6 @@ export interface IState {
   url?: string;
 }
 
-
 @withTemplateHelpers
 export default class InviteOrganizationDisplay extends React.Component<IProps, IState> {
   mut: Mut;
@@ -35,7 +32,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
       name,
       ownerEmail: orgAdminEmail,
       url: websiteUrl,
-      expiresAt: tomorrow()
+      expiresAt: tomorrow(),
     };
   }
 
@@ -45,7 +42,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
     await this.props.onSubmit(this.state);
 
     this.setState({ name: '', ownerEmail: '', url: '', expiresAt: tomorrow() });
-  }
+  };
 
   render() {
     const { mut } = this;
@@ -60,35 +57,27 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
               data-test-owner-email
               type='text'
               value={ownerEmail || ''}
-              onChange={mut('ownerEmail')} />
+              onChange={mut('ownerEmail')}
+            />
           </div>
 
           <div className='field m-b-xl'>
             <label>Organization Name</label>
-            <input
-              data-test-org-name
-              type='text'
-              value={name || ''}
-              onChange={mut('name')} />
+            <input data-test-org-name type='text' value={name || ''} onChange={mut('name')} />
           </div>
-
 
           <div className='field m-b-xl'>
             <label>Organization Website URL</label>
-            <input
-              data-test-org-url
-              type='text'
-              value={url || ''}
-              onChange={mut('url')} />
+            <input data-test-org-url type='text' value={url || ''} onChange={mut('url')} />
           </div>
 
           <button
             data-test-submit
             className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-            onClick={this.submit}>
+            onClick={this.submit}
+          >
             Add Organization
           </button>
-
         </form>
       </div>
     );

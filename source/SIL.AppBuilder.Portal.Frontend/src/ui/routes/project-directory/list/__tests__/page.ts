@@ -1,10 +1,4 @@
-import {
-  interactor,
-  Interactor,
-  text,
-  isPresent
-} from '@bigtest/interactor';
-
+import { interactor, Interactor, text, isPresent } from '@bigtest/interactor';
 import orgSelectInteractor from '@ui/components/inputs/organization-select/__tests__/page';
 import ProjectTableInteractor from '@ui/components/project-table/__tests__/page';
 
@@ -21,4 +15,6 @@ class Directory {
 export const DirectoryInteractor = interactor(Directory);
 export type TDirectoryInteractor = Directory & Interactor;
 
-export default new (DirectoryInteractor as any)('[data-test-project-directory]') as TDirectoryInteractor;
+export default new (DirectoryInteractor as any)(
+  '[data-test-project-directory]'
+) as TDirectoryInteractor;

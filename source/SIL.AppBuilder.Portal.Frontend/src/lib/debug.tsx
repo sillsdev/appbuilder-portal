@@ -1,28 +1,26 @@
 import * as React from 'react';
 
 export function withDebugger(InnerComponent) {
-  return props => {
-    /* tslint:disable */
-    debugger;
-    /* tslint:enable */
+  return (props) => {
+    debugger; // eslint-disable-line no-debugger
 
-    return <InnerComponent { ...props } />;
+    return <InnerComponent {...props} />;
   };
 }
 
 export const logProps = (label: string) => (WrappedComponent) => {
-  return props => {
+  return (props) => {
     console.log('DEBUG: ', label, props);
 
-    return <WrappedComponent { ...props } />;
+    return <WrappedComponent {...props} />;
   };
 };
 
 export function requireProps(...propsToCheck) {
-  return InnerComponent => props => {
+  return (InnerComponent) => (props) => {
     const missingProps: string[] = [];
 
-    propsToCheck.forEach(prop => {
+    propsToCheck.forEach((prop) => {
       if (props[prop] === undefined) {
         missingProps.push(prop);
       }
@@ -36,7 +34,7 @@ export function requireProps(...propsToCheck) {
       true
     );
 
-    return <InnerComponent { ...props } />;
+    return <InnerComponent {...props} />;
   };
 }
 

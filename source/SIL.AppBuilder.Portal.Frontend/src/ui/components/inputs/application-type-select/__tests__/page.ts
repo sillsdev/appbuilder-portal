@@ -1,31 +1,23 @@
-import {
-  interactor,
-  text,
-  is,
-  collection
-} from '@bigtest/interactor';
+import { interactor, text, is, collection } from '@bigtest/interactor';
 
 @interactor
 export class ApplicationTypeSelectInteractor {
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   selectedApplicationType = text('.selected');
 
   options = collection('.item');
 
   chooseApplicationType(optionText: string) {
-    return this
-      .when(() => {
-        const el = this
-          .$$('.item')
-          .find(item => item.innerText.includes(optionText));
+    return this.when(() => {
+      const el = this.$$('.item').find((item) => item.innerText.includes(optionText));
 
-        if (!el) {
-          throw new Error(`cannot find ".item" with text "${optionText}"`);
-        }
+      if (!el) {
+        throw new Error(`cannot find ".item" with text "${optionText}"`);
+      }
 
-        return el;
-      }).do(el => el.click());
+      return el;
+    }).do((el) => el.click());
   }
 }
 

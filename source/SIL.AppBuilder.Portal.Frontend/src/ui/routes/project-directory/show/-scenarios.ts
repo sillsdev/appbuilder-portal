@@ -14,7 +14,7 @@ export const projectOne = {
       'allow-downloads': true,
       'automatic-builds': true,
       'workflow-project-id': 60,
-      'workflow-project-url': ''
+      'workflow-project-url': '',
     },
     relationships: {
       type: { data: { type: 'application-types', id: '1' } },
@@ -23,13 +23,11 @@ export const projectOne = {
       organization: { data: { type: 'organizations', id: '1' } },
       reviewers: {},
       products: {
-        data: [
-          { type: 'products', id: 'bccb8128-2721-4fad-b138-d4137c5e34bf' }
-        ]
-      }
+        data: [{ type: 'products', id: 'bccb8128-2721-4fad-b138-d4137c5e34bf' }],
+      },
     },
     type: 'projects',
-    id: '685'
+    id: '685',
   },
   included: [
     {
@@ -38,43 +36,38 @@ export const projectOne = {
         'website-url': 'https://developertown.com',
         'build-engine-url': 'https://buildengine.gtis.guru:8443',
         'build-engine-api-access-token': 'NS7kCjCRNFPmCGMCs3cQ',
-        'logo-url': 'https://www.developertown.com/wp-content/uploads/2018/01/DT-PoundHouse-Blue.png',
+        'logo-url':
+          'https://www.developertown.com/wp-content/uploads/2018/01/DT-PoundHouse-Blue.png',
         'use-default-build-engine': true,
-        'public-by-default': true
+        'public-by-default': true,
       },
       relationships: {
         owner: { data: { type: 'users', id: '3' } },
         'organization-memberships': {
-          data: [
-            { type: 'organization-memberships', id: '6' }
-          ]
+          data: [{ type: 'organization-memberships', id: '6' }],
         },
         groups: {
-          data: [
-            { type: 'groups', id: '14' }
-          ]
+          data: [{ type: 'groups', id: '14' }],
         },
         'organization-product-definitions': {},
         'organization-stores': {},
         'user-roles': {
-          data: [
-            { type: 'user-roles', id: '9' }
-          ]
-        }
+          data: [{ type: 'user-roles', id: '9' }],
+        },
       },
       type: 'organizations',
-      id: '1'
+      id: '1',
     },
     {
       attributes: {
         name: 'Development',
-        abbreviation: 'DEV'
+        abbreviation: 'DEV',
       },
       relationships: {
-        owner: { data: { type: 'organizations', id: '1' } }
+        owner: { data: { type: 'organizations', id: '1' } },
       },
       type: 'groups',
-      id: '14'
+      id: '14',
     },
     {
       attributes: {
@@ -82,7 +75,7 @@ export const projectOne = {
       },
       relationships: {},
       type: 'users',
-      id: '3'
+      id: '3',
     },
     {
       attributes: {
@@ -97,18 +90,19 @@ export const projectOne = {
         auth0Id: 'google-oauth2|111802484969448690930',
         'profile-visibility': 1,
         'email-notification': true,
-        'publishing-key': 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCHSzEF6dEIiukeBeusI9qdQ3E8f/wCdtKOv5NItePwfXE3LLEOw5Kx7rZquhO9z6/58lTBK8flFpefOXsL2sYHHaAF40lcAJ6FBUsycehN12NThFDcGT+DbauARToXx/ypz4zJcdWJ8R0qQRm4vJgJL5xIKWR2cK8T7jA1FC0ZcltQdXw1yiSYiV7j1QIfNDTLtMIBg0M+HNVDPYDAC05h6Dnz9XDCA9sgCYt8CMey0wjqbzX+Qn3KxPmz000dRCtgiHYMj+oClZMVPPqltQuDJUiDpztNCAWpL1U6rF7vCC6xl2cXUwK8kT82CesCuKafOd336KZkUphkqP2bYRrz lprestonsegoiii@Tyche',
+        'publishing-key':
+          'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCHSzEF6dEIiukeBeusI9qdQ3E8f/wCdtKOv5NItePwfXE3LLEOw5Kx7rZquhO9z6/58lTBK8flFpefOXsL2sYHHaAF40lcAJ6FBUsycehN12NThFDcGT+DbauARToXx/ypz4zJcdWJ8R0qQRm4vJgJL5xIKWR2cK8T7jA1FC0ZcltQdXw1yiSYiV7j1QIfNDTLtMIBg0M+HNVDPYDAC05h6Dnz9XDCA9sgCYt8CMey0wjqbzX+Qn3KxPmz000dRCtgiHYMj+oClZMVPPqltQuDJUiDpztNCAWpL1U6rF7vCC6xl2cXUwK8kT82CesCuKafOd336KZkUphkqP2bYRrz lprestonsegoiii@Tyche',
         'workflow-user-id': '079d6e50-769c-4607-b66f-e668b6171a19',
         'date-created': null,
-        'date-updated': '2018-12-03T21:29:37.254778'
+        'date-updated': '2018-12-03T21:29:37.254778',
       },
       relationships: {
         'organization-memberships': {},
         'group-memberships': {},
-        'user-roles': {}
+        'user-roles': {},
       },
       type: 'users',
-      id: '7'
+      id: '7',
     },
     {
       attributes: {
@@ -119,7 +113,7 @@ export const projectOne = {
         'date-built': null,
         'workflow-publish-id': 0,
         'workflow-comment': '',
-        'date-published': null
+        'date-published': null,
       },
       relationships: {
         project: { data: { type: 'projects', id: '685' } },
@@ -127,18 +121,14 @@ export const projectOne = {
         store: { data: { type: 'stores', id: '1' } },
         'store-language': { data: { type: 'store-languages', id: '20' } },
         'product-builds': {
-          data: [
-            { type: 'product-builds', id: '1' },
-          ]
+          data: [{ type: 'product-builds', id: '1' }],
         },
         'product-artifacts': {
-          data: [
-            { type: 'product-artifacts', id: '48' },
-          ]
-        }
+          data: [{ type: 'product-artifacts', id: '48' }],
+        },
       },
       type: 'products',
-      id: 'bccb8128-2721-4fad-b138-d4137c5e34bf'
+      id: 'bccb8128-2721-4fad-b138-d4137c5e34bf',
     },
     {
       type: 'product-builds',
@@ -149,40 +139,39 @@ export const projectOne = {
       relationships: {
         product: { data: { type: 'products', id: 'bccb8128-2721-4fad-b138-d4137c5e34bf' } },
         'product-artifacts': {
-          data: [
-            { type: 'product-artifacts', id: '48' },
-          ]
+          data: [{ type: 'product-artifacts', id: '48' }],
         },
       },
     },
     {
       attributes: {
         name: 'android_google_play',
-        description: 'Android App to Google Play'
+        description: 'Android App to Google Play',
       },
       relationships: {
         type: { data: { type: 'application-types', id: '1' } },
-        workflow: { data: { type: 'workflow-definitions', id: '1' } }
+        workflow: { data: { type: 'workflow-definitions', id: '1' } },
       },
       type: 'product-definitions',
-      id: '1'
+      id: '1',
     },
     {
       attributes: {
         name: 'scriptureappbuilder',
-        description: 'Scripture App Builder'
+        description: 'Scripture App Builder',
       },
       type: 'application-types',
-      id: '1'
+      id: '1',
     },
     {
       attributes: {
         'artifact-type': 'package_name',
-        url: 'https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_23/34/package_name.txt',
+        url:
+          'https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_23/34/package_name.txt',
         'file-size': 18,
         'content-type': 'text/plain',
         'date-created': '2018-12-03T22:27:06.201276',
-        'date-updated': '2018-12-03T22:27:06.201276'
+        'date-updated': '2018-12-03T22:27:06.201276',
       },
       relationships: {
         product: { data: { type: 'products', id: 'bccb8128-2721-4fad-b138-d4137c5e34bf' } },
@@ -191,10 +180,10 @@ export const projectOne = {
         },
       },
       type: 'product-artifacts',
-      id: '48'
+      id: '48',
     },
   ],
   meta: {
-    'total-records': 685
-  }
+    'total-records': 685,
+  },
 };

@@ -1,4 +1,4 @@
-import { AttributesObject, ResourceObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type ROLE_TYPE = 'roles';
 export const TYPE_NAME = 'role';
@@ -6,7 +6,7 @@ export const TYPE_NAME = 'role';
 export enum ROLE {
   SuperAdmin = 'SuperAdmin',
   OrganizationAdmin = 'OrganizationAdmin',
-  AppBuilder = 'AppBuilder'
+  AppBuilder = 'AppBuilder',
 }
 
 export interface RoleAttributes extends AttributesObject {
@@ -14,4 +14,3 @@ export interface RoleAttributes extends AttributesObject {
 }
 
 export type RoleResource = ResourceObject<ROLE_TYPE | string, RoleAttributes>;
-

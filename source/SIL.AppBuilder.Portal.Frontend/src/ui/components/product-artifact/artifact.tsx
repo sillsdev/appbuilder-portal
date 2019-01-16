@@ -4,6 +4,7 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 
 import { ProductArtifactResource, attributesFor } from '@data';
+
 import FileSize from '@ui/components/labels/file-size';
 import TimezoneLabel from '@ui/components/labels/timezone';
 
@@ -11,8 +12,7 @@ interface IOwnProps {
   artifact: ProductArtifactResource;
 }
 
-type IProps =
-  & IOwnProps;
+type IProps = IOwnProps;
 
 class Artifact extends React.PureComponent<IProps> {
   render() {
@@ -27,19 +27,23 @@ class Artifact extends React.PureComponent<IProps> {
         </div>
         <div className='flex-30 flex align-items-center justify-content-end'>
           <div className='flex-grow'>
-            <TimezoneLabel dateTime={dateUpdated} className='m-r-md'/>
+            <TimezoneLabel dateTime={dateUpdated} className='m-r-md' />
           </div>
 
           <FileSize size={fileSize} className='flex-30 text-align-right p-r-md' />
-          <a href={url} download target='_blank' className='download flex-10'>
+          <a
+            href={url}
+            download
+            target='_blank'
+            rel='noopener noreferrer'
+            className='download flex-10'
+          >
             <VerticalAlignBottomIcon />
           </a>
         </div>
       </div>
     );
-
   }
-
 }
 
 export default Artifact;

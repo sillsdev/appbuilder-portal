@@ -3,9 +3,13 @@ import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import {
-  ProjectResource, attributesFor, OrganizationResource,
-  UserResource, GroupResource
+  ProjectResource,
+  attributesFor,
+  OrganizationResource,
+  UserResource,
+  GroupResource,
 } from '@data';
+
 import { i18nProps, withTranslations } from '@lib/i18n';
 
 import Products from './products';
@@ -21,10 +25,7 @@ interface IComposedProps {
   organizationOwner: UserResource;
 }
 
-type IProps =
-  & IExpectedProps
-  & IComposedProps
-  & i18nProps;
+type IProps = IExpectedProps & IComposedProps & i18nProps;
 
 class Details extends React.PureComponent<IProps> {
   render() {
@@ -33,14 +34,15 @@ class Details extends React.PureComponent<IProps> {
     const { name: organizationName, logoUrl } = attributesFor(organization);
     const { name: orgOwnerName } = attributesFor(organizationOwner);
 
-    const logo = logoUrl
-      ? <img src={logoUrl} style={{ maxHeight: '60px', maxWidth: '60px' }} />
-      : '\u00A0';
+    const logo = logoUrl ? (
+      <img src={logoUrl} style={{ maxHeight: '60px', maxWidth: '60px' }} />
+    ) : (
+      '\u00A0'
+    );
 
     return (
       <div className='flex-grow p-r-lg-lg'>
         <div data-test-public-project-details className='m-b-lg'>
-
           <div className='m-b-md thin-bottom-border p-b-lg flex-row justify-content-start align-items-center'>
             <span data-test-logo>{logo}</span>
 
@@ -65,7 +67,6 @@ class Details extends React.PureComponent<IProps> {
           </div>
         </div>
 
-
         <Products project={project} />
       </div>
     );
@@ -78,16 +79,16 @@ export default compose<IProps, IExpectedProps>(
     const { project } = passedProps;
 
     return {
-      group: q => q.findRelatedRecord(project, 'group'),
-      organization: q => q.findRelatedRecord(project, 'organization'),
-      owner: q => q.findRelatedRecord(project, 'owner'),
+      group: (q) => q.findRelatedRecord(project, 'group'),
+      organization: (q) => q.findRelatedRecord(project, 'organization'),
+      owner: (q) => q.findRelatedRecord(project, 'owner'),
     };
   }),
   withOrbit((passedProps: { organization: OrganizationResource }) => {
     const { organization } = passedProps;
 
     return {
-      organizationOwner: q => q.findRelatedRecord(organization, 'owner'),
+      organizationOwner: (q) => q.findRelatedRecord(organization, 'owner'),
     };
   })
 )(Details);

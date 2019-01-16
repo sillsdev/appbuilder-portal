@@ -1,7 +1,13 @@
 import {
   Interactor,
-  interactor, isPresent,
-  clickable, fillable, value, selectable, text, collection
+  interactor,
+  isPresent,
+  clickable,
+  fillable,
+  value,
+  selectable,
+  text,
+  collection,
 } from '@bigtest/interactor';
 
 @interactor
@@ -11,4 +17,4 @@ export class Page {
   comments = collection('[data-test-comment');
 }
 
-export default (new (Page as any)('[data-test-tasks]')) as Page & Interactor;
+export default new (Page as any)('[data-test-tasks]') as Page & Interactor;

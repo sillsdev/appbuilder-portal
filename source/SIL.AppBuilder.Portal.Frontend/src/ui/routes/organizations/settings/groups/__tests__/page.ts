@@ -1,14 +1,6 @@
-import {
-  clickable,
-  text,
-  fillable,
-  collection,
-  interactor,
-  Interactor,
-} from '@bigtest/interactor';
+import { clickable, text, fillable, collection, interactor, Interactor } from '@bigtest/interactor';
 
 class Groups {
-
   clickAddGroupButton = clickable('[data-test-org-add-group-button]');
   fillName = fillable('[data-test-org-group-form-name]');
   fillAbbreviation = fillable('[data-test-org-group-form-abbreviation]');

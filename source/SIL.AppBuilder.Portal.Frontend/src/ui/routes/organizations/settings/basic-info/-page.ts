@@ -1,10 +1,4 @@
-import {
-  interactor,
-  clickable,
-  text,
-  fillable,
-  Interactor
-} from '@bigtest/interactor';
+import { interactor, clickable, text, fillable, Interactor } from '@bigtest/interactor';
 
 class Page {
   fillName = fillable('input[data-test-name]');
@@ -16,4 +10,6 @@ export const PageInteractor = interactor(Page);
 
 export type TPageinationInteractor = Page & Interactor;
 
-export default new (PageInteractor as any)('form[data-test-org-settings-basic-info]') as TPageinationInteractor;
+export default new (PageInteractor as any)(
+  'form[data-test-org-settings-basic-info]'
+) as TPageinationInteractor;

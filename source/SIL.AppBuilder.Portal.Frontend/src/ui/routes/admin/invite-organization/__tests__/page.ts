@@ -1,12 +1,8 @@
-
-import {
-  interactor,
-  clickable, fillable, value
-} from '@bigtest/interactor';
+import { interactor, clickable, fillable, value } from '@bigtest/interactor';
 
 @interactor
 export class FormInteractor {
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   fillEmail = fillable('[data-test-owner-email]');
   fillOrgName = fillable('[data-test-org-name]');

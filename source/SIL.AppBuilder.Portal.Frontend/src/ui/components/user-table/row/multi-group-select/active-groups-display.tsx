@@ -8,11 +8,11 @@ import {
   attributesFor,
   isRelatedTo,
 } from '@data';
+
 import {
   withGroupMemberships,
   IProvidedProps as IUserGroupProps,
 } from '@data/containers/resources/user/with-user-groups';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 
@@ -38,18 +38,18 @@ export default compose<IProps, INeededProps>(
     };
   }),
   withGroupMemberships
-)(React.memo((props: IProps) => {
-  const { user, organization, groups, userHasGroup, t } = props;
+)(
+  React.memo((props: IProps) => {
+    const { user, organization, groups, userHasGroup, t } = props;
 
-  const activeGroups = groups.filter(group => {
-    return userHasGroup(group) && isRelatedTo(group, 'owner', organization.id);
-  });
+    const activeGroups = groups.filter((group) => {
+      return userHasGroup(group) && isRelatedTo(group, 'owner', organization.id);
+    });
 
-  if (isEmpty(activeGroups)) {
-    return t('common.none');
-  }
+    if (isEmpty(activeGroups)) {
+      return t('common.none');
+    }
 
-  return activeGroups
-    .map(group => attributesFor(group).name)
-    .join(', ');
-}));
+    return activeGroups.map((group) => attributesFor(group).name).join(', ');
+  })
+);

@@ -1,9 +1,4 @@
-import {
-  interactor,
-  clickable,
-  text,
-  Interactor
-} from '@bigtest/interactor';
+import { interactor, clickable, text, Interactor } from '@bigtest/interactor';
 
 class Pagination {
   clickFirst = clickable('a[type="firstItem"]');
@@ -18,4 +13,6 @@ export const PaginationInteractor = interactor(Pagination);
 
 export type TPageinationInteractor = Pagination & Interactor;
 
-export default new (PaginationInteractor as any)('[data-test-pagination-footer]') as TPageinationInteractor;
+export default new (PaginationInteractor as any)(
+  '[data-test-pagination-footer]'
+) as TPageinationInteractor;

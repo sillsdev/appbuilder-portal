@@ -5,9 +5,17 @@ import CloseIcon from '@material-ui/icons/Close';
 import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import ProductDefinitionMultiSelect from './multi-select';
-import { ProductResource, ProductDefinitionResource, OrganizationResource, attributesFor, ProjectResource } from '@data';
 import { isEmpty } from '@lib/collection';
+
+import ProductDefinitionMultiSelect from './multi-select';
+
+import {
+  ProductResource,
+  ProductDefinitionResource,
+  OrganizationResource,
+  attributesFor,
+  ProjectResource,
+} from '@data';
 
 interface INeededProps {
   organization: OrganizationResource;
@@ -19,17 +27,14 @@ interface IOwnProps {
   isEmptyWorkflowProjectUrl: boolean;
 }
 
-type IProps =
-  & IOwnProps
-  & INeededProps
-  & i18nProps;
+type IProps = IOwnProps & INeededProps & i18nProps;
 
- @withTemplateHelpers
- class ProductModal extends React.Component<IProps> {
+@withTemplateHelpers
+class ProductModal extends React.Component<IProps> {
   toggle: Toggle;
 
   state = {
-    isModalOpen: false
+    isModalOpen: false,
   };
 
   showToast = () => toast.warning(this.props.t('project.products.creationInProgress'));
@@ -81,16 +86,13 @@ type IProps =
       </Modal>
     );
   }
-
 }
 
 export default compose<IProps, INeededProps>(
   withTranslations,
-  withProps(({project}) => {
+  withProps(({ project }) => {
     return {
-      isEmptyWorkflowProjectUrl: isEmpty(
-        attributesFor(project).workflowProjectUrl
-      )
+      isEmptyWorkflowProjectUrl: isEmpty(attributesFor(project).workflowProjectUrl),
     };
   })
 )(ProductModal);

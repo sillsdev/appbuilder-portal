@@ -1,11 +1,10 @@
 import * as React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
 import List from './list';
 import AddOrganizationForm from './new';
 import EditOrganizationForm from './edit';
 import StoreSelection from './stores';
-
-import { Switch, Route } from 'react-router-dom';
 
 export const listPathName = '/admin/settings/organizations';
 export const addOrganizationPathName = '/admin/settings/organizations/new';
@@ -13,7 +12,6 @@ export const editOrganizationPathName = '/admin/settings/organizations/:orgId/ed
 export const storePath = '/admin/settings/organizations/:orgId/stores';
 
 class OrganizationRoute extends React.Component {
-
   render() {
     return (
       <div className='sub-page-content' data-test-admin-organizations>

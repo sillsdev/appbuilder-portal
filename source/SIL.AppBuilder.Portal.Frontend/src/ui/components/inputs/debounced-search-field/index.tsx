@@ -1,6 +1,5 @@
 import * as React from 'react';
 import SearchIcon from '@material-ui/icons/Search';
-
 import { debounce } from '@lib/debounce';
 import { filterForValidAttributes, IAttributeProps } from '@lib/dom';
 
@@ -28,7 +27,7 @@ export default class DebouncedSearch extends React.Component<IProps & IAttribute
     const searchTerm = e.target.value;
 
     this.setState({ searchTerm }, this.trySearch);
-  }
+  };
 
   render() {
     const { placeholder, className, onSubmit, ...other } = this.props;
@@ -37,15 +36,10 @@ export default class DebouncedSearch extends React.Component<IProps & IAttribute
     const attributes = filterForValidAttributes(other);
 
     return (
-      <div className={`ui left input icon ${className}`} { ...other }>
-        <input
-          type='text'
-          placeholder={placeholder}
-          value={searchTerm}
-          onChange={this.didType} />
+      <div className={`ui left input icon ${className}`} {...other}>
+        <input type='text' placeholder={placeholder} value={searchTerm} onChange={this.didType} />
         <SearchIcon className='material-search-icon-in-field' />
       </div>
     );
   }
-
 }

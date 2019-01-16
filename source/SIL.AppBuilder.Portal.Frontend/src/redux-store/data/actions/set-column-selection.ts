@@ -11,12 +11,15 @@ export interface SetColumnSelectionAction {
 }
 
 // Action Creator
-export const setColumnSelection = (tableName: string, columns: Column[]): SetColumnSelectionAction => ({
+export const setColumnSelection = (
+  tableName: string,
+  columns: Column[]
+): SetColumnSelectionAction => ({
   type: SET_COLUMN_SELECTION,
   payload: {
     tableName,
-    columns
-  }
+    columns,
+  },
 });
 
 // Reducer
@@ -26,8 +29,7 @@ export const reducer = (state: State, action: SetColumnSelectionAction) => {
   return {
     ...state,
     columnSelections: {
-      [tableName]: columns
-    }
+      [tableName]: columns,
+    },
   };
-
 };

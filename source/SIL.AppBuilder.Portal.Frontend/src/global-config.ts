@@ -23,7 +23,7 @@ $.ajaxSetup({
 
     xhr.setRequestHeader('Authorization', `Bearer ${token}`);
     xhr.setRequestHeader('Organization', `${orgId}`);
-  }
+  },
 });
 
 window.globalFetchOptions = () => {
@@ -32,8 +32,8 @@ window.globalFetchOptions = () => {
 
   return {
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Organization': `${orgId}`,
-    }
+      Authorization: `Bearer ${token}`,
+      Organization: `${orgId}`,
+    },
   };
 };

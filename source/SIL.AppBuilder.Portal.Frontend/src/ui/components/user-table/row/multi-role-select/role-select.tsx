@@ -4,18 +4,16 @@ import { withData as withOrbit } from 'react-orbitjs';
 import { Checkbox, Form } from 'semantic-ui-react';
 
 import {
-  UserResource, RoleResource, OrganizationResource,
+  UserResource,
+  RoleResource,
+  OrganizationResource,
   UserRoleResource,
   attributesFor,
-  isRelatedRecord
+  isRelatedRecord,
 } from '@data';
+
 import { ROLE } from '@data/models/role';
-
-import {
-  withUserRoles,
-  IUserRoleProps
-} from '@data/containers/resources/user';
-
+import { withUserRoles, IUserRoleProps } from '@data/containers/resources/user';
 import { compareVia } from '@lib/collection';
 
 interface IOwnProps {
@@ -25,10 +23,7 @@ interface IOwnProps {
   organization: OrganizationResource;
 }
 
-type IProps =
-& IOwnProps
-& IUserRoleProps;
-
+type IProps = IOwnProps & IUserRoleProps;
 
 class RoleSelect extends React.Component<IProps> {
   toggleRole = (e, semanticUIEvent) => {
@@ -36,33 +31,33 @@ class RoleSelect extends React.Component<IProps> {
     const { user, roles, toggleRole } = this.props;
 
     toggleRole(roleName);
-  }
+  };
 
   render() {
     const { roles, organization, userHasRole } = this.props;
     const orgAttrs = attributesFor(organization);
 
-    const sorted = roles.sort(compareVia(r => attributesFor(r).roleName));
+    const sorted = roles.sort(compareVia((r) => attributesFor(r).roleName));
 
     return (
       <>
-        {sorted.map(( role, i ) => {
+        {sorted.map((role, i) => {
           const attributes = attributesFor(role);
 
-          if (attributes.roleName === ROLE.SuperAdmin) { return; }
+          if (attributes.roleName === ROLE.SuperAdmin) {
+            return;
+          }
 
           return (
-            <Form.Field
-              key={i}
-              className='item flex-row align-items-center m-b-sm'>
-
-              <Checkbox data-test-role-select toggle
+            <Form.Field key={i} className='item flex-row align-items-center m-b-sm'>
+              <Checkbox
+                data-test-role-select
+                toggle
                 value={attributes.roleName}
                 checked={userHasRole(role)}
                 onChange={this.toggleRole}
               />
               <span className='m-l-sm'>{attributes.roleName}</span>
-
             </Form.Field>
           );
         })}
@@ -78,9 +73,9 @@ export default compose(
     return {
       propsforUserRoles: {
         user,
-        organization
-      }
+        organization,
+      },
     };
   }),
-  withUserRoles,
-)( RoleSelect );
+  withUserRoles
+)(RoleSelect);

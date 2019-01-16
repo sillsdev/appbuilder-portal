@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import md5 from 'md5-hash';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { withData } from '../edit/with-data';
 import { UserAttributes } from '@data/models/user';
-import { attributesFor, USERS_TYPE } from '@data';
 
+import { attributesFor, USERS_TYPE } from '@data';
 
 import './show.scss';
 import { ResourceObject } from 'jsonapi-typescript';
+
+import { withData } from '../edit/with-data';
 
 export const pathName = '/users/:id';
 
@@ -17,14 +17,10 @@ export interface IOwnProps {
   user: ResourceObject<USERS_TYPE, UserAttributes>;
 }
 
-export type IProps =
-  & IOwnProps
-  & i18nProps;
+export type IProps = IOwnProps & i18nProps;
 
 class User extends React.Component<IProps> {
-
   render() {
-
     const { t, user: userData } = this.props;
     const user = userData.attributes;
 
@@ -39,18 +35,21 @@ class User extends React.Component<IProps> {
         <h2 className='m-t-lg m-b-lg'>{t('profile.generalInformation')}</h2>
         <div className='flex-row'>
           <div>
-            <img data-test-show-profile-image src={`https://www.gravatar.com/avatar/${gravatarHash}?s=130&d=identicon`} />
+            <img
+              data-test-show-profile-image
+              src={`https://www.gravatar.com/avatar/${gravatarHash}?s=130&d=identicon`}
+            />
           </div>
           <div>
             <h4 data-test-show-profile-name>{fullname}</h4>
-            {
-              user && user.profileVisibility &&
+            {(user && user.profileVisibility && (
               <>
                 <p data-test-show-profile-email>{user.email}</p>
                 <p data-test-show-profile-phone>{phone}</p>
                 <p data-test-show-profile-timezone>{timezone}</p>
               </>
-            || null }
+            )) ||
+              null}
           </div>
         </div>
       </div>

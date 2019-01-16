@@ -2,12 +2,11 @@ import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
-  wait
+  wait,
 } from 'tests/helpers/index';
 
 import page from './page';
@@ -20,7 +19,7 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
 
   let requestCount = 0;
 
-  beforeEach(function () {
+  beforeEach(function() {
     const { server } = this.polly;
 
     this.mockGet(200, 'product-definitions', { data: [] });
@@ -34,7 +33,6 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
 
         if (!req.query.filter['organization-id']) {
           res.json(threeProjects);
-
         } else {
           res.json(DTProjects);
         }
@@ -43,7 +41,6 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       });
     });
   });
-
 
   describe('navigating to the project directory page', () => {
     beforeEach(async function() {
@@ -70,7 +67,7 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
 
     it('shows all the projects', () => {
       const rows = page.table.rows();
-      const text = rows.map(r => r.text).join();
+      const text = rows.map((r) => r.text).join();
 
       expect(text).to.include('Dummy project');
       expect(text).to.include('project 3');
@@ -98,7 +95,7 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       });
 
       it('shows the relevant projects', () => {
-        const text = rows.map(r => r.text).join();
+        const text = rows.map((r) => r.text).join();
 
         expect(rows.length).to.equal(2);
         expect(text).to.include('Dummy project');
@@ -106,7 +103,7 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       });
 
       it('does not show projects from another organization', () => {
-        const text = rows.map(r => r.text).join();
+        const text = rows.map((r) => r.text).join();
 
         expect(text).to.not.include('project 2');
       });

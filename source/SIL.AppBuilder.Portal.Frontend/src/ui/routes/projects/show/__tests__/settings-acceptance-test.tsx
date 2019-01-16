@@ -1,9 +1,11 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
-import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers/index';
-
+import {
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
+} from 'tests/helpers/index';
 
 import page from './page';
 
@@ -13,8 +15,7 @@ describe('Acceptance | Project View | Settings toggles', () => {
   useFakeAuthentication();
 
   describe('Toggle default to true', () => {
-
-    beforeEach(function () {
+    beforeEach(function() {
       this.mockGet(200, 'users', { data: [] });
       this.mockGet(200, '/groups', { data: [] });
       this.mockGet(200, 'projects/1', {
@@ -22,25 +23,25 @@ describe('Acceptance | Project View | Settings toggles', () => {
           type: 'projects',
           id: '1',
           attributes: {
-            'automaticBuilds': true,
-            'allowDownloads': true,
-            'isPublic': true
+            automaticBuilds: true,
+            allowDownloads: true,
+            isPublic: true,
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
             group: { data: { id: 1, type: 'groups' } },
-            owner: { data: { id: 2, type: 'users' } }
-          }
+            owner: { data: { id: 2, type: 'users' } },
+          },
         },
         included: [
-          { type: 'organizations', id: 1, },
+          { type: 'organizations', id: 1 },
           { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
           { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
-        ]
+        ],
       });
     });
 
-    beforeEach(async function () {
+    beforeEach(async function() {
       await visit('/projects/1');
     });
 

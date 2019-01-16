@@ -12,7 +12,7 @@ export default class PageLoader extends React.PureComponent<IProps> {
 
     return (
       <div className='flex-row flex-grow justify-content-center align-items-center'>
-        <RectLoader className='m-t-xxl m-b-xxl' { ...loaderProps }/>
+        <RectLoader className='m-t-xxl m-b-xxl' {...loaderProps} />
       </div>
     );
   }

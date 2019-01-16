@@ -3,6 +3,7 @@ import { Menu } from 'semantic-ui-react';
 import { ResourceObject } from 'jsonapi-typescript';
 
 import { attributesFor, ORGANIZATIONS_TYPE } from '@data';
+
 import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProps {
@@ -24,23 +25,18 @@ class Row extends React.Component<IProps> {
     const logo = logoUrl ? <img src={logoUrl} /> : '\u00A0';
 
     return (
-      <Menu.Item
-        data-test-org-select-item
-        className={className}
-        name={name}
-        onClick={onClick}>
-
+      <Menu.Item data-test-org-select-item className={className} name={name} onClick={onClick}>
         <span
           className={`
             list-thumbnail image-fill-container
             m-r-md ${!logoUrl && 'bg-lighter-gray'}
-          `}>
+          `}
+        >
           {logo}
         </span>
 
         <span>{name}</span>
       </Menu.Item>
-
     );
   }
 }

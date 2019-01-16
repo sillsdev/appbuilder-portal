@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { WithDataProps } from 'react-orbitjs';
-
 import { IUserTaskListProps } from '@data/containers/resources/user-task';
 import { isEmpty } from '@lib/collection';
 import { i18nProps } from '@lib/i18n';
@@ -20,10 +19,10 @@ export default class Display extends React.Component<IProps> {
     const cellSecondaryClasses = 'd-xs-none d-sm-table-cell flex align-items-center';
 
     return (
-      <div data-test-tasks className="ui container tasks">
-        <h1 className="page-heading">{t('tasks.title')}</h1>
+      <div data-test-tasks className='ui container tasks'>
+        <h1 className='page-heading'>{t('tasks.title')}</h1>
 
-        <table data-test-tasks-table className="ui table unstackable">
+        <table data-test-tasks-table className='ui table unstackable'>
           <thead>
             <tr>
               <th className={cellSecondaryClasses}>{t('tasks.product')}</th>

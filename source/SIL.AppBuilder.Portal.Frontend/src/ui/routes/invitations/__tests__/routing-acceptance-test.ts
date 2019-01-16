@@ -2,12 +2,14 @@ import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 import Convergence from '@bigtest/convergence';
+
 import i18n from '@translations';
 
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
 } from 'tests/helpers/index';
-
 import app from 'tests/helpers/pages/app';
 
 describe('Acceptance | Invitations | routing', () => {
@@ -47,8 +49,7 @@ describe('Acceptance | Invitations | routing', () => {
     beforeEach(async () => {
       await visit('/invitations/organization/something');
 
-      await new Convergence()
-        .when(() => app.headers);
+      await new Convergence().when(() => app.headers);
     });
 
     it.always('should not say that the path was not found', () => {

@@ -6,25 +6,23 @@ export interface ParsedError {
 }
 
 const getFirstJSONAPIError = (error) => {
-  return error.data &&
-    error.data.errors &&
-    error.data.errors.length > 0 &&
-    error.data.errors[0].detail;
+  return (
+    error.data && error.data.errors && error.data.errors.length > 0 && error.data.errors[0].detail
+  );
 };
 
 export function parseError(error: any): ParsedError {
-
   if (error instanceof RecordNotFoundException) {
     return {
       title: error.description,
-      body: error.message
+      body: error.message,
     };
   }
 
   if (error instanceof ClientError) {
     return {
       title: error.description,
-      body: error.message
+      body: error.message,
     };
   }
 
@@ -36,7 +34,6 @@ export function parseError(error: any): ParsedError {
 
   const title = error.message || error;
   const body = undefined;
-
 
   return { title, body };
 }

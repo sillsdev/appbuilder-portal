@@ -14,8 +14,8 @@ export const setRowSelection = (tableName: string, rows: any[]): SetRowSelection
   type: SET_ROW_SELECTION,
   payload: {
     tableName,
-    rows
-  }
+    rows,
+  },
 });
 
 export const reducer = (state: State, action: SetRowSelectionAction) => {
@@ -28,8 +28,8 @@ export const reducer = (state: State, action: SetRowSelectionAction) => {
     rowSelections: {
       [tableName]: {
         ...nextSelection,
-        rows
-      }
-    }
+        rows,
+      },
+    },
   };
 };

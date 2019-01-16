@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ResourceObject } from 'jsonapi-typescript';
 
 import { attributesFor, relationshipFor } from '@data';
+
 import { Checkbox } from 'semantic-ui-react';
 import ProductIcon from '@ui/components/product-icon';
 import { i18nProps } from '@lib/i18n';
@@ -18,32 +19,26 @@ interface IOwnProps<T> {
   readOnly?: boolean;
 }
 
-type IProps<T> =
-  & IOwnProps<T>
-  & i18nProps
-  & IAttributeProps;
+type IProps<T> = IOwnProps<T> & i18nProps & IAttributeProps;
 
 export class MultiSelect<T extends ResourceObject> extends React.Component<IProps<T>> {
-
   onChange = (element) => (e) => {
     e.preventDefault();
     this.props.onChange(element);
-  }
+  };
 
   inSelectedList = (element) => {
-
     const { selected, selectedItemJoinsWith } = this.props;
 
-    const el = selected.find(selectedItem => {
+    const el = selected.find((selectedItem) => {
       const { data } = relationshipFor(selectedItem, selectedItemJoinsWith);
       return data.id === element.id;
     });
 
     return el !== undefined;
-  }
+  };
 
   render() {
-
     const { list, emptyListLabel, displayProductIcon, t, readOnly } = this.props;
     const emptyLabel = emptyListLabel || t('common.noResults');
 
@@ -59,9 +54,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
 
     return (
       <div data-test-multi-select>
-      {
-        list.map((element, index) => {
-
+        {list.map((element, index) => {
           const isSelected = this.inSelectedList(element);
 
           return (
@@ -69,14 +62,14 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
               key={index}
               className={`flex flex-column align-items-center
               w-100 m-b-sm round-border-4 light-gray-text pointer
-              ${ isSelected ? 'blue-light-border' : 'thin-border'}`}
+              ${isSelected ? 'blue-light-border' : 'thin-border'}`}
               data-test-item
               onClick={this.onChange(element)}
             >
               <div
                 className={`flex flex-row align-items-center
                 w-100 p-sm bg-lightest-gray fs-14 round-border-4
-                ${ isSelected ? 'blue-light-bottom-border' : 'thin-bottom-border'}`}
+                ${isSelected ? 'blue-light-bottom-border' : 'thin-bottom-border'}`}
               >
                 <Checkbox
                   data-test-item-checkbox
@@ -85,14 +78,10 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
                   readOnly={readOnly}
                   checked={isSelected}
                 />
-                {
-                  displayProductIcon &&
+                {displayProductIcon && (
                   <ProductIcon product={element} selected={isSelected} size={19} />
-                }
-                <span
-                  data-test-item-text
-                  className={`p-l-xs-xs ${isSelected && 'black-text'}`}
-                >
+                )}
+                <span data-test-item-text className={`p-l-xs-xs ${isSelected && 'black-text'}`}>
                   {attributesFor(element).name}
                 </span>
               </div>
@@ -101,8 +90,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
               </div>
             </div>
           );
-        })
-      }
+        })}
       </div>
     );
   }

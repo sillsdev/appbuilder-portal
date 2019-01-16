@@ -2,7 +2,6 @@ import * as React from 'react';
 import { match as Match } from 'react-router';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
 import { compose } from 'recompose';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { OrganizationAttributes, OrganizationResource } from '@data/models/organization';
 
@@ -25,17 +24,18 @@ export interface IProps {
 
 @withTemplateHelpers
 class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
-
   mut: Mut;
   state = { name: '', logoUrl: '' };
 
   componentDidMount() {
     const { organization } = this.props;
-    const { attributes: { name, logoUrl } } = organization;
+    const {
+      attributes: { name, logoUrl },
+    } = organization;
 
     this.setState({
       name: name || '',
-      logoUrl: logoUrl || ''
+      logoUrl: logoUrl || '',
     });
   }
 
@@ -45,19 +45,21 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
     const { updateOrganization } = this.props;
 
     updateOrganization(this.state);
-  }
+  };
 
   render() {
     const {
       mut,
       state: { name, logoUrl },
-      props: { t }
+      props: { t },
     } = this;
 
     return (
       <form
         data-test-org-settings-basic-info
-        className='ui form sub-page-content' onSubmit={this.onSubmit}>
+        className='ui form sub-page-content'
+        onSubmit={this.onSubmit}
+      >
         <div className='flex-column-reverse-xs flex-row-sm justify-content-space-between m-b-md'>
           <div className='flex-grow'>
             <h2 className='d-xs-none bold m-b-xl'>{t('org.basicTitle')}</h2>
@@ -83,11 +85,12 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
           </div>
           <div className='m-l-md-sm m-b-md'>
             <div className='flex-column'>
-              <div className='m-b-md image-fill-container' style={{ width: '200px', height: '136px' }}>
+              <div
+                className='m-b-md image-fill-container'
+                style={{ width: '200px', height: '136px' }}
+              >
                 {!logoUrl && <div className='w-100 h-100 bg-lightest-gray' />}
-                {logoUrl && (
-                  <img src={logoUrl} />
-                )}
+                {logoUrl && <img src={logoUrl} />}
               </div>
             </div>
           </div>
@@ -100,7 +103,9 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
             p-md-xs-only m-b-md-xs-only
             ui button
           '
-          type='submit' onClick={this.onSubmit}>
+          type='submit'
+          onClick={this.onSubmit}
+        >
           {t('org.save')}
         </button>
       </form>
@@ -108,6 +113,4 @@ class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
   }
 }
 
-export default compose<IProps & i18nProps, IProps>(
-  withTranslations
-)( BasicInfoRoute );
+export default compose<IProps & i18nProps, IProps>(withTranslations)(BasicInfoRoute);

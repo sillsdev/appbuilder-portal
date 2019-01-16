@@ -14,38 +14,35 @@ export interface IProvidedProps {
 
 interface IProps {}
 
-const defaultInclude = [
-  'product.project',
-  'product.product-definition.workflow'
-];
+const defaultInclude = ['product.project', 'product.product-definition.workflow'];
 
 export function withNetwork<TWRappedProps>(options: IOptions = {}) {
   const { include } = options;
 
-  return WrappedComponent => {
+  return (WrappedComponent) => {
     function mapNetworkToProps(passedProps: TWRappedProps & IProps) {
       const requestOptions = buildOptions({
-        include: include || defaultInclude
+        include: include || defaultInclude,
       });
 
       return {
         cacheKey: ['static', include],
         userTasks: [
-          q => {
+          (q) => {
             const builder = q.findRecords('userTask');
 
             return builder;
           },
-          requestOptions
-        ]
+          requestOptions,
+        ],
       };
     }
 
     return compose(
-            query(mapNetworkToProps, {
-              passthroughError: true,
-              useRemoteDirectly: true
-            }),
+      query(mapNetworkToProps, {
+        passthroughError: true,
+        useRemoteDirectly: true,
+      })
     )(WrappedComponent);
   };
 }

@@ -15,11 +15,11 @@ export interface IProps {
 class UserSetupRoute extends React.Component<IProps> {
   render() {
     const { match } = this.props;
-    const { params: { orgId } } = match;
+    const {
+      params: { orgId },
+    } = match;
 
-    return (
-      'Settings: User Setup'
-    );
+    return 'Settings: User Setup';
   }
 }
 

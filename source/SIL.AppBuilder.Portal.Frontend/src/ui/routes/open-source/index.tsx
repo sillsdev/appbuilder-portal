@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { MIT } from './licenses/links';
@@ -20,14 +19,14 @@ export default class OpenSourceRoute extends React.Component<i18nProps> {
         <div className='m-t-md'>
           <h2>{t('attributions.subtitle')}</h2>
 
-          <h3><MIT /></h3>
-          <a href='https://reactjs.org/' target='_blank'>
+          <h3>
+            <MIT />
+          </h3>
+          <a href='https://reactjs.org/' target='_blank' rel='noopener noreferrer'>
             React
           </a>
-
         </div>
       </div>
     );
   }
 }
-

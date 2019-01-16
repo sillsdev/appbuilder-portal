@@ -2,15 +2,14 @@ import { describe, it, beforeEach, afterEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, setupRequestInterceptor, respondWithJsonApi,
-  wait
+  setupApplicationTest,
+  setupRequestInterceptor,
+  respondWithJsonApi,
+  wait,
 } from 'tests/helpers/index';
 import { fakeAuth0JWT, fakeAuth0Id } from 'tests/helpers/jwt';
-
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
-
 import app from 'tests/helpers/pages/app';
 
 // usage: https://github.com/bigtestjs/react/blob/master/tests/setup-app-test.js
@@ -20,7 +19,7 @@ describe('Acceptance | Authentication', () => {
 
   describe('authenticated with user that does not have a verified email', () => {
     beforeEach(async () => {
-      setToken(fakeAuth0JWT({email_verified: false}));
+      setToken(fakeAuth0JWT({ email_verified: false }));
       await visit('/tasks');
     });
     it('redirects to verify email', () => {
@@ -34,28 +33,32 @@ describe('Acceptance | Authentication', () => {
 
       setToken(fakeAuth0JWT());
 
-      server.get('/api/users/current-user').intercept(respondWithJsonApi(200, {
-        data: {
-          id: 1,
-          type: 'users',
-          attributes: { id: 1, auth0Id: fakeAuth0Id },
-          relationships: {
-            ['organization-memberships']: {
-              data: [
-                { id: 1, type: 'organization-memberships' },
-              ]
-            }
-          }
-        },
-        included: [
-          { type: 'organization-memberships', id: 1, attributes: {},
+      server.get('/api/users/current-user').intercept(
+        respondWithJsonApi(200, {
+          data: {
+            id: 1,
+            type: 'users',
+            attributes: { id: 1, auth0Id: fakeAuth0Id },
             relationships: {
-              organization: { data: { id: 1, type: 'organizations' } },
-              user: { data: { id: 1, type: 'users' } }
-            }},
-          { type: 'organizations', id: 1, attributes: {} }
-        ]
-      }));
+              ['organization-memberships']: {
+                data: [{ id: 1, type: 'organization-memberships' }],
+              },
+            },
+          },
+          included: [
+            {
+              type: 'organization-memberships',
+              id: 1,
+              attributes: {},
+              relationships: {
+                organization: { data: { id: 1, type: 'organizations' } },
+                user: { data: { id: 1, type: 'users' } },
+              },
+            },
+            { type: 'organizations', id: 1, attributes: {} },
+          ],
+        })
+      );
 
       expect(isLoggedIn()).to.be.true;
     });
@@ -146,5 +149,4 @@ describe('Acceptance | Authentication', () => {
       });
     });
   });
-
 });

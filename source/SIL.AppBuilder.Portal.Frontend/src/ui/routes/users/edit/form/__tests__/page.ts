@@ -1,12 +1,16 @@
-
 import {
-  interactor, isPresent,
-  clickable, fillable, value, selectable, text
+  interactor,
+  isPresent,
+  clickable,
+  fillable,
+  value,
+  selectable,
+  text,
 } from '@bigtest/interactor';
 
 @interactor
 export class FormInteractor {
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   fillFirstName = fillable('[data-test-profile-firstname]');
   fillLastName = fillable('[data-test-profile-lastname]');
@@ -28,7 +32,6 @@ export class FormInteractor {
   profileVisibility = isPresent('[data-test-profile-visible-profile].checked');
   profileVisibilityText = value('[data-test-profile-visible-text]');
   publishingKeyText = value('[data-test-profile-publishing-key]');
-
 }
 
 export default new FormInteractor('[data-test-edit-profile]');

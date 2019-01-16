@@ -1,7 +1,6 @@
 import { Polly } from '@pollyjs/core';
 import * as XHRAdapter from '@pollyjs/adapter-xhr';
 import * as FetchAdapter from '@pollyjs/adapter-fetch';
-
 import Orbit from '@orbit/data';
 
 import { mockGet, mockPatch, mockPost, mockDelete } from './requests';
@@ -12,7 +11,6 @@ import { mockGet, mockPatch, mockPost, mockDelete } from './requests';
 */
 Polly.register(XHRAdapter);
 Polly.register(FetchAdapter);
-
 
 // inspiration from:
 // https://github.com/Netflix/pollyjs/blob/master/packages/%40pollyjs/core/src/test-helpers/mocha.js
@@ -28,7 +26,6 @@ export function setupRequestInterceptor(config: any = {}) {
     await this.teardownIntercepting();
   });
 }
-
 
 // helpers stolen from:
 // https://github.com/Netflix/pollyjs/blob/master/packages/%40pollyjs/core/src/test-helpers/lib.js
@@ -55,9 +52,8 @@ const teardown = async function(context) {
       throw new Error(
         `[Polly] You are trying to access an instance of Polly that is no longer available.\n`
       );
-    }
+    },
   });
-
 };
 
 const setup = function(config) {
@@ -68,8 +64,8 @@ const setup = function(config) {
     adapters: ['fetch', 'xhr'],
     adapterOptions: {
       fetch: {
-        context: window
-      }
+        context: window,
+      },
     },
     persisterOptions: {
       keepUnusedRequests: false,
@@ -92,7 +88,7 @@ const setup = function(config) {
       //   hash: false
       // }
     },
-    ...config
+    ...config,
   };
 
   this.polly = new Polly(name, pollyConfig);
@@ -106,9 +102,11 @@ const setup = function(config) {
   this.mockPatch = mockPatch(server);
   this.mockPost = mockPost(server);
   this.mockDelete = mockDelete(server);
-  this.stubOrbit = () => Orbit.fetch = window.fetch;
+  this.stubOrbit = () => (Orbit.fetch = window.fetch);
+
   this.debugFetch = () => {
     const originalFetch = window.fetch;
+
     const fakeFetch = (...args) => {
       // debugger;
       return originalFetch(...args);
@@ -129,37 +127,41 @@ const setup = function(config) {
   // by default, unless overridden manually, we should force a 401 on current-user
   this.mockGet(401, '/users/current-user');
 
-  this.mockGet(200, '/user-tasks', { "data": [] });
-  this.mockGet(200, ('/notifications'), { "data": []});
+  this.mockGet(200, '/user-tasks', { data: [] });
+  this.mockGet(200, '/notifications', { data: [] });
 
   this.mockGet(200, '/roles', {
-    "data":[{
-      "attributes":{"role-name":"SuperAdmin"},
-      "relationships":{
-        "user-roles":{}
+    data: [
+      {
+        attributes: { 'role-name': 'SuperAdmin' },
+        relationships: {
+          'user-roles': {},
+        },
+        type: 'roles',
+        id: '1',
       },
-      "type":"roles",
-      "id":"1"
-    },{
-      "attributes":{
-        "role-name":"OrganizationAdmin"
+      {
+        attributes: {
+          'role-name': 'OrganizationAdmin',
+        },
+        relationships: {
+          'user-roles': {},
+        },
+        type: 'roles',
+        id: '2',
       },
-      "relationships":{
-        "user-roles":{}
+      {
+        attributes: {
+          'role-name': 'AppBuilder',
+        },
+        relationships: {
+          'user-roles': {},
+        },
+        type: 'roles',
+        id: '3',
       },
-      "type":"roles",
-      "id":"2"
-    },{
-      "attributes":{
-        "role-name":"AppBuilder"
-      },
-      "relationships":{
-        "user-roles":{}
-      },
-      "type":"roles",
-      "id":"3"
-    }],
-    "meta":{"total-records":3}
+    ],
+    meta: { 'total-records': 3 },
   });
 
   // This won't work unless we create a polly adapter for
@@ -173,5 +175,4 @@ const setup = function(config) {
   //     );
   //   });
   // });
-
 };

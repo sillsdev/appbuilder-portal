@@ -1,10 +1,13 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
-import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers';
-
+import {
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
+} from 'tests/helpers';
 import * as enUS from '@translations/locales/en-us.json';
+
 import page from './page';
 
 describe('Acceptance | Edit Profile Form', () => {
@@ -14,13 +17,15 @@ describe('Acceptance | Edit Profile Form', () => {
 
   describe('a user exists', () => {
     beforeEach(function() {
-      this.mockGet(200, '/users/1', { data: {
-        type: 'users',
-        id: '1',
-        attributes: {
-          givenName: 'hi'
-        }
-      } });
+      this.mockGet(200, '/users/1', {
+        data: {
+          type: 'users',
+          id: '1',
+          attributes: {
+            givenName: 'hi',
+          },
+        },
+      });
     });
 
     describe('the edit form is visited', () => {
@@ -75,21 +80,19 @@ describe('Acceptance | Edit Profile Form', () => {
         });
       });
     });
-
   });
 
   describe('the email notification value from the backend is represented via the checkbox', () => {
-
     describe('when the value from the backend is true', () => {
-      beforeEach(function () {
+      beforeEach(function() {
         this.mockGet(200, '/users/1', {
           data: {
             type: 'users',
             id: '1',
             attributes: {
-              emailNotification: true
-            }
-          }
+              emailNotification: true,
+            },
+          },
         });
       });
 
@@ -103,15 +106,15 @@ describe('Acceptance | Edit Profile Form', () => {
     });
 
     describe('when the value from the backend is false', () => {
-      beforeEach(function () {
+      beforeEach(function() {
         this.mockGet(200, '/users/1', {
           data: {
             type: 'users',
             id: '1',
             attributes: {
-              emailNotification: false
-            }
-          }
+              emailNotification: false,
+            },
+          },
         });
       });
 

@@ -1,18 +1,12 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
-
 import * as toast from '@lib/toast';
-
 import { StoreTypeAttributes } from '@data/models/store-type';
-import {
-  attributesFor,
-  StoreTypeResource
-} from '@data';
 
+import { attributesFor, StoreTypeResource } from '@data';
 
 interface IOwnProps {
   storeType?: StoreTypeResource;
@@ -26,10 +20,7 @@ interface IState {
   description?: string;
 }
 
-type IProps =
-  & i18nProps
-  & IOwnProps;
-
+type IProps = i18nProps & IOwnProps;
 
 @withTemplateHelpers
 class StoreTypeForm extends React.Component<IProps, IState> {
@@ -41,15 +32,12 @@ class StoreTypeForm extends React.Component<IProps, IState> {
 
     const { storeType } = props;
 
-    const {
-      name, description
-    } = attributesFor(storeType);
+    const { name, description } = attributesFor(storeType);
 
     this.state = {
       name: (name as string) || '',
       description: (description as string) || '',
     };
-
   }
 
   isValidForm = () => {
@@ -60,63 +48,47 @@ class StoreTypeForm extends React.Component<IProps, IState> {
     this.setState({ nameError });
 
     return !isEmpty(name);
-  }
+  };
 
   submit = async (e) => {
     e.preventDefault();
 
     const { onSubmit } = this.props;
-    const {
-      name, description
-    } = this.state;
+    const { name, description } = this.state;
 
     if (this.isValidForm()) {
       try {
         await onSubmit({
           name,
-          description
+          description,
         });
       } catch (e) {
         toast.error(e);
       }
     }
-  }
+  };
 
   cancel = (e) => {
     e.preventDefault();
     const { onCancel } = this.props;
     onCancel();
-  }
+  };
 
   render() {
     const { mut } = this;
 
-    const {
-      name, nameError, description
-    } = this.state;
+    const { name, nameError, description } = this.state;
 
     const { t, storeType } = this.props;
 
     return (
       <>
-        <h2>
-          {
-            t(storeType ?
-              'admin.settings.storeTypes.edit' :
-              'admin.settings.storeTypes.add'
-            )
-          }
-        </h2>
+        <h2>{t(storeType ? 'admin.settings.storeTypes.edit' : 'admin.settings.storeTypes.add')}</h2>
         <div className='flex w-60'>
           <form data-test-st-form className='ui form flex-grow'>
-
             <div className='field m-b-xl'>
               <label>{t('admin.settings.storeTypes.name')}</label>
-              <input
-                data-test-st-name
-                type='text'
-                value={name || ''}
-                onChange={mut('name')} />
+              <input data-test-st-name type='text' value={name || ''} onChange={mut('name')} />
               <div className='error'>{nameError}</div>
             </div>
 
@@ -134,20 +106,21 @@ class StoreTypeForm extends React.Component<IProps, IState> {
               <button
                 data-test-submit
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-                onClick={this.submit}>
-                {storeType ?
-                  t('admin.settings.storeTypes.edit') :
-                  t('admin.settings.storeTypes.add')}
+                onClick={this.submit}
+              >
+                {storeType
+                  ? t('admin.settings.storeTypes.edit')
+                  : t('admin.settings.storeTypes.add')}
               </button>
 
               <button
                 data-test-cancel
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-                onClick={this.cancel}>
+                onClick={this.cancel}
+              >
                 {t('common.cancel')}
               </button>
             </div>
-
           </form>
         </div>
       </>
@@ -155,6 +128,4 @@ class StoreTypeForm extends React.Component<IProps, IState> {
   }
 }
 
-export default compose(
-  withTranslations
-)(StoreTypeForm);
+export default compose(withTranslations)(StoreTypeForm);

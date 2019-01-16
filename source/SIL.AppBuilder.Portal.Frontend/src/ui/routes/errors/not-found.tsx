@@ -17,7 +17,4 @@ class NotFoundRoute extends React.Component<i18nProps> {
   }
 }
 
-export default compose(
-  withTranslations
-)(NotFoundRoute);
-
+export default compose(withTranslations)(NotFoundRoute);

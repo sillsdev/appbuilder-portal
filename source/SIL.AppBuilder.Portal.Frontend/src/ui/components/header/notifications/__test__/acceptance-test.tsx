@@ -5,13 +5,14 @@ import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 import { find } from 'lodash';
 import { respondWithJsonApi } from 'tests/helpers/index';
-
 import {
-  setupRequestInterceptor, useFakeAuthentication, setupApplicationTest
+  setupRequestInterceptor,
+  useFakeAuthentication,
+  setupApplicationTest,
 } from 'tests/helpers';
 
 import Page from './-page';
-import {notifications} from './-factory';
+import { notifications } from './-factory';
 
 describe('Acceptance | Notifications', () => {
   setupApplicationTest();
@@ -22,7 +23,7 @@ describe('Acceptance | Notifications', () => {
   beforeEach(async function() {
     mockNotifications = notifications(10, 3);
 
-    this.mockGet(200,  '/notifications', {data: mockNotifications});
+    this.mockGet(200, '/notifications', { data: mockNotifications });
     this.server.delete(['/api/notifications', '/api/notifications/:id']).intercept((req, res) => {
       console.log('DELETE', req.url, req.body, req.params);
       res.status(204);
@@ -31,10 +32,10 @@ describe('Acceptance | Notifications', () => {
     this.server.patch(['/api/notifications/:id', '/api/notifications']).intercept((req, res) => {
       const patch = JSON.parse(req.body);
       const n = find(mockNotifications, ['id', patch.data.id]);
-      const responseJSON = {...n};
-      responseJSON.attributes = {...responseJSON.attributes, ...patch.data.attributes};
+      const responseJSON = { ...n };
+      responseJSON.attributes = { ...responseJSON.attributes, ...patch.data.attributes };
       console.log('PATCH', req.url, req.body, req.params, patch, responseJSON);
-      respondWithJsonApi(200, {data: responseJSON})(req, res);
+      respondWithJsonApi(200, { data: responseJSON })(req, res);
     });
     page = new Page();
     await visit('/');
@@ -51,11 +52,11 @@ describe('Acceptance | Notifications', () => {
         await page.toggleNotificationMenu();
       });
 
-      it('is open',() => {
+      it('is open', () => {
         expect(page.menu.isVisible).to.be.true;
       });
 
-      describe('Click close on an inividual notification',() => {
+      describe('Click close on an inividual notification', () => {
         let notificationsCount;
         beforeEach(async () => {
           notificationsCount = page.notificationCount;
@@ -63,13 +64,13 @@ describe('Acceptance | Notifications', () => {
           await page.menu.notifications(0).clear();
         });
 
-        it('deletes the notification',() => {
+        it('deletes the notification', () => {
           expect(page.notificationCount).to.equal(notificationsCount - 1);
         });
       });
 
       describe('Click individual notification', () => {
-        beforeEach(async function(){
+        beforeEach(async function() {
           await page.menu.notifications(0).click();
         });
 
@@ -88,7 +89,7 @@ describe('Acceptance | Notifications', () => {
         });
       });
 
-      describe("Close menu", () => {
+      describe('Close menu', () => {
         beforeEach(async () => {
           await page.toggleNotificationMenu();
         });

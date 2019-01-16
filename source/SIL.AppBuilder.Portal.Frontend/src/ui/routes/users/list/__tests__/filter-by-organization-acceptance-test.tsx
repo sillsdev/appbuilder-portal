@@ -1,17 +1,18 @@
-
 import { when } from '@bigtest/convergence';
-
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication, fakeAuth0Id, wait,
-  switchToOrg
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
+  fakeAuth0Id,
+  wait,
+  switchToOrg,
 } from 'tests/helpers';
-
 import app from 'tests/helpers/pages/app';
 import switcher from '@ui/components/sidebar/org-switcher/__tests__/page';
+
 import UserTableInteractor from './-user-table';
 let userTable = null;
 describe('Acceptance | User list | Filtering users by organization', () => {
@@ -26,11 +27,11 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         ['organization-memberships']: {
           data: [
             { id: 1, type: 'organization-memberships' },
-            { id: 4, type: 'organization-memberships' }
-          ]
+            { id: 4, type: 'organization-memberships' },
+          ],
         },
-        ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
-      }
+        ['user-roles']: { data: [{ id: 1, type: 'user-roles' }] },
+      },
     },
     included: [
       {
@@ -39,54 +40,60 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         attributes: {},
         relationships: {
           user: { data: { id: 1, type: 'users' } },
-          organization: { data: { id: 1, type: 'organizations' } }
-        }
+          organization: { data: { id: 1, type: 'organizations' } },
+        },
       },
       {
-        id: 4, type: 'organization-memberships',
+        id: 4,
+        type: 'organization-memberships',
         attributes: {},
         relationships: {
           user: { data: { id: 1, type: 'users' } },
-          organization: { data: { id: 2, type: 'organizations' } }
-        }
+          organization: { data: { id: 2, type: 'organizations' } },
+        },
       },
       {
-        type: 'organizations', id: 1,
+        type: 'organizations',
+        id: 1,
         attributes: {
-          name: 'SIL International'
-        }
-      }, {
-        type: 'organizations', id: 2,
+          name: 'SIL International',
+        },
+      },
+      {
+        type: 'organizations',
+        id: 2,
         attributes: {
-          name: 'DeveloperTown'
-        }
+          name: 'DeveloperTown',
+        },
       },
       {
         id: 1,
-        type: 'groups' ,
+        type: 'groups',
         attributes: { name: 'Some Group' },
         relationships: {
-          organization: { data: { id: 1, type: 'organizations' } }
-        }
+          organization: { data: { id: 1, type: 'organizations' } },
+        },
       },
       {
-        id: 1, type: 'user-roles',
+        id: 1,
+        type: 'user-roles',
         attributes: { roleName: 'SuperAdmin' },
         relationships: {
           ['user']: { data: { id: 1, type: 'users' } },
           ['role']: { data: { id: 1, type: 'roles' } },
-          ['organization']: { data: { id: 1, type: 'organizations' } }
-        }
+          ['organization']: { data: { id: 1, type: 'organizations' } },
+        },
       },
       {
-        id: 1, type: 'roles',
-        attributes: { roleName: 'SuperAdmin' }
-      }
-    ]
+        id: 1,
+        type: 'roles',
+        attributes: { roleName: 'SuperAdmin' },
+      },
+    ],
   });
 
   describe('User belongs multiple organizations', () => {
-    beforeEach(function () {
+    beforeEach(function() {
       const { server } = this.polly;
 
       server.get('/api/users').intercept((req, res) => {
@@ -100,30 +107,40 @@ describe('Acceptance | User list | Filtering users by organization', () => {
 
         if (allOrganizations) {
           res.json({
-            data: [{
-              id: 1,
-              type: 'users',
-              attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
-              relationships: {
-                ['organization-memberships']: { data: [ { id: 1, type: 'organization-memberships' }]}
-              }
-            }, {
-              type: 'users',
-              id: 2,
-              attributes: { familyName: 'fake', givenName: 'One' },
-              relationships: {
-                ['organization-memberships']: { data: [ { id: 2, type: 'organization-memberships' }]},
-                "group-memberships": {}
-              }
-            }, {
-              type: 'users',
-              id: 3,
-              attributes: { familyName: 'fake', givenName: 'Two' },
-              relationships: {
-                ['organization-memberships']: { data: [ { id: 3, type: 'organization-memberships' }]},
-                "group-memberships": {}
+            data: [
+              {
+                id: 1,
+                type: 'users',
+                attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+                relationships: {
+                  ['organization-memberships']: {
+                    data: [{ id: 1, type: 'organization-memberships' }],
+                  },
+                },
               },
-            }],
+              {
+                type: 'users',
+                id: 2,
+                attributes: { familyName: 'fake', givenName: 'One' },
+                relationships: {
+                  ['organization-memberships']: {
+                    data: [{ id: 2, type: 'organization-memberships' }],
+                  },
+                  'group-memberships': {},
+                },
+              },
+              {
+                type: 'users',
+                id: 3,
+                attributes: { familyName: 'fake', givenName: 'Two' },
+                relationships: {
+                  ['organization-memberships']: {
+                    data: [{ id: 3, type: 'organization-memberships' }],
+                  },
+                  'group-memberships': {},
+                },
+              },
+            ],
             included: [
               {
                 id: 1,
@@ -131,56 +148,68 @@ describe('Acceptance | User list | Filtering users by organization', () => {
                 attributes: {},
                 relationships: {
                   user: { data: { id: 1, type: 'users' } },
-                  organization: { data: { id: 1, type: 'organizations' } }
-                }
+                  organization: { data: { id: 1, type: 'organizations' } },
+                },
               },
               {
-                id: 2, type: 'organization-memberships',
+                id: 2,
+                type: 'organization-memberships',
                 attributes: {},
                 relationships: {
                   user: { data: { id: 2, type: 'users' } },
-                  organization: { data: { id: 1, type: 'organizations' } }
-                }
+                  organization: { data: { id: 1, type: 'organizations' } },
+                },
               },
               {
-                id: 3, type: 'organization-memberships',
+                id: 3,
+                type: 'organization-memberships',
                 attributes: {},
                 relationships: {
                   user: { data: { id: 3, type: 'users' } },
-                  organization: { data: { id: 2, type: 'organizations' } }
-                }
+                  organization: { data: { id: 2, type: 'organizations' } },
+                },
               },
               {
-                type: 'organizations', id: 1,
+                type: 'organizations',
+                id: 1,
                 attributes: {
-                  name: 'SIL International'
-                }
-              }, {
-                type: 'organizations', id: 2,
+                  name: 'SIL International',
+                },
+              },
+              {
+                type: 'organizations',
+                id: 2,
                 attributes: {
-                  name: 'DeveloperTown'
-                }
-              }
-            ]
+                  name: 'DeveloperTown',
+                },
+              },
+            ],
           });
         } else if (selectedOrganization) {
           res.json({
-            data: [{
-              id: 1,
-              type: 'users',
-              attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
-              relationships: {
-                ['organization-memberships']: { data: [ { id: 1, type: 'organization-memberships' }]}
-              }
-            }, {
-              type: 'users',
-              id: 2,
-              attributes: { familyName: 'fake', givenName: 'One' },
-              relationships: {
-                ['organization-memberships']: { data: [ { id: 2, type: 'organization-memberships' }]},
-                "group-memberships": {}
-              }
-            }],
+            data: [
+              {
+                id: 1,
+                type: 'users',
+                attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+                relationships: {
+                  ['organization-memberships']: {
+                    data: [{ id: 1, type: 'organization-memberships' }],
+                  },
+                },
+              },
+              {
+                type: 'users',
+                id: 2,
+                attributes: { familyName: 'fake', givenName: 'One' },
+                relationships: {
+                  ['organization-memberships']: {
+                    data: [{ id: 2, type: 'organization-memberships' }],
+                  },
+                  'group-memberships': {},
+                },
+              },
+            ],
             included: [
               {
                 id: 1,
@@ -188,33 +217,37 @@ describe('Acceptance | User list | Filtering users by organization', () => {
                 attributes: {},
                 relationships: {
                   user: { data: { id: 1, type: 'users' } },
-                  organization: { data: { id: 1, type: 'organizations' } }
-                }
+                  organization: { data: { id: 1, type: 'organizations' } },
+                },
               },
               {
-                id: 2, type: 'organization-memberships',
+                id: 2,
+                type: 'organization-memberships',
                 attributes: {},
                 relationships: {
                   user: { data: { id: 2, type: 'users' } },
-                  organization: { data: { id: 1, type: 'organizations' } }
-                }
+                  organization: { data: { id: 1, type: 'organizations' } },
+                },
               },
               {
-                type: 'organizations', id: 1,
+                type: 'organizations',
+                id: 1,
                 attributes: {
-                  name: 'SIL International'
-                }
-              }
-            ]
+                  name: 'SIL International',
+                },
+              },
+            ],
           });
         } else {
-          throw new Error(`Unexpected Header Value: ${orgHeader}. Available: ${Object.keys(req.headers).join()}`);
+          throw new Error(
+            `Unexpected Header Value: ${orgHeader}. Available: ${Object.keys(req.headers).join()}`
+          );
         }
       });
     });
 
-    describe('Select all organizations',() => {
-      beforeEach(async function () {
+    describe('Select all organizations', () => {
+      beforeEach(async function() {
         await visit('/users');
         userTable = new UserTableInteractor();
 
@@ -222,9 +255,9 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         await app.openOrgSwitcher();
         await switcher.selectAllOrg();
 
-        expect(app.selectedOrg).to.equal("All Organizations");
+        expect(app.selectedOrg).to.equal('All Organizations');
         visit('/users');
-        await when( () => userTable.isPresent);
+        await when(() => userTable.isPresent);
       });
 
       describe('Renders users page', () => {
@@ -232,7 +265,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
           expect(userTable.usernames().length).to.equal(3);
 
           const usernames = userTable.usernames();
-          const text = usernames.map(u => u.text).join();
+          const text = usernames.map((u) => u.text).join();
 
           expect(text).to.include('fake fake');
           expect(text).to.include('One fake');
@@ -240,7 +273,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         });
 
         describe('Select a specific organization', () => {
-          beforeEach(async function () {
+          beforeEach(async function() {
             await switchToOrg('SIL International');
             await when(() => location().pathname === '/tasks');
 
@@ -253,7 +286,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
             expect(userTable.usernames().length).to.equal(2);
 
             const usernames = userTable.usernames();
-            const text = usernames.map(u => u.text).join();
+            const text = usernames.map((u) => u.text).join();
 
             expect(text).to.include('fake fake');
             expect(text).to.include('One fake');

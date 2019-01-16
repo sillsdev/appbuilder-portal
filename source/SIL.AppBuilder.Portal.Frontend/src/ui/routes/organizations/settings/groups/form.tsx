@@ -1,16 +1,12 @@
 import * as React from 'react';
 import * as toast from '@lib/toast';
 import { compose } from 'recompose';
-
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
-import {
-  IProvidedProps as IDataActionsProps
-} from '@data/containers/resources/group/with-data-actions';
+import { IProvidedProps as IDataActionsProps } from '@data/containers/resources/group/with-data-actions';
 import { isEmpty } from '@lib/collection';
-import { GroupResource, attributesFor, update } from '@data';
 
+import { GroupResource, attributesFor, update } from '@data';
 
 interface IOwnProps {
   onFinish: () => void;
@@ -24,16 +20,13 @@ interface IState {
   abbreviationError: string;
 }
 
-type IProps =
-  & IOwnProps
-  & IDataActionsProps
-  & i18nProps;
+type IProps = IOwnProps & IDataActionsProps & i18nProps;
 
 const initialState = {
   name: '',
   nameError: '',
   abbreviation: '',
-  abbreviationError: ''
+  abbreviationError: '',
 };
 
 @withTemplateHelpers
@@ -44,7 +37,7 @@ class Form extends React.Component<IProps, IState> {
 
   resetForm = () => {
     this.setState(initialState);
-  }
+  };
 
   isValidForm = () => {
     const { name, abbreviation } = this.state;
@@ -59,7 +52,7 @@ class Form extends React.Component<IProps, IState> {
     }
 
     return !isEmpty(name) && !isEmpty(abbreviation);
-  }
+  };
 
   onSubmit = (e) => {
     e.preventDefault();
@@ -77,14 +70,14 @@ class Form extends React.Component<IProps, IState> {
       }
       onFinish();
     }
-  }
+  };
 
   close = (e) => {
     e.preventDefault();
     const { onFinish } = this.props;
     this.resetForm();
     onFinish();
-  }
+  };
 
   componentDidMount() {
     const { groupToEdit } = this.props;
@@ -92,7 +85,7 @@ class Form extends React.Component<IProps, IState> {
     if (groupToEdit) {
       this.setState({
         name: attributesFor(groupToEdit).name,
-        abbreviation: attributesFor(groupToEdit).abbreviation
+        abbreviation: attributesFor(groupToEdit).abbreviation,
       });
     }
   }
@@ -112,10 +105,10 @@ class Form extends React.Component<IProps, IState> {
               className='ui input'
               type='text'
               value={name}
-              onChange={mut('name')} />
+              onChange={mut('name')}
+            />
             {nameError && <span className='error'>{nameError}</span>}
           </div>
-
 
           <div className='field'>
             <label>{t('common.abbreviation')}</label>
@@ -124,7 +117,8 @@ class Form extends React.Component<IProps, IState> {
               className='ui input'
               type='text'
               value={abbreviation}
-              onChange={mut('abbreviation')} />
+              onChange={mut('abbreviation')}
+            />
             {abbreviationError && <span className='error'>{abbreviationError}</span>}
           </div>
 
@@ -142,6 +136,4 @@ class Form extends React.Component<IProps, IState> {
   }
 }
 
-export default compose(
-  withTranslations
-)(Form);
+export default compose(withTranslations)(Form);

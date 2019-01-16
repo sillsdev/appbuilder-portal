@@ -9,11 +9,10 @@ import {
   ProductDefinitionResource,
   ApplicationTypeResource,
   WorkflowDefinitionResource,
-  idFromRecordIdentity
+  idFromRecordIdentity,
 } from '@data';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
-
 
 interface IOwnProps {
   productDefinition: ProductDefinitionResource;
@@ -21,36 +20,24 @@ interface IOwnProps {
   workflow?: WorkflowDefinitionResource;
 }
 
-type IProps =
-  & IOwnProps
-  & i18nProps;
+type IProps = IOwnProps & i18nProps;
 
 class ProductDefinitionItem extends React.Component<IProps> {
-
   render() {
-
     const { t, productDefinition, type, workflow } = this.props;
 
-    const {
-      name, description
-    } = attributesFor(productDefinition);
+    const { name, description } = attributesFor(productDefinition);
 
     return (
-      <div
-        className='flex p-md fs-13 m-b-sm thin-border round-border-4'
-      >
+      <div className='flex p-md fs-13 m-b-sm thin-border round-border-4'>
         <div className='flex-grow'>
           <div className='bold fs-16'>{name}</div>
           <div className='p-t-md'>
-            <span className='bold m-r-sm'>
-              {t('admin.settings.productDefinitions.type')}:
-            </span>
+            <span className='bold m-r-sm'>{t('admin.settings.productDefinitions.type')}:</span>
             <span>{attributesFor(type).name}</span>
           </div>
           <div>
-            <span className='bold m-r-sm'>
-              {t('admin.settings.productDefinitions.workflow')}:
-            </span>
+            <span className='bold m-r-sm'>{t('admin.settings.productDefinitions.workflow')}:</span>
             <span>{attributesFor(workflow).name}</span>
           </div>
           <div>
@@ -63,7 +50,9 @@ class ProductDefinitionItem extends React.Component<IProps> {
         <div>
           <Link
             className='gray-text'
-              to={`/admin/settings/product-definitions/${idFromRecordIdentity(productDefinition)}/edit`}
+            to={`/admin/settings/product-definitions/${idFromRecordIdentity(
+              productDefinition
+            )}/edit`}
           >
             <CreateIcon className='fs-16' />
           </Link>
@@ -71,13 +60,12 @@ class ProductDefinitionItem extends React.Component<IProps> {
       </div>
     );
   }
-
 }
 
 export default compose<IProps, IOwnProps>(
   withTranslations,
   withOrbit(({ productDefinition }) => ({
-    type: q => q.findRelatedRecord(productDefinition,'type'),
-    workflow: q => q.findRelatedRecord(productDefinition,'workflow')
+    type: (q) => q.findRelatedRecord(productDefinition, 'type'),
+    workflow: (q) => q.findRelatedRecord(productDefinition, 'workflow'),
   }))
 )(ProductDefinitionItem);

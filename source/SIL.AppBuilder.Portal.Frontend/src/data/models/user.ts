@@ -15,12 +15,11 @@ export interface UserAttributes extends AttributesObject {
   emailNotification?: boolean;
   sshKey?: string;
   isLocked?: boolean;
-  role?: {id: string, name: string}; // need api
-  groups?: Array<{id:string, name: string}>; // need an api
+  role?: { id: string; name: string }; // need api
+  groups?: Array<{ id: string; name: string }>; // need an api
   auth0Id?: string;
   profileVisibility?: number;
 }
-
 
 export function name(attrs: UserAttributes) {
   return attrs.name || `${attrs.givenName} ${attrs.familyName}`;

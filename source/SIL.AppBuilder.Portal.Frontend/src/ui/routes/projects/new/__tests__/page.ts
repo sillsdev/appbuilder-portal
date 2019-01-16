@@ -1,18 +1,10 @@
-import {
-  interactor,
-  clickable,
-  isPresent,
-  fillable,
-  text
-} from '@bigtest/interactor';
-
-
+import { interactor, clickable, isPresent, fillable, text } from '@bigtest/interactor';
 import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
 import applicationTypeInteractor from '@ui/components/inputs/application-type-select/__tests__/page';
 
 @interactor
 export class CreateProjectInteractor {
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   isSaveDisabled = isPresent('[data-test-save].disabled');
 

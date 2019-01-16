@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { FindRecordsTerm, OffsetLimitPageSpecifier } from '@orbit/data';
-
 import { withQueryParams, IProvidedQueryParams } from '@lib/query-string';
 
 export interface IPaginateProps {
@@ -21,7 +20,7 @@ interface IOptions {
 
 const defaultOptions = {
   pageSize: 20,
-  pageOffset: 1
+  pageOffset: 1,
 };
 
 interface IState {
@@ -34,17 +33,15 @@ interface IQueryParams {
   pageOffset: string;
 }
 
-type IProps =
-& RouteComponentProps
-& IProvidedQueryParams<IQueryParams>;
+type IProps = RouteComponentProps & IProvidedQueryParams<IQueryParams>;
 
 export function withPagination<TPassedProps>(opts: IOptions = {}) {
   const options = {
     ...defaultOptions,
-    ...opts
+    ...opts,
   };
 
-  return WrappedComponent => {
+  return (WrappedComponent) => {
     class PaginationWrapper extends React.Component<IProps & TPassedProps, IState> {
       state: IState = {};
 
@@ -54,7 +51,7 @@ export function withPagination<TPassedProps>(opts: IOptions = {}) {
 
         const fromQueryParams = {
           pageSize: parseInt(pageSize || `${defaultOptions.pageSize}`, 10),
-          pageOffset: parseInt(pageOffset || `${defaultOptions.pageOffset}`, 10)
+          pageOffset: parseInt(pageOffset || `${defaultOptions.pageOffset}`, 10),
         };
 
         this.setState(fromQueryParams);
@@ -65,39 +62,41 @@ export function withPagination<TPassedProps>(opts: IOptions = {}) {
 
         this.setState({ pageSize });
         updateQueryParams({ pageSize });
-      }
+      };
 
       nextPage = () => {
         const { pageOffset } = this.state;
 
         this.setPageSize(pageOffset + 1);
-      }
+      };
 
       prevPage = () => {
         const { pageOffset } = this.state;
 
         let prevPageNumber = pageOffset - 1;
 
-        if (prevPageNumber < 0) { prevPageNumber = 0; }
+        if (prevPageNumber < 0) {
+          prevPageNumber = 0;
+        }
 
         this.setPageSize(prevPageNumber);
-      }
+      };
 
       setOffset = (pageOffset: number) => {
         const { updateQueryParams } = this.props;
 
         this.setState({ pageOffset });
         updateQueryParams({ pageOffset });
-      }
+      };
 
       applyPagination = (builder: FindRecordsTerm): FindRecordsTerm => {
         const { pageSize, pageOffset } = this.state;
 
         return builder.page({
           offset: pageOffset || options.pageOffset,
-          limit: pageSize || options.pageSize
+          limit: pageSize || options.pageSize,
         } as OffsetLimitPageSpecifier);
-      }
+      };
 
       render() {
         const { pageSize, pageOffset } = this.state;
@@ -108,10 +107,10 @@ export function withPagination<TPassedProps>(opts: IOptions = {}) {
           setOffset: this.setOffset,
           applyPagination: this.applyPagination,
           nextPage: this.nextPage,
-          prevPage: this.prevPage
+          prevPage: this.prevPage,
         };
 
-        return<WrappedComponent { ...paginationProps } { ...this.props } />;
+        return <WrappedComponent {...paginationProps} {...this.props} />;
       }
     }
 

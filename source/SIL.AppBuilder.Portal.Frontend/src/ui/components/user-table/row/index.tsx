@@ -6,19 +6,21 @@ import { Radio } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import {
-  UserResource, GroupResource, RoleResource, OrganizationResource,
-  attributesFor, idFromRecordIdentity,
+  UserResource,
+  GroupResource,
+  RoleResource,
+  OrganizationResource,
+  attributesFor,
+  idFromRecordIdentity,
 } from '@data';
 
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
-
 import {
-  withDataActions, IProvidedProps as IActionProps
+  withDataActions,
+  IProvidedProps as IActionProps,
 } from '@data/containers/resources/user/with-data-actions';
-
 import { withRelationships } from '@data/containers/with-relationship';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import MultiGroupSelect from './multi-group-select';
@@ -36,18 +38,14 @@ export interface IOwnProps {
   organizations: OrganizationResource[];
 }
 
-export type IProps =
-  & INeededProps
-  & i18nProps
-  & IActionProps
-  & IOwnProps;
+export type IProps = INeededProps & i18nProps & IActionProps & IOwnProps;
 
 class Row extends React.Component<IProps> {
   getMessage = (nextState, type = 'success') => {
     const state = nextState ? 'lock' : 'unlock';
 
     return this.props.t(`users.operations.${state}.${type}`);
-  }
+  };
 
   toggleLock = async () => {
     const { updateAttribute, user } = this.props;
@@ -59,11 +57,11 @@ class Row extends React.Component<IProps> {
       await updateAttribute('isLocked', nextLockedState);
 
       toast.success(this.getMessage(nextLockedState));
-    } catch(e) {
+    } catch (e) {
       console.error(e);
-      toast.error(this.getMessage(nextLockedState,'error'));
+      toast.error(this.getMessage(nextLockedState, 'error'));
     }
-  }
+  };
 
   render() {
     const { user, t, roles, organizations } = this.props;
@@ -82,22 +80,13 @@ class Row extends React.Component<IProps> {
           </Link>
         </td>
         <td data-test-role-selector>
-          <MultiRoleSelect
-            user={user}
-            roles={roles}
-            organizations={organizations} />
+          <MultiRoleSelect user={user} roles={roles} organizations={organizations} />
         </td>
         <td>
-          <MultiGroupSelect
-            user={user}
-            organizations={organizations} />
-        </td >
+          <MultiGroupSelect user={user} organizations={organizations} />
+        </td>
         <td>
-          <Radio
-            data-test-toggle-lock
-            toggle
-            onChange={this.toggleLock}
-            checked={isActive} />
+          <Radio data-test-toggle-lock toggle onChange={this.toggleLock} checked={isActive} />
         </td>
       </tr>
     );
@@ -108,7 +97,7 @@ export default compose<IProps, INeededProps>(
   withTranslations,
   withDataActions,
   // read from cache for active/lock toggle
-  withOrbit(({ user }) => ({ user: q => q.findRecord(user) })),
+  withOrbit(({ user }) => ({ user: (q) => q.findRecord(user) })),
   withRelationships(({ user, currentUser }) => {
     return {
       userOrganizations: [user, 'organizationMemberships', 'organization'],
@@ -123,8 +112,8 @@ export default compose<IProps, INeededProps>(
     let organizations = [];
 
     if (userOrganizations && userOrganizations.length > 0) {
-      organizations = userOrganizations.filter(
-        org => currentUserOrganizations.some(o => o.id === org.id)
+      organizations = userOrganizations.filter((org) =>
+        currentUserOrganizations.some((o) => o.id === org.id)
       );
     }
 

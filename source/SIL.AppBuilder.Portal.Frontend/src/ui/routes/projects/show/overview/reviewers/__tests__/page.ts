@@ -1,13 +1,16 @@
 import {
   interactor,
-  clickable, text, isPresent,
-  fillable, count, collection
+  clickable,
+  text,
+  isPresent,
+  fillable,
+  count,
+  collection,
 } from '@bigtest/interactor';
 
 @interactor
 export class ReviewerInteractor {
-
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   list = collection('[data-test-project-reviewer-item-text]');
   listCount = count('[data-test-project-reviewer-item]');
@@ -20,7 +23,6 @@ export class ReviewerInteractor {
   clickAddReviewerSubmitButton = clickable('[data-test-project-reviewers-add-form-submit]');
 
   clickRemoveReviewer = clickable('[data-test-project-reviewers-remove-item]:first-child');
-
 }
 
 export default new ReviewerInteractor('[data-test-project-reviewers]');

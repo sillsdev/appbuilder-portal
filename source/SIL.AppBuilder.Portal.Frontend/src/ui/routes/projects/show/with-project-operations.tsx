@@ -1,29 +1,23 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
 import * as toast from '@lib/toast';
-import { attributesFor, ProjectResource } from '@data';
-import { withTranslations, i18nProps } from '@lib/i18n';
 
+import { attributesFor, ProjectResource } from '@data';
+
+import { withTranslations, i18nProps } from '@lib/i18n';
 import {
   withDataActions,
-  IProvidedProps as ProjectDataActionProps
+  IProvidedProps as ProjectDataActionProps,
 } from '@data/containers/resources/project/with-data-actions';
 
 interface IOwnProps {
   project: ProjectResource;
 }
-type IProps =
-  & IOwnProps
-  & i18nProps
-  & ProjectDataActionProps;
+type IProps = IOwnProps & i18nProps & ProjectDataActionProps;
 
 export function withProjectOperations(WrappedComponent) {
-
   class DataWrapper extends React.Component<IProps> {
-
     toggleArchiveProject = async () => {
-
       const { t, updateAttribute, project } = this.props;
       const { dateArchived } = attributesFor(project);
       const nextValue = !dateArchived ? new Date() : null;
@@ -31,31 +25,24 @@ export function withProjectOperations(WrappedComponent) {
       try {
         await updateAttribute('dateArchived', nextValue);
         toast.success(
-          !dateArchived ?
-            t('project.operations.archive.success') :
-            t('project.operations.reactivate.success')
+          !dateArchived
+            ? t('project.operations.archive.success')
+            : t('project.operations.reactivate.success')
         );
       } catch (e) {
         console.error(e);
         toast.error(e);
       }
-
-    }
+    };
 
     render() {
-
       const actionProps = {
-        toggleArchiveProject: this.toggleArchiveProject
+        toggleArchiveProject: this.toggleArchiveProject,
       };
 
-      return (
-        <WrappedComponent {...actionProps} {...this.props}/>
-      );
+      return <WrappedComponent {...actionProps} {...this.props} />;
     }
-
   }
 
-  return compose(
-    withDataActions,
-  )(DataWrapper);
+  return compose(withDataActions)(DataWrapper);
 }

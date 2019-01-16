@@ -2,10 +2,10 @@ import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, useFakeAuthentication,
-  setupRequestInterceptor
+  setupApplicationTest,
+  useFakeAuthentication,
+  setupRequestInterceptor,
 } from 'tests/helpers/index';
 
 import page from './page';
@@ -15,7 +15,7 @@ describe('Acceptance | Sidebar', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  describe('navigate to tasks page',() => {
+  describe('navigate to tasks page', () => {
     beforeEach(async () => {
       await visit('/tasks');
 
@@ -26,13 +26,12 @@ describe('Acceptance | Sidebar', () => {
       localStorage.clear();
     });
 
-    describe('Close button',() => {
-
-      it('is no longer visible',() => {
+    describe('Close button', () => {
+      it('is no longer visible', () => {
         expect(page.isCloseButtonVisible).to.be.true;
       });
 
-      it('is only visible in responsive view',() => {
+      it('is only visible in responsive view', () => {
         expect(page.isCloseButtonVisibleInResponsive).to.be.true;
       });
     });

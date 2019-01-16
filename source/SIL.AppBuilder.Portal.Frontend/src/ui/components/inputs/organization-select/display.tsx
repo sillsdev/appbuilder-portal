@@ -2,7 +2,9 @@ import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 
 import { OrganizationResource } from '@data';
+
 import { attributesFor, ORGANIZATIONS_TYPE, idFromRecordIdentity } from '@data';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { filterForValidAttributes } from '@lib/dom';
 
@@ -12,23 +14,21 @@ interface IOwnProps {
   onChange: (value: string) => void;
 }
 
-export type IProps =
-  & IOwnProps
-  & i18nProps;
+export type IProps = IOwnProps & i18nProps;
 
 class Display extends React.Component<IProps> {
   onChange = (e, dropdownEvent) => {
     e.preventDefault();
 
     this.props.onChange(dropdownEvent.value);
-  }
+  };
 
   render() {
     const { t, organizations, defaultValue, ...otherProps } = this.props;
-    const organizationOptions = [{ text: t('org.allOrganizations'), value: 'all'}].concat(
-      organizations.map(o => ({
+    const organizationOptions = [{ text: t('org.allOrganizations'), value: 'all' }].concat(
+      organizations.map((o) => ({
         text: attributesFor(o).name || '',
-        value: o.id
+        value: o.id,
       }))
     );
 
@@ -39,9 +39,7 @@ class Display extends React.Component<IProps> {
       ...filterForValidAttributes(otherProps),
     };
 
-    return (
-      <Dropdown data-test-organization-select { ...dropdownProps } />
-    );
+    return <Dropdown data-test-organization-select {...dropdownProps} />;
   }
 }
 

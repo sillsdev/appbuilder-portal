@@ -1,5 +1,4 @@
 import { toast as notify, ToastOptions } from 'react-toastify';
-
 import { parseError } from '@ui/components/errors/parse-error';
 
 export function show(msg: string, options: ToastOptions) {

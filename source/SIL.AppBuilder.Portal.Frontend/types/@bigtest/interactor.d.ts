@@ -1,9 +1,11 @@
-import { attributesFor } from "~/data";
-import { strict } from "assert";
-import { string } from "prop-types";
+import { attributesFor } from '~/data';
 
-export function interactor<T>(WrappedClass: T) : Interactor & T;
-export function text(selector?: string) : any;
+import { strict } from 'assert';
+
+import { string } from 'prop-types';
+
+export function interactor<T>(WrappedClass: T): Interactor & T;
+export function text(selector?: string): any;
 export function clickable(selector?: string): () => Promise<Interactor>;
 export function findAll(selector: string): HTMLElement[];
 export function isPresent(selector: string): boolean;

@@ -1,14 +1,13 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication,
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
 } from 'tests/helpers';
 
 import page from './-page';
-// import app from 'tests/helpers/pages/app';
-
 import * as scenarios from './-scenarios';
 
 describe('Acceptance | Project Directory | Public View', () => {
@@ -42,4 +41,3 @@ describe('Acceptance | Project Directory | Public View', () => {
     });
   });
 });
-

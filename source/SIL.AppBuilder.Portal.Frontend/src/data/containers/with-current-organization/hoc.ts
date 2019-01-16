@@ -1,20 +1,16 @@
 import { withData, WithDataProps } from 'react-orbitjs';
 import { RouteChildrenProps } from 'react-router';
 import { connect } from 'react-redux';
-import {
-  compose, withProps, branch, renderComponent
-} from 'recompose';
-
+import { compose, withProps, branch, renderComponent } from 'recompose';
 import { State } from '@store/reducers';
+
 import { withLoader, buildFindRecord, OrganizationResource, idFromRecordIdentity } from '@data';
+
 import { setCurrentOrganization } from '@store/data';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 import { withRelationships } from '@data/containers/with-relationship';
 
-import {
-  IProps, IProvidedProps, IDataProps,
-  IWithIntermediateData, IReduxProps
-} from './types';
+import { IProps, IProvidedProps, IDataProps, IWithIntermediateData, IReduxProps } from './types';
 
 // all organizations the user can select have already been loaded from
 // the with-current-user HOC
@@ -29,7 +25,8 @@ export const withCurrentOrganization = compose<IProps, IProvidedProps>(
       return {
         setCurrentOrganizationId: (id: string, defaultNav: boolean = true) => {
           dispatch(setCurrentOrganization(id));
-          if (defaultNav){
+
+          if (defaultNav) {
             history.push('/tasks');
           }
         },
@@ -37,7 +34,7 @@ export const withCurrentOrganization = compose<IProps, IProvidedProps>(
     }
   ),
   branch(
-    ({ currentOrganizationId: id }) => (id && `${id}`.length > 0),
+    ({ currentOrganizationId: id }) => id && `${id}`.length > 0,
     compose<IProps, IProvidedProps & IReduxProps>(
       withCurrentUserContext,
       withRelationships(({ currentUser }: ICurrentUserProps) => {
@@ -50,24 +47,25 @@ export const withCurrentOrganization = compose<IProps, IProvidedProps>(
       // request
       withLoader((props: IProvidedProps & IDataProps & IWithIntermediateData) => {
         const { currentOrganizationId, currentUserOrganizations } = props;
-        const noId = (!currentOrganizationId || currentOrganizationId === '');
+        const noId = !currentOrganizationId || currentOrganizationId === '';
 
-        if (noId) { return false; }
+        if (noId) {
+          return false;
+        }
 
-        return  !currentUserOrganizations;
+        return !currentUserOrganizations;
       }),
       withProps((props: IWithIntermediateData & IReduxProps) => {
-        const {
-          currentOrganizationId: id,
-          currentUserOrganizations: organizations
-        } = props;
+        const { currentOrganizationId: id, currentUserOrganizations: organizations } = props;
 
-        if (!id || id === '') { return {}; }
+        if (!id || id === '') {
+          return {};
+        }
 
-        const currentOrganization = organizations.find(org => idFromRecordIdentity(org) === id);
+        const currentOrganization = organizations.find((org) => idFromRecordIdentity(org) === id);
 
         return { currentOrganization };
-      }),
+      })
     )
   ),
   withProps((props: IProps) => {

@@ -1,29 +1,29 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication,
-  fakeAuth0Id
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
+  fakeAuth0Id,
 } from 'tests/helpers';
 
 import page from './page';
 
 const scenarios = {
   appWithSelectedOrg(orgId = '') {
-    setupApplicationTest({ data: { currentOrganizationId: orgId}});
+    setupApplicationTest({ data: { currentOrganizationId: orgId } });
     setupRequestInterceptor();
   },
   userHasNoGroups() {
     useFakeAuthentication({
       data: {
-        id: 1, type: 'users',
+        id: 1,
+        type: 'users',
         attributes: { auth0Id: fakeAuth0Id },
         relationships: {
-          ['organization-memberships']: { data: [
-            { id: 1, type: 'organization-memberships' }
-          ]}
-        }
+          ['organization-memberships']: { data: [{ id: 1, type: 'organization-memberships' }] },
+        },
       },
       included: [
         {
@@ -32,25 +32,22 @@ const scenarios = {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
-        }
-      ]
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+      ],
     });
   },
   userHasGroups() {
     useFakeAuthentication({
       data: {
-        id: 1, type: 'users',
+        id: 1,
+        type: 'users',
         attributes: { auth0Id: fakeAuth0Id },
         relationships: {
-          ['organization-memberships']: { data: [
-            { id: 1, type: 'organization-memberships' }
-          ] },
-          ['group-memberships']: { data: [
-            { id: 1, type: 'group-memberships' }
-          ] }
-        }
+          ['organization-memberships']: { data: [{ id: 1, type: 'organization-memberships' }] },
+          ['group-memberships']: { data: [{ id: 1, type: 'group-memberships' }] },
+        },
       },
       included: [
         {
@@ -59,8 +56,8 @@ const scenarios = {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            organization: { data: { id: 1, type: 'organizations' } }
-          }
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
         },
         {
           id: 1,
@@ -68,45 +65,48 @@ const scenarios = {
           attributes: {},
           relationships: {
             user: { data: { id: 1, type: 'users' } },
-            group: { data: { id: 1, type: 'groups' } }
-          }
+            group: { data: { id: 1, type: 'groups' } },
+          },
         },
         {
-          id: 1, type: 'groups',
+          id: 1,
+          type: 'groups',
           attributes: { name: 'Group 1' },
           relationships: {
-            owner: { data: { id: 1, type: 'organizations' }}
-          }
-        }
-      ]
+            owner: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+      ],
     });
   },
   applicationTypes() {
     return {
-      data: [{
-        id: '1',
-        type: 'application-types',
-        attributes: {
-          name: 'readingappbuilder',
-          description: 'Scripture App Builder'
-        }
-      }, {
-        id: '2',
-        type: 'application-types',
-        attributes: {
-          name: 'scriptureappbuilder',
-          description: 'Reading App Builder'
-        }
-      }],
+      data: [
+        {
+          id: '1',
+          type: 'application-types',
+          attributes: {
+            name: 'readingappbuilder',
+            description: 'Scripture App Builder',
+          },
+        },
+        {
+          id: '2',
+          type: 'application-types',
+          attributes: {
+            name: 'scriptureappbuilder',
+            description: 'Reading App Builder',
+          },
+        },
+      ],
       meta: {
-        'total-records': 2
-      }
+        'total-records': 2,
+      },
     };
-  }
+  },
 };
 
 describe('Acceptance | New Project', () => {
-
   describe('the user has no groups', () => {
     scenarios.appWithSelectedOrg();
     scenarios.userHasNoGroups();
@@ -121,7 +121,6 @@ describe('Acceptance | New Project', () => {
       });
     });
   });
-
 
   describe('the user has groups', () => {
     describe('but has all organizations selected', () => {
@@ -143,7 +142,7 @@ describe('Acceptance | New Project', () => {
       scenarios.appWithSelectedOrg('1');
       scenarios.userHasGroups();
 
-      beforeEach(function () {
+      beforeEach(function() {
         this.mockGet(200, '/application-types', scenarios.applicationTypes());
       });
 
@@ -163,7 +162,6 @@ describe('Acceptance | New Project', () => {
           page.groupSelect.chooseGroup('Group 1');
           page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
         });
-
 
         it('has not enabled the save button', () => {
           expect(page.isSaveDisabled).to.be.true;
@@ -187,7 +185,6 @@ describe('Acceptance | New Project', () => {
       });
 
       describe('type defaults to first option', () => {
-
         beforeEach(async function() {
           await page.fillName('some name');
           await page.fillLanguage('english');
@@ -195,7 +192,9 @@ describe('Acceptance | New Project', () => {
         });
 
         it('has a value', () => {
-          expect(page.applicationTypeSelect.selectedApplicationType).to.equal('Scripture App Builder');
+          expect(page.applicationTypeSelect.selectedApplicationType).to.equal(
+            'Scripture App Builder'
+          );
         });
 
         it('has enabled the save button', () => {
@@ -204,8 +203,7 @@ describe('Acceptance | New Project', () => {
       });
 
       describe('language is required', () => {
-
-        beforeEach(async function () {
+        beforeEach(async function() {
           await page.fillName('some name');
           await page.groupSelect.chooseGroup('Group 1');
           await page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
@@ -234,4 +232,3 @@ describe('Acceptance | New Project', () => {
     });
   });
 });
-

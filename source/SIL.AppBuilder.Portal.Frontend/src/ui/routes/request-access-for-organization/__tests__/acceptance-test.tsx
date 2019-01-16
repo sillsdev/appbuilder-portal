@@ -1,13 +1,16 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
-import { setupApplicationTest, setupRequestInterceptor, useFakeAuthentication } from 'tests/helpers/index';
+import {
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
+} from 'tests/helpers/index';
+import app from 'tests/helpers/pages/app';
 
 import { pathName as formPath } from '../index';
 import { pathName as successPath } from '../success';
 
-import app from 'tests/helpers/pages/app';
 import page from './page';
 
 describe('Acceptance | Request Access For Organization', () => {
@@ -15,12 +18,16 @@ describe('Acceptance | Request Access For Organization', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  beforeEach(function () {
-    this.mockGet(200, '/organizations', { data: [{
-      type: 'organizations',
-      id: 1,
-      attributes: {}
-    }] });
+  beforeEach(function() {
+    this.mockGet(200, '/organizations', {
+      data: [
+        {
+          type: 'organizations',
+          id: 1,
+          attributes: {},
+        },
+      ],
+    });
   });
 
   describe('navigates to form', () => {

@@ -1,20 +1,21 @@
 import * as React from 'react';
 import { compose, defaultProps, branch } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import ProductIcon from '@ui/components/product-icon';
+
 import {
   ProductDefinitionResource,
   ProductArtifactResource,
   ProductResource,
   ProductBuildResource,
-  attributesFor
+  attributesFor,
 } from '@data';
-import Artifact from './artifact';
+
 import EmptyLabel from '@ui/components/labels/empty';
 import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
+import Artifact from './artifact';
 import Header from './header';
 
 interface IExpectedProps {
@@ -31,16 +32,14 @@ interface IState {
   areArtifactsVisible: boolean;
 }
 
-type IProps =
-  & IOwnProps
-  & i18nProps;
+type IProps = IOwnProps & i18nProps;
 
 class ProductArtifact extends React.Component<IProps, IState> {
   state = { areArtifactsVisible: false };
 
   toggleShowArtifacts = () => {
     this.setState({ areArtifactsVisible: !this.state.areArtifactsVisible });
-  }
+  };
 
   render() {
     const { artifacts, t } = this.props;
@@ -48,7 +47,11 @@ class ProductArtifact extends React.Component<IProps, IState> {
 
     return (
       <div data-test-product-artifacts className='product-artifact w-100 m-b-lg'>
-        <Header {...this.props} onClick={this.toggleShowArtifacts} isCollapsed={areArtifactsVisible} />
+        <Header
+          {...this.props}
+          onClick={this.toggleShowArtifacts}
+          isCollapsed={areArtifactsVisible}
+        />
 
         {areArtifactsVisible && (
           <div data-test-artifact-list-container>
@@ -68,37 +71,37 @@ class ProductArtifact extends React.Component<IProps, IState> {
                   <div className='flex-30 text-align-right'>
                     <span className='m-r-md'>{t('project.products.size')}</span>
                   </div>
-                  <div className='flex-10'/>
+                  <div className='flex-10' />
                 </div>
               </div>
 
-              { ( artifacts || [] ).map((artifact, i) =>
-                <Artifact key={i} artifact={artifact}/>
-              )}
-
+              {(artifacts || []).map((artifact, i) => (
+                <Artifact key={i} artifact={artifact} />
+              ))}
             </EmptyLabel>
           </div>
         )}
       </div>
     );
-
   }
-
 }
 
 export default compose<IProps, IExpectedProps>(
   withTranslations,
-  withOrbit( props => {
-    const {product} = props;
+  withOrbit((props) => {
+    const { product } = props;
+
     return {
-      productDefinition: q => q.findRelatedRecord(product, 'productDefinition'),
+      productDefinition: (q) => q.findRelatedRecord(product, 'productDefinition'),
     };
   }),
-  branch( props => !!props.productBuild,
+  branch(
+    (props) => !!props.productBuild,
     withOrbit((passedProps: IExpectedProps) => {
       const { productBuild, product } = passedProps;
+
       return {
-        artifacts: q => q.findRelatedRecords(productBuild, 'productArtifacts'),
+        artifacts: (q) => q.findRelatedRecords(productBuild, 'productArtifacts'),
       };
     }),
     defaultProps({

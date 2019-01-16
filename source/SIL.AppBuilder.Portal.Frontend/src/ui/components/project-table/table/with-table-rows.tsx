@@ -3,9 +3,10 @@ import { compose } from 'recompose';
 import { connect } from 'react-redux';
 
 import { ProjectResource, idFromRecordIdentity } from '@data';
+
 import {
   setRowSelection as setRowSelectionData,
-  setAllCheckboxState as setAllCheckboxStateData
+  setAllCheckboxState as setAllCheckboxStateData,
 } from '@store/data';
 
 import { ALL_CHECKBOX_STATE } from './all-checkbox-state';
@@ -21,18 +22,14 @@ interface IOwnProps {
   rowCount: number;
 }
 
-type IRow =
-  | ProjectResource;
+type IRow = ProjectResource;
 
 interface IReduxProps {
   setRowSelection: (row: IRow) => void;
-  setAllCheckboxState: (newState:string) => void;
+  setAllCheckboxState: (newState: string) => void;
 }
 
-type IProps =
-  & IProvidedProps
-  & IOwnProps
-  & IReduxProps;
+type IProps = IProvidedProps & IOwnProps & IReduxProps;
 
 interface IOptions {
   tableName: string;
@@ -42,23 +39,26 @@ const ROWS_DEFAULT_VALUE = [];
 const TOGGLE_DEFAULT_VALUE = ALL_CHECKBOX_STATE.NONE;
 
 export function withTableRows(options: IOptions) {
-
   function mapStateToProps({ data }) {
     const { tableName } = options;
 
-    const selectedRows = data
-      && data.rowSelections
-      && data.rowSelections[tableName]
-      && data.rowSelections[tableName].rows || ROWS_DEFAULT_VALUE;
+    const selectedRows =
+      (data &&
+        data.rowSelections &&
+        data.rowSelections[tableName] &&
+        data.rowSelections[tableName].rows) ||
+      ROWS_DEFAULT_VALUE;
 
-    const allCheckboxState = data
-      && data.rowSelections
-      && data.rowSelections[tableName]
-      && data.rowSelections[tableName].allCheckboxState || TOGGLE_DEFAULT_VALUE;
+    const allCheckboxState =
+      (data &&
+        data.rowSelections &&
+        data.rowSelections[tableName] &&
+        data.rowSelections[tableName].allCheckboxState) ||
+      TOGGLE_DEFAULT_VALUE;
 
     return {
       selectedRows,
-      allCheckboxState
+      allCheckboxState,
     };
   }
 
@@ -66,34 +66,25 @@ export function withTableRows(options: IOptions) {
     const { tableName } = options;
 
     return {
-      setRowSelection: (row) =>
-        dispatch(setRowSelectionData(tableName, row)),
-      setAllCheckboxState: (newState) =>
-        dispatch(setAllCheckboxStateData(tableName, newState))
+      setRowSelection: (row) => dispatch(setRowSelectionData(tableName, row)),
+      setAllCheckboxState: (newState) => dispatch(setAllCheckboxStateData(tableName, newState)),
     };
   }
 
   const equalIds = (a, b) => idFromRecordIdentity(a) === idFromRecordIdentity(b);
   const notEqualIds = (a, b) => idFromRecordIdentity(a) !== idFromRecordIdentity(b);
 
-  return InnerComponent => {
-
+  return (InnerComponent) => {
     class WrapperComponent extends React.Component<IProps> {
-
       toggleRowSelection = (row: IRow) => {
-        const {
-          setRowSelection,
-          selectedRows,
-          rowCount,
-          setAllCheckboxState
-        } = this.props;
+        const { setRowSelection, selectedRows, rowCount, setAllCheckboxState } = this.props;
 
         let newSelection;
 
-        const isRowInSelection = selectedRows.find(r => equalIds(r, row));
+        const isRowInSelection = selectedRows.find((r) => equalIds(r, row));
 
         if (isRowInSelection) {
-          newSelection = selectedRows.filter((r) => notEqualIds(r,row));
+          newSelection = selectedRows.filter((r) => notEqualIds(r, row));
         } else {
           newSelection = [...selectedRows, row];
         }
@@ -107,14 +98,10 @@ export function withTableRows(options: IOptions) {
         } else {
           setAllCheckboxState(ALL_CHECKBOX_STATE.ALL);
         }
-      }
+      };
 
       toggleAllRowSelection = (rows) => {
-        const {
-          setRowSelection,
-          allCheckboxState,
-          setAllCheckboxState
-        } = this.props;
+        const { setRowSelection, allCheckboxState, setAllCheckboxState } = this.props;
 
         let newSelection;
 
@@ -122,14 +109,16 @@ export function withTableRows(options: IOptions) {
           newSelection = rows;
           setAllCheckboxState(ALL_CHECKBOX_STATE.ALL);
         }
-        if (allCheckboxState === ALL_CHECKBOX_STATE.ALL ||
-            allCheckboxState === ALL_CHECKBOX_STATE.INDETERMINATE) {
+        if (
+          allCheckboxState === ALL_CHECKBOX_STATE.ALL ||
+          allCheckboxState === ALL_CHECKBOX_STATE.INDETERMINATE
+        ) {
           newSelection = [];
           setAllCheckboxState(ALL_CHECKBOX_STATE.NONE);
         }
 
         setRowSelection(newSelection);
-      }
+      };
 
       render() {
         const innerProps = {
@@ -137,7 +126,7 @@ export function withTableRows(options: IOptions) {
           toggleRowSelection: this.toggleRowSelection,
           toggleAllRowSelection: this.toggleAllRowSelection,
           selectedRows: this.props.selectedRows,
-          allCheckboxState: this.props.allCheckboxState
+          allCheckboxState: this.props.allCheckboxState,
         };
 
         return <InnerComponent {...innerProps} />;
@@ -145,8 +134,10 @@ export function withTableRows(options: IOptions) {
     }
 
     return compose(
-      connect(mapStateToProps, mapDispatchToProps)
+      connect(
+        mapStateToProps,
+        mapDispatchToProps
+      )
     )(WrapperComponent);
   };
-
 }

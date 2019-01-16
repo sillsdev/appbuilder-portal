@@ -9,6 +9,6 @@ export function requireAuthHelper(authenticationChecker: (props: RouterProps) =>
 
     const WrappedWithRouter = withRouter(authenticationChecker);
 
-    return <WrappedWithRouter {...props } />;
+    return <WrappedWithRouter {...props} />;
   };
 }

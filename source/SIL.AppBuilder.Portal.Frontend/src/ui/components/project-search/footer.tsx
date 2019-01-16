@@ -6,7 +6,6 @@ interface IProps {
   keyword: string;
 }
 
-
 const descriptions = {
   ['name']: {
     example: `"NIV by SIL"`,
@@ -28,7 +27,7 @@ const descriptions = {
   },
   ['product.datePublished']: {
     title: ``,
-  }
+  },
 };
 
 export default class SearchFooter extends React.Component<IProps> {
