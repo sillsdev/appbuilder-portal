@@ -19,28 +19,25 @@ interface MenuItem {
   onClick: (e) => void;
   exact?: boolean;
   className?: string;
+  target?: string;
 }
 
-const MenuItem = ({ name, to, onClick, exact, className }: MenuItem) => {
+const MenuItem = ({ onClick, className, ...otherProps }: MenuItem) => {
 
   return (
     <>
       <Menu.Item
-        name={name}
         as={NavLink}
-        to={to}
-        exact
         activeClassName='active'
         className={`${className} d-xs-none d-sm-none d-md-none d-lg-block d-xl-block`}
+        { ...otherProps }
       />
       <Menu.Item
-        name={name}
         as={NavLink}
-        to={to}
         activeClassName='active'
         onClick={onClick}
-        exact
         className={`${className} d-xs-block d-sm-block d-md-block d-lg-none d-xl-none`}
+        { ...otherProps }
       />
     </>
   );
@@ -114,27 +111,11 @@ class Navigation extends React.Component<IProps & i18nProps> {
 
         <hr />
 
-        { allOrgsSelected && (
-          <Menu.Item
-            className={'disabled'}
-            to='/projects/new'>
-            <span>{t('sidebar.addProject')}</span>
-          </Menu.Item>
-        )}
-
-        { !allOrgsSelected && (
-          <MenuItem
-            name={t('sidebar.addProject')}
-            to='/projects/new'
-            onClick={closeSidebar} />
-        )}
-
-        <hr />
-
         <MenuItem
           name={t('opensource')}
           to='/open-source'
           className='m-t-lg'
+          target="_blank"
           onClick={closeSidebar} />
       </Menu>
     );

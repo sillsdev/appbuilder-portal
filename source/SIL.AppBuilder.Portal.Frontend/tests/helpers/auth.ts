@@ -14,20 +14,26 @@ export function useFakeAuthentication(currentUser?: object) {
 
     expect(isLoggedIn()).to.eq(true, 'user should be logged in, but is unauthenticated');
 
+    const defaultUser = {
+      id: 1,
+      type: 'users',
+      attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+      relationships: {
+        ['organization-memberships']: {
+          data: [
+            { id: 1, type: 'organization-memberships' },
+          ]
+        },
+        ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
+      }
+    };
+
+    const user = (currentUser || {}).data || defaultUser;
+
+    this.currentUser = user;
+
     this.mockGet(200, '/users/current-user', currentUser || {
-      data: {
-        id: 1,
-        type: 'users',
-        attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
-        relationships: {
-          ['organization-memberships']: {
-            data: [
-              { id: 1, type: 'organization-memberships' },
-            ]
-          },
-          ['user-roles']: { data: [ { id: 1, type: 'user-roles' } ] },
-        }
-      },
+      data: user,
       included: [
         {
           id: 1,

@@ -129,6 +129,26 @@ export async function create<TAttrs, TRelationships>(
   return record;
 }
 
+export function build<TAttrs, TRelationships>(...args) {
+  const firstArg = args[0];
+  let id: string | number;
+  let type: string;
+  let options: IBuildNewOptions<TAttrs, TRelationships>;
+
+  if (typeof firstArg === 'object') {
+    id = firstArg.id;
+    type = firstArg.type;
+    options = firstArg;
+  } else {
+    [id, type, options] = args;
+  }
+
+  return {
+    id,
+    ...(buildNew(type, options)),
+  };
+}
+
 // Example:
 // buildNew('projects', {
 //   attributes: { name: 'My First Project' },

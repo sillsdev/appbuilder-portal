@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
-import { Button } from 'semantic-ui-react';
+import { Button, Card, Label } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
 import * as prettyMs from 'pretty-ms';
 
@@ -11,9 +11,12 @@ import ProductIcon from '@ui/components/product-icon';
 import {
   attributesFor,
   idFromRecordIdentity,
-  TaskResource, WorkflowDefinitionResource,
-  ProductResource, ProjectResource, ProductDefinitionResource,
-  UserResource
+  TaskResource,
+  WorkflowDefinitionResource,
+  ProductResource,
+  ProjectResource,
+  ProductDefinitionResource,
+  UserResource,
 } from '@data';
 
 export interface IOwnProps {
@@ -30,11 +33,7 @@ export interface INeededProps {
   cellSecondaryClasses: string;
 }
 
-export type IProps =
-  & INeededProps
-  & RouteComponentProps
-  & IOwnProps
-  & i18nProps;
+export type IProps = INeededProps & RouteComponentProps & IOwnProps & i18nProps;
 
 class TaskRow extends React.Component<IProps> {
   didClickRow = (e: React.MouseEvent<HTMLTableRowElement>) => {
@@ -59,39 +58,52 @@ class TaskRow extends React.Component<IProps> {
 
   render() {
     const {
-      t, userTask, project, assignedTo,
+      t,
+      userTask,
+      project,
+      assignedTo,
       productDefinition,
-      cellClasses, cellSecondaryClasses
+      cellClasses,
+      cellSecondaryClasses,
     } = this.props;
 
-    const { status, waitTime } = attributesFor(userTask);
-    const { name } = attributesFor(assignedTo);
-
-    const claimedBy = name || t('tasks.unclaimed');
-
+    const { comment, status, waitTime } = attributesFor(userTask);
     const { name: projectName } = attributesFor(project);
     const { name: productName } = attributesFor(productDefinition);
 
     return (
-      <tr className='pointer' onClick={this.didClickRow}>
-        <td>
-          <a href={`/projects/${idFromRecordIdentity(project)}`} onClick={this.didClickProjectName}>{projectName}</a>
-        </td>
-        <td className={cellSecondaryClasses}>
-          <div className='flex align-items-center'>
-            <ProductIcon product={productDefinition} selected={true}/>
-            <span className='p-l-sm-xs'>{productName}</span>
-          </div>
-        </td>
-        <td className={cellClasses}>{claimedBy}</td>
-        <td className={cellClasses}>{status}</td>
-        <td className={cellClasses}>
-          {waitTime && prettyMs(waitTime)}
-        </td>
-        <td>
-          <Button>{t('tasks.reassign')}</Button>
-        </td>
-      </tr>
+      <>
+        <tr
+          data-test-row
+          className={`pointer p-t-md p-b-md ${comment ? 'no-bottom-border' : ''}`}
+          onClick={this.didClickRow}
+        >
+          <td>
+            <div className="flex align-items-center m-b-sm" onClick={this.didClickRow}>
+              <ProductIcon product={productDefinition} selected={true} />
+              <span className="p-l-sm-xs">{productName}</span>
+            </div>
+            <Label className="grey m-l-lg uppercase">{status}</Label>
+          </td>
+          <td>
+            <a
+              className="clickable"
+              href={`/projects/${idFromRecordIdentity(project)}`}
+              onClick={this.didClickProjectName}
+            >
+              {projectName}
+            </a>
+          </td>
+          <td>{waitTime && prettyMs(waitTime)}</td>
+        </tr>
+        {comment && (
+          <tr data-test-comment className="no-top-border">
+            <td style={{ paddingTop: 0 }} className="fs-12 no-top-border" colSpan={5}>
+              <span className='p-l-lg block'>{comment}</span>
+            </td>
+          </tr>
+        )}
+      </>
     );
   }
 }
@@ -102,7 +114,7 @@ export default compose<INeededProps, IProps>(
   withOrbit(({ userTask }) => {
     return {
       product: q => q.findRelatedRecord(userTask, 'product'),
-      assignedTo: q => q.findRelatedRecord(userTask, 'assigned')
+      assignedTo: q => q.findRelatedRecord(userTask, 'assigned'),
     };
   }),
   withOrbit(({ product }) => ({
@@ -112,4 +124,4 @@ export default compose<INeededProps, IProps>(
   withOrbit(({ productDefinition }) => ({
     workflow: q => q.findRelatedRecord(productDefinition, 'workflow'),
   }))
-)( TaskRow );
+)(TaskRow);

@@ -173,7 +173,8 @@
       "dropdown": {
         "orgProjects": "Organization Projects",
         "myProjects": "My Projects",
-        "archived": "Archived Projects"
+        "archived": "Archived Projects",
+        "all": "All Projects"
       }
     }
   },
@@ -240,7 +241,7 @@
       },
       "organizationDownloads": {
         "title": "Allow Other Organizations to download",
-        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products and their Artifacts"
+        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files"
       },
       "visibility": {
         "title": "Public Visibility",

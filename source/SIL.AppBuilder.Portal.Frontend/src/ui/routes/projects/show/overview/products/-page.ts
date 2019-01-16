@@ -17,10 +17,23 @@ class Products {
   isModalVisible = isPresent('[data-test-project-product-popup]');
 
   products = collection('[data-test-project-product-item]', {
+    name: text('[data-test-project-product-name]'),
     hasProductLink: isPresent('[data-test-project-product-publishlink]')
   });
 
+  productNamed(named: string) {
+    const item = this.products().find(p => p.name.includes(named));
+
+    if (!item) {
+      throw new Error(`cannot find product named: ${named}`);
+    }
+
+    return item;
+  }
+
+  // TODO: don't use interactor in the name, it's an implementation detail
   modalInteractor = ProductModalInteractor;
+  modal = ProductModalInteractor;
 }
 
 export const ProductsInteractor = interactor(Products);

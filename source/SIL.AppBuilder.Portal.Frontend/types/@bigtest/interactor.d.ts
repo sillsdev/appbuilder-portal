@@ -14,7 +14,7 @@ export function hasClass(selector?: string, className?: string): boolean;
 export function collection(selector: string, interactors?: any): (index?: number) => any;
 export function value(selector: string): string;
 export function is(selector: string): boolean;
-export function scoped(selector: string, interactors?: any): Interactor;
+export function scoped<T>(selector: string, interactors?: T): Interactor & T;
 export function attribute(selector: string, otherSelector?: string);
 
 export class Interactor {

@@ -17,6 +17,7 @@ import { ScrollToTop } from '@lib/routing';
 
 
 import 'semantic-ui-css/semantic.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 import '@ui/styles/app.scss';
 
 function resetBrowser() {

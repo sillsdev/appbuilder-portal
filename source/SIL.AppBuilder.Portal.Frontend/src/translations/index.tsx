@@ -7,6 +7,7 @@ import * as LanguageDetector from 'i18next-browser-languagedetector';
 // import { reactI18nextModule } from 'react-i18next';
 
 import enUs from './locales/en-us.json';
+import frFR from './locales/fr-FR.json';
 import esLa from './locales/es-419.json';
 
 i18n
@@ -38,6 +39,7 @@ i18n
 
 i18n.addResourceBundle('es-419', 'translations', esLa, true, true);
 i18n.addResourceBundle('en-US', 'translations', enUs, true, true);
+i18n.addResourceBundle('fr-FR', 'translations', frFR, true, true);
 
 export default i18n;
 

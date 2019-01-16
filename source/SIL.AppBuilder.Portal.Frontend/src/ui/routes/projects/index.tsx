@@ -8,6 +8,7 @@ import { requireAuth } from '@lib/auth';
 import { NotFound } from '@ui/routes/errors';
 import { withLayout } from '@ui/components/layout';
 
+import AllProjectsRoute, { pathName as allProjectPath } from './list/all';
 import MyProjectsRoute, { pathName as myProjectPath } from './list/my-projects';
 import OrganizationProjectsRoute, { pathName as organizationProjectPath } from './list/organization-projects';
 import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './list/archived-projects';
@@ -25,6 +26,7 @@ class ProjectsRoot extends React.Component {
           <Route exact path={organizationProjectPath} component={OrganizationProjectsRoute} />
           <Route exact path={archivedProjectPath} component={ArchivedProjectsRoute} />
           <Route exact path={newProjectPath} component={NewProjectRoute} />
+          <Route exact path={allProjectPath} component={AllProjectsRoute} />
 
           <Route path={projectDetailPath} component={ProjectDetailRoute} />
 
