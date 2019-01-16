@@ -175,7 +175,8 @@
       "dropdown": {
         "orgProjects": "Proyectos de organización",
         "myProjects": "Mis Proyectos",
-        "archived": "Proyectos archivados"
+        "archived": "Proyectos archivados",
+        "all": "All Projects"
       }
     }
   },
@@ -242,7 +243,7 @@
       },
       "organizationDownloads": {
         "title": "Permitir descargar a otras organizaciones",
-        "description": "Cuando está configuración está activa, cualquier usuario de Scriptoria que pueda ver su proyecto en el directorio, podrá descargarlo junto con sus artefactos"
+        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files"
       },
       "visibility": {
         "title": "Public Visibility",
