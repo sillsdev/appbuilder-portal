@@ -1,6 +1,6 @@
 ﻿@{
     var url = $"{Model.BaseUrl}/admin?" +
-        Uri.EscapeUriString($"name={Model.Name}&orgAdminEmail={Model.OrgAdminEmail}&websiteUrl={Model.WebsiteUrl}");
+        System.Uri.EscapeUriString($"name={Model.Name}&orgAdminEmail={Model.OrgAdminEmail}&websiteUrl={Model.WebsiteUrl}");
 }
 <html>
 <body>
