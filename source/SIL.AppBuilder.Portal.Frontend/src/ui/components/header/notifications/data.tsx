@@ -2,17 +2,17 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-
 import { TYPE_NAME as NOTIFICATION, NotificationAttributes } from '@data/models/notification';
-import { query, defaultOptions, NOTIFICATIONS_TYPE, withLoader } from '@data';
-import { withCollectionDataActions } from '@data/containers/resources/notification/with-collection-data-actions';
 
+import { query, defaultOptions, NOTIFICATIONS_TYPE, withLoader } from '@data';
+
+import { withCollectionDataActions } from '@data/containers/resources/notification/with-collection-data-actions';
 
 const notificationsQuery = (q) => q.findRecords(NOTIFICATION).sort('-dateCreated', '-dateRead');
 
 const mapNetworkToProps = (passedProps) => {
   return {
-    notifications: [notificationsQuery, {...defaultOptions()}]
+    notifications: [notificationsQuery, { ...defaultOptions() }],
   };
 };
 
@@ -35,20 +35,24 @@ export interface ActionProps {
 }
 
 export function withData(WrappedComponent) {
-
   class DataWrapper extends React.Component<DataProps & WithDataProps> {
     haveAllNotificationsBeenSeen = () => {
       const { notifications } = this.props;
 
-      return notifications &&
-        notifications.reduce((memo, notification) => memo && notification.attributes.dateRead !== null, true);
-    }
+      return (
+        notifications &&
+        notifications.reduce(
+          (memo, notification) => memo && notification.attributes.dateRead !== null,
+          true
+        )
+      );
+    };
 
     isThereAtLeastOneNotificationToShow = () => {
       const { notifications } = this.props;
 
       return notifications.length > 0;
-    }
+    };
 
     render() {
       const dataProps = {
@@ -56,7 +60,7 @@ export function withData(WrappedComponent) {
         isThereAtLeastOneNotificationToShow: this.isThereAtLeastOneNotificationToShow(),
       };
 
-      return <WrappedComponent { ...this.props } {...dataProps} />;
+      return <WrappedComponent {...this.props} {...dataProps} />;
     }
   }
 
@@ -64,6 +68,6 @@ export function withData(WrappedComponent) {
     query(mapNetworkToProps),
     withLoader(({ notifications }) => !notifications),
     withOrbit(mapRecordsToProps),
-    withCollectionDataActions,
+    withCollectionDataActions
   )(DataWrapper);
 }

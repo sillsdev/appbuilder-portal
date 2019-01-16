@@ -1,4 +1,4 @@
-import { AttributesObject, ResourceObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type PRODUCTS_TYPE = 'products';
 export const TYPE_NAME = 'product';

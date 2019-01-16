@@ -1,4 +1,4 @@
-import { AttributesObject, ResourceObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type STORE_TYPES_TYPE = 'store-types';
 export type TYPE_NAME = 'store-type';

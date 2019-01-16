@@ -4,7 +4,7 @@ import { recordIdentityFrom } from './store-helpers';
 import { PUSH_PAYLOAD_OPERATION } from './push-payload-operations';
 
 export async function pushPayload(updateStore, payload, op = PUSH_PAYLOAD_OPERATION.ADD_RECORD) {
-  const normalized =  serializer.deserializeDocument(payload);
+  const normalized = serializer.deserializeDocument(payload);
 
   const datas = buildDatas(normalized);
   const included = buildIncluded(normalized);
@@ -14,9 +14,10 @@ export async function pushPayload(updateStore, payload, op = PUSH_PAYLOAD_OPERAT
   assignIdsToResources(resources);
 
   await updateStore(
-    q => resources.map(resource => {
-      return q[op](resource);
-    }),
+    (q) =>
+      resources.map((resource) => {
+        return q[op](resource);
+      }),
     { skipRemote: true }
   );
 }
@@ -35,8 +36,8 @@ function buildDatas(normalized) {
 }
 
 function fixRelationships(resources) {
-  resources.forEach(resource => {
-    Object.keys(resource.relationships || {}).forEach(relationName => {
+  resources.forEach((resource) => {
+    Object.keys(resource.relationships || {}).forEach((relationName) => {
       const relation = resource.relationships[relationName] || {};
 
       if (!relation.data) {

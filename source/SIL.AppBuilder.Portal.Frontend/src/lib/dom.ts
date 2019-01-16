@@ -36,7 +36,6 @@ export const GENERIC_ATTRIBUTES = [
   'title',
 ];
 
-
 export function filterForValidAttributes(input: object) {
   return pick(input, GENERIC_ATTRIBUTES);
 }

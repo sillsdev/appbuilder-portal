@@ -1,11 +1,11 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
 } from 'tests/helpers/index';
-
 
 import {
   currentUserIsOrgAdmin,
@@ -13,9 +13,8 @@ import {
   currentUserIsAppBuilder,
   currentUserHasNoRoles,
   currentUserOwnsProject,
-  currentUserDoesNotOwnProject
+  currentUserDoesNotOwnProject,
 } from './user-scenarios';
-
 import page from './page';
 
 const accessGrantedPath = '/projects/1';
@@ -25,7 +24,6 @@ function attemptsToVisitTheProject() {
     await visit(accessGrantedPath);
   });
 }
-
 
 describe('Acceptance | Project View | Role Based Access', () => {
   setupApplicationTest();
@@ -90,8 +88,5 @@ describe('Acceptance | Project View | Role Based Access', () => {
         expect(location().pathname).to.equal(accessDeniedPath);
       });
     });
-
   });
-
-
 });

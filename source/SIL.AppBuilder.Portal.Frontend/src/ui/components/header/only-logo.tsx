@@ -5,17 +5,13 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import './header.scss';
 
 class Header extends React.Component<RouteComponentProps> {
-
   render() {
-
     const { history } = this.props;
 
     return (
       <div data-test-header-menu className='ui menu menu-navbar'>
         <div className='ui container'>
-          <div
-            className='item header logo'
-            onClick={() => history.push('/')}>
+          <div className='item header logo' onClick={() => history.push('/')}>
             SCRIPTORIA
           </div>
         </div>
@@ -24,6 +20,4 @@ class Header extends React.Component<RouteComponentProps> {
   }
 }
 
-export default compose(
-  withRouter
-)(Header);
+export default compose(withRouter)(Header);

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import MenuIcon from '@material-ui/icons/Menu';
-import { withRouter, RouteComponentProps  } from 'react-router-dom';
-
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import LocaleSelect from '@ui/components/inputs/locale-select';
+
 import Notifications from './notifications';
 import UserDropdown from './user-dropdown';
 
@@ -13,12 +13,9 @@ export interface Props {
   showSidebar: () => void;
 }
 
-export type IProps =
-  & Props
-  & RouteComponentProps<{}>;
+export type IProps = Props & RouteComponentProps<{}>;
 
 class Header extends React.Component<IProps> {
-
   render() {
     const { history, showSidebar } = this.props;
 
@@ -29,7 +26,8 @@ class Header extends React.Component<IProps> {
             <button
               data-test-header-sidebar-button
               className='ui button sidebar-button'
-              onClick={showSidebar}>
+              onClick={showSidebar}
+            >
               <MenuIcon />
             </button>
           </div>
@@ -37,29 +35,28 @@ class Header extends React.Component<IProps> {
           <div
             data-test-header-appname
             className='item header logo'
-            onClick={() => history.push('/')}>
+            onClick={() => history.push('/')}
+          >
             SCRIPTORIA
           </div>
 
           <div className='right menu'>
             <div className='item'>
-              <button
-                data-test-header-addproject
-                className='ui button add-project d-xs-none'>
+              <button data-test-header-addproject className='ui button add-project d-xs-none'>
                 Add Project
               </button>
             </div>
 
             <div className='item'>
-              <LocaleSelect/>
+              <LocaleSelect />
             </div>
 
             <div className='item'>
-              <Notifications/>
+              <Notifications />
             </div>
 
             <div className='item'>
-              <UserDropdown/>
+              <UserDropdown />
             </div>
           </div>
         </div>
@@ -68,6 +65,4 @@ class Header extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withRouter
-)(Header);
+export default compose(withRouter)(Header);

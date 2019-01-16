@@ -16,12 +16,16 @@ export {
 } from './store-helpers';
 
 export {
-  attributesFor, idFor,
-  relationshipsFor, hasRelationship, isRelatedTo,
-  relationshipFor, firstError,
+  attributesFor,
+  idFor,
+  relationshipsFor,
+  hasRelationship,
+  isRelatedTo,
+  relationshipFor,
+  firstError,
   isRelatedRecord,
   idsForRelationship,
-  recordsWithIdIn
+  recordsWithIdIn,
 } from './helpers';
 
 export { withLoader } from './containers/with-loader';
@@ -37,8 +41,14 @@ export { APPLICATION_TYPES_TYPE, ApplicationTypeResource } from './models/applic
 export { GROUP_MEMBERSHIPS_TYPE, GroupMembershipResource } from './models/group-membership';
 export { GROUPS_TYPE, GroupResource } from './models/group';
 export { NOTIFICATIONS_TYPE, NotificationResource } from './models/notification';
-export { ORGANIZATION_MEMBERSHIPS_TYPE, OrganizationMembershipResource } from './models/organization-membership';
-export { ORGANIZATION_PRODUCT_DEFINITIONS_TYPE, OrganizationProductDefinitionResource } from './models/organization-product-definition';
+export {
+  ORGANIZATION_MEMBERSHIPS_TYPE,
+  OrganizationMembershipResource,
+} from './models/organization-membership';
+export {
+  ORGANIZATION_PRODUCT_DEFINITIONS_TYPE,
+  OrganizationProductDefinitionResource,
+} from './models/organization-product-definition';
 export { ORGANIZATION_STORES_TYPE, OrganizationStoreResource } from './models/organization-store';
 export { ORGANIZATIONS_TYPE, OrganizationResource } from './models/organization';
 export { PRODUCT_ARTIFACTS_TYPE, ProductArtifactResource } from './models/product-artifact';
@@ -54,7 +64,10 @@ export { TASKS_TYPE, TaskResource } from './models/task';
 export { USER_TASK_TYPE, UserTaskResource } from './models/user-task';
 export { USER_ROLE_TYPE, UserRoleResource } from './models/user-role';
 export { USERS_TYPE, UserResource } from './models/user';
-export { WORKFLOW_DEFINITIONS_TYPE, WorkflowDefinitionResource} from './models/workflow-definition';
+export {
+  WORKFLOW_DEFINITIONS_TYPE,
+  WorkflowDefinitionResource,
+} from './models/workflow-definition';
 
 // TODO: change to 20, or remove.
 //       currently, we don't have a way to see what the total

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { withTemplateHelpers, Mut } from 'react-action-decorators';
 import { OrganizationAttributes } from '@data/models/organization';
 import ErrorHeader from '@ui/components/errors/header-message';
+
 import { withTranslations, i18nProps } from '~/lib/i18n';
 
 export interface IProps {
@@ -25,7 +26,7 @@ class InviteOrganizationDisplay extends React.Component<IProps & i18nProps, ISta
     const { onSubmit, token } = this.props;
 
     await onSubmit({ ...this.state, token });
-  }
+  };
 
   render() {
     const { mut } = this;
@@ -35,34 +36,21 @@ class InviteOrganizationDisplay extends React.Component<IProps & i18nProps, ISta
     return (
       <div>
         <form data-test-org-create-form className='ui form'>
-
-          { error ? <ErrorHeader error={error} /> : null }
+          {error ? <ErrorHeader error={error} /> : null}
 
           <div className='field'>
             <label>{t('invitations.orgName')}</label>
-            <input
-              data-test-org-name
-              type='text'
-              value={name}
-              onChange={mut('name')} />
+            <input data-test-org-name type='text' value={name} onChange={mut('name')} />
           </div>
 
           <div className='field'>
             <label>{t('invitations.orgUrl')}</label>
-            <input
-              data-test-website
-              type='text'
-              value={websiteUrl}
-              onChange={mut('websiteUrl')} />
+            <input data-test-website type='text' value={websiteUrl} onChange={mut('websiteUrl')} />
           </div>
 
-          <button
-            data-test-submit
-            className='ui primary button'
-            onClick={this.submit}>
+          <button data-test-submit className='ui primary button' onClick={this.submit}>
             {t('invitations.orgSubmit')}
           </button>
-
         </form>
       </div>
     );

@@ -17,10 +17,12 @@ module.exports = {
     'prettier',
     'typescript',
     'import',
+    'react',
   ],
   extends: [
     // 'typescript', // does not work...
     'eslint:recommended',
+    "plugin:react/recommended",
     'prettier',
   ],
 
@@ -28,14 +30,26 @@ module.exports = {
   rules: {
     // style
     "padded-blocks": ["error", "never"],
+    'padding-line-between-statements': [
+      'error',
+      // TODO: be on the lookout for something that handles a line after statements
+      { blankLine: "always", prev: "*", next: ["block-like", "multiline-block-like", "try"] },
+      { blankLine: "always", prev: "*", next: ["return"] },
+    ],
     "linebreak-style": ["error", "unix"],
     "space-in-parens": ["error", "never"],
+    "object-curly-spacing": ["error", "always"],
 
     // web api usage
     "no-console": 'warn',
 
     // typescript
     "typescript/explicit-function-return-type": 'off',
+
+    // react
+    'react/prop-types': 'off',
+    'react/display-name': 'off',
+    'react/no-unescaped-entities': 'off',
 
     'no-undef': 'off',
     'no-unused-vars': 'off',

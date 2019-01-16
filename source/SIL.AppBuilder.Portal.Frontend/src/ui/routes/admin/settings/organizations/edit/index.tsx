@@ -3,14 +3,13 @@ import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import {
   withDataActions,
-  IProvidedProps as IOrganizationProps
+  IProvidedProps as IOrganizationProps,
 } from '@data/containers/resources/organization/with-data-actions';
+import { withTranslations, i18nProps } from '@lib/i18n';
 
 import OrganizationForm from '../common/form';
-
 import { listPathName } from '../index';
 
 import {
@@ -19,35 +18,28 @@ import {
   buildOptions,
   buildFindRecord,
   OrganizationResource,
-  UserResource
+  UserResource,
 } from '@data';
-
-import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {
   organization: OrganizationResource;
   owner: UserResource;
 }
 
-type IProps =
-  & IOrganizationProps
-  & IOwnProps
-  & i18nProps
-  & RouteComponentProps<{}>;
+type IProps = IOrganizationProps & IOwnProps & i18nProps & RouteComponentProps<{}>;
 
 class EditOrganization extends React.Component<IProps> {
-
   update = async (attributes, relationships) => {
     const { updateAttributes, t } = this.props;
     await updateAttributes(attributes, relationships);
     this.redirectToList();
     toast.success(t('admin.settings.organizations.editSuccess'));
-  }
+  };
 
   redirectToList = () => {
     const { history } = this.props;
     history.push(listPathName);
-  }
+  };
 
   render() {
     const { organization, owner } = this.props;
@@ -56,7 +48,7 @@ class EditOrganization extends React.Component<IProps> {
       organization,
       owner,
       onSubmit: this.update,
-      onCancel: this.redirectToList
+      onCancel: this.redirectToList,
     };
 
     return <OrganizationForm {...organizationProps} />;
@@ -68,14 +60,15 @@ export default compose(
   withTranslations,
   query(({ match: { params: { orgId } } }) => ({
     organization: [
-      q => buildFindRecord(q, 'organization', orgId), buildOptions({
-        include: ['owner']
-      })
+      (q) => buildFindRecord(q, 'organization', orgId),
+      buildOptions({
+        include: ['owner'],
+      }),
     ],
   })),
   withLoader(({ organization }) => !organization),
-  withOrbit(({organization}) => ({
-    owner: q => q.findRelatedRecord(organization, 'owner')
+  withOrbit(({ organization }) => ({
+    owner: (q) => q.findRelatedRecord(organization, 'owner'),
   })),
-  withDataActions,
+  withDataActions
 )(EditOrganization);

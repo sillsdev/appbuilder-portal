@@ -1,4 +1,4 @@
-import { AttributesObject, ResourceObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type PRODUCT_ARTIFACTS_TYPE = 'productArtifact';
 
@@ -11,4 +11,7 @@ export interface ProductArtifactAttributes extends AttributesObject {
   dateUpdated: string;
 }
 
-export type ProductArtifactResource = ResourceObject<PRODUCT_ARTIFACTS_TYPE, ProductArtifactAttributes>;
+export type ProductArtifactResource = ResourceObject<
+  PRODUCT_ARTIFACTS_TYPE,
+  ProductArtifactAttributes
+>;

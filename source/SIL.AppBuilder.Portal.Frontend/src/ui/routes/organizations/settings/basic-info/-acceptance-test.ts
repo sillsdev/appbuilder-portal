@@ -1,14 +1,15 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, setupRequestInterceptor, useFakeAuthentication,
-  fakeAuth0Id
+  setupApplicationTest,
+  setupRequestInterceptor,
+  useFakeAuthentication,
+  fakeAuth0Id,
 } from 'tests/helpers';
+import app from 'tests/helpers/pages/app';
 
 import page from './-page';
-import app from 'tests/helpers/pages/app';
 
 describe('Acceptance | Organization Settings', () => {
   setupApplicationTest();
@@ -27,9 +28,9 @@ describe('Acceptance | Organization Settings', () => {
             relationships: {
               ['organization-product-definitions']: {},
               ['groups']: {},
-            }
+            },
           },
-          included: []
+          included: [],
         });
 
         await visit('/organizations/1/settings');
@@ -41,19 +42,24 @@ describe('Acceptance | Organization Settings', () => {
 
       describe('the user clicks the save button', () => {
         beforeEach(async function() {
-          this.mockPatch(200, '/organizations/1', {
-            data: {
-              id: '1',
-              type: 'organizations',
-              attributes: {
-                "name":"DeveloperTown2!",
-                "logo-url":"",
-                "public-by-default":true
+          this.mockPatch(
+            200,
+            '/organizations/1',
+            {
+              data: {
+                id: '1',
+                type: 'organizations',
+                attributes: {
+                  name: 'DeveloperTown2!',
+                  'logo-url': '',
+                  'public-by-default': true,
+                },
               },
             },
-          }, (server, req, res) => {
-            expect(req.body).to.include('DeveloperTown2!');
-          });
+            (server, req, res) => {
+              expect(req.body).to.include('DeveloperTown2!');
+            }
+          );
 
           await page.fillName('DeveloperTown2!');
           await page.submit();
@@ -66,4 +72,3 @@ describe('Acceptance | Organization Settings', () => {
     });
   });
 });
-

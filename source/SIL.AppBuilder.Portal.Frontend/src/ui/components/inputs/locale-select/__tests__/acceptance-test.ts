@@ -2,10 +2,11 @@ import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupApplicationTest, useFakeAuthentication,
-  setupRequestInterceptor, visitTheHomePage
+  setupApplicationTest,
+  useFakeAuthentication,
+  setupRequestInterceptor,
+  visitTheHomePage,
 } from 'tests/helpers/index';
 
 import page from './page';
@@ -35,6 +36,5 @@ describe('Acceptance | Locale Select', () => {
         });
       });
     });
-
   });
 });

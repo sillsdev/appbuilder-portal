@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router';
-
 import { RequestAccessForOrganizationAttributes as Attributes } from '@data/models/organization-invite';
 
 import Display from './display';
@@ -9,9 +8,7 @@ import { pathName as successPath } from './success';
 
 export const pathName = '/request-access-for-organization';
 
-export type IProps =
-  & {}
-  & RouteComponentProps<{}>;
+export type IProps = {} & RouteComponentProps<{}>;
 
 export interface IState {
   error?: string;
@@ -34,24 +31,24 @@ class RequestAccessForOrganizationRoute extends React.Component<IProps, IState> 
       console.debug('Error: ', e);
       this.setState({ error: e.message || 'An error occurred' });
     }
-  }
+  };
 
   // does not need authentication
   sendRequestForAccess = (data: Attributes) => {
     return fetch('/api/organization-invite-requests', {
       method: 'POST',
-      body: JSON.stringify({ data:{type: 'organization-invite-requests', attributes: data }}),
+      body: JSON.stringify({ data: { type: 'organization-invite-requests', attributes: data } }),
       headers: {
-        'Content-Type': 'application/vnd.api+json'
-      }
+        'Content-Type': 'application/vnd.api+json',
+      },
     });
-  }
+  };
 
   onSuccess = () => {
     const { history } = this.props;
 
     history.push(successPath);
-  }
+  };
 
   render() {
     const { error } = this.state;
@@ -60,6 +57,4 @@ class RequestAccessForOrganizationRoute extends React.Component<IProps, IState> 
   }
 }
 
-export default compose(
-  withRouter
-)(RequestAccessForOrganizationRoute);
+export default compose(withRouter)(RequestAccessForOrganizationRoute);

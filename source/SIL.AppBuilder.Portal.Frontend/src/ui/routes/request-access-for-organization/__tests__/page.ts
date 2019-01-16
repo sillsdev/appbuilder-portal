@@ -1,11 +1,8 @@
-import {
-  interactor,
-  clickable, fillable, isPresent
-} from '@bigtest/interactor';
+import { interactor, clickable, fillable, isPresent } from '@bigtest/interactor';
 
 @interactor
 export class FormInteractor {
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   fillName = fillable('[data-test-name]');
   fillEmail = fillable('[data-test-email]');

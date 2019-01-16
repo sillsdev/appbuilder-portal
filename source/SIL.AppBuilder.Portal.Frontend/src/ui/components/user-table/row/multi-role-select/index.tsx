@@ -2,18 +2,21 @@ import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import {
-  OrganizationResource, UserResource, RoleResource,
+  OrganizationResource,
+  UserResource,
+  RoleResource,
   UserRoleResource,
   attributesFor,
   idFor,
   relationshipFor,
-  recordsWithIdIn
+  recordsWithIdIn,
 } from '@data';
+
 import { isEmpty, unique } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 
 import Display from './display';
-import { withCurrentUserContext } from '@data/containers/with-current-user';
 
 interface INeededProps {
   user: UserResource;
@@ -29,11 +32,7 @@ interface IAfterUserRoles {
   userRoles: UserRoleResource[];
 }
 
-type IProps =
-& INeededProps
-& IOwnProps
-& IAfterUserRoles
-& i18nProps;
+type IProps = INeededProps & IOwnProps & IAfterUserRoles & i18nProps;
 
 export default compose<IProps, INeededProps>(
   withTranslations,
@@ -45,21 +44,21 @@ export default compose<IProps, INeededProps>(
     const { user } = props;
 
     return {
-      userRoles: q => q.findRelatedRecords(user, 'userRoles'),
+      userRoles: (q) => q.findRelatedRecords(user, 'userRoles'),
     };
   }),
   withProps((props: INeededProps & IAfterUserRoles & i18nProps) => {
     const { userRoles, organizations, roles, t } = props;
 
-    const applicable = userRoles.filter(userRole => {
+    const applicable = userRoles.filter((userRole) => {
       const id = idFor(relationshipFor(userRole, 'organization'));
 
       return recordsWithIdIn(organizations, [id]).length > 0;
     });
 
-    const names = applicable.map(userRole => {
+    const names = applicable.map((userRole) => {
       const roleId = idFor(relationshipFor(userRole, 'role'));
-      const role = roles.find(r => r.id === roleId);
+      const role = roles.find((r) => r.id === roleId);
 
       return attributesFor(role).roleName;
     });
@@ -73,14 +72,14 @@ export default compose<IProps, INeededProps>(
       .join(', ');
 
     return {
-      roleNames: result
+      roleNames: result,
     };
   }),
-  withProps(({currentUser, user, roleNames}) => {
+  withProps(({ currentUser, user, roleNames }) => {
     const isSuperAdmin = roleNames.includes('SuperAdmin');
 
     return {
-      editable: isSuperAdmin || currentUser.id !== user.id
+      editable: isSuperAdmin || currentUser.id !== user.id,
     };
   })
 )(Display);

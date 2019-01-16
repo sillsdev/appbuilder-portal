@@ -1,14 +1,10 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
 import { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/with-logout';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import FocusPanel from '@ui/components/focus-panel';
 
-type IProps =
-  & ILogoutProps
-  & i18nProps;
+type IProps = ILogoutProps & i18nProps;
 
 class VerifyEmail extends React.Component<IProps> {
   render() {

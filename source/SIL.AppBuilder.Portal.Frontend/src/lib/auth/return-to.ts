@@ -7,7 +7,7 @@ export function storePath(path) {
 export function retrievePath(clear = false) {
   const value = localStorage.getItem(RETURN_TO_PATH_KEY);
 
-  if(clear) {
+  if (clear) {
     localStorage.removeItem(RETURN_TO_PATH_KEY);
   }
 

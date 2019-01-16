@@ -3,13 +3,13 @@ import { match as Match } from 'react-router';
 import { Checkbox } from 'semantic-ui-react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import { OrganizationAttributes } from '@data/models/organization';
+
 import {
   OrganizationResource,
   OrganizationProductDefinitionResource,
   ProductDefinitionResource,
-  attributesFor
+  attributesFor,
 } from '@data';
 
 import ProductDefinitionMultiSelect from '@ui/components/inputs/product-definition-multi-select';
@@ -29,25 +29,21 @@ export interface IProps {
   organizationProductDefinitions: OrganizationProductDefinitionResource[];
 }
 
-type IOwnProps =
-  & IProps
-  & i18nProps;
+type IOwnProps = IProps & i18nProps;
 
 class ProductsRoute extends React.Component<IOwnProps> {
-
   togglePrivacy = () => {
     const { updateOrganization, organization } = this.props;
     const { publicByDefault } = attributesFor(organization);
 
     updateOrganization({ publicByDefault: !publicByDefault });
-  }
+  };
 
   updateProductDefinition = (productDefinition) => {
-
     const { updateProductDefinition } = this.props;
 
     updateProductDefinition(productDefinition);
-  }
+  };
 
   render() {
     const { organization, organizationProductDefinitions, t } = this.props;
@@ -55,7 +51,7 @@ class ProductsRoute extends React.Component<IOwnProps> {
 
     const multiSelectProps = {
       selected: organizationProductDefinitions,
-      onChange: this.updateProductDefinition
+      onChange: this.updateProductDefinition,
     };
 
     return (
@@ -67,10 +63,12 @@ class ProductsRoute extends React.Component<IOwnProps> {
             <h3>{t('org.makePrivateTitle')}</h3>
             <p className='input-info'>{t('org.makePrivateDescription')}</p>
           </div>
-          <Checkbox toggle className='m-l-lg'
+          <Checkbox
+            toggle
+            className='m-l-lg'
             checked={publicByDefault}
             onChange={this.togglePrivacy}
-            />
+          />
         </div>
 
         <hr />
@@ -84,8 +82,8 @@ class ProductsRoute extends React.Component<IOwnProps> {
 
 export default compose(
   withTranslations,
-  withOrbit(({organization}) => ({
-    organizationProductDefinitions: q =>
-      q.findRelatedRecords(organization, 'organizationProductDefinitions')
-  })),
+  withOrbit(({ organization }) => ({
+    organizationProductDefinitions: (q) =>
+      q.findRelatedRecords(organization, 'organizationProductDefinitions'),
+  }))
 )(ProductsRoute);

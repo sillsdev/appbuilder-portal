@@ -8,7 +8,6 @@ import { IProvidedProps as IPaginateProps } from '@data/containers/api/with-filt
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';
 import { i18nProps } from '@lib/i18n';
 import { IDataProps, IColumnProps } from '@ui/components/project-table';
-
 import { PaginationFooter } from '@data/containers/api/pagination-footer';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
 import { ErrorMessage } from '@ui/components/errors';
@@ -22,15 +21,13 @@ export interface IOwnProps {
   groups: GroupResource[];
 }
 
-export type IProps =
-& IOwnProps
-& ISortProps
-& IFilterProps
-& IDataProps
-& IPaginateProps
-& IColumnProps
-& i18nProps;
-
+export type IProps = IOwnProps &
+  ISortProps &
+  IFilterProps &
+  IDataProps &
+  IPaginateProps &
+  IColumnProps &
+  i18nProps;
 
 export default class DirectoryDisplay extends React.Component<IProps> {
   search = (value) => {
@@ -41,27 +38,43 @@ export default class DirectoryDisplay extends React.Component<IProps> {
     }
 
     updateFilter({ attribute: 'search-term', value });
-  }
+  };
 
   render() {
     const {
       t,
-      projects, updateFilter, error, toggleSort,
-      isAscending, sortProperty,
-      columns, selectedColumns, isLoading,
-      toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns
+      projects,
+      updateFilter,
+      error,
+      toggleSort,
+      isAscending,
+      sortProperty,
+      columns,
+      selectedColumns,
+      isLoading,
+      toggleColumnSelection,
+      activeProductColumns,
+      activeProjectColumns,
+      possibleColumns,
     } = this.props;
 
     const numProjects = projects && projects.length;
     /* TODO: figure out how to disable certain pagination buttons */
 
     const tableProps = {
-      projects, isLoading,
-      toggleSort, isAscending, sortProperty,
-      columns, selectedColumns,
-      toggleColumnSelection, activeProductColumns, activeProjectColumns, possibleColumns,
-      projectPath: id => `/directory/${id}`,
-      showProjectActions: false
+      projects,
+      isLoading,
+      toggleSort,
+      isAscending,
+      sortProperty,
+      columns,
+      selectedColumns,
+      toggleColumnSelection,
+      activeProductColumns,
+      activeProjectColumns,
+      possibleColumns,
+      projectPath: (id) => `/directory/${id}`,
+      showProjectActions: false,
     };
 
     return (
@@ -74,32 +87,31 @@ export default class DirectoryDisplay extends React.Component<IProps> {
           <Popup
             basic
             hoverable
-            trigger={<div>
-              <DebouncedSearch
-                placeholder={t('common.search')}
-                onSubmit={this.search} />
-            </div>}
-            position='bottom center'>
-
+            trigger={
+              <div>
+                <DebouncedSearch placeholder={t('common.search')} onSubmit={this.search} />
+              </div>
+            }
+            position='bottom center'
+          >
             <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
-
           </Popup>
         </div>
 
-        <Filters { ...this.props } />
+        <Filters {...this.props} />
 
-        { error && <ErrorMessage error={error} /> }
-        { !error && (
+        {error && <ErrorMessage error={error} />}
+        {!error && (
           <>
-            <Table { ...tableProps } />
+            <Table {...tableProps} />
 
-            {(
+            {
               <div className='flex-row justify-content-end'>
-                <PaginationFooter className='m-t-lg' { ...this.props } />
+                <PaginationFooter className='m-t-lg' {...this.props} />
               </div>
-            )}
+            }
           </>
-        ) }
+        )}
       </div>
     );
   }

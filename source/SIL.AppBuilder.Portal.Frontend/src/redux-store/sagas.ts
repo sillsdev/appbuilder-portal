@@ -18,7 +18,6 @@ import { all } from 'redux-saga/effects';
 // see https://github.com/redux-saga/redux-saga/issues/160
 // for performance discussion, and why all([flat list])
 // uses less memory
-export function * sagas() {
-  yield all([
-  ]);
+export function* sagas() {
+  yield all([]);
 }

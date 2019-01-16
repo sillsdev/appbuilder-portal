@@ -1,14 +1,12 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
-  wait
+  wait,
 } from 'tests/helpers/index';
-
 import range from '@ui/components/inputs/date-range/-page';
 
 import page from './page';
@@ -19,7 +17,7 @@ describe('Acceptance | Project Directory | Filtering | By Date', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  beforeEach(function () {
+  beforeEach(function() {
     const { server } = this.polly;
 
     this.mockGet(200, 'product-definitions', { data: [] });
@@ -75,7 +73,6 @@ describe('Acceptance | Project Directory | Filtering | By Date', () => {
       });
     });
   });
-
 
   describe('user sets the to date', () => {
     beforeEach(async function() {

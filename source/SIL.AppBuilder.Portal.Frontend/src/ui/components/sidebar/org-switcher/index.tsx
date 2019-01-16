@@ -1,12 +1,15 @@
 import { compose, withProps } from 'recompose';
-
-import { IGivenProps } from './types';
-import Display from './display';
-import { withCurrentOrganization, IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-current-organization';
+import {
+  withCurrentOrganization,
+  IProvidedProps as WithCurrentOrgProps,
+} from '@data/containers/with-current-organization';
 import { withCurrentUserContext } from '@data/containers/with-current-user';
-import { withData } from './with-data';
 import { withTranslations } from '@lib/i18n';
 import { withRouter } from 'react-router-dom';
+
+import { withData } from './with-data';
+import Display from './display';
+import { IGivenProps } from './types';
 
 export default compose<IGivenProps, {}>(
   withCurrentUserContext,
@@ -14,7 +17,7 @@ export default compose<IGivenProps, {}>(
   withTranslations,
   withCurrentOrganization,
   withProps(({ currentOrganizationId }: WithCurrentOrgProps) => ({
-    allOrgsSelected: '' === currentOrganizationId
+    allOrgsSelected: '' === currentOrganizationId,
   })),
-  withData,
+  withData
 )(Display);

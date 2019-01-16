@@ -1,17 +1,22 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-
 import * as toast from '@lib/toast';
 
 import {
-  attributesFor, create, recordIdentityFromKeys,
-  buildOptions, isRelatedRecord,
-  UserResource, OrganizationResource, RoleResource, UserRoleResource,
+  attributesFor,
+  create,
+  recordIdentityFromKeys,
+  buildOptions,
+  isRelatedRecord,
+  UserResource,
+  OrganizationResource,
+  RoleResource,
+  UserRoleResource,
 } from '@data';
+
 import { TYPE_NAME as USER_ROLE } from '@data/models/user-role';
 import { IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
-
 
 export interface IProvidedProps {
   userHasRole: (role: RoleResource) => boolean;
@@ -19,7 +24,6 @@ export interface IProvidedProps {
   roleForName: (roleName: string) => RoleResource;
   toggleRole: (roleName: string) => Promise<void>;
 }
-
 
 export interface IOwnProps {
   currentUser?: UserResource;
@@ -34,17 +38,14 @@ export interface IOwnProps {
   };
 }
 
-
-export type IProps =
-  & IOwnProps
-  & WithDataProps;
+export type IProps = IOwnProps & WithDataProps;
 
 export function withUserRoles<T>(WrappedComponent) {
   class UserRoleWrapper extends React.PureComponent<T & IProps> {
     get user() {
       const { currentUser, propsforUserRoles } = this.props;
 
-      return propsforUserRoles && propsforUserRoles.user || currentUser;
+      return (propsforUserRoles && propsforUserRoles.user) || currentUser;
     }
 
     get userName() {
@@ -54,15 +55,17 @@ export function withUserRoles<T>(WrappedComponent) {
     get organization() {
       const { forOrganization, propsforUserRoles } = this.props;
 
-      return propsforUserRoles && propsforUserRoles.organization || forOrganization;
+      return (propsforUserRoles && propsforUserRoles.organization) || forOrganization;
     }
 
     get userRolesForOrganization(): UserRoleResource[] {
       const { userRoles } = this.props;
 
-      if (!this.organization) { return []; }
+      if (!this.organization) {
+        return [];
+      }
 
-      const userRolesForOrganization = userRoles.filter(userRole => {
+      const userRolesForOrganization = userRoles.filter((userRole) => {
         return isRelatedRecord(userRole, this.organization);
       });
 
@@ -82,7 +85,7 @@ export function withUserRoles<T>(WrappedComponent) {
       } catch (e) {
         toast.error(e);
       }
-    }
+    };
 
     addToRole = async (role: RoleResource) => {
       const { dataStore } = this.props;
@@ -92,11 +95,11 @@ export function withUserRoles<T>(WrappedComponent) {
           role,
           user: this.user,
           organization: this.organization,
-        }
+        },
       });
 
       toast.success(`${this.userName} added to role`);
-    }
+    };
 
     removeFromRole = async (role: RoleResource) => {
       const { dataStore } = this.props;
@@ -104,29 +107,29 @@ export function withUserRoles<T>(WrappedComponent) {
       const userRole = this.userRoleForRole(role);
 
       if (userRole) {
-        await dataStore.update(t => t.removeRecord(userRole), buildOptions());
+        await dataStore.update((t) => t.removeRecord(userRole), buildOptions());
 
         toast.success(`${this.userName} removed from role`);
       } else {
         toast.warning(`${this.userName} is not in that role`);
       }
-    }
+    };
 
     roleForName = (roleName: string): RoleResource => {
       const { roles } = this.props;
 
-      return roles.find(role => attributesFor(role).roleName === roleName);
-    }
+      return roles.find((role) => attributesFor(role).roleName === roleName);
+    };
 
     userHasRole = (role: RoleResource): boolean => {
       return !!this.userRoleForRole(role);
-    }
+    };
 
     userRoleForRole = (role: RoleResource): UserRoleResource => {
-      return this.userRolesForOrganization.find(userRole => {
+      return this.userRolesForOrganization.find((userRole) => {
         return isRelatedRecord(userRole, role);
       });
-    }
+    };
 
     render() {
       const { propsforUserRoles, ...otherProps } = this.props;
@@ -134,31 +137,27 @@ export function withUserRoles<T>(WrappedComponent) {
       const userRoleProps = {
         userHasRole: this.userHasRole,
         userRoleForRole: this.userRoleForRole,
-        toggleRole: this.toggleRole
+        toggleRole: this.toggleRole,
       };
 
-      return (
-        <WrappedComponent
-          { ...otherProps }
-          { ...userRoleProps }
-        />
-      );
+      return <WrappedComponent {...otherProps} {...userRoleProps} />;
     }
   }
 
   return compose(
-
     withOrbit((props: ICurrentUserProps & IOwnProps) => {
       const { currentUser, propsforUserRoles, userRoles } = props;
 
       // userRoles already present.
-      if (userRoles) { return {}; }
+      if (userRoles) {
+        return {};
+      }
 
-      const user = propsforUserRoles && propsforUserRoles.user || currentUser;
+      const user = (propsforUserRoles && propsforUserRoles.user) || currentUser;
 
       return {
-        userRoles: q => q.findRelatedRecords(user, 'userRoles'),
+        userRoles: (q) => q.findRelatedRecords(user, 'userRoles'),
       };
     })
-  )( UserRoleWrapper );
+  )(UserRoleWrapper);
 }

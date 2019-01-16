@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import { titleize } from 'inflected';
-import { ResourceObject } from "jsonapi-typescript";
+import { ResourceObject } from 'jsonapi-typescript';
 
 import { attributesFor } from '@data';
 
@@ -20,19 +20,19 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
     e.preventDefault();
 
     const { onChange, items } = this.props;
-    const selected = items.find(i => i.id === dropdownEvent.value);
+    const selected = items.find((i) => i.id === dropdownEvent.value);
 
     onChange(selected);
-  }
+  };
 
   render() {
     const { noResourcesLabel, items, labelField, value, onChange, ...other } = this.props;
 
-    if (!items || items.length === 0){
-      return <Dropdown data-test-resource-select disabled text={noResourcesLabel}/>;
+    if (!items || items.length === 0) {
+      return <Dropdown data-test-resource-select disabled text={noResourcesLabel} />;
     }
 
-    const options = items.map(i => {
+    const options = items.map((i) => {
       let label;
       const attributes = attributesFor(i);
 
@@ -50,15 +50,9 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
     const dropdownProps = {
       options,
       defaultValue: value.id,
-      onChange: this.onChange
+      onChange: this.onChange,
     };
 
-    return (
-      <Dropdown
-        data-test-resource-select
-        { ...dropdownProps }
-        { ...other }
-      />
-    );
+    return <Dropdown data-test-resource-select {...dropdownProps} {...other} />;
   }
 }

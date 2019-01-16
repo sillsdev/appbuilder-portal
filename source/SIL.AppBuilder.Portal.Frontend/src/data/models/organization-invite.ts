@@ -1,4 +1,4 @@
-import { AttributesObject } from "jsonapi-typescript";
+import { AttributesObject } from 'jsonapi-typescript';
 
 export const TYPE_NAME = 'organizationInvite';
 

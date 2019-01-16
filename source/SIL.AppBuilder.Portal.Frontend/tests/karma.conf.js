@@ -1,5 +1,4 @@
-
-var path = require("path");
+var path = require('path');
 var root = path.resolve(__dirname, '..');
 
 console.log('root path: ', root);
@@ -19,34 +18,23 @@ module.exports = function(config) {
     retryLimit: 20, // hack around concurrency issues....
     concurrency: 1,
     basePath: '',
-    frameworks: [
-      'mocha',
-     ],
-    reporters: [
-      'mocha',
-    ],
+    frameworks: ['mocha'],
+    reporters: ['mocha'],
     browsers: ['Chrome', 'ChromeDebug'],
     customLaunchers: {
       ChromeDebug: {
         base: 'Chrome',
-        flags: [ '--remote-debugging-port=9333']
-      }
+        flags: ['--remote-debugging-port=9333'],
+      },
     },
-    mime: { 'text/x-typescript': ['ts','tsx'] },
+    mime: { 'text/x-typescript': ['ts', 'tsx'] },
 
-    files: [
-      { pattern: path.resolve(root, 'tests/index.ts'), watched: false }
-    ],
+    files: [{ pattern: path.resolve(root, 'tests/index.ts'), watched: false }],
 
-    exclude: [
-      `${root}/dist`,
-      `${root}/.cache`,
-    ],
+    exclude: [`${root}/dist`, `${root}/.cache`],
 
     preprocessors: {
-      [`${root}/tests/index.ts`]: [
-        'webpack',
-      ],
+      [`${root}/tests/index.ts`]: ['webpack'],
     },
     client: {
       captureConsole: false,
@@ -54,7 +42,7 @@ module.exports = function(config) {
         reporter: 'html',
         ui: 'bdd',
         globals: false,
-        opts: root + '/tests/mocha.opts'
+        opts: root + '/tests/mocha.opts',
       },
     },
 
@@ -65,7 +53,7 @@ module.exports = function(config) {
       fixWebpackSourcePaths: true,
       skipFilesWithNoCoverage: false,
       'report-config': {
-        html: { subdir: 'html' }
+        html: { subdir: 'html' },
       },
       thresholds: {
         emitWarning: true,
@@ -73,9 +61,9 @@ module.exports = function(config) {
           statements: 85,
           lines: 85,
           branches: 75,
-          functions: 85
-        }
-      }
+          functions: 85,
+        },
+      },
     },
 
     webpack: require(path.join(root, './tests/webpack.config.js')),
@@ -86,7 +74,7 @@ module.exports = function(config) {
       'karma-mocha-reporter',
       'karma-chrome-launcher',
       'karma-firefox-launcher',
-    ]
+    ],
   });
 
   if (process.env.DETACHED) {
@@ -108,12 +96,12 @@ module.exports = function(config) {
           '--disable-web-security',
           '--disable-gpu',
           '--disable-extensions',
-          '--window-size=1280,720'
-        ]
+          '--window-size=1280,720',
+        ],
       },
       FirefoxHeadless: {
         base: 'Firefox',
-        flags: [ '-headless' ],
+        flags: ['-headless'],
       },
     };
 

@@ -10,12 +10,15 @@ export interface SetAllCheckboxStateAction {
   };
 }
 
-export const setAllCheckboxState = (tableName: string, allCheckboxState: string): SetAllCheckboxStateAction => ({
+export const setAllCheckboxState = (
+  tableName: string,
+  allCheckboxState: string
+): SetAllCheckboxStateAction => ({
   type: SET_ALL_CHECKBOX_STATE,
   payload: {
     tableName,
-    allCheckboxState
-  }
+    allCheckboxState,
+  },
 });
 
 export const reducer = (state: State, action: SetAllCheckboxStateAction) => {
@@ -26,8 +29,8 @@ export const reducer = (state: State, action: SetAllCheckboxStateAction) => {
     rowSelections: {
       [tableName]: {
         ...state.rowSelections[tableName],
-        allCheckboxState
-      }
-    }
+        allCheckboxState,
+      },
+    },
   };
 };

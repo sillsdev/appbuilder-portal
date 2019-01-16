@@ -2,7 +2,6 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
-
 import { requireAuth } from '@lib/auth';
 import { NotFound } from '@ui/routes/errors';
 import { withLayout } from '@ui/components/layout';

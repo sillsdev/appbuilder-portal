@@ -2,6 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { create, update } from '@data/store-helpers';
+
 import {
   defaultOptions,
   OrganizationResource,
@@ -10,7 +11,7 @@ import {
   OrganizationStoreResource,
   StoreResource,
   UserResource,
-  relationshipFor
+  relationshipFor,
 } from '@data';
 
 import { OrganizationAttributes } from '@data/models/organization';
@@ -18,7 +19,7 @@ import { OrganizationAttributes } from '@data/models/organization';
 export interface IProvidedProps {
   createRecord: (attributes: OrganizationAttributes, relationships) => Promise<any>;
   updateAttribute: (attribute: string, value: any) => Promise<any>;
-  updateAttributes: (attrs: OrganizationAttributes, relationships?:any) => any;
+  updateAttributes: (attrs: OrganizationAttributes, relationships?: any) => any;
   updateOwner: (owner: UserResource) => any;
   updateProductDefinition: (productDefinition: ProductDefinitionResource) => any;
   updateStore: (store: StoreResource) => any;
@@ -30,13 +31,9 @@ interface IOwnProps {
   organizationStores: OrganizationStoreResource[];
 }
 
-
-type IProps =
-  & IOwnProps
-  & WithDataProps;
+type IProps = IOwnProps & WithDataProps;
 
 const mapRecordsToProps = (passedProps) => {
-
   const { organization } = passedProps;
 
   if (!organization) {
@@ -44,111 +41,113 @@ const mapRecordsToProps = (passedProps) => {
   }
 
   return {
-    organizationProductDefinitions: q =>
+    organizationProductDefinitions: (q) =>
       q.findRelatedRecords(organization, 'organizationProductDefinitions'),
-    organizationStores: q =>
-      q.findRelatedRecords(organization, 'organizationStores')
+    organizationStores: (q) => q.findRelatedRecords(organization, 'organizationStores'),
   };
 };
 
 export function withDataActions<T>(WrappedComponent) {
-
   class OrganizationDataActionWrapper extends React.Component<IProps & T> {
-
     createRecord = async (attributes: OrganizationAttributes, relationships) => {
-
       const { dataStore } = this.props;
 
       await create(dataStore, 'organization', {
         attributes,
-        relationships
+        relationships,
       });
-    }
+    };
 
     updateAttribute = (attribute: string, value: any) => {
       const { organization, dataStore } = this.props;
       return dataStore.update(
-        q => q.replaceAttribute(organization, attribute, value),
+        (q) => q.replaceAttribute(organization, attribute, value),
         defaultOptions()
       );
-    }
+    };
 
     updateAttributes = (attributes: OrganizationAttributes, relationships?: any) => {
       const { organization, dataStore } = this.props;
       return update(dataStore, organization, {
         attributes,
-        relationships
+        relationships,
       });
-    }
+    };
 
     updateOwner = (owner) => {
-
       const { organization, dataStore } = this.props;
 
-      return dataStore.update(q =>
-        q.replaceRelatedRecord(organization,'owner',owner),
+      return dataStore.update(
+        (q) => q.replaceRelatedRecord(organization, 'owner', owner),
         defaultOptions()
       );
-
-    }
+    };
 
     updateProductDefinition = (productDefinition) => {
-
       const { organization, organizationProductDefinitions, dataStore } = this.props;
 
-      const opdSelected = organizationProductDefinitions.find(opd => {
+      const opdSelected = organizationProductDefinitions.find((opd) => {
         const { data } = relationshipFor(opd, 'productDefinition');
         return data.id === productDefinition.id;
       });
 
       if (opdSelected) {
-
-        return dataStore.update(q => q.removeRecord({
-          type: 'organizationProductDefinition',
-          id: opdSelected.id
-        }), defaultOptions());
-
+        return dataStore.update(
+          (q) =>
+            q.removeRecord({
+              type: 'organizationProductDefinition',
+              id: opdSelected.id,
+            }),
+          defaultOptions()
+        );
       }
 
-      return dataStore.update(q => q.addRecord({
-        type: 'organizationProductDefinition',
-        attributes: {},
-        relationships: {
-          organization: { data: organization },
-          productDefinition: { data: productDefinition }
-        }
-      }), defaultOptions());
-
-    }
+      return dataStore.update(
+        (q) =>
+          q.addRecord({
+            type: 'organizationProductDefinition',
+            attributes: {},
+            relationships: {
+              organization: { data: organization },
+              productDefinition: { data: productDefinition },
+            },
+          }),
+        defaultOptions()
+      );
+    };
 
     updateStore = (store) => {
-
       const { organization, organizationStores, dataStore } = this.props;
 
-      const storeSelected = organizationStores.find(opd => {
+      const storeSelected = organizationStores.find((opd) => {
         const { data } = relationshipFor(opd, 'store');
         return data.id === store.id;
       });
 
       if (storeSelected) {
-
-        return dataStore.update(q => q.removeRecord({
-          type: 'organizationStore',
-          id: storeSelected.id
-        }), defaultOptions());
-
+        return dataStore.update(
+          (q) =>
+            q.removeRecord({
+              type: 'organizationStore',
+              id: storeSelected.id,
+            }),
+          defaultOptions()
+        );
       }
 
-      return dataStore.update(q => q.addRecord({
-        type: 'organizationStore',
-        attributes: {},
-        relationships: {
-          organization: { data: organization },
-          store: { data: store }
-        }
-      }), defaultOptions());
-
-    }
+      return dataStore.update(
+        (q) =>
+          q.addRecord({
+            type: 'organizationStore',
+            attributes: {},
+            relationships: {
+              organization: { data: organization },
+              store: { data: store },
+            },
+          }),
+        defaultOptions()
+      );
+    };
 
     render() {
       const actionProps = {
@@ -157,16 +156,12 @@ export function withDataActions<T>(WrappedComponent) {
         updateAttribute: this.updateAttribute,
         updateOwner: this.updateOwner,
         updateProductDefinition: this.updateProductDefinition,
-        updateStore: this.updateStore
+        updateStore: this.updateStore,
       };
 
       return <WrappedComponent {...this.props} {...actionProps} />;
     }
-
   }
 
-  return compose(
-    withOrbit(mapRecordsToProps)
-  )(OrganizationDataActionWrapper);
-
+  return compose(withOrbit(mapRecordsToProps))(OrganizationDataActionWrapper);
 }

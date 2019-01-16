@@ -2,13 +2,11 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Checkbox, Dropdown } from 'semantic-ui-react';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
-
 import * as toast from '@lib/toast';
-
 import { ProductDefinitionAttributes } from '@data/models/product-definition';
+
 import {
   query,
   buildOptions,
@@ -16,9 +14,8 @@ import {
   attributesFor,
   ApplicationTypeResource,
   WorkflowDefinitionResource,
-  ProductDefinitionResource
+  ProductDefinitionResource,
 } from '@data';
-
 
 interface IOwnProps {
   productDefinition: ProductDefinitionResource;
@@ -37,10 +34,7 @@ interface IState {
   workflowError?: string;
 }
 
-type IProps =
-  & i18nProps
-  & IOwnProps;
-
+type IProps = i18nProps & IOwnProps;
 
 @withTemplateHelpers
 class ProductDefinitionForm extends React.Component<IProps, IState> {
@@ -52,9 +46,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
 
     const { productDefinition, type, workflow } = props;
 
-    const {
-      name, description
-    } = attributesFor(productDefinition);
+    const { name, description } = attributesFor(productDefinition);
 
     this.state = {
       name: (name as string) || '',
@@ -62,78 +54,75 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
       type: type || null,
       typeError: '',
       workflow: workflow || null,
-      workflowError: ''
+      workflowError: '',
     };
-
   }
 
   isValidForm = () => {
     const { name, type, workflow } = this.state;
     const { t } = this.props;
 
-    const nameError = isEmpty(name) ? t('admin.settings.productDefinitions.emptyName'): '';
+    const nameError = isEmpty(name) ? t('admin.settings.productDefinitions.emptyName') : '';
     const typeError = isEmpty(type) ? t('admin.settings.productDefinitions.emptyType') : '';
-    const workflowError = isEmpty(workflow) ? t('admin.settings.productDefinitions.emptyWorkflow') : '';
+    const workflowError = isEmpty(workflow)
+      ? t('admin.settings.productDefinitions.emptyWorkflow')
+      : '';
 
     this.setState({
       nameError,
       typeError,
-      workflowError
+      workflowError,
     });
 
     return !isEmpty(type) && !isEmpty(workflow) && !isEmpty(name);
-  }
+  };
 
   submit = async (e) => {
     e.preventDefault();
 
     const { onSubmit } = this.props;
-    const {
-      name, description, type, workflow
-    } = this.state;
+    const { name, description, type, workflow } = this.state;
 
     if (this.isValidForm()) {
       try {
-        await onSubmit({
-          name,
-          description
-        },{
-          type,
-          workflow
-        });
-      } catch(e) {
+        await onSubmit(
+          {
+            name,
+            description,
+          },
+          {
+            type,
+            workflow,
+          }
+        );
+      } catch (e) {
         toast.error(e);
       }
     }
-  }
+  };
 
   cancel = (e) => {
     e.preventDefault();
     const { onCancel } = this.props;
     onCancel();
-  }
+  };
 
-  typeSelection = type => e => {
+  typeSelection = (type) => (e) => {
     this.setState({
-      type
+      type,
     });
-  }
+  };
 
-  workflowSelection = workflow => e => {
+  workflowSelection = (workflow) => (e) => {
     this.setState({
-      workflow
+      workflow,
     });
-  }
+  };
 
   render() {
     const { mut, toggle } = this;
 
-    const {
-      name, nameError,
-      description,
-      type, typeError,
-      workflow, workflowError
-    } = this.state;
+    const { name, nameError, description, type, typeError, workflow, workflowError } = this.state;
 
     const { t, productDefinition, types, workflows } = this.props;
 
@@ -143,23 +132,17 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
     return (
       <>
         <h2>
-          {
-            t(productDefinition ?
-              'admin.settings.productDefinitions.edit' :
-              'admin.settings.productDefinitions.add'
-            )
-          }
+          {t(
+            productDefinition
+              ? 'admin.settings.productDefinitions.edit'
+              : 'admin.settings.productDefinitions.add'
+          )}
         </h2>
         <div className='flex w-60'>
           <form data-test-form className='ui form flex-grow'>
-
             <div className='field m-b-xl'>
               <label>{t('admin.settings.productDefinitions.name')}</label>
-              <input
-                data-test-pd-name
-                type='text'
-                value={name}
-                onChange={mut('name')} />
+              <input data-test-pd-name type='text' value={name} onChange={mut('name')} />
               <div className='error'>{nameError}</div>
             </div>
 
@@ -172,12 +155,13 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                   text={typeName}
                 >
                   <Dropdown.Menu>
-                    {
-                      types.map((tp, i) => {
-                        const { name: fullName } = attributesFor(tp);
-                        return <Dropdown.Item key={i} text={fullName} onClick={this.typeSelection(tp)} />;
-                      })
-                    }
+                    {types.map((tp, i) => {
+                      const { name: fullName } = attributesFor(tp);
+
+                      return (
+                        <Dropdown.Item key={i} text={fullName} onClick={this.typeSelection(tp)} />
+                      );
+                    })}
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -193,45 +177,51 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                   text={workflowName}
                 >
                   <Dropdown.Menu>
-                    {
-                      workflows.map((w, i) => {
-                        const { name: fullName } = attributesFor(w);
-                        return <Dropdown.Item key={i} text={fullName} onClick={this.workflowSelection(w)} />;
-                      })
-                    }
+                    {workflows.map((w, i) => {
+                      const { name: fullName } = attributesFor(w);
+
+                      return (
+                        <Dropdown.Item
+                          key={i}
+                          text={fullName}
+                          onClick={this.workflowSelection(w)}
+                        />
+                      );
+                    })}
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
               <div className='error'>{workflowError}</div>
             </div>
 
-
             <div className='field m-b-xl'>
               <label>{t('admin.settings.productDefinitions.description')}</label>
               <textarea
                 data-test-pd-description
                 value={description}
-                onChange={mut('description')} />
+                onChange={mut('description')}
+              />
             </div>
 
             <div className='m-b-xl'>
               <button
                 data-test-submit
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-                onClick={this.submit}>
-                {productDefinition ?
-                  t('admin.settings.productDefinitions.edit') :
-                  t('admin.settings.productDefinitions.add')}
+                onClick={this.submit}
+              >
+                {productDefinition
+                  ? t('admin.settings.productDefinitions.edit')
+                  : t('admin.settings.productDefinitions.add')}
               </button>
 
               <button
                 data-test-pd-cancel
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-                onClick={this.cancel}>
+                onClick={this.cancel}
+              >
                 {t('common.cancel')}
               </button>
             </div>
-
           </form>
         </div>
       </>
@@ -242,12 +232,8 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
 export default compose(
   withTranslations,
   query(() => ({
-    types: [
-      q => q.findRecords('applicationType'), buildOptions()
-    ],
-    workflows: [
-      q => q.findRecords('workflowDefinition'), buildOptions()
-    ],
+    types: [(q) => q.findRecords('applicationType'), buildOptions()],
+    workflows: [(q) => q.findRecords('workflowDefinition'), buildOptions()],
   })),
   withLoader(({ types, workflows }) => !types && !workflows)
 )(ProductDefinitionForm);

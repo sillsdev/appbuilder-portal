@@ -1,7 +1,7 @@
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const path = require('path');
 
-const path = require("path");
-const webpack = require("webpack");
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const webpack = require('webpack');
 
 function locate(path) {
   return process.cwd() + '/' + path;
@@ -24,16 +24,17 @@ if (!isTesting) {
   ]);
 }
 
-
 const moduleRules = [
   {
     test: /\.(t|j)sx?$/,
-    use: [{
-      loader: 'ts-loader',
-      options: {
-        transpileOnly: true
-      }
-    }],
+    use: [
+      {
+        loader: 'ts-loader',
+        options: {
+          transpileOnly: true,
+        },
+      },
+    ],
     exclude: [/node_modules/, /\.cache/],
     // include: [
     //   // project files
@@ -47,14 +48,14 @@ const moduleRules = [
     test: /\.s?css$/,
     include: [/node_modules/, /src/, ...tsLoaderExclude],
     use: [
-      "style-loader", // creates style nodes from JS strings
-      "css-loader", // translates CSS into CommonJS
-      "sass-loader", // compiles Sass to CSS
-    ]
+      'style-loader', // creates style nodes from JS strings
+      'css-loader', // translates CSS into CommonJS
+      'sass-loader', // compiles Sass to CSS
+    ],
   },
   {
     test: /\.(png|svg)$/,
-    loader: 'url-loader?limit=100000'
+    loader: 'url-loader?limit=100000',
   },
   { test: /\.ttf$/, loader: 'ignore-loader' },
   { test: /\.woff$/, loader: 'ignore-loader' },
@@ -67,22 +68,22 @@ const resolver = {
   extensions: ['.tsx', '.ts', '.js', '.jsx'],
   plugins: [
     new TsconfigPathsPlugin({
-      configFile: locate('tsconfig.json')
+      configFile: locate('tsconfig.json'),
     }),
-  ]
+  ],
 };
 
 const plugins = [
   new webpack.EnvironmentPlugin([
-    "AUTH0_CONNECTION",
-    "AUTH0_DOMAIN",
-    "AUTH0_CLIENT_ID",
-    "AUTH0_SCOPE",
-    "API_HOST",
-    "HAS_API",
-    "NODE_ENV",
-    "IS_TESTING",
-  ])
+    'AUTH0_CONNECTION',
+    'AUTH0_DOMAIN',
+    'AUTH0_CLIENT_ID',
+    'AUTH0_SCOPE',
+    'API_HOST',
+    'HAS_API',
+    'NODE_ENV',
+    'IS_TESTING',
+  ]),
 ];
 
 module.exports = {
@@ -93,4 +94,4 @@ module.exports = {
   isProduction,
   isDevelopment,
   plugins,
-}
+};

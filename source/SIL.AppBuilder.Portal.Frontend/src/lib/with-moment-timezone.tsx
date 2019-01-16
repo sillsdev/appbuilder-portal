@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import * as moment from 'moment-timezone';
-
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
-import { withTranslations, i18nProps } from './i18n';
+
 import { attributesFor } from '../data/helpers';
+
+import { withTranslations, i18nProps } from './i18n';
 
 export interface IProvidedProps {
   moment: moment.MomentTimezone;

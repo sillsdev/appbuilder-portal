@@ -1,4 +1,5 @@
 import { OrganizationResource } from '@data';
+
 import { IProvidedProps as IDataProps } from './with-data';
 
 export interface IOwnProps {
@@ -10,6 +11,4 @@ export interface IOwnProps {
   scopeToOrganization?: OrganizationResource;
 }
 
-export type IProps =
-& IOwnProps
-& IDataProps;
+export type IProps = IOwnProps & IDataProps;

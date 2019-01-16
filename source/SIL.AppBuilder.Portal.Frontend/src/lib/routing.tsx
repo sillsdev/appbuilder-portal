@@ -20,9 +20,9 @@ class ScrollToTopOnLocationChange extends React.Component<any, any> {
 export const ScrollToTop = withRouter(ScrollToTopOnLocationChange);
 
 export function withResetScroll(WrappedComponent) {
-  return props => (
+  return (props) => (
     <ScrollToTop>
-      <WrappedComponent { ...props } />
+      <WrappedComponent {...props} />
     </ScrollToTop>
   );
 }

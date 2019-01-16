@@ -35,7 +35,7 @@ interface IState {
 //   }
 // })
 export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
-  return WrappedComponent => {
+  return (WrappedComponent) => {
     class WithRelationship extends React.PureComponent<T & MapFnResult & WithDataProps, IState> {
       state = { isLoading: false, error: undefined, result: {} };
       isFetchingRelationships = false;
@@ -45,7 +45,7 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
 
         const resultingRelationshipProps = {};
 
-        const promises = Object.keys(relationshipsToFind).map(async resultKey => {
+        const promises = Object.keys(relationshipsToFind).map(async (resultKey) => {
           const relationshipArgs = relationshipsToFind[resultKey];
 
           const relation = await retrieveRelation(dataStore, relationshipArgs);
@@ -60,11 +60,15 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
         }
 
         return resultingRelationshipProps;
-      }
+      };
 
       asyncStarter = () => {
-        if (this.isFetchingRelationships) { return; }
-        if (this.state.isLoading) { return; }
+        if (this.isFetchingRelationships) {
+          return;
+        }
+        if (this.state.isLoading) {
+          return;
+        }
 
         try {
           this.isFetchingRelationships = true;
@@ -80,7 +84,7 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
             this.isFetchingRelationships = false;
           });
         }
-      }
+      };
 
       componentDidMount() {
         this.asyncStarter();
@@ -94,12 +98,12 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
         const { result, isLoading, error } = this.state;
         const nextProps = {
           ...(this.props as object),
-          ...( result || {} ),
+          ...(result || {}),
           isLoading,
-          error
+          error,
         };
 
-        return <WrappedComponent { ...nextProps } />;
+        return <WrappedComponent {...nextProps} />;
       }
     }
 
@@ -111,15 +115,12 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
           relationshipsToFind: mapResult,
         };
       }),
-      withOrbit({}),
+      withOrbit({})
     )(WithRelationship);
   };
 }
 
-
-type RelationshipArgs =
-| [ResourceObject, string, string]
-| [ResourceObject, string];
+type RelationshipArgs = [ResourceObject, string, string] | [ResourceObject, string];
 
 export async function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs) {
   const sourceModel = relationshipArgs[0];
@@ -132,15 +133,21 @@ export async function retrieveRelation(dataStore: Store, relationshipArgs: Relat
   return await retriveDirectRelationship(dataStore, sourceModel, relationshipPath[0]);
 }
 
-async function retrieveManyToMany(dataStore: Store, sourceModel: ResourceObject, relationshipPath: [string, string]) {
+async function retrieveManyToMany(
+  dataStore: Store,
+  sourceModel: ResourceObject,
+  relationshipPath: [string, string]
+) {
   const [joinRelationship, targetRelationship] = relationshipPath;
 
-  const joins = dataStore.cache.query(q => q.findRelatedRecords(sourceModel, joinRelationship));
+  const joins = dataStore.cache.query((q) => q.findRelatedRecords(sourceModel, joinRelationship));
 
   // for each join record....
   const targets = [];
   const promises = joins.map(async (joinRecord) => {
-    const target = await dataStore.cache.query(q => q.findRelatedRecord(joinRecord, targetRelationship));
+    const target = await dataStore.cache.query((q) =>
+      q.findRelatedRecord(joinRecord, targetRelationship)
+    );
 
     targets.push(target);
   });
@@ -150,8 +157,11 @@ async function retrieveManyToMany(dataStore: Store, sourceModel: ResourceObject,
   return targets;
 }
 
-async function retriveDirectRelationship(dataStore: Store, sourceModel: ResourceObject, relationshipName: string) {
+async function retriveDirectRelationship(
+  dataStore: Store,
+  sourceModel: ResourceObject,
+  relationshipName: string
+) {
   // TODO: add detection for hasOne vs hasMany, via lookup of the schema from dataStore
   throw new Error('not implemented');
-
 }

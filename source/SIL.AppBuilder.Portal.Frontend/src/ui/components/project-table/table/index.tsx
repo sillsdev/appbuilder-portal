@@ -2,15 +2,15 @@ import * as React from 'react';
 import { compose } from 'recompose';
 
 import { ProjectResource } from '@data';
-import { ISortProps } from '@data/containers/api/sorting';
 
-import { IProvidedProps as ITableColumns } from './with-table-columns';
-import Header from './header';
-import Row from './row';
+import { ISortProps } from '@data/containers/api/sorting';
 import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import LoadingWrapper from '@ui/components/loading-wrapper';
 
+import { IProvidedProps as ITableColumns } from './with-table-columns';
+import Header from './header';
+import Row from './row';
 import { IProvidedProps as ITableRows } from './with-table-rows';
 
 interface IOwnProps {
@@ -21,17 +21,11 @@ interface IOwnProps {
   showProjectActions?: boolean;
 }
 
-type IProps =
-  & IOwnProps
-  & ITableColumns
-  & ITableRows
-  & ISortProps
-  & i18nProps;
+type IProps = IOwnProps & ITableColumns & ITableRows & ISortProps & i18nProps;
 
 class Table extends React.Component<IProps> {
-
   static defaultProps = {
-    showProjectActions: true
+    showProjectActions: true,
   };
 
   render() {
@@ -46,7 +40,7 @@ class Table extends React.Component<IProps> {
       selectedRows,
       toggleRowSelection,
       showSelection,
-      showProjectActions
+      showProjectActions,
     } = this.props;
 
     const isProjectListEmpty = isEmpty(projects);
@@ -59,40 +53,31 @@ class Table extends React.Component<IProps> {
       projectList = (
         <>
           <Header {...this.props} />
-          {
-            projects.map((project, index) => {
+          {projects.map((project, index) => {
+            const rowProps = {
+              project,
+              selectedColumns,
+              activeProjectColumns,
+              activeProductColumns,
+              projectPath,
+              selectedRows,
+              toggleRowSelection,
+              showSelection,
+              showProjectActions,
+            };
 
-              const rowProps = {
-                project,
-                selectedColumns,
-                activeProjectColumns,
-                activeProductColumns,
-                projectPath,
-                selectedRows,
-                toggleRowSelection,
-                showSelection,
-                showProjectActions
-              };
-
-              return <Row key={index} {...rowProps} />;
-            })
-          }
+            return <Row key={index} {...rowProps} />;
+          })}
         </>
       );
     }
 
     return (
-      <LoadingWrapper
-        data-test-project-table
-        isLoading={isLoading}
-        className='project-table'>
+      <LoadingWrapper data-test-project-table isLoading={isLoading} className='project-table'>
         {projectList}
       </LoadingWrapper>
     );
   }
-
 }
 
-export default compose(
-  withTranslations
-)(Table);
+export default compose(withTranslations)(Table);

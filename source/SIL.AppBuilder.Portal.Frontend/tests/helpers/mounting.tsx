@@ -4,7 +4,6 @@ import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting } from '@bigtest/react';
 // import MirageServer, { Factory } from '@bigtest/mirage';
 import { I18nextProvider } from 'react-i18next';
-
 import createHistory from 'history/createMemoryHistory';
 
 import i18n from '@translations';
@@ -14,7 +13,6 @@ import { ReduxProvider } from '@store/index';
 import { DataProvider } from '@data/index';
 import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
 import { ScrollToTop } from '@lib/routing';
-
 
 import 'semantic-ui-css/semantic.min.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -47,7 +45,12 @@ export function setupApplicationTest(initialState = {}, history?: History) {
 // Mounting with context is needed because some components,
 // esp those from react-router-dom (such as NavLink)
 // require that they be rendered within a Route within a Router.
-export const mountWithContext = async (Component, props = {}, state = {}, customHistory = undefined) => {
+export const mountWithContext = async (
+  Component,
+  props = {},
+  state = {},
+  customHistory = undefined
+) => {
   return await setupAppForTesting(
     ({ initialState, history }) => {
       return (
@@ -57,7 +60,7 @@ export const mountWithContext = async (Component, props = {}, state = {}, custom
               <ReduxProvider initialState={initialState || {}}>
                 <Router history={history}>
                   <ScrollToTop>
-                    <Component { ...props } />
+                    <Component {...props} />
                   </ScrollToTop>
                 </Router>
               </ReduxProvider>
@@ -69,7 +72,7 @@ export const mountWithContext = async (Component, props = {}, state = {}, custom
     {
       props: {
         initialState: state,
-        history: customHistory || createHistory()
+        history: customHistory || createHistory(),
       },
     }
   );

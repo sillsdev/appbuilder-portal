@@ -2,20 +2,19 @@ import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
-  fakeAuth0Id
+  fakeAuth0Id,
 } from 'tests/helpers';
 import { roles, userRoleFrom } from 'tests/helpers/fixtures';
-
 import i18n from '@translations/index';
 
 import UserTableInteractor from './-user-table';
 
 let userTable = null;
+
 async function toggleRoleAt(index, role: string, organization: string) {
   await userTable.row(index).role.open();
 
@@ -31,45 +30,44 @@ describe('Acceptance | User List | Role Management', () => {
   describe('current user is in one organization', () => {
     useFakeAuthentication();
 
-    beforeEach(function () {
+    beforeEach(function() {
       this.mockGet(200, '/users', {
-        data: [{
-          type: 'users',
-          id: 2,
-          attributes: {
-            name: "Fake user",
-            email: "fake.user@fake.com",
-          },
-          relationships: {
-            'user-roles': {
-              data: [
-                { type: 'user-roles', id: 2 },
-                { type: 'user-roles', id: 3 }
-              ]
+        data: [
+          {
+            type: 'users',
+            id: 2,
+            attributes: {
+              name: 'Fake user',
+              email: 'fake.user@fake.com',
             },
-            'organization-memberships': {
-              data: [{ type: 'organization-memberships', id: 2 }]
-            }
-          }
-        }],
+            relationships: {
+              'user-roles': {
+                data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
+              },
+              'organization-memberships': {
+                data: [{ type: 'organization-memberships', id: 2 }],
+              },
+            },
+          },
+        ],
         included: [
           {
             type: 'organization-memberships',
             id: 2,
             relationships: {
-              organization: { data: { type: 'organization', id: 1}},
-              user: { data: { type: 'user', id: 2}}
-            }
+              organization: { data: { type: 'organization', id: 1 } },
+              user: { data: { type: 'user', id: 2 } },
+            },
           },
           userRoleFrom(roles.orgAdmin, { id: 2, userId: 2, orgId: 1 }),
           userRoleFrom(roles.appBuilder, { id: 3, userId: 2, orgId: 1 }),
           roles.orgAdmin,
-          roles.appBuilder
-        ]
+          roles.appBuilder,
+        ],
       });
     });
 
-    beforeEach(async function () {
+    beforeEach(async function() {
       await visit('/users');
       userTable = new UserTableInteractor();
       await when(() => userTable.isVisible);
@@ -85,10 +83,10 @@ describe('Acceptance | User List | Role Management', () => {
       expect(actual).to.include('OrganizationAdmin');
     });
 
-    describe('remove user from all roles',() => {
+    describe('remove user from all roles', () => {
       beforeEach(function() {
-        this.mockDelete(204,'user-roles/2');
-        this.mockDelete(204,'user-roles/3');
+        this.mockDelete(204, 'user-roles/2');
+        this.mockDelete(204, 'user-roles/3');
       });
 
       beforeEach(async function() {
@@ -96,7 +94,7 @@ describe('Acceptance | User List | Role Management', () => {
         await toggleRoleAt(0, 'OrganizationAdmin', 'DeveloperTown');
       });
 
-      it('no roles are assigned',() => {
+      it('no roles are assigned', () => {
         const actual = userTable.row(0).role.list;
         const expected = i18n.t('users.noRoles');
 
@@ -107,14 +105,14 @@ describe('Acceptance | User List | Role Management', () => {
         beforeEach(function() {
           this.mockPost(201, 'user-roles', {
             data: {
-              attributes: { },
+              attributes: {},
               id: 2,
               type: 'user-roles',
               relationships: {
                 role: { data: { id: 1, type: 'role' } },
-                user: { data: { id: 1, type: 'users' } }
-              }
-            }
+                user: { data: { id: 1, type: 'users' } },
+              },
+            },
           });
         });
 
@@ -130,33 +128,36 @@ describe('Acceptance | User List | Role Management', () => {
     });
   });
 
-
-  describe('A User belongs to two organizations',() => {
-    beforeEach(function () {
+  describe('A User belongs to two organizations', () => {
+    beforeEach(function() {
       this.mockGet(200, '/users', {
-        data: [{
-          type: 'users',
-          id: 2,
-          attributes: {
-            name: "Fake user",
-            email: "fake.user@fake.com",
-          },
-          relationships: {
-            'user-roles': {
-              data: [
-                { type: 'user-roles', id: 2 },
-                { type: 'user-roles', id: 3 }
-              ]
+        data: [
+          {
+            type: 'users',
+            id: 2,
+            attributes: {
+              name: 'Fake user',
+              email: 'fake.user@fake.com',
             },
-            'organization-memberships': {
-              data: [{
-                type: "organization-memberships", id: 2
-              }, {
-                type: "organization-memberships", id: 3
-              }]
-            }
-          }
-        }],
+            relationships: {
+              'user-roles': {
+                data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
+              },
+              'organization-memberships': {
+                data: [
+                  {
+                    type: 'organization-memberships',
+                    id: 2,
+                  },
+                  {
+                    type: 'organization-memberships',
+                    id: 3,
+                  },
+                ],
+              },
+            },
+          },
+        ],
         included: [
           {
             type: 'organizations',
@@ -166,39 +167,41 @@ describe('Acceptance | User List | Role Management', () => {
           {
             type: 'organizations',
             id: 2,
-            attributes: { name: 'SIL' }
-          }, {
+            attributes: { name: 'SIL' },
+          },
+          {
             type: 'organization-memberships',
             id: 2,
             relationships: {
               organization: { data: { type: 'organization', id: 1 } },
-              user: { data: { type: 'user', id: 2 } }
-            }
-          }, {
+              user: { data: { type: 'user', id: 2 } },
+            },
+          },
+          {
             type: 'organization-memberships',
             id: 3,
             relationships: {
               organization: { data: { type: 'organization', id: 2 } },
-              user: { data: { type: 'user', id: 2 } }
-            }
+              user: { data: { type: 'user', id: 2 } },
+            },
           },
           userRoleFrom(roles.orgAdmin, { id: 2, userId: 2, orgId: 1 }),
           userRoleFrom(roles.appBuilder, { id: 3, userId: 2, orgId: 1 }),
           roles.orgAdmin,
           roles.appBuilder,
-        ]
+        ],
       });
     });
 
     describe('Current user belongs to one organization', () => {
       useFakeAuthentication();
 
-      beforeEach(async function () {
+      beforeEach(async function() {
         await visit('/users');
         await userTable.row(0).role.open();
       });
 
-      it('does not render second organization',() => {
+      it('does not render second organization', () => {
         const orgNames = userTable.row(0).role.organizationNames;
 
         expect(orgNames).to.contain('DeveloperTown');
@@ -206,7 +209,7 @@ describe('Acceptance | User List | Role Management', () => {
       });
     });
 
-    describe('Current user belongs to two organizations',() => {
+    describe('Current user belongs to two organizations', () => {
       useFakeAuthentication({
         data: {
           id: 1,
@@ -216,11 +219,11 @@ describe('Acceptance | User List | Role Management', () => {
             ['organization-memberships']: {
               data: [
                 { id: 1, type: 'organization-memberships' },
-                { id: 6, type: 'organization-memberships' }
-              ]
+                { id: 6, type: 'organization-memberships' },
+              ],
             },
             ['user-roles']: { data: [{ id: 1, type: 'user-roles' }] },
-          }
+          },
         },
         included: [
           {
@@ -229,34 +232,34 @@ describe('Acceptance | User List | Role Management', () => {
             attributes: {},
             relationships: {
               user: { data: { id: 1, type: 'users' } },
-              organization: { data: { id: 1, type: 'organizations' } }
-            }
+              organization: { data: { id: 1, type: 'organizations' } },
+            },
           },
           {
             id: 6,
             type: 'organization-memberships',
             attributes: {},
             relationships: {
-              user: { data: { id: 1, type: 'users'} },
-              organization: { data: { id: 2, type: 'organizations'}}
-            }
+              user: { data: { id: 1, type: 'users' } },
+              organization: { data: { id: 2, type: 'organizations' } },
+            },
           },
           {
             type: 'organizations',
             id: 1,
-            attributes: { name: 'DeveloperTown' }
+            attributes: { name: 'DeveloperTown' },
           },
           {
             type: 'organizations',
             id: 2,
-            attributes: { name: 'SIL'}
+            attributes: { name: 'SIL' },
           },
           userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 1 }),
           roles.superAdmin,
-        ]
+        ],
       });
 
-      beforeEach(async function () {
+      beforeEach(async function() {
         await visit('/users');
       });
 
@@ -266,57 +269,55 @@ describe('Acceptance | User List | Role Management', () => {
         expect(actual).to.include('AppBuilder');
         expect(actual).to.include('OrganizationAdmin');
       });
-
     });
   });
 
   describe('current user is editing itself', () => {
     useFakeAuthentication();
 
-    beforeEach(function () {
+    beforeEach(function() {
       this.mockGet(200, '/users', {
-        data: [{
-          type: 'users',
-          id: 1,
-          attributes: {
-            name: "Current User",
-            email: "current.user@fake.com"
-          },
-          relationships: {
-            'user-roles': {
-              data: [
-                { type: 'user-roles', id: 2 },
-                { type: 'user-roles', id: 3 }
-              ]
+        data: [
+          {
+            type: 'users',
+            id: 1,
+            attributes: {
+              name: 'Current User',
+              email: 'current.user@fake.com',
             },
-            'organization-memberships': {
-              data: [{ type: 'organization-memberships', id: 2 }]
-            }
-          }
-        }],
+            relationships: {
+              'user-roles': {
+                data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
+              },
+              'organization-memberships': {
+                data: [{ type: 'organization-memberships', id: 2 }],
+              },
+            },
+          },
+        ],
         included: [
           {
             type: 'organizations',
             id: 1,
-            attributes: { name: 'DeveloperTown' }
+            attributes: { name: 'DeveloperTown' },
           },
           {
             type: 'organization-memberships',
             id: 2,
             relationships: {
               organization: { data: { type: 'organization', id: 1 } },
-              user: { data: { type: 'user', id: 1 } }
-            }
+              user: { data: { type: 'user', id: 1 } },
+            },
           },
           userRoleFrom(roles.orgAdmin, { id: 2, userId: 1, orgId: 1 }),
           userRoleFrom(roles.appBuilder, { id: 3, userId: 1, orgId: 1 }),
           roles.orgAdmin,
-          roles.appBuilder
-        ]
+          roles.appBuilder,
+        ],
       });
     });
 
-    beforeEach(async function () {
+    beforeEach(async function() {
       await visit('/users');
       // userTable = new UserTableInteractor();
       // await when(() => {
@@ -334,6 +335,5 @@ describe('Acceptance | User List | Role Management', () => {
       expect(text).to.include('OrganizationAdmin');
       expect(userTable.row(0).role.isOpen).to.be.false;
     });
-
   });
 });

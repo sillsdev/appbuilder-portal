@@ -2,10 +2,8 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
-
 import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { getCurrentOrganizationId } from '@lib/current-organization';
 
@@ -23,30 +21,27 @@ interface MenuItem {
 }
 
 const MenuItem = ({ onClick, className, ...otherProps }: MenuItem) => {
-
   return (
     <>
       <Menu.Item
         as={NavLink}
         activeClassName='active'
         className={`${className} d-xs-none d-sm-none d-md-none d-lg-block d-xl-block`}
-        { ...otherProps }
+        {...otherProps}
       />
       <Menu.Item
         as={NavLink}
         activeClassName='active'
         onClick={onClick}
         className={`${className} d-xs-block d-sm-block d-md-block d-lg-none d-xl-none`}
-        { ...otherProps }
+        {...otherProps}
       />
     </>
   );
 };
 
 class Navigation extends React.Component<IProps & i18nProps> {
-
   render() {
-
     const currentOrganizationId = getCurrentOrganizationId();
     const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
     const allOrgsSelected = '' === currentOrganizationId;
@@ -55,19 +50,9 @@ class Navigation extends React.Component<IProps & i18nProps> {
 
     return (
       <Menu className='m-t-none no-borders' pointing secondary vertical>
+        <MenuItem name={t('sidebar.myTasks')} to='/tasks' onClick={closeSidebar} />
 
-        <MenuItem
-          name={t('sidebar.myTasks')}
-          to='/tasks'
-          onClick={closeSidebar}
-        />
-
-        <MenuItem
-          name={t('sidebar.myProjects')}
-          to='/projects/own'
-          exact
-          onClick={closeSidebar}
-        />
+        <MenuItem name={t('sidebar.myProjects')} to='/projects/own' exact onClick={closeSidebar} />
 
         <MenuItem
           name={t('sidebar.organizationProjects')}
@@ -77,14 +62,10 @@ class Navigation extends React.Component<IProps & i18nProps> {
         />
 
         <RequireRole roleName={ROLE.OrganizationAdmin}>
-          <MenuItem
-            name={t('sidebar.users')}
-            to='/users'
-            onClick={closeSidebar}
-          />
+          <MenuItem name={t('sidebar.users')} to='/users' onClick={closeSidebar} />
         </RequireRole>
 
-        { hasSelectedOrg && (
+        {hasSelectedOrg && (
           <RequireRole roleName={ROLE.OrganizationAdmin}>
             <MenuItem
               name={t('sidebar.organizationSettings')}
@@ -92,7 +73,7 @@ class Navigation extends React.Component<IProps & i18nProps> {
               onClick={closeSidebar}
             />
           </RequireRole>
-        ) }
+        )}
 
         <RequireRole roleName={ROLE.SuperAdmin}>
           <MenuItem
@@ -104,10 +85,7 @@ class Navigation extends React.Component<IProps & i18nProps> {
 
         <hr />
 
-        <MenuItem
-          name={t('sidebar.projectDirectory')}
-          to='/directory'
-          onClick={closeSidebar} />
+        <MenuItem name={t('sidebar.projectDirectory')} to='/directory' onClick={closeSidebar} />
 
         <hr />
 
@@ -115,13 +93,12 @@ class Navigation extends React.Component<IProps & i18nProps> {
           name={t('opensource')}
           to='/open-source'
           className='m-t-lg'
-          target="_blank"
-          onClick={closeSidebar} />
+          target='_blank'
+          onClick={closeSidebar}
+        />
       </Menu>
     );
   }
 }
 
-export default compose(
-  withTranslations
-)(Navigation);
+export default compose(withTranslations)(Navigation);

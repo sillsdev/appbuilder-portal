@@ -3,6 +3,7 @@ import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { defaultOptions, ProjectResource, ProductResource, relationshipFor } from '@data';
+
 import { ProjectAttributes } from '@data/models/project';
 import { recordIdentityFromKeys } from '@data/store-helpers';
 import { requireProps } from '@lib/debug';
@@ -21,88 +22,87 @@ interface IOwnProps {
   products: ProductResource[];
 }
 
-type IProps =
-  & IOwnProps
-  & WithDataProps;
+type IProps = IOwnProps & WithDataProps;
 
 const mapRecordsToProps = (passedProps) => {
-
   const { project } = passedProps;
 
   return {
-    products: q =>
-      q.findRelatedRecords(project, 'products')
+    products: (q) => q.findRelatedRecords(project, 'products'),
   };
 };
 
 export function withDataActions<T>(WrappedComponent) {
-
   class ProjectDataActionWrapper extends React.Component<IProps & T> {
-
     updateAttribute = async (attribute: string, value: any) => {
       const { project, dataStore } = this.props;
 
       await dataStore.update(
-        q => q.replaceAttribute(project, attribute, value),
+        (q) => q.replaceAttribute(project, attribute, value),
         defaultOptions()
       );
-
-    }
+    };
 
     updateAttributes = (attributes: ProjectAttributes) => {
       const { project, dataStore } = this.props;
       const { id, type } = project;
 
-      return dataStore.update(q => q.replaceRecord({
-        id, type, attributes
-      }), defaultOptions());
-    }
+      return dataStore.update(
+        (q) =>
+          q.replaceRecord({
+            id,
+            type,
+            attributes,
+          }),
+        defaultOptions()
+      );
+    };
 
     updateGroup = (groupId: Id) => {
       const { project, dataStore } = this.props;
       const recordIdentity = recordIdentityFromKeys(project);
 
-      return dataStore.update(q => q.replaceRelatedRecord(
-        recordIdentity, 'group',
-        { type: 'group', id: groupId }
-      ), defaultOptions());
-    }
+      return dataStore.update(
+        (q) => q.replaceRelatedRecord(recordIdentity, 'group', { type: 'group', id: groupId }),
+        defaultOptions()
+      );
+    };
 
     updateOwner = (userId: Id) => {
       const { project, updateStore } = this.props;
       const recordIdentity = recordIdentityFromKeys(project);
 
-      return updateStore(q => q.replaceRelatedRecord(
-        recordIdentity, 'owner',
-        { type: 'user', id: userId }
-      ), defaultOptions());
-    }
+      return updateStore(
+        (q) => q.replaceRelatedRecord(recordIdentity, 'owner', { type: 'user', id: userId }),
+        defaultOptions()
+      );
+    };
 
     updateProduct = (productDefinition) => {
-
       const { project, products, dataStore } = this.props;
 
-      const productSelected = products.find(product => {
+      const productSelected = products.find((product) => {
         const { data } = relationshipFor(product, 'productDefinition');
         return data.id === productDefinition.id;
       });
 
       if (productSelected) {
-        return dataStore.update(q =>
-          q.removeRecord(productSelected), defaultOptions()
-        );
+        return dataStore.update((q) => q.removeRecord(productSelected), defaultOptions());
       }
 
-      return dataStore.update(q => q.addRecord({
-        type: 'product',
-        attributes: {},
-        relationships: {
-          project: { data: project },
-          productDefinition: { data: productDefinition }
-        }
-      }), defaultOptions());
-
-    }
+      return dataStore.update(
+        (q) =>
+          q.addRecord({
+            type: 'product',
+            attributes: {},
+            relationships: {
+              project: { data: project },
+              productDefinition: { data: productDefinition },
+            },
+          }),
+        defaultOptions()
+      );
+    };
 
     render() {
       const props = {
@@ -111,10 +111,10 @@ export function withDataActions<T>(WrappedComponent) {
         updateAttribute: this.updateAttribute,
         updateGroup: this.updateGroup,
         updateOwner: this.updateOwner,
-        updateProduct: this.updateProduct
+        updateProduct: this.updateProduct,
       };
 
-      return <WrappedComponent { ...props } />;
+      return <WrappedComponent {...props} />;
     }
   }
 

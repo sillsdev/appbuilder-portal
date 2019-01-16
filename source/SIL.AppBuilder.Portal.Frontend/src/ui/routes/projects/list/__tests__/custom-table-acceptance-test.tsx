@@ -2,15 +2,13 @@ import { when } from '@bigtest/convergence';
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,
-  useFakeAuthentication
+  useFakeAuthentication,
 } from 'tests/helpers/index';
 
 import PageInteractor from './-page-interactor';
-
 import * as ProjectsFactory from './-factory';
 
 describe('Acceptance | My Projects | Column selector', () => {
@@ -19,14 +17,13 @@ describe('Acceptance | My Projects | Column selector', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  beforeEach(function () {
-
+  beforeEach(function() {
     this.mockGet(200, 'product-definitions', { data: [] });
-    this.mockGet(200, 'projects', {...ProjectsFactory.projectsResponse});
+    this.mockGet(200, 'projects', { ...ProjectsFactory.projectsResponse });
   });
 
   describe('navigates to my project page', () => {
-    beforeEach(async function () {
+    beforeEach(async function() {
       pageInteractor = new PageInteractor();
       await visit('/projects/own');
       await when(() => pageInteractor.isPresent);
@@ -37,14 +34,13 @@ describe('Acceptance | My Projects | Column selector', () => {
     });
 
     describe('Default columns are selected', () => {
-
-      beforeEach(async function () {
+      beforeEach(async function() {
         await pageInteractor.projectTable.clickColumnSelector();
       });
 
       it('default options are selected', () => {
         const items = pageInteractor.projectTable.selectedItems();
-        const itemsText = items.map(i => i.text);
+        const itemsText = items.map((i) => i.text);
 
         expect(itemsText).to.contain('Owner');
         expect(itemsText).to.contain('Group');
@@ -56,8 +52,6 @@ describe('Acceptance | My Projects | Column selector', () => {
         expect(itemsText).to.not.contain('Build Date');
         expect(itemsText).to.not.contain('Created On');
       });
-
     });
   });
-
 });

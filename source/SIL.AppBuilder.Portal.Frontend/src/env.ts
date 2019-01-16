@@ -23,5 +23,5 @@ export const api = {
 };
 
 export const app = {
-  hasApi: process.env.HAS_API
+  hasApi: process.env.HAS_API,
 };

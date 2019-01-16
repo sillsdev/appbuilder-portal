@@ -2,12 +2,16 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 import { withTemplateHelpers, Toggle } from 'react-action-decorators';
+import { withTranslations, i18nProps } from '@lib/i18n';
+import {
+  withDataActions,
+  IProvidedProps,
+} from '@data/containers/resources/group/with-data-actions';
 
 import Form from './form';
 import List from './list';
+
 import { withLoader, GroupResource } from '@data';
-import { withTranslations, i18nProps } from '@lib/i18n';
-import { withDataActions, IProvidedProps } from '@data/containers/resources/group/with-data-actions';
 
 export const pathName = '/organizations/:orgId/settings/groups';
 
@@ -20,27 +24,23 @@ interface IState {
   groupToEdit: GroupResource;
 }
 
-type IProps =
-  & IOwnProps
-  & IProvidedProps
-  & i18nProps;
+type IProps = IOwnProps & IProvidedProps & i18nProps;
 
 @withTemplateHelpers
 class GroupsRoute extends React.Component<IProps, IState> {
-
   toggle: Toggle;
 
   state = {
     showForm: false,
-    groupToEdit: null
+    groupToEdit: null,
   };
 
   setGroupToEdit = (group) => {
     this.setState({
       groupToEdit: group,
-      showForm: true
+      showForm: true,
     });
-  }
+  };
 
   render() {
     const { toggle } = this;
@@ -54,31 +54,32 @@ class GroupsRoute extends React.Component<IProps, IState> {
       onFinish: () => {
         this.setState({
           showForm: false,
-          groupToEdit: null
+          groupToEdit: null,
         });
-      }
+      },
     };
 
     const listProps = {
       removeRecord,
       setGroupToEdit: this.setGroupToEdit,
-      groups
+      groups,
     };
 
     return (
       <div className='sub-page-content' data-test-org-groups>
         <h2 className='sub-page-heading'>{t('org.groupsTitle')}</h2>
 
-        {!showForm &&
+        {!showForm && (
           <button
             data-test-org-add-group-button
             className='ui button tertiary uppercase large'
-            onClick={toggle('showForm')}>
+            onClick={toggle('showForm')}
+          >
             {t('org.addGroupButton')}
           </button>
-        }
+        )}
 
-        { showForm && <Form {...formProps} /> }
+        {showForm && <Form {...formProps} />}
 
         <List {...listProps} />
       </div>
@@ -89,8 +90,8 @@ class GroupsRoute extends React.Component<IProps, IState> {
 export default compose(
   withTranslations,
   withOrbit(({ organization }) => ({
-    groups: q => q.findRelatedRecords(organization, 'groups')
+    groups: (q) => q.findRelatedRecords(organization, 'groups'),
   })),
   withDataActions,
-  withLoader(({ groups }) => !groups),
-)( GroupsRoute );
+  withLoader(({ groups }) => !groups)
+)(GroupsRoute);

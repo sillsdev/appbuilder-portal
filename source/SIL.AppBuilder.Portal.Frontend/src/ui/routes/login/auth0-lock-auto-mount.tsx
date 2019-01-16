@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as uuid from 'uuid';
 import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
-
 import { getAuth0LockInstance, setToken, showLock, hideLock } from '@lib/auth0';
 
 export interface IProps {
@@ -10,7 +9,7 @@ export interface IProps {
 }
 
 class Lock extends React.Component<IProps & i18nProps> {
-  state = { loggedIn : false };
+  state = { loggedIn: false };
   lockRef: any;
   lockId: any;
 
@@ -41,7 +40,7 @@ class Lock extends React.Component<IProps & i18nProps> {
         signUpLabel: t('auth.signup'),
         loginLabel: t('auth.login'),
         loginSubmitLabel: t('auth.login'),
-      }
+      },
     };
 
     const lock = getAuth0LockInstance(auth0Options);
@@ -54,7 +53,6 @@ class Lock extends React.Component<IProps & i18nProps> {
     });
 
     showLock();
-
   }
 
   render() {
@@ -62,6 +60,4 @@ class Lock extends React.Component<IProps & i18nProps> {
   }
 }
 
-export default compose<IProps & i18nProps, IProps>(
-  withTranslations
-)(Lock);
+export default compose<IProps & i18nProps, IProps>(withTranslations)(Lock);

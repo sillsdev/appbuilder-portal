@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Switch, Route } from 'react-router-dom';
-
 import { requireAuth } from '@lib/auth';
-import InviteOrganization from './invite-organization';
-import AdminSettingsRoute, { pathName as settingsPathName } from './settings';
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
+
+import InviteOrganization from './invite-organization';
+import AdminSettingsRoute, { pathName as settingsPathName } from './settings';
 
 export const pathName = '/admin';
 
@@ -21,10 +21,9 @@ class AdminRoute extends React.Component {
   }
 }
 
-
 export default compose(
   requireAuth(),
   withRole(ROLE.SuperAdmin, {
-    redirectTo: '/'
-  }),
+    redirectTo: '/',
+  })
 )(AdminRoute);

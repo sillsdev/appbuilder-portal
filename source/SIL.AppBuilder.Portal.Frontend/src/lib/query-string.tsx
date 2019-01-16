@@ -1,6 +1,6 @@
-import * as React from 'react';
 import * as qs from 'querystring';
 
+import * as React from 'react';
 import { assert } from '@lib/debug';
 
 export interface IProvidedQueryParams<TQueryParams = {}> {
@@ -9,7 +9,7 @@ export interface IProvidedQueryParams<TQueryParams = {}> {
 }
 
 export function withQueryParams(InnerComponent) {
-  return props => {
+  return (props) => {
     const { location, history } = props;
 
     assert(location, `location could not be found in props. Did you include withRouter?`);
@@ -22,25 +22,20 @@ export function withQueryParams(InnerComponent) {
     }
 
     const params = qs.parse(search);
+
     const updateQueryParams = (changedQPs: object) => {
       const newQueryParams = {
         ...params,
-        ...changedQPs
+        ...changedQPs,
       };
 
       history.push({
         pathname: location.pathname,
-        search: qs.stringify(newQueryParams)
+        search: qs.stringify(newQueryParams),
       });
     };
 
-    return (
-      <InnerComponent
-        { ...props }
-        queryParams={params}
-        updateQueryParams={updateQueryParams}
-      />
-    );
+    return <InnerComponent {...props} queryParams={params} updateQueryParams={updateQueryParams} />;
   };
 }
 

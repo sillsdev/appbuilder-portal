@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { RouterProps, Redirect } from 'react-router';
-
 import { withCurrentUser } from '@data/containers/with-current-user';
 import { isLoggedIn, hasVerifiedEmail } from '@lib/auth0';
 import * as toast from '@lib/toast';
@@ -8,7 +7,7 @@ import * as toast from '@lib/toast';
 import { requireAuthHelper } from './require-auth-helper';
 import { storePath } from './return-to';
 
-export function requireAuth(opts = {}){
+export function requireAuth(opts = {}) {
   return (Component) => {
     // this.displayName = 'RequireAuth';
 
@@ -17,6 +16,7 @@ export function requireAuth(opts = {}){
 
       if (authenticated) {
         const emailVerified = hasVerifiedEmail();
+
         if (!emailVerified) {
           return <Redirect push={false} to={'/verify-email'} />;
         }
@@ -28,6 +28,7 @@ export function requireAuth(opts = {}){
       const attemptedLocation = propsWithRouting.history.location.pathname;
 
       storePath(attemptedLocation);
+
       return <Redirect push={true} to={'/login'} />;
     };
 

@@ -12,7 +12,6 @@ import { auth0 as auth0Env } from '@env';
 
 const storageKey = 'userToken';
 
-
 export function getToken(): string {
   return localStorage.getItem(storageKey);
 }
@@ -42,8 +41,9 @@ export function isTokenExpired(jwt = getDecodedJWT()) {
   return isExpired;
 }
 
-export function hasVerifiedEmail(): boolean{
+export function hasVerifiedEmail(): boolean {
   const decodedToken = getDecodedJWT();
+
   return decodedToken ? decodedToken.email_verified : false;
 }
 
@@ -52,8 +52,7 @@ export function getDecodedJWT(): Auth0JWT | undefined {
 
   try {
     return jwtDecode<Auth0JWT>(token);
-  }
-  catch (e) {
+  } catch (e) {
     // the token is invalid
     return undefined;
   }
@@ -68,13 +67,12 @@ export function getAuth0Id(): string {
 export function isLoggedIn(): boolean {
   const jwt = getDecodedJWT();
 
-  return jwt && !isTokenExpired(jwt) || false;
+  return (jwt && !isTokenExpired(jwt)) || false;
 }
 
 export function isLoggedOut(): boolean {
   return !isLoggedIn();
 }
-
 
 // example playoad fields from successful authentication
 //
@@ -88,18 +86,22 @@ export function isLoggedOut(): boolean {
 // state: string
 // tokenType : "Bearer"
 let lockInstance: Auth0LockStatic;
+
 export function getAuth0LockInstance(options = {}): Auth0LockStatic {
   if (lockInstance === undefined) {
     lockInstance = new Auth0Lock(auth0Env.clientId, auth0Env.domain, {
       // TODO: pull language form i18next
       language: 'en',
-      additionalSignUpFields: [{
-        name: 'given_name',
-        placeholder: 'Given Name'
-      }, {
-        name: 'family_name',
-        placeholder: 'Family Name'
-      }],
+      additionalSignUpFields: [
+        {
+          name: 'given_name',
+          placeholder: 'Given Name',
+        },
+        {
+          name: 'family_name',
+          placeholder: 'Family Name',
+        },
+      ],
       auth: {
         responseType: 'token id_token',
         sso: false,
@@ -115,7 +117,7 @@ export function getAuth0LockInstance(options = {}): Auth0LockStatic {
       theme: {
         logo: 'https://software.sil.org/wp/wp-content/uploads/2017/01/2014_sil_logo_80w_96h.png',
       },
-      ...options
+      ...options,
     });
   }
 
@@ -144,19 +146,20 @@ export function login(username: string, password: string): Promise<string> {
     realm: auth0Env.connection,
     username,
     password,
-    scope: auth0Env.scope
+    scope: auth0Env.scope,
   };
 
   const auth0 = new Auth0.WebAuth({
     domain: auth0Env.domain,
     clientID: auth0Env.clientId,
     responseType: 'token id_token',
-    scope: auth0Env.scope
+    scope: auth0Env.scope,
   });
 
   return new Promise((resolve, reject) => {
     auth0.client.login(loginPayload, (err, data) => {
       const e = err || data.error;
+
       if (e) {
         return reject(e);
       }

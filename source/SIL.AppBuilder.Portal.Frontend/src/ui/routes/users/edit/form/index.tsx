@@ -3,11 +3,7 @@ import { compose } from 'recompose';
 import { Checkbox } from 'semantic-ui-react';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import TimezonePicker from 'react-timezone';
-
-import {
-  withTemplateHelpers, Mut, ToggleHelper
-} from 'react-action-decorators';
-
+import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
 import { UserResource } from '@data/models/user';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
@@ -32,7 +28,6 @@ const PRIVATE_PROFILE = 0;
 
 @withTemplateHelpers
 class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
-
   mut: Mut;
   toggle: ToggleHelper;
   timezoneInput: any;
@@ -43,7 +38,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     const userAttributes = props.user.attributes;
 
     this.state = {
-      ...userAttributes
+      ...userAttributes,
     };
   }
 
@@ -51,14 +46,19 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     e.preventDefault();
     const profileVisibility = this.state.profileVisibility ? PUBLIC_PROFILE : PRIVATE_PROFILE;
     await this.props.onSubmit({ ...this.state, profileVisibility });
-  }
+  };
 
   render() {
     const { mut, toggle } = this;
     const {
-      givenName, familyName, email, phone,
-      timezone, emailNotification,
-      profileVisibility, publishingKey
+      givenName,
+      familyName,
+      email,
+      phone,
+      timezone,
+      emailNotification,
+      profileVisibility,
+      publishingKey,
     } = this.state;
 
     const { t } = this.props;
@@ -72,58 +72,49 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
               <input
                 data-test-profile-firstname
                 value={givenName || ''}
-                onChange={mut('givenName')} />
+                onChange={mut('givenName')}
+              />
             </div>
             <div className='field w-50-md'>
               <label>{t('profile.lastName')}</label>
               <input
                 data-test-profile-lastname
                 value={familyName || ''}
-                onChange={mut('familyName')} />
+                onChange={mut('familyName')}
+              />
             </div>
           </div>
         </div>
         <div className='field w-50-md p-r-lg m-t-lg'>
           <label>{t('profile.email')}</label>
-          <input
-            data-test-profile-email
-            value={email || ''}
-            onChange={mut('email')} />
+          <input data-test-profile-email value={email || ''} onChange={mut('email')} />
         </div>
         <div className='field w-50-md  p-r-lg m-t-lg'>
           <label>{t('profile.phone')}</label>
-          <input
-            data-test-profile-phone
-            value={phone || ''}
-            onChange={mut('phone')} />
+          <input data-test-profile-phone value={phone || ''} onChange={mut('phone')} />
         </div>
         <div className='field w-50-md p-r-lg m-t-lg'>
           <label>{t('profile.timezone')}</label>
-          <div
-            data-test-profile-timezone
-            className='position-relative'
-          >
-            <ArrowDropDownIcon className='timezone-icon'/>
+          <div data-test-profile-timezone className='position-relative'>
+            <ArrowDropDownIcon className='timezone-icon' />
             <TimezonePicker
-              ref={input => this.timezoneInput = input}
+              ref={(input) => (this.timezoneInput = input)}
               className='w-100'
               value={timezone || ''}
-              onChange={tz => {
-                this.setState({timezone: tz});
+              onChange={(tz) => {
+                this.setState({ timezone: tz });
               }}
               inputProps={{
                 placeholder: t('profile.timezonePlaceholder'),
                 className: 'bg-transparent',
-                name: 'timezone'
+                name: 'timezone',
               }}
             />
           </div>
         </div>
 
         <div className='ui divider m-t-xl m-b-xl' />
-        <h2 className='fs-21 bold gray-text m-b-lg'>
-          {t('profile.sshKeyLabel')}
-        </h2>
+        <h2 className='fs-21 bold gray-text m-b-lg'>{t('profile.sshKeyLabel')}</h2>
         <div className='field fs-16 w-50'>
           <textarea
             data-test-profile-publishing-key
@@ -132,24 +123,18 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
           />
         </div>
         <div className='ui divider m-t-xl m-b-xl' />
-        <h2 className='fs-21 bold gray-text m-b-lg'>
-          {t('profile.notificationSettingsTitle')}
-        </h2>
+        <h2 className='fs-21 bold gray-text m-b-lg'>{t('profile.notificationSettingsTitle')}</h2>
         <div className='field flex align-items-center'>
-          <span className='fs-16 m-r-md bold gray-text'>
-            {t('profile.optOutOfEmailOption')}
-          </span>
+          <span className='fs-16 m-r-md bold gray-text'>{t('profile.optOutOfEmailOption')}</span>
           <Checkbox
             data-test-profile-email-notification
             toggle
             defaultChecked={emailNotification}
             onChange={toggle('emailNotification')}
-            />
+          />
         </div>
         <div className='ui divider m-t-xl m-b-xl' />
-        <h2 className='fs-21 bold gray-text m-b-lg'>
-          {t('profile.visibleProfile')}
-        </h2>
+        <h2 className='fs-21 bold gray-text m-b-lg'>{t('profile.visibleProfile')}</h2>
         <div className='field flex align-items-center'>
           <span data-test-profile-visible-text className='fs-16 m-r-md bold gray-text'>
             {t('profile.visibility.visible')}
@@ -174,6 +159,4 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
   }
 }
 
-export  default compose(
-  withTranslations
-)(EditProfileDisplay);
+export default compose(withTranslations)(EditProfileDisplay);

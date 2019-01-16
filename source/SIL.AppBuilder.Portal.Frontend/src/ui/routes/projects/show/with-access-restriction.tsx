@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import * as toast from '@lib/toast';
 import { i18nProps } from '@lib/i18n';
+
 import {
   hasRelationship,
   relationshipFor,
@@ -14,7 +14,7 @@ import {
   UserResource,
   ProjectResource,
   OrganizationResource,
-  withLoader
+  withLoader,
 } from '@data';
 
 import { withRelationships } from '@data/containers/with-relationship';
@@ -34,7 +34,7 @@ interface IProvidedProps {
 //   the organization that the project is assigned to
 export function withAccessRestriction<TWrappedProps>(WrappedComponent) {
   return compose<INeededProps, TWrappedProps>(
-    withRelationships(( props: INeededProps ) => {
+    withRelationships((props: INeededProps) => {
       const { currentUser } = props;
 
       return {
@@ -45,19 +45,21 @@ export function withAccessRestriction<TWrappedProps>(WrappedComponent) {
       const { project } = passedProps;
 
       return {
-        projectOrg: q => buildFindRelatedRecord(q, project, 'organization')
+        projectOrg: (q) => buildFindRelatedRecord(q, project, 'organization'),
       };
     }),
-    withLoader(({ projectOrg, currentUserOrganizations }) => !projectOrg || !currentUserOrganizations)
-  )(( props: INeededProps & IProvidedProps & i18nProps) => {
+    withLoader(
+      ({ projectOrg, currentUserOrganizations }) => !projectOrg || !currentUserOrganizations
+    )
+  )((props: INeededProps & IProvidedProps & i18nProps) => {
     const { t, currentUserOrganizations, projectOrg } = props;
 
-    const currentUserOrgIds = currentUserOrganizations.map(o => o.id);
+    const currentUserOrgIds = currentUserOrganizations.map((o) => o.id);
 
     const isAMember = currentUserOrgIds.includes(projectOrg.id);
 
     if (isAMember) {
-      return <WrappedComponent { ...props } />;
+      return <WrappedComponent {...props} />;
     }
 
     toast.error(t('errors.notAMemberOfOrg'));

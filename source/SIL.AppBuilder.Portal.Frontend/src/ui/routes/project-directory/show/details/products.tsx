@@ -3,8 +3,8 @@ import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import { ProjectResource, ProductResource } from '@data';
-import { withTranslations, i18nProps } from '@lib/i18n';
 
+import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductArtifact from '@ui/components/product-artifact';
 
 interface IOwnProps {
@@ -12,9 +12,7 @@ interface IOwnProps {
   products: ProductResource[];
 }
 
-type IProps =
-  & IOwnProps
-  & i18nProps;
+type IProps = IOwnProps & i18nProps;
 
 class Products extends React.Component {
   render() {
@@ -36,7 +34,7 @@ export default compose(
     const { project } = passedProps;
 
     return {
-      products: q => q.findRelatedRecords(project, 'products'),
+      products: (q) => q.findRelatedRecords(project, 'products'),
     };
   })
 )(Products);

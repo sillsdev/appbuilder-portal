@@ -1,41 +1,36 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,
-  useFakeAuthentication
+  useFakeAuthentication,
 } from 'tests/helpers/index';
 
 import page from './page';
 
-
-
 describe('Acceptance | Organization Settings | Groups', () => {
-
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
   describe('Organization group page', () => {
-
-    beforeEach(function () {
+    beforeEach(function() {
       this.mockGet(200, '/organizations/1', {
         data: {
           id: 1,
           type: 'organizations',
           attributes: {
-            'public-by-default': true
+            'public-by-default': true,
           },
           relationships: {
-            'groups': { data: [] }
-          }
-        }
+            groups: { data: [] },
+          },
+        },
       });
     });
 
-    beforeEach(async function () {
+    beforeEach(async function() {
       await visit('/organizations/1/settings/groups');
     });
 
@@ -47,26 +42,22 @@ describe('Acceptance | Organization Settings | Groups', () => {
       expect(page.emptyLabel).to.equals('Your organization has no groups');
     });
 
-    describe('Add a new group',() => {
-
+    describe('Add a new group', () => {
       beforeEach(function() {
-
-        this.mockPost(201,'groups',{
+        this.mockPost(201, 'groups', {
           data: {
             attributes: {
               name: 'TEST GROUP',
-              abbreviation: 'TG'
+              abbreviation: 'TG',
             },
             relationships: {
-              owner: { data: { id: 1, type: 'organization'}}
+              owner: { data: { id: 1, type: 'organization' } },
             },
             id: 1,
-            type: 'groups'
-          }
+            type: 'groups',
+          },
         });
-
       });
-
 
       beforeEach(async function() {
         await page.clickAddGroupButton();
@@ -77,28 +68,25 @@ describe('Acceptance | Organization Settings | Groups', () => {
 
       it('shows the new group', () => {
         const groupNames = page.groupNameList();
-        const names = groupNames.map(item => item.text);
+        const names = groupNames.map((item) => item.text);
         expect(names).to.contains('TEST GROUP');
       });
 
       describe('edit the group', () => {
-
         beforeEach(function() {
-
-          this.mockPatch(200,'groups/1',{
+          this.mockPatch(200, 'groups/1', {
             data: {
               attributes: {
                 name: 'FAKE GROUP',
-                abbreviation: 'FG'
+                abbreviation: 'FG',
               },
               relationships: {
-                owner: { data: { type: 'organizations', id: 1}}
+                owner: { data: { type: 'organizations', id: 1 } },
               },
               id: 1,
-              type: 'groups'
-            }
+              type: 'groups',
+            },
           });
-
         });
 
         beforeEach(async function() {
@@ -110,14 +98,13 @@ describe('Acceptance | Organization Settings | Groups', () => {
 
         it('group is edited', () => {
           const groupNames = page.groupNameList();
-          const names = groupNames.map(item => item.text);
+          const names = groupNames.map((item) => item.text);
           expect(names).to.contains('FAKE GROUP');
         });
 
         describe('delete group', () => {
-
-          beforeEach(function () {
-            this.mockDelete(204,'groups/1');
+          beforeEach(function() {
+            this.mockDelete(204, 'groups/1');
           });
 
           beforeEach(async function() {
@@ -127,13 +114,8 @@ describe('Acceptance | Organization Settings | Groups', () => {
           it('render an empty list', () => {
             expect(page.emptyLabel).to.equals('Your organization has no groups');
           });
-
         });
-
       });
-
     });
-
   });
-
 });

@@ -1,6 +1,7 @@
 import { compose, withProps } from 'recompose';
 
 import { withLoader, withError } from '@data';
+
 import { withUserTaskList } from '@data/containers/resources/user-task';
 import { withTranslations } from '@lib/i18n';
 import { requireAuth } from '@lib/auth';
@@ -17,5 +18,5 @@ export default compose(
   requireAuth(),
   withUserTaskList(),
   withError('error', ({ error }) => error),
-  withLoader(({ userTasks }) => !userTasks),
+  withLoader(({ userTasks }) => !userTasks)
 )(Display);

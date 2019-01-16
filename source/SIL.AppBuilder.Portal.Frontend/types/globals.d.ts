@@ -1,4 +1,4 @@
-import { Store } from "redux";
+import { Store } from 'redux';
 
 export {}; // this file needs to be a module?
 

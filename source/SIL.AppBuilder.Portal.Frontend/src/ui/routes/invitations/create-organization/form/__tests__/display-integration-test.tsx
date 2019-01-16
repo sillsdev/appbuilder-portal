@@ -2,10 +2,10 @@ import * as React from 'react';
 import * as sinon from 'sinon';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { expect } from 'chai';
-
 import { mountWithContext } from 'tests/helpers';
 
 import Display from '../display';
+
 import page from './page';
 
 describe('Integration | Component | Create Organization Form', () => {
@@ -14,11 +14,7 @@ describe('Integration | Component | Create Organization Form', () => {
   beforeEach(async () => {
     fakeSubmit = sinon.spy();
 
-    await mountWithContext(() => (
-      <Display
-        token='invite-token'
-        onSubmit={fakeSubmit}/>
-    ));
+    await mountWithContext(() => <Display token='invite-token' onSubmit={fakeSubmit} />);
   });
 
   describe('The form has values', () => {
@@ -41,7 +37,7 @@ describe('Integration | Component | Create Organization Form', () => {
         expect(fakeSubmit).to.have.been.calledWithMatch({
           websiteUrl: 'fake.fake',
           name: 'Acme Org',
-          token: 'invite-token'
+          token: 'invite-token',
         });
       });
     });

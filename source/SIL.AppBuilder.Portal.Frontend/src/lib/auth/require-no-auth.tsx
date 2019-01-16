@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { RouterProps, Redirect } from 'react-router';
-
 import { isLoggedIn } from '@lib/auth0';
 
 import { requireAuthHelper } from './require-auth-helper';
@@ -11,7 +10,7 @@ export function requireNoAuth(redirectPath = '/') {
       const authenticated = isLoggedIn();
 
       if (!authenticated) {
-        return <Component { ...propsWithRouting } />;
+        return <Component {...propsWithRouting} />;
       }
 
       // toast.error('You must be logged out to do that');
@@ -22,4 +21,3 @@ export function requireNoAuth(redirectPath = '/') {
     return requireAuthHelper(checkForNoAuth);
   };
 }
-

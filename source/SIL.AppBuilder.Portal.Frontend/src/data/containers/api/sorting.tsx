@@ -3,7 +3,7 @@ import { FindRecordsTerm } from '@orbit/data';
 
 export enum SortDirection {
   Up = 0,
-  Down = 1
+  Down = 1,
 }
 
 export interface ISortProps {
@@ -26,7 +26,7 @@ export interface ISortOptions {
 export function withSorting(options) {
   const { defaultSort } = options;
 
-  return WrappedComponent => {
+  return (WrappedComponent) => {
     class SortWrapper extends React.Component<any, { sortProperty: string }> {
       state = { sortProperty: defaultSort || '' };
 
@@ -35,7 +35,7 @@ export function withSorting(options) {
         const isDescending = sortProperty.startsWith('-');
 
         this.sort(by, isDescending ? SortDirection.Up : SortDirection.Down);
-      }
+      };
 
       sort = (by: string, direction: SortDirection) => {
         const prefix = direction === SortDirection.Up ? '' : '-';
@@ -43,15 +43,15 @@ export function withSorting(options) {
         const sortProperty = `${prefix}${by}`;
 
         this.setState({ sortProperty });
-      }
+      };
 
       applySort = (builder: FindRecordsTerm) => {
         const { sortProperty } = this.state;
-        const sorts = [ sortProperty ];
+        const sorts = [sortProperty];
 
         // builder.sort support multi-property sort
         return builder.sort(...sorts);
-      }
+      };
 
       render() {
         const { sortProperty } = this.state;
@@ -64,15 +64,10 @@ export function withSorting(options) {
           toggleSort: this.toggleSort,
           sortProperty,
           defaultSort,
-          applySort: this.applySort
+          applySort: this.applySort,
         };
 
-        return (
-          <WrappedComponent
-            { ...this.props }
-            { ...sortProps }
-          />
-        );
+        return <WrappedComponent {...this.props} {...sortProps} />;
       }
     }
 

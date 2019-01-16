@@ -1,35 +1,29 @@
 // tslint:disable:max-classes-per-file
 
-import {
-  interactor,
-  clickable, text, isPresent, scoped, collection
-} from '@bigtest/interactor';
-
+import { interactor, clickable, text, isPresent, scoped, collection } from '@bigtest/interactor';
 import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
 import userInteractor from '@ui/components/inputs/user-select/__tests__/page';
 import reviewerInteractor from '@ui/routes/projects/show/overview/reviewers/__tests__/page';
 import detailsInteratctor from '@ui/routes/projects/show/overview/details/__tests__/page';
+
 import productsInteractor from '../overview/products/-page';
 
-
-
 @interactor
-export class ProductFilesInteractor{
-  constructor(selector?: string){}
+export class ProductFilesInteractor {
+  constructor(selector?: string) {}
   selectedBuild = text('[data-test-resource-select]');
   artifactCount = text('[data-test-count]');
 }
 
 @interactor
-export class ProjectFilesInteractor{
-  constructor(selector?: string){}
+export class ProjectFilesInteractor {
+  constructor(selector?: string) {}
   products = collection('[data-test-build]', ProductFilesInteractor);
 }
 
-
 @interactor
 export class ProjectInteractor {
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   projectName = text('[data-test-project-name]');
   clickArchiveLink = clickable('[data-test-archive]');

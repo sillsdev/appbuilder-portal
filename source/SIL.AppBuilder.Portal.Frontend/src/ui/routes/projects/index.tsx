@@ -3,14 +3,15 @@ import { match as Match } from 'react-router';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
-
 import { requireAuth } from '@lib/auth';
 import { NotFound } from '@ui/routes/errors';
 import { withLayout } from '@ui/components/layout';
 
 import AllProjectsRoute, { pathName as allProjectPath } from './list/all';
 import MyProjectsRoute, { pathName as myProjectPath } from './list/my-projects';
-import OrganizationProjectsRoute, { pathName as organizationProjectPath } from './list/organization-projects';
+import OrganizationProjectsRoute, {
+  pathName as organizationProjectPath,
+} from './list/organization-projects';
 import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './list/archived-projects';
 import NewProjectRoute, { pathName as newProjectPath } from './new';
 import ProjectDetailRoute, { pathName as projectDetailPath } from './show';
@@ -30,7 +31,6 @@ class ProjectsRoot extends React.Component {
 
           <Route path={projectDetailPath} component={ProjectDetailRoute} />
 
-
           <Route component={NotFound} />
         </Switch>
       </div>
@@ -41,5 +41,5 @@ class ProjectsRoot extends React.Component {
 export default compose(
   requireAuth(),
   withLayout,
-  withRouter,
+  withRouter
 )(ProjectsRoot);

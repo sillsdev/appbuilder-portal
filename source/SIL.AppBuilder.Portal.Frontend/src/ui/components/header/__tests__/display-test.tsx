@@ -2,29 +2,32 @@ import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { location, visit } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
-  setupRequestInterceptor, useFakeAuthentication, setupApplicationTest
+  setupRequestInterceptor,
+  useFakeAuthentication,
+  setupApplicationTest,
 } from 'tests/helpers';
-
-
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
-import Header from '../display';
-
 import headerHelper from 'tests/helpers/components/header';
 import { TOGGLE_SIDEBAR } from '@store/user-interface/actions/toggle-sidebar';
+
+import Header from '../display';
 
 describe('Acceptance | Component | Header', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  beforeEach(function () {
-    this.mockGet(200, '/organizations', { data: [{
-      type: 'organizations',
-      id: 1,
-      attributes: {}
-    }] });
+  beforeEach(function() {
+    this.mockGet(200, '/organizations', {
+      data: [
+        {
+          type: 'organizations',
+          id: 1,
+          attributes: {},
+        },
+      ],
+    });
   });
 
   describe('Dropdowns', () => {
@@ -42,7 +45,6 @@ describe('Acceptance | Component | Header', () => {
       it('is open', () => {
         expect(headerHelper.isNotificationMenuOpen).to.be.true;
       });
-
     });
 
     describe('the user/avarar dropdown', () => {
@@ -59,16 +61,15 @@ describe('Acceptance | Component | Header', () => {
   });
 
   describe('Go to profile', () => {
-
-    beforeEach(function () {
+    beforeEach(function() {
       this.mockGet(200, '/users/1', {
         data: {
           type: 'users',
           id: '1',
           attributes: {
-            givenName: 'hi'
-          }
-        }
+            givenName: 'hi',
+          },
+        },
       });
     });
 
@@ -77,9 +78,8 @@ describe('Acceptance | Component | Header', () => {
       await headerHelper.clickProfileLink();
     });
 
-    it('redirect to profile',() => {
+    it('redirect to profile', () => {
       expect(location().pathname).to.eq('/users/1/edit');
     });
   });
 });
-

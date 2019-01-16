@@ -2,7 +2,6 @@ import * as React from 'react';
 import { match as Match, Redirect } from 'react-router';
 import { translate, TransProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
-
 import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
 
@@ -21,7 +20,9 @@ export interface IProps {
 class CreateOrganizationRoute extends React.Component<IProps & i18nProps> {
   render() {
     const { match, t } = this.props;
-    const { params: { token } } = match;
+    const {
+      params: { token },
+    } = match;
 
     return (
       <div className='ui container'>

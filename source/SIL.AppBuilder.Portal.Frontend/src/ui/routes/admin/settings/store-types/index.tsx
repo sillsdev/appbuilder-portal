@@ -1,10 +1,9 @@
 import * as React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
 import List from './list';
 import AddStoreTypeForm from './new';
 import EditStoreTypeForm from './edit';
-
-import { Switch, Route } from 'react-router-dom';
 
 export const listPathName = '/admin/settings/store-types';
 export const addStoreTypePathName = '/admin/settings/store-types/new';

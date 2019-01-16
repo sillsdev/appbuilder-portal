@@ -1,20 +1,17 @@
 import * as React from 'react';
-
 import { IAttributeProps } from '@lib/dom';
 
-type IProps =
-& IAttributeProps
-& { isLoading: boolean };
+type IProps = IAttributeProps & { isLoading: boolean };
 
 export class LoadingWrapper extends React.PureComponent<IProps> {
   render() {
     const { isLoading, children, className, ...otherProps } = this.props;
 
     return (
-      <div { ...otherProps } className={`p-relative ${className}`}>
+      <div {...otherProps} className={`p-relative ${className}`}>
         {children}
 
-        { isLoading && <div className='loading-overlay' /> }
+        {isLoading && <div className='loading-overlay' />}
       </div>
     );
   }

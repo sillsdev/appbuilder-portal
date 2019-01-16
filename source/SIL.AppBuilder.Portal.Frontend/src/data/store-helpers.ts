@@ -1,8 +1,8 @@
+import * as qs from 'querystring';
+
 import Store from '@orbit/store';
 import { QueryBuilder, QueryOrExpression } from '@orbit/data';
 import { camelize } from '@orbit/utils';
-import * as qs from 'querystring';
-
 import { ResourceObject, AttributesObject } from 'jsonapi-typescript';
 
 import { schema, keyMap } from './schema';
@@ -19,14 +19,14 @@ export interface IQueryOptions {
   settings?: any;
 }
 
-
 type IResourceIdentity<TType extends string = '', TAttrs extends AttributesObject = {}> =
-| { type: TType, id: string }
-| ResourceObject<TType, TAttrs>;
+  | { type: TType; id: string }
+  | ResourceObject<TType, TAttrs>;
 
-type RecordIdentity<TType extends string = '', TAttrs extends AttributesObject = {}> =
-& IOrbitTracking
-& IResourceIdentity<TType, TAttrs>;
+type RecordIdentity<
+  TType extends string = '',
+  TAttrs extends AttributesObject = {}
+> = IOrbitTracking & IResourceIdentity<TType, TAttrs>;
 
 export function buildFindRelatedRecords(q: QueryBuilder, record: any, relationship: string) {
   return q.findRelatedRecords({ type: record.type, id: record.id }, relationship);
@@ -72,11 +72,10 @@ export function buildOptions(options: IQueryOptions = {}, label?: string) {
     maybeInclude.include = options.include;
   }
 
-
   if (options.fields) {
     fieldSettings = {
       params: {
-        fields: options.fields
+        fields: options.fields,
       },
     };
   }
@@ -91,9 +90,8 @@ export function buildOptions(options: IQueryOptions = {}, label?: string) {
           ...fieldSettings,
         },
         ...maybeInclude,
-
-      }
-    }
+      },
+    },
   };
 }
 
@@ -106,11 +104,12 @@ export async function update<TAttrs, TRelationships>(
   const recordOptions = buildRecordOptions(options);
 
   await store.update(
-    q => q.replaceRecord({
-      id: resource.id,
-      type: resource.type,
-      ...recordOptions
-    }),
+    (q) =>
+      q.replaceRecord({
+        id: resource.id,
+        type: resource.type,
+        ...recordOptions,
+      }),
     defaultOptions()
   );
 }
@@ -119,12 +118,13 @@ export async function update<TAttrs, TRelationships>(
 export async function create<TAttrs, TRelationships>(
   store: Store,
   type: string,
-  options: IBuildNewOptions<TAttrs, TRelationships>) {
+  options: IBuildNewOptions<TAttrs, TRelationships>
+) {
   const newRecord = buildNew(type, options);
 
-  await store.update(q => q.addRecord(newRecord), defaultOptions());
+  await store.update((q) => q.addRecord(newRecord), defaultOptions());
 
-  const record = await store.cache.query(q => q.findRecord(newRecord), defaultOptions());
+  const record = await store.cache.query((q) => q.findRecord(newRecord), defaultOptions());
 
   return record;
 }
@@ -145,7 +145,7 @@ export function build<TAttrs, TRelationships>(...args) {
 
   return {
     id,
-    ...(buildNew(type, options)),
+    ...buildNew(type, options),
   };
 }
 
@@ -157,35 +157,40 @@ export function build<TAttrs, TRelationships>(...args) {
 //     products: [ { type: 'products', id: '2' } ]
 //   }
 // });
-export function buildNew<TAttrs, TRelationships>(type: string, options: IBuildNewOptions<TAttrs, TRelationships>) {
+export function buildNew<TAttrs, TRelationships>(
+  type: string,
+  options: IBuildNewOptions<TAttrs, TRelationships>
+) {
   const recordOptions = buildRecordOptions(options);
+
   return {
     type,
-    ...recordOptions
+    ...recordOptions,
   };
 }
 
-export function buildRecordOptions<TAttrs, TRelationships>(options: IBuildNewOptions<TAttrs, TRelationships>) {
+export function buildRecordOptions<TAttrs, TRelationships>(
+  options: IBuildNewOptions<TAttrs, TRelationships>
+) {
   const attributes = options.attributes || {};
   const relationMap = options.relationships || {};
   const relationships = buildRelationships(relationMap);
 
   return {
     attributes,
-    relationships
+    relationships,
   };
 }
 
 export function buildRelationships<TRelationships>(relationMap: TRelationships) {
   return Object.keys(relationMap).reduce((result, relationName) => {
     const relationInfo = relationMap[relationName];
-    const relationData =
-      Array.isArray(relationInfo)
-        ? relationInfo.map(info => remoteIdentityFrom(info))
-        : remoteIdentityFrom(relationInfo);
+    const relationData = Array.isArray(relationInfo)
+      ? relationInfo.map((info) => remoteIdentityFrom(info))
+      : remoteIdentityFrom(relationInfo);
 
     result[relationName] = {
-      data: relationData
+      data: relationData,
     };
 
     return result;
@@ -206,11 +211,11 @@ export function localIdFromRecordIdentity(recordIdentity: any) {
   return keyMap.idFromKeys(type, { remoteId: maybeLocalId }) || recordIdentity.id;
 }
 
-
 // this should return the remoteId, always.
-export function idFromRecordIdentity<TType extends string = '', TAttrs extends AttributesObject = {}>(
-  recordIdentity: RecordIdentity<TType, TAttrs>
-): string {
+export function idFromRecordIdentity<
+  TType extends string = '',
+  TAttrs extends AttributesObject = {}
+>(recordIdentity: RecordIdentity<TType, TAttrs>): string {
   const keys = recordIdentity.keys;
 
   if (!keys) {
@@ -246,7 +251,6 @@ export interface IIdentityFromKeys {
 }
 
 export function recordIdentityFromKeys({ type, id, keys }: IIdentityFromKeys) {
-
   const recordIdentity = {
     type,
     keys: keys || { remoteId: keyMap.idToKey(type, 'remoteId', id) },

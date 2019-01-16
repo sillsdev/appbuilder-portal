@@ -5,6 +5,7 @@ import StoreIcon from '@material-ui/icons/Shop';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import { attributesFor, idFromRecordIdentity, OrganizationResource, UserResource } from '@data';
+
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { Link } from 'react-router-dom';
 
@@ -13,49 +14,34 @@ interface IOwnProps {
   owner: UserResource;
 }
 
-type IProps =
-  & IOwnProps
-  & i18nProps;
+type IProps = IOwnProps & i18nProps;
 
 class OrganizationItem extends React.Component<IProps> {
-
   render() {
-
     const { t, organization, owner } = this.props;
 
-    const {
-      name, websiteUrl, buildEngineUrl,
-      buildEngineApiAccessToken
-    } = attributesFor(organization);
+    const { name, websiteUrl, buildEngineUrl, buildEngineApiAccessToken } = attributesFor(
+      organization
+    );
 
     return (
-      <div
-        className='flex p-md fs-13 m-b-sm thin-border round-border-4'
-      >
+      <div className='flex p-md fs-13 m-b-sm thin-border round-border-4'>
         <div className='flex-grow'>
           <div className='bold fs-16'>{name}</div>
           <div className='p-t-md'>
-            <span className='bold m-r-sm'>
-              {t('admin.settings.organizations.owner')}:
-            </span>
+            <span className='bold m-r-sm'>{t('admin.settings.organizations.owner')}:</span>
             <span>{attributesFor(owner).name}</span>
           </div>
           <div>
-            <span className='bold m-r-sm'>
-              {t('admin.settings.organizations.websiteURL')}:
-            </span>
+            <span className='bold m-r-sm'>{t('admin.settings.organizations.websiteURL')}:</span>
             <span>{websiteUrl}</span>
           </div>
           <div>
-            <span className='bold m-r-sm'>
-              {t('admin.settings.organizations.buildEngineURL')}:
-            </span>
+            <span className='bold m-r-sm'>{t('admin.settings.organizations.buildEngineURL')}:</span>
             <span>{buildEngineUrl}</span>
           </div>
           <div>
-            <span className='bold m-r-sm'>
-              {t('admin.settings.organizations.accessToken')}:
-            </span>
+            <span className='bold m-r-sm'>{t('admin.settings.organizations.accessToken')}:</span>
             <span>{buildEngineApiAccessToken}</span>
           </div>
         </div>
@@ -76,12 +62,11 @@ class OrganizationItem extends React.Component<IProps> {
       </div>
     );
   }
-
 }
 
 export default compose(
   withTranslations,
-  withOrbit(({organization}) => ({
-    owner: q => q.findRelatedRecord(organization,'owner')
+  withOrbit(({ organization }) => ({
+    owner: (q) => q.findRelatedRecord(organization, 'owner'),
   }))
 )(OrganizationItem);

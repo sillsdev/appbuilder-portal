@@ -2,6 +2,7 @@ import * as React from 'react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
 import { defaultSourceOptions } from '@data';
+
 import { ErrorMessage } from '@ui/components/errors';
 import { isEmpty } from '@lib/collection';
 import { timeoutablePromise } from '@lib/promises';
@@ -50,17 +51,16 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
   const opts = options || { passthroughError: false, useRemoteDirectly: false, mapResultsFn: null };
   const { passthroughError, useRemoteDirectly, mapResultsFn } = opts;
 
-
   if (typeof mapRecordsToProps !== 'function') {
     map = (/* props */) => ({
       cacheKey: 'default-cache-key',
-      ...mapRecordsToProps
+      ...mapRecordsToProps,
     });
   } else {
     map = mapRecordsToProps;
   }
 
-  return InnerComponent => {
+  return (InnerComponent) => {
     class DataWrapper extends React.Component<T & WithDataProps, IState> {
       state = { result: {}, error: undefined, isLoading: false };
       // tslint:disable-next-line:variable-name
@@ -78,19 +78,22 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
       componentWillUnmount() {
         this._isMounted = false;
       }
-      setState(state, callback?){
-        if (this._isMounted){
+      setState(state, callback?) {
+        if (this._isMounted) {
           super.setState(state, callback);
         }
       }
       fetchData = async () => {
         const result = map(this.props);
 
-        const { dataStore, sources: { remote } } = this.props;
+        const {
+          dataStore,
+          sources: { remote },
+        } = this.props;
         const querier = useRemoteDirectly ? remote : dataStore;
 
         const responses = {};
-        const resultingKeys = Object.keys(result).filter(k => k !== 'cacheKey');
+        const resultingKeys = Object.keys(result).filter((k) => k !== 'cacheKey');
         const requestPromises = resultingKeys.map(async (key: string) => {
           const query = result[key];
           const args = typeof query === 'function' ? [query] : query;
@@ -100,7 +103,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
             responses[key] = queryResult;
 
             return Promise.resolve(queryResult);
-          } catch(e) {
+          } catch (e) {
             if (querier === remote) {
               querier.requestQueue.skip();
             }
@@ -114,15 +117,17 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         }
 
         return responses;
-      }
+      };
 
       tryFetch = async (force: boolean = false) => {
-        if (!this.isFetchNeeded() && !force) { return; }
+        if (!this.isFetchNeeded() && !force) {
+          return;
+        }
 
         this.setState({ isLoading: true }, async () => {
           try {
             let result = await this.fetchData();
-            if (mapResultsFn){
+            if (mapResultsFn) {
               result = await mapResultsFn(this.props, result);
             }
             this.setState({ result, isLoading: false });
@@ -130,7 +135,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
             this.setState({ error: e, isLoading: false });
           }
         });
-      }
+      };
 
       isFetchNeeded = () => {
         const result = map(this.props);
@@ -142,7 +147,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
         this.mapResult = result;
 
         return true;
-      }
+      };
 
       render() {
         const { result, error, isLoading } = this.state;
@@ -157,8 +162,7 @@ export function queryApi<T>(mapRecordsToProps, options?: IQueryOptions) {
           return <ErrorMessage error={error} />;
         }
 
-
-        return <InnerComponent { ...this.props } { ...dataProps } />;
+        return <InnerComponent {...this.props} {...dataProps} />;
       }
     }
 

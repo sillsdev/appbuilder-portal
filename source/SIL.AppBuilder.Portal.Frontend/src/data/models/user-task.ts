@@ -1,4 +1,4 @@
-import { AttributesObject, ResourceObject } from "jsonapi-typescript";
+import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type USER_TASK_TYPE = 'userTask';
 export const TYPE_NAME = 'user-task';

@@ -12,7 +12,7 @@ class IndexRoute extends React.Component {
   }
 }
 
-export default compose (
+export default compose(
   requireAuth(),
   withLayout
 )(IndexRoute);

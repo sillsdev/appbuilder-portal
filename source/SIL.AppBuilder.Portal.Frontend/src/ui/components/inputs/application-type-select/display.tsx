@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import { IOwnProps as IDataProps } from '@data/containers/resources/application-type/list';
+
 import { attributesFor } from '@data';
 
 interface IOwnProps {
@@ -8,14 +9,10 @@ interface IOwnProps {
   onChange: (applicationTypeId: Id) => void;
 }
 
-type IProps =
-  & IOwnProps
-  & IDataProps;
+type IProps = IOwnProps & IDataProps;
 
 export default class ApplicationTypeSelectDisplay extends React.Component<IProps> {
-
   componentDidMount() {
-
     const { selected, applicationTypes, onChange } = this.props;
 
     if (!selected && applicationTypes && applicationTypes.length > 0) {
@@ -29,17 +26,16 @@ export default class ApplicationTypeSelectDisplay extends React.Component<IProps
     e.preventDefault();
     const { onChange } = this.props;
     onChange(value);
-  }
+  };
 
   render() {
-
     const { applicationTypes, selected } = this.props;
 
     const applicationTypeOptions = applicationTypes
-      .filter(applicationType => attributesFor(applicationType).name)
-      .map(applicationType => ({
+      .filter((applicationType) => attributesFor(applicationType).name)
+      .map((applicationType) => ({
         text: attributesFor(applicationType).description,
-        value: applicationType.id
+        value: applicationType.id,
       }));
 
     return (
@@ -51,5 +47,4 @@ export default class ApplicationTypeSelectDisplay extends React.Component<IProps
       />
     );
   }
-
 }

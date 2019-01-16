@@ -6,7 +6,7 @@ import {
   value,
   fillable,
   isPresent,
-  Interactor
+  Interactor,
 } from '@bigtest/interactor';
 
 class Range {

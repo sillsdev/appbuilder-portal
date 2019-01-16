@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-
 import Header from '@ui/components/header';
 import Sidebar from '@ui/components/sidebar';
-
 import {
   showSidebar as showSidebarInStore,
   hideSidebar as hideSidebarInStore,
@@ -16,13 +14,13 @@ interface IOwnProps {
 }
 
 const mapStateToProps = ({ ui }) => ({
-  isSidebarVisible: ui.isSidebarVisible
+  isSidebarVisible: ui.isSidebarVisible,
 });
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     showSidebar: () => dispatch(showSidebarInStore()),
-    hideSidebar: () => dispatch(hideSidebarInStore())
+    hideSidebar: () => dispatch(hideSidebarInStore()),
   };
 };
 
@@ -34,11 +32,11 @@ class Layout extends React.Component<IOwnProps> {
 
     return (
       <div className='flex-row-lg flex-grow h-100vh no-overflow'>
-
-        <div className={`
+        <div
+          className={`
           sidebar-container flex-row transition-all h-100vh
-          align-items-stretch ${sidebarStatus}`}>
-
+          align-items-stretch ${sidebarStatus}`}
+        >
           <Sidebar className='sidebar-wrapper' closeSidebar={hideSidebar} />
 
           <div className='no-select sidebar-underlay full-overlay' onClick={hideSidebar} />
@@ -57,10 +55,12 @@ class Layout extends React.Component<IOwnProps> {
 const ConnectedLayout = connect(
   mapStateToProps,
   mapDispatchToProps
-)( Layout );
+)(Layout);
 
 export const withLayout = (Component) => (props) => (
-  <ConnectedLayout><Component { ...props } /></ConnectedLayout>
+  <ConnectedLayout>
+    <Component {...props} />
+  </ConnectedLayout>
 );
 
 export default ConnectedLayout;

@@ -3,19 +3,15 @@ import { withData, WithDataProps } from 'react-orbitjs';
 import { withRouter, RouterProps } from 'react-router';
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-
-
 import * as toast from '@lib/toast';
 import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
 
 import Display from './display';
 
-export interface IOwnProps { token: string; }
-export type IProps =
-  & IOwnProps
-  & WithDataProps
-  & RouterProps
-  & i18nProps;
+export interface IOwnProps {
+  token: string;
+}
+export type IProps = IOwnProps & WithDataProps & RouterProps & i18nProps;
 
 export interface IState {
   error: any;
@@ -35,27 +31,26 @@ export class CreateOrganizationForm extends React.Component<IProps, IState> {
     } catch (e) {
       this.setState({ error: e });
     }
-  }
+  };
 
   create = async (payload: OrganizationAttributes) => {
     const { updateStore, token } = this.props;
 
     const { name, websiteUrl } = payload;
 
-    return await updateStore(t => t.addRecord({
-      type: TYPE_NAME,
-      attributes: { name, websiteUrl, token }
-    }));
-  }
+    return await updateStore((t) =>
+      t.addRecord({
+        type: TYPE_NAME,
+        attributes: { name, websiteUrl, token },
+      })
+    );
+  };
 
   render() {
     const { token } = this.props;
     const { error } = this.state;
 
-    return <Display
-      token={token}
-      error={error}
-      onSubmit={this.submit} />;
+    return <Display token={token} error={error} onSubmit={this.submit} />;
   }
 }
 

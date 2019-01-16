@@ -6,8 +6,5 @@ export function timeoutablePromise(timeoutMs, promise) {
     }, timeoutMs);
   });
 
-  return Promise.race([
-    promise,
-    timeout
-  ]);
+  return Promise.race([promise, timeout]);
 }

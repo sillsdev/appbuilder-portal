@@ -1,9 +1,9 @@
 import i18n from 'i18next';
 import * as ICU from 'i18next-icu';
-import { reactI18nextModule } from "react-i18next";
+import { reactI18nextModule } from 'react-i18next';
+import * as LanguageDetector from 'i18next-browser-languagedetector';
 
 // import * as Backend from 'i18next-xhr-backend';
-import * as LanguageDetector from 'i18next-browser-languagedetector';
 // import { reactI18nextModule } from 'react-i18next';
 
 import enUs from './locales/en-us.json';
@@ -42,4 +42,3 @@ i18n.addResourceBundle('en-US', 'translations', enUs, true, true);
 i18n.addResourceBundle('fr-FR', 'translations', frFR, true, true);
 
 export default i18n;
-

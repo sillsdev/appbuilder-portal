@@ -5,18 +5,14 @@ import { Dropdown } from 'semantic-ui-react';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 class ItemActions extends React.Component<i18nProps> {
-
   render() {
-
     const { t } = this.props;
 
     return (
       <Dropdown
         pointing='top right'
         icon={null}
-        trigger={
-          <MoreVerticalIcon />
-        }
+        trigger={<MoreVerticalIcon />}
         className='line-height-0'
       >
         <Dropdown.Menu>
@@ -27,9 +23,6 @@ class ItemActions extends React.Component<i18nProps> {
       </Dropdown>
     );
   }
-
 }
 
-export default compose(
-  withTranslations
-)(ItemActions);
+export default compose(withTranslations)(ItemActions);

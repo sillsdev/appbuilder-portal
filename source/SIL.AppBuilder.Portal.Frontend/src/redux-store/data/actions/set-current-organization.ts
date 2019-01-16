@@ -9,13 +9,11 @@ export interface SetCurrentOrganizationAction {
 // Action Creator
 export const setCurrentOrganization = (id: string): SetCurrentOrganizationAction => ({
   type: SET_CURRENT_ORGANIZATION,
-  id
+  id,
 });
 
 // Reducer
 export const reducer = (state: State, action: SetCurrentOrganizationAction) => ({
   ...state,
-  currentOrganizationId: action.id
+  currentOrganizationId: action.id,
 });
-
-

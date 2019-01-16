@@ -4,13 +4,13 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import * as moment from 'moment';
 
 import { OrganizationResource, idFromRecordIdentity } from '@data';
+
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { IFilter, IFilterProps } from '@data/containers/api/with-filtering';
 import {
   withCurrentOrganization,
-  IProvidedProps as ICurrentOrgProps
+  IProvidedProps as ICurrentOrgProps,
 } from '@data/containers/with-current-organization';
-
 import OrganizationSelect from '@ui/components/inputs/organization-select/display';
 import ProductDefinitionSelect from '@ui/components/inputs/product-definition-select';
 import DateRange from '@ui/components/inputs/date-range';
@@ -19,7 +19,7 @@ import 'react-day-picker/lib/style.css';
 import './filters.scss';
 
 interface IState {
-  selectedProduct : string;
+  selectedProduct: string;
   selectedOrganization: string;
   from: any;
   to: any;
@@ -29,18 +29,14 @@ interface IOwnProps {
   organizations: OrganizationResource[];
 }
 
-type IProps =
-& ICurrentOrgProps
-& IOwnProps
-& IFilterProps
-& i18nProps;
+type IProps = ICurrentOrgProps & IOwnProps & IFilterProps & i18nProps;
 
 class Filter extends React.Component<IProps, IState> {
   state = {
     selectedProduct: 'all',
     selectedOrganization: 'all',
     from: '',
-    to: ''
+    to: '',
   };
 
   handleProductChange = (value) => {
@@ -55,7 +51,7 @@ class Filter extends React.Component<IProps, IState> {
     }
 
     this.setState({ selectedProduct: value });
-  }
+  };
 
   handleOrganizationChange = (value) => {
     const { updateFilter, removeFilter } = this.props;
@@ -71,7 +67,7 @@ class Filter extends React.Component<IProps, IState> {
     updateFilter({ attribute: 'organization-id', value: id });
 
     this.setState({ selectedOrganization: value });
-  }
+  };
 
   handleToChange = (to?: Date) => {
     const { updateFilter, removeFilter } = this.props;
@@ -81,12 +77,15 @@ class Filter extends React.Component<IProps, IState> {
       return this.setState({ to: undefined });
     }
 
-    const endOfDay = moment(to).endOf('day').utc().format();
+    const endOfDay = moment(to)
+      .endOf('day')
+      .utc()
+      .format();
 
     updateFilter({ attribute: 'project-updated-date', key: 'lt', value: `le:${endOfDay}` });
 
     this.setState({ to });
-  }
+  };
 
   handleFromChange = (from?: Date) => {
     const { updateFilter, removeFilter } = this.props;
@@ -96,17 +95,19 @@ class Filter extends React.Component<IProps, IState> {
       return this.setState({ from: undefined });
     }
 
-    const beginningOfDay = moment(from).startOf('day').utc().format();
+    const beginningOfDay = moment(from)
+      .startOf('day')
+      .utc()
+      .format();
 
     updateFilter({ attribute: 'project-updated-date', key: 'gt', value: `ge:${beginningOfDay}` });
 
-    this.setState({from});
-  }
+    this.setState({ from });
+  };
 
   render() {
     const { organizations, t } = this.props;
     const { from, to, selectedProduct, selectedOrganization } = this.state;
-
 
     return (
       <div className='flex-column-xs align-items-end justify-content-space-around flex-row-xl filters'>
@@ -128,10 +129,12 @@ class Filter extends React.Component<IProps, IState> {
           </div>
         </div>
 
-        <div className='
+        <div
+          className='
           flex justify-content-center
           w-100-xs w-50-xl p-l-md p-r-md m-t-lg-xs m-t-none-xl
-        '>
+        '
+        >
           <DateRange
             label={t('directory.filters.dateRange')}
             to={to}
@@ -147,6 +150,5 @@ class Filter extends React.Component<IProps, IState> {
 
 export default compose(
   withTranslations,
-  withCurrentOrganization,
+  withCurrentOrganization
 )(Filter);
-

@@ -1,9 +1,11 @@
 import { getToken } from './auth0';
 import { getCurrentOrganizationId } from './current-organization';
+
 import { isTesting } from '@env';
 
 export const tryParseJson = async (response) => {
   const text = await response.text();
+
   try {
     const json = JSON.parse(text);
 
@@ -29,7 +31,7 @@ export function put(url: string, options: any = {}) {
   return authenticatedFetch(url, {
     method: 'PUT',
     body: JSON.stringify(data),
-    ...restOptions
+    ...restOptions,
   });
 }
 
@@ -39,7 +41,7 @@ export function post(url: string, options: any = {}) {
   return authenticatedFetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
-    ...restOptions
+    ...restOptions,
   });
 }
 
@@ -49,7 +51,7 @@ export function patch(url: string, options: any = {}) {
   return authenticatedFetch(url, {
     method: 'PATCH',
     body: JSON.stringify(data),
-    ...restOptions
+    ...restOptions,
   });
 }
 
@@ -62,13 +64,12 @@ export function authenticatedFetch(url: string, options: any) {
     ...options,
     headers: {
       ...defaultHeaders(),
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 }
 
 export default authenticatedFetch;
-
 
 export function defaultHeaders() {
   const token = getToken();
@@ -79,4 +80,3 @@ export function defaultHeaders() {
     ['Organization']: `${orgId}`,
   };
 }
-

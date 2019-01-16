@@ -2,14 +2,10 @@ import { when } from '@bigtest/convergence';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-import scenarios, { threeOrgs, lotsOfOrgs, oneOrg} from './scenarios';
-
-import {
-  setupApplicationTest,
-  setupRequestInterceptor,
-} from 'tests/helpers/index';
-
+import { setupApplicationTest, setupRequestInterceptor } from 'tests/helpers/index';
 import app from 'tests/helpers/pages/app';
+
+import scenarios, { threeOrgs, lotsOfOrgs, oneOrg } from './scenarios';
 import switcher from './page';
 
 async function visitRootPageAndOpenSidebar() {
@@ -17,7 +13,7 @@ async function visitRootPageAndOpenSidebar() {
   await when(() => expect(location().pathname).to.eq('/'));
 
   await app.openSidebar();
-  await when( () => expect(app.isSidebarVisible).to.be.true);
+  await when(() => expect(app.isSidebarVisible).to.be.true);
 }
 
 async function makeOrgSwitcherVisible() {
@@ -32,7 +28,7 @@ describe('Acceptance | Organization Switcher', () => {
   describe('The Current user is a member of a single organization', () => {
     scenarios.userIsInOneOrganization();
 
-    beforeEach( async () => {
+    beforeEach(async () => {
       await visitRootPageAndOpenSidebar();
     });
 
@@ -55,7 +51,7 @@ describe('Acceptance | Organization Switcher', () => {
 
     beforeEach(function() {
       this.mockGet(200, '/organizations', {
-        data: [...threeOrgs]
+        data: [...threeOrgs],
       });
     });
 
@@ -69,7 +65,7 @@ describe('Acceptance | Organization Switcher', () => {
 
     it('renders each organization by name', () => {
       const nodes = switcher.orgNames;
-      const text = nodes.map(t => t.innerText).join();
+      const text = nodes.map((t) => t.innerText).join();
 
       expect(text).to.include('SIL International');
       expect(text).to.include('DeveloperTown');
@@ -98,7 +94,7 @@ describe('Acceptance | Organization Switcher', () => {
 
     beforeEach(function() {
       this.mockGet(200, '/organizations', {
-        data: [...lotsOfOrgs]
+        data: [...lotsOfOrgs],
       });
     });
 

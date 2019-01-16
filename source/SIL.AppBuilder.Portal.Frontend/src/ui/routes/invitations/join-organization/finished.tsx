@@ -5,9 +5,11 @@ import { requireAuth } from '@lib/auth';
 import { pathName as tasksPath } from '@ui/routes/tasks';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 import { PageLoader } from '@ui/components/loaders';
+
 import { isRelatedTo } from '@data';
 
-export const pathName = '/invitations/organization-membership/:token/finished/:organizationMembershipId';
+export const pathName =
+  '/invitations/organization-membership/:token/finished/:organizationMembershipId';
 
 interface Params {
   organizationMembershipId: string;
@@ -29,32 +31,40 @@ class JoinOrganizationFinishedRoute extends React.Component<IProps, IState> {
   };
 
   updateUserFromCache = async () => {
-    const { currentUserProps: { fetchCurrentUser }} = this.props;
-    await fetchCurrentUser({forceReloadFromServer: true});
-  }
+    const {
+      currentUserProps: { fetchCurrentUser },
+    } = this.props;
+    await fetchCurrentUser({ forceReloadFromServer: true });
+  };
 
-  componentDidMount(){
+  componentDidMount() {
     const { currentUser } = this.props;
-    if (isRelatedTo(currentUser, "organizationMemberships", this.props.match.params.organizationMembershipId)){
+
+    if (
+      isRelatedTo(
+        currentUser,
+        'organizationMemberships',
+        this.props.match.params.organizationMembershipId
+      )
+    ) {
       this.setState({ isLoading: false });
-    }
-    else{
+    } else {
       this.updateUserFromCache();
     }
   }
 
   render() {
     const { isLoading } = this.state;
-    if (isLoading){
+
+    if (isLoading) {
       return <PageLoader />;
-    }
-    else{
-      return <Redirect push={true} to={tasksPath}/>;
+    } else {
+      return <Redirect push={true} to={tasksPath} />;
     }
   }
 }
 
 export default compose(
   withCurrentUserContext,
-  requireAuth({redirectOnMissingMemberships: false}),
+  requireAuth({ redirectOnMissingMemberships: false })
 )(JoinOrganizationFinishedRoute);

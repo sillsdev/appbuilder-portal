@@ -12,4 +12,7 @@ export interface WorkflowDefinitionAttributes extends AttributesObject {
   workflowBusinessFlow?: string;
 }
 
-export type WorkflowDefinitionResource = ResourceObject<WORKFLOW_DEFINITIONS_TYPE, WorkflowDefinitionAttributes>;
+export type WorkflowDefinitionResource = ResourceObject<
+  WORKFLOW_DEFINITIONS_TYPE,
+  WorkflowDefinitionAttributes
+>;

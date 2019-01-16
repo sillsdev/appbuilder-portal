@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
-
 import { setColumnSelection as setColumnSelectionData } from '@store/data';
+
 import { possibleColumns, possibleColumnsByType, COLUMN_KEY } from './column-data';
 
 export interface IColumn {
@@ -32,16 +32,14 @@ interface IDataProps {
 }
 
 export function withTableColumns(options: IOptions) {
-
   function mapStateToProps({ data }) {
     const { tableName, defaultColumns } = options;
 
-    const selectedColumns = data
-      && data.columnSelections
-      && data.columnSelections[tableName] || defaultColumns;
+    const selectedColumns =
+      (data && data.columnSelections && data.columnSelections[tableName]) || defaultColumns;
 
     return {
-      selectedColumns
+      selectedColumns,
     };
   }
 
@@ -49,26 +47,25 @@ export function withTableColumns(options: IOptions) {
     const { tableName } = options;
 
     return {
-      setColumnSelection: (column) => dispatch(setColumnSelectionData(tableName, column))
+      setColumnSelection: (column) => dispatch(setColumnSelectionData(tableName, column)),
     };
   }
 
-  return InnerComponent => {
+  return (InnerComponent) => {
     class WrapperComponent extends React.Component<IProvidedProps & IDataProps> {
-
       toggleColumnSelection = (column) => {
         const { setColumnSelection, selectedColumns } = this.props;
 
         let newSelection;
 
         if (selectedColumns.includes(column)) {
-          newSelection = selectedColumns.filter(c => c !== column);
+          newSelection = selectedColumns.filter((c) => c !== column);
         } else {
           newSelection = [...selectedColumns, column];
         }
 
         setColumnSelection(newSelection);
-      }
+      };
 
       activeProjectColumns = () => {
         const { selectedColumns } = this.props;
@@ -85,7 +82,7 @@ export function withTableColumns(options: IOptions) {
         }, []);
 
         return active;
-      }
+      };
 
       activeProductColumns = () => {
         const { selectedColumns } = this.props;
@@ -102,7 +99,7 @@ export function withTableColumns(options: IOptions) {
         }, []);
 
         return active;
-      }
+      };
 
       render() {
         const innerProps = {
@@ -110,17 +107,18 @@ export function withTableColumns(options: IOptions) {
           possibleColumns,
           toggleColumnSelection: this.toggleColumnSelection,
           activeProjectColumns: this.activeProjectColumns(),
-          activeProductColumns: this.activeProductColumns()
+          activeProductColumns: this.activeProductColumns(),
         };
 
         return <InnerComponent {...innerProps} />;
       }
-
     }
 
     return compose(
-      connect(mapStateToProps, mapDispatchToProps)
+      connect(
+        mapStateToProps,
+        mapDispatchToProps
+      )
     )(WrapperComponent);
   };
-
 }

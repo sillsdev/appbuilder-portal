@@ -2,7 +2,9 @@ import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 
 import { attributesFor } from '@data';
+
 import { i18nProps } from '@lib/i18n';
+
 import { IProvidedProps as IDataProps } from './with-data';
 
 interface IOwnProps {
@@ -11,10 +13,7 @@ interface IOwnProps {
   disableSelection?: boolean;
 }
 
-type IProps =
-& IOwnProps
-& i18nProps
-& IDataProps;
+type IProps = IOwnProps & i18nProps & IDataProps;
 
 export default class GroupSelectDisplay extends React.Component<IProps> {
   componentDidMount() {
@@ -33,26 +32,28 @@ export default class GroupSelectDisplay extends React.Component<IProps> {
 
       onChange(firstId);
     }
-  }
+  };
 
   onSelect = (e, { value }) => {
     e.preventDefault();
 
     const { onChange, selected } = this.props;
 
-    if (value === selected) { return; }
+    if (value === selected) {
+      return;
+    }
 
     onChange(value);
-  }
+  };
 
   render() {
     const { groups, selected, disableSelection, t } = this.props;
 
     const groupOptions = groups
-      .filter(group => attributesFor(group).name)
-      .map(group => ({
+      .filter((group) => attributesFor(group).name)
+      .map((group) => ({
         text: attributesFor(group).name,
-        value: group.id
+        value: group.id,
       }));
 
     if (groupOptions.length === 0) {

@@ -1,10 +1,8 @@
-import {
-  interactor, isPresent, attribute
-} from '@bigtest/interactor';
+import { interactor, isPresent, attribute } from '@bigtest/interactor';
 
 @interactor
 export class UserInteractor {
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   isNamePresent = isPresent('[data-test-show-profile-name]');
   isEmailPresent = isPresent('[data-test-show-profile-email]');

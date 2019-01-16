@@ -1,20 +1,23 @@
 import { Bucket } from '@orbit/core';
 import Orbit, { Source } from '@orbit/data';
 import Store from '@orbit/store';
-
 import LocalStorageBucket from '@orbit/local-storage-bucket';
 import IndexedDBBucket, { supportsIndexedDB } from '@orbit/indexeddb-bucket';
-import Coordinator, { SyncStrategy, RequestStrategy, EventLoggingStrategy } from '@orbit/coordinator';
+import Coordinator, {
+  SyncStrategy,
+  RequestStrategy,
+  EventLoggingStrategy,
+} from '@orbit/coordinator';
 import JSONAPISource, { JSONAPISerializer } from '@orbit/jsonapi';
 import IndexedDBSource from '@orbit/indexeddb';
 
-
 import { api as apiEnv, app as appEnv } from '@env';
 
-import { schema, keyMap } from './schema';
 import authedFetch, { defaultHeaders } from '@lib/fetch';
 
-const BucketClass = (supportsIndexedDB ? IndexedDBBucket : LocalStorageBucket);
+import { schema, keyMap } from './schema';
+
+const BucketClass = supportsIndexedDB ? IndexedDBBucket : LocalStorageBucket;
 
 class CustomJSONAPISerializer extends JSONAPISerializer {
   // remoteId is used to track the difference between local ids and the
@@ -26,7 +29,9 @@ class CustomJSONAPISerializer extends JSONAPISerializer {
   // received from the server
   //
   // remoteIds will be set when the JSONAPISource receives records
-  resourceKey(type: string) { return 'remoteId'; }
+  resourceKey(type: string) {
+    return 'remoteId';
+  }
 }
 
 export const serializer = new JSONAPISerializer({ schema, keyMap });
@@ -42,18 +47,18 @@ export function defaultOptions() {
     sources: {
       remote: {
         settings: {
-          ...defaultSourceOptions()
-        }
-      }
-    }
+          ...defaultSourceOptions(),
+        },
+      },
+    },
   };
 }
 
 export function defaultSourceOptions() {
   return {
     headers: {
-      ...defaultHeaders()
-    }
+      ...defaultHeaders(),
+    },
   };
 }
 
@@ -63,9 +68,8 @@ export async function createStore() {
     // bucket,
     keyMap,
     schema,
-    name: 'inMemory'
+    name: 'inMemory',
   });
-
 
   const baseUrl = apiEnv.host ? `http://${apiEnv.host}/api` : '/api';
 
@@ -82,8 +86,8 @@ export async function createStore() {
         Authorization: 'Bearer not set',
         // Do not have a default Organization header here.
         // The Project directory needs this header to not be present
-      }
-    }
+      },
+    },
   });
 
   // For later when we want to persist between refreshes
@@ -101,71 +105,75 @@ export async function createStore() {
     sources: [
       // backup,
       inMemory,
-      remote
-    ]
+      remote,
+    ],
   });
 
   // TODO: when there is a network error:
   // https://github.com/dgeb/test-ember-orbit/blob/master/app/data-strategies/remote-push-fail.js
 
-
   // Pull query results from the server
-  this.coordinator.addStrategy(new RequestStrategy({
-    name: 'inMemory-remote-query-pessimistic',
-    source: 'inMemory',
-    on: 'beforeQuery',
-    target: 'remote',
-    action: 'pull',
-    blocking: true,
+  this.coordinator.addStrategy(
+    new RequestStrategy({
+      name: 'inMemory-remote-query-pessimistic',
+      source: 'inMemory',
+      on: 'beforeQuery',
+      target: 'remote',
+      action: 'pull',
+      blocking: true,
 
-    filter(query) {
-      const options = ((query || {}).options || {});
-      const keep = !(options.devOnly || options.skipRemote);
+      filter(query) {
+        const options = (query || {}).options || {};
+        const keep = !(options.devOnly || options.skipRemote);
 
-      return keep;
-    },
+        return keep;
+      },
 
-    catch(e) {
-      console.error('Could not pull from remote', e);
-      this.target.requestQueue.skip();
-      this.source.requestQueue.skip();
+      catch(e) {
+        console.error('Could not pull from remote', e);
+        this.target.requestQueue.skip();
+        this.source.requestQueue.skip();
 
-      throw e;
-    }
-  }));
+        throw e;
+      },
+    })
+  );
 
   // Push updates to the server
-  this.coordinator.addStrategy(new RequestStrategy({
-    name: 'inMemory-remote-update-pessimistic',
-    source: 'inMemory',
-    on: 'beforeUpdate',
-    target: 'remote',
-    action: 'push',
-    blocking: true,
+  this.coordinator.addStrategy(
+    new RequestStrategy({
+      name: 'inMemory-remote-update-pessimistic',
+      source: 'inMemory',
+      on: 'beforeUpdate',
+      target: 'remote',
+      action: 'push',
+      blocking: true,
 
-    filter(query) {
-      const options = ((query || {}).options || {});
-      const keep = !(options.devOnly || options.skipRemote);
+      filter(query) {
+        const options = (query || {}).options || {};
+        const keep = !(options.devOnly || options.skipRemote);
 
-      return keep;
-    },
+        return keep;
+      },
 
-    catch(e) {
-      console.error('Could not push to remote', e);
-      this.target.requestQueue.skip();
-      this.source.requestQueue.skip();
+      catch(e) {
+        console.error('Could not push to remote', e);
+        this.target.requestQueue.skip();
+        this.source.requestQueue.skip();
 
-      throw e;
-    }
-  }));
-
+        throw e;
+      },
+    })
+  );
 
   // sync all remote changes with the inMemory store
-  this.coordinator.addStrategy(new SyncStrategy({
-    source: 'remote',
-    target: 'inMemory',
-    blocking: true
-  }));
+  this.coordinator.addStrategy(
+    new SyncStrategy({
+      source: 'remote',
+      target: 'inMemory',
+      blocking: true,
+    })
+  );
 
   // this.coordinator.addStrategy(new SyncStrategy({
   //   source: 'inMemory',
@@ -177,7 +185,6 @@ export async function createStore() {
   //   sources: ['remote', 'inMemory']
   //   // sources: ['inMemory']
   // }));
-
 
   // // If there is data already stored locally, throw it in memory
   // backup.pull(q => q.findRecords())

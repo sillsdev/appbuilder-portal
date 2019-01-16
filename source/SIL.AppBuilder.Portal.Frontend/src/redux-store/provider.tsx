@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, Store, compose } from 'redux';
-
 import { setCurrentOrganizationId } from '@lib/current-organization';
-
 
 import { reducers } from './reducers';
 import { middleware, setup as setupMiddleware } from './middleware';
@@ -34,7 +32,7 @@ export default class ReduxProvider extends React.Component<IProps> {
 
     const state = {
       ...(initialState || {}),
-      ...persistedState
+      ...persistedState,
     };
 
     const store = createStore(
@@ -59,9 +57,9 @@ export default class ReduxProvider extends React.Component<IProps> {
         data: {
           currentOrganizationId,
           columnSelections,
-          rowSelections: {}
+          rowSelections: {},
         },
-        ui: currentState.ui
+        ui: currentState.ui,
       };
 
       // NOTE: that for non-react/redux things (jquery, fetch, etc),
@@ -83,12 +81,10 @@ export default class ReduxProvider extends React.Component<IProps> {
     const { children } = this.props;
 
     const isFunction = typeof children === 'function';
+
     return (
       <Provider store={this.store}>
-        {isFunction
-          ? children({ store: this.store })
-          : children
-        }
+        {isFunction ? children({ store: this.store }) : children}
       </Provider>
     );
   }

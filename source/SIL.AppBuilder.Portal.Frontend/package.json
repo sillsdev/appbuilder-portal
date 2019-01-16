@@ -134,7 +134,7 @@
     "eslint-config-typescript": "^1.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-prettier": "^3.0.1",
-    "eslint-plugin-react": "yannickcr/eslint-plugin-react",
+    "eslint-plugin-react": "^7.12.3",
     "eslint-plugin-typescript": "0.14.0",
     "express": "^4.16.3",
     "file-loader": "^2.0.0",

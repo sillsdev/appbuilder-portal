@@ -2,22 +2,19 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Checkbox, Dropdown } from 'semantic-ui-react';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
-
 import * as toast from '@lib/toast';
-
 import { OrganizationAttributes } from '@data/models/organization';
+
 import {
   query,
   buildOptions,
   withLoader,
   attributesFor,
   UserResource,
-  OrganizationResource
+  OrganizationResource,
 } from '@data';
-
 
 interface IOwnProps {
   organization: OrganizationResource;
@@ -38,10 +35,7 @@ interface IState {
   publicByDefault?: boolean;
 }
 
-type IProps =
-  & i18nProps
-  & IOwnProps;
-
+type IProps = i18nProps & IOwnProps;
 
 @withTemplateHelpers
 class OrganizationForm extends React.Component<IProps, IState> {
@@ -54,9 +48,12 @@ class OrganizationForm extends React.Component<IProps, IState> {
     const { organization, owner } = props;
 
     const {
-      name, websiteUrl, logoUrl,
-      buildEngineUrl, buildEngineApiAccessToken,
-      publicByDefault
+      name,
+      websiteUrl,
+      logoUrl,
+      buildEngineUrl,
+      buildEngineApiAccessToken,
+      publicByDefault,
     } = attributesFor(organization);
 
     this.state = {
@@ -67,9 +64,8 @@ class OrganizationForm extends React.Component<IProps, IState> {
       logoUrl: logoUrl || '',
       publicByDefault: publicByDefault !== undefined ? publicByDefault : true,
       owner: owner || null,
-      ownerError: ''
+      ownerError: '',
     };
-
   }
 
   isValidForm = () => {
@@ -77,59 +73,70 @@ class OrganizationForm extends React.Component<IProps, IState> {
     const { t } = this.props;
 
     const ownerError = isEmpty(owner) ? t('admin.settings.organizations.emptyOwner') : '';
-    this.setState({ownerError});
+    this.setState({ ownerError });
 
     return !isEmpty(owner);
-  }
+  };
 
   submit = async (e) => {
     e.preventDefault();
 
     const { onSubmit } = this.props;
     const {
-      name, websiteUrl, buildEngineUrl,
-      buildEngineApiAccessToken, logoUrl,
-      publicByDefault, owner
+      name,
+      websiteUrl,
+      buildEngineUrl,
+      buildEngineApiAccessToken,
+      logoUrl,
+      publicByDefault,
+      owner,
     } = this.state;
 
     if (this.isValidForm()) {
       try {
-        await onSubmit({
-          name,
-          websiteUrl,
-          buildEngineUrl,
-          buildEngineApiAccessToken,
-          logoUrl,
-          publicByDefault
-        },{
-          owner
-        });
-      } catch(e) {
+        await onSubmit(
+          {
+            name,
+            websiteUrl,
+            buildEngineUrl,
+            buildEngineApiAccessToken,
+            logoUrl,
+            publicByDefault,
+          },
+          {
+            owner,
+          }
+        );
+      } catch (e) {
         toast.error(e);
       }
     }
-  }
+  };
 
   cancel = (e) => {
     e.preventDefault();
     const { onCancel } = this.props;
     onCancel();
-  }
+  };
 
-  ownerSelection = user => e => {
+  ownerSelection = (user) => (e) => {
     this.setState({
-      owner: user
+      owner: user,
     });
-  }
+  };
 
   render() {
     const { mut, toggle } = this;
 
     const {
-      name, websiteUrl, buildEngineUrl,
+      name,
+      websiteUrl,
+      buildEngineUrl,
       buildEngineApiAccessToken,
-      logoUrl, publicByDefault,
-      owner, ownerError
+      logoUrl,
+      publicByDefault,
+      owner,
+      ownerError,
     } = this.state;
 
     const { t, users, organization } = this.props;
@@ -139,23 +146,15 @@ class OrganizationForm extends React.Component<IProps, IState> {
     return (
       <>
         <h2>
-          {
-            t(organization ?
-              'admin.settings.organizations.edit' :
-              'admin.settings.organizations.add'
-            )
-          }
+          {t(
+            organization ? 'admin.settings.organizations.edit' : 'admin.settings.organizations.add'
+          )}
         </h2>
         <div className='flex w-60'>
           <form data-test-form className='ui form flex-grow'>
-
             <div className='field m-b-xl'>
               <label>{t('admin.settings.organizations.name')}</label>
-              <input
-                data-test-org-name
-                type='text'
-                value={name || ''}
-                onChange={mut('name')} />
+              <input data-test-org-name type='text' value={name || ''} onChange={mut('name')} />
             </div>
 
             <div className='field m-b-xl'>
@@ -167,19 +166,18 @@ class OrganizationForm extends React.Component<IProps, IState> {
                   text={ownerName}
                 >
                   <Dropdown.Menu>
-                    {
-                      users.map((u, i) => {
-                        const { name: fullName } = attributesFor(u);
-                        return <Dropdown.Item key={i} text={fullName} onClick={this.ownerSelection(u)} />;
-                      })
-                    }
-                  </Dropdown.Menu>
+                    {users.map((u, i) => {
+                      const { name: fullName } = attributesFor(u);
 
+                      return (
+                        <Dropdown.Item key={i} text={fullName} onClick={this.ownerSelection(u)} />
+                      );
+                    })}
+                  </Dropdown.Menu>
                 </Dropdown>
               </div>
               <div className='error'>{ownerError}</div>
             </div>
-
 
             <div className='field m-b-xl'>
               <label>{t('admin.settings.organizations.websiteURL')}</label>
@@ -187,7 +185,8 @@ class OrganizationForm extends React.Component<IProps, IState> {
                 data-test-org-url
                 type='text'
                 value={websiteUrl || ''}
-                onChange={mut('websiteUrl')} />
+                onChange={mut('websiteUrl')}
+              />
             </div>
 
             <div className='field m-b-xl'>
@@ -222,9 +221,7 @@ class OrganizationForm extends React.Component<IProps, IState> {
             <div className='flex m-b-xl'>
               <div className='flex-row align-items-center'>
                 <div className='p-r-lg'>
-                  <h3>
-                    {t('admin.settings.organizations.publicByDefault')}
-                  </h3>
+                  <h3>{t('admin.settings.organizations.publicByDefault')}</h3>
                   <p className='input-info'>
                     {t('admin.settings.organizations.publicByDefaultDescription')}
                   </p>
@@ -245,20 +242,21 @@ class OrganizationForm extends React.Component<IProps, IState> {
               <button
                 data-test-submit
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-                onClick={this.submit}>
-                {organization ?
-                  t('admin.settings.organizations.edit') :
-                  t('admin.settings.organizations.add')}
+                onClick={this.submit}
+              >
+                {organization
+                  ? t('admin.settings.organizations.edit')
+                  : t('admin.settings.organizations.add')}
               </button>
 
               <button
                 data-test-cancel
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-                onClick={this.cancel}>
+                onClick={this.cancel}
+              >
                 {t('common.cancel')}
               </button>
             </div>
-
           </form>
         </div>
       </>
@@ -269,9 +267,7 @@ class OrganizationForm extends React.Component<IProps, IState> {
 export default compose(
   withTranslations,
   query(() => ({
-    users: [
-      q => q.findRecords('user'), buildOptions()
-    ],
+    users: [(q) => q.findRecords('user'), buildOptions()],
   })),
   withLoader(({ users }) => !users)
 )(OrganizationForm);

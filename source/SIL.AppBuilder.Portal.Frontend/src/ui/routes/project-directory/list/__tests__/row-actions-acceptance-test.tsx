@@ -2,13 +2,11 @@ import { when } from '@bigtest/convergence';
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,
-  useFakeAuthentication
+  useFakeAuthentication,
 } from 'tests/helpers/index';
-
 import ProjectTableInteractor from '@ui/components/project-table/__tests__/page';
 const page = new ProjectTableInteractor();
 
@@ -17,33 +15,34 @@ describe('Acceptance | Project Directory | Row Actions', () => {
   setupRequestInterceptor();
   useFakeAuthentication();
 
-  beforeEach(function () {
+  beforeEach(function() {
     this.mockGet(200, 'product-definitions', { data: [] });
     this.mockGet(200, 'projects', {
-      data: [{
-        type: 'projects',
-        id: '1',
-        attributes: {
-          'name': 'Dummy project',
-          'date-archived': null,
-          'language': 'English'
+      data: [
+        {
+          type: 'projects',
+          id: '1',
+          attributes: {
+            name: 'Dummy project',
+            'date-archived': null,
+            language: 'English',
+          },
+          relationships: {
+            organization: { data: { id: 1, type: 'organizations' } },
+            group: { data: { id: 1, type: 'groups' } },
+            owner: { data: { id: 1, type: 'users' } },
+          },
         },
-        relationships: {
-          organization: { data: { id: 1, type: 'organizations' } },
-          group: { data: { id: 1, type: 'groups' } },
-          owner: { data: { id: 1, type: 'users' } }
-        }
-      }],
+      ],
       included: [
         { type: 'organizations', id: 1, attributes: { name: 'Dummy organization' } },
-        { type: 'groups', id: 1, attributes: { name: 'Some Group' } }
-      ]
+        { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
+      ],
     });
   });
 
   describe('navigates to project directory page', () => {
-
-    beforeEach(async function () {
+    beforeEach(async function() {
       visit('/directory');
       await when(() => page.isPresent);
     });
@@ -53,12 +52,10 @@ describe('Acceptance | Project Directory | Row Actions', () => {
     });
 
     describe('Row actions', () => {
-
       it('row action is not present', () => {
         const isPresent = page.rows(1).isRowActionPresent;
         expect(isPresent).to.be.false;
       });
     });
-
   });
 });

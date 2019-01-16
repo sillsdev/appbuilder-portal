@@ -10,7 +10,4 @@ import './public/assets/images/favicon.ico';
 
 import Application from './ui/application';
 
-ReactDOM.render(
-  <Application />,
-  document.getElementById('root')
-);
+ReactDOM.render(<Application />, document.getElementById('root'));

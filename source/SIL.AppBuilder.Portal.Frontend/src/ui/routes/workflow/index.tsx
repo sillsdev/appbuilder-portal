@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router';
-
 import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
-
 import { PageLoader as Loader } from '@ui/components/loaders';
 import { ErrorBoundary } from '@ui/components/errors';
 
@@ -15,7 +13,7 @@ async function appendScriptToHead(path: string) {
   const text = await response.text();
 
   const head = document.querySelector('head');
-  const script = document.createElement('script') ;
+  const script = document.createElement('script');
 
   script.setAttribute('type', 'text/javascript');
   script.innerHTML = text;
@@ -49,14 +47,17 @@ export default compose(
   withLayout,
   withRouter
 )((props) => {
-  const { location: { pathname } } = props;
+  const {
+    location: { pathname },
+  } = props;
   const dwKitPaths = ['/form', '/flow'];
-  const isMatch = dwKitPaths
-    .filter(pathRoot => new RegExp(`^${pathRoot}`).test(pathname))
-    .length > 0;
+  const isMatch =
+    dwKitPaths.filter((pathRoot) => new RegExp(`^${pathRoot}`).test(pathname)).length > 0;
 
   if (isMatch) {
-    const LazyWorkflowApp = React.lazy(() => import(/* webpackChunkName: "workflow/app" */ './app'));
+    const LazyWorkflowApp = React.lazy(() =>
+      import(/* webpackChunkName: "workflow/app" */ './app')
+    );
 
     return (
       <React.Suspense fallback={<Loader />}>

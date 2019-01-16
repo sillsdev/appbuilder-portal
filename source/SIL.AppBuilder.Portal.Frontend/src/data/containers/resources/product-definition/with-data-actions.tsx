@@ -7,7 +7,7 @@ import {
   defaultOptions,
   ProductDefinitionResource,
   ApplicationTypeResource,
-  WorkflowDefinitionResource
+  WorkflowDefinitionResource,
 } from '@data';
 
 import { ProductDefinitionAttributes } from '@data/models/product-definition';
@@ -24,60 +24,52 @@ interface IOwnProps {
   productDefinition: ProductDefinitionResource;
 }
 
-
-type IProps =
-  & IOwnProps
-  & WithDataProps;
+type IProps = IOwnProps & WithDataProps;
 
 export function withDataActions<T>(WrappedComponent) {
-
   class ProductDefinitionDataActionWrapper extends React.Component<IProps & T> {
-
     createRecord = async (attributes: ProductDefinitionAttributes, relationships) => {
-
       const { dataStore } = this.props;
 
       await create(dataStore, 'productDefinition', {
         attributes,
-        relationships
+        relationships,
       });
-    }
+    };
 
     updateAttribute = (attribute: string, value: any) => {
       const { productDefinition, dataStore } = this.props;
       return dataStore.update(
-        q => q.replaceAttribute(productDefinition, attribute, value),
+        (q) => q.replaceAttribute(productDefinition, attribute, value),
         defaultOptions()
       );
-    }
+    };
 
     updateAttributes = (attributes: ProductDefinitionAttributes, relationships?: any) => {
       const { productDefinition, dataStore } = this.props;
       return update(dataStore, productDefinition, {
         attributes,
-        relationships
+        relationships,
       });
-    }
+    };
 
     updateType = (type) => {
-
       const { productDefinition, dataStore } = this.props;
 
-      return dataStore.update(q =>
-        q.replaceRelatedRecord(productDefinition, 'type', type),
+      return dataStore.update(
+        (q) => q.replaceRelatedRecord(productDefinition, 'type', type),
         defaultOptions()
       );
-    }
+    };
 
     updateWorkflow = (workflow) => {
-
       const { productDefinition, dataStore } = this.props;
 
-      return dataStore.update(q =>
-        q.replaceRelatedRecord(productDefinition, 'workflow', workflow),
+      return dataStore.update(
+        (q) => q.replaceRelatedRecord(productDefinition, 'workflow', workflow),
         defaultOptions()
       );
-    }
+    };
 
     render() {
       const actionProps = {
@@ -85,16 +77,12 @@ export function withDataActions<T>(WrappedComponent) {
         updateAttributes: this.updateAttributes,
         updateAttribute: this.updateAttribute,
         updateType: this.updateType,
-        updateWorkflow: this.updateWorkflow
+        updateWorkflow: this.updateWorkflow,
       };
 
       return <WrappedComponent {...this.props} {...actionProps} />;
     }
-
   }
 
-  return compose(
-    withOrbit({})
-  )(ProductDefinitionDataActionWrapper);
-
+  return compose(withOrbit({}))(ProductDefinitionDataActionWrapper);
 }

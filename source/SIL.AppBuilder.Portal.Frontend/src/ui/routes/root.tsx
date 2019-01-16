@@ -2,24 +2,24 @@ import * as React from 'react';
 import { Route, Link, Switch, withRouter } from 'react-router-dom';
 import Notifications from 'react-notify-toast';
 import { ToastContainer } from 'react-toastify';
-
 import IndexRoute, { pathName as rootPath } from '@ui/routes/index';
 import LoginRoute, { pathName as loginPath } from '@ui/routes/login';
-import TasksRoute, { pathName as tasksPath} from '@ui/routes/tasks';
-import AdminRoute, { pathName as adminPath} from '@ui/routes/admin';
+import TasksRoute, { pathName as tasksPath } from '@ui/routes/tasks';
+import AdminRoute, { pathName as adminPath } from '@ui/routes/admin';
 import InvitationsRoute, { pathName as invitationsPath } from '@ui/routes/invitations';
-
-import RequestOrgAccessRoute, { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-organization';
-import RequestOrgAccessSuccessRoute, { pathName as requestOrgAccessSuccessPath } from '@ui/routes/request-access-for-organization/success';
-
+import RequestOrgAccessRoute, {
+  pathName as requestOrgAccessPath,
+} from '@ui/routes/request-access-for-organization';
+import RequestOrgAccessSuccessRoute, {
+  pathName as requestOrgAccessSuccessPath,
+} from '@ui/routes/request-access-for-organization/success';
 import OrganizationsRoute, { pathName as organizationsPath } from '@ui/routes/organizations';
 import DirectoryRoute, { pathName as directoryPath } from '@ui/routes/project-directory';
-
 import ProjectsRoute, { pathName as projectsPath } from '@ui/routes/projects';
 import UsersRoute, { pathName as usersPath } from '@ui/routes/users';
 import OpenSourceRoute, { pathName as openSourcePath } from '@ui/routes/open-source';
-
 import ErrorRootRoute from '@ui/routes/errors';
+
 import Workflow from './workflow';
 
 export default class RootPage extends React.Component {

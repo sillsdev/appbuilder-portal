@@ -1,15 +1,12 @@
-
-import {
-  interactor, isPresent, isHidden, hasClass
-} from '@bigtest/interactor';
+import { interactor, isPresent, isHidden, hasClass } from '@bigtest/interactor';
 
 @interactor
 export class SidebarInteractor {
-  constructor(selector?: string) { }
+  constructor(selector?: string) {}
 
   isSidebarVisible = isPresent('.is-sidebar-visible [data-test-sidebar]');
   isCloseButtonVisible = isHidden('[data-test-sidebar-close-button]');
-  isCloseButtonVisibleInResponsive = hasClass('[data-test-sidebar-close-button]','d-lg-none');
+  isCloseButtonVisibleInResponsive = hasClass('[data-test-sidebar-close-button]', 'd-lg-none');
 }
 
 export default new SidebarInteractor();

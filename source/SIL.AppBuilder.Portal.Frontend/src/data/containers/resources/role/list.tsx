@@ -14,7 +14,7 @@ interface IOptions {
 export function withNetwork<TWrappedProps>(options: IOptions = {}) {
   const { include } = options;
 
-  return WrappedComponent => {
+  return (WrappedComponent) => {
     function mapNetworkToProps(passedProps: TWrappedProps) {
       let requestOptions = {};
 
@@ -25,15 +25,12 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       }
 
       return {
-        roles: [
-          q => q.findRecords('role'),
-          requestOptions
-        ]
+        roles: [(q) => q.findRecords('role'), requestOptions],
       };
     }
 
-    return compose(
-      query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }),
-    )(WrappedComponent);
+    return compose(query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }))(
+      WrappedComponent
+    );
   };
 }

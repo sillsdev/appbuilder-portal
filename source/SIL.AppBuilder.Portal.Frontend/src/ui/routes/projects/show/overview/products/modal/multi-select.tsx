@@ -13,11 +13,9 @@ import {
   withDataActions,
   IProvidedProps as IDataActionsProps,
 } from '@data/containers/resources/project/with-data-actions';
-
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { compareVia } from '@lib/collection';
-
 import { MultiSelect } from '@ui/components/inputs/multi-select';
 import { withRelationships } from '@data/containers/with-relationship';
 
@@ -31,7 +29,11 @@ interface IPendingUpdates {
   [itemId: string]: boolean;
 }
 
-type IProps = INeededProps & IDataActionsProps & i18nProps;
+interface IComposedProps {
+  list: ProductDefinitionResource[];
+}
+
+type IProps = INeededProps & IDataActionsProps & i18nProps & IComposedProps;
 
 export default compose<IProps, INeededProps>(
   withTranslations,
@@ -42,12 +44,12 @@ export default compose<IProps, INeededProps>(
     };
   }),
   withLoader(({ list }) => !list),
-  withProps(({ t, list }: i18nProps & { list: ProductDefinitionResource[] }) => {
+  withProps(({ t, list }: IProps) => {
     return {
       selectedItemJoinsWith: 'productDefinition',
       emptyListLabel: t('project.products.popup.empty'),
       displayProductIcon: true,
-      list: list.sort(compareVia(pd => attributesFor(pd).name)),
+      list: list.sort(compareVia((pd) => attributesFor(pd).name)),
     };
   })
 )(
@@ -66,7 +68,7 @@ export default compose<IProps, INeededProps>(
         }
         delete this.pendingUpdates[item.id];
       }
-    }
+    };
 
     render() {
       return <MultiSelect {...this.props} onChange={this.onSelectionChange} />;

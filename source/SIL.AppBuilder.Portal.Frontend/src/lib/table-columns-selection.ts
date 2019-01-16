@@ -7,24 +7,27 @@ const storageKey = 'table-columns-selection';
 // ]
 const getSelections = () => {
   const raw = localStorage.getItem(storageKey);
+
   try {
     return JSON.parse(raw) || [];
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
+
   return [];
 };
 
 const setSelections = (selections) => {
-  localStorage.setItem(storageKey,JSON.stringify(selections));
+  localStorage.setItem(storageKey, JSON.stringify(selections));
 };
 
-export function getTableColumnsSelection(key:string): string {
+export function getTableColumnsSelection(key: string): string {
   const tableColumnsSelections = getSelections();
+
   return tableColumnsSelections[key] || '';
 }
 
-export function setTableColumnsSelection(key:string, selection:string) {
+export function setTableColumnsSelection(key: string, selection: string) {
   const selections = getSelections();
   selections[key] = selection;
   setSelections(selections);

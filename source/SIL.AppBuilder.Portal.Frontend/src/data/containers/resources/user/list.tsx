@@ -1,6 +1,7 @@
 import { compose } from 'recompose';
 
 import { query, buildOptions, UserResource } from '@data';
+
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';
 import { IPaginateProps } from '@data/containers/api/pagination';
 import { ISortProps } from '@data/containers/api/sorting';
@@ -16,50 +17,61 @@ interface IOptions {
   include?: string;
 }
 
-type IProps =
-& IFilterProps
-& IPaginateProps
-& IOrgProps
-& ISortProps;
+type IProps = IFilterProps & IPaginateProps & IOrgProps & ISortProps;
 
 export function withNetwork<TWrappedProps>(options: IOptions = {}) {
   const { include } = options;
 
-  return WrappedComponent => {
+  return (WrappedComponent) => {
     function mapNetworkToProps(passedProps: TWrappedProps & IProps) {
       const {
-        applyPagination, currentPageOffset, currentPageSize,
-        applyFilter, filters, sortProperty, currentOrganizationId,
+        applyPagination,
+        currentPageOffset,
+        currentPageSize,
+        applyFilter,
+        filters,
+        sortProperty,
+        currentOrganizationId,
         applySort,
       } = passedProps;
 
       const requestOptions = buildOptions({
-        include: [include]
+        include: [include],
       });
 
       return {
         cacheKey: [
           currentOrganizationId,
-          sortProperty, filters,
-          currentPageOffset, currentPageSize
+          sortProperty,
+          filters,
+          currentPageOffset,
+          currentPageSize,
         ],
         users: [
-          q => {
+          (q) => {
             let builder = q.findRecords('user');
 
-            if (applyFilter) { builder = applyFilter(builder); }
-            if (applyPagination) { builder = applyPagination(builder); }
-            if (applySort) { builder = applySort(builder); }
+            if (applyFilter) {
+              builder = applyFilter(builder);
+            }
+
+            if (applyPagination) {
+              builder = applyPagination(builder);
+            }
+
+            if (applySort) {
+              builder = applySort(builder);
+            }
 
             return builder;
           },
-          requestOptions
-        ]
+          requestOptions,
+        ],
       };
     }
 
-    return compose(
-      query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }),
-    )(WrappedComponent);
+    return compose(query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }))(
+      WrappedComponent
+    );
   };
 }

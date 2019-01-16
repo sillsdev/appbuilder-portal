@@ -2,22 +2,19 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { Checkbox, Dropdown } from 'semantic-ui-react';
 import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
-
 import * as toast from '@lib/toast';
-
 import { WorkflowDefinitionAttributes } from '@data/models/workflow-definition';
+
 import {
   query,
   buildOptions,
   withLoader,
   attributesFor,
   StoreTypeResource,
-  WorkflowDefinitionResource
+  WorkflowDefinitionResource,
 } from '@data';
-
 
 interface IOwnProps {
   workflowDefinition: WorkflowDefinitionResource;
@@ -37,10 +34,7 @@ interface IState {
   enabled?: boolean;
 }
 
-type IProps =
-  & i18nProps
-  & IOwnProps;
-
+type IProps = i18nProps & IOwnProps;
 
 @withTemplateHelpers
 class WorkflowDefinitionForm extends React.Component<IProps, IState> {
@@ -52,13 +46,9 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
 
     const { workflowDefinition, storeType } = props;
 
-
-    const {
-      name, description,
-      workflowScheme, workflowBusinessFlow,
-      enabled
-    } = attributesFor(workflowDefinition);
-
+    const { name, description, workflowScheme, workflowBusinessFlow, enabled } = attributesFor(
+      workflowDefinition
+    );
 
     this.state = {
       name: name || '',
@@ -67,63 +57,74 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       workflowBusinessFlow: workflowBusinessFlow || '',
       enabled: enabled !== undefined ? enabled : true,
       storeType: storeType || null,
-      storeTypeError: ''
+      storeTypeError: '',
     };
   }
 
   isValidForm = () => {
     const { storeType } = this.state;
     const { t } = this.props;
-    const storeTypeError = isEmpty(storeType) ? t('admin.settings.workflowDefinitions.emptyStoreType') : '';
-    this.setState({storeTypeError});
+    const storeTypeError = isEmpty(storeType)
+      ? t('admin.settings.workflowDefinitions.emptyStoreType')
+      : '';
+    this.setState({ storeTypeError });
     return !isEmpty(storeType);
-  }
+  };
 
   submit = async (e) => {
     e.preventDefault();
 
     const { onSubmit } = this.props;
     const {
-      name, description, workflowScheme,
+      name,
+      description,
+      workflowScheme,
       workflowBusinessFlow,
-      enabled, storeType
+      enabled,
+      storeType,
     } = this.state;
 
     if (this.isValidForm()) {
       try {
-        await onSubmit({
-          name,
-          description,
-          workflowScheme,
-          workflowBusinessFlow,
-          enabled
-        },{
-          storeType
-        });
-      } catch(e) {
+        await onSubmit(
+          {
+            name,
+            description,
+            workflowScheme,
+            workflowBusinessFlow,
+            enabled,
+          },
+          {
+            storeType,
+          }
+        );
+      } catch (e) {
         toast.error(e);
       }
     }
-  }
+  };
 
   cancel = (e) => {
     e.preventDefault();
     const { onCancel } = this.props;
     onCancel();
-  }
+  };
 
-  storeTypeSelection = storeType => e => {
+  storeTypeSelection = (storeType) => (e) => {
     this.setState({ storeType });
-  }
+  };
 
   render() {
     const { mut, toggle } = this;
 
     const {
-      name, description, workflowScheme,
+      name,
+      description,
+      workflowScheme,
       workflowBusinessFlow,
       enabled,
-      storeType, storeTypeError
+      storeType,
+      storeTypeError,
     } = this.state;
 
     const { t, storeTypes, workflowDefinition } = this.props;
@@ -133,23 +134,17 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
     return (
       <>
         <h2>
-          {
-            t(workflowDefinition ?
-              'admin.settings.workflowDefinitions.edit' :
-              'admin.settings.workflowDefinitions.add'
-            )
-          }
+          {t(
+            workflowDefinition
+              ? 'admin.settings.workflowDefinitions.edit'
+              : 'admin.settings.workflowDefinitions.add'
+          )}
         </h2>
         <div className='flex w-60'>
           <form data-test-form className='ui form flex-grow'>
-
             <div className='field m-b-xl'>
               <label>{t('admin.settings.workflowDefinitions.name')}</label>
-              <input
-                data-test-wf-name
-                type='text'
-                value={name || ''}
-                onChange={mut('name')} />
+              <input data-test-wf-name type='text' value={name || ''} onChange={mut('name')} />
             </div>
 
             <div className='field m-b-xl'>
@@ -161,19 +156,22 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
                   text={storeTypeName}
                 >
                   <Dropdown.Menu>
-                    {
-                      storeTypes.map((s, i) => {
-                        const { name: typeName } = attributesFor(s);
-                        return <Dropdown.Item key={i} text={typeName} onClick={this.storeTypeSelection(s)} />;
-                      })
-                    }
-                  </Dropdown.Menu>
+                    {storeTypes.map((s, i) => {
+                      const { name: typeName } = attributesFor(s);
 
+                      return (
+                        <Dropdown.Item
+                          key={i}
+                          text={typeName}
+                          onClick={this.storeTypeSelection(s)}
+                        />
+                      );
+                    })}
+                  </Dropdown.Menu>
                 </Dropdown>
               </div>
               <div className='error'>{storeTypeError}</div>
             </div>
-
 
             <div className='field m-b-xl'>
               <label>{t('admin.settings.workflowDefinitions.description')}</label>
@@ -181,7 +179,8 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
                 data-test-wf-description
                 type='text'
                 value={description || ''}
-                onChange={mut('description')} />
+                onChange={mut('description')}
+              />
             </div>
 
             <div className='field m-b-xl'>
@@ -207,9 +206,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
             <div className='flex m-b-xl'>
               <div className='flex-row align-items-center'>
                 <div className='p-r-lg'>
-                  <h3>
-                    {t('admin.settings.workflowDefinitions.enabled')}
-                  </h3>
+                  <h3>{t('admin.settings.workflowDefinitions.enabled')}</h3>
                   <p className='input-info'>
                     {t('admin.settings.workflowDefinitions.enabledDescription')}
                   </p>
@@ -230,20 +227,21 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
               <button
                 data-test-wf-submit
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-                onClick={this.submit}>
-                {workflowDefinition ?
-                  t('admin.settings.workflowDefinitions.edit') :
-                  t('admin.settings.workflowDefinitions.add')}
+                onClick={this.submit}
+              >
+                {workflowDefinition
+                  ? t('admin.settings.workflowDefinitions.edit')
+                  : t('admin.settings.workflowDefinitions.add')}
               </button>
 
               <button
                 data-test-wf-cancel
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
-                onClick={this.cancel}>
+                onClick={this.cancel}
+              >
                 {t('common.cancel')}
               </button>
             </div>
-
           </form>
         </div>
       </>
@@ -254,9 +252,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
 export default compose(
   withTranslations,
   query(() => ({
-    storeTypes: [
-      q => q.findRecords('storeType'), buildOptions()
-    ],
+    storeTypes: [(q) => q.findRecords('storeType'), buildOptions()],
   })),
   withLoader(({ storeTypes }) => !storeTypes)
 )(WorkflowDefinitionForm);

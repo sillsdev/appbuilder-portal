@@ -1,58 +1,55 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,
-  useFakeAuthentication
+  useFakeAuthentication,
 } from 'tests/helpers/index';
-
 import multiSelect from '@ui/components/inputs/multi-select/-page';
 
 describe('Acceptance | Organization Settings | Store view', () => {
-
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
 
   describe('Store setting page', () => {
-
-    beforeEach(function () {
-
+    beforeEach(function() {
       this.mockGet(200, '/organizations/1', {
         data: {
           id: 1,
           type: 'organizations',
           attributes: {},
           relationships: {
-            'organization-stores': { data: [] }
-          }
-        }
+            'organization-stores': { data: [] },
+          },
+        },
       });
 
       this.mockGet(200, '/stores', {
-        data: [{
-          id: 2,
-          type: 'stores',
-          attributes: {
-            name: 'Store name 1',
-            description: 'Store description 1'
-          }
-        }, {
-          id: 3,
-          type: 'stores',
-          attributes: {
-            name: 'Store name 2',
-            description: 'Store description 2'
-          }
-        }],
-        meta: { 'total-records': 2 }
+        data: [
+          {
+            id: 2,
+            type: 'stores',
+            attributes: {
+              name: 'Store name 1',
+              description: 'Store description 1',
+            },
+          },
+          {
+            id: 3,
+            type: 'stores',
+            attributes: {
+              name: 'Store name 2',
+              description: 'Store description 2',
+            },
+          },
+        ],
+        meta: { 'total-records': 2 },
       });
-
     });
 
-    beforeEach(async function () {
+    beforeEach(async function() {
       await visit('/organizations/1/settings/stores');
     });
 
@@ -62,18 +59,17 @@ describe('Acceptance | Organization Settings | Store view', () => {
 
     it('show store list', () => {
       const storeList = multiSelect.itemsText();
-      const storeText = storeList.map(item => item.text);
+      const storeText = storeList.map((item) => item.text);
 
       expect(storeText).to.contain('Store name 1');
       expect(storeText).to.contain('Store name 2');
     });
 
     describe('with store list', () => {
-
       // managing stores has been made read-only for now.
       // this is because we currently don't have a way to show which stores
       // show up for which organizations.
-      beforeEach(function () {
+      beforeEach(function() {
         this.mockPost(201, '/organization-stores', {
           data: {
             attributes: {},
@@ -81,18 +77,16 @@ describe('Acceptance | Organization Settings | Store view', () => {
             type: 'organization-stores',
             relationships: {
               organization: { data: { id: 1, type: 'organizations' } },
-              store: { data: { id: 2, type: 'stores' } }
-            }
-          }
+              store: { data: { id: 2, type: 'stores' } },
+            },
+          },
         });
       });
 
       describe('select first store', () => {
-
-        beforeEach(async function () {
+        beforeEach(async function() {
           await multiSelect.items(0).click();
         });
-
 
         xit('first store is selected', () => {
           expect(multiSelect.items(0).isChecked).to.be.true;
@@ -100,12 +94,11 @@ describe('Acceptance | Organization Settings | Store view', () => {
         });
 
         describe('unselect it', () => {
-
-          beforeEach(function () {
+          beforeEach(function() {
             this.mockDelete(204, 'organization-stores/1');
           });
 
-          beforeEach(async function () {
+          beforeEach(async function() {
             const storeList = multiSelect.items();
             await storeList[0].click();
           });
@@ -115,37 +108,31 @@ describe('Acceptance | Organization Settings | Store view', () => {
             expect(multiSelect.items(0).isChecked).to.be.false;
             expect(multiSelect.items(1).isChecked).to.be.false;
           });
-
         });
-
       });
     });
-
   });
 
   describe('Empty stores', () => {
-
-    beforeEach(function () {
-
+    beforeEach(function() {
       this.mockGet(200, '/organizations/1', {
         data: {
           id: 1,
           type: 'organizations',
           attributes: {},
           relationships: {
-            'organization-stores': { data: [] }
-          }
-        }
+            'organization-stores': { data: [] },
+          },
+        },
       });
 
       this.mockGet(200, '/stores', {
         data: [],
-        meta: { 'total-records': 0 }
+        meta: { 'total-records': 0 },
       });
-
     });
 
-    beforeEach(async function () {
+    beforeEach(async function() {
       await visit('/organizations/1/settings/stores');
     });
 
