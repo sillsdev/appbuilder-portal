@@ -31,6 +31,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public void Process(EmailServiceData data)
         {
             var email = emailRepository.GetAsync(data.Id).Result;
+            Log.Information($"EmailService: Id={data.Id}");
 
             if (string.IsNullOrWhiteSpace(email.To) &&
                 string.IsNullOrWhiteSpace(email.Cc) &&
@@ -38,6 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 // Creating an Exception to report to BugSnag.  Don't want to Retry.
                 var ex = new Exception($"Email id={data.Id}: Didn't have To, Cc, or Bcc. Cancel Send.");
+                Log.Error(ex, "Sending Email: Missing fields");
                 bugsnagClient.Notify(ex);
                 return;
             }
@@ -49,7 +51,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .BCC(email.Bcc)
                 .Subject(email.Subject)
                 .UsingTemplateFromFile(templateFile, email.ContentModel);
-            this.sender.Send(fluentEmail);
+            Log.Information($"Sending Email: Sender={this.sender.ToString()} Subject={email.Subject}, To={email.To}, CC={email.Cc}, BCC={email.Bcc}, Template={templateFile}, Content={email.ContentModel}");
+            var response = this.sender.Send(fluentEmail);
+            Log.Information($"Sending Email: Successful={response.Successful}");
+            if (response.ErrorMessages.Count > 0)
+            {
+                Log.Error($"Sending Email: Error Messages={String.Join(';', response.ErrorMessages)}");
+            }
         }
     }
 }
