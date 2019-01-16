@@ -57,3 +57,17 @@ export function compareVia(accessor: any, invert?: boolean) {
 export function areCollectionsRoughlyEqual(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
+
+const toIdList = (list) =>
+  list
+    .map((u) => u.id)
+    .sort()
+    .join();
+
+export function areResourceListsEqual(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  return toIdList(a) === toIdList(b);
+}

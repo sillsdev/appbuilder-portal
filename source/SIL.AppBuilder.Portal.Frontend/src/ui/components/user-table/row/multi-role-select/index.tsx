@@ -1,4 +1,4 @@
-import { compose, withProps } from 'recompose';
+import { compose, withProps, shouldUpdate } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import {
@@ -12,7 +12,7 @@ import {
   recordsWithIdIn,
 } from '@data';
 
-import { isEmpty, unique } from '@lib/collection';
+import { isEmpty, unique, areResourceListsEqual } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 
@@ -47,6 +47,10 @@ export default compose<IProps, INeededProps>(
       userRoles: (q) => q.findRelatedRecords(user, 'userRoles'),
     };
   }),
+  shouldUpdate(
+    (props: IAfterUserRoles, nextProps: IAfterUserRoles) =>
+      !areResourceListsEqual(props.userRoles, nextProps.userRoles)
+  ),
   withProps((props: INeededProps & IAfterUserRoles & i18nProps) => {
     const { userRoles, organizations, roles, t } = props;
 

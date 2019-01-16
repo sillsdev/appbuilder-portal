@@ -16,6 +16,7 @@ export interface IAttributeProps {
   tabIndex?: string | number;
   title?: string;
   translate?: boolean;
+  placeholder?: string;
 }
 
 export const GENERIC_ATTRIBUTES = [
@@ -34,6 +35,7 @@ export const GENERIC_ATTRIBUTES = [
   'tabIndex',
   'translate',
   'title',
+  'placeholder',
 ];
 
 export function filterForValidAttributes(input: object) {

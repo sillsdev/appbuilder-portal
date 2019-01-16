@@ -41,6 +41,10 @@ export interface IOwnProps {
 export type IProps = INeededProps & i18nProps & IActionProps & IOwnProps;
 
 class Row extends React.Component<IProps> {
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.user.id !== this.props.user.id;
+  }
+
   getMessage = (nextState, type = 'success') => {
     const state = nextState ? 'lock' : 'unlock';
 

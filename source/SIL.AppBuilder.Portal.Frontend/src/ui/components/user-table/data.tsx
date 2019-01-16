@@ -77,14 +77,14 @@ export function withData(WrappedComponent) {
 
   return compose(
     withCurrentOrganization,
-    withUserList({
-      include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}.groups,${GROUP_MEMBERSHIPS}.${GROUP},user-roles`,
-    }),
-    withLoader(({ users }) => !users),
     withOrbit({
       organizationMemberships: (q) => q.findRecords('organizationMembership'),
       groups: (q) => q.findRecords(GROUP),
       roles: (q) => q.findRecords(ROLE),
-    })
+    }),
+    withUserList({
+      include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}.groups,${GROUP_MEMBERSHIPS}.${GROUP},user-roles`,
+    }),
+    withLoader(({ users }) => !users)
   )(DataWrapper);
 }
