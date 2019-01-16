@@ -74,7 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="wwwroot\js\login.js" />
-    <None Remove="Templates\Notification.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
@@ -95,18 +94,5 @@
     <Folder Include="source\" />
     <Folder Include="source\locales\" />
     <Folder Include="Forms\Users\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Services\CurrentUserMemberships.cs" />
-    <Compile Remove="Services\Contracts\ICurrentUserOrganizationsContext.cs" />
-    <Compile Remove="Services\Contracts\ICurrentUserMembershipsContext.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="source\locales\es-419.json" />
-    <Content Remove="source\locales\fr-FR.json" />
-    <Content Remove="Templates\Notification.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Templates\Notification.txt" />
   </ItemGroup>
 </Project>

@@ -48,7 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 {
                     To = superAdmin.User.Email,
                     Subject = subject,
-                    ContentTemplate = "OrganizationInviteRequest.cshtml",
+                    ContentTemplate = "OrganizationInviteRequest.txt",
                     ContentModel = new
                     {
                         request.Name,

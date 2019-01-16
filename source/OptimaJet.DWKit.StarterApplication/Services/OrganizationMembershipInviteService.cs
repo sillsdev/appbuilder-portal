@@ -118,7 +118,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 To = loadedInvite.Email,
                 Subject = subject,
-                ContentTemplate = "OrganizationMembershipInvite.cshtml",
+                ContentTemplate = "OrganizationMembershipInvite.txt",
                 ContentModel = new
                 {
                     OrganizationName = loadedInvite.Organization.Name,
