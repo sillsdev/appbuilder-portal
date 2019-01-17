@@ -115,6 +115,7 @@ const schemaDefinition: SchemaSettings = {
         name: { type: 'string' },
         status: { type: 'string' },
         dateCreated: { type: 'date' },
+        dateUpdated: { type: 'date' },
         dateArchived: { type: 'date' },
         language: { type: 'string' },
         type: { type: 'string' },

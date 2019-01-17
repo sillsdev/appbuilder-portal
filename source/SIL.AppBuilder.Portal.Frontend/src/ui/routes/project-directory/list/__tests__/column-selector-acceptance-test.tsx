@@ -60,8 +60,8 @@ describe('Acceptance | Project Directory | Column selector', () => {
         expect(itemsText).to.contain('Organization');
         expect(itemsText).to.contain('Language');
         expect(itemsText).to.contain('Build Version');
-        expect(itemsText).to.contain('Updated On');
 
+        expect(itemsText).to.not.contain('Updated On');
         expect(itemsText).to.not.contain('Owner');
         expect(itemsText).to.not.contain('Group');
         expect(itemsText).to.not.contain('Build Date');
