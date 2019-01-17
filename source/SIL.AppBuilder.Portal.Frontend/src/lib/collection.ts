@@ -1,3 +1,5 @@
+import { Record } from '@orbit/data';
+
 export function isEmpty(data) {
   return (
     !data ||
@@ -63,6 +65,10 @@ const toIdList = (list) =>
     .map((u) => u.id)
     .sort()
     .join();
+
+export function areResourcesEqual(a: Record, b: Record) {
+  return areCollectionsRoughlyEqual(a, b);
+}
 
 export function areResourceListsEqual(a, b) {
   if (a.length !== b.length) {

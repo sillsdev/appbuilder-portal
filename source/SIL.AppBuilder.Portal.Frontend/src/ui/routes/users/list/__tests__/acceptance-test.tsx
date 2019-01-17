@@ -1,5 +1,6 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
+import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 import {
   setupApplicationTest,
@@ -44,13 +45,15 @@ describe('Acceptance | Disable User', () => {
 
       await visit('/users');
       userTable = new UserTableInteractor();
+
+      await when(() => userTable.row().length > 0);
     });
 
-    it('is in users page', () => {
+    it('is on the users page', () => {
       expect(location().pathname).to.equal('/users');
     });
 
-    describe('an active users exists', () => {
+    describe('an active user exists', () => {
       it('active user', () => {
         expect(userTable.isUserActive).to.equal(true);
       });
@@ -71,9 +74,10 @@ describe('Acceptance | Disable User', () => {
         describe('toggle is clicked', () => {
           beforeEach(async () => {
             await userTable.clickLockUser();
+            await when(() => userTable.isUserActive === false);
           });
 
-          it('user locked', () => {
+          it('user becomes locked', () => {
             expect(userTable.isUserActive).to.equal(false);
           }).timeout(2000);
         });

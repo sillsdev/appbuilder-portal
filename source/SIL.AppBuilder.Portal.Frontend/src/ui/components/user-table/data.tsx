@@ -77,14 +77,18 @@ export function withData(WrappedComponent) {
 
   return compose(
     withCurrentOrganization,
+    withUserList({
+      include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}.groups,${GROUP_MEMBERSHIPS}.${GROUP},user-roles`,
+    }),
+    withLoader(({ users }) => !users),
+    // this data must be retrieved after receiving the list of users
+    // the following record retrievals are intended to be queried minimally,
+    // to hopefully prevent unneeded re-renders.
+    // TODO: what would putting this on each row do?
     withOrbit({
       organizationMemberships: (q) => q.findRecords('organizationMembership'),
       groups: (q) => q.findRecords(GROUP),
       roles: (q) => q.findRecords(ROLE),
-    }),
-    withUserList({
-      include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}.groups,${GROUP_MEMBERSHIPS}.${GROUP},user-roles`,
-    }),
-    withLoader(({ users }) => !users)
+    })
   )(DataWrapper);
 }

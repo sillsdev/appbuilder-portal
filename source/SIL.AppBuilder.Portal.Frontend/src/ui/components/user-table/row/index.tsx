@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as toast from '@lib/toast';
-import { compose, withProps } from 'recompose';
+import { compose, withProps, mapProps } from 'recompose';
+import pick from 'lodash/pick';
 import { Link } from 'react-router-dom';
 import { Radio } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
@@ -22,6 +23,7 @@ import {
 } from '@data/containers/resources/user/with-data-actions';
 import { withRelationships } from '@data/containers/with-relationship';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { areResourcesEqual } from '@lib/collection';
 
 import MultiGroupSelect from './multi-group-select';
 import MultiRoleSelect from './multi-role-select';
@@ -41,10 +43,6 @@ export interface IOwnProps {
 export type IProps = INeededProps & i18nProps & IActionProps & IOwnProps;
 
 class Row extends React.Component<IProps> {
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.user.id !== this.props.user.id;
-  }
-
   getMessage = (nextState, type = 'success') => {
     const state = nextState ? 'lock' : 'unlock';
 
@@ -101,7 +99,9 @@ export default compose<IProps, INeededProps>(
   withTranslations,
   withDataActions,
   // read from cache for active/lock toggle
-  withOrbit(({ user }) => ({ user: (q) => q.findRecord(user) })),
+  withOrbit(({ user }) => ({
+    user: (q) => q.findRecord(user),
+  })),
   withRelationships(({ user, currentUser }) => {
     return {
       userOrganizations: [user, 'organizationMemberships', 'organization'],
@@ -127,5 +127,17 @@ export default compose<IProps, INeededProps>(
     forAnyOrganization: (props: IProps) => {
       return props.organizations;
     },
+  }),
+  mapProps((allProps: any) => {
+    const remainingProps = pick(allProps, [
+      'user',
+      'userOrganizations',
+      'organizations',
+      'updateAttribute',
+      't',
+      'roles',
+    ]);
+
+    return remainingProps;
   })
 )(Row);

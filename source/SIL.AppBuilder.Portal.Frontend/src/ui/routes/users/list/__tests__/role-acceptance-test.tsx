@@ -261,6 +261,8 @@ describe('Acceptance | User List | Role Management', () => {
 
       beforeEach(async function() {
         await visit('/users');
+        userTable = new UserTableInteractor();
+        await when(() => userTable.row().length > 0);
       });
 
       it('renders two roles', () => {
@@ -319,10 +321,10 @@ describe('Acceptance | User List | Role Management', () => {
 
     beforeEach(async function() {
       await visit('/users');
-      // userTable = new UserTableInteractor();
-      // await when(() => {
-      //   expect(userTable.row().length).to.equal(1);
-      // });
+      userTable = new UserTableInteractor();
+      await when(() => {
+        expect(userTable.row().length).to.equal(1);
+      });
     });
 
     it('is in users page', () => {

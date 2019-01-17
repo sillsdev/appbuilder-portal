@@ -1,17 +1,24 @@
 import * as React from 'react';
-import { IAttributeProps } from '@lib/dom';
+import { IAttributeProps, filterForValidAttributes } from '@lib/dom';
+
+import './styles.scss';
 
 type IProps = IAttributeProps & { isLoading: boolean };
 
 export class LoadingWrapper extends React.PureComponent<IProps> {
   render() {
     const { isLoading, children, className, ...otherProps } = this.props;
+    const attributes = filterForValidAttributes(otherProps);
 
     return (
-      <div {...otherProps} className={`p-relative ${className}`}>
+      <div {...attributes} className={`p-relative ${className}`}>
         {children}
 
-        {isLoading && <div className='loading-overlay' />}
+        {isLoading && (
+          <div className='loading-overlay'>
+            <div className='dot-loader' />
+          </div>
+        )}
       </div>
     );
   }

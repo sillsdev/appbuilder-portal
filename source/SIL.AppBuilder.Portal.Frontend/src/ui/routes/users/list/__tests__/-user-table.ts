@@ -65,10 +65,13 @@ export class UserTableInteractor {
   groupDropdownOrganizationName = collection('[data-test-group-multi-organization-name]');
 
   row = collection('[data-test-user-row]', {
+    isActive: hasClass('[data-test-toggle-lock]', 'checked'),
+
     activeGroupsText: text('[data-test-groups-active]'),
     activeGroups: collection('[data-test-groups-active]', {
       text: text(),
     }),
+
     role: scoped('[data-test-role-selector]', UserTalbeUserRoleInteractor),
   });
 

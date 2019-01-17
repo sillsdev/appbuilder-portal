@@ -1,3 +1,4 @@
+import { Record } from '@orbit/data';
 import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type USERS_TYPE = 'users';
@@ -25,4 +26,4 @@ export function name(attrs: UserAttributes) {
   return attrs.name || `${attrs.givenName} ${attrs.familyName}`;
 }
 
-export type UserResource = ResourceObject<USERS_TYPE, UserAttributes>;
+export type UserResource = ResourceObject<USERS_TYPE, UserAttributes> & Record;

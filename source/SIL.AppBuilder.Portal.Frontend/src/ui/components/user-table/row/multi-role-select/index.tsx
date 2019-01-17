@@ -1,5 +1,6 @@
-import { compose, withProps, shouldUpdate } from 'recompose';
+import { compose, withProps, shouldUpdate, mapProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
+import pick from 'lodash/pick';
 
 import {
   OrganizationResource,
@@ -12,7 +13,7 @@ import {
   recordsWithIdIn,
 } from '@data';
 
-import { isEmpty, unique, areResourceListsEqual } from '@lib/collection';
+import { isEmpty, unique, areResourceListsEqual, areResourcesEqual } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 
@@ -47,10 +48,18 @@ export default compose<IProps, INeededProps>(
       userRoles: (q) => q.findRelatedRecords(user, 'userRoles'),
     };
   }),
-  shouldUpdate(
-    (props: IAfterUserRoles, nextProps: IAfterUserRoles) =>
-      !areResourceListsEqual(props.userRoles, nextProps.userRoles)
-  ),
+  mapProps((allProps: any) => {
+    const remainingProps = pick(allProps, [
+      'user',
+      'userRoles',
+      'currentUser',
+      'organizations',
+      'roles',
+      't',
+    ]);
+
+    return remainingProps;
+  }),
   withProps((props: INeededProps & IAfterUserRoles & i18nProps) => {
     const { userRoles, organizations, roles, t } = props;
 

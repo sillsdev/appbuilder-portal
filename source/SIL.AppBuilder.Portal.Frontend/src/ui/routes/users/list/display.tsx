@@ -11,7 +11,9 @@ import { LoadingWrapper } from '@ui/components/loading-wrapper';
 
 import AddUser from './add';
 import InviteUser from './invitations';
-interface IOwnProps {}
+interface IOwnProps {
+  allOrgsSelected: boolean;
+}
 
 type IProps = IOwnProps &
   IListProps &
