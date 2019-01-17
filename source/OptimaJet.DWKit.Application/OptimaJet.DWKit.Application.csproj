@@ -21,7 +21,7 @@
     <PackageReference Include="WorkflowEngine.NETCore-ProviderForMSSQL" Version="3.3.1" />
     <PackageReference Include="WorkflowEngine.NETCore-ProviderForPostgreSQL" Version="3.3.1" />
     <PackageReference Include="DWKit-ProviderForMSSQL" Version="2.4.1" />
-    <PackageReference Include="DWKit-ProviderForPostgreSQL" Version="2.4.1" />
+    <PackageReference Include="DWKit-ProviderForPostgreSQL" Version="2.4.2" />
     <PackageReference Include="DWKit-ProviderForOracle" Version="2.4.1" />
     <PackageReference Include="DWKit-Security" Version="2.4.1" />
   </ItemGroup>
