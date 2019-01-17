@@ -7,7 +7,25 @@
   ],
   "automerge": false,
   "enabled": true,
+  "ignorePaths": [
+    "source/OptimaJet.DWKit.StarterApplication/package.json"
+  ],
   "packageRules": [
+    {
+      "packagePatterns": ["*.csproj"],
+      "ignoreDeps": [
+        "Microsoft.EntityFrameworkCore.InMemory",
+        "Microsoft.EntityFrameworkCore.Design",
+        "Microsoft.EntityFrameworkCore",
+        "Microsoft.AspNetCore.StaticFiles",
+        "Microsoft.AspNetCore.Mvc",
+        "Microsoft.AspNetCore.Http.Abstractions",
+        "Microsoft.AspNetCore.Authentication.Cookies",
+        "Microsoft.AspNetCore",
+        "Microsoft.ApplicationInsights.AspNetCore",
+        "BundlerMinifier.Core"
+      ]
+    },
     {
         "paths": ["source/SIL.AppBuilder.Portal.Frontend/package.json"],
         "rangeStrategy": "replace",
