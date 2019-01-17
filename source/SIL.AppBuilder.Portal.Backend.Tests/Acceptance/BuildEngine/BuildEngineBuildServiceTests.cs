@@ -181,7 +181,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 ProjectId = project1.Id,
                 ProductDefinitionId = productDefinition1.Id,
                 StoreId = store1.Id,
-                WorkflowJobId = 1,
+                WorkflowJobId = 2,
                 WorkflowBuildId = 2
             });
             ur1 = AddEntity<AppDbContext, UserRole>(new UserRole
@@ -307,11 +307,35 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 FileSize = 1831,
                 LastModified = DateTime.UtcNow
             };
+            var modifiedArtifact4 = new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ArtifactType = "play-listing-manifest",
+                Url = "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/play-listing/manifest.json",
+                ContentType = "application/json",
+                FileSize = 1831,
+                LastModified = DateTime.UtcNow
+            };
+            var storetype = AddEntity<AppDbContext, StoreType>(new StoreType
+            {
+                Id = 1,
+                Name = "google_play_store",
+                Description = "Google Play Store"
+            });
+            var language = AddEntity<AppDbContext, StoreLanguage>(new StoreLanguage
+            {
+                Id = 1,
+                Name = "en-US",
+                Description = "English (United States) – en-US",
+                StoreTypeId = 1
+            });
+
             var artifacts = new Dictionary<string, string>()
             {
                 {"apk", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7.apk"},
                 {"about", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/about.txt"},
-                {"version", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/version.json"}
+                {"version", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/version.json"},
+                {"play-listing-manifest", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/play-listing/manifest.json"}
             };
             product2.WorkflowBuildId = 42;
 
@@ -343,15 +367,21 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
                                                                                   a.ArtifactType == "version")))
                                  .Returns(modifiedArtifact3);
+            mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
+                                                                                  a.ArtifactType == "play-listing-manifest")))
+                                 .Returns(modifiedArtifact4);
+
             mockWebClient.Setup(x => x.DownloadString(It.Is<string>(addr => addr == modifiedArtifact3.Url)))
                 .Returns("{ \"version\" : \"4.7.6\", \"versionName\" : \"4.7\", \"versionCode\" : \"6\" } ");
+            mockWebClient.Setup(x => x.DownloadString(It.Is<string>(addr => addr == modifiedArtifact4.Url)))
+                .Returns("{ \"default-language\" : \"en-US\" }");
             await buildBuildService.CheckBuildAsync(product2.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
             var modifiedArtifacts = ReadTestData<AppDbContext, ProductArtifact>();
-            Assert.Equal(3, modifiedArtifacts.Count);
+            Assert.Equal(4, modifiedArtifacts.Count);
             var modifiedApk = modifiedArtifacts.First(a => a.ArtifactType == modifiedArtifact1.ArtifactType);
             Assert.Equal(modifiedArtifact1.Url, modifiedApk.Url);
             Assert.Equal(modifiedArtifact1.ContentType, modifiedApk.ContentType);
@@ -360,6 +390,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Single(modifiedProductBuilds);
             var build = modifiedProductBuilds.First();
             Assert.Equal("4.7.6", build.Version);
+            var modifiedProduct = ReadTestData<AppDbContext, Product>().Where(p => p.Id == product2.Id);
+            Assert.Single(modifiedProduct);
+            var product = modifiedProduct.First();
+            Assert.Equal("en-US", product.StoreLanguage.Name);
             // One notification should be sent to owner on successful build
             mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
