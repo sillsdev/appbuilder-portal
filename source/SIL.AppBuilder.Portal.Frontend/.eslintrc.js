@@ -35,7 +35,7 @@ module.exports = {
 
     // typescript
     "typescript/explicit-function-return-type": 'off',
-    "typescript/interface-name-prefix": "error",
+    "typescript/interface-name-prefix": "off", // someday...
     "typescript/class-name-casing": "error",
     "typescript/no-explicit-any": "off", // someday...
     "typescript/no-unused-vars": "error",
