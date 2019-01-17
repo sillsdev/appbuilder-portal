@@ -24,33 +24,38 @@ module.exports = {
     'eslint:recommended',
     "plugin:react/recommended",
     'prettier',
+    "prettier/typescript",
+    "prettier/react"
   ],
 
   // 0 = off, 1 = warn, 2 = error
   rules: {
-    // style
-    "padded-blocks": ["error", "never"],
-    'padding-line-between-statements': [
-      'error',
-      // TODO: be on the lookout for something that handles a line after statements
-      { blankLine: "always", prev: "*", next: ["block-like", "multiline-block-like", "try"] },
-      { blankLine: "always", prev: "*", next: ["return"] },
-    ],
-    "linebreak-style": ["error", "unix"],
-    "space-in-parens": ["error", "never"],
-    "object-curly-spacing": ["error", "always"],
-
     // web api usage
     "no-console": 'warn',
 
     // typescript
     "typescript/explicit-function-return-type": 'off',
+    "typescript/interface-name-prefix": "off", // someday...
+    "typescript/class-name-casing": "error",
+    "typescript/no-explicit-any": "off", // someday...
+    "typescript/no-unused-vars": "error",
+    "typescript/member-ordering": "off", // someday...
+    "typescript/generic-type-naming": "error",
+    "typescript/member-delimiter-style": "error",
+    "typescript/type-annotation-spacing": ["error", {
+      before: true, after: true,
+      overrides: {
+        colon: { before: false, after: true },
+        arrow: { before: true, after: true }
+      }
+    }],
 
     // react
     'react/prop-types': 'off',
     'react/display-name': 'off',
     'react/no-unescaped-entities': 'off',
 
+    // cleanliness
     'no-undef': 'off',
     'no-unused-vars': 'off',
 
@@ -67,9 +72,6 @@ module.exports = {
 
     // handled by prettier
     'prettier/prettier': 'error',
-    "semi": 'off',
-    "quotes": 'off',
-    "indent": 'off',
   },
   overrides: [
     // node files
