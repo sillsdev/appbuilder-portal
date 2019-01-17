@@ -6,6 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="RestSharp" Version="106.3.1" />
-    <PackageReference Include="Humanizer" Version="2.4.2" />
+    <PackageReference Include="Humanizer" Version="2.5.16" />
   </ItemGroup>
 </Project>
