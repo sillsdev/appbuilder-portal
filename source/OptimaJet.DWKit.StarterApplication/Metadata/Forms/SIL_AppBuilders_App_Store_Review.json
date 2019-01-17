@@ -199,7 +199,7 @@
             "parameters": []
           }
         },
-        "defaultSort": "buildid ASC"
+        "defaultSort": "artifactid ASC"
       }
     ]
   }
