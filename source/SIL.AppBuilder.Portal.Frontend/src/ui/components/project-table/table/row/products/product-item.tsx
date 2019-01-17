@@ -43,9 +43,6 @@ class ProductItem extends React.Component<IProps> {
             .tz(timezone)
             .format('L');
           break;
-        // case COLUMN_KEY.PRODUCT_UPDATED_ON:
-        //   column.value = moment(updatedOn).tz(timezone).format('L');
-        //   break;
         default:
           column.value = 'active column not recognized';
       }

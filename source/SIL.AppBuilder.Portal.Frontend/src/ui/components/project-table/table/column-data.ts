@@ -9,7 +9,6 @@ export enum COLUMN_KEY {
   PRODUCT_BUILD_VERSION = 'buildVersion',
   PRODUCT_BUILD_DATE = 'buildDate',
   PRODUCT_CREATED_ON = 'createdOn',
-  // PRODUCT_UPDATED_ON = 'updatedOn'
 }
 
 export const possibleColumnsByType = {
@@ -61,11 +60,6 @@ export const possibleColumnsByType = {
       i18nKey: 'projectTable.columns.createdOn',
       propertyPath: 'product[].createdOn',
     },
-    // [COLUMN_KEY.PRODUCT_UPDATED_ON]: {
-    //   id: COLUMN_KEY.PRODUCT_UPDATED_ON,
-    //   i18nKey: 'projectTable.columns.updatedOn',
-    //   propertyPath: 'product[].updatedOn'
-    // }
   },
 };
 
