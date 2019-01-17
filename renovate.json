@@ -12,7 +12,7 @@
   ],
   "packageRules": [
     {
-      "packagePatterns": ["(.+)\.csproj"],
+      "packagePatterns": ["(.+)\\.csproj"],
       "ignoreDeps": [
         "Microsoft.EntityFrameworkCore.InMemory",
         "Microsoft.EntityFrameworkCore.Design",
