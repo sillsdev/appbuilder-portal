@@ -45,6 +45,18 @@ module.exports = {
 
     // typescript
     "typescript/explicit-function-return-type": 'off',
+    "typescript/interface-name-prefix": "error",
+    "typescript/class-name-casing": "error",
+    "typescript/no-explicit-any": "off", // someday...
+    "typescript/no-unused-vars": "error",
+    "typescript/generic-type-naming": "error",
+    "typescript/type-annotation-spacing": ["error", {
+      before: true, after: true,
+      overrides: {
+        colon: { before: false, after: true },
+        arrow: { before: true, after: true }
+      }
+    }],
 
     // react
     'react/prop-types': 'off',
