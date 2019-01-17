@@ -359,9 +359,6 @@ describe('Acceptance | User groups', () => {
       beforeEach(async function() {
         await visit('/users');
         await when(() => new UserTableInteractor().row().length > 0, 2000);
-        // await when(() => {
-        //   return document.querySelectorAll('[data-test-groups-active]').length === 2;
-        // });
       });
 
       it('renders two organizations groups', () => {
