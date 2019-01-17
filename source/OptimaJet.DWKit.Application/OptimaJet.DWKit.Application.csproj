@@ -23,6 +23,6 @@
     <PackageReference Include="DWKit-ProviderForMSSQL" Version="2.4.1" />
     <PackageReference Include="DWKit-ProviderForPostgreSQL" Version="2.4.1" />
     <PackageReference Include="DWKit-ProviderForOracle" Version="2.4.1" />
-    <PackageReference Include="DWKit-Security" Version="2.4.1" />
+    <PackageReference Include="DWKit-Security" Version="2.4.2" />
   </ItemGroup>
 </Project>
