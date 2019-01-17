@@ -100,7 +100,6 @@ class Header extends React.Component<IProps> {
       archived: t('projects.switcher.dropdown.archived'),
     };
 
-    console.log(filter);
     const trigger = (
       <>
         <div className='text'>{dropdownText[filter]}</div>

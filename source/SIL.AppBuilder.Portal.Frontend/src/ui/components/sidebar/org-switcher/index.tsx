@@ -12,9 +12,9 @@ import Display from './display';
 import { IGivenProps } from './types';
 
 export default compose<IGivenProps, {}>(
-  withCurrentUserContext,
   withRouter,
   withTranslations,
+  withCurrentUserContext,
   withCurrentOrganization,
   withProps(({ currentOrganizationId }: WithCurrentOrgProps) => ({
     allOrgsSelected: '' === currentOrganizationId,

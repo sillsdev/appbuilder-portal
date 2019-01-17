@@ -19,6 +19,10 @@ export interface IQueryOptions {
   settings?: any;
 }
 
+interface IOrbitTracking {
+  keys?: { remoteId: string };
+}
+
 type IResourceIdentity<TType extends string = '', TAttrs extends AttributesObject = {}> =
   | { type: TType; id: string }
   | ResourceObject<TType, TAttrs>;
@@ -195,10 +199,6 @@ export function buildRelationships<TRelationships>(relationMap: TRelationships) 
 
     return result;
   }, {});
-}
-
-interface IOrbitTracking {
-  keys?: { remoteId: string };
 }
 
 export function localIdFromRecordIdentity(recordIdentity: any) {

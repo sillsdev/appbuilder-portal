@@ -16,11 +16,11 @@ export const pathName = '/users';
 export default compose(
   withTranslations,
   withCurrentUserContext,
-  withRoles(),
-  withFiltering(),
-  withData,
   withCurrentOrganization,
   withProps(({ currentOrganizationId }: WithCurrentOrgProps) => ({
     allOrgsSelected: '' === currentOrganizationId,
-  }))
+  })),
+  withRoles(),
+  withFiltering(),
+  withData
 )(Display);

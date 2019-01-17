@@ -14,6 +14,7 @@ using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI.FilterQueryExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.StringExtensions;
+using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
@@ -59,7 +60,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                     .Include(p => p.Products)
                     .ThenInclude(product => product.ProductDefinition)
                     .Where(p => p.Products
-                        .Any(product => Like(product.ProductDefinition.Name, value)));
+                        .Any(product => EFUtils.Like(product.ProductDefinition.Name, value)));
             }
 
             if (filterQuery.Has(PROJECT_PRODUCT_DEFINITION_ID_ANY)) {
@@ -74,10 +75,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                     .Include(p => p.Owner)
                     .Include(p => p.Organization)
                     .Where(p => (
-                        Like(p.Name, value) 
-                        || Like(p.Language, value)
-                        || Like(p.Organization.Name, value)
-                        || Like(p.Owner.Name, value)
+                        EFUtils.Like(p.Name, value) 
+                        || EFUtils.Like(p.Language, value)
+                        || EFUtils.Like(p.Organization.Name, value)
+                        || EFUtils.Like(p.Owner.Name, value)
                     ));
             }
 
@@ -98,11 +99,6 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
             return base.Get().Where(p => p.IsPublic == true || orgIds.Contains(p.OrganizationId));
-        }
-
-        private bool Like(string value, string search) 
-        {
-            return EF.Functions.Like(value, $"%{search}%");
         }
     }
 }

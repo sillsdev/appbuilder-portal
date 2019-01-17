@@ -1,11 +1,8 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-class Header extends React.Component<i18nProps> {
-  render() {
-    const { t } = this.props;
-
+export default withTranslations(
+  React.memo(({ t }: i18nProps) => {
     return (
       <thead>
         <tr>
@@ -16,7 +13,5 @@ class Header extends React.Component<i18nProps> {
         </tr>
       </thead>
     );
-  }
-}
-
-export default compose(withTranslations)(Header);
+  })
+);

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { UserResource, RoleResource } from '@data';
 
-import { isEmpty } from '@lib/collection';
+import { isEmpty, areResourceListsEqual } from '@lib/collection';
 import { i18nProps } from '@lib/i18n';
 
 import Header from './header';
@@ -19,6 +19,13 @@ interface IOwnProps {
 type IProps = IOwnProps & i18nProps;
 
 export default class Table extends React.Component<IProps> {
+  shouldComponentUpdate(nextProps, nextState) {
+    const nextUsers = nextProps.users;
+    const users = this.props.users;
+
+    return !areResourceListsEqual(nextUsers, users);
+  }
+
   render() {
     const { users, roles, currentUser, t } = this.props;
 

@@ -66,8 +66,8 @@ class UserDropdown extends React.Component<IProps> {
 
 export default compose(
   withRouter,
+  withTranslations,
   withCurrentUserContext,
   withLoader(({ currentUser }) => !currentUser),
-  withTranslations,
   withLogout
 )(UserDropdown);

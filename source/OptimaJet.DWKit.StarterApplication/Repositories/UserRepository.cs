@@ -13,7 +13,7 @@ using OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI;
 using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI.FilterQueryExtensions;
-
+using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
@@ -36,6 +36,10 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 
         public override IQueryable<User> Filter(IQueryable<User> query, FilterQuery filterQuery)
         {
+            if (filterQuery.Attribute.Equals("name", StringComparison.OrdinalIgnoreCase)) {
+                return query.Where(u => EFUtils.Like(u.Name, filterQuery.Value));
+            } 
+
             return query.OptionallyFilterOnQueryParam(filterQuery,
                                           "organization-id",
                                           this,

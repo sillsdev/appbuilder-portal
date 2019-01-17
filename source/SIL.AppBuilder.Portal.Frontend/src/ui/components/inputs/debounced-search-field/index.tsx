@@ -14,7 +14,7 @@ interface IState {
   searchTerm: string;
 }
 
-export default class DebouncedSearch extends React.Component<IProps & IAttributeProps, IState> {
+export default class DebouncedSearch extends React.PureComponent<IProps & IAttributeProps, IState> {
   state = { searchTerm: '' };
 
   trySearch = debounce(() => {
@@ -36,7 +36,7 @@ export default class DebouncedSearch extends React.Component<IProps & IAttribute
     const attributes = filterForValidAttributes(other);
 
     return (
-      <div className={`ui left input icon ${className}`} {...other}>
+      <div className={`ui left input icon ${className}`} {...attributes}>
         <input type='text' placeholder={placeholder} value={searchTerm} onChange={this.didType} />
         <SearchIcon className='material-search-icon-in-field' />
       </div>

@@ -1,4 +1,4 @@
-import * as pick from 'lodash/pick';
+import pickBy from 'lodash/pickBy';
 
 // https://www.w3schools.com/tags/ref_attributes.asp
 export interface IAttributeProps {
@@ -16,6 +16,7 @@ export interface IAttributeProps {
   tabIndex?: string | number;
   title?: string;
   translate?: boolean;
+  placeholder?: string;
 }
 
 export const GENERIC_ATTRIBUTES = [
@@ -34,8 +35,15 @@ export const GENERIC_ATTRIBUTES = [
   'tabIndex',
   'translate',
   'title',
+  'placeholder',
 ];
 
 export function filterForValidAttributes(input: object) {
-  return pick(input, GENERIC_ATTRIBUTES);
+  return pickBy(input, (_v, key) => {
+    if (GENERIC_ATTRIBUTES.includes(key)) {
+      return true;
+    }
+
+    return key.startsWith('data-') || key.startsWith('aria-');
+  });
 }
