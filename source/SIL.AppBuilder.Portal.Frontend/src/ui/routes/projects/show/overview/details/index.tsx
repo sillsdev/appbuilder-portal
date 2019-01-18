@@ -6,20 +6,15 @@ import { ProjectResource, ApplicationTypeResource, attributesFor } from '@data';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-interface Params {
+interface INeededProps {
   project: ProjectResource;
+}
+
+interface IDataProps {
   applicationType: ApplicationTypeResource;
 }
 
-type IProps = Params & i18nProps;
-
-const mapRecordsToProps = (passedProps) => {
-  const { project } = passedProps;
-
-  return {
-    applicationType: (q) => q.findRelatedRecord(project, 'type'),
-  };
-};
+type IProps = INeededProps & IDataProps & i18nProps;
 
 class Details extends React.Component<IProps> {
   render() {
@@ -50,7 +45,11 @@ class Details extends React.Component<IProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, INeededProps>(
   withTranslations,
-  withOrbit(mapRecordsToProps)
+  withOrbit(({ project }) => {
+    return {
+      applicationType: (q) => q.findRelatedRecord(project, 'type'),
+    };
+  })
 )(Details);

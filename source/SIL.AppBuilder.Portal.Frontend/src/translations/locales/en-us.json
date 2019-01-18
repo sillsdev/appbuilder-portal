@@ -107,7 +107,9 @@
     "buildEngineUrl": "Build Engine URL",
     "buildEngineApiAccessToken": "Build Engine API Access Token"
   },
-  "products": {},
+  "products": {
+    "definition": "Useful files that result from a series of steps."
+  },
   "profile": {
     "title": "Profile",
     "pictureTitle": "Profile Picture",

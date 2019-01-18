@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { ResourceObject } from 'jsonapi-typescript';
-import { ProjectAttributes } from '@data/models/project';
-import { ReviewerAttributes } from '@data/models/reviewer';
 
-import { PROJECTS_TYPE, REVIEWERS_TYPE } from '@data';
+import { ProjectResource, ReviewerResource } from '@data';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 
@@ -14,12 +11,15 @@ import ReviewerItem from './item';
 
 import './styles.scss';
 
-interface Params {
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
-  reviewers: Array<ResourceObject<REVIEWERS_TYPE, ReviewerAttributes>>;
+interface INeededProps {
+  project: ProjectResource;
 }
 
-type IProps = Params & i18nProps;
+interface IDataProps {
+  reviewers: ReviewerResource[];
+}
+
+type IProps = IDataProps & INeededProps & i18nProps;
 
 class Reviewers extends React.Component<IProps> {
   state = {
@@ -57,7 +57,7 @@ class Reviewers extends React.Component<IProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, INeededProps>(
   withTranslations,
   withReviewers
 )(Reviewers);

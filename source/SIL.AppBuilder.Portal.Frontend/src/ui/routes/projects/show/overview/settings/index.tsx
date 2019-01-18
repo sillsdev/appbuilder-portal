@@ -8,12 +8,14 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { withSettings } from './with-settings';
 
-interface Params {
+interface INeededProps {
   project: ProjectResource;
+}
+interface ISettingsProps {
   toggleField: (fieldName: string, newToggleState: boolean) => void;
 }
 
-type IProps = Params & i18nProps;
+type IProps = INeededProps & ISettingsProps & i18nProps;
 
 class Settings extends React.Component<IProps> {
   toggle = (e, toggleData) => {
@@ -81,7 +83,7 @@ class Settings extends React.Component<IProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, INeededProps>(
   withTranslations,
   withSettings
 )(Settings);

@@ -13,11 +13,11 @@ import { i18nProps, withTranslations } from '@lib/i18n';
 import GroupSelect from '@ui/components/inputs/group-select';
 import UserSelect from '@ui/components/inputs/user-select';
 
-interface Params {
+interface INeededProps {
   project: ProjectResource;
 }
 
-type IProps = Params & IDataActionProps & i18nProps;
+type IProps = INeededProps & IDataActionProps & i18nProps;
 
 class Owners extends React.Component<IProps> {
   updateGroup = async (groupId) => {
@@ -87,9 +87,9 @@ class Owners extends React.Component<IProps> {
   }
 }
 
-export default compose(
+export default compose<IProps, INeededProps>(
   withTranslations,
-  withOrbit((passedProps: IProps) => {
+  withOrbit((passedProps: INeededProps) => {
     const { project } = passedProps;
 
     return {

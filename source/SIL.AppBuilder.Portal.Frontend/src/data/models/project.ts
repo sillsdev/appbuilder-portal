@@ -1,3 +1,4 @@
+import { Record } from '@orbit/data';
 import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type PROJECTS_TYPE = 'projects';
@@ -19,4 +20,4 @@ export interface ProjectAttributes extends AttributesObject {
   workflowProjectUrl?: string;
 }
 
-export type ProjectResource = ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+export type ProjectResource = ResourceObject<PROJECTS_TYPE, ProjectAttributes> & Record;
