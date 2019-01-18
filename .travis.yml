@@ -135,7 +135,7 @@ jobs:
             - docker-ce
       script:
         - echo "Installing $PYTHON_VERSION..."
-        - pyenv install $PYTHON_VERSION
+        - pyenv install $PYTHON_VERSION -f
         - pyenv global $PYTHON_VERSION
         # Deploy
         - time ./scripts/deploy-to-ecs.sh $TRAVIS_COMMIT $TRAVIS_BRANCH
