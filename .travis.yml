@@ -130,12 +130,18 @@ jobs:
         global:
           - PYENV_ROOT="$HOME/.pyenv"'
           - PATH="$PYENV_ROOT/bin:$PATH"
+          - PYTHON_VERSION=2.7.15
       addons:
         apt:
           packages:
             - docker-ce
       script:
-        - curl https://pyenv.run | bash
-        - exec "$SHELL"
-        - pyenv install 2.7.15
+        # Install Latest Python 2
+        # (why is Python 2 still a thing?)
+        - |
+          curl https://pyenv.run | bash
+          # exec "$SHELL"
+          pyenv install $PYTHON_VERSION
+          pyenv global $PYTHON_VERSION
+        # Deploy
         - time ./scripts/deploy-to-ecs.sh $TRAVIS_COMMIT $TRAVIS_BRANCH
