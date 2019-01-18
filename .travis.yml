@@ -1,5 +1,8 @@
 env:
-  - DOCKER_COMPOSE_VERSION=1.17.0 MOZ_HEADLESS=1
+  global:
+    - DOCKER_COMPOSE_VERSION=1.17.0 
+    - MOZ_HEADLESS=1
+    - PYTHON_VERSION=2.7.14
 
 stages:
   - "Quality"
@@ -126,15 +129,12 @@ jobs:
       sudo: required
       services:
         - docker
-      env:
-        global:
-          - PYTHON_VERSION="2.7.14"
       addons:
         apt:
           packages:
             - docker-ce
       script:
-        - echo "Installing ${PYTHON_VERSION}..."
+        - echo "Installing $PYTHON_VERSION..."
         - pyenv install $PYTHON_VERSION
         - pyenv global $PYTHON_VERSION
         # Deploy
