@@ -124,7 +124,7 @@ jobs:
 
     - stage: "Deploy"
       name: "Build and Push Docker Images"
-      if: branch IN (develop, master) AND type = push
+      if: branch IN (develop, master, ci-changes) AND type = push
       language: generic
       sudo: required
       services:
