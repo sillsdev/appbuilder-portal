@@ -35,13 +35,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             HubContext = hubContext;
 
         }
-        public async Task SendNotificationToOrgAdminsAndOwnerAsync(Organization organization, User owner, String messageId, Dictionary<string, object> subs)
+        public async Task SendNotificationToOrgAdminsAndOwnerAsync(Organization organization, User owner, String messageId, Dictionary<string, object> subs, String linkUrl = "")
         {
-            await SendNotificationToOrgAdminsAsync(organization, messageId, subs);
-            await SendNotificationToUserAsync(owner, messageId, subs, false);
+            await SendNotificationToOrgAdminsAndOwnerAsync(organization, owner, messageId, messageId, subs, linkUrl);
+            return;
         }
-        public async Task SendNotificationToOrgAdminsAsync(Organization organization, String messageId, Dictionary<string, object> subs)
+        public async Task SendNotificationToOrgAdminsAndOwnerAsync(Organization organization, User owner, String ownerMessageId, String orgAdminMessageId, Dictionary<string, object> subs, String linkUrl = "")
         {
+            var sentNotifictionToOwner = await SendNotificationToOrgAdminsAsync(organization, orgAdminMessageId, subs, linkUrl, owner.Id);
+            // Don't resend notification to owner if they already received one as an org admin
+            if (!sentNotifictionToOwner)
+            {
+                await SendNotificationToUserAsync(owner, ownerMessageId, subs, linkUrl, false);
+            }
+        }
+        public async Task<bool> SendNotificationToOrgAdminsAsync(Organization organization, String messageId, Dictionary<string, object> subs, String linkUrl = "", int ownerId = 0)
+        {
+            var sentNotificationToOwner = false;
             var orgAdmins = UserRolesRepository.Get()
                 .Include(ur => ur.User)
                 .Include(ur => ur.Role)
@@ -49,38 +59,46 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .ToList();
             foreach (UserRole orgAdmin in orgAdmins)
             {
-                await SendNotificationToUserAsync(orgAdmin.User, messageId, subs, true);
+                if (orgAdmin.UserId == ownerId)
+                {
+                    sentNotificationToOwner = true;
+                }
+                await SendNotificationToUserAsync(orgAdmin.User, messageId, subs, linkUrl, true);
             }
+            return sentNotificationToOwner;
         }
-        public async Task SendNotificationToSuperAdminsAsync(String messageId, Dictionary<string, object> subs)
+        public async Task SendNotificationToSuperAdminsAsync(String messageId, Dictionary<string, object> subs, String linkUrl = "", bool? forceEmail = true)
         {
             var superAdmins = UserRolesRepository.Get()
                 .Include(ur => ur.User)
                 .Include(ur => ur.Role)
                 .Where(ur => ur.Role.RoleName == RoleName.SuperAdmin)
+                .Select(ur => ur.User)
                 .ToList();
-            foreach (UserRole superAdmin in superAdmins)
+            foreach (User superAdmin in superAdmins.Distinct(new IdentifiableComparer()))
             {
-                await SendNotificationToUserAsync(superAdmin.User, messageId, subs, true);
+                await SendNotificationToUserAsync(superAdmin, messageId, subs, linkUrl, forceEmail);
             }
         }
-        public async Task SendNotificationToUserAsync(User user, String messageId, Dictionary<string, object> subs, bool sendEmailOverride = false)
+        public async Task SendNotificationToUserAsync(User user, String messageId, Dictionary<string, object> subs, String linkUrl = "", bool? forceEmail = null)
         {
             var locale = user.LocaleOrDefault();
             var fullMessageId = "notifications.notification." + messageId;
             var translated = await Translator.TranslateAsync(locale, "notifications", fullMessageId, subs);
-            var sendEmail = true;
-            if (!sendEmailOverride && (user.EmailNotification != null))
+            var sendEmail = !user.EmailNotification.HasValue || user.EmailNotification.Value;
+            if (forceEmail.HasValue)
             {
-                sendEmail = (bool)user.EmailNotification;
+                sendEmail = forceEmail.Value;
             }
+
             var notification = new Notification
             {
                 UserId = user.Id,
                 Message = translated,
                 SendEmail = sendEmail,
                 MessageSubstitutions = subs,
-                MessageId = messageId
+                MessageId = messageId,
+                LinkUrl = linkUrl
             };
             var updatedNotification = await NotificationRepository.CreateAsync(notification);
             await HubContext.Clients.User(user.ExternalId).SendAsync("Notification", updatedNotification.Id);
@@ -107,6 +125,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         }
         protected async Task SendEmailAsync(Notification notification)
         {
+            var template = "Notification.txt";
+            var buildEngineUrlText = "";
             var locale = notification.User.LocaleOrDefault();
             var fullBodyId = "notifications.body." + notification.MessageId;
             var fullSubjectId = "notifications.subject." + notification.MessageId;
@@ -115,14 +135,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var body = await Translator.TranslateAsync(locale, "notifications", fullBodyId, subsDict);
             notification.DateEmailSent = DateTime.UtcNow;
             await NotificationRepository.UpdateAsync(notification);
+            if (!string.IsNullOrEmpty(notification.LinkUrl))
+            {
+                template = "NotificationWithLink.txt";
+                var buildEngineUrlIndex = "notifications.body.buildEngineUrl";
+                buildEngineUrlText = await Translator.TranslateAsync(locale, "notifications", buildEngineUrlIndex, subsDict);
+            }
             var email = new Email
             {
                 To = notification.User.Email,
                 Subject = subject,
-                ContentTemplate = "Notification.txt",
+                ContentTemplate = template,
                 ContentModel = new
                 {
-                    Message = body
+                    Message = body,
+                    BuildEngineUrlText = buildEngineUrlText,
+                    LinkUrl = notification.LinkUrl
                 }
             };
             var result = await EmailRepository.CreateAsync(email);

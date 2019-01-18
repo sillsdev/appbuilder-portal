@@ -108,22 +108,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 product.WorkflowJobId = jobResponse.Id;
                 await ProductRepository.UpdateAsync(product);
                 var messageParms = new Dictionary<string, object>()
-            {
-                { "projectName", product.Project.Name },
-                { "productName", product.ProductDefinition.Name}
-            };
+                {
+                    { "projectName", product.Project.Name },
+                    { "productName", product.ProductDefinition.Name}
+                };
                 await sendNotificationService.SendNotificationToUserAsync(product.Project.Owner, "productCreatedSuccessfully", messageParms);
                 return;
             }
             else
             {
+                var buildEngineUrl = product.Project.Organization.BuildEngineUrl + "/job-admin";
                 var messageParms = new Dictionary<string, object>()
                     {
                         { "projectName", product.Project.Name },
                         { "productName", product.ProductDefinition.Name},
-                        { "buildEngineUrl", product.Project.Organization.BuildEngineUrl }
+                        { "buildEngineUrl", buildEngineUrl }
                     };
-                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "productCreationFailed", messageParms);
+                await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "productCreationFailedOwner", "productCreationFailedAdmin", messageParms, buildEngineUrl);
                 throw new Exception("Create job failed");
             }
         }

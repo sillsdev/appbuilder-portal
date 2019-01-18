@@ -327,7 +327,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\"}", notifications[0].MessageSubstitutionsJson);
-            Assert.Equal("releaseFailed", notifications[0].MessageId);
+            Assert.Equal("releaseFailedAdmin", notifications[0].MessageId);
+            Assert.Equal("https://buildengine.testorg1", notifications[0].LinkUrl);
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Get_Release_Status_Unavailable()

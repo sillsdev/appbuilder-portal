@@ -187,14 +187,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected async Task ProjectCreationFailedAsync(Project project, ProjectResponse projectResponse)
         {
+            var buildEngineUrl = project.Organization.BuildEngineUrl + "/project-admin/view?id=" + project.WorkflowProjectId.ToString();
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", project.Name },
                 { "projectStatus", projectResponse.Status },
                 { "projectError", projectResponse.Error },
-                { "buildEngineUrl", project.Organization.BuildEngineUrl }
+                { "buildEngineUrl", buildEngineUrl }
             };
-            await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(project.Organization, project.Owner, "projectCreationFailed", messageParms);
+            await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(project.Organization, project.Owner, "projectCreationFailedOwner", "projectCreationFailedAdmin", messageParms, buildEngineUrl);
             ClearAndExit(project.Id);
         }
         // This method will kill the current recurring job if it exists

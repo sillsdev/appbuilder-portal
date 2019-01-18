@@ -217,15 +217,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected async Task ReleaseCreationFailedAsync(Product product, ReleaseResponse buildEngineRelease)
         {
             ClearRecurringJob(product.Id);
+            var buildEngineUrl = product.Project.Organization.BuildEngineUrl;
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
                 { "productName", product.ProductDefinition.Name},
                 { "releaseStatus", buildEngineRelease.Status },
                 { "releaseError", buildEngineRelease.Error },
-                { "buildEngineUrl", product.Project.Organization.BuildEngineUrl }
+                { "buildEngineUrl", buildEngineUrl }
             };
-            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "releaseFailed", messageParms);
+            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "releaseFailedOwner", "releaseFailedAdmin", messageParms, buildEngineUrl);
         }
         protected ReleaseResponse GetBuildEngineRelease(Product product)
         {

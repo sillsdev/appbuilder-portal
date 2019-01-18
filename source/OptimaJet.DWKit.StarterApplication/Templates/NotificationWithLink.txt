@@ -1,0 +1,9 @@
+﻿@{
+    DisableEncoding = true;
+}
+<html>
+<body>
+    @Model.Message
+    <a href="@Model.LinkUrl"> @Model.BuildEngineUrlText </a>
+</body>
+</html>

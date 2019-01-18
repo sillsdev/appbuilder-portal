@@ -430,8 +430,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
-            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\"}", notifications[0].MessageSubstitutionsJson);
-            Assert.Equal("buildFailed", notifications[0].MessageId);
+            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/build-admin/view?id=2\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildFailedAdmin", notifications[0].MessageId);
+            Assert.Equal("https://buildengine.testorg1/build-admin/view?id=2", notifications[0].LinkUrl);
         }
 
         [Fact(Skip = skipAcceptanceTest)]
