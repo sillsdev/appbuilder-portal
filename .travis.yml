@@ -139,7 +139,8 @@ jobs:
         # Install Latest Python 2
         # (why is Python 2 still a thing?)
         - |
-          curl https://pyenv.run | bash
+          # curl https://pyenv.run | bash
+          pyenv install --list
           # exec "$SHELL"
           pyenv install $PYTHON_VERSION
           pyenv global $PYTHON_VERSION

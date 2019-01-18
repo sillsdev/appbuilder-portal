@@ -1,9 +1,7 @@
 #!/bin/bash
 # $1 - current version (e.g. commit sha)
 # $2 - branch
-sudo add-apt-repository ppa:deadsnakes/ppa -y
-sudo apt-get -qqy update
-sudo apt-get install -y python2.7
+
 time ( sudo ./run clean:api )
 
 

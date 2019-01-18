@@ -1,7 +1,7 @@
 
 set -a
 
-./build-setup.sh $1 $2
+./scripts/build-setup.sh $1 $2
 
 NGINX_BUILD_TAG="nginx-$CURRENT_VERSION"
 NGINX_IMAGE_URL=$AWS_ECR_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$REPO_PORTAL_NGINX

@@ -1,6 +1,6 @@
 set -a
 
-./build-setup.sh $1 $2
+./scripts/build-setup.sh $1 $2
 
 API_BUILD_TAG="api-$CURRENT_VERSION"
 API_IMAGE_URL=$AWS_ECR_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$REPO_PORTAL_API
