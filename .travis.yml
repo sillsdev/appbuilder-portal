@@ -128,18 +128,14 @@ jobs:
         - docker
       env:
         global:
-          - PYTHON_VERSION=2.7.14
+          - PYTHON_VERSION="2.7.14"
       addons:
         apt:
           packages:
             - docker-ce
       script:
-        # Install Latest Python 2
-        # (why is Python 2 still a thing?)
         - |
-          # curl https://pyenv.run | bash
-          pyenv install --list
-          # exec "$SHELL"
+          echo "Installing ${PYTHON_VERSION}..."
           pyenv install $PYTHON_VERSION
           pyenv global $PYTHON_VERSION
         # Deploy
