@@ -39,23 +39,32 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         private async Task SyncDatabaseTablesAsync()
         {
             // Remove DWUsers that are not in Users
-            var users = UserRepository.Get().ToList();
+            var users = UserRepository
+                .Get()
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .ToList();
             var dwusers = SecurityUser.SelectAsync().Result;
             var hashUsers = GetHashUsers(users);
             var hashDwUsers = GetHashDwUsers(dwusers);
-            var removeList = hashDwUsers.Keys.Except(hashUsers.Keys).ToList();
-            if (removeList.Any()) {
+            var removeUsers = hashDwUsers.Keys.Except(hashUsers.Keys).ToList();
+            if (removeUsers.Any()) {
                 try
                 {
-                    await SecurityUser.DeleteAsync(removeList);
+                    // Must remove SecurityUserToSecurityRole first or there
+                    // would be an exception attempting to delete the user where
+                    // the relationship is still there
+                    var removeAdmins = GetHashDwAdmins(removeUsers);
+                    await SecurityUserToSecurityRole.DeleteAsync(removeAdmins.Values.ToList());
+                    await SecurityUser.DeleteAsync(removeUsers);
                     hashDwUsers = hashDwUsers
-                        .Where(kvp => !removeList.Contains(kvp.Key))
+                        .Where(kvp => !removeUsers.Contains(kvp.Key))
                         .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 }
                 catch (Exception ex)
                 {
                     // TODO: SendNotification
-                    Log.Error(ex, $"Failed to Delete DwSecurityUsers: {String.Join(", ", removeList.ToArray())}");
+                    Log.Error(ex, $"Failed to Delete DwSecurityUsers: {String.Join(", ", removeUsers.ToArray())}");
                 }
             }
 
@@ -85,7 +94,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     SyncUserToDwUser(user, dwuser);
                     await dwuser.ApplyAsync();
                     await EnsureSecurityCredentials(user, dwuser);
-
+                    await SyncRoles(user);
                 }
                 catch (Exception ex)
                 {
@@ -151,6 +160,35 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             await SecurityCredential.ApplyAsync(credential);
         }
 
+        private async Task SyncRoles(User user)
+        {
+            var adminRole = await SecurityRole.SelectByCode("Admins");
+            var dwUserToRole = await SecurityUserToSecurityRole.SelectByUser(user.WorkflowUserId.Value);
+            if (user.HasRole(RoleName.SuperAdmin))
+            {
+                // Make sure User is in "Admins" Role
+                if (!dwUserToRole.Any(utr => utr.SecurityRoleId == adminRole.Id))
+                {
+                    var newAdmin = new SecurityUserToSecurityRole
+                    {
+                        Id = Guid.NewGuid(),
+                        SecurityRoleId = adminRole.Id,
+                        SecurityUserId = user.WorkflowUserId.Value
+                    };
+
+                    await SecurityUserToSecurityRole.ApplyAsync(newAdmin);
+                }
+            }
+            else
+            {
+                // Make sure User is not "Admins" Role
+                var userAdminRole = dwUserToRole.FirstOrDefault(dtr => dtr.SecurityRoleId == adminRole.Id);
+                if (userAdminRole != null)
+                {
+                    await SecurityUserToSecurityRole.DeleteAsync(userAdminRole.Id);
+                }
+            }
+        }
         private Dictionary<Guid, User> GetHashUsers(List<User> users)
         {
             var hash = users
@@ -168,6 +206,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             var hash = dwusers
                 .Where(dwuser => !dwuser.Name.Equals("admin"))
                 .ToDictionary(dwuser => dwuser.Id, dwuser => dwuser);
+            return hash;
+        }
+
+        private Dictionary<Guid, SecurityUserToSecurityRole> GetHashDwAdmins(List<Guid> userids)
+        {
+            var adminRole = SecurityRole.SelectByCode("Admins").Result;
+            var usersToAdminRoles = SecurityUserToSecurityRole.SelectByRole(adminRole.Id).Result;
+            var hash = usersToAdminRoles
+                .Where(ur => ur.SecurityRoleId == adminRole.Id && userids.Any(uid => uid == ur.SecurityUserId))
+                .ToDictionary(ur => ur.SecurityUserId, ur => ur);
+
             return hash;
         }
     }
