@@ -15,6 +15,7 @@ import { ScrollToTop } from '@lib/routing';
 import i18n from '../translations';
 
 import { RouteListener } from './components/route-listener';
+import DebugInfo from './components/debug-info';
 import RootRoute from './routes/root';
 
 interface IProps {
@@ -52,6 +53,7 @@ export default class Application extends React.Component<IProps> {
                     <ScrollToTop>
                       <RootRoute />
                     </ScrollToTop>
+                    <DebugInfo />
                   </>
                 </Router>
               </ReduxProvider>
