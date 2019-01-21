@@ -1,6 +1,6 @@
 set -a
 
-./scripts/build-setup.sh $1 $2
+source ./scripts/build-setup.sh
 
 echo "Attempting to deploy $CURRENT_VERSION to Cluster: '$ECS_CLUSTER'..."
 
