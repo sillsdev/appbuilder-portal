@@ -15,6 +15,7 @@ export interface IProvidedProps {
   updateGroup: (groupId: Id) => any;
   updateOwner: (userId: Id) => any;
   updateProduct: (productDefinition: ProductDefinitionResource) => any;
+  productForProductDefinition: (productDefinition) => ProductResource;
 }
 
 interface IOwnProps {
@@ -78,13 +79,21 @@ export function withDataActions<T>(WrappedComponent) {
       );
     };
 
-    updateProduct = (productDefinition) => {
-      const { project, products, dataStore } = this.props;
+    productForProductDefinition = (productDefinition) => {
+      const { products } = this.props;
 
-      const productSelected = products.find((product) => {
+      const matchingProduct = products.find((product) => {
         const { data } = relationshipFor(product, 'productDefinition');
         return data.id === productDefinition.id;
       });
+
+      return matchingProduct;
+    };
+
+    updateProduct = (productDefinition) => {
+      const { project, products, dataStore } = this.props;
+
+      const productSelected = this.productForProductDefinition(productDefinition);
 
       if (productSelected) {
         return dataStore.update((q) => q.removeRecord(productSelected), defaultOptions());
@@ -112,6 +121,7 @@ export function withDataActions<T>(WrappedComponent) {
         updateGroup: this.updateGroup,
         updateOwner: this.updateOwner,
         updateProduct: this.updateProduct,
+        productForProductDefinition: this.productForProductDefinition,
       };
 
       return <WrappedComponent {...props} />;

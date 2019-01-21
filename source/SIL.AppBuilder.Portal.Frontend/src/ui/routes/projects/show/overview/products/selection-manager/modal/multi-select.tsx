@@ -5,14 +5,11 @@ import {
   OrganizationResource,
   ProductDefinitionResource,
   ProjectResource,
+  ProductResource,
   withLoader,
   attributesFor,
 } from '@data';
 
-import {
-  withDataActions,
-  IProvidedProps as IDataActionsProps,
-} from '@data/containers/resources/project/with-data-actions';
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { compareVia } from '@lib/collection';
@@ -23,6 +20,7 @@ interface INeededProps {
   organization: OrganizationResource;
   selected?: ProductDefinitionResource[];
   project: ProjectResource;
+  onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
 }
 
 interface IPendingUpdates {
@@ -30,14 +28,16 @@ interface IPendingUpdates {
 }
 
 interface IComposedProps {
+  selectedItemJoinsWith: string;
+  emptyListLabel: string;
+  displayProductIcon: boolean;
   list: ProductDefinitionResource[];
 }
 
-type IProps = INeededProps & IDataActionsProps & i18nProps & IComposedProps;
+type IProps = INeededProps & i18nProps & IComposedProps;
 
 export default compose<IProps, INeededProps>(
   withTranslations,
-  withDataActions,
   withRelationships(({ organization }: INeededProps) => {
     return {
       list: [organization, 'organizationProductDefinitions', 'productDefinition'],
@@ -57,21 +57,40 @@ export default compose<IProps, INeededProps>(
     pendingUpdates: IPendingUpdates = {};
 
     onSelectionChange = async (item: ProductDefinitionResource) => {
-      if (!this.pendingUpdates[item.id]) {
-        this.pendingUpdates[item.id] = true;
-        const { t, updateProduct } = this.props;
-        try {
-          await updateProduct(item);
-          toast.success(t('updated'));
-        } catch (e) {
-          toast.error(e.message);
-        }
-        delete this.pendingUpdates[item.id];
+      if (this.pendingUpdates[item.id]) {
+        return;
       }
+
+      this.pendingUpdates[item.id] = true;
+
+      const { onChangeSelection } = this.props;
+
+      await onChangeSelection(item);
+
+      delete this.pendingUpdates[item.id];
     };
 
     render() {
-      return <MultiSelect {...this.props} onChange={this.onSelectionChange} />;
+      const {
+        selected,
+        t,
+        list,
+        selectedItemJoinsWith,
+        emptyListLabel,
+        displayProductIcon,
+      } = this.props;
+
+      const selectProps = {
+        list,
+        selectedItemJoinsWith,
+        emptyListLabel,
+        displayProductIcon,
+        selected,
+        t,
+        onChange: this.onSelectionChange,
+      };
+
+      return <MultiSelect {...selectProps} />;
     }
   }
 );
