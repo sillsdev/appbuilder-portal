@@ -59,7 +59,7 @@
     "query-string": "^6.1.0",
     "react": "^16.0.0",
     "react-action-decorators": "^0.0.4",
-    "react-datepicker": "^1.8.0",
+    "react-datepicker": "^2.0.0",
     "react-day-picker": "^7.1.10",
     "react-dom": "^16.0.0",
     "react-dropzone-component": "^3.2.0",
