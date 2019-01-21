@@ -2,6 +2,7 @@
   "labels": [
     "dependency upgrade"
   ],
+  "masterIssue": true,
   "extends": [
     "config:base"
   ],
