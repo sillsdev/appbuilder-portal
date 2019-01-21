@@ -38,11 +38,6 @@ class ProductItem extends React.Component<IProps> {
         case COLUMN_KEY.PRODUCT_BUILD_VERSION:
           column.value = buildVersion || '-';
           break;
-        case COLUMN_KEY.PRODUCT_CREATED_ON:
-          column.value = moment(createdOn)
-            .tz(timezone)
-            .format('L');
-          break;
         default:
           column.value = 'active column not recognized';
       }
