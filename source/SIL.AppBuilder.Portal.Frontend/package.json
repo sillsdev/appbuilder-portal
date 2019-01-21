@@ -66,7 +66,7 @@
     "react-i18next": "^8.3.9",
     "react-notify-toast": "^0.5.0",
     "react-orbitjs": "github:NullVoxPopuli/react-orbitjs#c1f47d604a56be00a2986740ca841181db225f09",
-    "react-redux": "^5.0.7",
+    "react-redux": "^6.0.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-timezone": "^2.1.0",
