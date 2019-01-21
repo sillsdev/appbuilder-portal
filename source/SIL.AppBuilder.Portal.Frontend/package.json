@@ -15,7 +15,7 @@
     "webpack-dev": "./node_modules/.bin/webpack-dev-server",
     "tslint": "./node_modules/.bin/tslint -c ./tslint.json --project ./tsconfig.json",
     "start:dev": "REVISION=$(git rev-parse HEAD) BUILD_DATE=$(date) yarn webpack-dev",
-    "webpack:build": "REVISION=$(git rev-parse HEAD) BUILD_DATE=$(date) NODE_ENV=production yarn webpack --env production",
+    "webpack:build": "BUILD_DATE=$(date) NODE_ENV=production yarn webpack --env production",
     "webpack:build:analyze": "./scripts/analyze.sh",
     "webpack:analyze": "./node_modules/.bin/webpack-bundle-analyzer dist/stats.json",
     "analyze": "yarn webpack:build:analyze && yarn webpack:analyze",

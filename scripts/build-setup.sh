@@ -23,11 +23,28 @@ esac
 
 
 docker --version # document the version travis is using
-sudo apt-get install -y jq
+
+if [ `builtin type -p jq` ]; then
+  echo "System already has jq";
+else
+  sudo apt-get install -y jq
+fi
 which jq && jq --version
-pip install --user awscli # install aws cli w/o sudo
+
+
+if [ `builtin type -p aws` ]; then
+  echo "System already has the aws cli";
+else
+  pip install --user awscli # install aws cli w/o sudo
+fi
 
 export PATH=$PATH:$HOME/.local/bin # put aws in path
-(cd $HOME/.local/bin && curl -O https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy && chmod +x ecs-deploy) 
+
+if [ `builtin type -p ecs-deploy` ]; then
+  echo "System already has ecs-deploy";
+else
+  (cd $HOME/.local/bin && curl -O https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy && chmod +x ecs-deploy)
+fi
+
 eval $(aws ecr get-login --no-include-email --region us-east-1) #needs AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars
 
