@@ -29,7 +29,9 @@
     "notAvailable": "Not Available",
     "archive": "Archive",
     "reactivate": "Reactivate",
-    "build": "Build / Rebuild"
+    "build": "Build / Rebuild",
+    "updated": "Updated",
+    "error": "Error"
   },
   "auth": {
     "title": "Scriptoria",
@@ -108,7 +110,7 @@
     "buildEngineApiAccessToken": "Token de acceso del motor de construcción"
   },
   "products": {
-
+    "definition": "Useful files that result from a series of steps."
   },
   "profile": {
     "title": "Perfil",
