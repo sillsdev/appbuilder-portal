@@ -26,6 +26,11 @@ ENV AUTH0_DOMAIN sil-appbuilder.auth0.com
 ENV AUTH0_CONNECTION Username-Password-Authentication
 ENV NODE_ENV production
 
+ARG SHOW_DEBUG
+ARG REVISION
+ENV SHOW_DEBUG=$SHOW_DEBUG
+ENV REVISION=$REVISION
+
 WORKDIR /src
 COPY --from=dependencies /src/node_modules ./node_modules
 COPY source/SIL.AppBuilder.Portal.Frontend /src

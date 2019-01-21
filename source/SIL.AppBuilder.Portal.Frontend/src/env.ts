@@ -14,9 +14,12 @@ export const auth0 = {
   scope: process.env.AUTH0_SCOPE,
 };
 
-export const NODE_ENV = process.env.NODE_ENV;
+export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const isTesting = process.env.IS_TESTING;
-export const isDevelopment = NODE_ENV === 'development' || !NODE_ENV;
+export const isDevelopment = NODE_ENV === 'development';
+export const showDebug = process.env.DEBUG_INFO || NODE_ENV === 'development';
+export const buildDate = process.env.BUILD_DATE;
+export const revision = process.env.REVISION;
 
 export const api = {
   host: process.env.API_HOST,

@@ -82,6 +82,9 @@ const plugins = [
     'API_HOST',
     'HAS_API',
     'NODE_ENV',
+    'DEBUG_INFO',
+    'BUILD_DATE',
+    'REVISION',
     'IS_TESTING',
   ]),
 ];

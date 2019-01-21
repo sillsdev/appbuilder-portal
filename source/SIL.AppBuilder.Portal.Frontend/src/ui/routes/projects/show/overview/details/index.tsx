@@ -1,27 +1,41 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
+import { Form } from 'semantic-ui-react';
 
 import { ProjectResource, ApplicationTypeResource, attributesFor } from '@data';
 
+import {
+  withDataActions,
+  IProvidedProps as IProjectActions,
+} from '@data/containers/resources/project/with-data-actions';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import * as toast from '@lib/toast';
+import AutoSavingInput from '@ui/components/inputs/auto-saving-input';
 
-interface Params {
+interface INeededProps {
   project: ProjectResource;
+}
+
+interface IDataProps {
   applicationType: ApplicationTypeResource;
 }
 
-type IProps = Params & i18nProps;
-
-const mapRecordsToProps = (passedProps) => {
-  const { project } = passedProps;
-
-  return {
-    applicationType: (q) => q.findRelatedRecord(project, 'type'),
-  };
-};
+type IProps = INeededProps & IDataProps & i18nProps & IProjectActions;
 
 class Details extends React.Component<IProps> {
+  updateDescription = async (value: string) => {
+    const { t, updateAttribute } = this.props;
+
+    try {
+      await updateAttribute('description', value);
+
+      toast.success(t('common.updated'));
+    } catch (e) {
+      toast.error(e);
+    }
+  };
+
   render() {
     const { t, project, applicationType } = this.props;
     const { language, description } = attributesFor(project);
@@ -44,13 +58,20 @@ class Details extends React.Component<IProps> {
             </p>
           </div>
         </div>
-        <div className='p-t-lg p-b-lg fs-16'>{description}</div>
+        <div className='p-t-lg p-b-lg fs-16'>
+          <AutoSavingInput value={description} onChange={this.updateDescription} />
+        </div>
       </div>
     );
   }
 }
 
-export default compose(
+export default compose<IProps, INeededProps>(
   withTranslations,
-  withOrbit(mapRecordsToProps)
+  withOrbit(({ project }) => {
+    return {
+      applicationType: (q) => q.findRelatedRecord(project, 'type'),
+    };
+  }),
+  withDataActions
 )(Details);

@@ -20,14 +20,17 @@ import ProductItem from './item';
 
 import './styles.scss';
 
-interface IOwnProps {
+interface INeededProps {
   project: ProjectResource;
+}
+
+interface IOwnProps {
   products: ProductResource[];
   organization: OrganizationResource;
   isEmptyWorkflowProjectUrl: boolean;
 }
 
-type IProps = IOwnProps & i18nProps;
+type IProps = IOwnProps & i18nProps & INeededProps;
 
 class Products extends React.Component<IProps> {
   render() {
@@ -50,7 +53,9 @@ class Products extends React.Component<IProps> {
 
     return (
       <div data-test-project-products className='product p-t-lg p-b-xl m-b-lg thin-bottom-border'>
-        <h3 className='m-b-md fs-21'>{t('project.products.title')}</h3>
+        <h3 className='m-b-sm fs-21'>{t('project.products.title')}</h3>
+        <p className='italic m-b-md'>{t('products.definition')}</p>
+
         {!isEmpty(products) && (
           <div className='flex align-items-center fs-13 bold gray-text m-b-sm d-xs-only-none d-sm-only-none'>
             <div className='w-55' />
@@ -65,7 +70,7 @@ class Products extends React.Component<IProps> {
     );
   }
 }
-export default compose(
+export default compose<IProps, INeededProps>(
   withTranslations,
   withOrbit(({ project }) => ({
     organization: (q) => q.findRelatedRecord(project, 'organization'),
