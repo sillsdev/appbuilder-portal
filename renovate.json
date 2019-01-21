@@ -28,6 +28,25 @@
       ]
     },
     {
+      "sourceUrlPrefixes": ["https://github.com/aspnet/Extensions"],
+      "groupName": "ASP.NET Extensions"
+    },
+    {
+      "packagePatterns": ["DWKit"],
+      "groupName": "DWKit packages"
+    },
+    {
+      "packagePatterns": ["^Microsoft.AspNetCore"],
+      "groupName": "ASP.NET Core packages"
+    },
+    {
+      "sourceUrlPrefixes": [
+        "https://github.com/aspnet/MetaPackages",
+        "https://github.com/aspnet/AspNetCore"
+      ],
+      "groupName": "ASP.NET Core packages"
+    },
+    {
         "paths": ["source/SIL.AppBuilder.Portal.Frontend/package.json"],
         "rangeStrategy": "replace",
         "enabled": true
