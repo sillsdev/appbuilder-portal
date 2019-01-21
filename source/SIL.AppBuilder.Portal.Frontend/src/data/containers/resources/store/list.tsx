@@ -28,7 +28,9 @@ export function withNetwork<TWrappedProps>(options = {}) {
         applySort,
       } = passedProps;
 
-      const requestOptions = buildOptions();
+      const requestOptions = buildOptions({
+        include: ['store-type'],
+      });
 
       return {
         cacheKey: [sortProperty, filters, currentPageOffset, currentPageSize],

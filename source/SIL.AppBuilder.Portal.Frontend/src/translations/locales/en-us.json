@@ -110,7 +110,8 @@
     "buildEngineApiAccessToken": "Build Engine API Access Token"
   },
   "products": {
-    "definition": "Useful files that result from a series of steps."
+    "definition": "Useful files that result from a series of steps.",
+    "storeSelect": "Select a store for {name}"
   },
   "profile": {
     "title": "Profile",

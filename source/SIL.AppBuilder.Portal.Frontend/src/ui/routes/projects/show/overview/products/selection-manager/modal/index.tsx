@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
-
 import {
   withDataActions,
   IProvidedProps as IDataActionsProps,
@@ -25,8 +23,6 @@ import {
   IProvidedProps as IProductSelectionState,
 } from './with-product-selection-state';
 import ProductSelection from './product-selection';
-
-
 import StoreSelection from './store-selection';
 
 interface INeededProps {
@@ -56,7 +52,6 @@ export default compose<IProps, INeededProps>(
     onStoreSelect = async (store: StoreTypeResource) => {
       console.log('selected', store);
     };
-
 
     render() {
       const { productSelection, t, selected, organization, project } = this.props;

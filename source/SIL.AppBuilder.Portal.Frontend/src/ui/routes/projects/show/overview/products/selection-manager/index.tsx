@@ -12,9 +12,7 @@ interface INeededProps {
 
 class SelectionManager extends React.Component<INeededProps> {
   render() {
-    return (
-      <ProductSelectionModal { ...this.props }/>
-    );
+    return <ProductSelectionModal {...this.props} />;
   }
 }
 

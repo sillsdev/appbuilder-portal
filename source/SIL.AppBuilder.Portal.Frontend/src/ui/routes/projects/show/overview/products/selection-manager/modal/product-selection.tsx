@@ -1,13 +1,8 @@
 import * as React from 'react';
-
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 
-import {
-  OrganizationResource,
-  ProductDefinitionResource,
-  ProjectResource
-} from '@data';
+import { OrganizationResource, ProductDefinitionResource, ProjectResource } from '@data';
 
 import { i18nProps } from '@lib/i18n';
 
@@ -68,4 +63,4 @@ export default (props: IProps & i18nProps) => {
       </Modal.Actions>
     </Modal>
   );
-}
+};

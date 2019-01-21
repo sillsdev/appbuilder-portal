@@ -1,6 +1,7 @@
 import { compose, withProps } from 'recompose';
 
-import { StoreResource, StoreTypeResource, relationshipFor } from '@data';
+import { StoreResource, StoreTypeResource, relationshipFor, idFor } from '@data';
+
 import { withTranslations } from '@lib/i18n';
 import { withNetwork as withStores } from '@data/containers/resources/store/list';
 import { withLoader } from '@data/containers/with-loader';
@@ -17,12 +18,11 @@ export default compose(
   withStores(),
   withLoader(({ error, stores }) => !error && !stores),
   withProps(({ stores, t, ofStoreType }) => ({
-    list: ( stores || []).filter((store) => {
-      console.log(ofStoreType, relationshipFor(store, 'storeType'));
+    list: (stores || []).filter((store) => {
       if (!ofStoreType) {
         return true;
       }
-      return relationshipFor(store, 'storeType').id === ofStoreType.id;
+      return idFor(relationshipFor(store, 'storeType')) === ofStoreType.id;
     }),
     selectedItemJoinsWith: 'store',
     emptyListLabel: t('org.nostores'),

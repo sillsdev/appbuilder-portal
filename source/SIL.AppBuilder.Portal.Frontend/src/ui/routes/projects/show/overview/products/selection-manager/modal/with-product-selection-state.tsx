@@ -2,6 +2,7 @@ import * as React from 'react';
 import { DataProps } from 'react-orbitjs';
 
 import { ProductDefinitionResource, StoreTypeResource, relationshipFor } from '@data';
+
 import { IProvidedProps as IDataActionsProps } from '@data/containers/resources/project/with-data-actions';
 import * as toast from '@lib/toast';
 import { i18nProps } from '@lib/i18n';
@@ -18,7 +19,6 @@ export interface IProvidedProps {
     storeNeededFor: ProductDefinitionResource;
     cancelStore: () => void;
     onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
-
   };
 }
 
@@ -32,7 +32,7 @@ interface IState {
 
 export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
   return class extends React.Component<IProps & TWrappedProps, IState> {
-    state = { isModalOpen: false, storeNeededFor: undefined, storeType: undefined, };
+    state = { isModalOpen: false, storeNeededFor: undefined, storeType: undefined };
 
     toggleModal = () => this.setState({ isModalOpen: !this.state.isModalOpen });
     showToast = () => toast.warning(this.props.t('project.products.creationInProgress'));
@@ -42,8 +42,12 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
       // if the product needs a store, show the store selection modal,
       // otherwise go-ahead and add the product.
       const { t, updateProduct, dataStore } = this.props;
-      const workflow = await dataStore.cache.query(q => q.findRelatedRecord(definition, 'workflow'));
-      const storeType = await dataStore.cache.query(q => q.findRelatedRecord(workflow, 'storeType'));
+      const workflow = await dataStore.cache.query((q) =>
+        q.findRelatedRecord(definition, 'workflow')
+      );
+      const storeType = await dataStore.cache.query((q) =>
+        q.findRelatedRecord(workflow, 'storeType')
+      );
 
       if (!storeType) {
         return await this.updateProduct(definition);
