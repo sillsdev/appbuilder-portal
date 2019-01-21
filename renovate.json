@@ -40,6 +40,10 @@
       "groupName": "ASP.NET Core packages"
     },
     {
+      "packagePatterns": ["^@types"],
+      "groupName": "TypeScript type definitions"
+    },
+    {
       "sourceUrlPrefixes": [
         "https://github.com/aspnet/MetaPackages",
         "https://github.com/aspnet/AspNetCore"
