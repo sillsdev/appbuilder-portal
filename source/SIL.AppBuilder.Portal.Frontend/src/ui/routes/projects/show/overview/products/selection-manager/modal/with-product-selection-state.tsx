@@ -82,17 +82,18 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
 
     render() {
       const { isEmptyWorkflowProjectUrl } = this.props;
-      const { isModalOpen, storeNeededFor } = this.state;
+      const { isModalOpen, storeNeededFor, storeType } = this.state;
 
       const toggleModal = isEmptyWorkflowProjectUrl ? this.showToast : this.toggleModal;
       const props = {
         ...this.props,
         productSelection: {
           isModalOpen,
-          storeNeededFor,
           toggleModal: this.toggleModal,
           onChangeSelection: this.onChangeSelection,
           cancelStore: this.cancelStore,
+          storeNeededFor,
+          storeType,
         },
       };
 

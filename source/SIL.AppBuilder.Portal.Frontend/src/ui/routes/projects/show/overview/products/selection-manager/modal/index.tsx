@@ -61,7 +61,7 @@ export default compose<IProps, INeededProps>(
     render() {
       const { productSelection, t, selected, organization, project } = this.props;
 
-      const { storeNeededFor, cancelStore } = productSelection;
+      const { storeNeededFor, cancelStore, storeType } = productSelection;
 
       return (
         <>
@@ -70,6 +70,7 @@ export default compose<IProps, INeededProps>(
               productDefinition={storeNeededFor}
               onStoreSelect={this.onStoreSelect}
               onStoreCancel={cancelStore}
+              storeType={storeType}
               t={t}
             />
           )}

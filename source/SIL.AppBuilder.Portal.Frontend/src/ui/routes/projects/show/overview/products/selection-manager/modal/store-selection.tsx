@@ -16,10 +16,7 @@ interface INeededProps {
 
 export default class extends React.Component<INeededProps & i18nProps> {
   render() {
-    const { t, onStoreSelect, onStoreCancel, productDefinition } = this.props;
-
-    const workflow = relationshipFor(productDefinition, 'workflow');
-    const storeType = relationshipFor(workflow, 'storeType');
+    const { t, onStoreSelect, onStoreCancel, productDefinition, storeType } = this.props;
 
     return (
       <Modal
