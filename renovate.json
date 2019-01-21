@@ -12,7 +12,7 @@
   ],
   "packageRules": [
     {
-      "packagePatterns": ["(.+)\\.csproj"],
+      "managers": ["nuget"],
       "ignoreDeps": [
         "Microsoft.EntityFrameworkCore.InMemory",
         "Microsoft.EntityFrameworkCore.Design",
