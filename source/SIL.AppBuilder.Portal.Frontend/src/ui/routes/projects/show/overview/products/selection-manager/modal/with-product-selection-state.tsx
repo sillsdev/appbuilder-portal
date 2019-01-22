@@ -9,7 +9,10 @@ import { i18nProps } from '@lib/i18n';
 
 interface INeededProps {
   isEmptyWorkflowProjectUrl: boolean;
-  updateProduct: (definition: ProductDefinitionResource, storeType?: StoreResource) => Promise<void>;
+  updateProduct: (
+    definition: ProductDefinitionResource,
+    storeType?: StoreResource
+  ) => Promise<void>;
 }
 
 export interface IProvidedProps {
