@@ -2,10 +2,12 @@ import {
   clickable,
   text,
   collection,
+  scoped,
   isPresent,
   interactor,
   Interactor,
 } from '@bigtest/interactor';
+import MultiSelectInteractor from '@ui/components/inputs/multi-select/-page';
 
 import ProductModalInteractor from './-modal';
 
@@ -33,6 +35,9 @@ class Products {
   // TODO: don't use interactor in the name, it's an implementation detail
   modalInteractor = ProductModalInteractor;
   modal = ProductModalInteractor;
+  storeModal = scoped('[data-test-project-product-store-select-modal]', {
+    multiSelect: MultiSelectInteractor,
+  });
 }
 
 export const ProductsInteractor = interactor(Products);

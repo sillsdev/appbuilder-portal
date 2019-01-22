@@ -27,6 +27,7 @@ describe('Acceptance | Project View | Products', () => {
       customizer = null;
       this.mockGet(200, 'users', { data: [] }, requestCustomizer);
       this.mockGet(200, '/groups', { data: [] }, requestCustomizer);
+      this.mockGet(200, 'organization-stores', { data: [] });
       this.mockGet(
         200,
         'projects/1',
@@ -89,6 +90,14 @@ describe('Acceptance | Project View | Products', () => {
                 description: 'Publish Android app to S3',
                 name: 'android_s3',
               },
+              relationships: {
+                workflow: {
+                  data: {
+                    id: 1,
+                    type: 'workflow-definition',
+                  },
+                },
+              },
             },
             {
               type: 'product-definitions',
@@ -97,6 +106,43 @@ describe('Acceptance | Project View | Products', () => {
                 description: 'Publish Android App to Google Play',
                 name: 'android_amazon_app',
               },
+              relationships: {
+                workflow: {
+                  data: {
+                    id: 2,
+                    type: 'workflow-definition',
+                  },
+                },
+              },
+            },
+            {
+              type: 'workflow-definition',
+              id: 1,
+              attributes: {},
+              relationships: {
+                'store-type': {
+                  data: {
+                    id: 1,
+                    type: 'store-type',
+                  },
+                },
+              },
+            },
+            {
+              type: 'workflow-definition',
+              id: 2,
+              attributes: {},
+              relationships: {
+                'store-type': {
+                  data: null,
+                },
+              },
+            },
+            {
+              type: 'store-type',
+              id: 1,
+              attributes: {},
+              relationships: {},
             },
           ],
         },
@@ -141,7 +187,7 @@ describe('Acceptance | Project View | Products', () => {
       expect(productsText).to.contain('android_s3');
     });
 
-    describe('manage products', () => {
+    describe('select products that do not require a store', () => {
       beforeEach(async function() {
         await new Convergence()
           .do(() => page.productsInteractor.clickManageProductButton())
