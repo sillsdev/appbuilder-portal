@@ -33,8 +33,6 @@ export function withNetwork<TWrappedProps>(options = {}) {
         include: ['store.store-type'],
       });
 
-      console.log(requestOptions);
-
       return {
         cacheKey: [sortProperty, filters, currentPageOffset, currentPageSize],
         organizationStores: [

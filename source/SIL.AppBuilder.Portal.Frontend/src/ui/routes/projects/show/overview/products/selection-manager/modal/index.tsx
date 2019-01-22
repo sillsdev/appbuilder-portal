@@ -46,11 +46,15 @@ export default compose<IProps, INeededProps>(
 )(
   class ProductModal extends React.Component<IProps> {
     onStoreSelect = async (store: StoreResource) => {
-      const { storeNeededFor, onStoreSelect, cancelStore } = this.props.productSelection;
+      const {
+        storeNeededFor,
+        onStoreSelect,
+        cancelStore: closeStoreModal,
+      } = this.props.productSelection;
 
       await onStoreSelect(storeNeededFor, store);
 
-      cancelStore();
+      closeStoreModal();
     };
 
     render() {

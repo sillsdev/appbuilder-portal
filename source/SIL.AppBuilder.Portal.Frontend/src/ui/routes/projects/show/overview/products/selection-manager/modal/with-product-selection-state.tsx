@@ -22,6 +22,7 @@ export interface IProvidedProps {
     storeNeededFor: ProductDefinitionResource;
     cancelStore: () => void;
     onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
+    onStoreSelect: (definition: ProductDefinitionResource, store?: StoreResource) => Promise<void>;
     storeType?: StoreTypeResource;
   };
 }
@@ -89,7 +90,6 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
     };
 
     render() {
-      const { isEmptyWorkflowProjectUrl } = this.props;
       const { isModalOpen, storeNeededFor, storeType } = this.state;
 
       const props = {
@@ -98,9 +98,9 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
           isModalOpen,
           toggleModal: this.toggleModal,
           onChangeSelection: this.onChangeSelection,
-          cancelStore: this.cancelStore,
           storeNeededFor,
           onStoreSelect: this.updateProduct,
+          cancelStore: this.cancelStore,
           storeType,
         },
       };

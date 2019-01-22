@@ -1,16 +1,11 @@
 import { compose, withProps } from 'recompose';
 
-import { StoreResource, StoreTypeResource, relationshipFor, idFor } from '@data';
+import { StoreResource } from '@data';
 
 import { withTranslations } from '@lib/i18n';
 import { withNetwork as withStores } from '@data/containers/resources/store/list';
 import { withLoader } from '@data/containers/with-loader';
 import { MultiSelect } from '@ui/components/inputs/multi-select';
-
-interface INeededProps {
-  onChange: (store: StoreResource) => void;
-  selected: StoreResource[];
-}
 
 export default compose(
   withTranslations,

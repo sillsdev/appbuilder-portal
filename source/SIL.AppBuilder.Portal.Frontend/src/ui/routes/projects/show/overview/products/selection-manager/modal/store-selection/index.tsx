@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -7,8 +6,8 @@ import {
   ProductDefinitionResource,
   StoreTypeResource,
   StoreResource,
-  relationshipFor,
   attributesFor,
+  OrganizationStoreResource,
 } from '@data';
 
 import { i18nProps } from '@lib/i18n';
@@ -25,18 +24,24 @@ interface INeededProps {
 type IProps = i18nProps & INeededProps;
 
 interface IState {
-  selected: StoreResource[];
+  selected: OrganizationStoreResource[];
 }
 
 export default class extends React.Component<IProps, IState> {
   state = { selected: [] };
 
   onChange = (store: StoreResource) => {
-    this.setState({ selected: [store] }, () => this.props.onStoreSelect(store));
+    if (this.state.selected.length > 0) {
+      return;
+    }
+
+    const fakeResource: any = { relationships: { store: { data: store } } };
+
+    this.setState({ selected: [fakeResource] }, () => this.props.onStoreSelect(store));
   };
 
   render() {
-    const { t, onStoreSelect, onStoreCancel, productDefinition, storeType } = this.props;
+    const { t, onStoreCancel, productDefinition, storeType } = this.props;
 
     const { name } = attributesFor(productDefinition);
 
