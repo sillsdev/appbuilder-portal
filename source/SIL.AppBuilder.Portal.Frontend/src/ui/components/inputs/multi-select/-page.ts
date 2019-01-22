@@ -17,6 +17,8 @@ class MultiSelect {
     toggle: clickable('[data-test-item-checkbox]'),
   });
 
+  checkedItems = collection('[data-test-item] .checked');
+
   itemNamed(named: string) {
     const item = this.items().find((p) => p.text.includes(named));
 
@@ -33,9 +35,10 @@ class MultiSelect {
 
   itemsText = collection('[data-test-item-text]');
   isListEmpty = isPresent('[data-test-empty-list]');
+  emptyText = text('[data-test-empty-list]');
 }
 
-export const MultiSelectInteractor = interactor(MultiSelect);
 export type TInteractor = MultiSelect & Interactor;
+export const MultiSelectInteractor = interactor(MultiSelect) as TInteractor;
 
 export default new (MultiSelectInteractor as any)('[data-test-multi-select]') as TInteractor;
