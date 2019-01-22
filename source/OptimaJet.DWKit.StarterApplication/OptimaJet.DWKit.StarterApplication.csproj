@@ -30,7 +30,7 @@
     <PackageReference Include="Auth0" Version="3.6.0" />
     <PackageReference Include="Bugsnag.AspNet.Core" Version="2.2.0" />
     <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
-    <PackageReference Include="dotenv.net" Version="1.0.3" />
+    <PackageReference Include="dotenv.net" Version="1.0.4" />
     <PackageReference Include="DWKit-Core" Version="2.4.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
