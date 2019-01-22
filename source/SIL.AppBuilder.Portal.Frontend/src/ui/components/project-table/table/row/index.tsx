@@ -105,9 +105,9 @@ class Row extends React.Component<IProps> {
 
     if (!isInArchiveLocation) {
       return dateArchived !== null;
-    } else {
-      return dateArchived === null;
     }
+
+    return dateArchived === null;
   }
 
   render() {
@@ -161,6 +161,9 @@ export default compose(
   withRouter,
   withMomentTimezone,
   withOrbit(({ project }) => ({
+    // refetching the project (from local cache)
+    // subscribes this component to changes to the project.
+    project: (q) => q.findRecord(project),
     organization: (q) => q.findRelatedRecord(project, 'organization'),
     owner: (q) => q.findRelatedRecord(project, 'owner'),
     group: (q) => q.findRelatedRecord(project, 'group'),
