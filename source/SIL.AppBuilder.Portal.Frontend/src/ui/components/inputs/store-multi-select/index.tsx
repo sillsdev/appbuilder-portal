@@ -10,20 +10,14 @@ import { MultiSelect } from '@ui/components/inputs/multi-select';
 interface INeededProps {
   onChange: (store: StoreResource) => void;
   selected: StoreResource[];
-  ofStoreType?: StoreTypeResource;
 }
 
 export default compose(
   withTranslations,
   withStores(),
   withLoader(({ error, stores }) => !error && !stores),
-  withProps(({ stores, t, ofStoreType }) => ({
-    list: (stores || []).filter((store) => {
-      if (!ofStoreType) {
-        return true;
-      }
-      return idFor(relationshipFor(store, 'storeType')) === ofStoreType.id;
-    }),
+  withProps(({ stores, t }) => ({
+    list: stores || [],
     selectedItemJoinsWith: 'store',
     emptyListLabel: t('org.nostores'),
     displayProductIcon: false,

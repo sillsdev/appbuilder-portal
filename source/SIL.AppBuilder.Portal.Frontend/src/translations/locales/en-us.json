@@ -111,7 +111,8 @@
   },
   "products": {
     "definition": "Useful files that result from a series of steps.",
-    "storeSelect": "Select a store for {name}"
+    "storeSelect": "Select a store for {name}",
+    "noStoresAvailable": "There are no stores available for the selected product. Please contact your organization administrator."
   },
   "profile": {
     "title": "Profile",
