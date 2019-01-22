@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import {
@@ -9,13 +8,11 @@ import {
 } from '@data/containers/resources/project/with-data-actions';
 
 import {
-  ProductResource,
   ProductDefinitionResource,
   OrganizationResource,
   attributesFor,
   ProjectResource,
-  StoreTypeResource,
-  relationshipFor,
+  StoreResource,
 } from '@data';
 
 import {
@@ -46,11 +43,14 @@ export default compose<IProps, INeededProps>(
   }),
   withDataActions,
   withProductSelectionState
-  // withStoreSelectionState,
 )(
   class ProductModal extends React.Component<IProps> {
-    onStoreSelect = async (store: StoreTypeResource) => {
-      console.log('selected', store);
+    onStoreSelect = async (store: StoreResource) => {
+      const { storeNeededFor, onStoreSelect, cancelStore } = this.props.productSelection;
+
+      await onStoreSelect(storeNeededFor, store);
+
+      cancelStore();
     };
 
     render() {

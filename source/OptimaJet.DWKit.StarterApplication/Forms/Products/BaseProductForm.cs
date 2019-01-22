@@ -35,12 +35,7 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Products
                     var message = "This store is not permitted for this product";
                     AddError(message);
                 }
-                if (!storeLanguageId.HasValue)
-                {
-                    var message = "A Store is specified but there is no store language for this product";
-                    AddError(message);
-                }
-                else if (!store.StoreType.LanguageIds.Contains(storeLanguageId.Value))
+                else if (storeLanguageId.HasValue && !store.StoreType.LanguageIds.Contains(storeLanguageId.Value))
                 {
                     var message = "Invalid store language for this product";
                     AddError(message);

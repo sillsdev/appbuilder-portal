@@ -5,12 +5,10 @@ import {
   OrganizationResource,
   ProductDefinitionResource,
   ProjectResource,
-  ProductResource,
   withLoader,
   attributesFor,
 } from '@data';
 
-import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { compareVia } from '@lib/collection';
 import { MultiSelect } from '@ui/components/inputs/multi-select';

@@ -2,7 +2,13 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 
-import { defaultOptions, ProjectResource, ProductResource, relationshipFor } from '@data';
+import {
+  defaultOptions,
+  ProjectResource,
+  ProductResource,
+  StoreResource,
+  relationshipFor,
+} from '@data';
 
 import { ProjectAttributes } from '@data/models/project';
 import { recordIdentityFromKeys } from '@data/store-helpers';
@@ -90,7 +96,7 @@ export function withDataActions<T>(WrappedComponent) {
       return matchingProduct;
     };
 
-    updateProduct = (productDefinition) => {
+    updateProduct = (productDefinition, store?: StoreResource) => {
       const { project, products, dataStore } = this.props;
 
       const productSelected = this.productForProductDefinition(productDefinition);
@@ -107,6 +113,7 @@ export function withDataActions<T>(WrappedComponent) {
             relationships: {
               project: { data: project },
               productDefinition: { data: productDefinition },
+              store: { data: store || null },
             },
           }),
         defaultOptions()

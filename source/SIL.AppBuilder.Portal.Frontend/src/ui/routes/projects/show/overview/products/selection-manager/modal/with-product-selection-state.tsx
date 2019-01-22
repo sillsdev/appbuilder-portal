@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { DataProps } from 'react-orbitjs';
+import { WithDataProps } from 'react-orbitjs';
 
-import { ProductDefinitionResource, StoreTypeResource, relationshipFor } from '@data';
+import { ProductDefinitionResource, StoreTypeResource, StoreResource } from '@data';
 
 import { IProvidedProps as IDataActionsProps } from '@data/containers/resources/project/with-data-actions';
 import * as toast from '@lib/toast';
@@ -9,7 +9,7 @@ import { i18nProps } from '@lib/i18n';
 
 interface INeededProps {
   isEmptyWorkflowProjectUrl: boolean;
-  updateProduct: (definition: ProductDefinitionResource) => Promise<void>;
+  updateProduct: (definition: ProductDefinitionResource, storeType?: StoreResource) => Promise<void>;
 }
 
 export interface IProvidedProps {
@@ -19,15 +19,16 @@ export interface IProvidedProps {
     storeNeededFor: ProductDefinitionResource;
     cancelStore: () => void;
     onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
+    storeType?: StoreTypeResource;
   };
 }
 
-type IProps = INeededProps & i18nProps & IDataActionsProps & DataProps;
+type IProps = INeededProps & i18nProps & IDataActionsProps & WithDataProps;
 
 interface IState {
   isModalOpen: boolean;
   storeNeededFor?: ProductDefinitionResource;
-  selectedProductStoreType?: StoreTypeResource;
+  storeType?: StoreTypeResource;
 }
 
 export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
@@ -41,7 +42,7 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
       // we are only here, because the product has not yet been added.
       // if the product needs a store, show the store selection modal,
       // otherwise go-ahead and add the product.
-      const { t, updateProduct, dataStore } = this.props;
+      const { dataStore } = this.props;
       const workflow = await dataStore.cache.query((q) =>
         q.findRelatedRecord(definition, 'workflow')
       );
@@ -56,20 +57,20 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
       this.setState({ storeNeededFor: definition, storeType });
     };
 
-    updateProduct = async (definition: ProductDefinitionResource) => {
+    updateProduct = async (definition: ProductDefinitionResource, store?: StoreResource) => {
       const { t, updateProduct } = this.props;
 
       try {
-        await updateProduct(definition);
+        await updateProduct(definition, store);
 
         toast.success(t('updated'));
       } catch (e) {
-        toast.error(e.message);
+        toast.error(e);
       }
     };
 
     onChangeSelection = async (definition: ProductDefinitionResource) => {
-      const { t, updateProduct, productForProductDefinition } = this.props;
+      const { productForProductDefinition } = this.props;
 
       const product = productForProductDefinition(definition);
 
@@ -88,7 +89,6 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
       const { isEmptyWorkflowProjectUrl } = this.props;
       const { isModalOpen, storeNeededFor, storeType } = this.state;
 
-      const toggleModal = isEmptyWorkflowProjectUrl ? this.showToast : this.toggleModal;
       const props = {
         ...this.props,
         productSelection: {
@@ -97,6 +97,7 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
           onChangeSelection: this.onChangeSelection,
           cancelStore: this.cancelStore,
           storeNeededFor,
+          onStoreSelect: this.updateProduct,
           storeType,
         },
       };

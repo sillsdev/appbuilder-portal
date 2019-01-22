@@ -6,6 +6,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import {
   ProductDefinitionResource,
   StoreTypeResource,
+  StoreResource,
   relationshipFor,
   attributesFor,
 } from '@data';
@@ -17,45 +18,53 @@ import StoreSelect from './multi-select';
 interface INeededProps {
   productDefinition: ProductDefinitionResource;
   storeType: StoreTypeResource;
-  onStoreSelect: (store: StoreTypeResource) => Promise<void>;
+  onStoreSelect: (store: StoreResource) => Promise<void>;
   onStoreCancel: () => void;
 }
 
 type IProps = i18nProps & INeededProps;
 
-export default compose<IProps, INeededProps>()(
-  class extends React.Component<IProps> {
-    render() {
-      const { t, onStoreSelect, onStoreCancel, productDefinition, storeType } = this.props;
+interface IState {
+  selected: StoreResource[];
+}
 
-      const { name } = attributesFor(productDefinition);
+export default class extends React.Component<IProps, IState> {
+  state = { selected: [] };
 
-      const selectProps = {
-        onChange: onStoreSelect,
-        selected: [],
-        ofStoreType: storeType,
-      };
+  onChange = (store: StoreResource) => {
+    this.setState({ selected: [store] }, () => this.props.onStoreSelect(store));
+  };
 
-      return (
-        <Modal
-          data-test-project-product-store-select-modal
-          open={true}
-          className='medium'
-          closeIcon={<CloseIcon className='close-modal' />}
-          onClose={onStoreCancel}
-        >
-          <Modal.Header>{t('products.storeSelect', { name })}</Modal.Header>
-          <Modal.Content>
-            <StoreSelect {...selectProps} />
-          </Modal.Content>
+  render() {
+    const { t, onStoreSelect, onStoreCancel, productDefinition, storeType } = this.props;
 
-          <Modal.Actions>
-            <button className='ui button huge' onClick={onStoreCancel}>
-              {t('common.cancel')}
-            </button>
-          </Modal.Actions>
-        </Modal>
-      );
-    }
+    const { name } = attributesFor(productDefinition);
+
+    const selectProps = {
+      onChange: this.onChange,
+      selected: this.state.selected,
+      ofStoreType: storeType,
+    };
+
+    return (
+      <Modal
+        data-test-project-product-store-select-modal
+        open={true}
+        className='medium'
+        closeIcon={<CloseIcon className='close-modal' />}
+        onClose={onStoreCancel}
+      >
+        <Modal.Header>{t('products.storeSelect', { name })}</Modal.Header>
+        <Modal.Content>
+          <StoreSelect {...selectProps} />
+        </Modal.Content>
+
+        <Modal.Actions>
+          <button className='ui button huge' onClick={onStoreCancel}>
+            {t('common.cancel')}
+          </button>
+        </Modal.Actions>
+      </Modal>
+    );
   }
-);
+}
