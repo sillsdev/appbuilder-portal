@@ -8,6 +8,6 @@ url="https://raw.githubusercontent.com/silnrsi/sldr/master/extras/alltags.json"
 folder="./src/public/assets/language/"
 targetPath="${folder}alltags.json"
 
-mkdir -p $filder
+mkdir -p $folder
 
 wget --output-document $targetPath $url

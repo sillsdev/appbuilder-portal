@@ -8,3 +8,5 @@ stats.json
 tests/coverage/
 tests/cypress/screenshots/
 tests/cypress/videos/
+
+src/public/assets/language/alltags.json
