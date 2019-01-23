@@ -9,7 +9,7 @@ export function fakeAuth0JWT(data = {}) {
     sub: fakeAuth0Id,
     exp: new Date().getTime() + 3600000,
     picture: 'https://i.imgur.com/oHM3bhj.gif',
-    email_verified: true,
+    ['email_verified']: true,
     ...data,
   });
   const signature = `${header}.${payload}`;

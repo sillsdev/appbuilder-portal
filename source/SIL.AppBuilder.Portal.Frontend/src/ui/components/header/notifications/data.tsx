@@ -1,29 +1,28 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { TYPE_NAME as NOTIFICATION, NotificationAttributes } from '@data/models/notification';
+import { TYPE_NAME as NOTIFICATION, NotificationResource } from '@data/models/notification';
 
-import { query, defaultOptions, NOTIFICATIONS_TYPE, withLoader } from '@data';
+import { query, defaultOptions, withLoader } from '@data';
 
 import { withCollectionDataActions } from '@data/containers/resources/notification/with-collection-data-actions';
 
 const notificationsQuery = (q) => q.findRecords(NOTIFICATION).sort('-dateCreated', '-dateRead');
 
-const mapNetworkToProps = (passedProps) => {
+const mapNetworkToProps = () => {
   return {
     notifications: [notificationsQuery, { ...defaultOptions() }],
   };
 };
 
-const mapRecordsToProps = (passedProps) => {
+const mapRecordsToProps = () => {
   return {
     notifications: notificationsQuery,
   };
 };
 
 export interface DataProps {
-  notifications: Array<ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes>>;
+  notifications: NotificationResource[];
   haveAllNotificationsBeenSeen: boolean;
   isThereAtLeastOneNotificationToShow: boolean;
 }

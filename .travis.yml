@@ -26,7 +26,7 @@ jobs:
         directories:
           - source/SIL.AppBuilder.Portal.Frontend/node_modules
 
-      script: ./run yarn && ./run yarn lint
+      script: ./run yarn && ./run yarn lint --quiet
 
     - stage: "Quality"
       name: "Frontend Typechecking"

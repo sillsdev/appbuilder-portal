@@ -19,7 +19,7 @@ describe('Acceptance | Authentication', () => {
 
   describe('authenticated with user that does not have a verified email', () => {
     beforeEach(async () => {
-      setToken(fakeAuth0JWT({ email_verified: false }));
+      setToken(fakeAuth0JWT({ ['email_verified']: false }));
       await visit('/tasks');
     });
     it('redirects to verify email', () => {
