@@ -203,7 +203,6 @@ namespace OptimaJet.DWKit.StarterApplication
             app.UseBuildEngine(Configuration);
             app.UseWorkflow(Configuration);
             app.UseNotifications(Configuration);
-            app.UseStatusUpdates(Configuration);
         }
     }
 }

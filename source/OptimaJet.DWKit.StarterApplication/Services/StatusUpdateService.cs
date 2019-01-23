@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Npgsql;
-using OptimaJet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
-    public class StatusUpdateService
+    public class StatusUpdateService : BackgroundService
     {
         public IBackgroundJobClient HangfireClient { get; }
         public IHubContext<ScriptoriaHub> HubContext { get; }
+        public String ConnectionString { get; set; }
         public StatusUpdateService(
             IBackgroundJobClient hangfireClient,
             IHubContext<ScriptoriaHub> hubContext
@@ -33,9 +32,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var groupName = "/" + tableName + "/" + id;
             await HubContext.Clients.Group(groupName).SendAsync("StatusUpdate", message);
         }
-        public void ListenForNotifications(string connectionString)
+        public void ListenForNotifications(CancellationToken stoppingToken)
         {
-            NpgsqlConnection conn = new NpgsqlConnection(connectionString);
+            Log.Information($"ListenForNotifications: Start");
+
+            NpgsqlConnection conn = new NpgsqlConnection(ConnectionString);
             conn.Open();
             var listenCommand = conn.CreateCommand();
             listenCommand.CommandText = $"listen db_notifications;";
@@ -45,8 +46,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             while (true)
             {
                 // wait until an asynchronous PostgreSQL notification arrives...
-                conn.Wait();
+                conn.Wait(5000);
+                if (stoppingToken.IsCancellationRequested)
+                {
+                    break;
+                }
             }
+            Log.Information($"ListenForNotifications: End");
         }
         private void PostgresNotificationReceived(object sender, NpgsqlNotificationEventArgs e)
         {
@@ -54,5 +60,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             SendStatusUpdateAsync(message).Wait();
         }
 
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            await Task.Run(() => ListenForNotifications(stoppingToken));
+        }
     }
 }

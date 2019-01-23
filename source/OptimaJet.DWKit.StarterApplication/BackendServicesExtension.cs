@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Data;
@@ -79,7 +80,6 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<GroupService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
-            services.AddScoped<StatusUpdateService>();
             services.AddScoped<OrganizationMembershipService>();
             services.AddScoped<OrganizationMembershipInviteService>();
 
@@ -135,7 +135,14 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddSingleton<WorkflowActivityMonitorService>();
             services.AddTransient<IWorkflowRuleProvider, WorkflowProductRuleProvider>();
             services.AddTransient<IWorkflowActionProvider, WorkflowProductActionProvider>();
+            services.AddTransient<StatusUpdateService>();
             services.AddSingleton<WorkflowRuntime>(s =>  WorkflowInit.Runtime );
+            services.AddSingleton<IHostedService, StatusUpdateService>(sp =>
+            {
+                var service = sp.GetRequiredService<StatusUpdateService>();
+                service.ConnectionString = configuration["ConnectionStrings:default"];
+                return service;
+            });
 
             return services;
         }

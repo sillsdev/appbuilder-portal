@@ -66,12 +66,5 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
             return app;
         }
-
-        public static IApplicationBuilder UseStatusUpdates(this IApplicationBuilder app, IConfigurationRoot configuration)
-        {
-            var connectionString = configuration["ConnectionStrings:default"];
-            BackgroundJob.Enqueue<StatusUpdateService>(service => service.ListenForNotifications(connectionString));
-            return app;
-        }
     }
 }
