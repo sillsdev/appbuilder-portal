@@ -8,11 +8,11 @@ import {
   useFakeAuthentication,
   wait,
 } from 'tests/helpers/index';
-import { MultiSelectInteractor } from '@ui/components/inputs/multi-select/-page';
 
-import { default as projectShowPage, ProjectInteractor } from './page';
-
+import { MultiSelectInteractor } from '~/ui/components/inputs/multi-select/-page';
 import { ProductsInteractor } from '~/ui/routes/projects/show/overview/products/-page.ts';
+
+import i18n from '@translations';
 
 describe('Acceptance | Project View | Products', () => {
   setupApplicationTest();
@@ -226,7 +226,7 @@ describe('Acceptance | Project View | Products', () => {
     describe('the user clicks a product that requires a store...', () => {
       describe('... but the store is not configured for the organization', () => {
         beforeEach(async function() {
-          await page.modal.multiSelect.itemNamed('android_s3').toggle();
+          await products.itemNamed('android_s3').toggle();
           await when(() => stores.isVisible);
         });
 
@@ -236,9 +236,9 @@ describe('Acceptance | Project View | Products', () => {
 
         it('shows a message saying to contact the org admin', () => {
           const text = stores.emptyText;
+          const expected = i18n.t('products.noStoresAvailable');
 
-          expect(text).to.include('no stores available for the selected product');
-          expect(text).to.include('organization administrator');
+          expect(text).to.include(expected);
         });
       });
 
