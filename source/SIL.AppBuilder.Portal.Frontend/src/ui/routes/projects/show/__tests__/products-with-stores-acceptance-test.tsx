@@ -1,12 +1,13 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
-import { visit, location } from '@bigtest/react';
-import Convergence, { when } from '@bigtest/convergence';
+import { visit } from '@bigtest/react';
+import { when } from '@bigtest/convergence';
+
 import { expect } from 'chai';
+
 import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
-  wait,
 } from 'tests/helpers/index';
 
 import { MultiSelectInteractor } from '~/ui/components/inputs/multi-select/-page';
