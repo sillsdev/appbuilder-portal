@@ -15,7 +15,7 @@ import {
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 
-import ProductModal from './modal';
+import ProductSelectionManager from './selection-manager';
 import ProductItem from './item';
 
 import './styles.scss';
@@ -65,7 +65,11 @@ class Products extends React.Component<IProps> {
           </div>
         )}
         <div className='m-b-lg'>{productList}</div>
-        <ProductModal organization={organization} selected={products} project={project} />
+        <ProductSelectionManager
+          organization={organization}
+          selected={products}
+          project={project}
+        />
       </div>
     );
   }

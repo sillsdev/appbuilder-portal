@@ -2,7 +2,7 @@
 using JsonApiDotNetCore.Models;
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class OrganizationStore : Identifiable
+    public class OrganizationStore : Identifiable, IBelongsToOrganization
     {
         [HasOne("organization")]
         public virtual Organization Organization { get; set; }

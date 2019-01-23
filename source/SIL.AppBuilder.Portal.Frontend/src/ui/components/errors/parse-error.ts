@@ -1,15 +1,22 @@
 import { RecordNotFoundException, ClientError } from '@orbit/data';
+import { isEmpty } from '@lib/collection';
 
 export interface ParsedError {
   title: string;
   body?: string | string[];
 }
 
-const getFirstJSONAPIError = (error) => {
-  return (
-    error.data && error.data.errors && error.data.errors.length > 0 && error.data.errors[0].detail
-  );
-};
+function getJSONAPIErrors(error) {
+  return (error.data && error.data.errors) || [];
+}
+
+function getFirstJSONAPIError(error) {
+  return getJSONAPIErrors(error)[0] || {};
+}
+
+function getFirstJSONAPIErrorMessage(error) {
+  return getFirstJSONAPIError(error).detail;
+}
 
 export function parseError(error: any): ParsedError {
   if (error instanceof RecordNotFoundException) {
@@ -20,13 +27,19 @@ export function parseError(error: any): ParsedError {
   }
 
   if (error instanceof ClientError) {
+    const maybeJsonApiError = getFirstJSONAPIError(error);
+
+    if (!isEmpty(maybeJsonApiError)) {
+      return { title: maybeJsonApiError.title, body: maybeJsonApiError.detail };
+    }
+
     return {
       title: error.description,
       body: error.message,
     };
   }
 
-  const jsonApiError = getFirstJSONAPIError(error);
+  const jsonApiError = getFirstJSONAPIErrorMessage(error);
 
   if (jsonApiError) {
     return { title: jsonApiError };

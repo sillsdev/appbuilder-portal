@@ -1,14 +1,16 @@
 import { compose } from 'recompose';
 
-import { query, buildOptions, StoreResource } from '@data';
+import { query, buildOptions, OrganizationStoreResource, OrganizationResource } from '@data';
 
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';
 import { IPaginateProps } from '@data/containers/api/pagination';
 import { ISortProps } from '@data/containers/api/sorting';
 import { IProvidedProps as IOrgProps } from '@data/containers/with-current-organization';
 
-export interface IOwnProps {
-  stores: StoreResource;
+export interface INeededProps {}
+
+export interface IProvidedProps {
+  organizationStores: OrganizationStoreResource[];
   error?: any;
 }
 
@@ -16,7 +18,7 @@ type IProps = IFilterProps & IPaginateProps & IOrgProps & ISortProps;
 
 export function withNetwork<TWrappedProps>(options = {}) {
   return (WrappedComponent) => {
-    function mapNetworkToProps(passedProps: TWrappedProps & IProps) {
+    function mapNetworkToProps(passedProps: TWrappedProps & IProps & INeededProps) {
       const {
         applyPagination,
         currentPageOffset,
@@ -24,19 +26,18 @@ export function withNetwork<TWrappedProps>(options = {}) {
         applyFilter,
         filters,
         sortProperty,
-        currentOrganizationId,
         applySort,
       } = passedProps;
 
       const requestOptions = buildOptions({
-        include: ['store-type'],
+        include: ['store.store-type'],
       });
 
       return {
         cacheKey: [sortProperty, filters, currentPageOffset, currentPageSize],
-        stores: [
+        organizationStores: [
           (q) => {
-            let builder = q.findRecords('store');
+            let builder = q.findRecords('organizationStore');
 
             if (applyFilter) {
               builder = applyFilter(builder);
@@ -57,7 +58,7 @@ export function withNetwork<TWrappedProps>(options = {}) {
       };
     }
 
-    return compose(query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }))(
+    return query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true })(
       WrappedComponent
     );
   };

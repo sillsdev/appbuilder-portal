@@ -31,11 +31,19 @@ namespace OptimaJet.DWKit.StarterApplication.Middleware
             //       The status code of the Result is correct so that is what counts.
             var jsonApiException = JsonApiExceptionFactory.GetException(context.Exception);
 
-            var error = jsonApiException.GetError();
-            var result = new ObjectResult(error)
+            var errors = jsonApiException.GetError();
+
+            if (errors.Errors.Count == 1) {
+                code = errors.Errors[0].StatusCode;
+            } else if (errors.Errors.Count > 1) {
+                code = StatusCodes.Status400BadRequest;
+            }
+
+            var result = new ObjectResult(errors)
             {
                 StatusCode = code
             };
+
             context.Result = result;
         }
     }
