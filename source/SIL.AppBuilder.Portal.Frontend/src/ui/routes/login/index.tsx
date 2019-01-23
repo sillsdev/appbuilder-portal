@@ -10,8 +10,6 @@ import { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-
 
 import AutoMountingLock from './auth0-lock-auto-mount';
 
-export const pathName = '/login';
-
 class LoginRoute extends React.Component<RouterProps & i18nProps> {
   state = { data: {}, errors: {} };
 

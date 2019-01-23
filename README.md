@@ -1,4 +1,4 @@
-# AppBuilder Portal 
+# AppBuilder Portal
 [![Build Status](https://travis-ci.org/sillsdev/appbuilder-portal.svg?branch=master)](https://travis-ci.org/sillsdev/appbuilder-portal)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/scriptoria/localized.svg)](https://crowdin.com/project/scriptoria)
 [![Maintainability](https://api.codeclimate.com/v1/badges/71fa3c1c0bf8eca409d2/maintainability)](https://codeclimate.com/github/sillsdev/appbuilder-portal/maintainability)
@@ -72,7 +72,7 @@ DWKit requires database scripts to be executed before running the backend
 
 These seem to be idempotent, but we do not have a guarantee that they will remain that way.
 
-The backend has a Entity Framework Core migrations script generated into the production docker image (created by `source/Dockerfile.backend`) and is run at startup (by `source/run-api.sh`).  
+The backend has a Entity Framework Core migrations script generated into the production docker image (created by `source/Dockerfile.backend`) and is run at startup (by `source/run-api.sh`).
 
 If you need to rollback a production release that contains a new migration change, you can generate a rollback sql script by running the following command in the `source/OptimaJet.DWKit.StarterApplication` directory of the code current at production (that you wish to rollback):
 ```bash
@@ -91,6 +91,7 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 ### Running
 
 ```bash
+./run refresh-languages
 ./run up:build
 
 # first time only, after up:build, separate terminal

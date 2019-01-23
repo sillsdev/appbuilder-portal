@@ -10,8 +10,6 @@ import ListRoute, { pathName as listPath } from './list';
 import ShowRoute, { pathName as showPath } from './show';
 import EditRoute, { pathName as editPath } from './edit';
 
-export const pathName = '/users';
-
 class UsersRoot extends React.Component {
   render() {
     return (

@@ -30,3 +30,18 @@ interface Auth0JWT {
 type FnParams<TParams, TResult> = (passedProps: TParams) => TResult;
 
 type FnOrObject<TParams, TResult> = TResult | FnParams<TParams, TResult>;
+
+interface ILanguageTag {
+  full: string;
+  iana: string;
+  iso639_3: string;
+  localname?: string;
+  name: string;
+  names?: string[];
+  region: string;
+  regionname: string;
+  regions?: string;
+  sldr: boolean;
+  tag: string;
+  tags?: string[];
+}
