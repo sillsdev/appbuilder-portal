@@ -17,7 +17,7 @@ export interface UserAttributes extends AttributesObject {
   sshKey?: string;
   isLocked?: boolean;
   role?: { id: string; name: string }; // need api
-  groups?: Array<{ id: string; name: string }>; // need an api
+  groups?: { id: string; name: string }[]; // need an api
   auth0Id?: string;
   profileVisibility?: number;
 }

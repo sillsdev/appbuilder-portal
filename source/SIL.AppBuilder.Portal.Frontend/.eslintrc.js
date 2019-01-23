@@ -1,14 +1,6 @@
 module.exports = {
   root: true,
-  parser: "typescript-eslint-parser",
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-      modules: true,
-    },
-    ecmaVersion: 2018,
-    sourceType: "module"
-  },
+  parser: '@typescript-eslint/parser',
   env: {
     browser: true,
   },
@@ -16,12 +8,11 @@ module.exports = {
     'prettier',
     'typescript',
     'import',
-    'react',
+    '@typescript-eslint',
   ],
   extends: [
-    // 'typescript', // does not work...
     'eslint:recommended',
-    "plugin:react/recommended",
+    'plugin:@typescript-eslint/recommended',
     'prettier',
     "prettier/typescript",
     "prettier/react"
@@ -33,26 +24,12 @@ module.exports = {
     "no-console": 'warn',
 
     // typescript
-    "typescript/explicit-function-return-type": 'off',
-    "typescript/interface-name-prefix": "off", // someday...
-    "typescript/class-name-casing": "error",
-    "typescript/no-explicit-any": "off", // someday...
-    "typescript/no-unused-vars": "error",
-    "typescript/member-ordering": "off", // someday...
-    "typescript/generic-type-naming": "error",
-    "typescript/member-delimiter-style": "error",
-    "typescript/type-annotation-spacing": ["error", {
-      before: true, after: true,
-      overrides: {
-        colon: { before: false, after: true },
-        arrow: { before: true, after: true }
-      }
-    }],
-
-    // react
-    'react/prop-types': 'off',
-    'react/display-name': 'off',
-    'react/no-unescaped-entities': 'off',
+    '@typescript-eslint/interface-name-prefix': 'off', // someday...
+    '@typescript-eslint/no-object-literal-type-assertion': 'off', // someday...
+    '@typescript-eslint/explicit-member-accessibility': 'off', // private fields are coming to native JS classes
+    '@typescript-eslint/explicit-function-return-type': 'off', // TS is pretty good at inference
+    '@typescript-eslint/no-use-before-define': 'off', // this doesn't matter for side-effect-free modules
+    '@typescript-eslint/no-empty-interface': 'off', // better to have conventions for react prop interfaces
 
     // cleanliness
     'no-undef': 'off',
@@ -71,13 +48,19 @@ module.exports = {
 
     // handled by prettier
     'prettier/prettier': 'error',
+    '@typescript-eslint/indent': 'off',
   },
   overrides: [
-    // node files
+    // node / config files
     {
       files: [
         'config/**/*.js',
+        'tests/test-setup.js',
+        'tests/karma.conf.js',
       ],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off'
+      },
       parserOptions: {
         sourceType: 'script',
         ecmaVersion: 2015
