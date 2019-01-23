@@ -1,9 +1,7 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
-
 import { expect } from 'chai';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,
@@ -11,6 +9,7 @@ import {
 } from 'tests/helpers/index';
 
 import { MultiSelectInteractor } from '~/ui/components/inputs/multi-select/-page';
+
 import { ProductsInteractor } from '~/ui/routes/projects/show/overview/products/-page.ts';
 
 import i18n from '@translations';
