@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@aspnet/signalr@^1.0.4":
+"@aspnet/signalr@^1.0.4", "@aspnet/signalr@~1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@aspnet/signalr/-/signalr-1.1.0.tgz#616be5d565f78ea6ab3910d8a5fb0690471b35f9"
   integrity sha512-UwWXpfVyB7pfod/GmntaYWMdmmqlfuX7hoig7wMs01xxp53FIBrWGFStUKC3y3S4yu83i38NkzBndBIfOHo5Dw==
@@ -10,11 +10,6 @@
     eventsource "^1.0.7"
     request "^2.88.0"
     ws "^6.0.0"
-
-"@aspnet/signalr@~1.0.0":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@aspnet/signalr/-/signalr-1.0.4.tgz#ab685e59152539e4a49c5c71bb767ce25e7d4900"
-  integrity sha512-q7HMlTZPkZCa/0UclsXvEyqNirpjRfRuwhjEeADD1i6pqe0Yx5OwuCO7+Xsc6MNKR8vE1C9MyxnSj0SecvUbTA==
 
 "@babel/code-frame@^7.0.0":
   version "7.0.0"
@@ -450,12 +445,12 @@
     array-from "^2.1.1"
     lodash.get "^4.4.2"
 
-"@ssv/signalr-client@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@ssv/signalr-client/-/signalr-client-0.8.1.tgz#aa996f7ca433435b9b718096879a85b57a3eceb5"
-  integrity sha512-BxaA884xp1XXV1Ay+zFaUisVYU3MFVoVLRMntqAWXY7sPX/svgiYMZKiv3fUguRLz6mxz2JXxMJGxEJwsZm6LQ==
+"@ssv/signalr-client@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ssv/signalr-client/-/signalr-client-1.0.0.tgz#9007356740c48c336f86b972cd5b36e249017024"
+  integrity sha512-thXLmwONY4dEZO1AJn1CHYL7Nmalz9Pnl1pXEgdrPxVr19uz6HTH8WTqtjzu0ankX0TdwdLn43ZciMMryb1cAQ==
   dependencies:
-    "@aspnet/signalr" "~1.0.0"
+    "@aspnet/signalr" "~1.1.0"
 
 "@types/anymatch@*":
   version "1.3.0"
