@@ -98,7 +98,7 @@ export default class Display extends React.Component<IProps, IState> {
 
               <div className='flex justify-content-space-between'>
                 <Form.Field className='flex-50 m-r-md'>
-                  <label>{t('project.projectName')}</label>
+                  <label className='required'>{t('project.projectName')}</label>
                   <input required data-test-name value={name || ''} onChange={mut('name')} />
                 </Form.Field>
 
@@ -115,7 +115,7 @@ export default class Display extends React.Component<IProps, IState> {
 
               <div className='flex justify-content-space-between'>
                 <Form.Field className='flex-50 m-r-md'>
-                  <label>{t('project.languageCode')}</label>
+                  <label className='required'>{t('project.languageCode')}</label>
                   <input
                     required
                     data-test-language
