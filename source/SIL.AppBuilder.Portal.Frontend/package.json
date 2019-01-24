@@ -59,6 +59,7 @@
     "pretty-ms": "^4.0.0",
     "query-string": "^6.1.0",
     "react": "^16.0.0",
+    "react-autosuggest": "^9.4.3",
     "react-datepicker": "^2.0.0",
     "react-day-picker": "^7.1.10",
     "react-dom": "^16.0.0",
