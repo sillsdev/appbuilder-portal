@@ -8,6 +8,9 @@ namespace OptimaJet.DWKit.StarterApplication.Filters
     {
         public bool Authorize(DashboardContext context)
         {
+            // Temp perma-enabled until we figure out how to auth
+            return true;
+
             // why are there no user claims?
             var user = context.GetHttpContext().User;
 
