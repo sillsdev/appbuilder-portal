@@ -1,33 +1,24 @@
 import * as React from 'react';
 import { compose, mapProps } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { ResourceObject } from 'jsonapi-typescript';
+import { WithDataProps } from 'react-orbitjs';
 
-import { defaultOptions, ORGANIZATIONS_TYPE, withLoader, attributesFor } from '@data';
+import { defaultOptions, withLoader, attributesFor } from '@data';
 
 import { IProvidedProps as IFilterProps, withFiltering } from '@data/containers/api/with-filtering';
-import { TYPE_NAME as ORGANIZATION, OrganizationAttributes } from '@data/models/organization';
+import { TYPE_NAME as ORGANIZATION, OrganizationResource } from '@data/models/organization';
 import { ICurrentUserProps, withCurrentUserContext } from '@data/containers/with-current-user';
 import { debounce } from '@lib/debounce';
 import { withRelationships } from '@data/containers/with-relationship';
 
 import { IGivenProps } from './types';
 
-function mapNetworkToProps(passedProps) {
-  const { applyFilter } = passedProps;
-
-  return {
-    fromNetwork: [(q) => applyFilter(q.findRecords(ORGANIZATION)), defaultOptions()],
-  };
-}
-
 interface IOwnProps {
-  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  organizations: OrganizationResource[];
 }
 
 export interface IProvidedDataProps {
-  organizations: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
-  searchResults: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  organizations: OrganizationResource[];
+  searchResults: OrganizationResource[];
   searchByName: (name: string) => void;
   selectOrganization: (id: string) => void;
   didTypeInSearch: (e: Event) => void;
@@ -35,7 +26,7 @@ export interface IProvidedDataProps {
 }
 
 interface IState {
-  searchResults?: Array<ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>>;
+  searchResults?: OrganizationResource[];
   searchTerm: string;
 }
 

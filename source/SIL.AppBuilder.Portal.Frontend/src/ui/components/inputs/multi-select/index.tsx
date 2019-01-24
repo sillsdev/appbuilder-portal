@@ -31,7 +31,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
     const { selected, selectedItemJoinsWith } = this.props;
 
     const el = selected.find((selectedItem) => {
-      const { data } = relationshipFor(selectedItem, selectedItemJoinsWith);
+      const { data } = relationshipFor(selectedItem, selectedItemJoinsWith) || {};
       return data.id === element.id;
     });
 

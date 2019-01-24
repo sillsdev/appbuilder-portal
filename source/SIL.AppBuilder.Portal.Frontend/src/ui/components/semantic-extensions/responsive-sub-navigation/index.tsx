@@ -6,7 +6,7 @@ import { RouteComponentProps } from 'react-router';
 import './navigation.scss';
 
 export interface IProps {
-  items: Array<{ to: string; text: string }>;
+  items: { to: string; text: string }[];
   exactRoutes?: boolean;
 }
 

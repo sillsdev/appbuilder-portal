@@ -36,6 +36,10 @@
       "groupName": "DWKit packages"
     },
     {
+      "packagePatterns": ["xunit"],
+      "groupName": "XUnit packages"
+    },    
+    {
       "packagePatterns": ["^Microsoft.AspNetCore"],
       "groupName": "ASP.NET Core packages"
     },

@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { toast as notify, ToastOptions } from 'react-toastify';
 import { parseError } from '@ui/components/errors/parse-error';
 
@@ -23,7 +24,20 @@ export function warning(msg: string, options: ToastOptions = {}) {
 
 export function error(err: string, options: ToastOptions = {}) {
   const parsed = parseError(err);
-  const msg = `${parsed.title} ${parsed.body || ''}`;
+  const { title, body } = parsed;
+
+  let msg;
+  if (title && body) {
+    msg = (
+      <>
+        <em>{title}</em>
+        <br />
+        <span>{body}</span>
+      </>
+    );
+  } else {
+    msg = title;
+  }
 
   notify.error(msg, options);
 }

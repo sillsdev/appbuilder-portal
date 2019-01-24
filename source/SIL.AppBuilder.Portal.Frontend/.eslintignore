@@ -1,3 +1,5 @@
 /node_modules
 /scripts
 /src/public
+/src/locales
+/dist

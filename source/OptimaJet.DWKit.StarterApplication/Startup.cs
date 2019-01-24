@@ -25,6 +25,7 @@ using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using Microsoft.AspNetCore.Http;
 using Serilog;
+using OptimaJet.DWKit.StarterApplication.Filters;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -152,13 +153,9 @@ namespace OptimaJet.DWKit.StarterApplication
                 new Hangfire.AspNetCore.AspNetCoreJobActivator(serviceScopeFactory));
             GlobalJobFilters.Filters.Add(
                 new ErrorReportingJobFilter(serviceProvider.GetService<IClient>()));
+
+
             app.UseHangfireServer();
-            var useDashBoard = GetVarOrDefault("HANGFIRE_USE_DASHBOARD", ""); 
-            if (!String.IsNullOrEmpty(useDashBoard))
-            {
-                Log.Information("Using Hangfire Dashboard");
-                app.UseHangfireDashboard();
-            }
 
             if (env.IsDevelopment())
             {
@@ -199,10 +196,12 @@ namespace OptimaJet.DWKit.StarterApplication
             });
 
             app.UseJsonApi();
-
             app.UseBuildEngine(Configuration);
             app.UseWorkflow(Configuration);
             app.UseNotifications(Configuration);
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions {
+                Authorization = new[] { new HangfireDashboardAuthorizationFilter() }
+            });
         }
     }
 }

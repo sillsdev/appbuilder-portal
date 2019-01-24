@@ -29,6 +29,12 @@ export function useFakeAuthentication(currentUser?: object) {
     const user = (currentUser || {}).data || defaultUser;
 
     this.currentUser = user;
+    // NOTE: current org is currently not extracted from custom user payloads
+    this.currentOrganization = {
+      type: 'organizations',
+      id: 1,
+      attributes: { name: 'DeveloperTown' },
+    };
 
     this.mockGet(
       200,
@@ -45,11 +51,7 @@ export function useFakeAuthentication(currentUser?: object) {
               organization: { data: { id: 1, type: 'organizations' } },
             },
           },
-          {
-            type: 'organizations',
-            id: 1,
-            attributes: { name: 'DeveloperTown' },
-          },
+          this.currentOrganization,
           {
             id: 1,
             type: 'groups',

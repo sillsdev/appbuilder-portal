@@ -26,14 +26,6 @@ fi
 PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
   -f /app/scripts/api_migrations.sql
 
-# upsert default workflow
-PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
-  -f /app/scripts/default_workflow.sql
-
-# Create triggers
-PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f /app/scripts/default_trigger.sql
-
 if [ "$DB_BOOTSTRAP" -eq "1" ]; then
   # Create tables required by api
   PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
@@ -43,6 +35,14 @@ if [ "$DB_BOOTSTRAP" -eq "1" ]; then
       -f /app/scripts/$DB_BOOTSTRAP_FILE
   fi
 fi
+
+# upsert default workflow
+PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
+  -f /app/scripts/default_workflow.sql
+
+# Create triggers
+PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
+    -f /app/scripts/default_trigger.sql
 
 if [ "$DB_SAMPLEDATA" -eq "1" ]; then
   # Add sample data for CI environment
