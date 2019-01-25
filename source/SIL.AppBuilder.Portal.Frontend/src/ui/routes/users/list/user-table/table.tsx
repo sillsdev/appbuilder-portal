@@ -19,12 +19,12 @@ interface IOwnProps {
 type IProps = IOwnProps & i18nProps;
 
 export default class Table extends React.Component<IProps> {
-  shouldComponentUpdate(nextProps, nextState) {
-    const nextUsers = nextProps.users;
-    const users = this.props.users;
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   const nextUsers = nextProps.users;
+  //   const users = this.props.users;
 
-    return !areResourceListsEqual(nextUsers, users);
-  }
+  //   return !areResourceListsEqual(nextUsers, users);
+  // }
 
   render() {
     const { users, roles, currentUser, t } = this.props;

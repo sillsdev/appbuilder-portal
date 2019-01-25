@@ -13,19 +13,23 @@ import {
 import { compareVia } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
+import { withActiveRoles } from './with-active-roles';
+
 interface INeededProps {
-  userRoles: UserRoleResource[];
   roles: RoleResource[];
   user: UserResource;
   organization: OrganizationResource;
 }
 
-interface IOwnProps {}
+interface IOwnProps {
+  userRoles: UserRoleResource[];
+}
 
 type IProps = IOwnProps & i18nProps & IUserRoleProps;
 
 export default compose<IProps, INeededProps>(
   withTranslations,
+  withActiveRoles,
   withProps((props: INeededProps) => {
     const { user, organization } = props;
 
@@ -37,7 +41,7 @@ export default compose<IProps, INeededProps>(
     };
   }),
   withUserRoles
-)(({ user, roles, userHasRole, organization, t }) => {
+)(({ roles, userHasRole, t }) => {
   const activeRoles = roles
     .filter((role) => userHasRole(role))
     .sort(compareVia((r) => attributesFor(r).roleName));

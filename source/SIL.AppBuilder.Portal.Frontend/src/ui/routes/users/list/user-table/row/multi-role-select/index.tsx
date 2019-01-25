@@ -11,6 +11,7 @@ import {
   idFor,
   relationshipFor,
   recordsWithIdIn,
+  withLoader,
 } from '@data';
 
 import { isEmpty, unique, areResourceListsEqual, areResourcesEqual } from '@lib/collection';
@@ -18,6 +19,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 
 import Display from './display';
+import { ROLE } from '~/data/models/role';
 
 interface INeededProps {
   user: UserResource;
@@ -38,20 +40,20 @@ type IProps = INeededProps & IOwnProps & IAfterUserRoles & i18nProps;
 export default compose<IProps, INeededProps>(
   withTranslations,
   withCurrentUserContext,
-  // share one set of userRoles for the entire list.
-  // otherwise the RoleSelect's own withUserRoles will
-  // make a call to get the userRoles as a convient default
   withOrbit((props: INeededProps) => {
-    const { user } = props;
+    const { user, roles } = props;
+    const superAdmin = roles.find(role => attributesFor(role).roleName === ROLE.SuperAdmin);
 
     return {
-      userRoles: (q) => q.findRelatedRecords(user, 'userRoles'),
+      superAdminRoles: (q) => q.findRecords('userRoles')
+                          .filter({ relation: 'role', record: superAdmin })
+                          .filter({ relation: 'user', record: user }),
     };
   }),
   mapProps((allProps: any) => {
     const remainingProps = pick(allProps, [
       'user',
-      'userRoles',
+      'superAdminRoles',
       'currentUser',
       'organizations',
       'roles',
@@ -60,36 +62,8 @@ export default compose<IProps, INeededProps>(
 
     return remainingProps;
   }),
-  withProps((props: INeededProps & IAfterUserRoles & i18nProps) => {
-    const { userRoles, organizations, roles, t } = props;
-
-    const applicable = userRoles.filter((userRole) => {
-      const id = idFor(relationshipFor(userRole, 'organization'));
-
-      return recordsWithIdIn(organizations, [id]).length > 0;
-    });
-
-    const names = applicable.map((userRole) => {
-      const roleId = idFor(relationshipFor(userRole, 'role'));
-      const role = roles.find((r) => r.id === roleId);
-
-      return attributesFor(role).roleName;
-    });
-
-    if (isEmpty(names)) {
-      return { roleNames: t('users.noRoles') };
-    }
-
-    const result = unique(names)
-      .sort()
-      .join(', ');
-
-    return {
-      roleNames: result,
-    };
-  }),
-  withProps(({ currentUser, user, roleNames }) => {
-    const isSuperAdmin = roleNames.includes('SuperAdmin');
+  withProps(({ currentUser, user, superAdminRoles }) => {
+    const isSuperAdmin = (superAdminRoles) || [].length > 0;
 
     return {
       editable: isSuperAdmin || currentUser.id !== user.id,

@@ -190,8 +190,8 @@ export function withFetcher() {
     }
 
     return compose(
+      withTranslations,
       withData({}),
-      withTranslations
     )(WrapperClass);
   };
 }

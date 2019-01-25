@@ -28,7 +28,7 @@ export default class NotificationsSocketClient implements SocketClient {
       endpointUri: '/hubs/notifications',
       options: {
         accessTokenFactory: () => `${getToken()}`,
-        logger: LogLevel.Trace,
+        // logger: LogLevel.Trace,
         // tslint:disable-next-line:no-bitwise
         transport:
           HttpTransportType.WebSockets |
