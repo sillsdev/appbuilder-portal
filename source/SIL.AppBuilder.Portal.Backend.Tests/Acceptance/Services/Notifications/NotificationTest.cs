@@ -10,11 +10,10 @@ using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
-using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support.TestClasses;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
-namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifications
+namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
 {
     [Collection("BuildEngineCollection")]
     public class NotificationTest : BaseTest<BuildEngineStartup>
@@ -135,7 +134,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "token", "replace" }
             };
 
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "buildengineConnected", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
@@ -152,7 +151,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "token", "replace" }
             };
 
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(org1, CurrentUser, "buildengineConnected", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(3, modifiedNotifications.Count);
@@ -170,7 +169,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "token", "replace" }
             };
 
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(org1, user1, "buildengineConnected", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
@@ -190,7 +189,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "buildEngineUrl", link }
             };
 
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(org1, CurrentUser, "buildFailedOwner", "buildFailedAdmin", notificationParm, link);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(3, modifiedNotifications.Count);
@@ -203,58 +202,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
         }
 
         [Fact]
-        public async Task Send_EmailAsync()
-        {
-            BuildTestData();
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
-            var notifications = ReadTestData<AppDbContext, Notification>();
-            await sendNotificationService.SendEmailTest(notifications[0]);
-            var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Single(modifiedNotifications);
-            var notification = modifiedNotifications[0];
-            Assert.NotNull(notification.DateEmailSent);
-            var emails = ReadTestData<AppDbContext, Email>();
-            Assert.Single(emails);
-            var email = emails[0];
-            Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
-            Assert.Equal("Notification.txt", email.ContentTemplate);
-            Assert.Equal("{\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\",\"BuildEngineUrlText\":\"\",\"LinkUrl\":null}", email.ContentModelJson);
-        }
-        [Fact]
-        public async Task Send_EmailAsyncWithLink()
-        {
-            BuildTestData();
-            var notificationParm = new
-            {
-                orgName = "SIL International",
-                url = "http://gtis.guru.com:8443",
-                token = "replace"
-            };
-            var serializedParm = JsonConvert.SerializeObject(notificationParm);
-            notification2 = AddEntity<AppDbContext, Notification>(new Notification
-            {
-                MessageId = "buildengineConnected",
-                MessageSubstitutionsJson = serializedParm,
-                Message = "Build Engine for organization SIL International status change: connected",
-                UserId = user1.Id,
-                LinkUrl = "https://buildengine.gtis.guru:8443"
-            });
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
-            var notifications = ReadTestData<AppDbContext, Notification>();
-            await sendNotificationService.SendEmailTest(notifications[1]);
-            var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Equal(2, modifiedNotifications.Count);
-            var notification = modifiedNotifications[1];
-            Assert.NotNull(notification.DateEmailSent);
-            var emails = ReadTestData<AppDbContext, Email>();
-            Assert.Single(emails);
-            var email = emails[0];
-            Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
-            Assert.Equal("NotificationWithLink.txt", email.ContentTemplate);
-            Assert.Equal("{\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\",\"BuildEngineUrlText\":\"notifications.body.buildEngineUrl\",\"LinkUrl\":\"https://buildengine.gtis.guru:8443\"}", email.ContentModelJson);
-        }
-
-        [Fact]
         public async Task Test_Multiple_Substitutions()
         {
             BuildTestData();
@@ -263,7 +210,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "orgName", "SIL International" },
                 { "projectName", "Test project" }
             };
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "projectFailedBuildEngine", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
@@ -278,7 +225,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "orgName", "SIL International" },
                 { "projectName", "Test project" }
             };
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToOrgAdminsAsync(org1, "projectFailedBuildEngine", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
@@ -295,7 +242,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "orgName", "SIL International" },
                 { "projectName", "Test project" }
             };
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToOrgAdminsAsync(org2, "projectFailedBuildEngine", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
@@ -323,7 +270,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Notifica
                 { "orgName", "SIL International" },
                 { "projectName", "Test project" }
             };
-            var sendNotificationService = _fixture.GetService<SendNotificationServiceTester>();
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToSuperAdminsAsync("projectFailedBuildEngine", notificationParm, "", false);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);

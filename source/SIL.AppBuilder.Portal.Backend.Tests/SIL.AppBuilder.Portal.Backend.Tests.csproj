@@ -44,10 +44,12 @@
     <Folder Include="Acceptance\APIControllers\OrganizationInviteRequests\" />
     <Folder Include="Acceptance\BuildEngine\" />
     <Folder Include="Acceptance\APIControllers\GroupMemberships\" />
-    <Folder Include="Acceptance\APIControllers\Notifications\" />
     <Folder Include="Acceptance\Support\TestClasses\" />
     <Folder Include="Acceptance\EventDispatcher\" />
     <Folder Include="Acceptance\EventDispatcher\EntityHandler\" />
+    <Folder Include="Acceptance\Services\" />
+    <Folder Include="Acceptance\Services\Notifications\" />
+    <Folder Include="Acceptance\Services\SendEmails\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Acceptance\APIControllers\ProjectsTest.cs" />

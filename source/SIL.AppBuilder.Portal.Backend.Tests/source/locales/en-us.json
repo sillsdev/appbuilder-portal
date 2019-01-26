@@ -5,6 +5,7 @@
       "buildengineDisconnected": "<p>Build Engine for organization {{orgName}} status change: disconnected</p>",
       "buildFailedOwner": "<p>Build for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{buildStatus}} </p><p> The organization administrator has been notified of this issue</p>",
       "buildFailedAdmin": "<p>Build for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{buildStatus}} </p>",
+      "reviewProduct": "<p>Please review {{productName}} for project {{projectName}}.</p><p>The links below will connect you with the product files to be reviewed:</p>",
       "projectFailedBuildEngine": "<p>Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}.</p>"
     },
     "subject": {
@@ -12,6 +13,7 @@
       "buildengineDisconnected": "Scriptoria: {{orgName}} Build Engine Disconnected",
       "buildFailedOwner": "Scriptoria: Build {{projectName}} {{productName}} Failed",
       "buildFailedAdmin": "Scriptoria: Build {{projectName}} {{productName}} Failed",
+      "reviewProduct": "Scriptoria: {{productName}} {{projectName}} Ready for Review",
       "projectFailedBuildEngine": "Scriptoria: Create Project {{projectName}} Failed"
     },
     "notification":  {

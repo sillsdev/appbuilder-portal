@@ -1,0 +1,9 @@
+﻿@{
+    DisableEncoding = true;
+}
+<html>
+<body>
+    @Model.Message
+    @Model.Links
+</body>
+</html>
