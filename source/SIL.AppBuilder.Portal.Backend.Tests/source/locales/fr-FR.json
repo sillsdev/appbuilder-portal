@@ -3,16 +3,22 @@
     "body": {
       "buildengineConnected": "<p>Build Engine for organization {{orgName}} status change: connected</p>",
       "buildengineDisconnected": "<p>Build Engine for organization {{orgName}} status change: disconnected</p>",
+      "buildFailedOwner": "<p>Build for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{buildStatus}} </p><p> The organization administrator has been notified of this issue</p>",
+      "buildFailedAdmin": "<p>Build for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{buildStatus}} </p>",
       "projectFailedBuildEngine": "<p>Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}.</p>"
     },
     "subject": {
       "buildengineConnected": "Scriptoria: {{orgName}} Build Engine Connected",
       "buildengineDisconnected": "Scriptoria: {{orgName}} Build Engine Disconnected",
+      "buildFailedOwner": "Scriptoria: Build {{projectName}} {{productName}} Failed",
+      "buildFailedAdmin": "Scriptoria: Build {{projectName}} {{productName}} Failed",
       "projectFailedBuildEngine": "Scriptoria: Create Project {{projectName}} Failed"
     },
     "notification": {
       "buildengineConnected": "Build Engine for organization {{orgName}} status change: connected",
       "buildengineDisconnected": "Build Engine for organization {{orgName}} status change: disconnected",
+      "buildFailedOwner": "Build for product {{productName}} project {{projectName}} failed. Status: {{buildStatus}} The organization administrator has been notified of this issue.",
+      "buildFailedAdmin": "Build for product {{productName}} project {{projectName}} failed. Status: {{buildStatus}}  Review status at build engine {{buildEngineUrl}} for details",
       "projectFailedBuildEngine": "Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}."
     }
   },
