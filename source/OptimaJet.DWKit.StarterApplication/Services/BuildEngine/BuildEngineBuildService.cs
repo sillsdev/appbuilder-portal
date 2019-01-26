@@ -254,15 +254,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected async Task BuildCreationFailedAsync(Product product, BuildResponse buildEngineBuild)
         {
             ClearRecurringJob(product.Id);
+            var buildEngineUrl = product.Project.Organization.BuildEngineUrl + "/build-admin/view?id=" + product.WorkflowBuildId.ToString();
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
                 { "productName", product.ProductDefinition.Name},
                 { "buildStatus", buildEngineBuild.Status },
                 { "buildError", buildEngineBuild.Error },
-                { "buildEngineUrl", product.Project.Organization.BuildEngineUrl }
+                { "buildEngineUrl", buildEngineUrl }
             };
-            await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "buildFailed", messageParms);
+            await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "buildFailedOwner", "buildFailedAdmin", messageParms, buildEngineUrl);
         }
         protected void ClearRecurringJob(Guid productId)
         {

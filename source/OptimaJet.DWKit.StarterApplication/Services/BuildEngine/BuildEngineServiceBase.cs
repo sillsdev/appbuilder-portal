@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -90,16 +91,26 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             }
             return true;
         }
-        protected async System.Threading.Tasks.Task SendNotificationOnFinalRetryAsync(PerformContext context,
+        protected async Task SendNotificationOnFinalRetryAsync(PerformContext context,
                                                     Organization organization,
                                                     User user,
                                                     string messageId,
                                                     Dictionary<string, object> subs)
         {
+            await SendNotificationOnFinalRetryAsync(context, organization, user, messageId, messageId, subs, "");
+        }
+        protected async Task SendNotificationOnFinalRetryAsync(PerformContext context,
+                                                    Organization organization,
+                                                    User user,
+                                                    string ownerMessageId,
+                                                    string adminMessageId,
+                                                    Dictionary<string, object> subs,
+                                                    string linkUrl)
+        {
             if (IsFinalRetry(context))
             {
                 await SendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(organization, user,
-                                                               messageId, subs);
+                                                               ownerMessageId, adminMessageId, subs, linkUrl);
 
             }
         }
