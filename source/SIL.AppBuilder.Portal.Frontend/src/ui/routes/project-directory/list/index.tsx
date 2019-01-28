@@ -31,7 +31,10 @@ export default compose(
   ),
   withCurrentUserContext,
   withFiltering(() => ({
-    requiredFilters: [{ attribute: 'date-archived', value: 'isnull:' }],
+    requiredFilters: [
+      { attribute: 'date-archived', value: 'isnull:' },
+      { attribute: 'is-public', value: 'true' },
+    ],
   })),
   withSorting({ defaultSort: 'name' }),
   withPagination(),
