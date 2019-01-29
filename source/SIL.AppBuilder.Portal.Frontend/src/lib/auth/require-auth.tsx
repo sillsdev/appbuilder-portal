@@ -20,7 +20,7 @@ export function requireAuth(opts = {}) {
         if (!emailVerified) {
           return <Redirect push={false} to={'/verify-email'} />;
         }
-        const WithUser = withCurrentUserContext(Component);
+        const WithUser = withCurrentUser(opts)(Component);
 
         return <WithUser {...propsWithRouting} />;
       }

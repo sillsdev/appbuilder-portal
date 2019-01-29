@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { withData, WithDataProps } from 'react-orbitjs';
+import { withData, ILegacyProvidedProps, pushPayload } from 'react-orbitjs';
 import { compose } from 'recompose';
-
-import { pushPayload } from '@data';
 
 import { TYPE_NAME } from '@data/models/user';
 import { getAuth0Id } from '@lib/auth0';
@@ -59,7 +57,7 @@ async function handleResponse(response, t) {
 //     we can navigate back.
 export function withFetcher() {
   return (InnerComponent) => {
-    class WrapperClass extends React.Component<IProps & WithDataProps & i18nProps, IState> {
+    class WrapperClass extends React.Component<IProps & ILegacyProvidedProps & i18nProps, IState> {
       makingRequest: boolean;
       forceComponentUpdate: boolean = false;
 
@@ -128,7 +126,7 @@ export function withFetcher() {
           this.forceComponentUpdate = true;
         }
 
-        const { updateStore, t, dataStore } = this.props;
+        const { t, dataStore } = this.props;
         const { currentUser } = this.state;
 
         if (this.makingRequest) {
@@ -155,7 +153,7 @@ export function withFetcher() {
 
             const json = await handleResponse(response, t);
 
-            await pushPayload(updateStore, json);
+            await pushPayload(dataStore, json);
           }
 
           if (needsUpdate || forceReloadFromServer || forceReloadFromCache) {
@@ -174,6 +172,7 @@ export function withFetcher() {
             );
           }
         } catch (e) {
+          debugger;
           this.setState({ error: e, networkFetchComplete: true, isLoading: false }, () => {
             this.makingRequest = false;
           });

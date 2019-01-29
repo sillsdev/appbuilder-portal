@@ -3,6 +3,7 @@ import Store from '@orbit/store';
 import { compose, withProps } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { assert } from '@orbit/utils';
 
 interface MapFnResult {
   [propKey: string]: [any, string, string];
@@ -139,6 +140,13 @@ async function retrieveManyToMany(
   relationshipPath: [string, string]
 ) {
   const [joinRelationship, targetRelationship] = relationshipPath;
+
+  assert(
+    `sourceModel in call to retrieveManyToMany is undefined when trying to access ${relationshipPath.join(
+      '.'
+    )}`,
+    sourceModel !== undefined
+  );
 
   const joins = dataStore.cache.query((q) => q.findRelatedRecords(sourceModel, joinRelationship));
 

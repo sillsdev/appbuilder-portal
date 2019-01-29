@@ -23,10 +23,12 @@ export const Provider = withFetcher()((props: ICurrentUserProps & { children: an
 
 export function withCurrentUserContext(InnerComponent) {
   return (props) => {
-    // console.log('what is causing this to update?', props);
     return (
       <CurrentUserContext.Consumer>
-        {(context) => <InnerComponent {...props} {...context} />}
+        {(context) => {
+          console.log(context);
+        return <InnerComponent {...props} {...context} />
+      }}
       </CurrentUserContext.Consumer>
     );
   };
