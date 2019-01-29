@@ -172,7 +172,6 @@ export function withFetcher() {
             );
           }
         } catch (e) {
-          debugger;
           this.setState({ error: e, networkFetchComplete: true, isLoading: false }, () => {
             this.makingRequest = false;
           });

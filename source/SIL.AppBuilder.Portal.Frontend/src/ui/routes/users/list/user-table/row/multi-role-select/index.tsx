@@ -45,7 +45,7 @@ export default compose<IProps, INeededProps>(
     const superAdmin = roles.find(role => attributesFor(role).roleName === ROLE.SuperAdmin);
 
     return {
-      superAdminRoles: (q) => q.findRecords('userRoles')
+      superAdminRoles: (q) => q.findRecords('userRole')
                           .filter({ relation: 'role', record: superAdmin })
                           .filter({ relation: 'user', record: user }),
     };

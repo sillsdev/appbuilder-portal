@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { compose } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { compose, withProps } from 'recompose';
+import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
 import { i18nProps } from '@lib/i18n';
 import { withNetwork as withUserList } from '@data/containers/resources/user/list';
 import { TYPE_NAME as GROUP } from '@data/models/group';
@@ -20,6 +20,7 @@ import {
 
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
+import { withDebugger } from '~/lib/debug';
 
 interface IOwnProps {
   refetch: () => Promise<void>;
@@ -29,7 +30,7 @@ interface IOwnProps {
   organizationMemberships: OrganizationMembershipResource[];
 }
 
-export type IProps = IOwnProps & i18nProps & IActionProps & WithDataProps;
+export type IProps = IOwnProps & i18nProps & IActionProps & ILegacyProvidedProps;
 
 export function withData(WrappedComponent) {
   class DataWrapper extends React.Component<IProps> {
@@ -89,6 +90,8 @@ export function withData(WrappedComponent) {
       organizationMemberships: (q) => q.findRecords('organizationMembership'),
       groups: (q) => q.findRecords(GROUP),
       roles: (q) => q.findRecords(ROLE),
+    }, {
+      label: 'user-table-data',
     })
   )(DataWrapper);
 }

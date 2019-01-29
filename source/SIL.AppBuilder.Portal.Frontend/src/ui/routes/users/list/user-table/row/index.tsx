@@ -13,6 +13,7 @@ import {
   OrganizationResource,
   attributesFor,
   idFromRecordIdentity,
+  withLoader,
 } from '@data';
 
 import { withRole } from '@data/containers/with-role';

@@ -121,7 +121,7 @@ export default compose<INeededProps, IProps>(
       assignedTo: (q) => q.findRelatedRecord(userTask, 'assigned'),
     };
   }),
-  withLoader(({ product, assignedTo }) => !product || !assignedTo, loadingOptions),
+  withLoader(({ product }) => !product, loadingOptions),
   withOrbit(({ product }) => ({
     project: (q) => q.findRelatedRecord(product, 'project'),
     productDefinition: (q) => q.findRelatedRecord(product, 'productDefinition'),
