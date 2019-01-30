@@ -1,22 +1,10 @@
-import { compose, withProps, shouldUpdate, mapProps } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
-import pick from 'lodash/pick';
+import { compose, mapProps } from 'recompose';
+import { withData as withOrbit, attributesFor } from 'react-orbitjs';
 
-import {
-  OrganizationResource,
-  UserResource,
-  RoleResource,
-  UserRoleResource,
-  attributesFor,
-  idFor,
-  relationshipFor,
-  recordsWithIdIn,
-  withLoader,
-} from '@data';
+import { OrganizationResource, UserResource, RoleResource, UserRoleResource } from '@data';
 
-import { isEmpty, unique, areResourceListsEqual, areResourcesEqual } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { withCurrentUserContext } from '@data/containers/with-current-user';
+import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 
 import Display from './display';
 import { ROLE } from '~/data/models/role';
@@ -35,37 +23,41 @@ interface IAfterUserRoles {
   userRoles: UserRoleResource[];
 }
 
-type IProps = INeededProps & IOwnProps & IAfterUserRoles & i18nProps;
+interface IFromOrbit {
+  superAdminRoles: UserRoleResource[];
+}
+
+type IProps = INeededProps &
+  IOwnProps &
+  IAfterUserRoles &
+  i18nProps &
+  IFromOrbit &
+  ICurrentUserProps;
 
 export default compose<IProps, INeededProps>(
   withTranslations,
   withCurrentUserContext,
-  withOrbit((props: INeededProps) => {
-    const { user, roles } = props;
-    const superAdmin = roles.find(role => attributesFor(role).roleName === ROLE.SuperAdmin);
+  withOrbit<INeededProps & ICurrentUserProps, IFromOrbit>(({ user, roles }) => {
+    const superAdmin = roles.find((role) => attributesFor(role).roleName === ROLE.SuperAdmin);
 
     return {
-      superAdminRoles: (q) => q.findRecords('userRole')
-                          .filter({ relation: 'role', record: superAdmin })
-                          .filter({ relation: 'user', record: user }),
+      superAdminRoles: (q) =>
+        q
+          .findRecords('userRole')
+          .filter({ relation: 'role', record: superAdmin })
+          .filter({ relation: 'user', record: user }),
     };
   }),
-  mapProps((allProps: any) => {
-    const remainingProps = pick(allProps, [
-      'user',
-      'superAdminRoles',
-      'currentUser',
-      'organizations',
-      'roles',
-      't',
-    ]);
-
-    return remainingProps;
-  }),
-  withProps(({ currentUser, user, superAdminRoles }) => {
-    const isSuperAdmin = (superAdminRoles) || [].length > 0;
+  mapProps(({ user, superAdminRoles, currentUser, organizations, roles, t }: IProps) => {
+    const isSuperAdmin = superAdminRoles || [].length > 0;
 
     return {
+      user,
+      superAdminRoles,
+      currentUser,
+      organizations,
+      roles,
+      t,
       editable: isSuperAdmin || currentUser.id !== user.id,
     };
   })

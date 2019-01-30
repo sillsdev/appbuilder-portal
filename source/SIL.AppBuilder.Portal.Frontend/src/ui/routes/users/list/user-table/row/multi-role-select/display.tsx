@@ -37,6 +37,7 @@ export default class MultiRoleSelect extends React.Component<IProps, { open: boo
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    console.log('RoleMultiSelect:scu: ', this.props.user.attributes.name, this.props, nextProps);
     return nextProps.editable != this.props.editable || this.state.open !== nextState.open;
   }
 
