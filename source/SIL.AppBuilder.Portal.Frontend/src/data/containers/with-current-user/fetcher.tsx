@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { withData, ILegacyProvidedProps, pushPayload } from 'react-orbitjs';
 import { compose } from 'recompose';
-
 import { TYPE_NAME } from '@data/models/user';
 import { getAuth0Id } from '@lib/auth0';
 import { get as authenticatedGet, tryParseJson } from '@lib/fetch';
@@ -189,7 +188,7 @@ export function withFetcher() {
 
     return compose(
       withTranslations,
-      withData({}),
+      withData({})
     )(WrapperClass);
   };
 }

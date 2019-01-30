@@ -7,6 +7,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 
 import Display from './display';
+
 import { ROLE } from '~/data/models/role';
 
 interface INeededProps {
@@ -50,18 +51,20 @@ export default compose<IProps, INeededProps>(
       userRolesForUser: (q) => q.findRelatedRecords(user, 'userRoles'),
     };
   }),
-  mapProps(({ user, superAdminRoles, currentUser, organizations, roles, userRolesForUser, t }: IProps) => {
-    const isSuperAdmin = (superAdminRoles || []).length > 0;
+  mapProps(
+    ({ user, superAdminRoles, currentUser, organizations, roles, userRolesForUser, t }: IProps) => {
+      const isSuperAdmin = (superAdminRoles || []).length > 0;
 
-    return {
-      user,
-      superAdminRoles,
-      currentUser,
-      organizations,
-      roles,
-      userRolesForUser,
-      t,
-      editable: isSuperAdmin || currentUser.id !== user.id,
-    };
-  })
+      return {
+        user,
+        superAdminRoles,
+        currentUser,
+        organizations,
+        roles,
+        userRolesForUser,
+        t,
+        editable: isSuperAdmin || currentUser.id !== user.id,
+      };
+    }
+  )
 )(Display);

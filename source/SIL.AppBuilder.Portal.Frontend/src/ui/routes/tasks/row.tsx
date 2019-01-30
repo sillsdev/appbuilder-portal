@@ -18,6 +18,7 @@ import {
   UserResource,
   withLoader,
 } from '@data';
+
 import productDefinitionSelect from '~/ui/components/inputs/product-definition-select';
 
 export interface IOwnProps {
@@ -109,7 +110,11 @@ class TaskRow extends React.Component<IProps> {
   }
 }
 
-const LoadingWrapper = ({children}) => <tr><td colSpan={3}>{children}</td></tr>;
+const LoadingWrapper = ({ children }) => (
+  <tr>
+    <td colSpan={3}>{children}</td>
+  </tr>
+);
 const loadingOptions = { wrapWith: LoadingWrapper };
 
 export default compose<INeededProps, IProps>(

@@ -6,9 +6,9 @@ import {
   withCurrentOrganization,
   IProvidedProps as WithCurrentOrgProps,
 } from '@data/containers/with-current-organization';
-import { withData } from './user-table/data';
 import { withTranslations } from '@lib/i18n';
 
+import { withData } from './user-table/data';
 import Display from './display';
 
 export const pathName = '/users';

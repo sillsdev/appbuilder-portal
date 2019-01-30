@@ -20,6 +20,7 @@ import {
 
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
+
 import { withDebugger } from '~/lib/debug';
 
 interface IOwnProps {
@@ -86,12 +87,15 @@ export function withData(WrappedComponent) {
     // the following record retrievals are intended to be queried minimally,
     // to hopefully prevent unneeded re-renders.
     // TODO: what would putting this on each row do?
-    withOrbit({
-      organizationMemberships: (q) => q.findRecords('organizationMembership'),
-      groups: (q) => q.findRecords(GROUP),
-      roles: (q) => q.findRecords(ROLE),
-    }, {
-      label: 'user-table-data',
-    })
+    withOrbit(
+      {
+        organizationMemberships: (q) => q.findRecords('organizationMembership'),
+        groups: (q) => q.findRecords(GROUP),
+        roles: (q) => q.findRecords(ROLE),
+      },
+      {
+        label: 'user-table-data',
+      }
+    )
   )(DataWrapper);
 }

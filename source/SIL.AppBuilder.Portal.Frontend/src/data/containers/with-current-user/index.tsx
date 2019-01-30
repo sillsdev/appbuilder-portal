@@ -26,7 +26,7 @@ export function withCurrentUserContext(InnerComponent) {
     return (
       <CurrentUserContext.Consumer>
         {(context) => {
-          return <InnerComponent {...props} {...context} />
+          return <InnerComponent {...props} {...context} />;
         }}
       </CurrentUserContext.Consumer>
     );

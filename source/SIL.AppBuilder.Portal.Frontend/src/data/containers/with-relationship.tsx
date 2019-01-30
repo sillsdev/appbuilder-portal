@@ -91,7 +91,7 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
       //   this.asyncStarter();
       // }
 
-      constructor(props){
+      constructor(props) {
         super(props);
 
         const result = this.fetchRelationships();
