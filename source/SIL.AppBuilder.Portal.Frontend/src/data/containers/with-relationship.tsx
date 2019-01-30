@@ -41,24 +41,24 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
       state = { isLoading: false, error: undefined, result: {} };
       isFetchingRelationships = false;
 
-      fetchRelationships = async (): Promise<object> => {
+      fetchRelationships = (): object => {
         const { dataStore, relationshipsToFind } = this.props;
 
         const resultingRelationshipProps = {};
 
-        const promises = Object.keys(relationshipsToFind).map(async (resultKey) => {
+        const promises = Object.keys(relationshipsToFind).map((resultKey) => {
           const relationshipArgs = relationshipsToFind[resultKey];
 
-          const relation = await retrieveRelation(dataStore, relationshipArgs);
+          const relation = retrieveRelation(dataStore, relationshipArgs);
 
           resultingRelationshipProps[resultKey] = relation;
         });
 
-        try {
-          await Promise.all(promises);
-        } catch (e) {
-          this.setState({ error: e });
-        }
+        // try {
+        //   await Promise.all(promises);
+        // } catch (e) {
+        //   this.setState({ error: e });
+        // }
 
         return resultingRelationshipProps;
       };
@@ -73,8 +73,8 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
 
         try {
           this.isFetchingRelationships = true;
-          this.setState({ isLoading: true, error: undefined }, async () => {
-            const result = await this.fetchRelationships();
+          this.setState({ isLoading: true, error: undefined }, () => {
+            const result = this.fetchRelationships();
 
             this.setState({ result, isLoading: false, error: undefined }, () => {
               this.isFetchingRelationships = false;
@@ -87,8 +87,15 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
         }
       };
 
-      componentDidMount() {
-        this.asyncStarter();
+      // componentDidMount() {
+      //   this.asyncStarter();
+      // }
+
+      constructor(props){
+        super(props);
+
+        const result = this.fetchRelationships();
+        this.state = { result, isLoading: false, error: undefined };
       }
 
       componentDidUpdate() {
@@ -123,18 +130,18 @@ export function withRelationships<T>(mappingFn: (props: T) => MapFnResult) {
 
 type RelationshipArgs = [ResourceObject, string, string] | [ResourceObject, string];
 
-export async function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs) {
+export function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs) {
   const sourceModel = relationshipArgs[0];
   const relationshipPath = relationshipArgs.slice(1) as [string, string] | [string];
 
   if (relationshipPath.length === 2) {
-    return await retrieveManyToMany(dataStore, sourceModel, relationshipPath);
+    return retrieveManyToMany(dataStore, sourceModel, relationshipPath);
   }
 
-  return await retriveDirectRelationship(dataStore, sourceModel, relationshipPath[0]);
+  return retriveDirectRelationship(dataStore, sourceModel, relationshipPath[0]);
 }
 
-async function retrieveManyToMany(
+function retrieveManyToMany(
   dataStore: Store,
   sourceModel: ResourceObject,
   relationshipPath: [string, string]
@@ -152,15 +159,15 @@ async function retrieveManyToMany(
 
   // for each join record....
   const targets = [];
-  const promises = joins.map(async (joinRecord) => {
-    const target = await dataStore.cache.query((q) =>
+  const promises = joins.map((joinRecord) => {
+    const target = dataStore.cache.query((q) =>
       q.findRelatedRecord(joinRecord, targetRelationship)
     );
 
     targets.push(target);
   });
 
-  await Promise.all(promises);
+  // await Promise.all(promises);
 
   return targets;
 }

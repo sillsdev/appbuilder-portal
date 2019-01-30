@@ -25,6 +25,7 @@ interface IAfterUserRoles {
 
 interface IFromOrbit {
   superAdminRoles: UserRoleResource[];
+  userRolesForUser: UserRoleResource[];
 }
 
 type IProps = INeededProps &
@@ -37,7 +38,7 @@ type IProps = INeededProps &
 export default compose<IProps, INeededProps>(
   withTranslations,
   withCurrentUserContext,
-  withOrbit<INeededProps & ICurrentUserProps, IFromOrbit>(({ user, roles }) => {
+  withOrbit<INeededProps & ICurrentUserProps, IFromOrbit>(({ currentUser, user, roles }) => {
     const superAdmin = roles.find((role) => attributesFor(role).roleName === ROLE.SuperAdmin);
 
     return {
@@ -45,11 +46,12 @@ export default compose<IProps, INeededProps>(
         q
           .findRecords('userRole')
           .filter({ relation: 'role', record: superAdmin })
-          .filter({ relation: 'user', record: user }),
+          .filter({ relation: 'user', record: currentUser }),
+      userRolesForUser: (q) => q.findRelatedRecords(user, 'userRoles'),
     };
   }),
-  mapProps(({ user, superAdminRoles, currentUser, organizations, roles, t }: IProps) => {
-    const isSuperAdmin = superAdminRoles || [].length > 0;
+  mapProps(({ user, superAdminRoles, currentUser, organizations, roles, userRolesForUser, t }: IProps) => {
+    const isSuperAdmin = (superAdminRoles || []).length > 0;
 
     return {
       user,
@@ -57,6 +59,7 @@ export default compose<IProps, INeededProps>(
       currentUser,
       organizations,
       roles,
+      userRolesForUser,
       t,
       editable: isSuperAdmin || currentUser.id !== user.id,
     };

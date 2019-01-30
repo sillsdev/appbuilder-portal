@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
-import { isEmpty } from '@lib/collection';
+import { isEmpty, areResourceListsEqual } from '@lib/collection';
 
 import {
   attributesFor,
@@ -23,7 +23,7 @@ export interface IOwnProps {
   user: UserResource;
   organizations: OrganizationResource[];
   roles: RoleResource[];
-  userRoles: UserRoleResource[];
+  userRolesForUser: UserRoleResource[];
   roleNames: string;
 }
 
@@ -32,13 +32,13 @@ export type IProps = IOwnProps & i18nProps;
 export default class MultiRoleSelect extends React.Component<IProps, { open: boolean }> {
   state = { open: false };
 
-  componentDidMount() {
-    console.log('RoleMultiSelect didMount', this.props.user.attributes.name);
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('RoleMultiSelect:scu: ', this.props.user.attributes.name, this.props, nextProps);
-    return nextProps.editable != this.props.editable || this.state.open !== nextState.open;
+    console.log('mrs -- checking if needs to update', nextProps, this.props);
+    return (
+      nextProps.editable != this.props.editable ||
+      this.state.open !== nextState.open ||
+      areResourceListsEqual(this.props.userRolesForUser, nextProps.userRolesForUser)
+    );
   }
 
   toggle = () => {
