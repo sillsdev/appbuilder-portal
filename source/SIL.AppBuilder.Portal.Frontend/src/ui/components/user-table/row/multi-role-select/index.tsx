@@ -1,5 +1,5 @@
-import { compose, mapProps, withProps } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { compose, withProps, shouldUpdate, mapProps } from 'recompose';
+import { withData as withOrbit } from 'react-orbitjs';
 import pick from 'lodash/pick';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
@@ -12,7 +12,6 @@ import {
   idFor,
   relationshipFor,
   recordsWithIdIn,
-  withLoader,
 } from '@data';
 
 import { isEmpty, unique, areResourceListsEqual, areResourcesEqual } from '@lib/collection';
@@ -21,8 +20,12 @@ import { withCurrentUserContext } from '~/data/containers/with-current-user';
 
 interface INeededProps {
   user: UserResource;
-  organization: OrganizationResource;
+  organizations: OrganizationResource[];
   roles: RoleResource[];
+}
+
+interface IOwnProps {
+  roleNames: string;
 }
 
 interface IAfterUserRoles {

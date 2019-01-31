@@ -16,8 +16,6 @@ import { ROLE } from '@data/models/role';
 import { withUserRoles, IUserRoleProps } from '@data/containers/resources/user';
 import { compareVia } from '@lib/collection';
 
-import { withActiveRoles } from './with-active-roles';
-
 interface IOwnProps {
   roles: RoleResource[];
   user: UserResource;
@@ -69,7 +67,6 @@ class RoleSelect extends React.Component<IProps> {
 }
 
 export default compose(
-  withActiveRoles,
   withProps((props: IOwnProps) => {
     const { user, organization } = props;
 

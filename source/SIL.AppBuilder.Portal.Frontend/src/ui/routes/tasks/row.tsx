@@ -110,13 +110,6 @@ class TaskRow extends React.Component<IProps> {
   }
 }
 
-const LoadingWrapper = ({ children }) => (
-  <tr>
-    <td colSpan={3}>{children}</td>
-  </tr>
-);
-const loadingOptions = { wrapWith: LoadingWrapper };
-
 export default compose<INeededProps, IProps>(
   withTranslations,
   withRouter,
@@ -126,14 +119,11 @@ export default compose<INeededProps, IProps>(
       assignedTo: (q) => q.findRelatedRecord(userTask, 'assigned'),
     };
   }),
-  withLoader(({ product }) => !product, loadingOptions),
   withOrbit(({ product }) => ({
     project: (q) => q.findRelatedRecord(product, 'project'),
     productDefinition: (q) => q.findRelatedRecord(product, 'productDefinition'),
   })),
-  withLoader(({ project, productDefinition }) => !project || !productDefinition, loadingOptions),
   withOrbit(({ productDefinition }) => ({
     workflow: (q) => q.findRelatedRecord(productDefinition, 'workflow'),
   })),
-  withLoader(({ workflow }) => !workflow, loadingOptions)
 )(TaskRow);

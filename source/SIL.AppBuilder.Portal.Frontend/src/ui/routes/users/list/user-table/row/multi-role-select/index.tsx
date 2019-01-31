@@ -48,8 +48,9 @@ export default compose<IProps, INeededProps>(
           .findRecords('userRole')
           .filter({ relation: 'role', record: superAdmin })
           .filter({ relation: 'user', record: currentUser }),
-      userRolesForUser: (q) => q.findRelatedRecords(user, 'userRoles'),
     };
+  }, {
+    label: 'user-roles-for-dropdown'
   }),
   mapProps(
     ({ user, superAdminRoles, currentUser, organizations, roles, userRolesForUser, t }: IProps) => {
