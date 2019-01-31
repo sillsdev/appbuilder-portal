@@ -40,7 +40,7 @@ export function withRelationships<TWrappedProps, TResultProps>(
         relationshipsToFind
       );
 
-      return <WrappedComponent {...props} {...{ relations }} />;
+      return <WrappedComponent {...props} {...relations} />;
     });
 }
 
