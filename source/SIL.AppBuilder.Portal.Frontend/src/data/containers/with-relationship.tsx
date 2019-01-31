@@ -30,53 +30,35 @@ type RelationshipArgs = [ResourceObject, string, string] | [ResourceObject, stri
 export function withRelationships<TWrappedProps, TResultProps>(
   mappingFn: (props: TWrappedProps) => { [K in keyof TResultProps]: RelationshipArgs }
 ) {
-  type IProps = TWrappedProps & ILegacyProvidedProps;
+  type KeyConstraint = { [K in keyof TResultProps]: RelationshipArgs };
 
-  return (WrappedComponent) => {
-    class WithRelationship extends React.Component<IProps, TResultProps> {
-      static displayName = `WithRelationship(${getDisplayName(WrappedComponent)})`;
+  return (WrappedComponent) =>
+    withOrbit<TWrappedProps, {}>()((props) => {
+      const relationshipsToFind = mappingFn(props);
+      const relations = findRelationships<KeyConstraint, TResultProps>(
+        props.dataStore,
+        relationshipsToFind
+      );
 
-      relationshipsToFind: { [K in keyof TResultProps]: RelationshipArgs };
+      return <WrappedComponent {...props} {...{ relations }} />;
+    });
+}
 
-      constructor(props: IProps) {
-        super(props);
+export function findRelationships<TRelationships, TResult>(
+  dataStore: Store,
+  relationshipsToFind: TRelationships
+) {
+  const result = {};
 
-        this.relationshipsToFind = mappingFn(props);
-        this.state = this.fetchRelationships();
-      }
+  Object.keys(relationshipsToFind).forEach((resultKey) => {
+    const relationshipArgs = relationshipsToFind[resultKey];
 
-      componentWillReceiveProps() {
-        this.state = this.fetchRelationships();
-      }
+    const relation = retrieveRelation(dataStore, relationshipArgs);
 
-      fetchRelationships = (): TResultProps => {
-        const { dataStore } = this.props;
+    result[resultKey] = relation;
+  });
 
-        const result = {};
-
-        Object.keys(this.relationshipsToFind).forEach((resultKey) => {
-          const relationshipArgs = this.relationshipsToFind[resultKey];
-
-          const relation = retrieveRelation(dataStore, relationshipArgs);
-
-          result[resultKey] = relation;
-        });
-
-        return result as TResultProps;
-      };
-
-      render() {
-        const nextProps = {
-          ...this.props,
-          ...this.state,
-        };
-
-        return <WrappedComponent {...nextProps} />;
-      }
-    }
-
-    return compose<TWrappedProps, TWrappedProps & TResultProps>(withOrbit({}))(WithRelationship);
-  };
+  return result as TResult;
 }
 
 export function retrieveRelation(dataStore: Store, relationshipArgs: RelationshipArgs) {
