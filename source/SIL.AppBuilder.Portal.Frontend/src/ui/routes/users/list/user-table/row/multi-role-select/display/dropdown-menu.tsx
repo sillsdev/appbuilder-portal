@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { Dropdown }from 'semantic-ui-react'
+import { Dropdown } from 'semantic-ui-react';
 import { attributesFor, withOrbit } from 'react-orbitjs';
 
 import { RequireRole } from '~/ui/components/authorization';
+
 import { ROLE, RoleResource } from '~/data/models/role';
+
 import { UserRoleResource, UserResource, OrganizationResource } from '~/data';
 
 import ActiveRolesDisplay from './active-roles-display';
@@ -13,7 +15,7 @@ interface INeededProps {
   user: UserResource;
   roles: RoleResource[];
   organizations: OrganizationResource[];
-  open: boolean
+  open: boolean;
 }
 
 interface IOrbitProps {
@@ -22,7 +24,7 @@ interface IOrbitProps {
 
 export default withOrbit<INeededProps, IOrbitProps>(({ user }) => {
   return {
-    userRoles: q => q.findRelatedRecords(user, 'userRoles'),
+    userRoles: (q) => q.findRelatedRecords(user, 'userRoles'),
   };
 })(({ organizations, user, roles, userRoles, open }) => {
   return (

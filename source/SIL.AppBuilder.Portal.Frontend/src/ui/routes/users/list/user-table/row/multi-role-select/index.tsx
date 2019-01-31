@@ -39,19 +39,22 @@ type IProps = INeededProps &
 export default compose<IProps, INeededProps>(
   withTranslations,
   withCurrentUserContext,
-  withOrbit<INeededProps & ICurrentUserProps, IFromOrbit>(({ currentUser, user, roles }) => {
-    const superAdmin = roles.find((role) => attributesFor(role).roleName === ROLE.SuperAdmin);
+  withOrbit<INeededProps & ICurrentUserProps, IFromOrbit>(
+    ({ currentUser, user, roles }) => {
+      const superAdmin = roles.find((role) => attributesFor(role).roleName === ROLE.SuperAdmin);
 
-    return {
-      superAdminRoles: (q) =>
-        q
-          .findRecords('userRole')
-          .filter({ relation: 'role', record: superAdmin })
-          .filter({ relation: 'user', record: currentUser }),
-    };
-  }, {
-    label: 'user-roles-for-dropdown'
-  }),
+      return {
+        superAdminRoles: (q) =>
+          q
+            .findRecords('userRole')
+            .filter({ relation: 'role', record: superAdmin })
+            .filter({ relation: 'user', record: currentUser }),
+      };
+    },
+    {
+      label: 'user-roles-for-dropdown',
+    }
+  ),
   mapProps(
     ({ user, superAdminRoles, currentUser, organizations, roles, userRolesForUser, t }: IProps) => {
       const isSuperAdmin = (superAdminRoles || []).length > 0;

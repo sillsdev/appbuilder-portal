@@ -33,10 +33,7 @@ export default class MultiRoleSelect extends React.Component<IProps, { open: boo
 
   shouldComponentUpdate(nextProps, nextState) {
     console.log('mrs -- checking if needs to update', nextProps, this.props);
-    return (
-      nextProps.editable != this.props.editable ||
-      this.state.open !== nextState.open
-    );
+    return nextProps.editable != this.props.editable || this.state.open !== nextState.open;
   }
 
   toggle = (e: any) => {
@@ -54,11 +51,7 @@ export default class MultiRoleSelect extends React.Component<IProps, { open: boo
     }
 
     const roleList = (
-      <RoleListByOrganization
-        roles={roles}
-        organizations={organizations}
-        user={user}
-      />
+      <RoleListByOrganization roles={roles} organizations={organizations} user={user} />
     );
 
     if (!editable) {

@@ -125,5 +125,5 @@ export default compose<INeededProps, IProps>(
   })),
   withOrbit(({ productDefinition }) => ({
     workflow: (q) => q.findRelatedRecord(productDefinition, 'workflow'),
-  })),
+  }))
 )(TaskRow);

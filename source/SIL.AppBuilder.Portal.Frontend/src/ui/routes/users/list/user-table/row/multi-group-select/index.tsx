@@ -44,6 +44,7 @@ class MultiGroupSelect extends React.Component<IProps> {
     return (
       <>
         <Dropdown
+          simple
           data-test-group-multi-select
           multiple
           trigger={groupList}
