@@ -70,7 +70,7 @@ const setup = function(config) {
     persisterOptions: {
       keepUnusedRequests: false,
     },
-    logging: true,
+    // logging: true,
     recordFailedRequests: false,
     recordIfMissing: false,
     recordIfExpired: false,

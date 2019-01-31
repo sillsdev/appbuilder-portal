@@ -6,7 +6,7 @@ import { compose } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withRouter } from 'react-router-dom';
 
-import { idFromRecordIdentity, withLoader } from '@data';
+import { idFromRecordIdentity } from '@data';
 
 import { OrganizationAttributes } from '@data/models/organization';
 
