@@ -39,7 +39,7 @@ export default class MultiRoleSelect extends React.Component<IProps, { open: boo
     );
   }
 
-  toggle = (e: Event) => {
+  toggle = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({ open: !this.state.open });
@@ -71,12 +71,14 @@ export default class MultiRoleSelect extends React.Component<IProps, { open: boo
 
     return (
       <Dropdown
+        simple
         data-test-role-multi-select
         multiple
         onClick={this.toggle}
         closeOnBlur={false}
         closeOnChange={false}
         trigger={roleList}
+        open={open}
         className='w-100 multiDropdown'
       >
         <DropdownMenu {...{ organizations, user, roles, open }} />
