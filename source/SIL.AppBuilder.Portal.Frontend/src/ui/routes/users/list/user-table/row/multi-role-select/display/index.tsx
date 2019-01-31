@@ -32,7 +32,6 @@ export default class MultiRoleSelect extends React.Component<IProps, { open: boo
   state = { open: false };
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('mrs -- checking if needs to update', nextProps, this.props);
     return nextProps.editable != this.props.editable || this.state.open !== nextState.open;
   }
 

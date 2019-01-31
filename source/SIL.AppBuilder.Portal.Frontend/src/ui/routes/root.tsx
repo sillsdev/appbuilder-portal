@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Route, Link, Switch, withRouter } from 'react-router-dom';
-import Notifications from 'react-notify-toast';
+import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import IndexRoute, { pathName as rootPath } from '@ui/routes/index';
 import LoginRoute, { pathName as loginPath } from '@ui/routes/login';

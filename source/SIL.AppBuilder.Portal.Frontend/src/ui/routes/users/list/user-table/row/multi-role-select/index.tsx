@@ -26,7 +26,6 @@ interface IAfterUserRoles {
 
 interface IFromOrbit {
   superAdminRoles: UserRoleResource[];
-  userRolesForUser: UserRoleResource[];
 }
 
 type IProps = INeededProps &
@@ -40,7 +39,7 @@ export default compose<IProps, INeededProps>(
   withTranslations,
   withCurrentUserContext,
   withOrbit<INeededProps & ICurrentUserProps, IFromOrbit>(
-    ({ currentUser, user, roles }) => {
+    ({ currentUser, roles }) => {
       const superAdmin = roles.find((role) => attributesFor(role).roleName === ROLE.SuperAdmin);
 
       return {
@@ -55,20 +54,17 @@ export default compose<IProps, INeededProps>(
       label: 'user-roles-for-dropdown',
     }
   ),
-  mapProps(
-    ({ user, superAdminRoles, currentUser, organizations, roles, userRolesForUser, t }: IProps) => {
-      const isSuperAdmin = (superAdminRoles || []).length > 0;
+  mapProps(({ user, superAdminRoles, currentUser, organizations, roles, t }: IProps) => {
+    const isSuperAdmin = (superAdminRoles || []).length > 0;
 
-      return {
-        user,
-        superAdminRoles,
-        currentUser,
-        organizations,
-        roles,
-        userRolesForUser,
-        t,
-        editable: isSuperAdmin || currentUser.id !== user.id,
-      };
-    }
-  )
+    return {
+      user,
+      superAdminRoles,
+      currentUser,
+      organizations,
+      roles,
+      t,
+      editable: isSuperAdmin || currentUser.id !== user.id,
+    };
+  })
 )(Display);

@@ -15,13 +15,11 @@ interface IOrbitProps {
   userRoles: UserRoleResource[];
 }
 
-type IProps = IOrbitProps & INeededProps;
-
 export default withOrbit<INeededProps, IOrbitProps>(({ user }) => {
   return {
     userRoles: (q) => q.findRelatedRecords(user, 'userRoles'),
   };
-})(({ organizations, user, roles, userRoles }: IProps) => {
+})(({ organizations, user, roles, userRoles }) => {
   return (
     <>
       {organizations.map((organization, index) => {

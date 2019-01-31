@@ -1,15 +1,18 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
 import { withRouter, Redirect, RouteComponentProps } from 'react-router-dom';
 import { ResourceObject } from 'jsonapi-typescript';
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import Store from '@orbit/store';
+import { assert } from '@orbit/utils';
 
 import { OrganizationResource } from '../models/organization';
 import { UserResource } from '../models/user';
 import { RoleResource, ROLE } from '../models/role';
 import { isRelatedTo, attributesFor } from '../helpers';
+import { UserRoleResource } from '../models/user-role';
 
 import { withCurrentUserContext, ICurrentUserProps } from './with-current-user';
 import {
@@ -37,14 +40,13 @@ export interface IProvidedProps {
 
 export type IProps = IOwnProps &
   IOrganziationProps &
-  WithDataProps &
+  ILegacyProvidedProps &
   RouteComponentProps &
   i18nProps &
   ICurrentUserProps;
 
 interface IState {
   accessGranted: boolean;
-  roleEvaluated: boolean;
   error?: string;
 }
 
@@ -78,9 +80,20 @@ export function withRole<TWrappedProps extends {}>(
 
   return (WrappedComponent) => {
     class AuthorizationWrapper extends React.PureComponent<TWrappedProps & IProps, IState> {
-      state = { roleEvaluated: false, accessGranted: false, error: '' };
+      constructor(props) {
+        super(props);
 
-      doesUserHaveAccess = async () => {
+        assert(`currentUser is not present in withRole invocation`, props.currentUser);
+
+        const result = this.doesUserHaveAccess();
+
+        this.state = {
+          accessGranted: result,
+          error: '',
+        };
+      }
+
+      doesUserHaveAccess = () => {
         if (overrideIf && overrideIf({ ...(this.props as any), ...(extraProps || {}) })) {
           return true;
         }
@@ -89,7 +102,7 @@ export function withRole<TWrappedProps extends {}>(
         const organization = evalWithProps(forOrganization, this.props) || currentOrganization;
         const anyOrganization = forAnyOrganization ? forAnyOrganization(this.props as any) : null;
 
-        const resultOfSuperAdmin = await canDoEverything(dataStore, currentUser);
+        const resultOfSuperAdmin = canDoEverything(dataStore, currentUser);
 
         if (resultOfSuperAdmin) {
           return true;
@@ -100,11 +113,9 @@ export function withRole<TWrappedProps extends {}>(
         let resultOfAnyOrganization = false;
 
         if (anyOrganization) {
-          const results = await Promise.all(
-            anyOrganization.map((org) => {
-              return roleInOrganization(currentUser, dataStore, org, role);
-            })
-          );
+          const results = anyOrganization.map((org) => {
+            return roleInOrganization(currentUser, dataStore, org, role);
+          });
 
           // only one needs to be true
           resultOfAnyOrganization = results.some((r) => r);
@@ -115,67 +126,43 @@ export function withRole<TWrappedProps extends {}>(
         }
 
         if (organization) {
-          resultOfOrganization = await roleInOrganization(
-            currentUser,
-            dataStore,
-            organization,
-            role
-          );
+          resultOfOrganization = roleInOrganization(currentUser, dataStore, organization, role);
         }
 
         if (checkOrganizationOf) {
           const resource = checkOrganizationOf((this.props as any) as TWrappedProps);
 
-          resultOfResource = await roleInOrganizationOfResource(
-            currentUser,
-            dataStore,
-            resource,
-            role
-          );
+          resultOfResource = roleInOrganizationOfResource(currentUser, dataStore, resource, role);
         }
 
         return resultOfOrganization || resultOfResource;
       };
 
-      componentDidMount() {
-        this.resolveAccess();
-      }
-
       componentDidUpdate() {
         this.resolveAccess();
       }
 
-      resolveAccess = async () => {
+      resolveAccess = () => {
         // The UI should not be in charge of actively denying
         // access if something dynamic causes authorization to be
         // denied
-        if (this.state.roleEvaluated) {
-          return;
-        }
         if (this.state.accessGranted) {
           return;
         }
 
         try {
-          const result = await this.doesUserHaveAccess();
+          const result = this.doesUserHaveAccess();
 
-          this.setState({ accessGranted: result, roleEvaluated: true, error: undefined });
+          this.setState({ accessGranted: result, error: undefined });
         } catch (error) {
           console.error('check failed', error);
-          this.setState({ accessGranted: false, roleEvaluated: true, error });
+          this.setState({ accessGranted: false, error });
         }
       };
 
       render() {
         const { t } = this.props;
-        const { accessGranted, roleEvaluated, error } = this.state;
-
-        // not sure if this could cause a flicker or not, all the async
-        // work here is with local cache, so I don't know if it would cause a stutter
-        // on slower devices
-        if (!roleEvaluated) {
-          return null;
-        }
+        const { accessGranted, error } = this.state;
 
         if (!accessGranted && !passthroughOnForbidden) {
           if (OnForbidden) {
@@ -196,7 +183,7 @@ export function withRole<TWrappedProps extends {}>(
         }
 
         const props: TWrappedProps & IProvidedProps = {
-          ...(this.props as object),
+          ...this.props,
           accessGranted,
           isForbidden: !accessGranted,
         };
@@ -215,42 +202,35 @@ export function withRole<TWrappedProps extends {}>(
   };
 }
 
-async function canDoEverything(dataStore, currentUser: UserResource) {
-  const userRoles = await dataStore.cache.query((q) =>
-    q.findRelatedRecords(currentUser, 'userRoles')
-  );
+function canDoEverything(dataStore: Store, currentUser: UserResource) {
+  const userRoles = dataStore.cache.query((q) => q.findRelatedRecords(currentUser, 'userRoles'));
 
-  const result = await isSuperAdmin(dataStore, userRoles);
+  const result = isSuperAdmin(dataStore, userRoles);
 
   return result;
 }
 
-async function isSuperAdmin(dataStore, userRoles): Promise<boolean> {
+function isSuperAdmin(dataStore: Store, userRoles: UserRoleResource[]): boolean {
   // NOTE: SuperAdmins are cross-organization
   //       the organization relationship doesn't matter.
-  const allAssignedRolesPromises = userRoles.map((userRole) => {
+  const allAssignedRoles: RoleResource[] = userRoles.map((userRole) => {
     return dataStore.cache.query((q) => q.findRelatedRecord(userRole, 'role'));
   });
 
-  const allAssignedRoles: RoleResource[] = ((await Promise.all(
-    allAssignedRolesPromises
-  )) as unknown) as RoleResource[];
   const allAssignmentNames = allAssignedRoles.map((r) => attributesFor(r).roleName);
   const result = allAssignmentNames.includes(ROLE.SuperAdmin);
 
   return result;
 }
 
-export async function roleInOrganization(
-  currentUser,
-  dataStore,
-  organization,
+export function roleInOrganization(
+  currentUser: UserResource,
+  dataStore: Store,
+  organization: OrganizationResource,
   role: ROLE
-): Promise<boolean> {
-  const userRoles = await dataStore.cache.query((q) =>
-    q.findRelatedRecords(currentUser, 'userRoles')
-  );
-  const isAuthorized = await isSuperAdmin(dataStore, userRoles);
+): boolean {
+  const userRoles = dataStore.cache.query((q) => q.findRelatedRecords(currentUser, 'userRoles'));
+  const isAuthorized = isSuperAdmin(dataStore, userRoles);
 
   if (isAuthorized) {
     return true;
@@ -260,29 +240,23 @@ export async function roleInOrganization(
     return isRelatedTo(userRole, 'organization', organization.id);
   });
 
-  const promises = userRolesMatchingOrganization.map((userRole) => {
+  const rolesForOrganization = userRolesMatchingOrganization.map((userRole) => {
     return dataStore.cache.query((q) => q.findRelatedRecord(userRole, 'role'));
   });
 
-  const rolesForOrganization: RoleResource[] = ((await Promise.all(
-    promises
-  )) as unknown) as RoleResource[];
   const roleNames = rolesForOrganization.map((r) => attributesFor(r).roleName);
-
   const result = roleNames.includes(role);
 
   return result;
 }
 
-export async function roleInOrganizationOfResource(
-  currentUser,
-  dataStore,
-  resource,
-  role
-): Promise<boolean> {
-  const organization = await dataStore.cache.query((q) =>
-    q.findRelatedRecord(resource, 'organization')
-  );
+export function roleInOrganizationOfResource(
+  currentUser: UserResource,
+  dataStore: Store,
+  resource: any,
+  role: ROLE
+): boolean {
+  const organization = dataStore.cache.query((q) => q.findRelatedRecord(resource, 'organization'));
 
   return roleInOrganization(currentUser, dataStore, organization, role);
 }

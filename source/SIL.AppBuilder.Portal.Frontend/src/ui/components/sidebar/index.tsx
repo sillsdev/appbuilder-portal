@@ -30,7 +30,6 @@ class Sidebar extends React.Component<IProps> {
         className={`sidebar bg-white border-right-dark border-top-dark ${className}`}
       >
         <Header
-          className='thin-bottom-border'
           closeSidebar={closeSidebar}
           isOrgSwitcherActive={isOrgSwitcherActive}
           toggleOrgSwitcher={orgSwitchToggler}

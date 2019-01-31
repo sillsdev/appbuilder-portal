@@ -65,7 +65,7 @@
     "react-dropzone-component": "^3.2.0",
     "react-i18next": "^9.0.0",
     "react-notify-toast": "^0.5.0",
-    "react-orbitjs": "github:NullVoxPopuli/react-orbitjs#c1f47d604a56be00a2986740ca841181db225f09",
+    "react-orbitjs": "github:DeveloperTown/react-orbitjs#effcc06e3ac0d1ffecddd7961ae1f5d367c256ce",
     "react-redux": "^6.0.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",

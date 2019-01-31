@@ -6,7 +6,7 @@ import { compose } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withRouter } from 'react-router-dom';
 
-import { idFromRecordIdentity } from '@data';
+import { idFromRecordIdentity, withLoader } from '@data';
 
 import { OrganizationAttributes } from '@data/models/organization';
 
@@ -16,9 +16,9 @@ import { withCurrentOrganization } from '@data/containers/with-current-organizat
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 import { withRelationships } from '@data/containers/with-relationship';
+
 export interface IProps {
   closeSidebar: () => void;
-  className?: string;
   isOrgSwitcherActive: boolean;
   toggleOrgSwitcher: () => void;
   organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
@@ -59,13 +59,7 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
   }
 
   render() {
-    const {
-      closeSidebar,
-      className,
-      isOrgSwitcherActive,
-      currentOrganization: org,
-      t,
-    } = this.props;
+    const { closeSidebar, isOrgSwitcherActive, currentOrganization: org, t } = this.props;
 
     const icon = isOrgSwitcherActive ? <ArrowDropUp /> : <ArrowDropDown />;
     const orgAttributes = attributesFor(org);
@@ -78,8 +72,8 @@ class SidebarHeader extends React.Component<IProps & i18nProps> {
       <div
         className={`
         sidebar-title flex-row transition-all-fast
-        align-items-center
-        justify-content-space-between ${bgClass} ${className}`}
+        align-items-center thin-bottom-border
+        justify-content-space-between ${bgClass}`}
       >
         <div
           data-test-org-switcher-toggler
