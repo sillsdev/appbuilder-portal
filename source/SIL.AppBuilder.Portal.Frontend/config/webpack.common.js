@@ -29,7 +29,7 @@ const moduleRules = [
     test: /\.(t|j)sx?$/,
     use: [
       {
-        loader: 'ts-loader',
+        loader: 'ts-loader?configFileName=tsconfig.json',
         options: {
           transpileOnly: true,
         },
@@ -44,6 +44,7 @@ const moduleRules = [
     //   locate('node_modules/react-orbitjs/dist')
     // ],
   },
+  // { test: /\.d\.ts$/, loader: 'ignore-loader' },
   {
     test: /\.s?css$/,
     include: [/node_modules/, /src/, ...tsLoaderExclude],
@@ -74,6 +75,7 @@ const resolver = {
 };
 
 const plugins = [
+  new webpack.WatchIgnorePlugin([/\.d\.ts$/]),
   new webpack.EnvironmentPlugin([
     'AUTH0_CONNECTION',
     'AUTH0_DOMAIN',

@@ -1,5 +1,3 @@
-export { default as DataProvider } from './provider';
-
 export { defaultSourceOptions, defaultOptions } from './store';
 export {
   create,

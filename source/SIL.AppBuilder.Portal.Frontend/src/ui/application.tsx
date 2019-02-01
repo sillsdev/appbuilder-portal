@@ -1,22 +1,23 @@
 import * as React from 'react';
 import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
-
-import { DataProvider } from '@data';
+import { APIProvider } from 'react-orbitjs';
 
 import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
 
+import { createStore as createAPIStrategy } from '@data/store';
 import { ReduxProvider } from '@store';
-
 import { SocketManager } from '@sockets';
-
 import { ScrollToTop } from '@lib/routing';
+
+
 
 import i18n from '../translations';
 
 import { RouteListener } from './components/route-listener';
 import DebugInfo from './components/debug-info';
 import RootRoute from './routes/root';
+import { Portal } from 'semantic-ui-react';
 
 interface IProps {
   initialState: any;
@@ -43,7 +44,7 @@ export default class Application extends React.Component<IProps> {
 
     return (
       <I18nextProvider i18n={i18n}>
-        <DataProvider>
+        <APIProvider storeCreator={createAPIStrategy}>
           <CurrentUserProvider>
             <SocketManager>
               <ReduxProvider initialState={initialState || {}}>
@@ -59,7 +60,7 @@ export default class Application extends React.Component<IProps> {
               </ReduxProvider>
             </SocketManager>
           </CurrentUserProvider>
-        </DataProvider>
+        </APIProvider>
       </I18nextProvider>
     );
   }

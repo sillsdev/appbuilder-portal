@@ -101,7 +101,7 @@ export async function createStore() {
   // });
 
   // We don't want to have to query the API everytime we want data
-  this.coordinator = new Coordinator({
+  const coordinator = new Coordinator({
     sources: [
       // backup,
       inMemory,
@@ -113,7 +113,7 @@ export async function createStore() {
   // https://github.com/dgeb/test-ember-orbit/blob/master/app/data-strategies/remote-push-fail.js
 
   // Pull query results from the server
-  this.coordinator.addStrategy(
+  coordinator.addStrategy(
     new RequestStrategy({
       name: 'inMemory-remote-query-pessimistic',
       source: 'inMemory',
@@ -140,7 +140,7 @@ export async function createStore() {
   );
 
   // Push updates to the server
-  this.coordinator.addStrategy(
+  coordinator.addStrategy(
     new RequestStrategy({
       name: 'inMemory-remote-update-pessimistic',
       source: 'inMemory',
@@ -167,7 +167,7 @@ export async function createStore() {
   );
 
   // sync all remote changes with the inMemory store
-  this.coordinator.addStrategy(
+  coordinator.addStrategy(
     new SyncStrategy({
       source: 'remote',
       target: 'inMemory',
@@ -175,13 +175,13 @@ export async function createStore() {
     })
   );
 
-  // this.coordinator.addStrategy(new SyncStrategy({
+  // coordinator.addStrategy(new SyncStrategy({
   //   source: 'inMemory',
   //   target: 'backup',
   //   blocking: true
   // }));
 
-  // this.coordinator.addStrategy(new EventLoggingStrategy({
+  // coordinator.addStrategy(new EventLoggingStrategy({
   //   sources: ['remote', 'inMemory']
   //   // sources: ['inMemory']
   // }));
@@ -192,9 +192,9 @@ export async function createStore() {
   //     console.log(transform);
   //     return inMemory.sync(transform)
   //   })
-  //   .then(() => this.coordinator.activate());
+  //   .then(() => coordinator.activate());
 
-  await this.coordinator.activate();
+  await coordinator.activate();
 
-  return { store: inMemory, sources: { remote, inMemory } };
+  return { store: inMemory, sources: { remote, inMemory }, coordinator };
 }
