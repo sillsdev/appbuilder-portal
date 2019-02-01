@@ -1,58 +1,74 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Dynamic;
 using System.Threading.Tasks;
-using Hangfire;
+using JsonApiDotNetCore.Data;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Npgsql;
+using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
     public class StatusUpdateService
     {
-        public IBackgroundJobClient HangfireClient { get; }
+        protected static string Insert = "INSERT";
+        protected static string Update = "UPDATE";
+        protected static string Delete = "DELETE";
+
         public IHubContext<ScriptoriaHub> HubContext { get; }
+        public DbContext DbContext { get; }
         public StatusUpdateService(
-            IBackgroundJobClient hangfireClient,
-            IHubContext<ScriptoriaHub> hubContext
+            IHubContext<ScriptoriaHub> hubContext,
+            IDbContextResolver contextResolver
         )
         {
-            HangfireClient = hangfireClient;
             HubContext = hubContext;
+            DbContext = contextResolver.GetContext();
         }
-        public async Task SendStatusUpdateAsync(string message)
-        {
-            dynamic messageObj = JsonConvert.DeserializeObject(message);
-            var tableName = messageObj.table.Value as string;
-            var id = messageObj.id.Value as string;
-            var groupName = "/" + tableName + "/" + id;
-            await HubContext.Clients.Group(groupName).SendAsync("StatusUpdate", message);
-        }
-        public void ListenForNotifications(string connectionString)
-        {
-            NpgsqlConnection conn = new NpgsqlConnection(connectionString);
-            conn.Open();
-            var listenCommand = conn.CreateCommand();
-            listenCommand.CommandText = $"listen db_notifications;";
-            listenCommand.ExecuteNonQuery();
 
-            conn.Notification += PostgresNotificationReceived;
-            while (true)
+        public void OnInsert(IStatusUpdate entity)
+        {
+            ChangesSaved(entity, Insert);
+        }
+
+        public void OnUpdate(IStatusUpdate entity)
+        {
+            ChangesSaved(entity, Update);
+        }
+
+        public void OnDelete(IStatusUpdate entity)
+        {
+            ChangesSaved(entity, Delete);
+        }
+
+        protected void ChangesSaved(IStatusUpdate entity, string operation)
+        {
+            if (entity == null) return;
+
+            var id = entity.StringId;
+            if (string.IsNullOrEmpty(id)) return;
+
+            var tableName = DbContext.Model.FindEntityType(entity.GetType()).Relational().TableName;
+            if (tableName == null) return;
+
+            dynamic message = new ExpandoObject();
+            message.table = tableName;
+            message.id = id;
+            message.operation = operation;
+
+            var updateGroups = new string[] { $"/{tableName}", $"/{tableName}/{id}" };
+            var json = JsonConvert.SerializeObject(message);
+            SendStatusUpdateAsync(updateGroups, json).Wait();
+        }
+
+        public async Task SendStatusUpdateAsync(IEnumerable<string>updateGroups, string message)
+        {
+            foreach (var groupName in updateGroups)
             {
-                // wait until an asynchronous PostgreSQL notification arrives...
-                conn.Wait();
+                await HubContext.Clients.Group(groupName).SendAsync("StatusUpdate", message);
             }
         }
-        private void PostgresNotificationReceived(object sender, NpgsqlNotificationEventArgs e)
-        {
-            string message = e.AdditionalInformation.ToString();
-            SendStatusUpdateAsync(message).Wait();
-        }
-
     }
 }

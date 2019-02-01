@@ -199,7 +199,6 @@ namespace OptimaJet.DWKit.StarterApplication
             app.UseBuildEngine(Configuration);
             app.UseWorkflow(Configuration);
             app.UseNotifications(Configuration);
-            app.UseStatusUpdates(Configuration);
             app.UseHangfireDashboard("/hangfire", new DashboardOptions {
                 Authorization = new[] { new HangfireDashboardAuthorizationFilter() }
             });

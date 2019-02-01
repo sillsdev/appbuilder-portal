@@ -22,17 +22,18 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             UserRepository userRepository,
             ILoggerFactory loggerFactory,
             CurrentUserRepository currentUserRepository,
+            StatusUpdateService statusUpdateService,
             IJsonApiContext jsonApiContext,
             IDbContextResolver contextResolver
-        ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
+        ) : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {
             this.OrganizationContext = organizationContext;
             this.CurrentUserContext = currentUserContext;
             this.UserRepository = userRepository;
         }
-        public override IQueryable<Product> Filter(IQueryable<Product> query, FilterQuery filterQuery)
+        public override IQueryable<Product> Filter(IQueryable<Product> entities, FilterQuery filterQuery)
         {
-            return query.OptionallyFilterOnQueryParam(filterQuery,
+            return entities.OptionallyFilterOnQueryParam(filterQuery,
                                                       "organization-header",
                                                       UserRepository,
                                                       CurrentUserContext,

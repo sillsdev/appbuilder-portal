@@ -25,24 +25,25 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             CurrentUserRepository currentUserRepository,
+            StatusUpdateService statusUpdateService,
             IDbContextResolver contextResolver
-            ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
+            ) : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {
             this.CurrentUserRepository = currentUserRepository;
         }
 
-        public override IQueryable<UserTask> Filter(IQueryable<UserTask> query, FilterQuery filterQuery)
+        public override IQueryable<UserTask> Filter(IQueryable<UserTask> entities, FilterQuery filterQuery)
         {         
-            var all = query.ToList();
+            var all = entities.ToList();
 
             if (filterQuery.Has(ORGANIZATION_HEADER)) 
             {
                 var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
-                return this.FilterByOrganization(query, filterQuery, allowedOrganizationIds: orgIds);
+                return this.FilterByOrganization(entities, filterQuery, allowedOrganizationIds: orgIds);
             }
 
-            return base.Filter(query, filterQuery);
+            return base.Filter(entities, filterQuery);
 
         }
 
