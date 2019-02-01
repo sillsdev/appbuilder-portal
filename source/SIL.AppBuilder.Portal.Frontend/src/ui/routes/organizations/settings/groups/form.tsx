@@ -1,12 +1,13 @@
 import * as React from 'react';
 import * as toast from '@lib/toast';
 import { compose } from 'recompose';
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { IProvidedProps as IDataActionsProps } from '@data/containers/resources/group/with-data-actions';
 import { isEmpty } from '@lib/collection';
 
 import { GroupResource, attributesFor, update } from '@data';
+
+import { Mut, mutCreator } from 'react-state-helpers';
 
 interface IOwnProps {
   onFinish: () => void;
@@ -29,11 +30,16 @@ const initialState = {
   abbreviationError: '',
 };
 
-@withTemplateHelpers
 class Form extends React.Component<IProps, IState> {
   mut: Mut;
 
   state = initialState;
+
+  constructor(props) {
+    super(props);
+
+    this.mut = mutCreator(this);
+  }
 
   resetForm = () => {
     this.setState(initialState);

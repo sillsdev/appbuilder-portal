@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 
 import Header from './header';
 import Navigation from './navigation';
@@ -12,17 +11,18 @@ export interface IProps {
   className?: string;
 }
 
-@withTemplateHelpers
-class Sidebar extends React.Component<IProps> {
-  toggle: Toggle;
+interface IState {
+  isOrgSwitcherActive: boolean;
+}
 
+class Sidebar extends React.Component<IProps, IState> {
   state = { isOrgSwitcherActive: false };
+
+  orgSwitchToggler = () => this.setState({ isOrgSwitcherActive: !this.state.isOrgSwitcherActive });
 
   render() {
     const { isOrgSwitcherActive } = this.state;
     const { closeSidebar, className } = this.props;
-
-    const orgSwitchToggler = this.toggle('isOrgSwitcherActive');
 
     return (
       <div
@@ -32,12 +32,12 @@ class Sidebar extends React.Component<IProps> {
         <Header
           closeSidebar={closeSidebar}
           isOrgSwitcherActive={isOrgSwitcherActive}
-          toggleOrgSwitcher={orgSwitchToggler}
+          toggleOrgSwitcher={this.orgSwitchToggler}
         />
 
         {!isOrgSwitcherActive && <Navigation closeSidebar={closeSidebar} />}
 
-        {isOrgSwitcherActive && <OrgSwitcher toggle={orgSwitchToggler} />}
+        {isOrgSwitcherActive && <OrgSwitcher toggle={this.orgSwitchToggler} />}
       </div>
     );
   }

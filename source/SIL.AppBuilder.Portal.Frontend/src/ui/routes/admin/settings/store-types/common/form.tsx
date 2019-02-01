@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
 import { StoreTypeAttributes } from '@data/models/store-type';
 
 import { attributesFor, StoreTypeResource } from '@data';
+
+import { mutCreator, toggleCreator, Mut, Toggle } from 'react-state-helpers';
 
 interface IOwnProps {
   storeType?: StoreTypeResource;
@@ -22,7 +23,6 @@ interface IState {
 
 type IProps = i18nProps & IOwnProps;
 
-@withTemplateHelpers
 class StoreTypeForm extends React.Component<IProps, IState> {
   mut: Mut;
   toggle: Toggle;
@@ -33,6 +33,9 @@ class StoreTypeForm extends React.Component<IProps, IState> {
     const { storeType } = props;
 
     const { name, description } = attributesFor(storeType);
+
+    this.mut = mutCreator(this);
+    this.toggle = toggleCreator(this);
 
     this.state = {
       name: (name as string) || '',

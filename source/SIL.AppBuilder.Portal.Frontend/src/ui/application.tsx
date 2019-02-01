@@ -2,22 +2,21 @@ import * as React from 'react';
 import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import { APIProvider } from 'react-orbitjs';
-
 import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
-
 import { createStore as createAPIStrategy } from '@data/store';
+
 import { ReduxProvider } from '@store';
+
 import { SocketManager } from '@sockets';
+
 import { ScrollToTop } from '@lib/routing';
-
-
+import { Portal } from 'semantic-ui-react';
 
 import i18n from '../translations';
 
 import { RouteListener } from './components/route-listener';
 import DebugInfo from './components/debug-info';
 import RootRoute from './routes/root';
-import { Portal } from 'semantic-ui-react';
 
 interface IProps {
   initialState: any;

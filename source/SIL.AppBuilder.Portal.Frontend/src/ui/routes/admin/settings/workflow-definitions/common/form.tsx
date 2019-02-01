@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Checkbox, Dropdown } from 'semantic-ui-react';
-import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
@@ -15,6 +14,8 @@ import {
   StoreTypeResource,
   WorkflowDefinitionResource,
 } from '@data';
+
+import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
 
 interface IOwnProps {
   workflowDefinition: WorkflowDefinitionResource;
@@ -36,7 +37,6 @@ interface IState {
 
 type IProps = i18nProps & IOwnProps;
 
-@withTemplateHelpers
 class WorkflowDefinitionForm extends React.Component<IProps, IState> {
   mut: Mut;
   toggle: Toggle;
@@ -49,6 +49,9 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
     const { name, description, workflowScheme, workflowBusinessFlow, enabled } = attributesFor(
       workflowDefinition
     );
+
+    this.mut = mutCreator(this);
+    this.toggle = toggleCreator(this);
 
     this.state = {
       name: name || '',

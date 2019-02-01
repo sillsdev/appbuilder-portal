@@ -130,7 +130,7 @@ export function withDataActions<T>(WrappedComponent) {
   return compose(
     withOrbit((passedProps) => {
       const { project } = passedProps;
-    
+
       return {
         products: (q) => q.findRelatedRecords(project, 'products'),
       };

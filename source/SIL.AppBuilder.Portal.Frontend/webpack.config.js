@@ -63,6 +63,7 @@ let config = {
   ],
   optimization: {
     runtimeChunk: 'single',
+    sideEffects: false,
     splitChunks: {
       chunks: 'all',
     }

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Form, Button, Message } from 'semantic-ui-react';
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
 import { RequestAccessForOrganizationAttributes as Attributes } from '@data/models/organization-invite';
 import FocusPanel from '@ui/components/focus-panel';
+import { Mut, mutCreator } from 'react-state-helpers';
 
 export interface IProps {
   onSubmit: (data: Attributes) => void;
@@ -15,10 +15,15 @@ export interface IState {
   websiteUrl: string;
 }
 
-@withTemplateHelpers
 class RequestAccessForOrganizationDisplay extends React.Component<IProps, IState> {
   mut: Mut;
   state = { name: '', orgAdminEmail: '', websiteUrl: '' };
+
+  constructor(props) {
+    super(props);
+
+    this.mut = mutCreator(this);
+  }
 
   onSubmit = (e) => {
     e.preventDefault();

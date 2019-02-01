@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
 import { isEmpty } from '@lib/collection';
 import { isValidEmail } from '@lib/validations';
 import { ResourceObject } from 'jsonapi-typescript';
@@ -13,6 +12,7 @@ import {
   withDataActions,
   IProvidedProps,
 } from '@data/containers/resources/reviewer/with-data-actions';
+import { mutCreator, Mut } from 'react-state-helpers';
 
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
@@ -20,7 +20,6 @@ interface Params {
 
 type IProps = Params & i18nProps & IProvidedProps;
 
-@withTemplateHelpers
 class AddReviewerForm extends React.Component<IProps> {
   mut: Mut;
 
@@ -30,6 +29,12 @@ class AddReviewerForm extends React.Component<IProps> {
     email: '',
     emailError: '',
   };
+
+  constructor(props) {
+    super(props);
+
+    this.mut = mutCreator(this);
+  }
 
   resetForm = () => {
     this.setState({

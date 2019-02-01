@@ -3,9 +3,9 @@ import { compose } from 'recompose';
 import { Checkbox } from 'semantic-ui-react';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import TimezonePicker from 'react-timezone';
-import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
 import { UserResource } from '@data/models/user';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
 
 export interface IProps {
   user: UserResource;
@@ -26,10 +26,9 @@ export interface IState {
 const PUBLIC_PROFILE = 1;
 const PRIVATE_PROFILE = 0;
 
-@withTemplateHelpers
 class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
   mut: Mut;
-  toggle: ToggleHelper;
+  toggle: Toggle;
   timezoneInput: any;
 
   constructor(props) {
@@ -40,6 +39,9 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     this.state = {
       ...userAttributes,
     };
+
+    this.mut = mutCreator(this);
+    this.toggle = toggleCreator(this);
   }
 
   submit = async (e) => {

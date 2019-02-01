@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
-import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 import { withData, WithDataProps } from 'react-orbitjs';
 import { compose } from 'recompose';
 
@@ -13,6 +12,7 @@ import { i18nProps, withTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
 import { ErrorMessage } from '@ui/components/errors';
 import { attributesFor } from '@data/helpers';
+import { Toggle, toggleCreator } from 'react-state-helpers';
 
 import UserInput from './user-input';
 
@@ -26,7 +26,6 @@ interface IOwnProps {
 
 export type IProps = IOwnProps & i18nProps & WithDataProps & ICurrentOrganizationProps;
 
-@withTemplateHelpers
 class AddUserModal extends React.Component<IProps> {
   toggle: Toggle;
 
@@ -34,6 +33,12 @@ class AddUserModal extends React.Component<IProps> {
     isModalOpen: false,
     error: null,
   };
+
+  constructor(props) {
+    super(props);
+
+    this.toggle = toggleCreator(this);
+  }
 
   onAdd = async (email: string) => {
     const { dataStore, onUserAdded, t } = this.props;

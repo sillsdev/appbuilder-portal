@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
 import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { OrganizationAttributes, OrganizationResource } from '@data/models/organization';
+import { Mut, mutCreator } from 'react-state-helpers';
 
 export const pathName = '/organizations/:orgId/settings';
 
@@ -22,10 +22,15 @@ export interface IProps {
   organization: OrganizationResource;
 }
 
-@withTemplateHelpers
 class BasicInfoRoute extends React.Component<IProps & i18nProps, IState> {
   mut: Mut;
   state = { name: '', logoUrl: '' };
+
+  constructor(props) {
+    super(props);
+
+    this.mut = mutCreator(this);
+  }
 
   componentDidMount() {
     const { organization } = this.props;

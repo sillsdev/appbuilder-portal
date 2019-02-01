@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
 import { OrganizationAttributes } from '@data/models/organization';
 import ErrorHeader from '@ui/components/errors/header-message';
 
 import { withTranslations, i18nProps } from '~/lib/i18n';
+
+import { Mut, mutCreator } from 'react-state-helpers';
 
 export interface IProps {
   token: string;
@@ -15,10 +16,15 @@ export interface IState {
   websiteUrl: string;
 }
 
-@withTemplateHelpers
 class InviteOrganizationDisplay extends React.Component<IProps & i18nProps, IState> {
   mut: Mut;
   state = { name: '', websiteUrl: '' };
+
+  constructor(props) {
+    super(props);
+
+    this.mut = mutCreator(this);
+  }
 
   submit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
