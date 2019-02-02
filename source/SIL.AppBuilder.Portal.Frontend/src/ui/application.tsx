@@ -20,6 +20,7 @@ import RootRoute from './routes/root';
 
 interface IProps {
   initialState: any;
+  entryComponent?: React.ComponentType;
   history: any;
 }
 
@@ -32,9 +33,10 @@ export default class Application extends React.Component<IProps> {
   //         the withCurrentUser HOC) will need to have some sort of loading while
   //         the current user is fetched
   render() {
-    const { initialState, history } = this.props;
+    const { initialState, history, entryComponent } = this.props;
 
     const Router = history ? GenericRouter : BrowserRouter;
+    const Component = entryComponent ? entryComponent : RootRoute;
     const routerProps = {};
 
     if (history) {
@@ -51,7 +53,7 @@ export default class Application extends React.Component<IProps> {
                   <>
                     <RouteListener />
                     <ScrollToTop>
-                      <RootRoute />
+                      <Component />
                     </ScrollToTop>
                     <DebugInfo />
                   </>

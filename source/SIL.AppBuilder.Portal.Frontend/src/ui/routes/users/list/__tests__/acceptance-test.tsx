@@ -22,10 +22,21 @@ describe('Acceptance | Disable User', () => {
         data: [
           {
             type: 'users',
-            id: '1',
+            id: '2',
             attributes: {
               name: 'Fake user',
               'is-locked': false,
+            },
+          },
+        ],
+        included: [
+          {
+            id: 2,
+            type: 'organization-memberships',
+            attributes: {},
+            relationships: {
+              user: { data: { id: 2, type: 'users' } },
+              organization: { data: { id: 1, type: 'organizations' } },
             },
           },
         ],
@@ -55,15 +66,15 @@ describe('Acceptance | Disable User', () => {
 
     describe('an active user exists', () => {
       it('active user', () => {
-        expect(userTable.isUserActive).to.equal(true);
+        expect(userTable.row(0).isActive).to.equal(true);
       });
 
       describe('locking user', () => {
         beforeEach(function() {
-          this.mockPatch(200, 'users/1', {
+          this.mockPatch(200, 'users/2', {
             data: {
               type: 'users',
-              id: '1',
+              id: '2',
               attributes: {
                 'is-locked': true,
               },
@@ -73,13 +84,15 @@ describe('Acceptance | Disable User', () => {
 
         describe('toggle is clicked', () => {
           beforeEach(async () => {
-            await userTable.clickLockUser();
-            await when(() => userTable.isUserActive === false);
+            expect(userTable.row(0).isActive).to.equal(true);
+
+            await userTable.row(0).toggleActive();
+            await when(() => userTable.row(0).isActive === false);
           });
 
           it('user becomes locked', () => {
-            expect(userTable.isUserActive).to.equal(false);
-          }).timeout(2000);
+            expect(userTable.row(0).isActive).to.equal(false);
+          }).timeout(5000);
         });
       });
     });

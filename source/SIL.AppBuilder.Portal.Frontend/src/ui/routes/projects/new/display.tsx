@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, Form, Checkbox } from 'semantic-ui-react';
+import { Card, Form, Radio } from 'semantic-ui-react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 
 import { idFromRecordIdentity } from '@data';
@@ -145,11 +145,11 @@ export default class Display extends React.Component<IProps, IState> {
                   <div className='flex-row'>
                     <div className='toggle-selector flex-row flex-grow justify-content-space-between'>
                       <span className='bold'>{t('project.visibilityLabel')}</span>
-                      <Checkbox
+                      <Radio
                         toggle
                         data-test-visibility
                         checked={isPublic}
-                        onChange={toggle('isPublic')}
+                        onClick={toggle('isPublic')}
                       />
                     </div>
                   </div>

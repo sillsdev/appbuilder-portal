@@ -32,6 +32,7 @@ const moduleRules = [
     loader: 'babel-loader',
     options: babelConfig,
     include: [locate('src'), locate('tests')],
+    exclude: [locate('src/public')],
   },
   {
     test: /\.js$/,

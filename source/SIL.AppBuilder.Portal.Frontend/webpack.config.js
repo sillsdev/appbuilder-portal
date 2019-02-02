@@ -72,7 +72,7 @@ let config = {
 
 if (isDevelopment) {
   config.plugins = config.plugins.concat([
-    new ForkTsCheckerWebpackPlugin(),
+    // new ForkTsCheckerWebpackPlugin(),
     // new BundleAnalyzerPlugin(),
     new webpack.HotModuleReplacementPlugin({
       // Options...

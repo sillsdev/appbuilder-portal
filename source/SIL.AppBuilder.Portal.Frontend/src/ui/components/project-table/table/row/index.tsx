@@ -85,7 +85,9 @@ class Row extends React.Component<IProps> {
 
   onSelect = (row) => (e) => {
     e.preventDefault();
+    e.stopPropagation();
     const { toggleRowSelection } = this.props;
+
     toggleRowSelection(row);
   };
 
@@ -94,6 +96,7 @@ class Row extends React.Component<IProps> {
     const p =
       selectedRows &&
       selectedRows.find((r) => idFromRecordIdentity(r) === idFromRecordIdentity(row));
+
     return p !== undefined;
   };
 
@@ -133,7 +136,7 @@ class Row extends React.Component<IProps> {
                 data-test-selector
                 className='m-r-sm'
                 onClick={this.onSelect(project)}
-                checked={this.inRowSelection(project)}
+                defaultChecked={this.inRowSelection(project)}
               />
             )}
             <Link to={clickPath}>{projectName}</Link>

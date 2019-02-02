@@ -6,6 +6,7 @@ import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
+  wait,
 } from 'tests/helpers/index';
 import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 import { fakeAuth0Id } from 'tests/helpers/jwt';
@@ -13,6 +14,8 @@ import { merge, mergeWith, isArray } from 'lodash';
 
 import * as factory from './-factory';
 import ProjectListPage from './-page-interactor';
+
+import { ProjectTableInteractor } from '~/ui/components/project-table/__tests__/page';
 
 const pageInteractor = new ProjectListPage();
 
@@ -93,15 +96,27 @@ describe('Acceptance | Projects | Bulk Action Permissions', () => {
     describe('the project list', () => {
       beforeEach(async function() {
         visit('/projects/organization');
+
         await when(() => pageInteractor.projectTable.isPresent);
+        await when(() => pageInteractor.projectTable.rows().length === 2);
       });
+
+      it('has nothing checked initially', () => {
+        const rows = pageInteractor.projectTable.rows();
+
+        expect(rows[0].isSelected).to.equal(false);
+        expect(rows[1].isSelected).to.equal(false);
+      });
+
       context('when I select projects that I own and do not own', () => {
         beforeEach(async () => {
-          const rows = await pageInteractor.projectTable.rows();
+          const table = new ProjectTableInteractor('[data-test-project-table]');
 
-          for (const row of rows) {
-            await row.select();
-          }
+          await table.rows(0).select();
+          await table.rows(1).select();
+
+          await when(() => table.rows(0).isSelected === true);
+          await when(() => table.rows(1).isSelected === true);
         });
 
         it('has available bulk archive action', () => {
@@ -154,16 +169,27 @@ describe('Acceptance | Projects | Bulk Action Permissions', () => {
     describe('the project list', () => {
       beforeEach(async function() {
         visit('/projects/organization');
+
         await when(() => pageInteractor.projectTable.isPresent);
+        await when(() => pageInteractor.projectTable.rows().length === 2);
+      });
+
+      it('has nothing checked initially', () => {
+        const rows = pageInteractor.projectTable.rows();
+
+        expect(rows[0].isSelected).to.equal(false);
+        expect(rows[1].isSelected).to.equal(false);
       });
 
       context('when i have selected projects that I own and do not own', () => {
         beforeEach(async () => {
           const rows = await pageInteractor.projectTable.rows();
 
-          for (const row of rows) {
-            await row.select();
-          }
+          await rows[0].select();
+          await rows[1].select();
+
+          await when(() => rows[0].isSelected === true);
+          await when(() => rows[1].isSelected === true);
         });
 
         it('has no bulk archive action', () => {

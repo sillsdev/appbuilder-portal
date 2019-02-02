@@ -84,7 +84,7 @@ class Header extends React.Component<IProps> {
         <div className='flex align-items-center justify-content-space-evenly flex-grow-xs p-sm'>
           {showSelection && (
             <Checkbox
-              onClick={this.toggleSelectAll}
+              onChange={this.toggleSelectAll}
               checked={checked}
               indeterminate={indeterminate}
             />

@@ -66,6 +66,7 @@ export class UserTableInteractor {
 
   row = collection('[data-test-user-row]', {
     isActive: hasClass('[data-test-toggle-lock]', 'checked'),
+    toggleActive: clickable('[data-test-toggle-lock] label'),
 
     activeGroupsText: text('[data-test-groups-active]'),
     activeGroups: collection('[data-test-groups-active]', {

@@ -89,7 +89,7 @@ class Row extends React.Component<IProps> {
           <MultiGroupSelect user={user} organizations={organizations} />
         </td>
         <td>
-          <Radio data-test-toggle-lock toggle onChange={this.toggleLock} checked={isActive} />
+          <Radio data-test-toggle-lock toggle onClick={this.toggleLock} checked={isActive} />
         </td>
       </tr>
     );

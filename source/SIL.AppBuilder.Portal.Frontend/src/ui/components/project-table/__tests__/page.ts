@@ -5,6 +5,7 @@ import {
   collection,
   text,
   isPresent,
+  hasClass,
   Interactor,
 } from '@bigtest/interactor';
 import { find } from 'lodash';
@@ -17,7 +18,9 @@ class ProjectRow {
   static defaultScope = '[data-test-project-row]';
   isRowActionPresent = isPresent('[data-test-row-actions]');
   select = clickable('[data-test-selector]');
+  isSelected = hasClass('[data-test-selector]', 'checked');
   projectId = attribute('data-test-project-row');
+  text = text();
 }
 
 export const ProjectRowInteractor = interactor(ProjectRow);

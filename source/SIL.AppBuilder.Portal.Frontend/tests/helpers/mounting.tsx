@@ -51,29 +51,11 @@ export const mountWithContext = async (
   state = {},
   customHistory = undefined
 ) => {
-  return await setupAppForTesting(
-    ({ initialState, history }) => {
-      return (
-        <I18nextProvider i18n={i18n}>
-          <DataProvider>
-            <CurrentUserProvider>
-              <ReduxProvider initialState={initialState || {}}>
-                <Router history={history}>
-                  <ScrollToTop>
-                    <Component {...props} />
-                  </ScrollToTop>
-                </Router>
-              </ReduxProvider>
-            </CurrentUserProvider>
-          </DataProvider>
-        </I18nextProvider>
-      );
+  return await setupAppForTesting(Application, {
+    props: {
+      initialState: state,
+      history: customHistory || createHistory(),
+      entryComponent: Component,
     },
-    {
-      props: {
-        initialState: state,
-        history: customHistory || createHistory(),
-      },
-    }
-  );
+  });
 };
