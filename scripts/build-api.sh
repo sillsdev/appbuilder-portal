@@ -1,4 +1,9 @@
-set -a
+#!/bin/bash
+#
+# shell flags
+#  -e aborts the script if any subcommand fails
+#  -a shares the environment variables between parent and subshells
+set -ea
 
 source ./scripts/build-setup.sh
 
