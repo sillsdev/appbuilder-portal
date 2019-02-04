@@ -7,19 +7,26 @@
 export REPO_PORTAL_NGINX=appbuilder-portal-nginx
 export REPO_PORTAL_API=appbuilder-portal-api
 export CURRENT_VERSION=$1
+export CURRENT_BRANCH=$2
 
 export DEPLOY_LEVEL=staging
-case "$2" in
+case "$CURRENT_BRANCH" in
   master)  export DEPLOY_LEVEL=alpha ;;
   develop) export DEPLOY_LEVEL=staging ;;
   "")      export DEPLOY_LEVEL=unknown ;;
-  *)       export DEPLOY_LEVEL=$2 ;;
+  *)       export DEPLOY_LEVEL=$CURRENT_BRANCH ;;
 esac
 
-case "$2" in
+case "$CURRENT_BRANCH" in
   master)  export ECS_CLUSTER=aps-alpha ;;
   develop) export ECS_CLUSTER=aps-stg ;;
 esac
+
+# Are we going to deploy this C.I. run? If so, we need to tell the build scripts
+# to also push the images after building them.
+if [[ $CURRENT_BRANCH == *"develop"* ]] || [[ $CURRENT_BRANCH == *"master"* ]]; then
+  export PUSH_TO_DOCKER_REGISTRY='true'
+fi
 
 
 docker --version # document the version travis is using
