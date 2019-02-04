@@ -70,7 +70,7 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       };
     }
 
-    return compose(query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true }))(
+    return query(mapNetworkToProps, { passthroughError: true, useRemoteDirectly: true })(
       WrappedComponent
     );
   };

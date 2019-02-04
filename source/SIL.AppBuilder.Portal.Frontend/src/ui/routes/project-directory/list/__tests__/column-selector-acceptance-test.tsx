@@ -1,13 +1,16 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
-import { expect } from 'chai';
+import { when } from '@bigtest/interactor';
+import { expect, assert } from 'chai';
 import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
 } from 'tests/helpers/index';
 import ProjectTableInteractor from '@ui/components/project-table/__tests__/page';
+
 const page = new ProjectTableInteractor();
+
 describe('Acceptance | Project Directory | Column selector', () => {
   setupApplicationTest();
   setupRequestInterceptor();
@@ -50,7 +53,11 @@ describe('Acceptance | Project Directory | Column selector', () => {
 
     describe('Default columns are selected', () => {
       beforeEach(async function() {
-        await page.clickColumnSelector();
+        await page.columnSelector.toggle();
+      });
+
+      it('opens the column selector', () => {
+        expect(page.columnSelector.isOpen).to.equal(true);
       });
 
       it('default options are selected', () => {
@@ -65,12 +72,11 @@ describe('Acceptance | Project Directory | Column selector', () => {
         expect(itemsText).to.not.contain('Owner');
         expect(itemsText).to.not.contain('Group');
         expect(itemsText).to.not.contain('Build Date');
-        expect(itemsText).to.not.contain('Created On');
       });
 
       describe('Add owner column to project table', () => {
         beforeEach(async function() {
-          await page.clickOwnerColumn();
+          await page.columnSelector.toggleColumn('Owner');
         });
 
         it('owner column its added to project table', () => {
@@ -83,7 +89,7 @@ describe('Acceptance | Project Directory | Column selector', () => {
 
         describe('Remove Organization from project table', () => {
           beforeEach(async function() {
-            await page.selectorItems(1).click();
+            await page.columnSelector.toggleColumn('Organization');
           });
 
           it('organization column is no longer present', () => {

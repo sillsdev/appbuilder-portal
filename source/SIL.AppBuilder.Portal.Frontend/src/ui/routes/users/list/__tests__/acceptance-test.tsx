@@ -55,7 +55,7 @@ describe('Acceptance | Disable User', () => {
       });
 
       await visit('/users');
-      userTable = new UserTableInteractor();
+      userTable = new UserTableInteractor(UserTableInteractor.defaultScope);
 
       await when(() => userTable.row().length > 0);
     });
@@ -87,12 +87,11 @@ describe('Acceptance | Disable User', () => {
             expect(userTable.row(0).isActive).to.equal(true);
 
             await userTable.row(0).toggleActive();
-            await when(() => userTable.row(0).isActive === false);
           });
 
           it('user becomes locked', () => {
             expect(userTable.row(0).isActive).to.equal(false);
-          }).timeout(5000);
+          });
         });
       });
     });

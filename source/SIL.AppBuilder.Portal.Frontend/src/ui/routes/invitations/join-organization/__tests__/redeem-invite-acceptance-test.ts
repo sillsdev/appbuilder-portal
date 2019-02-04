@@ -9,7 +9,9 @@ import {
   useFakeAuthentication,
 } from 'tests/helpers';
 
-import OrganizationMembershipInvitePageInteractor from './-page';
+import i18n from '@translations';
+
+import page from './-page';
 
 describe('Acceptance | Organization Membership Invites', () => {
   setupApplicationTest();
@@ -26,145 +28,111 @@ describe('Acceptance | Organization Membership Invites', () => {
     });
 
     context('when logged in', () => {
-      useFakeAuthentication();
-
-      beforeEach(function() {
-        console.log('what the fuck fuck fuck');
-        this.mockGet(
-          200,
-          '/users/current-user?include=organization-memberships.organization,group-memberships.group,user-roles.role',
-          {
-            data: {
-              attributes: {
-                'given-name': 'Test',
-                'family-name': 'User',
-                auth0Id: fakeAuth0Id,
-              },
-              relationships: {
-                'organization-memberships': {
-                  data: [
-                    {
-                      type: 'organization-memberships',
-                      id: '41',
-                    },
-                  ],
+      useFakeAuthentication({
+        data: {
+          attributes: {
+            'given-name': 'Test',
+            'family-name': 'User',
+            auth0Id: fakeAuth0Id,
+          },
+          relationships: {
+            'organization-memberships': {
+              data: [
+                {
+                  type: 'organization-memberships',
+                  id: '41',
                 },
-                'group-memberships': {
-                  data: [],
-                },
-                'user-roles': {
-                  data: [],
-                },
-                notifications: {},
-              },
-              type: 'users',
-              id: '1',
+              ],
             },
-            included: [
-              {
-                attributes: {
-                  email: null,
-                  'user-id': 1,
-                  'organization-id': 1,
+            'group-memberships': {
+              data: [],
+            },
+            'user-roles': {
+              data: [],
+            },
+            notifications: {},
+          },
+          type: 'users',
+          id: '1',
+        },
+        included: [
+          {
+            attributes: {
+              email: null,
+              'user-id': 1,
+              'organization-id': 1,
+            },
+            relationships: {
+              user: {
+                data: {
+                  type: 'users',
+                  id: '1',
                 },
-                relationships: {
-                  user: {
-                    data: {
-                      type: 'users',
-                      id: '1',
-                    },
-                  },
-                  organization: {
-                    data: {
-                      type: 'organizations',
-                      id: '1',
-                    },
-                  },
-                },
-                type: 'organization-memberships',
-                id: '41',
               },
-              {
-                attributes: {
-                  name: 'DeveloperTown',
-                  'website-url': 'https://developertown.com',
-                  'build-engine-url': 'https://buildengine.gtis.guru:8443',
-                  'build-engine-api-access-token': 'nMdPdrcbjJDCp2QwLHajXAUunZUqNeDe',
-                  'logo-url': null,
-                  'use-default-build-engine': false,
-                  'public-by-default': true,
+              organization: {
+                data: {
+                  type: 'organizations',
+                  id: '1',
                 },
-                relationships: {
-                  owner: {
-                    data: {
-                      type: 'users',
-                      id: '3',
-                    },
-                  },
-                  'organization-memberships': {
-                    data: [
-                      {
-                        type: 'organization-memberships',
-                        id: '41',
-                      },
-                    ],
-                  },
-                  'organization-product-definitions': {},
-                  'organization-stores': {},
-                  'user-roles': {},
-                },
-                type: 'organizations',
-                id: '2',
               },
-            ],
-          }
-        );
+            },
+            type: 'organization-memberships',
+            id: '41',
+          },
+          {
+            attributes: {
+              name: 'DeveloperTown',
+              'website-url': 'https://developertown.com',
+              'build-engine-url': 'https://buildengine.gtis.guru:8443',
+              'build-engine-api-access-token': 'nMdPdrcbjJDCp2QwLHajXAUunZUqNeDe',
+              'logo-url': null,
+              'use-default-build-engine': false,
+              'public-by-default': true,
+            },
+            relationships: {
+              owner: {
+                data: {
+                  type: 'users',
+                  id: '3',
+                },
+              },
+              'organization-memberships': {
+                data: [
+                  {
+                    type: 'organization-memberships',
+                    id: '41',
+                  },
+                ],
+              },
+              'organization-product-definitions': {},
+              'organization-stores': {},
+              'user-roles': {},
+            },
+            type: 'organizations',
+            id: '2',
+          },
+        ],
       });
 
       context('invite is not redeemed', () => {
         beforeEach(function() {
-          this.mockPatch(200, '/organization-membership-invites/redeem/any-token', {
-            data: {
-              attributes: {
-                email: null,
-                'user-id': 14,
-                'organization-id': 2,
-              },
-              relationships: {
-                user: {
-                  data: {
-                    type: 'users',
-                    id: '14',
-                  },
-                },
-                organization: {
-                  data: {
-                    type: 'organizations',
-                    id: '2',
-                  },
-                },
-              },
-              type: 'organization-memberships',
-              id: '41',
-            },
+          this.mockPatch(404, '/organization-membership-invites/redeem/any-token', {
+            errors: [{ title: 'organization-membership.invite.error.not-found', status: '404' }],
           });
         });
+
         beforeEach(() => {
           visit('/invitations/organization-membership/any-token');
         });
 
-        it('redirects to /tasks', () => {
-          expect(location().pathname).to.eql('/tasks');
+        it('shows not found error.', () => {
+          expect(page.errorMessage).to.contain(
+            i18n.t('organization-membership.invite.error.not-found')
+          );
         });
       });
 
       describe('error handling', () => {
-        let page;
-        beforeEach(() => {
-          page = new OrganizationMembershipInvitePageInteractor(
-            '[data-test-organization-membership-invite]'
-          );
-        });
         context('invite is expired', () => {
           beforeEach(function() {
             this.mockPatch(403, '/organization-membership-invites/redeem/any-token', {

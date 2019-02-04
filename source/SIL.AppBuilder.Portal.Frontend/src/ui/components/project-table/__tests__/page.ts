@@ -1,3 +1,4 @@
+import { assert } from 'chai';
 import {
   interactor,
   attribute,
@@ -7,6 +8,7 @@ import {
   isPresent,
   hasClass,
   Interactor,
+  scoped,
 } from '@bigtest/interactor';
 import { find } from 'lodash';
 
@@ -43,6 +45,34 @@ class ProjectTable {
 
   isSortingUp = isPresent('[data-test-up-arrow]');
   isSortingDown = isPresent('[data-test-down-arrow]');
+
+  columnSelector = scoped('[data-test-project-table-columns-selector]', {
+    isOpen: hasClass('.menu.columns', 'visible'),
+    toggle: clickable(),
+
+    options: collection('[data-test-project-table-columns-selector-item]', {
+      isChecked: hasClass('checked'),
+      toggle: clickable('input'),
+    }),
+
+    async toggleColumn(columnName: string) {
+      if (!this.isOpen) {
+        await this.toggle();
+      }
+
+      let options = this.options();
+      let matchingColumnName = options.find((o) => o.text.includes(columnName));
+
+      if (!matchingColumnName) {
+        throw new Error(`cannot find option with text "${columnName}"`);
+      }
+
+      await matchingColumnName.toggle();
+      await this.when(() =>
+        assert(!this.isOpen, `expected column selector to close after selecting "${columnName}"`)
+      );
+    },
+  });
 
   clickColumn(this: Interactor, columnText: string) {
     return this.when(() => {

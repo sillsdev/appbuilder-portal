@@ -2,7 +2,7 @@
 
 set -ex
 
-if [[ ! -d node_modules/semantic-ui-react ]]; then
+if [[ ! -d node_modules/semantic-ui-react/dist ]]; then
   echo "semantic-ui-react has not been built!"
   echo "PWD: $1"
   

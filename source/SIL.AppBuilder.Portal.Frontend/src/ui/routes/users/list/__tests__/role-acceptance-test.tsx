@@ -1,7 +1,7 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import {
   setupApplicationTest,
   setupRequestInterceptor,
@@ -13,7 +13,7 @@ import i18n from '@translations/index';
 
 import UserTableInteractor from './-user-table';
 
-let userTable = null;
+let userTable = new UserTableInteractor();
 
 async function toggleRoleAt(index, role: string, organization: string) {
   await userTable.row(index).role.open();
@@ -198,6 +198,8 @@ describe('Acceptance | User List | Role Management', () => {
 
       beforeEach(async function() {
         await visit('/users');
+        userTable = new UserTableInteractor();
+
         await userTable.row(0).role.open();
       });
 
@@ -278,15 +280,10 @@ describe('Acceptance | User List | Role Management', () => {
     useFakeAuthentication();
 
     beforeEach(function() {
-      this.mockGet(200, '/users', {
+      const paylo1ad = {
         data: [
           {
-            type: 'users',
-            id: 1,
-            attributes: {
-              name: 'Current User',
-              email: 'current.user@fake.com',
-            },
+            ...this.currentUser,
             relationships: {
               'user-roles': {
                 data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
@@ -294,15 +291,12 @@ describe('Acceptance | User List | Role Management', () => {
               'organization-memberships': {
                 data: [{ type: 'organization-memberships', id: 2 }],
               },
+              'group-memberships': { data: [] },
             },
           },
         ],
         included: [
-          {
-            type: 'organizations',
-            id: 1,
-            attributes: { name: 'DeveloperTown' },
-          },
+          // this.currentOrganization,
           {
             type: 'organization-memberships',
             id: 2,
@@ -313,18 +307,123 @@ describe('Acceptance | User List | Role Management', () => {
           },
           userRoleFrom(roles.orgAdmin, { id: 2, userId: 1, orgId: 1 }),
           userRoleFrom(roles.appBuilder, { id: 3, userId: 1, orgId: 1 }),
-          roles.orgAdmin,
-          roles.appBuilder,
         ],
-      });
+      };
+
+      const payload = {
+        data: [
+          {
+            ...this.currentUser,
+            relationships: {
+              'organization-memberships': {
+                data: [
+                  {
+                    type: 'organization-memberships',
+                    id: '1',
+                  },
+                ],
+              },
+              'group-memberships': { data: [] },
+              'user-roles': {
+                data: [
+                  {
+                    type: 'user-roles',
+                    id: '10',
+                  },
+                  {
+                    type: 'user-roles',
+                    id: '11',
+                  },
+                ],
+              },
+              notifications: {},
+            },
+          },
+        ],
+        included: [
+          {
+            attributes: {},
+            relationships: {
+              user: {
+                data: {
+                  type: 'users',
+                  id: this.currentUser.id,
+                },
+              },
+              role: {
+                data: {
+                  type: 'roles',
+                  id: '3',
+                },
+              },
+              organization: {
+                data: {
+                  type: 'organizations',
+                  id: '1',
+                },
+              },
+            },
+            type: 'user-roles',
+            id: '10',
+          },
+          {
+            attributes: {},
+            relationships: {
+              user: {
+                data: {
+                  type: 'users',
+                  id: this.currentUser.id,
+                },
+              },
+              role: {
+                data: {
+                  type: 'roles',
+                  id: '2',
+                },
+              },
+              organization: {
+                data: {
+                  type: 'organizations',
+                  id: '1',
+                },
+              },
+            },
+            type: 'user-roles',
+            id: '11',
+          },
+          {
+            attributes: {
+              email: null,
+              'user-id': 1,
+              'organization-id': 1,
+            },
+            relationships: {
+              user: {
+                data: {
+                  type: 'users',
+                  id: '1',
+                },
+              },
+              organization: {
+                data: {
+                  type: 'organizations',
+                  id: '1',
+                },
+              },
+            },
+            type: 'organization-memberships',
+            id: '1',
+          },
+        ],
+      };
+
+      this.mockGet(200, '/users', payload);
     });
 
     beforeEach(async function() {
       await visit('/users');
+
       userTable = new UserTableInteractor();
-      await when(() => {
-        expect(userTable.row().length).to.equal(1);
-      });
     });
 
     it('is in users page', () => {

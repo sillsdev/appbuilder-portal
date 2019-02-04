@@ -87,8 +87,8 @@ export function withData(WrappedComponent) {
     // TODO: what would putting this on each row do?
     withOrbit({
       organizationMemberships: (q) => q.findRecords('organizationMembership'),
-      groups: (q) => q.findRecords(GROUP),
-      roles: (q) => q.findRecords(ROLE),
+      groups: (q) => q.findRecords('group'),
+      roles: (q) => q.findRecords('role'),
     })
   )(DataWrapper);
 }

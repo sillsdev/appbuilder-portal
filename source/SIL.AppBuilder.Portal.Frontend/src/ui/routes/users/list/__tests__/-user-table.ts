@@ -17,6 +17,7 @@ class UserTalbeUserRoleInteractor extends Interactor {
   list = text('[data-test-role-multi-select] > div');
   organizationNames = text('[data-test-organization-name]');
   noEditText = text('[data-test-role-no-edit]');
+
   chooseUnder(role: string, organization: string) {
     return this.when(() => {
       const org = this.$$('[data-test-organization-name]').find((item) =>
@@ -66,7 +67,7 @@ export class UserTableInteractor {
 
   row = collection('[data-test-user-row]', {
     isActive: hasClass('[data-test-toggle-lock]', 'checked'),
-    toggleActive: clickable('[data-test-toggle-lock] label'),
+    toggleActive: clickable('[data-test-toggle-lock] input'),
 
     activeGroupsText: text('[data-test-groups-active]'),
     activeGroups: collection('[data-test-groups-active]', {
