@@ -14,6 +14,7 @@ using Hangfire;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using OptimaJet.DWKit.StarterApplication.Services;
+using Microsoft.AspNetCore.SignalR;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {
@@ -400,6 +401,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
+            var statusUpdateService = _fixture.GetService<StatusUpdateService>();
+            var mockScriptoriaHub = Mock.Get(statusUpdateService.HubContext);
+            mockScriptoriaHub.Reset();
+            var mockClients = Mock.Get<IHubClients>(statusUpdateService.HubContext.Clients);
+            mockClients.Reset();
             var projectResponse = new ProjectResponse
             {
                 Id = 4,
@@ -426,6 +432,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Single(notifications);
             Assert.Equal("{\"projectName\":\"Test Project3\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("projectCreatedSuccessfully", notifications[0].MessageId);
+            // Verify that project status update sent when updating through job repository
+            mockScriptoriaHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Exactly(2));
+            mockScriptoriaHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == "/Project")));
+            mockScriptoriaHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == "/Project/" + project3.Id.ToString())));
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_Failed()
