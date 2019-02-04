@@ -6,8 +6,9 @@
 
 export REPO_PORTAL_NGINX=appbuilder-portal-nginx
 export REPO_PORTAL_API=appbuilder-portal-api
-export CURRENT_VERSION=$1
-export CURRENT_BRANCH=$2
+
+export CURRENT_VERSION=$1 # $TRAVIS_COMMIT
+export CURRENT_BRANCH=$2  # $TRAVIS_BRANCH
 
 export DEPLOY_LEVEL=staging
 case "$CURRENT_BRANCH" in
