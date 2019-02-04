@@ -87,6 +87,7 @@ if (isDevelopment) {
     hot: true,
     historyApiFallback: true,
     // hotOnly: true,
+    disableHostCheck: true,
     inline: true,
     overlay: true,
     progress: true,
