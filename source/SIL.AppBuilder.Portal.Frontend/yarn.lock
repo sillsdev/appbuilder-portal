@@ -989,20 +989,20 @@
     morgan "^1.9.1"
     nocache "^2.0.0"
 
-"@pollyjs/persister-rest@^1.0.0":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@pollyjs/persister-rest/-/persister-rest-1.4.1.tgz#ecb8c2ea1b53243db6a999c66f76be14fa5a58f7"
-  integrity sha512-uakbnQQnFaP2zA8FnnKbBXgmHnIX36MPYLePYCU2pPmBk7AIaKWyitP6lky5CBxlrxWAnnqH1saK1P/OywN/6A==
+"@pollyjs/persister-rest@^2.0.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/persister-rest/-/persister-rest-2.1.0.tgz#1c3ce724909ec5e04a6dfb2f14f613233df92294"
+  integrity sha512-hZ+Afed80DmyALvfeaCbtJnEeMQXJF4IKejcL/s3gxTX4A0gsoYJ6td943MO0f+YLD1II3FnxQyxMT2+u+wY2Q==
   dependencies:
-    "@pollyjs/persister" "^1.4.1"
-    "@pollyjs/utils" "^1.4.1"
+    "@pollyjs/persister" "^2.1.0"
+    "@pollyjs/utils" "^2.1.0"
 
-"@pollyjs/persister@^1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@pollyjs/persister/-/persister-1.4.1.tgz#12de9b582d0ba2154b0b293a0155ac50213a5fe3"
-  integrity sha512-jAeC9D6lrCaq3iKzQTg4gW/1XK9LeZJdzcltCK8jNcqtGEhjGddm5M+DDnTwuKWREXZvtUWBTEcpNvn7WbHbag==
+"@pollyjs/persister@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/persister/-/persister-2.1.0.tgz#56595370602fffa0370d993ac6cec104faae5bc8"
+  integrity sha512-PB8AGtScyS+FIdH0kHxSFJf+TfcK5XqotOZn/0ja62dDGC0CAq+ZunhUbgwU0eXIoOyI6SYHPqM3ISiyNcX8VQ==
   dependencies:
-    "@pollyjs/utils" "^1.4.1"
+    "@pollyjs/utils" "^2.1.0"
     bowser "^1.9.3"
     fast-json-stable-stringify "^2.0.0"
     lodash-es "^4.17.11"
@@ -1013,6 +1013,14 @@
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@pollyjs/utils/-/utils-1.4.1.tgz#2cee4980ca9f27427cd62833e916ae28660e6652"
   integrity sha512-UVIgsj50LBdWZfcUY+Yh0NU9sciLtUW75kqqgnPCagUYnYpsENiih1+C83zs4IcPR7kbuBht8z2EMxeD1tf+qg==
+  dependencies:
+    qs "^6.6.0"
+    url-parse "^1.4.4"
+
+"@pollyjs/utils@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/utils/-/utils-2.1.0.tgz#2d52f625c0d96eba1e9ef18476d6dc18dddf6ba1"
+  integrity sha512-psHTlcQZuKxG9ZACzcCo/omOFc4LbYRx4ASjWxR7TmOZKzcR653R0/APL8SXGRfGPD8RsFOGSSbXzjXyUX+g7A==
   dependencies:
     qs "^6.6.0"
     url-parse "^1.4.4"
@@ -1351,13 +1359,6 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
-
-"@types/recompose@0.30.3":
-  version "0.30.3"
-  resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.30.3.tgz#74dfa5c505f432dc4ea5509a49814b70ff58bf5e"
-  integrity sha512-sxD7+lXO/eZRfMhJeDwqrx7Kwjm89FXc8g7O/muJ//qCN/q498C6pq9jhaoMhkbNxN3YpoW6RFZprK2VYLUKRQ==
-  dependencies:
-    "@types/react" "*"
 
 "@types/recompose@0.30.3":
   version "0.30.3"
