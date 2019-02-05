@@ -1,6 +1,7 @@
 const path = require('path');
 
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 const babelConfig = require('../babelrc.config.js');
@@ -70,6 +71,7 @@ const resolver = {
 
 const plugins = [
   // new webpack.WatchIgnorePlugin([/\.d\.ts$/]),
+  new CopyWebpackPlugin([{ from: 'src/public' }]),
   new webpack.EnvironmentPlugin([
     'AUTH0_CONNECTION',
     'AUTH0_DOMAIN',

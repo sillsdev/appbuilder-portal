@@ -1,97 +1,48 @@
 import * as React from 'react';
-import Autosuggest from 'react-autosuggest';
+import { RectLoader } from '@ui/components/loaders';
 
+import LocaleInputField from './field';
 
-function getSuggestions(value) {
-  const escapedValue = escapeRegexCharacters(value.trim());
-  
-  if (escapedValue === '') {
-    return [];
+// async function getLanguages() {
+//   return await import(/* webpackChunkName: "alltags.json" */ '~/public/assets/language/alltags.json');
+// }
+
+export interface IProps {
+  value?: string;
+  onChange: (localeCode: string) => void;
+}
+
+interface IState {
+  data?: ILanguageTag[];
+}
+export default class extends React.Component<IProps, IState> {
+  loading = true;
+  state: IState = {};
+
+  componentDidMount() {
+    this.fetchLanguageData();
   }
 
-  const regex = new RegExp('^' + escapedValue, 'i');
+  async fetchLanguageData() {
+    const response = await fetch('/assets/language/alltags.json');
+    const data = await response.json();
 
-  return languages
-    .map(section => {
-      return {
-        title: section.title,
-        languages: section.languages.filter(language => regex.test(language.name))
-      };
-    })
-    .filter(section => section.languages.length > 0);
-}
-
-function getSuggestionValue(suggestion) {
-  return suggestion.name;
-}
-
-function renderSuggestion(suggestion) {
-  return (
-    <span>{suggestion.name}</span>
-  );
-}
-
-function renderSectionTitle(section) {
-  return (
-    <strong>{section.title}</strong>
-  );
-}
-
-function getSectionSuggestions(section) {
-  return section.languages;
-}
-
-interface IProps {}
-interface IState {
-  value: string;
-  suggestions: string[];
-}
-
-
-
-export default class extends React.Component<IProps, IState> {
-  state = {
-    value: '',
-    suggestions: []
-  };    
-
-  onChange = (event, { newValue, method }) => {
-    this.setState({
-      value: newValue
-    });
-  };
-  
-  onSuggestionsFetchRequested = ({ value }) => {
-    this.setState({
-      suggestions: getSuggestions(value)
-    });
-  };
-
-  onSuggestionsClearRequested = () => {
-    this.setState({
-      suggestions: []
-    });
-  };
+    this.loading = false;
+    this.setState({ data });
+  }
 
   render() {
-    const { value, suggestions } = this.state;
-    const inputProps = {
-      placeholder: "Type 'c'",
-      value,
-      onChange: this.onChange
-    };
+    const { value, onChange } = this.props;
+    const { data } = this.state;
 
-    return (
-      <Autosuggest 
-        multiSection={false}
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-        getSuggestionValue={getSuggestionValue}
-        renderSuggestion={renderSuggestion}
-        renderSectionTitle={renderSectionTitle}
-        getSectionSuggestions={getSectionSuggestions}
-        inputProps={inputProps} />
-    );
+    if (this.loading) {
+      return (
+        <div>
+          <RectLoader />
+        </div>
+      );
+    }
+
+    return <LocaleInputField {...{ value, onChange, data }} />;
   }
 }

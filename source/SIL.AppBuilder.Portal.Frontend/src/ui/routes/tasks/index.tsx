@@ -10,8 +10,6 @@ import { withLayout } from '@ui/components/layout';
 import './tasks.scss';
 import Display from './display';
 
-export const pathName = '/tasks';
-
 export default compose(
   withTranslations,
   requireAuth(),

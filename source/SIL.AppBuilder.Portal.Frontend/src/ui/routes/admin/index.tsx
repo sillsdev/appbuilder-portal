@@ -9,7 +9,6 @@ import { adminPath } from '@ui/routes/paths';
 import InviteOrganization from './invite-organization';
 import AdminSettingsRoute, { pathName as settingsPathName } from './settings';
 
-
 class AdminRoute extends React.Component {
   render() {
     return (

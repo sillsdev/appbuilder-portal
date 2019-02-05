@@ -4,7 +4,6 @@ import { Switch, Route } from 'react-router-dom';
 import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
 import { NotFound } from '@ui/routes/errors';
-
 import { directoryPath } from '@ui/routes/paths';
 
 import IndexRoute from './list';

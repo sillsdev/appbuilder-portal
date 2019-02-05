@@ -14,6 +14,7 @@ import {
 import OrganizationSelect from '@ui/components/inputs/organization-select/display';
 import ProductDefinitionSelect from '@ui/components/inputs/product-definition-select';
 import DateRange from '@ui/components/inputs/date-range';
+import LocaleInput from '@ui/components/inputs/locale-input';
 
 import 'react-day-picker/lib/style.css';
 import './filters.scss';
@@ -110,40 +111,46 @@ class Filter extends React.Component<IProps, IState> {
     const { from, to, selectedProduct, selectedOrganization } = this.state;
 
     return (
-      <div className='flex-column-xs align-items-end justify-content-space-around flex-row-xl filters'>
-        <div className='flex w-100-xs w-50-xl justify-content-center'>
-          <div className='input flex-row align-items-center m-l-md m-r-md'>
-            <ProductDefinitionSelect
-              className='w-100'
-              onChange={this.handleProductChange}
-              defaultValue={selectedProduct}
-            />
-          </div>
-          <div className='input flex-row align-items-center m-l-md m-r-md'>
-            <OrganizationSelect
-              className='w-100'
-              onChange={this.handleOrganizationChange}
-              organizations={organizations}
-              defaultValue={selectedOrganization}
-            />
-          </div>
-        </div>
+      <>
+        <LocaleInput />
+        <br />
+        <br />
 
-        <div
-          className='
+        <div className='flex-column-xs align-items-end justify-content-space-around flex-row-xl filters'>
+          <div className='flex w-100-xs w-50-xl justify-content-center'>
+            <div className='input flex-row align-items-center m-l-md m-r-md'>
+              <ProductDefinitionSelect
+                className='w-100'
+                onChange={this.handleProductChange}
+                defaultValue={selectedProduct}
+              />
+            </div>
+            <div className='input flex-row align-items-center m-l-md m-r-md'>
+              <OrganizationSelect
+                className='w-100'
+                onChange={this.handleOrganizationChange}
+                organizations={organizations}
+                defaultValue={selectedOrganization}
+              />
+            </div>
+          </div>
+
+          <div
+            className='
           flex justify-content-center
           w-100-xs w-50-xl p-l-md p-r-md m-t-lg-xs m-t-none-xl
         '
-        >
-          <DateRange
-            label={t('directory.filters.dateRange')}
-            to={to}
-            from={from}
-            onToChange={this.handleToChange}
-            onFromChange={this.handleFromChange}
-          />
+          >
+            <DateRange
+              label={t('directory.filters.dateRange')}
+              to={to}
+              from={from}
+              onToChange={this.handleToChange}
+              onFromChange={this.handleFromChange}
+            />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 }

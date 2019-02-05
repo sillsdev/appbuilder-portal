@@ -9,7 +9,6 @@ import JoinOrganizationFinishedRoute, {
   pathName as joinOrganizationFinishedPath,
 } from './join-organization/finished';
 
-
 export default class InvitationsRoute extends React.Component {
   render() {
     return (
