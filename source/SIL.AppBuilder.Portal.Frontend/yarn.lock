@@ -937,13 +937,13 @@
     "@pollyjs/utils" "^1.4.1"
     detect-node "^2.0.4"
 
-"@pollyjs/adapter-xhr@^1.0.0":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-xhr/-/adapter-xhr-1.4.1.tgz#3a5e446960484ebd07bc863cdd4f23984c65fdd3"
-  integrity sha512-1pPf9jhoTmtebtNmSfNK4UwHEJGbncLc1pXsP7U5bSkry5KNc40thhusjSpy3rCwqUIMeEaMl93P0qYqrXS+jw==
+"@pollyjs/adapter-xhr@^2.0.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-xhr/-/adapter-xhr-2.1.0.tgz#91a2b1a5df8125439763605b8da7b27d5e956d7a"
+  integrity sha512-FoQ3VNju4l3132noTGZsfxONPt5gEQA7rG3GKHy/v/yHwPew9RpsjLLZSBHlWyXY3ZC7/7jM4CfJWpcPVoBnKw==
   dependencies:
-    "@pollyjs/adapter" "^1.4.1"
-    "@pollyjs/utils" "^1.4.1"
+    "@pollyjs/adapter" "^2.1.0"
+    "@pollyjs/utils" "^2.1.0"
     nise "^1.4.6"
 
 "@pollyjs/adapter@^1.4.1":
@@ -952,6 +952,13 @@
   integrity sha512-1CFoFkoFhP/DLhCIbTLpyIKr1jlzHWBTzL2WerE1loWLrCvnI+rw7YYfz2wJxEH9fuF25QRg5P3L2Yrvw5l3ig==
   dependencies:
     "@pollyjs/utils" "^1.4.1"
+
+"@pollyjs/adapter@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter/-/adapter-2.1.0.tgz#03b7040320d6c8b376700a2fba11a347c2e472d6"
+  integrity sha512-r93P6xAXZu1VhPhok4GLAL7DNO2bTy/w9SsHmX1WdqgaB+nPTC0QC5UF7HQIJggryZBNN4zJ11w3YgV7rAb8mA==
+  dependencies:
+    "@pollyjs/utils" "^2.1.0"
 
 "@pollyjs/cli@^1.0.0":
   version "1.4.1"
@@ -1013,6 +1020,14 @@
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@pollyjs/utils/-/utils-1.4.1.tgz#2cee4980ca9f27427cd62833e916ae28660e6652"
   integrity sha512-UVIgsj50LBdWZfcUY+Yh0NU9sciLtUW75kqqgnPCagUYnYpsENiih1+C83zs4IcPR7kbuBht8z2EMxeD1tf+qg==
+  dependencies:
+    qs "^6.6.0"
+    url-parse "^1.4.4"
+
+"@pollyjs/utils@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/utils/-/utils-2.1.0.tgz#2d52f625c0d96eba1e9ef18476d6dc18dddf6ba1"
+  integrity sha512-psHTlcQZuKxG9ZACzcCo/omOFc4LbYRx4ASjWxR7TmOZKzcR653R0/APL8SXGRfGPD8RsFOGSSbXzjXyUX+g7A==
   dependencies:
     qs "^6.6.0"
     url-parse "^1.4.4"
