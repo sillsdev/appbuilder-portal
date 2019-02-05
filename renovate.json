@@ -57,7 +57,8 @@
     {
         "paths": ["source/SIL.AppBuilder.Portal.Frontend/package.json"],
         "rangeStrategy": "replace",
-        "enabled": true
+        "enabled": true,
+        "automerge": true
     },
     {
         "packagePatterns": ["Dockerfile"],
