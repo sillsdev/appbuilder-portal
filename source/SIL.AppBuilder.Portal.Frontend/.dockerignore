@@ -2,3 +2,7 @@ tmp
 dist
 node_modules
 yarn-error.log
+
+source/SIL.AppBuilder.Portal.Frontend/node_modules/
+source/SIL.AppBuilder.Portal.Frontend/dist/
+source/out/
