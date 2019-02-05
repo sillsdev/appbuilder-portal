@@ -59,7 +59,7 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
 
           return (
             <div
-              key={index}
+              key={element.id}
               className={`flex flex-column align-items-center
               w-100 m-b-sm round-border-4 light-gray-text pointer
               ${isSelected ? 'blue-light-border' : 'thin-border'}`}

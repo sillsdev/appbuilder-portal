@@ -1,3 +1,4 @@
+import { assert } from 'chai';
 import {
   interactor,
   attribute,
@@ -5,22 +6,13 @@ import {
   collection,
   text,
   isPresent,
+  hasClass,
   Interactor,
+  scoped,
 } from '@bigtest/interactor';
 import { find } from 'lodash';
 
 import { attributesFor } from '~/data';
-// tslint:disable:max-classes-per-file
-
-class ProjectRow {
-  constructor(selector?: string) {}
-  static defaultScope = '[data-test-project-row]';
-  isRowActionPresent = isPresent('[data-test-row-actions]');
-  select = clickable('[data-test-selector]');
-  projectId = attribute('data-test-project-row');
-}
-
-export const ProjectRowInteractor = interactor(ProjectRow);
 
 class ProjectTable {
   constructor(selector?: string) {}
@@ -36,10 +28,45 @@ class ProjectTable {
   isEmptyTextPresent = isPresent('[data-test-project-list-empty]');
   emptyText = text('[data-test-project-list-empty]');
 
-  rows = collection(ProjectRowInteractor.defaultScope, ProjectRowInteractor);
+  rows = collection('[data-test-project-row]', {
+    isRowActionPresent: isPresent('[data-test-row-actions]'),
+    select: clickable('[data-test-selector] input'),
+
+    isSelected: hasClass('[data-test-selector]', 'checked'),
+    projectId: attribute('data-test-project-row'),
+    text: text(),
+  });
 
   isSortingUp = isPresent('[data-test-up-arrow]');
   isSortingDown = isPresent('[data-test-down-arrow]');
+
+  columnSelector = scoped('[data-test-project-table-columns-selector]', {
+    isOpen: hasClass('.menu.columns', 'visible'),
+    toggle: clickable(),
+
+    options: collection('[data-test-project-table-columns-selector-item]', {
+      isChecked: hasClass('checked'),
+      toggle: clickable('input'),
+    }),
+
+    async toggleColumn(columnName: string) {
+      if (!this.isOpen) {
+        await this.toggle();
+      }
+
+      let options = this.options();
+      let matchingColumnName = options.find((o) => o.text.includes(columnName));
+
+      if (!matchingColumnName) {
+        throw new Error(`cannot find option with text "${columnName}"`);
+      }
+
+      await matchingColumnName.toggle();
+      await this.when(() =>
+        assert(!this.isOpen, `expected column selector to close after selecting "${columnName}"`)
+      );
+    },
+  });
 
   clickColumn(this: Interactor, columnText: string) {
     return this.when(() => {

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Card, Form, Checkbox } from 'semantic-ui-react';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 
 import { idFromRecordIdentity } from '@data';
 
@@ -11,6 +10,7 @@ import { isEmpty } from '@lib/collection';
 import ApplicationTypeSelect from '@ui/components/inputs/application-type-select';
 import GroupSelect from '@ui/components/inputs/group-select';
 import { IProvidedProps as ICurrentOrganizationProps } from '@data/containers/with-current-organization';
+import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
 
 import { IProvidedProps as IDataProps } from './with-data';
 
@@ -26,12 +26,18 @@ interface IState {
   description?: string;
 }
 
-@withTemplateHelpers
 export default class Display extends React.Component<IProps, IState> {
   mut: Mut;
   toggle: Toggle;
 
   state: IState = { disableSubmit: false, isPublic: true };
+
+  constructor(props) {
+    super(props);
+
+    this.mut = mutCreator(this);
+    this.toggle = toggleCreator(this);
+  }
 
   componentDidUpdate(prevProps) {
     const hasOrgChanged = prevProps.currentOrganizationId !== this.props.currentOrganizationId;
@@ -143,7 +149,7 @@ export default class Display extends React.Component<IProps, IState> {
                         toggle
                         data-test-visibility
                         checked={isPublic}
-                        onChange={toggle('isPublic')}
+                        onClick={toggle('isPublic')}
                       />
                     </div>
                   </div>

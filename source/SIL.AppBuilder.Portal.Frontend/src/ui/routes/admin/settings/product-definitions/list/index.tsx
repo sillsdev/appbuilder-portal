@@ -34,8 +34,11 @@ class ListProductDefinition extends React.Component<IProps> {
           <button className='ui button tertiary uppercase large m-b-lg' onClick={this.showAddForm}>
             {t('admin.settings.productDefinitions.add')}
           </button>
-          {productDefinitions.map((productDefinition, i) => (
-            <ProductDefinitionItem key={i} productDefinition={productDefinition} />
+          {productDefinitions.map((productDefinition) => (
+            <ProductDefinitionItem
+              key={productDefinition.id}
+              productDefinition={productDefinition}
+            />
           ))}
         </div>
       </>

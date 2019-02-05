@@ -31,7 +31,7 @@ class ResponsiveSubNav extends React.Component<IProps & RouteComponentProps<{}>>
     const menuItems = items.map((i, index) => (
       <NavLink
         to={i.to}
-        key={index}
+        key={i.to}
         className='item'
         activeClassName='active'
         isActive={() => shouldUseExactRoutes(i.to)}

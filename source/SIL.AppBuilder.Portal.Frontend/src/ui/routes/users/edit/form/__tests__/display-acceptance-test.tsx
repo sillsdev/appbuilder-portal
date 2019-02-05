@@ -22,7 +22,13 @@ describe('Acceptance | Edit Profile Form', () => {
           type: 'users',
           id: '1',
           attributes: {
-            givenName: 'hi',
+            givenName: 'first',
+            familyName: 'last',
+            email: 'whatever@w.ver',
+            phone: 'no',
+            profileVisibility: false,
+            emailNotification: false,
+            publishingKey: 'no',
           },
         },
       });
@@ -37,6 +43,14 @@ describe('Acceptance | Edit Profile Form', () => {
         expect(location().pathname).to.equal('/users/1/edit');
       });
 
+      it('renders the firstname', () => expect(page.firstname).to.equal('first'));
+      it('renders lastname', () => expect(page.lastname).to.equal('last'));
+      it('renders email', () => expect(page.email).to.equal('whatever@w.ver'));
+      it('renders phone number', () => expect(page.phone).to.equal('no'));
+      it('renders publishing key text', () => expect(page.publishingKeyText).to.equal('no'));
+      it('renders email notification', () => expect(page.isEmailNotificationChecked).to.be.false);
+      it('renders profile visibility', () => expect(page.profileVisibility).to.be.false);
+
       describe('The form has values', () => {
         beforeEach(async () => {
           await page.fillFirstName('Fake');
@@ -48,15 +62,14 @@ describe('Acceptance | Edit Profile Form', () => {
           await page.clickProfileVisibility();
         });
 
-        it('has values', () => {
-          expect(page.firstname).to.equal('Fake');
-          expect(page.lastname).to.equal('Name');
-          expect(page.email).to.equal('fake@domain.com');
-          expect(page.phone).to.equal('997528963');
-          expect(page.publishingKeyText).to.equal('ssh-rsa 1234');
-          expect(page.isEmailNotificationChecked).to.be.true;
-          expect(page.profileVisibility).to.be.true;
-        });
+        it('updates the firstname', () => expect(page.firstname).to.equal('Fake'));
+        it('updates lastname', () => expect(page.lastname).to.equal('Name'));
+        it('updates email', () => expect(page.email).to.equal('fake@domain.com'));
+        it('updates phone number', () => expect(page.phone).to.equal('997528963'));
+        it('updates publishing key text', () =>
+          expect(page.publishingKeyText).to.equal('ssh-rsa 1234'));
+        it('updates email notification', () => expect(page.isEmailNotificationChecked).to.be.true);
+        it('updates profile visibility', () => expect(page.profileVisibility).to.be.true);
       });
     });
 

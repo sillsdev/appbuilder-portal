@@ -22,6 +22,7 @@ describe('Acceptance | Authentication', () => {
       setToken(fakeAuth0JWT({ ['email_verified']: false }));
       await visit('/tasks');
     });
+
     it('redirects to verify email', () => {
       expect(location().pathname).to.equal('/verify-email');
     });

@@ -34,8 +34,11 @@ class ListWorkflowDefinition extends React.Component<IProps> {
           <button className='ui button tertiary uppercase large m-b-lg' onClick={this.showAddForm}>
             {t('admin.settings.workflowDefinitions.add')}
           </button>
-          {workflowDefinitions.map((workflowDefinition, i) => (
-            <WorkflowDefinitionItem key={i} workflowDefinition={workflowDefinition} />
+          {workflowDefinitions.map((workflowDefinition) => (
+            <WorkflowDefinitionItem
+              key={workflowDefinition.id}
+              workflowDefinition={workflowDefinition}
+            />
           ))}
         </div>
       </>

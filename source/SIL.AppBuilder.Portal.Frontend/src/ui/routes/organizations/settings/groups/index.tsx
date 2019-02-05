@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-import { withTemplateHelpers, Toggle } from 'react-action-decorators';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import {
   withDataActions,
   IProvidedProps,
 } from '@data/containers/resources/group/with-data-actions';
+import { Toggle, toggleCreator } from 'react-state-helpers';
 
 import Form from './form';
 import List from './list';
@@ -26,7 +26,6 @@ interface IState {
 
 type IProps = IOwnProps & IProvidedProps & i18nProps;
 
-@withTemplateHelpers
 class GroupsRoute extends React.Component<IProps, IState> {
   toggle: Toggle;
 
@@ -34,6 +33,12 @@ class GroupsRoute extends React.Component<IProps, IState> {
     showForm: false,
     groupToEdit: null,
   };
+
+  constructor(props) {
+    super(props);
+
+    this.toggle = toggleCreator(this);
+  }
 
   setGroupToEdit = (group) => {
     this.setState({

@@ -24,8 +24,8 @@ class Files extends React.Component<IProps> {
 
     return (
       <div data-test-project-files className='flex flex-column'>
-        {products.map((product, i) => (
-          <ProductArtifact key={i} product={product} />
+        {products.map((product) => (
+          <ProductArtifact key={product.id} product={product} />
         ))}
       </div>
     );

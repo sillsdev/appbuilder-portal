@@ -1,7 +1,7 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import {
   setupApplicationTest,
   setupRequestInterceptor,
@@ -13,7 +13,7 @@ import i18n from '@translations/index';
 
 import UserTableInteractor from './-user-table';
 
-let userTable = null;
+let userTable = new UserTableInteractor();
 
 async function toggleRoleAt(index, role: string, organization: string) {
   await userTable.row(index).role.open();
@@ -198,6 +198,8 @@ describe('Acceptance | User List | Role Management', () => {
 
       beforeEach(async function() {
         await visit('/users');
+        userTable = new UserTableInteractor();
+
         await userTable.row(0).role.open();
       });
 
@@ -278,15 +280,10 @@ describe('Acceptance | User List | Role Management', () => {
     useFakeAuthentication();
 
     beforeEach(function() {
-      this.mockGet(200, '/users', {
+      const paylo1ad = {
         data: [
           {
-            type: 'users',
-            id: 1,
-            attributes: {
-              name: 'Current User',
-              email: 'current.user@fake.com',
-            },
+            ...this.currentUser,
             relationships: {
               'user-roles': {
                 data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
@@ -294,15 +291,12 @@ describe('Acceptance | User List | Role Management', () => {
               'organization-memberships': {
                 data: [{ type: 'organization-memberships', id: 2 }],
               },
+              'group-memberships': { data: [] },
             },
           },
         ],
         included: [
-          {
-            type: 'organizations',
-            id: 1,
-            attributes: { name: 'DeveloperTown' },
-          },
+          // this.currentOrganization,
           {
             type: 'organization-memberships',
             id: 2,
@@ -313,18 +307,216 @@ describe('Acceptance | User List | Role Management', () => {
           },
           userRoleFrom(roles.orgAdmin, { id: 2, userId: 1, orgId: 1 }),
           userRoleFrom(roles.appBuilder, { id: 3, userId: 1, orgId: 1 }),
-          roles.orgAdmin,
-          roles.appBuilder,
         ],
-      });
+      };
+
+      const payload = {
+        data: [
+          {
+            attributes: {
+              name: 'Chris Hubbard',
+              'given-name': 'Chris',
+              'family-name': 'Hubbard',
+              email: 'chris_hubbard@sil.org',
+              phone: null,
+              timezone: null,
+              locale: null,
+              'is-locked': false,
+              auth0Id: 'google-oauth2|116747902156680384840',
+              'profile-visibility': 1,
+              'email-notification': true,
+              'publishing-key': null,
+              'workflow-user-id': '75dcb91c-0ec5-4711-b7a7-fcfd90dc8983',
+              'date-created': null,
+              'date-updated': '2019-02-04T19:10:02.63153',
+            },
+            relationships: {
+              'organization-memberships': {
+                data: [
+                  {
+                    type: 'organization-memberships',
+                    id: '1',
+                  },
+                ],
+              },
+              'user-roles': {
+                data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
+              },
+            },
+            type: 'users',
+            id: '1',
+          },
+        ],
+        included: [
+          userRoleFrom(roles.orgAdmin, { id: 2, userId: 1, orgId: 1 }),
+          userRoleFrom(roles.appBuilder, { id: 3, userId: 1, orgId: 1 }),
+          {
+            attributes: {
+              email: null,
+              'user-id': 1,
+              'organization-id': 1,
+            },
+            relationships: {
+              user: {
+                links: {
+                  self: 'http://api:7081/api/organization-memberships/1/relationships/user',
+                  related: 'http://api:7081/api/organization-memberships/1/user',
+                },
+                data: {
+                  type: 'users',
+                  id: '1',
+                },
+              },
+              organization: {
+                links: {
+                  self: 'http://api:7081/api/organization-memberships/1/relationships/organization',
+                  related: 'http://api:7081/api/organization-memberships/1/organization',
+                },
+                data: {
+                  type: 'organizations',
+                  id: '1',
+                },
+              },
+            },
+            type: 'organization-memberships',
+            id: '1',
+          },
+          {
+            attributes: {
+              name: 'SIL International',
+              'website-url': 'https://sil.org',
+              'build-engine-url': 'https://buildengine.gtis.guru:8443',
+              'build-engine-api-access-token': 'replace',
+              'logo-url': null,
+              'use-default-build-engine': false,
+              'public-by-default': true,
+            },
+            relationships: {
+              owner: {
+                links: {
+                  self: 'http://api:7081/api/organizations/1/relationships/owner',
+                  related: 'http://api:7081/api/organizations/1/owner',
+                },
+                data: {
+                  type: 'users',
+                  id: '1',
+                },
+              },
+              'organization-memberships': {
+                data: [
+                  {
+                    type: 'organization-memberships',
+                    id: '10',
+                  },
+                  {
+                    type: 'organization-memberships',
+                    id: '1',
+                  },
+                  {
+                    type: 'organization-memberships',
+                    id: '20',
+                  },
+                  {
+                    type: 'organization-memberships',
+                    id: '15',
+                  },
+                ],
+              },
+              groups: {
+                links: {
+                  self: 'http://api:7081/api/organizations/1/relationships/groups',
+                  related: 'http://api:7081/api/organizations/1/groups',
+                },
+                data: [
+                  {
+                    type: 'groups',
+                    id: '3',
+                  },
+                  {
+                    type: 'groups',
+                    id: '8',
+                  },
+                  {
+                    type: 'groups',
+                    id: '10',
+                  },
+                  {
+                    type: 'groups',
+                    id: '4',
+                  },
+                  {
+                    type: 'groups',
+                    id: '9',
+                  },
+                  {
+                    type: 'groups',
+                    id: '5',
+                  },
+                  {
+                    type: 'groups',
+                    id: '12',
+                  },
+                  {
+                    type: 'groups',
+                    id: '11',
+                  },
+                  {
+                    type: 'groups',
+                    id: '6',
+                  },
+                  {
+                    type: 'groups',
+                    id: '1',
+                  },
+                  {
+                    type: 'groups',
+                    id: '2',
+                  },
+                  {
+                    type: 'groups',
+                    id: '7',
+                  },
+                  {
+                    type: 'groups',
+                    id: '13',
+                  },
+                ],
+              },
+              'organization-product-definitions': {},
+              'organization-stores': {},
+              'user-roles': {
+                data: [
+                  {
+                    type: 'user-roles',
+                    id: '4',
+                  },
+                  {
+                    type: 'user-roles',
+                    id: '1',
+                  },
+                  {
+                    type: 'user-roles',
+                    id: '16',
+                  },
+                ],
+              },
+            },
+            type: 'organizations',
+            id: '1',
+          },
+        ],
+        meta: {
+          'total-records': 8,
+        },
+      };
+
+      this.mockGet(200, '/users', payload);
     });
 
     beforeEach(async function() {
       await visit('/users');
+
       userTable = new UserTableInteractor();
-      await when(() => {
-        expect(userTable.row().length).to.equal(1);
-      });
     });
 
     it('is in users page', () => {

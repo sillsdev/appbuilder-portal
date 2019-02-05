@@ -40,10 +40,10 @@ class NotificationInteractor {
     return this.hasNotifications && this.unreadNotificationCount > 0;
   }
 
-  get notificationCount(this: Interactor) {
+  get notificationCount() {
     return this.$$('[data-test-notification]').length;
   }
-  get unreadNotificationCount(this: Interactor) {
+  get unreadNotificationCount() {
     return this.$$('[data-test-notification].not-seen').length;
   }
 }

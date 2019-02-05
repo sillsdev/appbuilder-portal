@@ -48,8 +48,8 @@ class Products extends React.Component<IProps> {
               <div className='action d-xs-none d-md-block' />
             </div>
 
-            {products.map((product, index) => (
-              <ProductItem key={index} {...this.props} product={product} />
+            {products.map((product) => (
+              <ProductItem key={product.id} {...this.props} product={product} />
             ))}
           </>
         )}

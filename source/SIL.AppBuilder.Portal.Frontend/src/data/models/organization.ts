@@ -1,4 +1,5 @@
 import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
+import { Record } from '@orbit/data';
 
 export type ORGANIZATIONS_TYPE = 'organizations';
 export const TYPE_NAME = 'organization';
@@ -17,4 +18,5 @@ export interface OrganizationAttributes extends AttributesObject {
   logoUrl?: string;
 }
 
-export type OrganizationResource = ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
+export type OrganizationResource = ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes> &
+  Record;

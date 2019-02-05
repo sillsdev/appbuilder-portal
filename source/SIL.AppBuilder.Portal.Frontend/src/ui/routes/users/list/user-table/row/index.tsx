@@ -3,7 +3,7 @@ import * as toast from '@lib/toast';
 import { compose, withProps, mapProps } from 'recompose';
 import pick from 'lodash/pick';
 import { Link } from 'react-router-dom';
-import { Radio } from 'semantic-ui-react';
+import { Checkbox } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
 
 import {
@@ -13,6 +13,7 @@ import {
   OrganizationResource,
   attributesFor,
   idFromRecordIdentity,
+  withLoader,
 } from '@data';
 
 import { withRole } from '@data/containers/with-role';
@@ -49,7 +50,9 @@ class Row extends React.Component<IProps> {
     return this.props.t(`users.operations.${state}.${type}`);
   };
 
-  toggleLock = async () => {
+  toggleLock = async (e) => {
+    e.preventDefault();
+
     const { updateAttribute, user } = this.props;
 
     const currentLockedState = attributesFor(user).isLocked;
@@ -88,7 +91,7 @@ class Row extends React.Component<IProps> {
           <MultiGroupSelect user={user} organizations={organizations} />
         </td>
         <td>
-          <Radio data-test-toggle-lock toggle onChange={this.toggleLock} checked={isActive} />
+          <Checkbox data-test-toggle-lock toggle onClick={this.toggleLock} checked={isActive} />
         </td>
       </tr>
     );

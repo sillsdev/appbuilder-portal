@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withTemplateHelpers, Mut } from 'react-action-decorators';
+import { mutCreator, Mut } from 'react-state-helpers';
 import { tomorrow } from '@lib/date';
 import { OrganizationInviteAttributes } from '@data/models/organization-invite';
 
@@ -19,7 +19,6 @@ export interface IState {
   url?: string;
 }
 
-@withTemplateHelpers
 export default class InviteOrganizationDisplay extends React.Component<IProps, IState> {
   mut: Mut;
 
@@ -28,6 +27,7 @@ export default class InviteOrganizationDisplay extends React.Component<IProps, I
 
     const { name, orgAdminEmail, websiteUrl } = props;
 
+    this.mut = mutCreator(this);
     this.state = {
       name,
       ownerEmail: orgAdminEmail,

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { Checkbox } from 'semantic-ui-react';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { ISortProps } from '@data/containers/api/sorting';
@@ -67,7 +66,16 @@ class Header extends React.Component<IProps> {
   };
 
   render() {
-    const { allCheckboxState, showSelection } = this.props;
+    const {
+      allCheckboxState,
+      showSelection,
+      columns,
+      selectedColumns,
+      toggleColumnSelection,
+      activeProductColumns,
+      activeProjectColumns,
+      possibleColumns,
+    } = this.props;
 
     const checked = allCheckboxState === ALL_CHECKBOX_STATE.ALL;
     const indeterminate = allCheckboxState === ALL_CHECKBOX_STATE.INDETERMINATE;
@@ -89,10 +97,22 @@ class Header extends React.Component<IProps> {
               indeterminate={indeterminate}
             />
           )}
+
           {nameColumn}
+
           {this.buildHeaderTitles()}
+
           <div className='flex align-items-center p-r-md line-height-0'>
-            <ColumnSelector {...this.props} />
+            <ColumnSelector
+              {...{
+                columns,
+                selectedColumns,
+                toggleColumnSelection,
+                activeProjectColumns,
+                activeProductColumns,
+                possibleColumns,
+              }}
+            />
           </div>
         </div>
       </div>
@@ -100,4 +120,4 @@ class Header extends React.Component<IProps> {
   }
 }
 
-export default compose(withTranslations)(Header);
+export default withTranslations(Header);

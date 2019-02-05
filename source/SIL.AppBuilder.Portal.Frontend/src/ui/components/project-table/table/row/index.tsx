@@ -85,7 +85,10 @@ class Row extends React.Component<IProps> {
 
   onSelect = (row) => (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
     const { toggleRowSelection } = this.props;
+
     toggleRowSelection(row);
   };
 
@@ -94,6 +97,7 @@ class Row extends React.Component<IProps> {
     const p =
       selectedRows &&
       selectedRows.find((r) => idFromRecordIdentity(r) === idFromRecordIdentity(row));
+
     return p !== undefined;
   };
 
@@ -139,8 +143,8 @@ class Row extends React.Component<IProps> {
             <Link to={clickPath}>{projectName}</Link>
           </div>
 
-          {activeProjectColumns.map((column, i) => (
-            <div key={i} data-test-project-table-column className='col flex-100'>
+          {activeProjectColumns.map((column) => (
+            <div key={column.id} data-test-project-table-column className='col flex-100'>
               {column.value}
             </div>
           ))}

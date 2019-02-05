@@ -3,6 +3,8 @@ const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
 
+const babelConfig = require('../babelrc.config.js');
+
 function locate(path) {
   return process.cwd() + '/' + path;
 }
@@ -27,22 +29,15 @@ if (!isTesting) {
 const moduleRules = [
   {
     test: /\.(t|j)sx?$/,
-    use: [
-      {
-        loader: 'ts-loader',
-        options: {
-          transpileOnly: true,
-        },
-      },
-    ],
-    exclude: [/node_modules/, /\.cache/],
-    // include: [
-    //   // project files
-    //   locate('src'),
-    //   locate('tests'),
-    //   // packages that are bundled properly
-    //   locate('node_modules/react-orbitjs/dist')
-    // ],
+    loader: 'babel-loader',
+    options: babelConfig,
+    include: [locate('src'), locate('tests')],
+    exclude: [locate('src/public')],
+  },
+  {
+    test: /\.js$/,
+    use: ['source-map-loader'],
+    enforce: 'pre',
   },
   {
     test: /\.s?css$/,
@@ -74,6 +69,7 @@ const resolver = {
 };
 
 const plugins = [
+  // new webpack.WatchIgnorePlugin([/\.d\.ts$/]),
   new webpack.EnvironmentPlugin([
     'AUTH0_CONNECTION',
     'AUTH0_DOMAIN',

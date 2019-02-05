@@ -31,14 +31,6 @@ interface IOwnProps {
 
 type IProps = IOwnProps & WithDataProps;
 
-const mapRecordsToProps = (passedProps) => {
-  const { project } = passedProps;
-
-  return {
-    products: (q) => q.findRelatedRecords(project, 'products'),
-  };
-};
-
 export function withDataActions<T>(WrappedComponent) {
   class ProjectDataActionWrapper extends React.Component<IProps & T> {
     updateAttribute = async (attribute: string, value: any) => {
@@ -136,7 +128,13 @@ export function withDataActions<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit(mapRecordsToProps),
+    withOrbit((passedProps) => {
+      const { project } = passedProps;
+
+      return {
+        products: (q) => q.findRelatedRecords(project, 'products'),
+      };
+    }),
     requireProps('project')
   )(ProjectDataActionWrapper);
 }

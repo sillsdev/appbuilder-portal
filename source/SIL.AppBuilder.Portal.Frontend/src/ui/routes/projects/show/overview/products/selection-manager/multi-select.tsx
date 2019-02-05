@@ -13,6 +13,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { compareVia } from '@lib/collection';
 import { MultiSelect } from '@ui/components/inputs/multi-select';
 import { withRelationships } from '@data/containers/with-relationship';
+import { withOrbit } from 'react-orbitjs';
 
 interface INeededProps {
   organization: OrganizationResource;
@@ -36,12 +37,12 @@ type IProps = INeededProps & i18nProps & IComposedProps;
 
 export default compose<IProps, INeededProps>(
   withTranslations,
+  withOrbit(),
   withRelationships(({ organization }: INeededProps) => {
     return {
       list: [organization, 'organizationProductDefinitions', 'productDefinition'],
     };
   }),
-  withLoader(({ list }) => !list),
   withProps(({ t, list }: IProps) => {
     return {
       selectedItemJoinsWith: 'productDefinition',

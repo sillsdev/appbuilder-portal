@@ -63,6 +63,7 @@ let config = {
   ],
   optimization: {
     runtimeChunk: 'single',
+    sideEffects: false,
     splitChunks: {
       chunks: 'all',
     }
@@ -71,7 +72,7 @@ let config = {
 
 if (isDevelopment) {
   config.plugins = config.plugins.concat([
-    new ForkTsCheckerWebpackPlugin(),
+    // new ForkTsCheckerWebpackPlugin(),
     // new BundleAnalyzerPlugin(),
     new webpack.HotModuleReplacementPlugin({
       // Options...
@@ -86,6 +87,7 @@ if (isDevelopment) {
     hot: true,
     historyApiFallback: true,
     // hotOnly: true,
+    disableHostCheck: true,
     inline: true,
     overlay: true,
     progress: true,

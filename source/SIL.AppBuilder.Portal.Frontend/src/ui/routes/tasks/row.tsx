@@ -16,7 +16,10 @@ import {
   ProjectResource,
   ProductDefinitionResource,
   UserResource,
+  withLoader,
 } from '@data';
+
+import productDefinitionSelect from '~/ui/components/inputs/product-definition-select';
 
 export interface IOwnProps {
   product: ProductResource;

@@ -19,8 +19,8 @@ export class FormInteractor {
   fillLocalization = fillable('[data-test-profile-localization]');
   fillPublishingKey = fillable('[data-test-profile-publishing-key]');
 
-  clickEmailNotification = clickable('[data-test-profile-email-notification]');
-  clickProfileVisibility = clickable('[data-test-profile-visible-profile]');
+  clickEmailNotification = clickable('[data-test-profile-email-notification] input');
+  clickProfileVisibility = clickable('[data-test-profile-visible-profile] input');
   clickSubmit = clickable('[data-test-profile-submit]');
 
   firstname = value('[data-test-profile-firstname]');

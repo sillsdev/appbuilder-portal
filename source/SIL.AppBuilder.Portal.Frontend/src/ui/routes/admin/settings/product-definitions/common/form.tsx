@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Checkbox, Dropdown } from 'semantic-ui-react';
-import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
 import { ProductDefinitionAttributes } from '@data/models/product-definition';
+import { mutCreator, toggleCreator, Toggle, Mut } from 'react-state-helpers';
 
 import {
   query,
@@ -36,7 +36,6 @@ interface IState {
 
 type IProps = i18nProps & IOwnProps;
 
-@withTemplateHelpers
 class ProductDefinitionForm extends React.Component<IProps, IState> {
   mut: Mut;
   toggle: Toggle;
@@ -47,6 +46,9 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
     const { productDefinition, type, workflow } = props;
 
     const { name, description } = attributesFor(productDefinition);
+
+    this.mut = mutCreator(this);
+    this.toggle = toggleCreator(this);
 
     this.state = {
       name: (name as string) || '',
@@ -159,7 +161,11 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                       const { name: fullName } = attributesFor(tp);
 
                       return (
-                        <Dropdown.Item key={i} text={fullName} onClick={this.typeSelection(tp)} />
+                        <Dropdown.Item
+                          key={tp.id}
+                          text={fullName}
+                          onClick={this.typeSelection(tp)}
+                        />
                       );
                     })}
                   </Dropdown.Menu>
@@ -182,7 +188,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
 
                       return (
                         <Dropdown.Item
-                          key={i}
+                          key={w.id}
                           text={fullName}
                           onClick={this.workflowSelection(w)}
                         />

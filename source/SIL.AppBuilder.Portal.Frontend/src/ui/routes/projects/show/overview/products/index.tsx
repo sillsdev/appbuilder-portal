@@ -48,7 +48,7 @@ class Products extends React.Component<IProps> {
         </div>
       );
     } else {
-      productList = products.map((product, i) => <ProductItem key={i} product={product} />);
+      productList = products.map((product) => <ProductItem key={product.id} product={product} />);
     }
 
     return (

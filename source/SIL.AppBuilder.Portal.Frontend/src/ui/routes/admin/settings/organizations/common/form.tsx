@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Checkbox, Dropdown } from 'semantic-ui-react';
-import { withTemplateHelpers, Mut, Toggle } from 'react-action-decorators';
+import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
@@ -37,7 +37,6 @@ interface IState {
 
 type IProps = i18nProps & IOwnProps;
 
-@withTemplateHelpers
 class OrganizationForm extends React.Component<IProps, IState> {
   mut: Mut;
   toggle: Toggle;
@@ -55,6 +54,9 @@ class OrganizationForm extends React.Component<IProps, IState> {
       buildEngineApiAccessToken,
       publicByDefault,
     } = attributesFor(organization);
+
+    this.mut = mutCreator(this);
+    this.toggle = toggleCreator(this);
 
     this.state = {
       name: name || '',
@@ -166,11 +168,15 @@ class OrganizationForm extends React.Component<IProps, IState> {
                   text={ownerName}
                 >
                   <Dropdown.Menu>
-                    {users.map((u, i) => {
+                    {users.map((u) => {
                       const { name: fullName } = attributesFor(u);
 
                       return (
-                        <Dropdown.Item key={i} text={fullName} onClick={this.ownerSelection(u)} />
+                        <Dropdown.Item
+                          key={u.id}
+                          text={fullName}
+                          onClick={this.ownerSelection(u)}
+                        />
                       );
                     })}
                   </Dropdown.Menu>

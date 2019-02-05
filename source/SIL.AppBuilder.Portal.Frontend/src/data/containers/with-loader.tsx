@@ -2,7 +2,7 @@ import * as React from 'react';
 import { PageLoader, RectLoader } from '@ui/components/loaders';
 
 interface IOptions {
-  wrapWith?: React.ComponentClass;
+  wrapWith?: React.ComponentType;
   forPage?: boolean;
 }
 

@@ -44,13 +44,14 @@ class MultiGroupSelect extends React.Component<IProps> {
     return (
       <>
         <Dropdown
+          simple
           data-test-group-multi-select
           multiple
           trigger={groupList}
           className='w-100 multiDropdown'
         >
           <Dropdown.Menu className='groups' data-test-group-menu>
-            {organizations.map((organization, index) => {
+            {organizations.map((organization) => {
               const { name } = attributesFor(organization);
 
               const groupCheckboxesProps = {
@@ -59,7 +60,7 @@ class MultiGroupSelect extends React.Component<IProps> {
               };
 
               return (
-                <React.Fragment key={index}>
+                <React.Fragment key={organization.id}>
                   <Dropdown.Header data-test-group-multi-organization-name content={name} />
                   <GroupSelect {...groupCheckboxesProps} />
                 </React.Fragment>

@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { withData, WithDataProps } from 'react-orbitjs';
+import { withData, ILegacyProvidedProps } from 'react-orbitjs';
 import { withRouter, RouterProps } from 'react-router';
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import * as toast from '@lib/toast';
 import { OrganizationAttributes, TYPE_NAME } from '@data/models/organization';
 
 import Display from './display';
 
+import { withTranslations, i18nProps } from '~/lib/i18n';
+
 export interface IOwnProps {
   token: string;
 }
-export type IProps = IOwnProps & WithDataProps & RouterProps & i18nProps;
+export type IProps = IOwnProps & ILegacyProvidedProps & RouterProps & i18nProps;
 
 export interface IState {
   error: any;
@@ -34,11 +35,11 @@ export class CreateOrganizationForm extends React.Component<IProps, IState> {
   };
 
   create = async (payload: OrganizationAttributes) => {
-    const { updateStore, token } = this.props;
+    const { dataStore, token } = this.props;
 
     const { name, websiteUrl } = payload;
 
-    return await updateStore((t) =>
+    return await dataStore.update((t) =>
       t.addRecord({
         type: TYPE_NAME,
         attributes: { name, websiteUrl, token },
@@ -57,5 +58,5 @@ export class CreateOrganizationForm extends React.Component<IProps, IState> {
 export default compose<{}, IOwnProps>(
   withRouter,
   withData({}),
-  translate('translations')
+  withTranslations
 )(CreateOrganizationForm);

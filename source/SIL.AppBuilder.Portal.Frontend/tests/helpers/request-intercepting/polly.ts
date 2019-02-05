@@ -3,8 +3,9 @@ import * as XHRAdapter from '@pollyjs/adapter-xhr';
 import * as FetchAdapter from '@pollyjs/adapter-fetch';
 import Orbit from '@orbit/data';
 
-import { mockGet, mockPatch, mockPost, mockDelete } from './requests';
+import { roles } from '../fixtures';
 
+import { mockGet, mockPatch, mockPost, mockDelete } from './requests';
 /*
   Register the adapters and persisters we want to use. This way all future
   polly instances can access them by name.
@@ -131,36 +132,7 @@ const setup = function(config) {
   this.mockGet(200, '/notifications', { data: [] });
 
   this.mockGet(200, '/roles', {
-    data: [
-      {
-        attributes: { 'role-name': 'SuperAdmin' },
-        relationships: {
-          'user-roles': {},
-        },
-        type: 'roles',
-        id: '1',
-      },
-      {
-        attributes: {
-          'role-name': 'OrganizationAdmin',
-        },
-        relationships: {
-          'user-roles': {},
-        },
-        type: 'roles',
-        id: '2',
-      },
-      {
-        attributes: {
-          'role-name': 'AppBuilder',
-        },
-        relationships: {
-          'user-roles': {},
-        },
-        type: 'roles',
-        id: '3',
-      },
-    ],
+    data: [roles.superAdmin, roles.orgAdmin, roles.appBuilder],
     meta: { 'total-records': 3 },
   });
 

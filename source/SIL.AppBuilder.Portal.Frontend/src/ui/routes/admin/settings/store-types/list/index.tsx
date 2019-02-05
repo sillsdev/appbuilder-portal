@@ -34,8 +34,8 @@ class ListStoreType extends React.Component<IProps> {
           <button className='ui button tertiary uppercase large m-b-lg' onClick={this.showAddForm}>
             {t('admin.settings.storeTypes.add')}
           </button>
-          {storeTypes.map((storeType, i) => (
-            <StoreTypeItem key={i} storeType={storeType} />
+          {storeTypes.map((storeType) => (
+            <StoreTypeItem key={storeType.id} storeType={storeType} />
           ))}
         </div>
       </>

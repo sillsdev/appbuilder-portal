@@ -22,7 +22,7 @@ interface INeededProps {
 
 interface IOwnProps {}
 
-type IProps = IOwnProps & i18nProps & IUserRoleProps;
+type IProps = IOwnProps & i18nProps & IUserRoleProps & INeededProps;
 
 export default compose<IProps, INeededProps>(
   withTranslations,
@@ -37,14 +37,14 @@ export default compose<IProps, INeededProps>(
     };
   }),
   withUserRoles
-)(({ user, roles, userHasRole, organization, t }) => {
+)(({ roles, userHasRole, t }: IProps) => {
   const activeRoles = roles
     .filter((role) => userHasRole(role))
     .sort(compareVia((r) => attributesFor(r).roleName));
 
   if (activeRoles.length === 0) {
-    return t('users.noRoles');
+    return <span>{t('users.noRoles')}</span>;
   }
 
-  return activeRoles.map((role) => attributesFor(role).roleName).join(', ');
+  return <span>{activeRoles.map((role) => attributesFor(role).roleName).join(', ')}</span>;
 });

@@ -53,8 +53,16 @@ function runstuff {
     bash)     ${COMPOSE} run --rm $arguments bash;;
     restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
 
-    db:update) ${COMPOSE} exec api bash -c "dotnet ef database update --msbuildprojectextensionspath /app/out/OptimaJet.DWKit.StarterApplication/obj/ ${arguments}";;
-    db:migrations) ${COMPOSE} exec api bash -c "dotnet ef migrations  --msbuildprojectextensionspath /app/out/OptimaJet.DWKit.StarterApplication/obj/ ${arguments}";;
+    api:ef)
+      ${COMPOSE} exec api bash -c "\
+        dotnet ef ${arguments} \
+          --startup-project /app/OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
+          --project /app/OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
+          --msbuildprojectextensionspath /app/out/OptimaJet.DWKit.StarterApplication/obj/ \
+        ";;
+
+    db:update)     runstuff api:ef database update ${arguments};;
+    db:migrations) runstuff api:ef migrations ${arguments};;
 
     bootstrap)
       runstuff bootstrap:dwkit
@@ -110,7 +118,7 @@ function runstuff {
       ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/sample_data.sql" \
         && echo "DB setup with sample data"
     ;;
-    
+
     bootstrap:orgs)
       echo "Adding sample data..."
 

@@ -1,5 +1,3 @@
-export { default as DataProvider } from './provider';
-
 export { defaultSourceOptions, defaultOptions } from './store';
 export {
   create,
@@ -32,7 +30,7 @@ export { withLoader } from './containers/with-loader';
 export { withError } from './containers/with-error';
 export { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/with-logout';
 
-export { queryApi as query } from './query';
+export { query } from 'react-orbitjs';
 
 export { pushPayload } from './push-payload';
 export { PUSH_PAYLOAD_OPERATION } from './push-payload-operations';

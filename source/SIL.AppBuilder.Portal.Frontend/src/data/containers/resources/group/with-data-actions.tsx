@@ -10,6 +10,8 @@ import { requireProps } from '@lib/debug';
 
 import { OrganizationResource } from '@data';
 
+import { QueryBuilder, TransformBuilder } from '@orbit/data';
+
 export interface IProvidedProps {
   createRecord: (attrs: GroupAttributes) => any;
   removeRecord: (group: GroupResource) => any;
@@ -58,15 +60,16 @@ export function withDataActions(InnerComponent) {
       const { updateStore } = this.props;
       const { id, type } = group;
 
-      return updateStore(
-        (q) =>
-          q.replaceRecord({
-            id,
-            type,
-            attributes,
-          }),
-        defaultOptions()
-      );
+      return updateStore((t: TransformBuilder) => {
+        return t.replaceRecord({
+          id,
+          type,
+          attributes: {
+            ...(group.attributes || {}),
+            ...attributes,
+          },
+        });
+      }, defaultOptions());
     };
 
     render() {

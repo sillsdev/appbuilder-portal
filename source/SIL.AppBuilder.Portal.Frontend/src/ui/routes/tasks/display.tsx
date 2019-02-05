@@ -32,7 +32,7 @@ export default class Display extends React.Component<IProps> {
             </tr>
           </thead>
           <tbody>
-            {userTasks && userTasks.map((task, i) => <Row key={i} userTask={task} />)}
+            {userTasks && userTasks.map((task) => <Row key={task.id} userTask={task} />)}
 
             {isEmpty(userTasks) && (
               <tr>

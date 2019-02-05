@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
-
-import { DataProvider } from '@data';
-
+import { APIProvider, strategies } from 'react-orbitjs';
 import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
+import { baseUrl } from '@data/store';
 
 import { ReduxProvider } from '@store';
 
@@ -18,8 +17,11 @@ import { RouteListener } from './components/route-listener';
 import DebugInfo from './components/debug-info';
 import RootRoute from './routes/root';
 
+import { schema, keyMap } from '~/data/schema';
+
 interface IProps {
   initialState: any;
+  entryComponent?: React.ComponentType;
   history: any;
 }
 
@@ -32,9 +34,10 @@ export default class Application extends React.Component<IProps> {
   //         the withCurrentUser HOC) will need to have some sort of loading while
   //         the current user is fetched
   render() {
-    const { initialState, history } = this.props;
+    const { initialState, history, entryComponent } = this.props;
 
     const Router = history ? GenericRouter : BrowserRouter;
+    const Component = entryComponent ? entryComponent : RootRoute;
     const routerProps = {};
 
     if (history) {
@@ -43,7 +46,11 @@ export default class Application extends React.Component<IProps> {
 
     return (
       <I18nextProvider i18n={i18n}>
-        <DataProvider>
+        <APIProvider
+          storeCreator={() =>
+            strategies.pessimisticWithRemoteIds.createStore(baseUrl, schema, keyMap)
+          }
+        >
           <CurrentUserProvider>
             <SocketManager>
               <ReduxProvider initialState={initialState || {}}>
@@ -51,7 +58,7 @@ export default class Application extends React.Component<IProps> {
                   <>
                     <RouteListener />
                     <ScrollToTop>
-                      <RootRoute />
+                      <Component />
                     </ScrollToTop>
                     <DebugInfo />
                   </>
@@ -59,7 +66,7 @@ export default class Application extends React.Component<IProps> {
               </ReduxProvider>
             </SocketManager>
           </CurrentUserProvider>
-        </DataProvider>
+        </APIProvider>
       </I18nextProvider>
     );
   }

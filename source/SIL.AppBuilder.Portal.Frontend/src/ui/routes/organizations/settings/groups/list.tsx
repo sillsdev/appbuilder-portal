@@ -49,7 +49,7 @@ class List extends React.Component<IProps> {
       <div className='m-t-lg'>
         {groups.map((group, index) => (
           <div
-            key={index}
+            key={group.id}
             className='
                 flex align-items-center
                 justify-content-space-between

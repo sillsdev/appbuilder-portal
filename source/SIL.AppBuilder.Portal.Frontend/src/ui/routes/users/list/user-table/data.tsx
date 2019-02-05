@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
 import { i18nProps } from '@lib/i18n';
 import { withNetwork as withUserList } from '@data/containers/resources/user/list';
 import { TYPE_NAME as GROUP } from '@data/models/group';
@@ -29,7 +29,7 @@ interface IOwnProps {
   organizationMemberships: OrganizationMembershipResource[];
 }
 
-export type IProps = IOwnProps & i18nProps & IActionProps & WithDataProps;
+export type IProps = IOwnProps & i18nProps & IActionProps & ILegacyProvidedProps;
 
 export function withData(WrappedComponent) {
   class DataWrapper extends React.Component<IProps> {
@@ -87,8 +87,8 @@ export function withData(WrappedComponent) {
     // TODO: what would putting this on each row do?
     withOrbit({
       organizationMemberships: (q) => q.findRecords('organizationMembership'),
-      groups: (q) => q.findRecords(GROUP),
-      roles: (q) => q.findRecords(ROLE),
+      groups: (q) => q.findRecords('group'),
+      roles: (q) => q.findRecords('role'),
     })
   )(DataWrapper);
 }

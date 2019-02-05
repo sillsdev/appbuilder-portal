@@ -5,12 +5,13 @@ import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filter
 import { ICurrentUserProps } from '@data/containers/with-current-user';
 import { IRolesProps } from '@data/containers/resources/role';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
-import UserTable from '@ui/components/user-table/table';
-import { IProps as IUserDataProps } from '@ui/components/user-table/data';
 import { LoadingWrapper } from '@ui/components/loading-wrapper';
 
 import AddUser from './add';
 import InviteUser from './invitations';
+import UserTable from './user-table/table';
+import { IProps as IUserDataProps } from './user-table/data';
+
 interface IOwnProps {
   allOrgsSelected: boolean;
 }

@@ -74,8 +74,8 @@ class LoginRoute extends React.Component<RouterProps & i18nProps> {
 }
 
 export default compose(
+  withTranslations,
   withRouter,
   requireNoAuth('/'),
-  withTranslations,
   withCurrentUserContext
 )(LoginRoute);

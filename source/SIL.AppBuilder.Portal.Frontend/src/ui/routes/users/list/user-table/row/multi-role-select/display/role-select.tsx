@@ -41,7 +41,7 @@ class RoleSelect extends React.Component<IProps> {
 
     return (
       <>
-        {sorted.map((role, i) => {
+        {sorted.map((role) => {
           const attributes = attributesFor(role);
 
           if (attributes.roleName === ROLE.SuperAdmin) {
@@ -49,7 +49,7 @@ class RoleSelect extends React.Component<IProps> {
           }
 
           return (
-            <Form.Field key={i} className='item flex-row align-items-center m-b-sm'>
+            <Form.Field key={role.id} className='item flex-row align-items-center m-b-sm'>
               <Checkbox
                 data-test-role-select
                 toggle

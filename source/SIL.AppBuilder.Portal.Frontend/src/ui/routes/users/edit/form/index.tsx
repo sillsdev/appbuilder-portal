@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Checkbox } from 'semantic-ui-react';
+import { Radio } from 'semantic-ui-react';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import TimezonePicker from 'react-timezone';
-import { withTemplateHelpers, Mut, ToggleHelper } from 'react-action-decorators';
 import { UserResource } from '@data/models/user';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
 
 export interface IProps {
   user: UserResource;
@@ -26,10 +26,13 @@ export interface IState {
 const PUBLIC_PROFILE = 1;
 const PRIVATE_PROFILE = 0;
 
-@withTemplateHelpers
+function visibilityIsSet(value) {
+  return value === PUBLIC_PROFILE || value === PRIVATE_PROFILE;
+}
+
 class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
   mut: Mut;
-  toggle: ToggleHelper;
+  toggle: Toggle;
   timezoneInput: any;
 
   constructor(props) {
@@ -40,11 +43,25 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     this.state = {
       ...userAttributes,
     };
+
+    this.mut = mutCreator(this);
+    this.toggle = toggleCreator(this);
   }
+
+  changeProfileVisibility = () => {
+    const { profileVisibility } = this.state;
+    const nextValue = profileVisibility === PUBLIC_PROFILE ? PRIVATE_PROFILE : PUBLIC_PROFILE;
+
+    this.setState({ profileVisibility: nextValue });
+  };
 
   submit = async (e) => {
     e.preventDefault();
-    const profileVisibility = this.state.profileVisibility ? PUBLIC_PROFILE : PRIVATE_PROFILE;
+
+    // default to public if not set
+    const profileVisibility = !visibilityIsSet(this.state.profileVisibility)
+      ? PUBLIC_PROFILE
+      : PRIVATE_PROFILE;
     await this.props.onSubmit({ ...this.state, profileVisibility });
   };
 
@@ -126,11 +143,11 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
         <h2 className='fs-21 bold gray-text m-b-lg'>{t('profile.notificationSettingsTitle')}</h2>
         <div className='field flex align-items-center'>
           <span className='fs-16 m-r-md bold gray-text'>{t('profile.optOutOfEmailOption')}</span>
-          <Checkbox
+          <Radio
             data-test-profile-email-notification
             toggle
-            defaultChecked={emailNotification}
-            onChange={toggle('emailNotification')}
+            checked={emailNotification}
+            onClick={toggle('emailNotification')}
           />
         </div>
         <div className='ui divider m-t-xl m-b-xl' />
@@ -139,11 +156,11 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
           <span data-test-profile-visible-text className='fs-16 m-r-md bold gray-text'>
             {t('profile.visibility.visible')}
           </span>
-          <Checkbox
+          <Radio
             data-test-profile-visible-profile
             toggle
-            defaultChecked={profileVisibility === PUBLIC_PROFILE}
-            onChange={toggle('profileVisibility')}
+            checked={profileVisibility === PUBLIC_PROFILE}
+            onClick={this.changeProfileVisibility}
           />
         </div>
         <div className='ui divider m-t-xl m-b-xl' />

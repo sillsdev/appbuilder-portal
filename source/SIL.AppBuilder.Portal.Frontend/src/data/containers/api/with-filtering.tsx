@@ -149,6 +149,7 @@ export function withFiltering<TPassedProps>(opts: FnOrObject<TPassedProps, IFilt
         return builder.filter(...withMetaRemoved);
       };
 
+      // map remote filter options to local orbitjs filters
       _filterOperationMap(filter: IFilter): IFilter {
         const attribute = camelize(filter.attribute);
 
