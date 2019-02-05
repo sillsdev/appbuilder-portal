@@ -99,7 +99,7 @@
     "@bigtest/react": "^0.1.1",
     "@pollyjs/adapter-fetch": "^1.0.0",
     "@pollyjs/adapter-xhr": "^2.0.0",
-    "@pollyjs/cli": "^1.0.0",
+    "@pollyjs/cli": "^2.0.0",
     "@pollyjs/core": "^1.0.0",
     "@pollyjs/persister-rest": "^1.0.0",
     "@types/auth0-js": "^8.11.2",
