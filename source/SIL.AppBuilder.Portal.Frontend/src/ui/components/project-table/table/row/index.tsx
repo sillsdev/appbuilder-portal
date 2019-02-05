@@ -137,7 +137,7 @@ class Row extends React.Component<IProps> {
                 data-test-selector
                 className='m-r-sm'
                 onClick={this.onSelect(project)}
-                defaultChecked={this.inRowSelection(project)}
+                checked={this.inRowSelection(project)}
               />
             )}
             <Link to={clickPath}>{projectName}</Link>

@@ -153,13 +153,6 @@ export function withFiltering<TPassedProps>(opts: FnOrObject<TPassedProps, IFilt
       _filterOperationMap(filter: IFilter): IFilter {
         const attribute = camelize(filter.attribute);
 
-        // if (filter.attribute === 'organization-id') {
-        //   filter = {
-        //     relation: 'organization',
-        //     record: { type: 'organization', id: filter.value }
-        //   };
-        // }
-
         switch (filter.value) {
           // TODO: need a mapping for dates, as Date.toString() is not
           //       in an iso format.

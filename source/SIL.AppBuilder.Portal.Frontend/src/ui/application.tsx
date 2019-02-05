@@ -1,22 +1,23 @@
 import * as React from 'react';
 import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
-import { APIProvider } from 'react-orbitjs';
+import { APIProvider, strategies } from 'react-orbitjs';
 import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
-import { createStore as createAPIStrategy } from '@data/store';
+import { baseUrl } from '@data/store';
 
 import { ReduxProvider } from '@store';
 
 import { SocketManager } from '@sockets';
 
 import { ScrollToTop } from '@lib/routing';
-import { Portal } from 'semantic-ui-react';
 
 import i18n from '../translations';
 
 import { RouteListener } from './components/route-listener';
 import DebugInfo from './components/debug-info';
 import RootRoute from './routes/root';
+
+import { schema, keyMap } from '~/data/schema';
 
 interface IProps {
   initialState: any;
@@ -45,7 +46,11 @@ export default class Application extends React.Component<IProps> {
 
     return (
       <I18nextProvider i18n={i18n}>
-        <APIProvider storeCreator={createAPIStrategy}>
+        <APIProvider
+          storeCreator={() =>
+            strategies.pessimisticWithRemoteIds.createStore(baseUrl, schema, keyMap)
+          }
+        >
           <CurrentUserProvider>
             <SocketManager>
               <ReduxProvider initialState={initialState || {}}>
