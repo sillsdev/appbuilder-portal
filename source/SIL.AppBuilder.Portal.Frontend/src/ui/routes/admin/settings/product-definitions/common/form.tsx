@@ -161,7 +161,11 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                       const { name: fullName } = attributesFor(tp);
 
                       return (
-                        <Dropdown.Item key={i} text={fullName} onClick={this.typeSelection(tp)} />
+                        <Dropdown.Item
+                          key={tp.id}
+                          text={fullName}
+                          onClick={this.typeSelection(tp)}
+                        />
                       );
                     })}
                   </Dropdown.Menu>
@@ -184,7 +188,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
 
                       return (
                         <Dropdown.Item
-                          key={i}
+                          key={w.id}
                           text={fullName}
                           onClick={this.workflowSelection(w)}
                         />

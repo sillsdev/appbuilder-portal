@@ -34,8 +34,8 @@ class ListOrganization extends React.Component<IProps> {
           <button className='ui button tertiary uppercase large m-b-lg' onClick={this.showAddForm}>
             {t('admin.settings.organizations.add')}
           </button>
-          {organizations.map((organization, i) => (
-            <OrganizationItem key={i} organization={organization} />
+          {organizations.map((organization) => (
+            <OrganizationItem key={organization.id} organization={organization} />
           ))}
         </div>
       </>

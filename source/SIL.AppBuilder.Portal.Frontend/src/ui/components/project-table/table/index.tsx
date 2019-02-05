@@ -53,20 +53,23 @@ class Table extends React.Component<IProps> {
       projectList = (
         <>
           <Header {...this.props} />
-          {projects.map((project, index) => {
-            const rowProps = {
-              project,
-              selectedColumns,
-              activeProjectColumns,
-              activeProductColumns,
-              projectPath,
-              selectedRows,
-              toggleRowSelection,
-              showSelection,
-              showProjectActions,
-            };
-
-            return <Row key={index} {...rowProps} />;
+          {projects.map((project) => {
+            return (
+              <Row
+                key={project.id}
+                {...{
+                  project,
+                  selectedColumns,
+                  activeProjectColumns,
+                  activeProductColumns,
+                  projectPath,
+                  selectedRows,
+                  toggleRowSelection,
+                  showSelection,
+                  showProjectActions,
+                }}
+              />
+            );
           })}
         </>
       );

@@ -50,7 +50,7 @@ class Reviewers extends React.Component<IProps> {
         {isAddFormVisible && <AddReviewerForm project={project} />}
         <div className='list'>
           {reviewers &&
-            reviewers.map((reviewer, index) => <ReviewerItem key={index} reviewer={reviewer} />)}
+            reviewers.map((reviewer) => <ReviewerItem key={reviewer.id} reviewer={reviewer} />)}
         </div>
       </div>
     );

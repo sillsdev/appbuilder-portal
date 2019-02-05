@@ -159,12 +159,12 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
                   text={storeTypeName}
                 >
                   <Dropdown.Menu>
-                    {storeTypes.map((s, i) => {
+                    {storeTypes.map((s) => {
                       const { name: typeName } = attributesFor(s);
 
                       return (
                         <Dropdown.Item
-                          key={i}
+                          key={s.id}
                           text={typeName}
                           onClick={this.storeTypeSelection(s)}
                         />

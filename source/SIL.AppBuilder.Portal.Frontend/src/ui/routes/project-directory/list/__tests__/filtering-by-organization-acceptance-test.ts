@@ -79,9 +79,10 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
 
       beforeEach(async function() {
         requestCount = 0;
-
+        await when(() => page.table.rows().length === 3);
         await page.orgSelect.choose('DeveloperTown');
         await when(() => !page.isLoading);
+        await when(() => page.table.rows().length === 2);
 
         rows = page.table.rows();
       });
@@ -97,7 +98,6 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       it('shows the relevant projects', () => {
         const text = rows.map((r) => r.text).join();
 
-        expect(rows.length).to.equal(2);
         expect(text).to.include('Dummy project');
         expect(text).to.include('project 3');
       });

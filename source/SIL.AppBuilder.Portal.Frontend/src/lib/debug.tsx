@@ -8,6 +8,13 @@ export function withDebugger(InnerComponent) {
   };
 }
 
+export function inspectProps(fn = console.log.bind(null, 'inspecting: ')) {
+  return (InnerComponent) => (props) => {
+    fn(props);
+    return <InnerComponent {...props} />;
+  };
+}
+
 export const logProps = (label: string) => (WrappedComponent) => {
   return (props) => {
     console.log('DEBUG: ', label, props);

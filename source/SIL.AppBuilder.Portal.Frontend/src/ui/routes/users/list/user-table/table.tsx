@@ -34,8 +34,8 @@ export default class Table extends React.Component<IProps> {
         <Header />
         <tbody>
           {users &&
-            users.map((user, index) => (
-              <Row key={index} currentUser={currentUser} user={user} roles={roles} />
+            users.map((user) => (
+              <Row key={user.id} currentUser={currentUser} user={user} roles={roles} />
             ))}
 
           {isEmpty(users) && (

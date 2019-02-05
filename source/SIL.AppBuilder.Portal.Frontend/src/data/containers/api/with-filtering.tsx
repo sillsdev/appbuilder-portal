@@ -149,8 +149,16 @@ export function withFiltering<TPassedProps>(opts: FnOrObject<TPassedProps, IFilt
         return builder.filter(...withMetaRemoved);
       };
 
+      // map remote filter options to local orbitjs filters
       _filterOperationMap(filter: IFilter): IFilter {
         const attribute = camelize(filter.attribute);
+
+        // if (filter.attribute === 'organization-id') {
+        //   filter = {
+        //     relation: 'organization',
+        //     record: { type: 'organization', id: filter.value }
+        //   };
+        // }
 
         switch (filter.value) {
           // TODO: need a mapping for dates, as Date.toString() is not

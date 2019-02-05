@@ -38,11 +38,11 @@ class GroupSelect extends React.Component<IProps> {
       return [];
     }
 
-    return groups.map((group, index) => {
+    return groups.map((group) => {
       const { name } = attributesFor(group);
 
       return (
-        <div key={index} className='item' onClick={this.toggleGroup(group)}>
+        <div key={group.id} className='item' onClick={this.toggleGroup(group)}>
           <Checkbox
             data-test-multi-group-checkbox
             toggle

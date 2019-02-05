@@ -61,22 +61,6 @@ export default class DirectoryDisplay extends React.Component<IProps> {
     const numProjects = projects && projects.length;
     /* TODO: figure out how to disable certain pagination buttons */
 
-    const tableProps = {
-      projects,
-      isLoading,
-      toggleSort,
-      isAscending,
-      sortProperty,
-      columns,
-      selectedColumns,
-      toggleColumnSelection,
-      activeProductColumns,
-      activeProjectColumns,
-      possibleColumns,
-      projectPath: (id) => `/directory/${id}`,
-      showProjectActions: false,
-    };
-
     return (
       <div data-test-project-directory className='ui container'>
         <div className='flex-row justify-content-space-between align-items-center'>
@@ -103,7 +87,23 @@ export default class DirectoryDisplay extends React.Component<IProps> {
         {error && <ErrorMessage error={error} />}
         {!error && (
           <>
-            <Table {...tableProps} />
+            <Table
+              {...{
+                projects,
+                isLoading,
+                toggleSort,
+                isAscending,
+                sortProperty,
+                columns,
+                selectedColumns,
+                toggleColumnSelection,
+                activeProductColumns,
+                activeProjectColumns,
+                possibleColumns,
+                projectPath: (id) => `/directory/${id}`,
+                showProjectActions: false,
+              }}
+            />
 
             {
               <div className='flex-row justify-content-end'>

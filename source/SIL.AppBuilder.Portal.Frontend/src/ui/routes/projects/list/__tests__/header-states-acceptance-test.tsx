@@ -53,6 +53,7 @@ describe('Acceptance | Projects | Bulk Action Permissions', () => {
     this.mockGet(200, 'product-definitions', { data: [] });
     this.mockGet(200, 'projects', projectsResponse);
   });
+
   context('when I am an org admin', () => {
     useFakeAuthentication({
       data: {
@@ -108,7 +109,7 @@ describe('Acceptance | Projects | Bulk Action Permissions', () => {
         expect(rows[1].isSelected).to.equal(false);
       });
 
-      context('when I select projects that I own and do not own', () => {
+      context('when I select all projects (including those that I do not own)', () => {
         beforeEach(async () => {
           const table = new ProjectTableInteractor('[data-test-project-table]');
 

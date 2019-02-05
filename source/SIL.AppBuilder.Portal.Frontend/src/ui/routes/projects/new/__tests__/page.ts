@@ -12,7 +12,7 @@ export class CreateProjectInteractor {
 
   fillName = fillable('[data-test-name]');
   fillLanguage = fillable('[data-test-language]');
-  toggleVisibility = clickable('[data-test-visibility]');
+  toggleVisibility = clickable('[data-test-visibility] input');
 
   isVisibilityChecked = isPresent('[data-test-visibility].checked');
 

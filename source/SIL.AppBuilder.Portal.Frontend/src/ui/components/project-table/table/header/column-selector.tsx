@@ -28,12 +28,12 @@ class ColumnSelector extends React.Component<IColumnProps & i18nProps> {
         icon={<TriggerIcon style={{ transform: 'rotate(-90deg)' }} />}
       >
         <Dropdown.Menu className='columns'>
-          {columns.map((column: COLUMN_KEY, index) => {
+          {columns.map((column: COLUMN_KEY) => {
             const columnData = possibleColumns[column];
 
             return (
               <Checkbox
-                key={index}
+                key={column}
                 className='w-100 item'
                 data-test-project-table-columns-selector-item
                 label={t(columnData.i18nKey)}

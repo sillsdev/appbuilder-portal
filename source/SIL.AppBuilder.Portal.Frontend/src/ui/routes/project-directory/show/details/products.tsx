@@ -21,7 +21,7 @@ class Products extends React.Component {
     return (
       <div data-test-products>
         {products.map((product, i) => {
-          return <ProductArtifact key={i} product={product} />;
+          return <ProductArtifact key={product.id} product={product} />;
         })}
       </div>
     );

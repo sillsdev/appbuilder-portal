@@ -313,7 +313,23 @@ describe('Acceptance | User List | Role Management', () => {
       const payload = {
         data: [
           {
-            ...this.currentUser,
+            attributes: {
+              name: 'Chris Hubbard',
+              'given-name': 'Chris',
+              'family-name': 'Hubbard',
+              email: 'chris_hubbard@sil.org',
+              phone: null,
+              timezone: null,
+              locale: null,
+              'is-locked': false,
+              auth0Id: 'google-oauth2|116747902156680384840',
+              'profile-visibility': 1,
+              'email-notification': true,
+              'publishing-key': null,
+              'workflow-user-id': '75dcb91c-0ec5-4711-b7a7-fcfd90dc8983',
+              'date-created': null,
+              'date-updated': '2019-02-04T19:10:02.63153',
+            },
             relationships: {
               'organization-memberships': {
                 data: [
@@ -323,74 +339,17 @@ describe('Acceptance | User List | Role Management', () => {
                   },
                 ],
               },
-              'group-memberships': { data: [] },
               'user-roles': {
-                data: [
-                  {
-                    type: 'user-roles',
-                    id: '10',
-                  },
-                  {
-                    type: 'user-roles',
-                    id: '11',
-                  },
-                ],
+                data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
               },
-              notifications: {},
             },
+            type: 'users',
+            id: '1',
           },
         ],
         included: [
-          {
-            attributes: {},
-            relationships: {
-              user: {
-                data: {
-                  type: 'users',
-                  id: this.currentUser.id,
-                },
-              },
-              role: {
-                data: {
-                  type: 'roles',
-                  id: '3',
-                },
-              },
-              organization: {
-                data: {
-                  type: 'organizations',
-                  id: '1',
-                },
-              },
-            },
-            type: 'user-roles',
-            id: '10',
-          },
-          {
-            attributes: {},
-            relationships: {
-              user: {
-                data: {
-                  type: 'users',
-                  id: this.currentUser.id,
-                },
-              },
-              role: {
-                data: {
-                  type: 'roles',
-                  id: '2',
-                },
-              },
-              organization: {
-                data: {
-                  type: 'organizations',
-                  id: '1',
-                },
-              },
-            },
-            type: 'user-roles',
-            id: '11',
-          },
+          userRoleFrom(roles.orgAdmin, { id: 2, userId: 1, orgId: 1 }),
+          userRoleFrom(roles.appBuilder, { id: 3, userId: 1, orgId: 1 }),
           {
             attributes: {
               email: null,
@@ -399,12 +358,20 @@ describe('Acceptance | User List | Role Management', () => {
             },
             relationships: {
               user: {
+                links: {
+                  self: 'http://api:7081/api/organization-memberships/1/relationships/user',
+                  related: 'http://api:7081/api/organization-memberships/1/user',
+                },
                 data: {
                   type: 'users',
                   id: '1',
                 },
               },
               organization: {
+                links: {
+                  self: 'http://api:7081/api/organization-memberships/1/relationships/organization',
+                  related: 'http://api:7081/api/organization-memberships/1/organization',
+                },
                 data: {
                   type: 'organizations',
                   id: '1',
@@ -414,7 +381,133 @@ describe('Acceptance | User List | Role Management', () => {
             type: 'organization-memberships',
             id: '1',
           },
+          {
+            attributes: {
+              name: 'SIL International',
+              'website-url': 'https://sil.org',
+              'build-engine-url': 'https://buildengine.gtis.guru:8443',
+              'build-engine-api-access-token': 'replace',
+              'logo-url': null,
+              'use-default-build-engine': false,
+              'public-by-default': true,
+            },
+            relationships: {
+              owner: {
+                links: {
+                  self: 'http://api:7081/api/organizations/1/relationships/owner',
+                  related: 'http://api:7081/api/organizations/1/owner',
+                },
+                data: {
+                  type: 'users',
+                  id: '1',
+                },
+              },
+              'organization-memberships': {
+                data: [
+                  {
+                    type: 'organization-memberships',
+                    id: '10',
+                  },
+                  {
+                    type: 'organization-memberships',
+                    id: '1',
+                  },
+                  {
+                    type: 'organization-memberships',
+                    id: '20',
+                  },
+                  {
+                    type: 'organization-memberships',
+                    id: '15',
+                  },
+                ],
+              },
+              groups: {
+                links: {
+                  self: 'http://api:7081/api/organizations/1/relationships/groups',
+                  related: 'http://api:7081/api/organizations/1/groups',
+                },
+                data: [
+                  {
+                    type: 'groups',
+                    id: '3',
+                  },
+                  {
+                    type: 'groups',
+                    id: '8',
+                  },
+                  {
+                    type: 'groups',
+                    id: '10',
+                  },
+                  {
+                    type: 'groups',
+                    id: '4',
+                  },
+                  {
+                    type: 'groups',
+                    id: '9',
+                  },
+                  {
+                    type: 'groups',
+                    id: '5',
+                  },
+                  {
+                    type: 'groups',
+                    id: '12',
+                  },
+                  {
+                    type: 'groups',
+                    id: '11',
+                  },
+                  {
+                    type: 'groups',
+                    id: '6',
+                  },
+                  {
+                    type: 'groups',
+                    id: '1',
+                  },
+                  {
+                    type: 'groups',
+                    id: '2',
+                  },
+                  {
+                    type: 'groups',
+                    id: '7',
+                  },
+                  {
+                    type: 'groups',
+                    id: '13',
+                  },
+                ],
+              },
+              'organization-product-definitions': {},
+              'organization-stores': {},
+              'user-roles': {
+                data: [
+                  {
+                    type: 'user-roles',
+                    id: '4',
+                  },
+                  {
+                    type: 'user-roles',
+                    id: '1',
+                  },
+                  {
+                    type: 'user-roles',
+                    id: '16',
+                  },
+                ],
+              },
+            },
+            type: 'organizations',
+            id: '1',
+          },
         ],
+        meta: {
+          'total-records': 8,
+        },
       };
 
       this.mockGet(200, '/users', payload);

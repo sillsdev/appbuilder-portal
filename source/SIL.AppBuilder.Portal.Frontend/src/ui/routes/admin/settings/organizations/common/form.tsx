@@ -168,11 +168,15 @@ class OrganizationForm extends React.Component<IProps, IState> {
                   text={ownerName}
                 >
                   <Dropdown.Menu>
-                    {users.map((u, i) => {
+                    {users.map((u) => {
                       const { name: fullName } = attributesFor(u);
 
                       return (
-                        <Dropdown.Item key={i} text={fullName} onClick={this.ownerSelection(u)} />
+                        <Dropdown.Item
+                          key={u.id}
+                          text={fullName}
+                          onClick={this.ownerSelection(u)}
+                        />
                       );
                     })}
                   </Dropdown.Menu>

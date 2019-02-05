@@ -70,8 +70,12 @@ class ProductItem extends React.Component<IProps> {
           <span className='p-l-sm-xs'>{this.humanReadableName()}</span>
         </div>
 
-        {activeProductColumns.map((column, i) => (
-          <div key={i} data-test-project-table-column className={'col bold flex-100 p-l-md p-r-md'}>
+        {activeProductColumns.map((column) => (
+          <div
+            key={column.id}
+            data-test-project-table-column
+            className={'col bold flex-100 p-l-md p-r-md'}
+          >
             {column.value}
           </div>
         ))}

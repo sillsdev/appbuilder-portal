@@ -75,8 +75,8 @@ class ProductArtifact extends React.Component<IProps, IState> {
                 </div>
               </div>
 
-              {(artifacts || []).map((artifact, i) => (
-                <Artifact key={i} artifact={artifact} />
+              {(artifacts || []).map((artifact) => (
+                <Artifact key={artifact.id} artifact={artifact} />
               ))}
             </EmptyLabel>
           </div>

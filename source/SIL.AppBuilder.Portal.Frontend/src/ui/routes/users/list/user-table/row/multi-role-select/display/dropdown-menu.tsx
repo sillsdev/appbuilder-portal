@@ -29,7 +29,7 @@ export default withOrbit<INeededProps, IOrbitProps>(({ user }) => {
 })(({ organizations, user, roles, userRoles, open }) => {
   return (
     <Dropdown.Menu data-test-role-menu open={open}>
-      {organizations.map((organization, index) => {
+      {organizations.map((organization) => {
         const organizationName = attributesFor(organization).name;
         const roleProps = {
           organization,
@@ -39,7 +39,7 @@ export default withOrbit<INeededProps, IOrbitProps>(({ user }) => {
         };
 
         return (
-          <React.Fragment key={index}>
+          <React.Fragment key={organization.id}>
             <Dropdown.Header data-test-organization-name content={organizationName} />
             <RequireRole
               roleName={ROLE.OrganizationAdmin}

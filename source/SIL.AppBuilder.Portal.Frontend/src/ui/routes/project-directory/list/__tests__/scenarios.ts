@@ -1,58 +1,64 @@
+const dt = { id: 1, type: 'organizations' };
+const sil = { id: 2, type: 'organizations' };
+const dtResource = { ...dt, attributes: { name: 'DeveloperTown' } };
+
+const dummyProject = {
+  type: 'projects',
+  id: '1',
+  attributes: {
+    name: 'Dummy project',
+    'date-archived': null,
+    language: 'English',
+    'is-public': false,
+  },
+  relationships: {
+    organization: { data: dt },
+    group: { data: { id: 1, type: 'groups' } },
+    owner: { data: { id: 1, type: 'users' } },
+  },
+};
+
+const project2 = {
+  type: 'projects',
+  id: 2,
+  attributes: {
+    name: 'project 2',
+    'date-archived': null,
+    language: 'English',
+    'is-public': true,
+  },
+  relationships: {
+    organization: { data: sil },
+    group: { data: { id: 2, type: 'groups' } },
+    owner: { data: { id: 2, type: 'users' } },
+  },
+};
+
+const project3 = {
+  type: 'projects',
+  id: 3,
+  attributes: {
+    name: 'project 3',
+    'date-archived': null,
+    language: 'English',
+    'is-public': true,
+  },
+  relationships: {
+    organization: { data: dt },
+    group: { data: { id: 1, type: 'groups' } },
+    owner: { data: { id: 3, type: 'users' } },
+  },
+};
+
 export const threeProjects = {
   meta: { ['total-records']: 3 },
-  data: [
-    {
-      type: 'projects',
-      id: '1',
-      attributes: {
-        name: 'Dummy project',
-        'date-archived': null,
-        language: 'English',
-        'is-public': false,
-      },
-      relationships: {
-        organization: { data: { id: 1, type: 'organizations' } },
-        group: { data: { id: 1, type: 'groups' } },
-        owner: { data: { id: 1, type: 'users' } },
-      },
-    },
-    {
-      type: 'projects',
-      id: 2,
-      attributes: {
-        name: 'project 2',
-        'date-archived': null,
-        language: 'English',
-        'is-public': true,
-      },
-      relationships: {
-        organization: { data: { id: 2, type: 'organizations' } },
-        group: { data: { id: 2, type: 'groups' } },
-        owner: { data: { id: 2, type: 'users' } },
-      },
-    },
-    {
-      type: 'projects',
-      id: 3,
-      attributes: {
-        name: 'project 3',
-        'date-archived': null,
-        language: 'English',
-        'is-public': true,
-      },
-      relationships: {
-        organization: { data: { id: 1, type: 'organizations' } },
-        group: { data: { id: 1, type: 'groups' } },
-        owner: { data: { id: 3, type: 'users' } },
-      },
-    },
-  ],
+  data: [dummyProject, project2, project3],
   included: [
-    { type: 'organizations', id: 1, attributes: { name: 'DeveloperTown' } },
-    { type: 'organizations', id: 2, attributes: { name: 'SIL' } },
-    { type: 'groups', id: 1, attributes: { name: 'Group' } },
-    { type: 'groups', id: 2, attributes: { name: 'Group' } },
-    { type: 'groups', id: 3, attributes: { name: 'Group' } },
+    dtResource,
+    { ...sil, attributes: { name: 'SIL' } },
+    { type: 'groups', id: 1, attributes: { name: 'Group1' } },
+    { type: 'groups', id: 2, attributes: { name: 'Group2' } },
+    { type: 'groups', id: 3, attributes: { name: 'Group3' } },
     { type: 'users', id: 2 },
     { type: 'users', id: 3 },
   ],
@@ -60,40 +66,9 @@ export const threeProjects = {
 
 export const DTProjects = {
   meta: { ['total-records']: 2 },
-  data: [
-    {
-      type: 'projects',
-      id: '1',
-      attributes: {
-        name: 'Dummy project',
-        'date-archived': null,
-        language: 'English',
-        'is-public': false,
-      },
-      relationships: {
-        organization: { data: { id: 1, type: 'organizations' } },
-        group: { data: { id: 1, type: 'groups' } },
-        owner: { data: { id: 1, type: 'users' } },
-      },
-    },
-    {
-      type: 'projects',
-      id: 3,
-      attributes: {
-        name: 'project 3',
-        'date-archived': null,
-        language: 'English',
-        'is-public': true,
-      },
-      relationships: {
-        organization: { data: { id: 1, type: 'organizations' } },
-        group: { data: { id: 1, type: 'groups' } },
-        owner: { data: { id: 3, type: 'users' } },
-      },
-    },
-  ],
+  data: [dummyProject, project3],
   included: [
-    { type: 'organizations', id: 1, attributes: { name: 'DeveloperTown' } },
+    dtResource,
     { type: 'groups', id: 1, attributes: { name: 'Group' } },
     { type: 'groups', id: 3, attributes: { name: 'Group' } },
     { type: 'users', id: 2 },
@@ -118,15 +93,12 @@ export const fullPageOfProjects = {
       'is-public': true,
     },
     relationships: {
-      organization: { data: { id: 1, type: 'organizations' } },
+      organization: { data: dt },
       group: { data: { id: 1, type: 'groups' } },
       owner: { data: { id: 1, type: 'users' } },
     },
   })),
-  included: [
-    { type: 'organizations', id: 1, attributes: { name: 'DeveloperTown' } },
-    { type: 'groups', id: 1, attributes: { name: 'Group' } },
-  ],
+  included: [dtResource, { type: 'groups', id: 1, attributes: { name: 'Group' } }],
 };
 
 export const moreThanOnePageOfProjects = {

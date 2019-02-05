@@ -13,19 +13,6 @@ import {
 import { find } from 'lodash';
 
 import { attributesFor } from '~/data';
-// tslint:disable:max-classes-per-file
-
-class ProjectRow {
-  constructor(selector?: string) {}
-  static defaultScope = '[data-test-project-row]';
-  isRowActionPresent = isPresent('[data-test-row-actions]');
-  select = clickable('[data-test-selector]');
-  isSelected = hasClass('[data-test-selector]', 'checked');
-  projectId = attribute('data-test-project-row');
-  text = text();
-}
-
-export const ProjectRowInteractor = interactor(ProjectRow);
 
 class ProjectTable {
   constructor(selector?: string) {}
@@ -41,7 +28,14 @@ class ProjectTable {
   isEmptyTextPresent = isPresent('[data-test-project-list-empty]');
   emptyText = text('[data-test-project-list-empty]');
 
-  rows = collection(ProjectRowInteractor.defaultScope, ProjectRowInteractor);
+  rows = collection('[data-test-project-row]', {
+    isRowActionPresent: isPresent('[data-test-row-actions]'),
+    select: clickable('[data-test-selector] input'),
+
+    isSelected: hasClass('[data-test-selector]', 'checked'),
+    projectId: attribute('data-test-project-row'),
+    text: text(),
+  });
 
   isSortingUp = isPresent('[data-test-up-arrow]');
   isSortingDown = isPresent('[data-test-down-arrow]');

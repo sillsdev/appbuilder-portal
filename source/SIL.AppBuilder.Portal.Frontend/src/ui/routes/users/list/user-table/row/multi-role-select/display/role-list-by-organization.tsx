@@ -22,7 +22,7 @@ export default withOrbit<INeededProps, IOrbitProps>(({ user }) => {
 })(({ organizations, user, roles, userRoles }) => {
   return (
     <>
-      {organizations.map((organization, index) => {
+      {organizations.map((organization) => {
         const organizationName = attributesFor(organization).name;
         const roleProps = {
           organization,
@@ -32,7 +32,7 @@ export default withOrbit<INeededProps, IOrbitProps>(({ user }) => {
         };
 
         return (
-          <div key={index}>
+          <div key={organization.id}>
             <span className='bold fs-11'>{organizationName}</span>
             <br />
             <ActiveRolesDisplay {...roleProps} />
