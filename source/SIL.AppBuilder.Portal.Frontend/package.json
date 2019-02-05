@@ -101,7 +101,7 @@
     "@pollyjs/adapter-xhr": "^2.0.0",
     "@pollyjs/cli": "^1.0.0",
     "@pollyjs/core": "^1.0.0",
-    "@pollyjs/persister-rest": "^1.0.0",
+    "@pollyjs/persister-rest": "^2.0.0",
     "@types/auth0-js": "^8.11.2",
     "@types/auth0-lock": "^11.4.4",
     "@types/chai": "^4.1.3",
