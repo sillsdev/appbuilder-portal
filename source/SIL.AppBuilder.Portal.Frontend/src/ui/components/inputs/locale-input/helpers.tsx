@@ -6,10 +6,6 @@ export const getSuggestions = (data: ILanguageInfo[]) =>
   measureTime('getSuggestions', (value) => {
     const inputValue = (value || '').trim().toLowerCase();
 
-    if (inputValue.length < 2) {
-      return [];
-    }
-
     const has = (property: string) => (property || '').toLowerCase().includes(inputValue);
 
     return data.filter(
