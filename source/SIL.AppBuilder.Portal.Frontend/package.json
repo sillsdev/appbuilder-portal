@@ -63,7 +63,7 @@
     "react-day-picker": "^7.1.10",
     "react-dom": "^16.0.0",
     "react-dropzone-component": "^3.2.0",
-    "react-i18next": "^9.0.0",
+    "react-i18next": "^10.0.0",
     "react-notify-toast": "^0.5.0",
     "react-orbitjs": "github:DeveloperTown/react-orbitjs#ebc8d8133891ec208ec4fecb5b74231a1d896706",
     "react-redux": "^6.0.0",
