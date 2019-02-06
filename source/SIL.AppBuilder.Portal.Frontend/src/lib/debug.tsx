@@ -30,7 +30,7 @@ export function measureTime(label: string, fn: (...args: any[]) => void) {
     console.timeEnd(label);
 
     return returnValue;
-  }
+  };
 }
 
 export function requireProps(...propsToCheck) {

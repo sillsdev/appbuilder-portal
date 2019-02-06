@@ -1,23 +1,22 @@
 import * as React from 'react';
+
 import { measureTime } from '~/lib/debug';
 
-export const getSuggestions = (data: ILanguageInfo[]) => measureTime('getSuggestions', (value) => {
-  const inputValue = (value || '').trim().toLowerCase();
+export const getSuggestions = (data: ILanguageInfo[]) =>
+  measureTime('getSuggestions', (value) => {
+    const inputValue = (value || '').trim().toLowerCase();
 
-  if (inputValue.length < 2) {
-    return [];
-  }
+    if (inputValue.length < 2) {
+      return [];
+    }
 
-  const has = (property: string) => (property || '').toLowerCase().includes(inputValue);
+    const has = (property: string) => (property || '').toLowerCase().includes(inputValue);
 
-  return data.filter(
-    ({ name, region, tag, localname, regions, names }) =>
-      has((names || []).join()) ||
-      has(localname || name) ||
-      has(regions || region) ||
-      has(tag)
-  );
-});
+    return data.filter(
+      ({ name, region, tag, localname, regions, names }) =>
+        has((names || []).join()) || has(localname || name) || has(regions || region) || has(tag)
+    );
+  });
 
 export const getSuggestionValue = (suggestion: ILanguageInfo) => suggestion.tag;
 
@@ -57,7 +56,7 @@ export function highlightIfPresent(term: string, highlight: string) {
 // 1 a is more than b
 // 0 a and b are the same
 //
-// logic from: 
+// logic from:
 // https://github.com/sillsdev/libpalaso/blob/master/SIL.WritingSystems/LanguageLookup.cs#L290
 //
 // this is a straight port of the C# code
@@ -67,30 +66,40 @@ export function highlightIfPresent(term: string, highlight: string) {
 /// but need to take both items into account together with the current search string.  Ordering
 /// by relevance is clearly impossible since we'd have to read the user's mind and apply that
 /// knowledge to the data.  But the heuristics we use here may be better than nothing...
-export function sortComparer(searchTerm?: string) { 
+export function sortComparer(searchTerm?: string) {
   const lowerSearch = `${searchTerm}`.toLocaleLowerCase();
 
   return (x: ILanguageInfo, y: ILanguageInfo) => {
-    if (x.tag === y.tag) { return 0; }
+    if (x.tag === y.tag) {
+      return 0;
+    }
 
     // Favor ones where some language name matches the search string to solve BL-1141
     // We restrict this to the top 2 names of each language, and to cases where the
     // corresponding names of the two languages are different.  (If both language names
     // match the search string, there's no good reason to favor one over the other!)
     if (x.names && y.names) {
-      let [xFirst, xSecond] = x.names.map(n => n.toLocaleLowerCase());
-      let [yFirst, ySecond] = y.names.map(n => n.toLocaleLowerCase());
+      let [xFirst, xSecond] = x.names.map((n) => n.toLocaleLowerCase());
+      let [yFirst, ySecond] = y.names.map((n) => n.toLocaleLowerCase());
 
       if (xFirst !== yFirst) {
-        if (xFirst === lowerSearch) { return -1; }
-        if (yFirst === lowerSearch) { return 1; }
+        if (xFirst === lowerSearch) {
+          return -1;
+        }
+        if (yFirst === lowerSearch) {
+          return 1;
+        }
       } else if (xSecond !== ySecond) {
         // If we get here, x.Names[0] == y.Names[0].  If both equal the search string, then neither x.Names[1]
         // nor y.Names[1] should equal the search string since the code adding to Names checks for redundancy.
         // Also it's possible that neither x.Names[1] nor y.Names[1] exists at this point in the code, or that
         // only one of them exists, or that both of them exist (in which case they are not equal).
-        if (xSecond === lowerSearch) { return -1; }
-        if (ySecond === lowerSearch) { return 1; }
+        if (xSecond === lowerSearch) {
+          return -1;
+        }
+        if (ySecond === lowerSearch) {
+          return 1;
+        }
       }
     }
 
@@ -103,26 +112,31 @@ export function sortComparer(searchTerm?: string) {
     }
 
     // NOTE: there is no script or variant, so it was not ported from the C#
-    let {tag: xTag, name: xName, region: xRegion} = x;
-    let {tag: yTag, name: yName, region: yRegion} = y;
+    let { tag: xTag, name: xName, region: xRegion } = x;
+    let { tag: yTag, name: yName, region: yRegion } = y;
     let bothTagLanguagesMatchSearch = xName === yName && xName.toLocaleLowerCase() === lowerSearch;
 
     if (!bothTagLanguagesMatchSearch) {
       // One of the tag language pieces may match the search string even though not both match.  In that case,
       // sort the matching language earlier in the list.
-      if (xName.toLocaleLowerCase() === lowerSearch) { return -1; }
-      if (yName.toLocaleLowerCase() === lowerSearch) { return 1; }
+      if (xName.toLocaleLowerCase() === lowerSearch) {
+        return -1;
+      }
+      if (yName.toLocaleLowerCase() === lowerSearch) {
+        return 1;
+      }
     }
 
-    if (xTag.length < yTag.length) { return -1; }
-    if (yTag.length < xTag.length) { return 1; }
-
+    if (xTag.length < yTag.length) {
+      return -1;
+    }
+    if (yTag.length < xTag.length) {
+      return 1;
+    }
 
     // if (!bothTagLanguagesMatchSearch) {
 
     // }
-
-    
 
     return x.tag.localeCompare(y.tag);
   };

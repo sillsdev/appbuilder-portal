@@ -88,6 +88,14 @@ Inputs
   background-color: $checkbox-background-color;
 }
 
+.input {
+  position: relative;
+  svg, i {
+    position: absolute !important;
+    right: 0;
+  }
+}
+
 /***********************************
 Checkbox
 ************************************/

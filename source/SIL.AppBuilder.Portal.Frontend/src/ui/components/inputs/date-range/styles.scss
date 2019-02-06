@@ -7,18 +7,17 @@
 
 }
 
-
-.input {
-  svg {
-    position: absolute !important;
-    right: 0;
-  }
-}
-
 .date-range-input-with-label {
   svg {
     pointer-events: none;
   }
+  .input {
+    position: relative;
+    svg {
+      position: absolute !important;
+      right: 0;
+    }
+  }  
 }
 
 .DayPickerInput {

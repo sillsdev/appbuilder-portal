@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 import { OrganizationResource } from '@data';
 
@@ -36,6 +37,7 @@ class Display extends React.Component<IProps> {
       options: organizationOptions,
       onChange: this.onChange,
       value: defaultValue,
+      icon: <ArrowDropDownIcon />,
       ...filterForValidAttributes(otherProps),
     };
 

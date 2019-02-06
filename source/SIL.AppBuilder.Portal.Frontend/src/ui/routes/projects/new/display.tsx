@@ -9,6 +9,7 @@ import * as toast from '@lib/toast';
 import { isEmpty } from '@lib/collection';
 import ApplicationTypeSelect from '@ui/components/inputs/application-type-select';
 import GroupSelect from '@ui/components/inputs/group-select';
+import LocaleInput from '@ui/components/inputs/locale-input';
 import { IProvidedProps as ICurrentOrganizationProps } from '@data/containers/with-current-organization';
 import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
 
@@ -122,12 +123,7 @@ export default class Display extends React.Component<IProps, IState> {
               <div className='flex justify-content-space-between'>
                 <Form.Field className='flex-50 m-r-md'>
                   <label className='required'>{t('project.languageCode')}</label>
-                  <input
-                    required
-                    data-test-language
-                    value={language || ''}
-                    onChange={mut('language')}
-                  />
+                  <LocaleInput value={language} onChange={mut('language')} />
                 </Form.Field>
 
                 <Form.Field className='flex-50 m-l-md m-b-md'>
