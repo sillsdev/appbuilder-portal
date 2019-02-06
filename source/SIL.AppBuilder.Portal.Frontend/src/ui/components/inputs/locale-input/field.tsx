@@ -2,57 +2,29 @@ import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { assert } from '@orbit/utils';
 
-const getSuggestions = (data: ILanguageTag[]) => (value) => {
-  const inputValue = (value || '').trim().toLowerCase();
-
-  if (inputValue.length < 3) {
-    return [];
-  }
-
-  const has = (property: string) => (property || '').toLowerCase().includes(inputValue);
-
-  return data.filter(
-    ({ full, iso639_3: iso, name, region, tag }) =>
-      has(full) || has(iso) || has(name) || has(region) || has(tag)
-  );
-};
-
-function findLanguageCode(data: ILanguageTag[]) {
-  return (value: string) => {
-    const tag = data.find((lang) => lang.iso639_3 === value);
-
-    return tag.iso639_3 || '';
-  };
-}
-
-const getSuggestionValue = (suggestion: ILanguageTag) => suggestion.iso639_3;
+import {
+  getSuggestions,
+  highlightIfPresent,
+  findLanguageCode,
+  getSuggestionValue,
+  sortComparer,
+} from './helpers';
 
 // Use your imagination to render suggestions.
-const renderSuggestion = (suggestion: ILanguageTag) => (
-  <div className='flex-col'>
-    <div className='flex-row justify-content-space-between p-b-xs'>
-      <span>{suggestion.name}</span>
-      <em>{suggestion.iso639_3}</em>
-    </div>
-    <div className='flex-row'>
-      <strong>{suggestion.full}</strong>
-    </div>
-  </div>
-);
 
 export interface IProps {
-  value: string; // iso639_3
+  value: string; // tag
   onChange: (localeCode: string) => void;
-  data: ILanguageTag[];
+  data: ILanguageInfo[];
 }
 
 interface IState {
   value?: string;
-  suggestions: ILanguageTag[];
+  suggestions: ILanguageInfo[];
 }
 
 export default class Field extends React.Component<IProps, IState> {
-  getSuggestions: (value: string) => ILanguageTag[];
+  getSuggestions: (value: string) => ILanguageInfo[];
 
   constructor(props) {
     super(props);
@@ -60,7 +32,7 @@ export default class Field extends React.Component<IProps, IState> {
     assert(`The Locale Picker Field needs a data set. The passed data set is empty.`, props.data);
 
     this.state = {
-      value: findLanguageCode(props.data)(props.value) || 'eng',
+      value: findLanguageCode(props.data)(props.value) || 'en',
       suggestions: props.data,
     };
 
@@ -88,25 +60,53 @@ export default class Field extends React.Component<IProps, IState> {
     });
   };
 
+  renderSuggestion = ({ localname, name, tag, regions, region, names }: ILanguageInfo) => {
+    const { value } = this.state;
+
+    return (
+      <div className='flex-col'>
+        <div className='flex-row justify-content-space-between p-b-xs'>
+          <div className='flex-col m-b-sm m-r-md'>
+            <div className='fs-11 gray-text m-r-sm uppercase'>Name</div>
+            <div className='black-text'>{highlightIfPresent(localname || name, value)}</div>
+          </div>
+          <div className='flex-col text-align-right'>
+            <div className='fs-11 gray-text uppercase'>Code</div>
+            <div className='black-text'>{highlightIfPresent(tag, value)}</div>
+          </div>
+        </div>
+        <div className='flex-row justify-content-space-between'>
+          <div className='flex-col m-r-md'>
+            <div className='fs-11 gray-text m-r-sm uppercase'>Country</div>
+            <div className='black-text'>{highlightIfPresent(regions || region, value)}</div>
+          </div>
+          <div className='flex-col text-align-right'>
+            <div className='fs-11 gray-text uppercase'>Other Names</div>
+            <div className='black-text'>{highlightIfPresent((names || []).join(', '), value)}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   render() {
     const { value, suggestions } = this.state;
 
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
-      placeholder: 'Type at least 3 letters',
+      placeholder: 'Type at least 2 letters',
       value,
       onChange: this.onChange,
     };
-    console.log(value, suggestions);
 
     // Finally, render it!
     return (
       <Autosuggest
         {...{
-          suggestions,
+          suggestions: suggestions.sort(sortComparer(value)).slice(0, 5),
           getSuggestionValue,
-          renderSuggestion,
           inputProps,
+          renderSuggestion: this.renderSuggestion,
           onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
           onSuggestionsClearRequested: this.onSuggestionsClearRequested,
         }}

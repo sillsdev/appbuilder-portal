@@ -13,7 +13,7 @@ export interface IProps {
 }
 
 interface IState {
-  data?: ILanguageTag[];
+  data?: ILanguageInfo[];
 }
 export default class extends React.Component<IProps, IState> {
   loading = true;

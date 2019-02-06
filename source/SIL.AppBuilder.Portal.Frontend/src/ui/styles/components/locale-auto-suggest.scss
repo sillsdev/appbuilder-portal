@@ -1,3 +1,9 @@
+.phrase-with-highlight {
+  .highlight {
+    background: yellow;
+  }
+}
+
 // modified from:
 // http://react-autosuggest.js.org/autosuggest.css
 .react-autosuggest__container {
@@ -37,7 +43,7 @@
   display: block;
   position: absolute;
   top: 51px;
-  width: 340px;
+  width: 440px;
   border: 1px solid #aaa;
   background-color: #fff;
   font-family: 'Open Sans', sans-serif;
