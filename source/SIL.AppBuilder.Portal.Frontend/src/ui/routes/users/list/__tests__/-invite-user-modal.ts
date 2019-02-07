@@ -7,6 +7,7 @@ class InviteUserModalInteractor {
 
   enterEmail = fillable('[data-test-email]');
   submit = clickable('[data-test-invite]');
+  close = clickable('.close-modal');
   hasError(like: string): boolean {
     const error = this.scoped('[data-test-error]');
 

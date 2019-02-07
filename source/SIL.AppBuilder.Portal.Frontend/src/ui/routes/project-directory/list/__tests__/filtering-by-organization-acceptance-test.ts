@@ -40,6 +40,11 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
         expect(req.headers.Organization).to.equal(undefined);
       });
     });
+
+    server.get('/assets/language/alltags.json').intercept((req, res) => {
+      res.status(200);
+      res.json([]);
+    });
   });
 
   describe('navigating to the project directory page', () => {
@@ -78,8 +83,10 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       let rows;
 
       beforeEach(async function() {
-        requestCount = 0;
         await when(() => page.table.rows().length === 3);
+        // page has finished loading ^
+
+        requestCount = 0;
         await page.orgSelect.choose('DeveloperTown');
         await when(() => !page.isLoading);
         await when(() => page.table.rows().length === 2);

@@ -1,6 +1,7 @@
 import { interactor, clickable, isPresent, fillable, text } from '@bigtest/interactor';
 import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
 import applicationTypeInteractor from '@ui/components/inputs/application-type-select/__tests__/page';
+import languageInteractor from '@ui/components/inputs/locale-input/-page';
 
 @interactor
 export class CreateProjectInteractor {
@@ -16,6 +17,7 @@ export class CreateProjectInteractor {
 
   isVisibilityChecked = isPresent('[data-test-visibility].checked');
 
+  language = languageInteractor;
   groupSelect = groupInteractor;
   applicationTypeSelect = applicationTypeInteractor;
 }

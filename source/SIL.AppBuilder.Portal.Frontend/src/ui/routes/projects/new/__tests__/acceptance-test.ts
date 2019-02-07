@@ -144,6 +144,17 @@ describe('Acceptance | New Project', () => {
 
       beforeEach(function() {
         this.mockGet(200, '/application-types', scenarios.applicationTypes());
+        this.server.get('/assets/language/alltags.json').intercept((req, res) => {
+          res.status(200);
+          res.json([
+            {
+              tag: 'english',
+              localname: 'english',
+              region: 'US',
+              names: ['American'],
+            },
+          ]);
+        });
       });
 
       beforeEach(async function() {
@@ -157,8 +168,8 @@ describe('Acceptance | New Project', () => {
       });
 
       describe('name is required', () => {
-        beforeEach(() => {
-          page.fillLanguage('english');
+        beforeEach(async () => {
+          await page.language.searchAndSelect('english');
           page.groupSelect.chooseGroup('Group 1');
           page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
         });
@@ -171,7 +182,7 @@ describe('Acceptance | New Project', () => {
       describe('group defaults to first option', () => {
         beforeEach(async function() {
           await page.fillName('some name');
-          await page.fillLanguage('english');
+          await page.language.searchAndSelect('english');
           await page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
         });
 
@@ -187,7 +198,7 @@ describe('Acceptance | New Project', () => {
       describe('type defaults to first option', () => {
         beforeEach(async function() {
           await page.fillName('some name');
-          await page.fillLanguage('english');
+          await page.language.searchAndSelect('english');
           await page.groupSelect.chooseGroup('Group 1');
         });
 

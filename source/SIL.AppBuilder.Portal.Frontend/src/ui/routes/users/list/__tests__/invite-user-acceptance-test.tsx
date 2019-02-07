@@ -2,15 +2,18 @@ import { describe, beforeEach, it } from '@bigtest/mocha';
 import { when } from '@bigtest/convergence';
 import { visit } from '@bigtest/react';
 import { Interactor } from '@bigtest/interactor';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { fakeAuth0Id } from 'tests/helpers/jwt';
 import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
+  wait,
 } from 'tests/helpers';
 import appPage from 'tests/helpers/pages/app';
+import InviteUserModalInteractor from '@ui/routes/users/list/__tests__/-invite-user-modal';
+import { Simulate } from 'react-dom/test-utils';
 
 import page from './-page';
 
@@ -206,17 +209,19 @@ describe('Acceptance | User list | Invite User', () => {
           });
 
           describe('clears error on close', () => {
+            let modal;
             beforeEach(async () => {
-              await page.inviteUser();
+              modal = new InviteUserModalInteractor('[data-test-users-invite-user-modal]');
+              await page.inviteUser(); // this is a toggle
+              await wait(100);
+              await page.inviteUser(); // this is a toggle
+              await wait(100);
 
-              await when(() => !page.inviteUserModal.isPresent);
-              await page.inviteUser();
-              await when(() => page.inviteUserModal.isVisible);
+              await when(() => assert(modal.isVisible, '2 expected modal to be open'));
             });
 
             it.always('has cleared the error', () => {
-              expect(page.inviteUserModal.hasError('Error occured while trying to invite user.')).to
-                .be.false;
+              expect(modal.hasError('Error occured while trying to invite user.')).to.be.false;
             });
           });
         });

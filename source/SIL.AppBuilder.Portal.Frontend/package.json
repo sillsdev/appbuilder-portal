@@ -24,7 +24,7 @@
     "karma:debug": "yarn karma start ./tests/karma.conf.js --fail-on-empty-test-suite --browsers ChromeDebug",
     "test:watch": "yarn karma:start",
     "test:watch:headless": "CI=true yarn karma:start",
-    "test:watch:detached": "DETACHED=true yarn karma:start",
+    "test:watch:detached": "NODE_OPTIONS=\"--max-old-space-size=4096\" DETACHED=true yarn karma:start",
     "test:ci": "CI=true yarn karma:start --single-run",
     "lint": "yarn lint:js",
     "lint:js": "yarn eslint . --ext .js --ext .ts --ext .jsx --ext .tsx",

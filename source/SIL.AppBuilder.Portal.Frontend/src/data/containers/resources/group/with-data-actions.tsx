@@ -57,10 +57,10 @@ export function withDataActions(InnerComponent) {
     };
 
     updateAttributes = (group: GroupResource, attributes: GroupAttributes) => {
-      const { updateStore } = this.props;
+      const { dataStore } = this.props;
       const { id, type } = group;
 
-      return updateStore((t: TransformBuilder) => {
+      return dataStore.update((t: TransformBuilder) => {
         return t.replaceRecord({
           id,
           type,

@@ -4,20 +4,25 @@ import { strict } from 'assert';
 
 import { string } from 'prop-types';
 
-export function interactor<T>(WrappedClass: T): Interactor & T;
+type OptionalSelector<TOtherArgs extends any[]> = [string, ...TOtherArgs] | TOtherArgs;
+
+export function interactor<T>(
+  WrappedClass: T
+): T & Interactor & { new (selector?: string): T & Interactor };
 export function text(selector?: string): any;
 export function clickable(selector?: string): () => Promise<Interactor>;
 export function findAll(selector: string): HTMLElement[];
 export function isPresent(selector: string): boolean;
 export function selectable(selector: string): (text: string) => Promise<void>;
-export function fillable(selector: string): (text: string) => Promise<void>;
-export function isHidden(selector: string): boolean;
+export function fillable(selector?: string): (text: string) => Promise<void>;
+export function isHidden(selector?: string): boolean;
 export function hasClass(selector?: string, className?: string): boolean;
 export function collection(selector: string, interactors?: any): (index?: number) => any;
-export function value(selector: string): string;
+export function value(selector?: string): string;
 export function is(selector: string): boolean;
 export function scoped<T>(selector: string, interactors?: T): Interactor & T;
 export function attribute(selector: string, otherSelector?: string);
+export function triggerable(...args: OptionalSelector<[string, object]>): void;
 
 export class Interactor {
   constructor(selector?: string);

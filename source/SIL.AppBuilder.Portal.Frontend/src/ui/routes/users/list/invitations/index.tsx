@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
-import { withData, WithDataProps } from 'react-orbitjs';
+import { withData, ILegacyProvidedProps } from 'react-orbitjs';
 import { compose } from 'recompose';
 
 import { defaultOptions } from '@data';
@@ -20,30 +20,20 @@ import { attributesFor } from '@data/helpers';
 
 import { idFromRecordIdentity } from '@data';
 
-import { Toggle, toggleCreator } from 'react-state-helpers';
-
 import UserInput from './user-input';
 interface IOwnProps {}
 
 export type IProps = IOwnProps &
   i18nProps &
-  WithDataProps &
+  ILegacyProvidedProps &
   ICurrentUserProps &
   ICurrentOrganizationProps;
 
 class InviteUserModal extends React.Component<IProps> {
-  toggle: Toggle;
-
   state = {
     isModalOpen: false,
     error: null,
   };
-
-  constructor(props) {
-    super(props);
-
-    this.toggle = toggleCreator(this);
-  }
 
   onInvite = async (email: string) => {
     const { t, dataStore, currentUser } = this.props;
@@ -62,17 +52,22 @@ class InviteUserModal extends React.Component<IProps> {
         defaultOptions()
       );
       toast.success(t('organization-membership.invite.create.success', { email }));
-      this.toggle('isModalOpen')();
+      this.close();
     } catch (err) {
       this.setState({ error: t('organization-membership.invite.create.error') });
     }
   };
 
   toggleModal = () => {
-    if (this.state.isModalOpen) {
-      this.setState({ error: null });
-    }
-    this.toggle('isModalOpen')();
+    this.state.isModalOpen ? this.close() : this.open();
+  };
+
+  open = () => {
+    this.setState({ isModalOpen: true, error: null });
+  };
+
+  close = () => {
+    this.setState({ isModalOpen: false, error: null });
   };
 
   render() {

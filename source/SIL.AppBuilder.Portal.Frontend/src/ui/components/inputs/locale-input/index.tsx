@@ -37,7 +37,7 @@ export default class extends React.Component<IProps, IState> {
 
     if (this.loading) {
       return (
-        <div>
+        <div className='flex justify-content-center w-100'>
           <RectLoader />
         </div>
       );

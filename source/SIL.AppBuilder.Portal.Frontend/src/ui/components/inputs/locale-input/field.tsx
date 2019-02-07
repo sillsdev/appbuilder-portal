@@ -90,7 +90,7 @@ class Field extends React.Component<IProps & i18nProps, IState> {
     const wrapperClass = `locale-input__${!value || isMatch ? 'has-match' : 'match-missing'}`;
 
     return (
-      <span className={wrapperClass}>
+      <span data-test-locale-input-container className={wrapperClass}>
         <Autosuggest
           {...{
             suggestions: suggestions.sort(sortComparer(value)).slice(0, 5),
@@ -98,6 +98,8 @@ class Field extends React.Component<IProps & i18nProps, IState> {
             // the value of the input on highlight.
             getSuggestionValue: () => value,
             inputProps: {
+              'data-test-language': true,
+              'data-test-value-from-props': this.props.value,
               placeholder: t('locale-picker.placeholder'),
               value,
               onChange: this.onChange,
@@ -125,7 +127,9 @@ class Field extends React.Component<IProps & i18nProps, IState> {
           </div>
           <div className='flex-col text-align-right'>
             <div className='fs-11 gray-text uppercase'>{t('locale-picker.code')}</div>
-            <div className='black-text'>{highlightIfPresent(tag, value)}</div>
+            <div data-test-tag className='black-text'>
+              {highlightIfPresent(tag, value)}
+            </div>
           </div>
         </div>
         <div className='flex-row justify-content-space-between'>
