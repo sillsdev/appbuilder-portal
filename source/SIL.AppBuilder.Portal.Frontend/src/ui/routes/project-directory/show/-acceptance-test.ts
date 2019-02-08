@@ -37,7 +37,7 @@ describe('Acceptance | Project Directory | Public View', () => {
       expect(page.description).to.contain('');
 
       expect(page.image.exists).to.equal(true);
-      expect(page.products.artifacts.amount).to.contain('1 Artifacts');
+      expect(page.products.artifacts.amount).to.contain('1 Product Files');
     });
   });
 });
