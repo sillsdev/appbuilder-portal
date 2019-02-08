@@ -13,10 +13,10 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
         public virtual ProductArtifact GetFileInfo(ProductArtifact artifact)
         {
             var modifiedArtifact = artifact;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(artifact.Url);
-            request.Method = "HEAD";
             try
             {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(artifact.Url);
+                request.Method = "HEAD";
                 using (HttpWebResponse resp = (HttpWebResponse)(request.GetResponse()))
                 {
                     modifiedArtifact.ContentType = resp.ContentType;
