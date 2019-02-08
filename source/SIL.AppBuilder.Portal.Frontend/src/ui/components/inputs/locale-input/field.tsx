@@ -10,7 +10,9 @@ import {
   findLanguageCode,
   getSuggestionValue,
   sortComparer,
+  findAdditionalMatches,
 } from './helpers';
+import Localized from './localized';
 
 export interface IProps {
   value: string; // tag
@@ -114,34 +116,42 @@ class Field extends React.Component<IProps & i18nProps, IState> {
     );
   }
 
-  renderSuggestion = ({ localname, name, tag, regions, region, names }: ILanguageInfo) => {
+  renderSuggestion = (suggestion: ILanguageInfo) => {
+    const { localname, name, tag } = suggestion;
     const { t } = this.props;
     const { value } = this.state;
 
+    const additionalMatch = findAdditionalMatches(suggestion, value);
+
     return (
       <div className='flex-col'>
-        <div className='flex-row justify-content-space-between p-b-xs'>
-          <div className='flex-col m-b-sm m-r-md'>
-            <div className='fs-11 gray-text m-r-sm uppercase'>{t('locale-picker.name')}</div>
+        <div className='flex-row justify-content-space-between'>
+          <div className='flex-col m-r-md'>
             <div className='black-text'>{highlightIfPresent(localname || name, value)}</div>
+            <div className='fs-11 gray-text m-r-sm'>
+              <Localized type={'languages'} name={tag} />
+            </div>
           </div>
           <div className='flex-col text-align-right'>
-            <div className='fs-11 gray-text uppercase'>{t('locale-picker.code')}</div>
             <div data-test-tag className='black-text'>
               {highlightIfPresent(tag, value)}
             </div>
+            <div className='fs-11 gray-text'>{t('locale-picker.code')}</div>
           </div>
         </div>
-        <div className='flex-row justify-content-space-between'>
-          <div className='flex-col m-r-md'>
-            <div className='fs-11 gray-text m-r-sm uppercase'>{t('locale-picker.country')}</div>
-            <div className='black-text'>{highlightIfPresent(regions || region, value)}</div>
+
+        {additionalMatch && additionalMatch.match && (
+          <div className='flex-row justify-content-space-between m-t-xs'>
+            <div className='flex-col'>
+              <div className='fs-11 gray-text uppercase'>
+                {t(`locale-picker.${additionalMatch.match.key}`)}
+              </div>
+              <div className='black-text'>
+                {highlightIfPresent(additionalMatch.match.value, value)}
+              </div>
+            </div>
           </div>
-          <div className='flex-col text-align-right'>
-            <div className='fs-11 gray-text uppercase'>{t('locale-picker.other')}</div>
-            <div className='black-text'>{highlightIfPresent((names || []).join(', '), value)}</div>
-          </div>
-        </div>
+        )}
       </div>
     );
   };

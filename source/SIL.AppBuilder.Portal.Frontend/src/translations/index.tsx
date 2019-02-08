@@ -1,10 +1,10 @@
 import i18n from 'i18next';
-import * as ICU from 'i18next-icu';
-import { reactI18nextModule } from 'react-i18next';
-import * as LanguageDetector from 'i18next-browser-languagedetector';
-
-// import * as Backend from 'i18next-xhr-backend';
-// import { reactI18nextModule } from 'react-i18next';
+import ICU from 'i18next-icu';
+// import * as Fetch from 'i18next-fetch-backend';
+import XHR from 'i18next-xhr-backend';
+// import Backend from 'i18next-node-remote-backend';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 import enUs from './locales/en-us.json';
 import frFR from './locales/fr-FR.json';
@@ -13,11 +13,10 @@ import esLa from './locales/es-419.json';
 i18n
   // https://github.com/i18next/i18next-icu
   .use(ICU)
-  // https://github.com/i18next/i18next-xhr-backend
-  // .use(Backend)
   // https://github.com/i18next/i18next-browser-languageDetector
   .use(LanguageDetector)
-  .use(reactI18nextModule)
+  .use(initReactI18next)
+  .use(XHR)
   .init({
     resources: {},
     fallbackLng: 'en-US',
@@ -26,7 +25,7 @@ i18n
     // keySeparator: false,
 
     // common namespace for the app
-    ns: ['translations'],
+    ns: ['translations', 'ldml'],
     defaultNS: 'translations',
 
     // debug: true,

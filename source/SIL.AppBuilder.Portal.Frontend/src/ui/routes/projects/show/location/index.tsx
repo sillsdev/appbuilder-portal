@@ -6,6 +6,8 @@ import { ResourceObject } from 'jsonapi-typescript';
 
 import { PROJECTS_TYPE } from '@data';
 
+import { withTranslations } from '~/lib/i18n';
+
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
 }
@@ -28,4 +30,4 @@ class Location extends React.Component<IProps> {
   }
 }
 
-export default compose(translate('translations'))(Location);
+export default compose(withTranslations)(Location);

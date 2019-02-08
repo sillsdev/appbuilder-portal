@@ -2,12 +2,72 @@ import * as React from 'react';
 
 import { measureTime } from '~/lib/debug';
 
+const hasSearchTerm = (searchTerm: string) => {
+  let lowerSearch = (searchTerm || '').trim().toLocaleLowerCase();
+
+  return (property: string) => {
+    try {
+      return (property || '').toLocaleLowerCase().includes(lowerSearch);
+    } catch (e) {
+      console.error(`searched for ${searchTerm} against value: ${property}`, e);
+    }
+  };
+};
+
+interface IAdditionalSearchResult {
+  match?: Dict<string, string>;
+  additionalMatches: Dict<string, string>[];
+}
+
+export function findAdditionalMatches(
+  suggestion: ILanguageInfo,
+  searchTerm: string
+): IAdditionalSearchResult {
+  // NOTE: things shown in the UI:
+  //  - localname || name
+  //  - name in UI language
+  //  - tag
+  //
+  // Non-searchable:
+  //  - sldr
+  const unsearchable = ['sldr'];
+  const defaultDisplayedKeys = ['localname', 'name', 'tag'];
+  const keysToSkip = [...defaultDisplayedKeys, ...unsearchable];
+
+  const has = hasSearchTerm(searchTerm);
+  const result: IAdditionalSearchResult = { additionalMatches: [] };
+  const updateResult = (entry: Dict<string, string>) => {
+    result.match ? result.additionalMatches.push(entry) : (result.match = entry);
+  };
+
+  let hasDefault = defaultDisplayedKeys.find((key) => has(suggestion[key]));
+  if (hasDefault) {
+    return result;
+  }
+
+  if (has('localname') || has('name') || has('tag')) {
+    return result;
+  }
+
+  Object.keys(suggestion).forEach((key) => {
+    if (keysToSkip.includes(key)) return;
+    let rawValue = suggestion[key];
+    // TODO: localize separator, and values
+    let value = Array.isArray(rawValue) ? rawValue.join() : rawValue;
+
+    if (has(value)) {
+      updateResult({ key, value });
+    }
+  });
+
+  return result;
+}
+
 export const getSuggestions = (data: ILanguageInfo[]) =>
   measureTime('getSuggestions', (value) => {
-    const inputValue = (value || '').trim().toLowerCase();
+    const has = hasSearchTerm(value);
 
-    const has = (property: string) => (property || '').toLowerCase().includes(inputValue);
-
+    // TODO: localize values
     return data.filter(
       ({ name, region, tag, localname, regions, names }) =>
         has((names || []).join()) || has(localname || name) || has(regions || region) || has(tag)
