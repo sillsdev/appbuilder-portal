@@ -49,7 +49,7 @@
     "i18next": "^14.0.0",
     "i18next-browser-languagedetector": "^3.0.0",
     "i18next-icu": "^1.0.1",
-    "i18next-xhr-backend": "^1.5.1",
+    "i18next-xhr-backend": "^2.0.0",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.11",
     "md5-hash": "^1.0.1",
