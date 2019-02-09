@@ -46,7 +46,7 @@
     "@ssv/signalr-client": "^1.0.0",
     "auth0-js": "^9.6.1",
     "auth0-lock": "^11.7.2",
-    "i18next": "^14.0.0",
+    "i18next": "^15.0.0",
     "i18next-browser-languagedetector": "^3.0.0",
     "i18next-icu": "^1.0.1",
     "i18next-xhr-backend": "^2.0.0",
