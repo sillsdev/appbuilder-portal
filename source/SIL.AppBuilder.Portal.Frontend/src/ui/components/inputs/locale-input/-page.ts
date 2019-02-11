@@ -52,7 +52,6 @@ class LocaleInput extends Interactor {
       )
     );
 
-    console.log('hey props', this.input.valueFromProps, this.input.value);
     await when(() =>
       assert(
         this.input.valueFromProps === this.input.value,
