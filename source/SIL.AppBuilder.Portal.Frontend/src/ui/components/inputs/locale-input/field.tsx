@@ -123,6 +123,7 @@ const LocaleInputField = memo(
     const { t, i18n } = useLdml();
     const data = useMemo(() => localizeTagData(props.data, t), [i18n.language]);
 
+    console.log(i18n);
     return <FieldDisplay {...{ ...props, data }} />;
   },
   (prev, next) => prev.value === next.value

@@ -19,12 +19,12 @@ export function localizeTagData(data: ILanguageInfo[], t): ILanguageInfo[] {
       //  - tags?: string[];
 
       // These are the only fields that need localization
-      region: info.region && t(`localeDisplayNames.territories.${info.region}`),
+      region: info.region && t(`ldml.localeDisplayNames.territories.${info.region}`),
       regions:
         info.regions &&
         info.regions
           .split(' ')
-          .map((region) => t(`localeDisplayNames.territories.${region}`))
+          .map((region) => t(`ldml.localeDisplayNames.territories.${region}`))
           .join(', '),
     };
   });

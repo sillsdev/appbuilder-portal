@@ -35,7 +35,7 @@ export function Suggestion({ suggestion, searchedValue, t }: IProps) {
             <div className='fs-11 gray-text uppercase'>
               {t(`locale-picker.${additionalMatch.match.key}`, { num: additionalMatch.match.num })}
             </div>
-            <div className='black-text'>
+            <div className='black-text single-line-clamp' style={{ maxWidth: '370px' }}>
               {highlightIfPresent(additionalMatch.match.value, searchedValue)}
             </div>
           </div>
