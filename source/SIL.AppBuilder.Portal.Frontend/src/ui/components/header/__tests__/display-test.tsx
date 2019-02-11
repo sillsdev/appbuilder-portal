@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { location, visit } from '@bigtest/react';
 import { expect } from 'chai';
@@ -7,11 +6,8 @@ import {
   useFakeAuthentication,
   setupApplicationTest,
 } from 'tests/helpers';
-import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import headerHelper from 'tests/helpers/components/header';
-import { TOGGLE_SIDEBAR } from '@store/user-interface/actions/toggle-sidebar';
 
-import Header from '../display';
 
 describe('Acceptance | Component | Header', () => {
   setupApplicationTest();

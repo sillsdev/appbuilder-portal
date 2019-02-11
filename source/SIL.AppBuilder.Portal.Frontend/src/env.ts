@@ -22,7 +22,7 @@ export const buildDate = process.env.BUILD_DATE;
 export const revision = process.env.REVISION;
 
 export const api = {
-  host: process.env.API_HOST,
+  host: isTesting ? undefined : process.env.API_HOST,
 };
 
 export const app = {
