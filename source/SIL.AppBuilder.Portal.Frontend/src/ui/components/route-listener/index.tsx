@@ -29,8 +29,8 @@ export const RouteListener = compose(
 
         // TODO: if in some debug mode, log transitions and such
         //      (handy for debugging tests)
-        // console.log(`The current URL is ${location.pathname}${location.search}${location.hash}`);
-        // console.log(`The last navigation action was ${action}`);
+        console.log(`The current URL is ${location.pathname}${location.search}${location.hash}`);
+        console.log(`The last navigation action was ${action}`);
       });
     }
     render() {

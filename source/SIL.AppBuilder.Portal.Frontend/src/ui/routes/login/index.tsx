@@ -30,7 +30,7 @@ class LoginRoute extends React.Component<RouterProps & i18nProps> {
     const { t } = this.props;
 
     return (
-      <div className='bg-blue flex-grow flex-column justify-content-center'>
+      <div data-test-login-page className='bg-blue flex-grow flex-column justify-content-center'>
         <AutoMountingLock afterLogin={this.afterLogin} />
 
         <div className='white-text m-b-md m-t-md text-center'>
