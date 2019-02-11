@@ -6,8 +6,6 @@ import { defaultHeaders } from '@lib/fetch';
 
 import { schema, keyMap } from './schema';
 
-
-
 export const serializer = new JSONAPISerializer({ schema, keyMap });
 
 // DEBUG!

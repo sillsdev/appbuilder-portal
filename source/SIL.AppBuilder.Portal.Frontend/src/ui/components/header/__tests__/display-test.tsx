@@ -8,7 +8,6 @@ import {
 } from 'tests/helpers';
 import headerHelper from 'tests/helpers/components/header';
 
-
 describe('Acceptance | Component | Header', () => {
   setupApplicationTest();
   setupRequestInterceptor();
