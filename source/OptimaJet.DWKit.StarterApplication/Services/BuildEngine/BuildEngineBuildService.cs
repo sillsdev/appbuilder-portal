@@ -291,10 +291,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             if (existingArtifact != null)
             {
                 // Not sure why we are getting multiple of these, but we don't want multiple entries.
-                // Should we ignore it or update?  Update for now.
+                // Should we ignore it or update?  Ignore for now. Updating threw exceptions
                 Log.Information($"Updating Artifact: Id={existingArtifact.Id}");
                 updatedArtifact.Id = existingArtifact.Id;
-                await ProductArtifactRepository.UpdateAsync(updatedArtifact);
+                // await ProductArtifactRepository.UpdateAsync(updatedArtifact);
             }
             else
             {
