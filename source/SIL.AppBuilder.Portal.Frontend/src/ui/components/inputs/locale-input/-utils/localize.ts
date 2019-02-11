@@ -3,6 +3,16 @@
 //
 // TODO: apply the language delimeter
 export function localizeTagData(data: ILanguageInfo[], t): ILanguageInfo[] {
+  const tryLocalize = (namespace: string, str: string) => {
+    let result = t(`localeDisplayNames.${namespace}.${str}`);
+
+    if (result.includes('localeDisplayNames.')) {
+      return str; // localization was not found
+    }
+
+    return result;
+  };
+
   return data.map((info) => {
     return {
       ...info,
@@ -19,12 +29,12 @@ export function localizeTagData(data: ILanguageInfo[], t): ILanguageInfo[] {
       //  - tags?: string[];
 
       // These are the only fields that need localization
-      region: info.region && t(`ldml.localeDisplayNames.territories.${info.region}`),
+      region: info.region && tryLocalize('territories', info.region),
       regions:
         info.regions &&
         info.regions
           .split(' ')
-          .map((region) => t(`ldml.localeDisplayNames.territories.${region}`))
+          .map((region) => tryLocalize('territories', region))
           .join(', '),
     };
   });
