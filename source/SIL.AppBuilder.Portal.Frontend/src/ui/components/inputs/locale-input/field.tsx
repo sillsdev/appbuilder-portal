@@ -1,14 +1,13 @@
 import * as React from 'react';
+import { useMemo, memo } from 'react';
 import Autosuggest from 'react-autosuggest';
 import { assert } from '@orbit/utils';
 
 import { withTranslations, i18nProps, useLdml } from '~/lib/i18n';
 
 import { getSuggestions, findLanguageCode, sortComparer } from './-utils/helpers';
-
 import { localizeTagData } from './-utils/localize';
 import { Suggestion } from './suggestion';
-import { measureTime } from '~/lib/debug';
 
 export interface IProps {
   value: string; // tag
@@ -66,9 +65,13 @@ class Field extends React.Component<IProps & i18nProps, IState> {
       isMatch,
     });
 
-    if (newValue === '') {
-      this.props.onChange('');
-    }
+    // TODO: Do we want to have a condition passed in that requires
+    // a match?
+    // if (newValue === '') {
+    //   this.props.onChange('');
+    // }
+
+    this.props.onChange(newValue);
   };
 
   onSuggestionsFetchRequested = ({ value }) => {
@@ -115,14 +118,14 @@ class Field extends React.Component<IProps & i18nProps, IState> {
 }
 const FieldDisplay = withTranslations(Field);
 
-const LocaleInputField = React.memo((props: IProps) => {
-  const { t, i18n } = useLdml();
-  // TODO: need a way to cache localizeTagData
-  let data = measureTime('localizeTagData', () => localizeTagData(props.data, t))();
+const LocaleInputField = memo(
+  (props: IProps) => {
+    const { t, i18n } = useLdml();
+    const data = useMemo(() => localizeTagData(props.data, t), [null, i18n.language]);
 
-  return <FieldDisplay {...{ ...props, data }} />;
-}, (prevProps, nextProps) => {
-  return prevProps.value === nextProps.value;
-});
+    return <FieldDisplay {...{ ...props, data }} />;
+  },
+  (prev, next) => prev.value === next.value
+);
 
 export default LocaleInputField;

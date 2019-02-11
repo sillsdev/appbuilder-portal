@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-import { measureTime } from '~/lib/debug';
-
 export const hasSearchTerm = (searchTerm: string) => {
   let lowerSearch = (searchTerm || '').trim().toLocaleLowerCase();
 
@@ -14,16 +12,14 @@ export const hasSearchTerm = (searchTerm: string) => {
   };
 };
 
-export const getSuggestions = (data: ILanguageInfo[]) =>
-  measureTime('getSuggestions', (value) => {
-    const has = hasSearchTerm(value);
+export const getSuggestions = (data: ILanguageInfo[]) => (value) => {
+  const has = hasSearchTerm(value);
 
-    // TODO: localize values
-    return data.filter(
-      ({ name, region, tag, localname, regions, names }) =>
-        has((names || []).join()) || has(localname || name) || has(regions || region) || has(tag)
-    );
-  });
+  return data.filter(
+    ({ name, region, tag, localname, regions, names }) =>
+      has((names || []).join()) || has(localname || name) || has(regions || region) || has(tag)
+  );
+};
 
 export const getSuggestionValue = (suggestion: ILanguageInfo) => suggestion.tag;
 

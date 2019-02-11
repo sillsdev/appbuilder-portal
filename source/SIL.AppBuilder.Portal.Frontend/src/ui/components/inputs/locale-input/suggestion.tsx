@@ -2,7 +2,7 @@ import * as React from 'react';
 import i18next from 'i18next';
 
 import { highlightIfPresent } from './-utils/helpers';
-import { findAdditionalMatches } from "./-utils/find-additional-matches";
+import { findAdditionalMatches } from './-utils/find-additional-matches';
 
 interface IProps {
   suggestion: ILanguageInfo;

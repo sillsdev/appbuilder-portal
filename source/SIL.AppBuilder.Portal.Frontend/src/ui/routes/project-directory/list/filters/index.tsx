@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { compose, mapProps } from 'recompose';
-import { Grid } from 'semantic-ui-react';
+import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import * as moment from 'moment';
+import debounce from 'lodash/debounce';
 
 import { OrganizationResource, idFromRecordIdentity } from '@data';
 
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
-import { IFilter, IFilterProps } from '@data/containers/api/with-filtering';
+import { IFilterProps } from '@data/containers/api/with-filtering';
 import {
   withCurrentOrganization,
   IProvidedProps as ICurrentOrgProps,
@@ -73,17 +73,17 @@ class Filter extends React.Component<IProps, IState> {
     this.setState({ selectedOrganization: value });
   };
 
-  handleLanguageChange = (value) => {
+  handleLanguageChange = debounce((value: string) => {
     const { updateFilter, removeFilter } = this.props;
 
     if (value === '') {
       removeFilter({ attribute: 'language' });
     } else {
-      updateFilter({ attribute: 'language', value });
+      updateFilter({ attribute: 'language', value: `like:${value}` });
     }
 
     this.setState({ selectedLanguage: value });
-  };
+  }, 250);
 
   handleToChange = (to?: Date) => {
     const { updateFilter, removeFilter } = this.props;
