@@ -56,6 +56,9 @@ interface ILanguageInfo {
   sldr: boolean;
   tag: string;
   tags?: string[];
+
+  // app-managed
+  nameInLocale: string;
 }
 
 interface ILDMLData {

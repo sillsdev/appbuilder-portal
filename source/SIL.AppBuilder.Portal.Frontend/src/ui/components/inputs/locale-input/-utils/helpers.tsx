@@ -16,8 +16,12 @@ export const getSuggestions = (data: ILanguageInfo[]) => (value) => {
   const has = hasSearchTerm(value);
 
   return data.filter(
-    ({ name, region, tag, localname, regions, names }) =>
-      has((names || []).join()) || has(localname || name) || has(regions || region) || has(tag)
+    ({ name, nameInLocale, region, tag, localname, regions, names }) =>
+      has(nameInLocale) ||
+      has((names || []).join()) ||
+      has(localname || name) ||
+      has(regions || region) ||
+      has(tag)
   );
 };
 

@@ -34,7 +34,6 @@ class Field extends React.Component<IProps & i18nProps, IState> {
 
     assert(`The Locale Picker Field needs a data set. The passed data set is empty.`, props.data);
 
-    // TODO: re-calc this if the user changes their language
     this.getSuggestions = getSuggestions(props.data).bind(this);
     this.findLanguageCode = findLanguageCode(props.data);
     this.findLanguageInfo = findLanguageInfo(props.data);
