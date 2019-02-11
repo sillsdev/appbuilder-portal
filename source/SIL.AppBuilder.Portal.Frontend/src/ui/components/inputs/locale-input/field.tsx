@@ -2,17 +2,13 @@ import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { assert } from '@orbit/utils';
 
-import { withTranslations, i18nProps } from '~/lib/i18n';
+import { withTranslations, i18nProps, useLdml } from '~/lib/i18n';
 
-import {
-  getSuggestions,
-  highlightIfPresent,
-  findLanguageCode,
-  getSuggestionValue,
-  sortComparer,
-  findAdditionalMatches,
-} from './helpers';
-import Localized from './localized';
+import { getSuggestions, findLanguageCode, sortComparer } from './-utils/helpers';
+
+import { localizeTagData } from './-utils/localize';
+import { Suggestion } from './suggestion';
+import { measureTime } from '~/lib/debug';
 
 export interface IProps {
   value: string; // tag
@@ -35,6 +31,7 @@ class Field extends React.Component<IProps & i18nProps, IState> {
 
     assert(`The Locale Picker Field needs a data set. The passed data set is empty.`, props.data);
 
+    // TODO: re-calc this if the user changes their language
     this.getSuggestions = getSuggestions(props.data).bind(this);
     this.findLanguageCode = findLanguageCode(props.data);
 
@@ -106,7 +103,7 @@ class Field extends React.Component<IProps & i18nProps, IState> {
               value,
               onChange: this.onChange,
             },
-            renderSuggestion: this.renderSuggestion,
+            renderSuggestion: (suggestion) => Suggestion({ suggestion, searchedValue: value, t }),
             onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
             onSuggestionSelected: this.onSuggestionSelected,
             onSuggestionsClearRequested: this.onSuggestionsClearRequested,
@@ -115,46 +112,17 @@ class Field extends React.Component<IProps & i18nProps, IState> {
       </span>
     );
   }
-
-  renderSuggestion = (suggestion: ILanguageInfo) => {
-    const { localname, name, tag } = suggestion;
-    const { t } = this.props;
-    const { value } = this.state;
-
-    const additionalMatch = findAdditionalMatches(suggestion, value);
-
-    return (
-      <div className='flex-col'>
-        <div className='flex-row justify-content-space-between'>
-          <div className='flex-col m-r-md'>
-            <div className='black-text'>{highlightIfPresent(localname || name, value)}</div>
-            <div className='fs-11 gray-text m-r-sm'>
-              <Localized type={'languages'} name={tag} />
-            </div>
-          </div>
-          <div className='flex-col text-align-right'>
-            <div data-test-tag className='black-text'>
-              {highlightIfPresent(tag, value)}
-            </div>
-            <div className='fs-11 gray-text'>{t('locale-picker.code')}</div>
-          </div>
-        </div>
-
-        {additionalMatch && additionalMatch.match && (
-          <div className='flex-row justify-content-space-between m-t-xs'>
-            <div className='flex-col'>
-              <div className='fs-11 gray-text uppercase'>
-                {t(`locale-picker.${additionalMatch.match.key}`)}
-              </div>
-              <div className='black-text'>
-                {highlightIfPresent(additionalMatch.match.value, value)}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
 }
+const FieldDisplay = withTranslations(Field);
 
-export default withTranslations(Field);
+const LocaleInputField = React.memo((props: IProps) => {
+  const { t, i18n } = useLdml();
+  // TODO: need a way to cache localizeTagData
+  let data = measureTime('localizeTagData', () => localizeTagData(props.data, t))();
+
+  return <FieldDisplay {...{ ...props, data }} />;
+}, (prevProps, nextProps) => {
+  return prevProps.value === nextProps.value;
+});
+
+export default LocaleInputField;

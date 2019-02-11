@@ -11,3 +11,7 @@ export const withLdml = withTranslation(ldml);
 export function useLdml() {
   return useTranslation(ldml);
 }
+
+export function useTranslations() {
+  return useTranslation(defaultNamespace);
+}

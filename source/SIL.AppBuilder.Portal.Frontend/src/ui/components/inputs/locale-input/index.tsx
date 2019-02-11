@@ -3,10 +3,6 @@ import { RectLoader } from '@ui/components/loaders';
 
 import LocaleInputField from './field';
 
-// async function getLanguages() {
-//   return await import(/* webpackChunkName: "alltags.json" */ '~/public/assets/language/alltags.json');
-// }
-
 export interface IProps {
   value?: string;
   onChange: (localeCode: string) => void;

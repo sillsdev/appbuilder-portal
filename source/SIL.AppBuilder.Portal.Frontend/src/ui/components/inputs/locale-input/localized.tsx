@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { withLdml, i18nProps, useLdml } from '@lib/i18n';
+import { i18nProps, useLdml } from '@lib/i18n';
 
 interface IOwnProps {
   type: string;
