@@ -5002,24 +5002,12 @@ i18next-browser-languagedetector@^3.0.0:
   resolved "https://registry.yarnpkg.com/i18next-browser-languagedetector/-/i18next-browser-languagedetector-3.0.0.tgz#bdcce9e3f40162cdefc7db469a972c34f224250b"
   integrity sha512-WI+XaZ94+WDp7HhIVykTwZUQsyCqpNDGWTIKG4PAeekZ4UVeMX6sN4gQj+Ad5g5PPwwENiynbW8x9TFFStoYPg==
 
-i18next-fetch-backend@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/i18next-fetch-backend/-/i18next-fetch-backend-2.0.0.tgz#6f62c3419ad824f9471baef9d5adf2eccc9d1ca4"
-  integrity sha512-GebY3fmoHCOhfcQiGptMz0gUb1jpuRuA5w7r8VgqTSAoXxTOPQzKqQCUIOk0uhJX9BJMlW/rM9H6/s/D/ryL7g==
-
 i18next-icu@^1.0.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/i18next-icu/-/i18next-icu-1.1.2.tgz#543f8c6b0fe7bd5087e1eb8723acded04c88a936"
   integrity sha512-8/Yoq3Cb7+CGn37w2nbGEpD5FgCNlox3XfEu7+cDTTLd1FjuaCmeSo94fxAFnVGNc65aunUD2EE8rwcjfWa2Nw==
   dependencies:
     intl-messageformat "2.2.0"
-
-i18next-node-remote-backend@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/i18next-node-remote-backend/-/i18next-node-remote-backend-1.0.0.tgz#ec51b01f3e2bb3449b7ecb81c99239e5a92c7a33"
-  integrity sha1-7FGwHz4rs0SbfsuByZI55aksejM=
-  dependencies:
-    request "^2.65.0"
 
 i18next-service-backend@^1.0.5:
   version "1.0.5"
@@ -8209,7 +8197,7 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-request@^2.65.0, request@^2.87.0, request@^2.88.0:
+request@^2.87.0, request@^2.88.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==

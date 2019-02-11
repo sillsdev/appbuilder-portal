@@ -1,8 +1,6 @@
 import i18n from 'i18next';
 import ICU from 'i18next-icu';
-// import * as Fetch from 'i18next-fetch-backend';
 import XHR from 'i18next-xhr-backend';
-// import Backend from 'i18next-node-remote-backend';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
