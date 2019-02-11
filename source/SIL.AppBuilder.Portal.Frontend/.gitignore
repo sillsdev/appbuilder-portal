@@ -10,4 +10,4 @@ tests/cypress/screenshots/
 tests/cypress/videos/
 
 src/public/assets/language/alltags.json
-src/public/assets/language/ldml*
+src/public/assets/language/**/ldml*
