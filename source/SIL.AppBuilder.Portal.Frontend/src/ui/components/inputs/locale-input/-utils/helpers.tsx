@@ -138,7 +138,7 @@ export function sortComparer(searchTerm?: string) {
     }
 
     // if (!bothTagLanguagesMatchSearch) {
-
+    // TODO: do we want a fuzzy match on the tag names?
     // }
 
     return x.tag.localeCompare(y.tag);
