@@ -5,7 +5,9 @@ import { assert } from '@orbit/utils';
 
 import { withTranslations, i18nProps, useLdml } from '~/lib/i18n';
 
-import { getSuggestions, findLanguageCode, sortComparer } from './-utils/helpers';
+import { filterForValidAttributes } from '~/lib/dom';
+
+import { getSuggestions, findLanguageCode, sortComparer, findLanguageInfo } from './-utils/helpers';
 import { localizeTagData } from './-utils/localize';
 import { Suggestion } from './suggestion';
 
@@ -19,11 +21,13 @@ interface IState {
   value?: string;
   isMatch: boolean;
   suggestions: ILanguageInfo[];
+  languageInfo: ILanguageInfo;
 }
 
 class Field extends React.Component<IProps & i18nProps, IState> {
   getSuggestions: (value: string) => ILanguageInfo[];
   findLanguageCode: (value: string) => string;
+  findLanguageInfo: (value: string) => ILanguageInfo;
 
   constructor(props) {
     super(props);
@@ -33,36 +37,40 @@ class Field extends React.Component<IProps & i18nProps, IState> {
     // TODO: re-calc this if the user changes their language
     this.getSuggestions = getSuggestions(props.data).bind(this);
     this.findLanguageCode = findLanguageCode(props.data);
+    this.findLanguageInfo = findLanguageInfo(props.data);
 
     const value = this.findLanguageCode(props.value) || '';
+    const matchData = this.languageInfoMatchingValue(value);
 
     this.state = {
       value,
       suggestions: props.data,
-      isMatch: this.doesValueMatchLanguageInfo(value),
+      ...matchData,
     };
   }
 
   onSuggestionSelected = (event, args) => {
     const { onChange } = this.props;
     const value = args.suggestion.tag;
-    const isMatch = this.doesValueMatchLanguageInfo(value);
+    const matchData = this.languageInfoMatchingValue(value);
 
-    this.setState({ value, isMatch }, () => onChange(value));
+    this.setState({ value, ...matchData }, () => onChange(value));
   };
 
-  doesValueMatchLanguageInfo = (value: string) => {
-    const matchingTag = this.findLanguageCode(value);
+  languageInfoMatchingValue = (
+    value: string
+  ): { isMatch: boolean; languageInfo: ILanguageInfo } => {
+    const matchingTag = this.findLanguageInfo(value);
 
-    return !!matchingTag;
+    return { isMatch: !!matchingTag, languageInfo: matchingTag };
   };
 
   onChange = (event, { newValue }) => {
-    const isMatch = this.doesValueMatchLanguageInfo(newValue);
+    const matchData = this.languageInfoMatchingValue(newValue);
 
     this.setState({
       value: newValue,
-      isMatch,
+      ...matchData,
     });
 
     // TODO: Do we want to have a condition passed in that requires
@@ -88,11 +96,14 @@ class Field extends React.Component<IProps & i18nProps, IState> {
 
   render() {
     const { t } = this.props;
-    const { value, suggestions, isMatch } = this.state;
+    const { value, suggestions, isMatch, languageInfo } = this.state;
     const wrapperClass = `locale-input__${!value || isMatch ? 'has-match' : 'match-missing'}`;
 
+    const domAttributes = filterForValidAttributes(this.props);
+
     return (
-      <span data-test-locale-input-container className={wrapperClass}>
+      <span data-test-locale-input-container className={wrapperClass} {...domAttributes}>
+        <div className='locale-input__full-tag'>{languageInfo && languageInfo.full}</div>
         <Autosuggest
           {...{
             suggestions: suggestions.sort(sortComparer(value)).slice(0, 5),

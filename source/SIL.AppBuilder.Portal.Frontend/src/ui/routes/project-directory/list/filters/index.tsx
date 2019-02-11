@@ -128,7 +128,11 @@ class Filter extends React.Component<IProps, IState> {
     return (
       <div className='grid-container m-b-lg'>
         <div className='thin-bottom-border flex align-items-center'>
-          <LocaleInput value={selectedLanguage} onChange={this.handleLanguageChange} />
+          <LocaleInput
+            value={selectedLanguage}
+            onChange={this.handleLanguageChange}
+            style={{ width: '100%' }}
+          />
         </div>
 
         <div className='input thin-bottom-border flex align-items-center'>

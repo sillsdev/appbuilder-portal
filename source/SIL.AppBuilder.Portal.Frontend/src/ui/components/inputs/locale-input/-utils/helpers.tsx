@@ -31,6 +31,14 @@ export function findLanguageCode(data: ILanguageInfo[]) {
   };
 }
 
+export function findLanguageInfo(data: ILanguageInfo[]) {
+  return (value: string) => {
+    const info = data.find((lang) => lang.tag === value);
+
+    return info;
+  };
+}
+
 export function highlightIfPresent(term: string, highlight: string) {
   let termLower = term.toLowerCase();
   let highLower = highlight.toLowerCase();

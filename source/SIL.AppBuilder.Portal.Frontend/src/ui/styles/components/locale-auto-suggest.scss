@@ -4,6 +4,22 @@
   }
 }
 
+
+.locale-input__has-match,
+.locale-input__match_missing {
+  display: block;
+  position: relative;
+
+  .locale-input__full-tag {
+    position: absolute;
+    right: 0;
+    line-height: 30px;
+    font-style: italic;
+    color: #999;
+    z-index: 1;
+  }
+}
+
 .locale-input__match-missing {
   input {
     background: rgba(255, 255, 0, 0.15) !important;

@@ -6,6 +6,7 @@ import LocaleInputField from './field';
 export interface IProps {
   value?: string;
   onChange: (localeCode: string) => void;
+  style?: string;
 }
 
 interface IState {
@@ -28,7 +29,7 @@ export default class extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { value, onChange } = this.props;
+    const { value, onChange, style } = this.props;
     const { data } = this.state;
 
     if (this.loading) {
@@ -39,6 +40,6 @@ export default class extends React.Component<IProps, IState> {
       );
     }
 
-    return <LocaleInputField {...{ value, onChange, data }} />;
+    return <LocaleInputField {...{ value, onChange, data, style }} />;
   }
 }
