@@ -12,7 +12,8 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         public IBackgroundJobClient BackgroundJobClient { get; }
 
         public JobEmailRepository(IDbContextResolver contextResolver,
-                                  IBackgroundJobClient backgroundJobClient) : base(contextResolver)
+                                  EntityHooksService<Email> statusUpdateService,
+                                  IBackgroundJobClient backgroundJobClient) : base(contextResolver, statusUpdateService)
         {
             BackgroundJobClient = backgroundJobClient;
         }

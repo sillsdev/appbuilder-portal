@@ -25,18 +25,19 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             CurrentUserRepository currentUserRepository,
+            EntityHooksService<Project> statusUpdateService,
             IDbContextResolver contextResolver
-        ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
+        ) : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {
         }
 
-        public override IQueryable<Project> Filter(IQueryable<Project> query, FilterQuery filterQuery)
+        public override IQueryable<Project> Filter(IQueryable<Project> entities, FilterQuery filterQuery)
         {            
             if (filterQuery.Has(ORGANIZATION_HEADER)) 
             {
                 var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
-                return query.FilterByOrganization(filterQuery, allowedOrganizationIds: orgIds);
+                return entities.FilterByOrganization(filterQuery, allowedOrganizationIds: orgIds);
             }
 
             var value = filterQuery.Value;
@@ -47,16 +48,16 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 
                 switch(op) {
                     case FilterOperations.ge:
-                        return query
+                        return entities
                             .Where(p => p.DateUpdated > date);
                     case FilterOperations.le:
-                        return query
+                        return entities
                             .Where(p => p.DateUpdated < date);
                 }
             }
 
             if (filterQuery.Has(PROJECT_PRODUCT_NAME_ANY)) {
-                return query
+                return entities
                     .Include(p => p.Products)
                     .ThenInclude(product => product.ProductDefinition)
                     .Where(p => p.Products
@@ -64,14 +65,14 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             }
 
             if (filterQuery.Has(PROJECT_PRODUCT_DEFINITION_ID_ANY)) {
-                return query
+                return entities
                     .Include(p => p.Products)
                     .Where(p => p.Products
                         .Any(product => product.ProductDefinitionId.ToString() == value));
             }
 
             if (filterQuery.Has(PROJECT_SEARCH_TERM)) {
-                return query
+                return entities
                     .Include(p => p.Owner)
                     .Include(p => p.Organization)
                     .Where(p => (
@@ -83,7 +84,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             }
 
             
-            return base.Filter(query, filterQuery);
+            return base.Filter(entities, filterQuery);
         }
 
         public override IQueryable<Project> Sort(IQueryable<Project> entities, List<SortQuery> sortQueries)

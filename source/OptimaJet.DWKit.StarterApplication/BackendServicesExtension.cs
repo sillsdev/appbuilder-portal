@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
@@ -70,6 +71,9 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
 
+            // EventDispatchers
+            services.AddScoped<IEntityHookHandler<Project>, ProjectHookNotifier>();
+
 
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();
@@ -82,7 +86,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<GroupService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
-            services.AddScoped<StatusUpdateService>();
+            services.AddScoped(typeof(EntityHooksService<>));
             services.AddScoped<OrganizationMembershipService>();
             services.AddScoped<OrganizationMembershipInviteService>();
 

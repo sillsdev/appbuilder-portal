@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Utility;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
@@ -18,6 +22,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public async Task Create_Product()
         {
             BuildTestData();
+            var hubContext = _fixture.GetService<IHubContext<ScriptoriaHub>>();
+            var mockScriptoriaHub = Mock.Get(hubContext);
+            mockScriptoriaHub.Reset();
+            var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
+            mockClients.Reset();
 
             var content = new
             {
@@ -45,6 +54,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
 
             Assert.Equal(project1.Id, product.ProjectId);
             Assert.Equal(productDefinition1.Id, product.ProductDefinitionId);
+            // Verify that status update not sent for non project
+            mockScriptoriaHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Never());
         }
 
         [Fact(Skip = "Enabling the updating of a Project in the Product service throws a NullReferenceException. Reason unknown. Unable to debug libraries with VS Code - Preston")]

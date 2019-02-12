@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Hangfire;
@@ -7,8 +6,8 @@ using Hangfire.Common;
 using Hangfire.States;
 using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
 using OptimaJet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
@@ -279,6 +278,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 It.Is<Job>(job =>
                            job.Method.Name == "ManageProject" &&
                            job.Type == typeof(BuildEngineProjectService)),
+                It.IsAny<EnqueuedState>()));
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "DidInsert" &&
+                           job.Type == typeof(IEntityHookHandler<Project>)),
                 It.IsAny<EnqueuedState>()));
         }
         [Fact]

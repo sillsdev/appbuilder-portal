@@ -1,19 +1,23 @@
 ﻿using System;
-using Moq;
-using OptimaJet.DWKit.StarterApplication.Data;
-using OptimaJet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
-using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
-using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
-using SIL.AppBuilder.BuildEngineApiClient;
-using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
-using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
-using OptimaJet.DWKit.StarterApplication.Repositories;
+using Hangfire.Common;
+using Hangfire.States;
+using Microsoft.AspNetCore.SignalR;
+using Moq;
+using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
+using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.StarterApplication.Utility;
+using SIL.AppBuilder.BuildEngineApiClient;
+using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
-using OptimaJet.DWKit.StarterApplication.Services;
+using Xunit;
+using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
+using Job = Hangfire.Common.Job;
+using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {
@@ -400,6 +404,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
+            var hubContext = _fixture.GetService<IHubContext<ScriptoriaHub>>();
+            var mockScriptoriaHub = Mock.Get(hubContext);
+            mockScriptoriaHub.Reset();
+            var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
+            mockClients.Reset();
             var projectResponse = new ProjectResponse
             {
                 Id = 4,
@@ -417,6 +426,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockBuildEngine.Verify(x => x.GetProject(
                 It.Is<int>(b => b == project3.WorkflowProjectId)
             ));
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+
             var projects = ReadTestData<AppDbContext, Project>();
             var modifiedProject = projects.First(p => p.Id == project3.Id);
             Assert.Equal(projectResponse.Url, modifiedProject.WorkflowProjectUrl);
@@ -426,6 +438,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Single(notifications);
             Assert.Equal("{\"projectName\":\"Test Project3\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("projectCreatedSuccessfully", notifications[0].MessageId);
+
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "DidUpdate" &&
+                           job.Type == typeof(IEntityHookHandler<Project>)),
+                It.IsAny<EnqueuedState>()));
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_Failed()

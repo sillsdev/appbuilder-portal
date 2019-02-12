@@ -4,6 +4,7 @@ using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
@@ -13,8 +14,9 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             CurrentUserRepository currentUserRepository,
+            EntityHooksService<Notification> statusUpdateService,
             IDbContextResolver contextResolver
-        ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
+        ) : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {
         }
 

@@ -1,37 +1,25 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
-    public class BaseRepository<TEntity> : DefaultEntityRepository<TEntity>
+    public class BaseRepository<TEntity> : BaseRepository<TEntity, int>, IEntityRepository<TEntity>
         where TEntity : class, IIdentifiable<int>
     {
-        protected readonly DbSet<TEntity> dbSet;
-        protected readonly CurrentUserRepository currentUserRepository;
-        protected readonly DbContext dbContext;
-
         public BaseRepository(ILoggerFactory loggerFactory,
                               IJsonApiContext jsonApiContext,
                               CurrentUserRepository currentUserRepository,
+                              EntityHooksService<TEntity> statusUpdateService,
                               IDbContextResolver contextResolver)
-            : base(loggerFactory, jsonApiContext, contextResolver)
+            : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {
-            this.dbContext = contextResolver.GetContext();
-            this.dbSet = contextResolver.GetDbSet<TEntity>();
-            this.currentUserRepository = currentUserRepository;
-        }
-
-        public User CurrentUser
-        {
-            get
-            {
-                return currentUserRepository.GetCurrentUser().Result;
-            }
         }
     }
 
@@ -40,24 +28,52 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
     {
         protected readonly DbSet<TEntity> dbSet;
         protected readonly CurrentUserRepository currentUserRepository;
+        protected readonly EntityHooksService<TEntity> statusUpdateService;
         protected readonly DbContext dbContext;
 
         public BaseRepository(
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             CurrentUserRepository currentUserRepository,
+            EntityHooksService<TEntity> statusUpdateService,
             IDbContextResolver contextResolver
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
             this.dbContext = contextResolver.GetContext();
             this.dbSet = contextResolver.GetDbSet<TEntity>();
             this.currentUserRepository = currentUserRepository;
+            this.statusUpdateService = statusUpdateService;
         }
 
         public User CurrentUser {
             get {
                 return currentUserRepository.GetCurrentUser().Result;
             }
+        }
+
+        public override async Task<TEntity> UpdateAsync(TId id, TEntity entity)
+        {
+            var retval = await base.UpdateAsync(id, entity);
+            statusUpdateService.DidUpdate(retval);
+            return retval;
+        }
+
+        public override async Task<TEntity> CreateAsync(TEntity entity)
+        {
+            var retval = await base.CreateAsync(entity);
+            statusUpdateService.DidInsert(retval);
+            return retval;
+        }
+
+        public override async Task<bool> DeleteAsync(TId id)
+        {
+            var entity = await GetAsync(id);
+            var retval = await base.DeleteAsync(id);
+            if (retval)
+            {
+                statusUpdateService.DidDelete(entity);
+            }
+            return retval;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Hangfire;
@@ -7,6 +6,7 @@ using Hangfire.Common;
 using Hangfire.States;
 using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
@@ -247,6 +247,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         {
             BuildTestData();
 
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+
             var expectedName = project1.Name + "-updated!";
             var payload = ResourcePatchPayload(
                 "projects", project1.Id, new Dictionary<string, object>()
@@ -261,6 +264,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             var updatedProject = await Deserialize<Project>(response);
 
             Assert.Equal(expectedName, updatedProject.Name);
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                       job.Method.Name == "DidUpdate" &&
+                       job.Type == typeof(IEntityHookHandler<Project>)),
+                It.IsAny<EnqueuedState>()));
         }
         [Fact]
         public async Task Patch_ProjectForOrganization()
@@ -358,7 +366,22 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal(updatedProject.GroupId, group1.Id);
             Assert.Equal(updatedProject.OrganizationId, org1.Id);
             // Hangfire does not get called if a change is made but does not change owner
-            backgroundJobClientMock.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Never());
+            // But it does get called for the EntityHookHandler
+            backgroundJobClientMock.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Exactly(1));
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "UpdateProject" &&
+                           job.Type == typeof(BuildEngineProjectService) &&
+                           job.Args.Count == 2),
+                It.IsAny<EnqueuedState>()), Times.Never());
+
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "DidUpdate" &&
+                           job.Type == typeof(IEntityHookHandler<Project>)),
+                It.IsAny<EnqueuedState>()));
+
+
         }
         //
         // Verify that you can't set the organization to a different value than the group.owner
@@ -545,17 +568,23 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             };
             var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+            backgroundJobClientMock.Reset();
 
             var response = await Patch("/api/projects/" + project1.Id.ToString(), content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            backgroundJobClientMock.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Exactly(2));
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "UpdateProject" &&
                            job.Type == typeof(BuildEngineProjectService) &&
                            job.Args.Count == 2),
                 It.IsAny<EnqueuedState>()));
-
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "DidUpdate" &&
+                           job.Type == typeof(IEntityHookHandler<Project>)),
+                It.IsAny<EnqueuedState>()));
         }
         [Fact]
         public async Task Patch_Owner_No_Publishing_Key()

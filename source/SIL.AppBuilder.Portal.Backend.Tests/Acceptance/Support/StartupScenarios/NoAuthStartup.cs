@@ -4,19 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.StarterApplication;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services;
-using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
-using GST.Fake.Authentication.JwtBearer;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios.ServiceOverrides;
-using GST.Fake.Authentication.JwtBearer.Events;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using OptimaJet.DWKit.StarterApplication.Policies;
-using OptimaJet.DWKit.StarterApplication.Models;
-using System.Collections.Generic;
 using Hangfire;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
+using OptimaJet.DWKit.StarterApplication.Models;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {

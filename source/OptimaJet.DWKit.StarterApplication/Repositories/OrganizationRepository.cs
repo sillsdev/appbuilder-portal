@@ -18,11 +18,12 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             CurrentUserRepository currentUserRepository,
+            EntityHooksService<Organization> statusUpdateService,
             IDbContextResolver contextResolver
-            ) : base(loggerFactory, jsonApiContext, currentUserRepository, contextResolver)
+            ) : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {
         }
-        public override IQueryable<Organization> Filter(IQueryable<Organization> query, FilterQuery filterQuery)
+        public override IQueryable<Organization> Filter(IQueryable<Organization> entities, FilterQuery filterQuery)
         {
             var attribute = filterQuery.Attribute;
             var value = filterQuery.Value;
@@ -31,13 +32,13 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             if (isScopeToUser) {
                 var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
-                var scopedToUser = query.Where(organization => orgIds.Contains(organization.Id));
+                var scopedToUser = entities.Where(organization => orgIds.Contains(organization.Id));
 
                 // return base.Filter(scopedToUser, filterQuery);
                 return scopedToUser;
             }
 
-            return base.Filter(query, filterQuery);
+            return base.Filter(entities, filterQuery);
         }
     }
 }
