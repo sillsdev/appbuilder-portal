@@ -7750,10 +7750,10 @@ react-event-listener@^0.6.2:
     prop-types "^15.6.0"
     warning "^4.0.1"
 
-react-hooks-fetch@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/react-hooks-fetch/-/react-hooks-fetch-0.7.0.tgz#9edd8608fbc097f63335d3fcc20e52369ffe684b"
-  integrity sha512-gXbyj9fY8VBlNglb/Sk1C9D7+z8Sws+fyZm+v5zRPj6cM9cfecstaf5o7XUCocStfwWTv+rZLWT/4ddX+v1Z8w==
+react-hooks-fetch@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/react-hooks-fetch/-/react-hooks-fetch-0.8.0.tgz#e85c97d8811942d6c07ca1dd9426aa4cf5389597"
+  integrity sha512-ZAuEdo4+PnsuVGFhrFjepDChx1GboOG5N0Tt4qHZKRBFFO9SXlpy6LiDTkId1PA5oN/JSL/A0U5Bp+b2fY390A==
 
 react-i18next@*, react-i18next@^10.0.2:
   version "10.0.4"
