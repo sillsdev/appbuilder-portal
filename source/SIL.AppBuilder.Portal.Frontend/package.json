@@ -179,7 +179,7 @@
     "mocha": "^5.2.0",
     "node-sass": "^4.9.0",
     "prettier": "^1.14.3",
-    "react-hooks-fetch": "^0.7.0",
+    "react-hooks-fetch": "^0.8.0",
     "react-test-renderer": "^16.4.0",
     "redux-devtools-extension": "^2.13.5",
     "serve-static": "^1.13.2",
