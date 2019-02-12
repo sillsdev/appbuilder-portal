@@ -31,9 +31,9 @@ export type IProps = IOwnProps & i18nProps;
 export default class MultiRoleSelect extends React.Component<IProps, { open: boolean }> {
   state = { open: false };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.editable != this.props.editable || this.state.open !== nextState.open;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   return nextProps.editable != this.props.editable || this.state.open !== nextState.open;
+  // }
 
   toggle = (e: any) => {
     e.preventDefault();
@@ -66,7 +66,7 @@ export default class MultiRoleSelect extends React.Component<IProps, { open: boo
         simple
         data-test-role-multi-select
         multiple
-        onClick={this.toggle}
+        onLabelClick={this.toggle}
         closeOnBlur={false}
         closeOnChange={false}
         trigger={roleList}
