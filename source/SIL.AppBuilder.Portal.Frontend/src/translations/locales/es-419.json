@@ -7,6 +7,17 @@
   "updated": "¡Actualizado!",
   "opensource": "Código abierto",
   "home": "Home",
+  "locale-picker": {
+    "code": "Code",
+    "country": "Country",
+    "other": "Other Names",
+    "label": "Lenguaje",
+    "placeholder": "Search by Language...",
+    "region": "{num, plural, one {Region} other {Regions}}",
+    "name": "{num, plural, one {Name} other {Names}}",
+    "tag": "{num, plural, one {Tag} other {Tags}}",
+    "regionName": "Region Name"
+  },
   "attributions": {
     "title": "Proyecto de código abierto usado en Scriptoria",
     "subtitle": "Librerías usadas por la licencia"
