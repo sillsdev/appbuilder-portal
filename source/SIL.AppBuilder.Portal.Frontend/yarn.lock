@@ -3728,10 +3728,10 @@ eslint-config-prettier@^3.1.0:
   dependencies:
     get-stdin "^6.0.0"
 
-eslint-config-typescript@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-typescript/-/eslint-config-typescript-1.1.0.tgz#77eba5ab9fe095bd8d7998b135cc7372a0e0b045"
-  integrity sha512-2dKs/kXzOc1BSzgt+UhQC95bXtxQno44Xraic/sV0U06R1xjnUkRVqCjctxPdkus5GsSc7pR1FipBXJeBXykKg==
+eslint-config-typescript@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-typescript/-/eslint-config-typescript-2.0.0.tgz#0a63a023f0c329fbb0826354a6b98874b3695e1c"
+  integrity sha512-TuXF29/Xg3L+BxeCODbZsAbRkoHrwSWTaalli6ek0ki84WdEX8Vf1kpimGdSeiHFUHdW+Xjql5OS8ujPfJmfGw==
 
 eslint-import-resolver-node@^0.3.2:
   version "0.3.2"
