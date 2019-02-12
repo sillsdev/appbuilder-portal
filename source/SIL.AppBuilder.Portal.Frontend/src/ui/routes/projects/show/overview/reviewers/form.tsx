@@ -14,6 +14,8 @@ import {
 } from '@data/containers/resources/reviewer/with-data-actions';
 import { mutCreator, Mut } from 'react-state-helpers';
 
+import { withTranslations } from '~/lib/i18n';
+
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
 }
@@ -123,6 +125,6 @@ class AddReviewerForm extends React.Component<IProps> {
 }
 
 export default compose(
-  translate('translations'),
+  withTranslations,
   withDataActions
 )(AddReviewerForm);

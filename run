@@ -162,6 +162,7 @@ function runstuff {
 
     # frontend things
     yarn) ( cd $UI_PATH && yarn $arguments );;
+    refresh-languages) ( cd $UI_PATH && ./scripts/refresh-languages.sh );;
 
     # backend / api things
     dotnet:api) ( cd $API_PATH && dotnet $arguments );;

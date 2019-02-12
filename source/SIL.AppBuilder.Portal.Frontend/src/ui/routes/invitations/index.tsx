@@ -1,8 +1,5 @@
 import * as React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import { compose } from 'recompose';
-import { requireAuth } from '@lib/auth';
-import { withLayout } from '@ui/components/layout';
 import NotFoundRoute from '@ui/routes/errors/not-found';
 
 import CreateOrganizationRoute, { pathName as createPath } from './create-organization';
@@ -11,7 +8,6 @@ import JoinOrganizationRoute, { pathName as joinOrganizationPath } from './join-
 import JoinOrganizationFinishedRoute, {
   pathName as joinOrganizationFinishedPath,
 } from './join-organization/finished';
-export const pathName = '/invitations';
 
 export default class InvitationsRoute extends React.Component {
   render() {

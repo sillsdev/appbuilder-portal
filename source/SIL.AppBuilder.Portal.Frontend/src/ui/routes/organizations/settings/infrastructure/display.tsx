@@ -10,6 +10,8 @@ import { OrganizationAttributes } from '@data/models/organization';
 import { ResourceObject } from 'jsonapi-typescript';
 import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
 
+import { withTranslations } from '~/lib/i18n';
+
 export interface IProps {
   onChange: (payload: OrganizationAttributes) => void;
   organization: ResourceObject<ORGANIZATIONS_TYPE, OrganizationAttributes>;
@@ -98,4 +100,4 @@ class InfrastructureDisplay extends React.Component<IProps & i18nProps> {
   }
 }
 
-export default compose(translate('translations'))(InfrastructureDisplay);
+export default compose(withTranslations)(InfrastructureDisplay);

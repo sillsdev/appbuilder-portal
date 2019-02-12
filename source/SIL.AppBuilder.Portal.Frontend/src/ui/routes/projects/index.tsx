@@ -16,8 +16,6 @@ import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './list/a
 import NewProjectRoute, { pathName as newProjectPath } from './new';
 import ProjectDetailRoute, { pathName as projectDetailPath } from './show';
 
-export const pathName = '/projects';
-
 class ProjectsRoot extends React.Component {
   render() {
     return (

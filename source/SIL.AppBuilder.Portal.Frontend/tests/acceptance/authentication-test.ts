@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, afterEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import {
   setupApplicationTest,
   setupRequestInterceptor,
@@ -107,10 +107,17 @@ describe('Acceptance | Authentication', () => {
     describe('navigates to a route that requires no authentication', () => {
       beforeEach(async function() {
         await visit('/login');
+
+        await when(() =>
+          assert(
+            !document.querySelector('[data-test-login-page]'),
+            `expected to not find the auth0 lock widget.`
+          )
+        );
       });
 
       it('is redirected', () => {
-        expect(location().pathname).to.equal('/');
+        expect(location().pathname).to.equal('/tasks');
       });
     });
   });

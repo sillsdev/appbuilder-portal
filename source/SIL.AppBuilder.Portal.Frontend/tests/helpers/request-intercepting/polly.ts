@@ -131,6 +131,11 @@ const setup = function(config) {
   this.mockGet(200, '/user-tasks', { data: [] });
   this.mockGet(200, '/notifications', { data: [] });
 
+  server.get('/assets/language/alltags.json').intercept((req, res) => {
+    res.status(200);
+    res.json([]);
+  });
+
   this.mockGet(200, '/roles', {
     data: [roles.superAdmin, roles.orgAdmin, roles.appBuilder],
     meta: { 'total-records': 3 },

@@ -7,9 +7,10 @@ import {
   useFakeAuthentication,
 } from 'tests/helpers/index';
 import app from 'tests/helpers/pages/app';
-
-import { pathName as formPath } from '../index';
-import { pathName as successPath } from '../success';
+import {
+  requestOrgAccessSuccessPath as successPath,
+  requestOrgAccessPath as formPath,
+} from '@ui/routes/paths';
 
 import page from './page';
 

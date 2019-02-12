@@ -23,6 +23,16 @@ export const logProps = (label: string) => (WrappedComponent) => {
   };
 };
 
+export function measureTime(label: string, fn: (...args: any[]) => void) {
+  return (...args: any[]) => {
+    console.time(label);
+    let returnValue = fn(...args);
+    console.timeEnd(label);
+
+    return returnValue;
+  };
+}
+
 export function requireProps(...propsToCheck) {
   return (InnerComponent) => (props) => {
     const missingProps: string[] = [];

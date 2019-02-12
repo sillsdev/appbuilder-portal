@@ -1,8 +1,6 @@
 import * as React from 'react';
 import FocusPanel from '@ui/components/focus-panel';
 
-export const pathName = '/request-access-for-organization/success';
-
 class RequestSuccess extends React.Component {
   render() {
     return (

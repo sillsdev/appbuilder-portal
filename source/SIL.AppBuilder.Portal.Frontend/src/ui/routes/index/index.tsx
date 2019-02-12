@@ -4,8 +4,6 @@ import { Redirect } from 'react-router-dom';
 import { withLayout } from '@ui/components/layout';
 import { requireAuth } from '@lib/auth';
 
-export const pathName = '/';
-
 class IndexRoute extends React.Component {
   render() {
     return <Redirect push={true} to={'/tasks'} />;

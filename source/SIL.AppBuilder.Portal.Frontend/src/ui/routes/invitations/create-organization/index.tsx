@@ -7,6 +7,8 @@ import { withLayout } from '@ui/components/layout';
 
 import CreateOrganizationForm from './form';
 
+import { withTranslations } from '~/lib/i18n';
+
 export const pathName = '/invitations/organization/:token';
 
 export interface Params {
@@ -41,5 +43,5 @@ class CreateOrganizationRoute extends React.Component<IProps & i18nProps> {
 export default compose(
   requireAuth(),
   withLayout,
-  translate('translations')
+  withTranslations
 )(CreateOrganizationRoute);

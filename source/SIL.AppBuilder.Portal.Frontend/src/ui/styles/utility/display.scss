@@ -2,6 +2,15 @@
   display: block !important;
 }
 
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-column-gap: 2rem;
+  grid-row-gap: 2rem;
+
+  .grid-item {}
+}
+
 .fixed {
   position: fixed !important;
 }

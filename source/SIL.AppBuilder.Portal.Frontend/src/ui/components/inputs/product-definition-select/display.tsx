@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { titleize } from 'inflected';
 
 import { attributesFor, ProductDefinitionResource } from '@data';
@@ -39,6 +40,7 @@ export class Display extends React.Component<IProps> {
       options,
       defaultValue,
       onChange: this.onChange,
+      icon: <ArrowDropDownIcon />,
       ...filterForValidAttributes(otherProps),
     };
 

@@ -6,11 +6,9 @@ import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { requireNoAuth, retrievePath } from '@lib/auth';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { hasVerifiedEmail } from '@lib/auth0';
-import { pathName as requestOrgAccessPath } from '@ui/routes/request-access-for-organization';
+import * as paths from '@ui/routes/paths';
 
 import AutoMountingLock from './auth0-lock-auto-mount';
-
-export const pathName = '/login';
 
 class LoginRoute extends React.Component<RouterProps & i18nProps> {
   state = { data: {}, errors: {} };
@@ -32,13 +30,13 @@ class LoginRoute extends React.Component<RouterProps & i18nProps> {
     const { t } = this.props;
 
     return (
-      <div className='bg-blue flex-grow flex-column justify-content-center'>
+      <div data-test-login-page className='bg-blue flex-grow flex-column justify-content-center'>
         <AutoMountingLock afterLogin={this.afterLogin} />
 
         <div className='white-text m-b-md m-t-md text-center'>
           {t('invitations.orgPrompt')}
           &nbsp;
-          <Link to={requestOrgAccessPath} className='white-text bold'>
+          <Link to={paths.requestOrgAccessPath} className='white-text bold'>
             {t('contactUs')}
           </Link>
         </div>

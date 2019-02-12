@@ -7,6 +7,17 @@
   "updated": "Updated!",
   "opensource": "Open Source",
   "home": "Home",
+  "locale-picker": {
+    "code": "Code",
+    "country": "Country",
+    "other": "Other Names",
+    "label": "Language",
+    "placeholder": "Search by Language...",
+    "region": "{num, plural, one {Region} other {Regions}}",
+    "name": "{num, plural, one {Name} other {Names}}",
+    "tag": "{num, plural, one {Tag} other {Tags}}",
+    "regionName": "Region Name"
+  },
   "attributions": {
     "title": "Open Source Project used in Scriptoria",
     "subtitle": "Libraries used by License"

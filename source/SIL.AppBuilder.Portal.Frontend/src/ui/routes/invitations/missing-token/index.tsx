@@ -6,6 +6,8 @@ import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';
 import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
 
+import { withTranslations } from '~/lib/i18n';
+
 export const pathName = '/invitations/missing-token';
 
 export interface Params {
@@ -37,5 +39,5 @@ class CreateOrganizationRoute extends React.Component<IProps & i18nProps> {
 export default compose(
   requireAuth(),
   withLayout,
-  translate('translations')
+  withTranslations
 )(CreateOrganizationRoute);

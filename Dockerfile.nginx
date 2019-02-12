@@ -5,7 +5,7 @@ FROM nginx:1.15.8-alpine AS base
 # so here is the nodejs search for that version of alpine
 # https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.9&repo=main
 #
-RUN apk add --no-cache git curl
+RUN apk add --no-cache git curl bash
 RUN apk add --no-cache \
       --repository http://dl-3.alpinelinux.org/alpine/edge/community \
       nodejs=10.14.2-r0 \
@@ -40,6 +40,7 @@ WORKDIR /src
 COPY --from=dependencies /src/node_modules ./node_modules
 COPY source/SIL.AppBuilder.Portal.Frontend /src
 RUN rm -rf /src/node_modules/semantic-ui-react/index.d.ts
+RUN bash -c "/src/scripts/refresh-languages.sh"
 RUN yarn webpack:build --output-path /src/_html_tmp
 
 # ---- Release ----

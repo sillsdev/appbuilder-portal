@@ -2,11 +2,9 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { RequestAccessForOrganizationAttributes as Attributes } from '@data/models/organization-invite';
+import { requestOrgAccessSuccessPath as successPath } from '@ui/routes/paths';
 
 import Display from './display';
-import { pathName as successPath } from './success';
-
-export const pathName = '/request-access-for-organization';
 
 export type IProps = {} & RouteComponentProps<{}>;
 

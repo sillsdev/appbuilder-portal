@@ -62,12 +62,28 @@ let config = {
     ...plugins
   ],
   optimization: {
+    // TODO: figure out how to make multiple vendor splits
+    //       based on which entry is using what dependencies
     runtimeChunk: 'single',
     sideEffects: false,
     splitChunks: {
-      chunks: 'all',
-    }
-  }
+      cacheGroups: {
+				commons: {
+					chunks: "initial",
+					minChunks: 2,
+					maxInitialRequests: 10, // The default limit is too small to showcase the effect
+					minSize: 200 // This is example is too small to create commons chunks
+				},
+				vendor: {
+					test: /node_modules/,
+					chunks: "initial",
+					name: "vendor",
+					priority: 10,
+					enforce: true
+				}
+      },
+    },
+  },
 };
 
 if (isDevelopment) {

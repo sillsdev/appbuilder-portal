@@ -1,10 +1,7 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { MIT } from './licenses/links';
-
-export const pathName = '/open-source';
 
 @withTranslations
 export default class OpenSourceRoute extends React.Component<i18nProps> {

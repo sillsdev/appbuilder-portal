@@ -11,7 +11,9 @@ import { SocketManager } from '@sockets';
 
 import { ScrollToTop } from '@lib/routing';
 
-import i18n from '../translations';
+import i18n from '~/translations';
+
+import { L10nLoader } from '~/translations/fetch-l10n';
 
 import { RouteListener } from './components/route-listener';
 import DebugInfo from './components/debug-info';
@@ -46,27 +48,29 @@ export default class Application extends React.Component<IProps> {
 
     return (
       <I18nextProvider i18n={i18n}>
-        <APIProvider
-          storeCreator={() =>
-            strategies.pessimisticWithRemoteIds.createStore(baseUrl, schema, keyMap)
-          }
-        >
-          <CurrentUserProvider>
-            <SocketManager>
-              <ReduxProvider initialState={initialState || {}}>
-                <Router {...routerProps}>
-                  <>
-                    <RouteListener />
-                    <ScrollToTop>
-                      <Component />
-                    </ScrollToTop>
-                    <DebugInfo />
-                  </>
-                </Router>
-              </ReduxProvider>
-            </SocketManager>
-          </CurrentUserProvider>
-        </APIProvider>
+        <L10nLoader>
+          <APIProvider
+            storeCreator={() =>
+              strategies.pessimisticWithRemoteIds.createStore(baseUrl, schema, keyMap)
+            }
+          >
+            <CurrentUserProvider>
+              <SocketManager>
+                <ReduxProvider initialState={initialState || {}}>
+                  <Router {...routerProps}>
+                    <>
+                      <RouteListener />
+                      <ScrollToTop>
+                        <Component />
+                      </ScrollToTop>
+                      <DebugInfo />
+                    </>
+                  </Router>
+                </ReduxProvider>
+              </SocketManager>
+            </CurrentUserProvider>
+          </APIProvider>
+        </L10nLoader>
       </I18nextProvider>
     );
   }
