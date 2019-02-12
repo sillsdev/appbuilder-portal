@@ -213,6 +213,7 @@
     "title": "Project",
     "organizationContact": "Organization Contact: ",
     "projectOwner": "Project Owner: ",
+    "claimOwnership": "Claim Ownership",
     "newProject": "New Project",
     "projectName": "Project Name",
     "noAvailableGroups": "There are no available groups for the selected organization",

@@ -30,6 +30,7 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off', // TS is pretty good at inference
     '@typescript-eslint/no-use-before-define': 'off', // this doesn't matter for side-effect-free modules
     '@typescript-eslint/no-empty-interface': 'off', // better to have conventions for react prop interfaces
+    // '@typescript-eslint/no-unused-vars': 'error', // why isn't this a default?
 
     // cleanliness
     'no-undef': 'off',

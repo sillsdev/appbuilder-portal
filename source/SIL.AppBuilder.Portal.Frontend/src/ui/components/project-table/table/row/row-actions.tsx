@@ -20,10 +20,6 @@ interface IOwnProps {
 type IProps = IOwnProps & i18nProps;
 
 class RowActions extends React.Component<IProps> {
-  overrideIf = ({ owner, currentUser }) => {
-    return owner.id === currentUser.id;
-  };
-
   render() {
     const { t, toggleArchiveProject, project, owner } = this.props;
     const { dateArchived } = attributesFor(project);
@@ -32,11 +28,7 @@ class RowActions extends React.Component<IProps> {
       ? t('project.dropdown.archive')
       : t('project.dropdown.reactivate');
 
-    const requireRoleProps = {
-      roleName: ROLE.OrganizationAdmin,
-      owner,
-      overrideIf: this.overrideIf,
-    };
+    const claimOwnership = () => {};
 
     return (
       <Dropdown
@@ -48,8 +40,17 @@ class RowActions extends React.Component<IProps> {
       >
         <Dropdown.Menu>
           <Dropdown.Item text={t('project.dropdown.build')} />
-          <RequireRole {...requireRoleProps}>
+          <RequireRole
+            {...{
+              roleName: ROLE.OrganizationAdmin,
+              owner,
+              overrideIf({ owner, currentUser }) {
+                return owner.id === currentUser.id;
+              },
+            }}
+          >
             <Dropdown.Item text={dropdownItemText} onClick={toggleArchiveProject} />
+            <Dropdown.Item text={t('project.claimOwnership')} onClick={claimOwnership} />
           </RequireRole>
         </Dropdown.Menu>
       </Dropdown>

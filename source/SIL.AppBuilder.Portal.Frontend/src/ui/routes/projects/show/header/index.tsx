@@ -5,7 +5,7 @@ import TimezoneLabel from '@ui/components/labels/timezone';
 
 import { attributesFor } from '@data';
 
-export default ({ project, t, toggleArchive }) => {
+export default ({ project, t, toggleArchive, claimOwnership }) => {
   const { name, dateCreated, dateArchived, isPublic } = attributesFor(project);
 
   const toggleText = !dateArchived
@@ -32,6 +32,11 @@ export default ({ project, t, toggleArchive }) => {
           <Dropdown pointing='top right' icon={null} trigger={<MoreVerticalIcon />}>
             <Dropdown.Menu>
               <Dropdown.Item data-test-archive text={toggleText} onClick={toggleArchive} />
+              <Dropdown.Item
+                data-test-claim-ownership
+                text={t('project.claimOwnership')}
+                onClick={claimOwnership}
+              />
             </Dropdown.Menu>
           </Dropdown>
         </div>

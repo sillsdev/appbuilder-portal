@@ -36,6 +36,12 @@ class Display extends React.Component<IProps> {
     toggleArchiveProject(project);
   };
 
+  claimOwnership = (e) => {
+    e.preventDefault();
+
+    console.log('implement this');
+  };
+
   render() {
     const { project, t } = this.props;
 
@@ -45,7 +51,14 @@ class Display extends React.Component<IProps> {
 
     return (
       <div className='project-details' data-test-project>
-        <Header t={t} project={project} toggleArchive={this.toggleArchivedProject} />
+        <Header
+          {...{
+            t,
+            project,
+            toggleArchive: this.toggleArchivedProject,
+            claimOwnership: this.claimOwnership,
+          }}
+        />
 
         <Tab
           menu={{ text: true }}
