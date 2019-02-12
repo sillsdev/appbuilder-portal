@@ -16,6 +16,7 @@ using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using Newtonsoft.Json;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
@@ -245,7 +246,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
-                BackgroundJobClient.Enqueue<SendEmailService>(s => s.SendProductReviewEmail(product.Id, actionParameter));
+                var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+                if (parmsDict.ContainsKey("types"))
+                {
+                    BackgroundJobClient.Enqueue<SendEmailService>(s => s.SendProductReviewEmail(product.Id, parmsDict));
+                }
+                else
+                {
+                    throw new Exception($"Product {product.Id.ToString()}: Types not found in workflow action parameters");
+                }
             }
         }
 

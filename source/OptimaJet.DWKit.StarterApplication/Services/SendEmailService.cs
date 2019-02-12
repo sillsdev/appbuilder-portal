@@ -59,11 +59,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             };
             var result = await EmailRepository.CreateAsync(email);
         }
-        public void SendProductReviewEmail(Guid productId, string artifactTypesJson)
+        public void SendProductReviewEmail(Guid productId, Dictionary<string, object> parmsDictionary)
         {
-            SendProductReviewEmailAsync(productId, artifactTypesJson).Wait();
+            SendProductReviewEmailAsync(productId, parmsDictionary).Wait();
         }
-        protected async Task SendProductReviewEmailAsync(Guid productId, string artifactTypesJson)
+        protected async Task SendProductReviewEmailAsync(Guid productId, Dictionary<string, object> parmsDict)
         {
             var product = await ProductRepository.Get()
                 .Where(p => p.Id == productId)
@@ -77,12 +77,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             if (lastBuildRecord != null)
             {
                 // Create a list of names/urls for all artifacts for this build
-                var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(artifactTypesJson);
-                if (parmsDict.ContainsKey("types"))
-                {
-                    var links = BuildLinks(parmsDict, lastBuildRecord);
-                    await SendEmailsAsync(product, links);
-                }
+                var links = BuildLinks(parmsDict, lastBuildRecord);
+                await SendEmailsAsync(product, links);
             }
         }
         protected async Task SendEmailsAsync(Product product, string links)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OptimaJet.DWKit.StarterApplication.Data;
@@ -271,7 +272,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             BuildTestData();
             var sendEmailService = _fixture.GetService<SendEmailService>();
             var actionParm = "{\"types\" : [\"apk\", \"play-listing\"]}";
-            sendEmailService.SendProductReviewEmail(product1.Id, actionParm);
+            var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParm);
+            sendEmailService.SendProductReviewEmail(product1.Id, parmsDict);
             var emails = ReadTestData<AppDbContext, Email>();
             Assert.Equal(2, emails.Count);
             var expectedContent = "{\"Message\":\"<p>Please review TestProd1 for project Test Project1.</p><p>The links below will connect you with the product files to be reviewed:</p>\",\"Links\":\"<p><a href = http://www.test.com/testfile.apk>apk</a></p><p><a href = http://www.test.com/listing.txt>play-listing</a></p>\"}";
