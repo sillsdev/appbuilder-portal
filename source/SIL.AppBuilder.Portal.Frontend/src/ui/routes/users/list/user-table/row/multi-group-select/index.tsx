@@ -33,7 +33,13 @@ interface IOwnProps {
 
 type IProps = INeededProps & i18nProps & IOwnProps;
 
-class MultiGroupSelect extends React.Component<IProps> {
+class MultiGroupSelect extends React.Component<IProps, { open: boolean }> {
+  state = { open: false };
+
+  toggle = () => {
+    this.setState({ open: !this.state.open });
+  };
+
   render() {
     const { organizations, user, groups } = this.props;
 
@@ -48,6 +54,8 @@ class MultiGroupSelect extends React.Component<IProps> {
           data-test-group-multi-select
           multiple
           trigger={groupList}
+          onLabelClick={this.toggle}
+          open={this.state.open}
           className='w-100 multiDropdown'
         >
           <Dropdown.Menu className='groups' data-test-group-menu>
