@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export const hasSearchTerm = (searchTerm: string) => {
+export const hasSearchTerm = (searchTerm?: string) => {
   let lowerSearch = (searchTerm || '').trim().toLocaleLowerCase();
 
   return (property: string) => {
@@ -82,7 +82,7 @@ export function highlightIfPresent(term: string, highlight: string) {
 /// by relevance is clearly impossible since we'd have to read the user's mind and apply that
 /// knowledge to the data.  But the heuristics we use here may be better than nothing...
 export function sortComparer(searchTerm?: string) {
-  const lowerSearch = `${searchTerm}`.toLocaleLowerCase();
+  const lowerSearch = (searchTerm || '').toLocaleLowerCase();
 
   return (x: ILanguageInfo, y: ILanguageInfo) => {
     if (x.tag === y.tag) {
