@@ -22,7 +22,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             UserRepository userRepository,
             ILoggerFactory loggerFactory,
             CurrentUserRepository currentUserRepository,
-            StatusUpdateService statusUpdateService,
+            EntityHooksService<Product> statusUpdateService,
             IJsonApiContext jsonApiContext,
             IDbContextResolver contextResolver
         ) : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)

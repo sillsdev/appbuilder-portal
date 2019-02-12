@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
-using Microsoft.AspNetCore.SignalR;
 using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
+using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
 using OptimaJet.DWKit.StarterApplication.Models;
-using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
@@ -261,11 +259,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                         }
                 }
             };
-            var statusUpdateService = _fixture.GetService<StatusUpdateService>();
-            var mockScriptoriaHub = Mock.Get(statusUpdateService.HubContext);
-            mockScriptoriaHub.Reset();
-            var mockClients = Mock.Get<IHubClients>(statusUpdateService.HubContext.Clients);
-            mockClients.Reset();
             var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
 
@@ -286,10 +279,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                            job.Method.Name == "ManageProject" &&
                            job.Type == typeof(BuildEngineProjectService)),
                 It.IsAny<EnqueuedState>()));
-            // Verify that project status update sent
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Exactly(2));
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == "/Project")));
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == "/Project/" + project.Id.ToString())));
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "DidInsert" &&
+                           job.Type == typeof(IEntityHookHandler<Project>)),
+                It.IsAny<EnqueuedState>()));
         }
         [Fact]
         public async Task Create_Project_GroupOwner_Organization_Mismatch()

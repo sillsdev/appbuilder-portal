@@ -16,7 +16,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         public BaseRepository(ILoggerFactory loggerFactory,
                               IJsonApiContext jsonApiContext,
                               CurrentUserRepository currentUserRepository,
-                              StatusUpdateService statusUpdateService,
+                              EntityHooksService<TEntity> statusUpdateService,
                               IDbContextResolver contextResolver)
             : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {
@@ -28,14 +28,14 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
     {
         protected readonly DbSet<TEntity> dbSet;
         protected readonly CurrentUserRepository currentUserRepository;
-        protected readonly StatusUpdateService statusUpdateService;
+        protected readonly EntityHooksService<TEntity> statusUpdateService;
         protected readonly DbContext dbContext;
 
         public BaseRepository(
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             CurrentUserRepository currentUserRepository,
-            StatusUpdateService statusUpdateService,
+            EntityHooksService<TEntity> statusUpdateService,
             IDbContextResolver contextResolver
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
@@ -54,14 +54,14 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         public override async Task<TEntity> UpdateAsync(TId id, TEntity entity)
         {
             var retval = await base.UpdateAsync(id, entity);
-            statusUpdateService.OnUpdate(retval as IStatusUpdate);
+            statusUpdateService.DidUpdate(retval);
             return retval;
         }
 
         public override async Task<TEntity> CreateAsync(TEntity entity)
         {
             var retval = await base.CreateAsync(entity);
-            statusUpdateService.OnInsert(retval as IStatusUpdate);
+            statusUpdateService.DidInsert(retval);
             return retval;
         }
 
@@ -71,7 +71,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             var retval = await base.DeleteAsync(id);
             if (retval)
             {
-                statusUpdateService.OnDelete(entity as IStatusUpdate);
+                statusUpdateService.DidDelete(entity);
             }
             return retval;
         }

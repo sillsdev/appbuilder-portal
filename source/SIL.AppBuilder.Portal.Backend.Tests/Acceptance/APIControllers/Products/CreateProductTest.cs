@@ -6,6 +6,7 @@ using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Utility;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
 
@@ -21,10 +22,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public async Task Create_Product()
         {
             BuildTestData();
-            var statusUpdateService = _fixture.GetService<StatusUpdateService>();
-            var mockScriptoriaHub = Mock.Get(statusUpdateService.HubContext);
+            var hubContext = _fixture.GetService<IHubContext<ScriptoriaHub>>();
+            var mockScriptoriaHub = Mock.Get(hubContext);
             mockScriptoriaHub.Reset();
-            var mockClients = Mock.Get<IHubClients>(statusUpdateService.HubContext.Clients);
+            var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
             mockClients.Reset();
 
             var content = new

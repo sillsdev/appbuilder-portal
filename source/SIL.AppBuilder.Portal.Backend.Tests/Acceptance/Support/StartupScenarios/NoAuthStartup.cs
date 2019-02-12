@@ -9,6 +9,8 @@ using Hangfire;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
+using OptimaJet.DWKit.StarterApplication.Models;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {

@@ -46,6 +46,8 @@
     <Folder Include="Acceptance\APIControllers\GroupMemberships\" />
     <Folder Include="Acceptance\APIControllers\Notifications\" />
     <Folder Include="Acceptance\Support\TestClasses\" />
+    <Folder Include="Acceptance\EventDispatcher\" />
+    <Folder Include="Acceptance\EventDispatcher\EntityHandler\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Acceptance\APIControllers\ProjectsTest.cs" />

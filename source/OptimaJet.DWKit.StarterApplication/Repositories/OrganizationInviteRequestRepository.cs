@@ -19,7 +19,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             IJsonApiContext jsonApiContext,
             IDbContextResolver contextResolver,
             CurrentUserRepository currentUserRepository,
-            StatusUpdateService statusUpdateService,
+            EntityHooksService<OrganizationInviteRequest> statusUpdateService,
             IBackgroundJobClient backgroundJobClient
             ) : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {

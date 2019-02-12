@@ -103,6 +103,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var updatedNotification = await NotificationRepository.CreateAsync(notification);
             await HubContext.Clients.User(user.ExternalId).SendAsync("Notification", updatedNotification.Id);
         }
+
         public void NotificationEmailMonitor()
         {
             // Get limits from environment

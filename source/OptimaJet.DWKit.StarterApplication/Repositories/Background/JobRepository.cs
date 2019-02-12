@@ -17,7 +17,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
     {
         public JobRepository(
             IDbContextResolver contextResolver,
-            StatusUpdateService statusUpdateService)
+            EntityHooksService<TEntity> statusUpdateService)
             : base(contextResolver, statusUpdateService)
         {}
     }
@@ -29,11 +29,11 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         protected readonly DbSet<TEntity> dbSet;
         protected readonly DbContext dbContext;
 
-        public StatusUpdateService StatusUpdateService { get; }
+        public EntityHooksService<TEntity> StatusUpdateService { get; }
 
         public JobRepository(
             IDbContextResolver contextResolver,
-            StatusUpdateService statusUpdateService
+            EntityHooksService<TEntity> statusUpdateService
         )
         {
             this.dbContext = contextResolver.GetContext();
@@ -46,7 +46,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             dbSet.Add(entity);
 
             var retval = await dbContext.SaveChangesAsync();
-            StatusUpdateService.OnInsert(entity as IStatusUpdate);
+            StatusUpdateService.DidInsert(entity);
             return entity;
         }
 
@@ -70,7 +70,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 
             dbSet.Update(entity);
             await dbContext.SaveChangesAsync();
-            StatusUpdateService.OnUpdate(entity as IStatusUpdate);
+            StatusUpdateService.DidUpdate(entity);
             return entity;
         }
         public virtual async Task<bool> DeleteAsync(TId id)
@@ -80,7 +80,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
 
             dbSet.Remove(entity);
             await dbContext.SaveChangesAsync();
-            StatusUpdateService.OnDelete(entity as IStatusUpdate);
+            StatusUpdateService.DidDelete(entity);
             return true;
         }
     }
