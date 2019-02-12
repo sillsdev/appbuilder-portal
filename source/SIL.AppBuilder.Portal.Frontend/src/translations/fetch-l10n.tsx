@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFetch } from 'react-hooks-fetch';
 
+import { isTesting } from '@env';
 import { PageLoader } from '~/ui/components/loaders';
 
 const namespace = 'ldml';
@@ -26,6 +27,10 @@ export function L10nLoader({ children }) {
   const { language } = i18n;
 
   if (i18n.hasResourceBundle(language, namespace)) {
+    return children;
+  }
+
+  if (isTesting) {
     return children;
   }
 
