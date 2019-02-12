@@ -118,6 +118,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="App Store Preview" State="App Store Preview" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="SendReviewerLinkToProductFiles">
+          <ActionParameter><![CDATA[{"types":["apk","play-listing"]}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
