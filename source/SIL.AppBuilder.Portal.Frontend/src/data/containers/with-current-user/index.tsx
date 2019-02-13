@@ -6,7 +6,7 @@ import { withDisplay } from './display';
 
 export { ICurrentUserProps } from './types';
 
-const CurrentUserContext = React.createContext<ICurrentUserProps>({
+export const CurrentUserContext = React.createContext<ICurrentUserProps>({
   currentUser: undefined,
   currentUserProps: {},
 });

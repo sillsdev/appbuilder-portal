@@ -1,3 +1,6 @@
+// NOTE: much of this should probably be deprecated, as
+//       @lib/auth/get-permissions is much more ergonomic.
+
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
