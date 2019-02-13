@@ -33,7 +33,7 @@ checkEnvVar('AUTH0_CONNECTION');
 
 let config = {
   mode: isProduction ? 'production' : 'development',
-  devtool: isProduction ? 'none' : 'inline-source-map',
+  devtool: isProduction ? 'none' : 'inline-module-source-map',
   context: process.cwd(),
   entry: {
     app: locate('src/index.tsx'),
