@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withLayout } from '@ui/components/layout';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import Navigation from '@ui/components/layout/admin/navigation';
+import { withLayout } from '@ui/components/layout';
+
+import Navigation from './navigation';
 
 class AdminLayout extends React.Component<i18nProps> {
   render() {

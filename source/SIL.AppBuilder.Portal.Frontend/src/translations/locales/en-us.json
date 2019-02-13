@@ -363,7 +363,8 @@
         "organizations": "Organizations",
         "workflowdefinitions": "Workflow Definitions",
         "productDefinitions": "Product Definitions",
-        "storeTypes": "Store Types"
+        "storeTypes": "Store Types",
+        "stores": "Stores"
       },
       "organizations": {
         "title": "Organizations",

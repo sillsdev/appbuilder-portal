@@ -7,17 +7,16 @@ import { ROLE } from '@data/models/role';
 import { adminPath } from '@ui/routes/paths';
 
 import InviteOrganization from './invite-organization';
-import AdminSettingsRoute, { pathName as settingsPathName } from './settings';
+import AdminSettingsRoute from './settings';
+import { paths } from './paths';
 
-class AdminRoute extends React.Component {
-  render() {
-    return (
-      <Switch>
-        <Route exact path={adminPath} component={InviteOrganization} />
-        <Route path={settingsPathName} component={AdminSettingsRoute} />
-      </Switch>
-    );
-  }
+function AdminRoute() {
+  return (
+    <Switch>
+      <Route exact path={paths.root.path} component={InviteOrganization} />
+      <Route path={paths.settings.path} component={AdminSettingsRoute} />
+    </Switch>
+  );
 }
 
 export default compose(

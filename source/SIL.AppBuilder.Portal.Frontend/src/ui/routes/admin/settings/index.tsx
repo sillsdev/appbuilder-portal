@@ -1,25 +1,27 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withAdminLayout } from '@ui/components/layout/admin';
 import { Switch, Route } from 'react-router-dom';
-import OrganizationsRoute from '@ui/routes/admin/settings/organizations';
-import WorkflowDefinitionsRoute from '@ui/routes/admin/settings/workflow-definitions';
-import ProductDefinitionsRoute from '@ui/routes/admin/settings/product-definitions';
-import StoreTypesRoute from '@ui/routes/admin/settings/store-types';
+import { paths as adminPaths } from '@ui/routes/admin/paths';
 
-export const pathName = '/admin/settings';
+import { withAdminLayout } from './-components/layout';
+import OrganizationsRoute from './organizations';
+import WorkflowDefinitionsRoute from './workflow-definitions';
+import ProductDefinitionsRoute from './product-definitions';
+import StoreTypesRoute from './store-types';
+import StoreRoute from './stores';
 
-class AdminSettingsRoute extends React.Component {
-  render() {
-    return (
-      <Switch>
-        <Route path={'/admin/settings/organizations'} component={OrganizationsRoute} />
-        <Route path={'/admin/settings/workflow-definitions'} component={WorkflowDefinitionsRoute} />
-        <Route path={'/admin/settings/product-definitions'} component={ProductDefinitionsRoute} />
-        <Route path={'/admin/settings/store-types'} component={StoreTypesRoute} />
-      </Switch>
-    );
-  }
+const paths = adminPaths.settings;
+
+function AdminSettingsRoute() {
+  return (
+    <Switch>
+      <Route path={paths.organizations.path} component={OrganizationsRoute} />
+      <Route path={paths.workflowDefinitions.path} component={WorkflowDefinitionsRoute} />
+      <Route path={paths.productDefinitions.path} component={ProductDefinitionsRoute} />
+      <Route path={paths.stores.path} component={StoreRoute} />
+      <Route path={paths.storeTypes.path} component={StoreTypesRoute} />
+    </Switch>
+  );
 }
 
-export default compose(withAdminLayout)(AdminSettingsRoute);
+export default withAdminLayout(AdminSettingsRoute);
