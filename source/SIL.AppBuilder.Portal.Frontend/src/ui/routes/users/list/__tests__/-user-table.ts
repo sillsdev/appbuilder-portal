@@ -9,6 +9,9 @@ import {
   scoped,
   isPresent,
 } from '@bigtest/interactor';
+import { when } from '@bigtest/convergence';
+import { assert } from 'chai';
+import { Simulate } from 'react-dom/test-utils';
 
 @interactor
 class UserTalbeUserRoleInteractor extends Interactor {
@@ -76,6 +79,14 @@ export class UserTableInteractor {
 
     role: scoped('[data-test-role-selector]', UserTalbeUserRoleInteractor),
   });
+
+  async toggleRoleAt(index: number, role: string, organization: string) {
+    // NOTE: the dropdown doesn't actually need to be open, because the UI
+    // is all rendered.
+    // also, for some reason, I (Preston) can't figure out how to programatically
+    // open the role dropdown. :-\
+    await this.row(index).role.chooseUnder(role, organization);
+  }
 
   containsUserByEmail(email: string): boolean {
     return this.scoped(`[data-test-user-row='${email}']`).isPresent;
