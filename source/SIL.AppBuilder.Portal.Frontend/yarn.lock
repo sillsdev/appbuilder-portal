@@ -911,13 +911,13 @@
   resolved "https://registry.yarnpkg.com/@orbit/utils/-/utils-0.15.23.tgz#3c3c00414e9a0a8aa3b1907025e30ca31b98e65b"
   integrity sha512-+7l34ROgaq2SISR6uU4/amz8TjG0HxL7XgGEeuxAinhFzO/vI8/G/kER7Jah885esM+ZmGVLrU5c6ddkHm0H3Q==
 
-"@pollyjs/adapter-fetch@^1.0.0":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-fetch/-/adapter-fetch-1.4.2.tgz#4320f0357d1bb3451050a292e481cda090fdc3c8"
-  integrity sha512-pkcbTkq4C1E15qssEtQophXq3/KPE2LNNlrWgyD/ryH6dtmt9xrAxHydJanrYSTpshiRV49DPfB9SPokq/EB4g==
+"@pollyjs/adapter-fetch@^2.0.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-fetch/-/adapter-fetch-2.1.0.tgz#b07156fafb3f678d9c502fd89ad772f31e7ae4c2"
+  integrity sha512-4KcQg4V4P0Wc/HhFCrjT8gJWkR4efPABr1KwsayfI1z6iOMLnlgOhnZMIVEbl8Fj+7lQhVfA0Uq0SYUYl1o1kw==
   dependencies:
-    "@pollyjs/adapter" "^1.4.1"
-    "@pollyjs/utils" "^1.4.1"
+    "@pollyjs/adapter" "^2.1.0"
+    "@pollyjs/utils" "^2.1.0"
     detect-node "^2.0.4"
 
 "@pollyjs/adapter-xhr@^2.0.0":
@@ -928,13 +928,6 @@
     "@pollyjs/adapter" "^2.1.0"
     "@pollyjs/utils" "^2.1.0"
     nise "^1.4.6"
-
-"@pollyjs/adapter@^1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter/-/adapter-1.4.1.tgz#4bf58f5127620f004edfcb7f27b572ba0699aaee"
-  integrity sha512-1CFoFkoFhP/DLhCIbTLpyIKr1jlzHWBTzL2WerE1loWLrCvnI+rw7YYfz2wJxEH9fuF25QRg5P3L2Yrvw5l3ig==
-  dependencies:
-    "@pollyjs/utils" "^1.4.1"
 
 "@pollyjs/adapter@^2.1.0":
   version "2.1.0"
