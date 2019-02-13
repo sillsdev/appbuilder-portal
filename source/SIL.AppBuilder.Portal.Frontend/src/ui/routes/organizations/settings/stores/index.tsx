@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
-import { compose } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
+import { compose, mapProps } from 'recompose';
+import { withOrbit } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
 
 import { OrganizationResource, OrganizationStoreResource, StoreResource } from '@data';
 
 import StoreMultiSelect from '@ui/components/inputs/store-multi-select';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { useTranslations } from '@lib/i18n';
+import { getPermissions } from '@lib/auth';
 
 export const pathName = '/organizations/:orgId/settings/stores';
 
@@ -15,59 +16,54 @@ export interface Params {
   orgId: string;
 }
 
-export interface IProps {
+export interface IExpectedProps {
   match: Match<Params>;
   update: (payload: OrganizationAttributes) => void;
   updateOrganizationStore: (payload: StoreResource) => void;
   organization: OrganizationResource;
+}
+
+export interface IFromOrbit {
   organizationStores: OrganizationStoreResource[];
 }
 
-type IOwnProps = IProps & i18nProps;
+export interface IProps {
+  selected: OrganizationStoreResource[];
+  onChange: (payload: StoreResource) => void;
+}
 
-const mapRecordsToProps = (passedProps) => {
-  const { organization } = passedProps;
+export function StoresRoute({ selected, onChange }) {
+  const { t } = useTranslations();
 
-  return {
-    organizationStores: (q) => q.findRelatedRecords(organization, 'organizationStores'),
-  };
-};
+  return (
+    <div className='sub-page-content' data-test-org-settings-stores>
+      <h2 className='bold m-b-md'>{t('org.storesTitle')}</h2>
+      <h3 className='p-b-md'>{t('org.storeSelectTitle')}</h3>
 
-class StoresRoute extends React.Component<IOwnProps> {
-  togglePrivacy = () => {
-    const { update, organization } = this.props;
-    const { makePrivateByDefault } = organization.attributes;
-
-    update({ makePrivateByDefault: !makePrivateByDefault });
-  };
-
-  updateOrganizationStore = (store) => {
-    const { updateOrganizationStore } = this.props;
-
-    updateOrganizationStore(store);
-  };
-
-  render() {
-    const { organizationStores, t } = this.props;
-
-    const multiSelectProps = {
-      selected: organizationStores,
-      // onChange: this.updateOrganizationStore,
-      onChange: () => null,
-      readOnly: true,
-    };
-
-    return (
-      <div className='sub-page-content' data-test-org-settings-stores>
-        <h2 className='bold m-b-md'>{t('org.storesTitle')}</h2>
-        <h3 className='p-b-md'>{t('org.storeSelectTitle')}</h3>
-        <StoreMultiSelect {...multiSelectProps} />
-      </div>
-    );
-  }
+      <StoreMultiSelect {...{ onChange, readOnly: true, selected }} />
+    </div>
+  );
 }
 
 export default compose(
-  withTranslations,
-  withOrbit(mapRecordsToProps)
+  withOrbit<IExpectedProps, IFromOrbit>((passedProps) => {
+    const { organization } = passedProps;
+
+    return {
+      organizationStores: (q) => q.findRelatedRecords(organization, 'organizationStores'),
+    };
+  }),
+  mapProps(({ organizationStores, updateOrganizationStore }) => {
+    const { isSuperAdmin } = getPermissions();
+
+    return {
+      selected: organizationStores,
+      onChange(store) {
+        // if not superadmin, this onChange handler is a noop
+        if (isSuperAdmin) {
+          updateOrganizationStore(store);
+        }
+      },
+    };
+  })
 )(StoresRoute);
