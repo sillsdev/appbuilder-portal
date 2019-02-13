@@ -13,9 +13,8 @@ export interface IProps {
 }
 
 function LocaleInput(props: IProps) {
-  console.log('starting...');
   const { error, data } = useFetch('/assets/language/alltags.json');
-  console.log('localeInput', error, data, props);
+
   if (error) return <ErrorMessage error={error} />;
   if (!data) return null;
 

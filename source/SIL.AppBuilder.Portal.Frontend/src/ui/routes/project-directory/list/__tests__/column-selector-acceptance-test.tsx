@@ -77,7 +77,6 @@ describe('Acceptance | Project Directory | Column selector', () => {
 
       describe('Add owner column to project table', () => {
         beforeEach(async function() {
-          // await when(() => page.columns());
           await page.columnSelector.toggleColumn('Owner');
         });
 
