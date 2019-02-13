@@ -1,45 +1,40 @@
 import * as React from 'react';
+import { Suspense, unstable_ConcurrentMode as ConcurrentMode } from 'react';
 import { RectLoader } from '@ui/components/loaders';
+import { useFetch } from 'react-hooks-fetch';
+import { ErrorMessage, ErrorBoundary } from '@ui/components/errors';
 
 import LocaleInputField from './field';
 
 export interface IProps {
-  value?: string;
+  value: string;
   onChange: (localeCode: string) => void;
   style?: string;
 }
 
-interface IState {
-  data?: ILanguageInfo[];
+function LocaleInput(props: IProps) {
+  const { error, data } = useFetch('/assets/language/alltags.json');
+
+  if (error) return <ErrorMessage error={error} />;
+  if (!data) return null;
+
+  return <LocaleInputField {...{ ...props, data }} />;
 }
-export default class extends React.Component<IProps, IState> {
-  loading = true;
-  state: IState = {};
 
-  componentDidMount() {
-    this.fetchLanguageData();
-  }
+const loader = (
+  <div className='flex justify-content-center w-100'>
+    <RectLoader />
+  </div>
+);
 
-  async fetchLanguageData() {
-    const response = await fetch('/assets/language/alltags.json');
-    const data = await response.json();
-
-    this.loading = false;
-    this.setState({ data });
-  }
-
-  render() {
-    const { value, onChange, style } = this.props;
-    const { data } = this.state;
-
-    if (this.loading) {
-      return (
-        <div className='flex justify-content-center w-100'>
-          <RectLoader />
-        </div>
-      );
-    }
-
-    return <LocaleInputField {...{ value, onChange, data, style }} />;
-  }
+export default function LocaleInputLoader(props: IProps) {
+  return (
+    <ErrorBoundary>
+      <ConcurrentMode>
+        <Suspense fallback={loader}>
+          <LocaleInput {...props} />
+        </Suspense>
+      </ConcurrentMode>
+    </ErrorBoundary>
+  );
 }

@@ -15,14 +15,6 @@ import UserTableInteractor from './-user-table';
 
 let userTable = new UserTableInteractor();
 
-async function toggleRoleAt(index, role: string, organization: string) {
-  await userTable.row(index).role.open();
-
-  expect(userTable.row(index).role.isOpen).to.equal(true);
-
-  await userTable.row(index).role.chooseUnder(role, organization);
-}
-
 describe('Acceptance | User List | Role Management', () => {
   setupApplicationTest();
   setupRequestInterceptor();
@@ -90,8 +82,8 @@ describe('Acceptance | User List | Role Management', () => {
       });
 
       beforeEach(async function() {
-        await toggleRoleAt(0, 'AppBuilder', 'DeveloperTown');
-        await toggleRoleAt(0, 'OrganizationAdmin', 'DeveloperTown');
+        await userTable.toggleRoleAt(0, 'AppBuilder', 'DeveloperTown');
+        await userTable.toggleRoleAt(0, 'OrganizationAdmin', 'DeveloperTown');
       });
 
       it('no roles are assigned', () => {
@@ -117,7 +109,7 @@ describe('Acceptance | User List | Role Management', () => {
         });
 
         beforeEach(async function() {
-          await toggleRoleAt(0, 'AppBuilder', 'DeveloperTown');
+          await userTable.toggleRoleAt(0, 'AppBuilder', 'DeveloperTown');
         });
 
         it('the role is displayed', () => {

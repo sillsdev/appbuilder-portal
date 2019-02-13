@@ -136,6 +136,21 @@ const setup = function(config) {
     res.json([]);
   });
 
+  server.get('/assets/language/en-US/ldml.json').intercept((req, res) => {
+    res.status(200);
+    res.json({ localeDisplayNames: {} });
+  });
+
+  server.get('/assets/language/es-419/ldml.json').intercept((req, res) => {
+    res.status(200);
+    res.json({});
+  });
+
+  server.get('/assets/language/fr-FR/ldml.json').intercept((req, res) => {
+    res.status(200);
+    res.json({});
+  });
+
   this.mockGet(200, '/roles', {
     data: [roles.superAdmin, roles.orgAdmin, roles.appBuilder],
     meta: { 'total-records': 3 },

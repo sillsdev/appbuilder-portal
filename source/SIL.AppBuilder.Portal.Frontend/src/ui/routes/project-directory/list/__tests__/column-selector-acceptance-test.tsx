@@ -1,6 +1,6 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
-import { when } from '@bigtest/interactor';
+import { when } from '@bigtest/convergence';
 import { expect, assert } from 'chai';
 import {
   setupApplicationTest,
@@ -45,6 +45,7 @@ describe('Acceptance | Project Directory | Column selector', () => {
   describe('navigates to project directory page', () => {
     beforeEach(async function() {
       await visit('/directory');
+      await when(() => assert(page.rows().length > 0, `Expected project table to be rendered`));
     });
 
     it('is in directory page', () => {

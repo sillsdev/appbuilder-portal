@@ -17,6 +17,7 @@ import { OrganizationResource } from '@data';
 
 import { withRelationships } from '@data/containers/with-relationship';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { useToggle } from '@lib/hooks';
 
 import GroupSelect from './group-select';
 import GroupListByOrganization from './group-list-by-organization';
@@ -33,44 +34,44 @@ interface IOwnProps {
 
 type IProps = INeededProps & i18nProps & IOwnProps;
 
-class MultiGroupSelect extends React.Component<IProps> {
-  render() {
-    const { organizations, user, groups } = this.props;
+function MultiGroupSelect({ organizations, user, groups }: IProps) {
+  const [open, toggle] = useToggle();
 
-    const groupList = (
-      <GroupListByOrganization groups={groups} user={user} organizations={organizations} />
-    );
+  const groupList = (
+    <GroupListByOrganization groups={groups} user={user} organizations={organizations} />
+  );
 
-    return (
-      <>
-        <Dropdown
-          simple
-          data-test-group-multi-select
-          multiple
-          trigger={groupList}
-          className='w-100 multiDropdown'
-        >
-          <Dropdown.Menu className='groups' data-test-group-menu>
-            {organizations.map((organization) => {
-              const { name } = attributesFor(organization);
+  return (
+    <>
+      <Dropdown
+        simple
+        data-test-group-multi-select
+        multiple
+        trigger={groupList}
+        onLabelClick={toggle}
+        open={open}
+        className='w-100 multiDropdown'
+      >
+        <Dropdown.Menu className='groups' data-test-group-menu>
+          {organizations.map((organization) => {
+            const { name } = attributesFor(organization);
 
-              const groupCheckboxesProps = {
-                organization,
-                user,
-              };
+            const groupCheckboxesProps = {
+              organization,
+              user,
+            };
 
-              return (
-                <React.Fragment key={organization.id}>
-                  <Dropdown.Header data-test-group-multi-organization-name content={name} />
-                  <GroupSelect {...groupCheckboxesProps} />
-                </React.Fragment>
-              );
-            })}
-          </Dropdown.Menu>
-        </Dropdown>
-      </>
-    );
-  }
+            return (
+              <React.Fragment key={organization.id}>
+                <Dropdown.Header data-test-group-multi-organization-name content={name} />
+                <GroupSelect {...groupCheckboxesProps} />
+              </React.Fragment>
+            );
+          })}
+        </Dropdown.Menu>
+      </Dropdown>
+    </>
+  );
 }
 
 export default compose<IProps, INeededProps>(
