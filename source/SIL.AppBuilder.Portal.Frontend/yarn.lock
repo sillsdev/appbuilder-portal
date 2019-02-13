@@ -951,12 +951,12 @@
     "@pollyjs/node-server" "^2.1.0"
     commander "^2.19.0"
 
-"@pollyjs/core@^1.0.0":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-1.4.2.tgz#ef6cc8d55bf8c0c3972bf4ec4ce4567f5b8230a4"
-  integrity sha512-2GCTpVMsObC+D7LvFX88mNMe+bfqNqfab35/lUrpsA6Sg9pthpwaxdIDFDujzfN6Dukuw8JCbY4sY85eJhsvWA==
+"@pollyjs/core@^2.0.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-2.1.0.tgz#d259fb585827f79f2dab0a929957815633461e8a"
+  integrity sha512-CU5/U/vem3Zx3DzVZfTbB//C4xizSg96DmloNeFWd6n2xQZRGChPo7e+T/s1+v6sVgGH7vGp9PwRxkaAiLg2PA==
   dependencies:
-    "@pollyjs/utils" "^1.4.1"
+    "@pollyjs/utils" "^2.1.0"
     "@sindresorhus/fnv1a" "^1.0.0"
     blueimp-md5 "^2.10.0"
     fast-json-stable-stringify "^2.0.0"
