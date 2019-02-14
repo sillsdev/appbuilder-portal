@@ -1,8 +1,14 @@
 import * as React from 'react';
-import { compose } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
+import { compose, withProps } from 'recompose';
+import { withData as withOrbit, useOrbit } from 'react-orbitjs';
 
-import { ProductResource, ProductDefinitionResource, withLoader, attributesFor } from '@data';
+import {
+  ProductResource,
+  ProductDefinitionResource,
+  withLoader,
+  attributesFor,
+  UserTaskResource,
+} from '@data';
 
 import IconButton from '@material-ui/core/IconButton';
 import LaunchIcon from '@material-ui/icons/Launch';
@@ -10,20 +16,36 @@ import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { Link } from 'react-router-dom';
 import { isEmpty } from '@lib/collection';
-import { withTranslations, i18nProps, useTranslations } from '@lib/i18n';
+import { useTranslations } from '@lib/i18n';
 
 import ItemActions from './actions';
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 interface IOwnProps {
   includeHeader?: boolean;
   product: ProductResource;
   productDefinition: ProductDefinitionResource;
+  tasks: UserTaskResource[];
 }
 
-type IProps = IOwnProps & i18nProps;
+type IProps = IOwnProps;
 
-function ProductItem({ product, productDefinition, includeHeader }) {
+export default function ProductItem({ product, includeHeader }) {
   const { t } = useTranslations();
+  const { currentUser } = useCurrentUser();
+  const { dataStore } = useOrbit();
+
+  const productDefinition = dataStore.cache.query((q) =>
+    q.findRelatedRecord(product, 'productDefinition')
+  );
+
+  const tasks = dataStore.cache.query((q) =>
+    q
+      .findRecords('userTasks')
+      .filter({ relation: 'product', record: product })
+      .filter({ relation: 'user', record: currentUser })
+  );
+
   const { description, name } = attributesFor(productDefinition);
   const { dateUpdated, datePublished, publishLink } = attributesFor(product);
 
@@ -61,18 +83,11 @@ function ProductItem({ product, productDefinition, includeHeader }) {
       <div className='flex w-5-md p-l-md-md move-right'>
         <ItemActions />
       </div>
+
+      {(tasks || []).map((task) => {
+        const { activityName } = attributesFor(task);
+        return activityName;
+      })}
     </div>
   );
 }
-
-export default compose(
-  withOrbit((passedProps) => {
-    const { product } = passedProps;
-
-    return {
-      productDefinition: (q) => q.findRelatedRecord(product, 'productDefinition'),
-      tasks: (q) => q.findRelatedRecord(product, 'userTasks').filter({ type: 'relation', record: currentUser })
-    };
-  }),
-  withLoader(({ productDefinition }) => !productDefinition)
-)(ProductItem);

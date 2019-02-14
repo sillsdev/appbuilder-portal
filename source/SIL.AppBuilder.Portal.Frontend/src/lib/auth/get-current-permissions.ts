@@ -5,7 +5,7 @@ import Store from '@orbit/store';
 import { OrganizationResource, UserResource, UserRoleResource } from '@data';
 
 import { ROLE } from '@data/models/role';
-import { CurrentUserContext } from '@data/containers/with-current-user';
+import { useCurrentUser } from '@data/containers/with-current-user';
 
 interface IHasRoleInOrganizationArgs {
   organization?: OrganizationResource;
@@ -13,7 +13,7 @@ interface IHasRoleInOrganizationArgs {
 }
 
 export function getPermissions(organization?: OrganizationResource) {
-  const { currentUser } = useContext(CurrentUserContext);
+  const { currentUser } = useCurrentUser();
   const { dataStore } = useOrbit();
 
   return {
