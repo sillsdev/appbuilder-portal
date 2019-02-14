@@ -5,7 +5,6 @@ import { query, withLoader, attributesFor, StoreResource, buildOptions } from '@
 
 import { useTranslations } from '@lib/i18n';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-
 import { paths } from '@ui/routes/admin/paths';
 import { compareVia } from '@lib/collection';
 

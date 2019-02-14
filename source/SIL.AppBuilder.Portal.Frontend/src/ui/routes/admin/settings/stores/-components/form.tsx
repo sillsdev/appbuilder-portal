@@ -4,6 +4,7 @@ import { attributesFor, useOrbit, idFromRecordIdentity, query } from 'react-orbi
 import { Dropdown } from 'semantic-ui-react';
 
 import { buildOptions } from '~/data';
+
 import { isEmpty, hasValues } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';

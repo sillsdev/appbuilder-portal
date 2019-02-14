@@ -6,7 +6,6 @@ import { idFromRecordIdentity, useOrbit, attributesFor } from 'react-orbitjs';
 import { StoreResource } from '@data';
 
 import { useTranslations } from '@lib/i18n';
-
 import { paths } from '@ui/routes/admin/paths';
 
 interface IProps {
@@ -17,7 +16,7 @@ export default function Item({ store }: IProps) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
   const { name, description } = attributesFor(store);
-  const storeType = dataStore.cache.query(q => q.findRelatedRecord(store, 'storeType'));
+  const storeType = dataStore.cache.query((q) => q.findRelatedRecord(store, 'storeType'));
   const { name: storeTypeName } = attributesFor(storeType);
 
   return (
