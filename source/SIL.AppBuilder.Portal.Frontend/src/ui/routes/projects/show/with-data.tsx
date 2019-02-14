@@ -22,6 +22,8 @@ const mapNetworkToProps = (passedProps) => {
       buildOptions({
         include: [
           'products.product-builds.product-artifacts',
+          'products.user-tasks.user',
+          'products.product-definition',
           'organization.organization-product-definitions.product-definition.workflow.store-type',
           GROUP,
           'owner.group-memberships.group',
