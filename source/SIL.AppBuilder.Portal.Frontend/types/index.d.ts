@@ -31,6 +31,10 @@ type FnParams<TParams, TResult> = (passedProps: TParams) => TResult;
 
 type FnOrObject<TParams, TResult> = TResult | FnParams<TParams, TResult>;
 
+interface IMap<TVal> {
+  [key: string]: TVal;
+}
+
 interface Dict<TKey, TVal> {
   key: TKey;
   value: TVal;

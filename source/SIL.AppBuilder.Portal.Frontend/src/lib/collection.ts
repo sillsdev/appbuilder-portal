@@ -8,6 +8,10 @@ export function isEmpty(data) {
   );
 }
 
+export function hasValues<T>(array: T[]) {
+  return array.some((i) => i);
+}
+
 export function unique(arr) {
   return Array.from(new Set(arr));
 }

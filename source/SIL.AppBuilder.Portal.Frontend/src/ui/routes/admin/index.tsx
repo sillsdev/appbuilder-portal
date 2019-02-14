@@ -13,8 +13,8 @@ import { paths } from './paths';
 function AdminRoute() {
   return (
     <Switch>
-      <Route exact path={paths.root.path} component={InviteOrganization} />
-      <Route path={paths.settings.path} component={AdminSettingsRoute} />
+      <Route exact path={paths.root.path()} component={InviteOrganization} />
+      <Route path={paths.settings.path()} component={AdminSettingsRoute} />
     </Switch>
   );
 }

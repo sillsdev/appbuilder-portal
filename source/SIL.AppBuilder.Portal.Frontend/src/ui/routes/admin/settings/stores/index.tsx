@@ -10,11 +10,11 @@ const paths = adminPaths.settings.stores;
 
 export default function StoresRoute() {
   return (
-    <div className='sub-page-content' data-test-admin-product-definitions>
+    <div className='sub-page-content' data-test-admin-stores>
       <Switch>
-        <Route exact path={paths.path} component={List} />
-        <Route path={paths.create.path} component={Form} />
-        <Route path={paths.edit.name} component={Edit} />
+        <Route exact path={paths.path()} component={List} />
+        <Route path={paths.create.path()} component={Form} />
+        <Route path={paths.edit.path()} component={Edit} />
       </Switch>
     </div>
   );

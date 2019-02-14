@@ -12,23 +12,23 @@ export default function Navigation() {
     <ResponsiveNav
       items={[
         {
-          to: paths.organizations.path,
+          to: paths.organizations.path(),
           text: t('admin.settings.navigation.organizations'),
         },
         {
-          to: paths.workflowDefinitions.path,
+          to: paths.workflowDefinitions.path(),
           text: t('admin.settings.navigation.workflowdefinitions'),
         },
         {
-          to: paths.productDefinitions.path,
+          to: paths.productDefinitions.path(),
           text: t('admin.settings.navigation.productDefinitions'),
         },
         {
-          to: paths.stores.path,
+          to: paths.stores.path(),
           text: t('admin.settings.navigation.stores'),
         },
         {
-          to: paths.storeTypes.path,
+          to: paths.storeTypes.path(),
           text: t('admin.settings.navigation.storeTypes'),
         },
       ]}

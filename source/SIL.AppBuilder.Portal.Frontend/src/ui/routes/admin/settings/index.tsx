@@ -15,11 +15,11 @@ const paths = adminPaths.settings;
 function AdminSettingsRoute() {
   return (
     <Switch>
-      <Route path={paths.organizations.path} component={OrganizationsRoute} />
-      <Route path={paths.workflowDefinitions.path} component={WorkflowDefinitionsRoute} />
-      <Route path={paths.productDefinitions.path} component={ProductDefinitionsRoute} />
-      <Route path={paths.stores.path} component={StoreRoute} />
-      <Route path={paths.storeTypes.path} component={StoreTypesRoute} />
+      <Route path={paths.organizations.path()} component={OrganizationsRoute} />
+      <Route path={paths.workflowDefinitions.path()} component={WorkflowDefinitionsRoute} />
+      <Route path={paths.productDefinitions.path()} component={ProductDefinitionsRoute} />
+      <Route path={paths.stores.path()} component={StoreRoute} />
+      <Route path={paths.storeTypes.path()} component={StoreTypesRoute} />
     </Switch>
   );
 }
