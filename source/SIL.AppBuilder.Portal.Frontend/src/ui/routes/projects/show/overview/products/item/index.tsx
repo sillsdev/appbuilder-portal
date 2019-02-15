@@ -53,7 +53,7 @@ class ProductItem extends React.Component<IProps> {
           </div>
           {!isEmpty(publishLink) && (
             <div data-test-project-product-publishlink>
-              <IconButton component={Link} to={publishLink} target='_blank'>
+              <IconButton href={publishLink} target='_blank'>
                 <LaunchIcon />
               </IconButton>
             </div>
