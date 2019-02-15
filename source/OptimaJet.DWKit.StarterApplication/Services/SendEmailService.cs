@@ -71,6 +71,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .Include(p => p.Project)
                     .ThenInclude(pr => pr.Reviewers)
                 .Include(p => p.ProductBuilds)
+                    .ThenInclude(pb => pb.ProductArtifacts)
                 .FirstOrDefaultAsync();
             // Get the latest build (build with highest id number)
             var lastBuildRecord = product.ProductBuilds.OrderByDescending(pb => pb.Id).FirstOrDefault();
