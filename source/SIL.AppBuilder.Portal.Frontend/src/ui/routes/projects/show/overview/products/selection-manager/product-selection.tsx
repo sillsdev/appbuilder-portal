@@ -7,6 +7,7 @@ import { OrganizationResource, ProductDefinitionResource, ProjectResource } from
 import { i18nProps } from '@lib/i18n';
 
 import ProductDefinitionMultiSelect from './multi-select';
+import { attributesFor } from 'react-orbitjs/dist';
 
 interface IProps {
   toggleModal: () => void;
@@ -26,6 +27,7 @@ export default (props: IProps & i18nProps) => {
       className='ui button fs-13 bold uppercase
       round-border-4 dark-blue-text
       thin-inverted-border bg-transparent'
+      disabled={!attributesFor(project).workflowProjectUrl}
       onClick={toggleModal}
     >
       {t('project.products.addRemove')}
