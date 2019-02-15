@@ -39,9 +39,10 @@ export default function ProductItem({ product, includeHeader }) {
     q.findRelatedRecord(product, 'productDefinition')
   );
 
+  // const tasks = [];
   const tasks = dataStore.cache.query((q) =>
     q
-      .findRecords('userTasks')
+      .findRecords('userTask')
       .filter({ relation: 'product', record: product })
       .filter({ relation: 'user', record: currentUser })
   );
