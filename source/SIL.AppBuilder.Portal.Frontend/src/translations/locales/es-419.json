@@ -44,6 +44,13 @@
     "updated": "Updated",
     "error": "Error"
   },
+  "models": {
+    "add": "Add {name}",
+    "edit": "Edit {name}",
+    "save": "Save {name}",
+    "createSuccess": "{name} was successfully created!",
+    "updateSuccess": "{name} was successfully updated!"
+  },
   "auth": {
     "title": "Scriptoria",
     "signup": "Registrarse",
@@ -155,6 +162,7 @@
   },
   "errors": {
     "generic": "¡Ha ocurrido un error! {errorMessage}",
+    "requiredField": "The {field} is required, but has no value",
     "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
     "notFoundTitle": "\n¡No encontrado!",
     "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
@@ -356,6 +364,18 @@
       }
     }
   },
+  "stores": {
+    "name": "Store",
+    "listTitle": "Stores",
+    "attributes": {
+      "name": "Nombre",
+      "description": "Description"
+    }
+  },
+  "storeTypes": {
+    "name": "Store Type",
+    "listTitle": "Store Types"
+  },
   "admin": {
     "settings": {
       "title": "Admin settings",
@@ -363,7 +383,8 @@
         "organizations": "Organizations",
         "workflowdefinitions": "Workflow Definitions",
         "productDefinitions": "Product Definitions",
-        "storeTypes": "Store Types"
+        "storeTypes": "Store Types",
+        "stores": "Stores"
       },
       "organizations": {
         "title": "Organizations",
