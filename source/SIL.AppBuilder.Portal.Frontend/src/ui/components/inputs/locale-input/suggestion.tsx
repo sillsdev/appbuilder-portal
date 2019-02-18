@@ -13,15 +13,18 @@ interface IProps {
 export function Suggestion({ suggestion, searchedValue, t }: IProps) {
   const { localname, name, tag, nameInLocale } = suggestion;
   const additionalMatch = findAdditionalMatches(suggestion, searchedValue);
-
+  const languagename = localname || name;
+  const doesNameDifferInLocale = languagename !== nameInLocale;
   return (
     <div className='flex-col'>
       <div className='flex-row justify-content-space-between'>
         <div className='flex-col m-r-md'>
-          <div className='black-text'>{highlightIfPresent(localname || name, searchedValue)}</div>
-          <div className='fs-11 gray-text m-r-sm'>
-            {highlightIfPresent(nameInLocale, searchedValue)}
-          </div>
+          <div className='black-text'>{highlightIfPresent(languagename, searchedValue)}</div>
+          {doesNameDifferInLocale && (
+            <div className='fs-11 gray-text m-r-sm'>
+              {highlightIfPresent(nameInLocale, searchedValue)}
+            </div>
+          )}
         </div>
         <div className='flex-col text-align-right'>
           <div data-test-tag className='black-text'>

@@ -102,7 +102,7 @@ class Field extends React.Component<IProps & i18nProps, IState> {
 
     return (
       <span data-test-locale-input-container className={wrapperClass} {...domAttributes}>
-        <div className='locale-input__full-tag'>{languageInfo && languageInfo.full}</div>
+        <div className='locale-input__full-tag'>{languageInfo && languageInfo.nameInLocale}</div>
         <Autosuggest
           {...{
             suggestions: suggestions.sort(sortComparer(value)).slice(0, 5),
