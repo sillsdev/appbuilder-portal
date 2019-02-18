@@ -3018,6 +3018,15 @@
       "source": "// entities are List<DynamicEntity> of mapped properties for the form (Product properties and form field names)\n// DateBuilt, DateCreated, DatePublished, DateUpdated, ProductDefinitionId, ProjectId, WorkflowBuildId, WorkflowJobId,\n// WorkflowPublishId, Id, dropdown_store, dropdown_language, textarea_comment, input_project_description, input_project_name\n// if (entities != null && entities.Count > 0)\n// {\n//     var entity1 = entities.First();\n//     foreach(var pair in entity1.ToDictionary())\n//     {\n//         Console.WriteLine(\":::: Property: \" + pair.ToString());\n//     }\n// } \nvar id = entities.Select(e => (int) e.WorkflowBuildId).Max();\nLog.Information($\":::: Max WorkflowBuildId id:{id} typeof:{id.GetType()}\");\nreturn Filter.And.Equal(id, \"buildid\");\n//return Filter.Empty;",
       "usings": "Serilog;\nSystem;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Diagnostics;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
       "isAsync": false
+    },
+    {
+      "id": "14905a2a-e5f4-2fcc-88a9-b2aaf4328110",
+      "name": "ProductReviewers",
+      "definedOnServer": false,
+      "type": 0,
+      "source": "// entities are List<DynamicEntity> of mapped properties for the form (Product properties and form field names)\n// DateBuilt, DateCreated, DatePublished, DateUpdated, ProductDefinitionId, ProjectId, WorkflowBuildId, WorkflowJobId,\n// WorkflowPublishId, Id, dropdown_store, dropdown_language, textarea_comment, input_project_description, input_project_name\nif (entities != null && entities.Count > 0)\n{\n    var entity1 = entities.First();\n    foreach(var pair in entity1.ToDictionary())\n    {\n        Console.WriteLine(\":::: Property: \" + pair.ToString());\n    }\n} \nvar id = entities.Select(e => (int) e.ProjectId).Max();\nConsole.WriteLine(\":::: Entity: \" + id);\nreturn Filter.Empty;\n//return Filter.And.Equal(id, \"projectid\");\n",
+      "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
+      "isAsync": false
     }
   ],
   "businessFlow": [
@@ -3027,15 +3036,6 @@
       "scheme": "SIL_Default_AppBuilders_Android_GooglePlay",
       "defaultForm": "SIL_AppBuilders_Waiting",
       "map": [
-        {
-          "states": [
-            "Definition"
-          ],
-          "roles": [
-            "*"
-          ],
-          "form": "SIL_AppBuilders_Product_Definition"
-        },
         {
           "states": [
             "Approval"

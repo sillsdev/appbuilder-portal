@@ -11,7 +11,6 @@ using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using SIL.AppBuilder.BuildEngineApiClient;
-using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support.TestClasses;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
@@ -41,7 +40,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
             services.AddScoped<BuildEngineProductService>();
             services.AddScoped<BuildEngineBuildService>();
             services.AddScoped<BuildEngineReleaseService>();
-            services.AddScoped<SendNotificationServiceTester>();
+            services.AddScoped<SendNotificationService>();
+            services.AddScoped<SendEmailService>();
             services.AddScoped<IOrganizationInviteRequestService, OrganizationInviteRequestService>();
             services.AddI18NextLocalization(i18n => i18n
                                             .IntegrateToAspNetCore()

@@ -18,12 +18,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public ITranslator Translator { get; }
         public IJobRepository<Email> EmailRepository { get; }
         public IJobRepository<UserRole> UserRolesRepository { get; }
+        public SendEmailService SendEmailService { get; }
         public IJobRepository<Notification> NotificationRepository { get; }
 
         public SendNotificationService(
             ITranslator translator,
             IJobRepository<Email> emailRepository,
             IJobRepository<UserRole> userRolesRepository,
+            SendEmailService sendEmailService,
             IHubContext<ScriptoriaHub> hubContext,
             IJobRepository<Notification> notificationRepository
         )
@@ -31,6 +33,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             Translator = translator;
             EmailRepository = emailRepository;
             UserRolesRepository = userRolesRepository;
+            SendEmailService = sendEmailService;
             NotificationRepository = notificationRepository;
             HubContext = hubContext;
 
@@ -121,40 +124,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                                     .ToList();
             foreach (var notification in notifications)
             {
-                SendEmailAsync(notification).Wait();
+                SendEmailService.SendNotificationEmailAsync(notification).Wait();
+                notification.DateEmailSent = DateTime.UtcNow;
+                NotificationRepository.UpdateAsync(notification).Wait();
             }
-        }
-        protected async Task SendEmailAsync(Notification notification)
-        {
-            var template = "Notification.txt";
-            var buildEngineUrlText = "";
-            var locale = notification.User.LocaleOrDefault();
-            var fullBodyId = "notifications.body." + notification.MessageId;
-            var fullSubjectId = "notifications.subject." + notification.MessageId;
-            var subsDict = notification.MessageSubstitutions as Dictionary<string, object>;
-            var subject = await Translator.TranslateAsync(locale, "notifications", fullSubjectId, subsDict);
-            var body = await Translator.TranslateAsync(locale, "notifications", fullBodyId, subsDict);
-            notification.DateEmailSent = DateTime.UtcNow;
-            await NotificationRepository.UpdateAsync(notification);
-            if (!string.IsNullOrEmpty(notification.LinkUrl))
-            {
-                template = "NotificationWithLink.txt";
-                var buildEngineUrlIndex = "notifications.body.buildEngineUrl";
-                buildEngineUrlText = await Translator.TranslateAsync(locale, "notifications", buildEngineUrlIndex, subsDict);
-            }
-            var email = new Email
-            {
-                To = notification.User.Email,
-                Subject = subject,
-                ContentTemplate = template,
-                ContentModel = new
-                {
-                    Message = body,
-                    BuildEngineUrlText = buildEngineUrlText,
-                    LinkUrl = notification.LinkUrl
-                }
-            };
-            var result = await EmailRepository.CreateAsync(email);
         }
     }
 }

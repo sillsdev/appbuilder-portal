@@ -16,6 +16,7 @@ using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using Newtonsoft.Json;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
@@ -48,6 +49,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncActions.Add("BuildEngine_BuildProduct", BuildEngineBuildProductAsync);
             _asyncActions.Add("BuildEngine_PublishProduct", BuildEnginePublishProductAsync);
             _asyncActions.Add("GooglePlay_UpdatePublishLink", GooglePlay_UpdatPublishLinkAsync);
+            _asyncActions.Add("SendReviewerLinkToProductFiles", SendReviewerLinkToProductFilesAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
             //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync); 
@@ -235,6 +237,24 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
                 //TODO: Send Notification to user
                 Log.Information($"SendNotification: auth0Id={owner.ExternalId}, name={owner.Name}");
+            }
+        }
+
+        private async Task SendReviewerLinkToProductFilesAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+                if (parmsDict.ContainsKey("types"))
+                {
+                    BackgroundJobClient.Enqueue<SendEmailService>(s => s.SendProductReviewEmail(product.Id, parmsDict));
+                }
+                else
+                {
+                    throw new Exception($"Product {product.Id.ToString()}: Types not found in workflow action parameters");
+                }
             }
         }
 

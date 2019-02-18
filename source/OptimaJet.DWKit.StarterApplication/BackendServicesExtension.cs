@@ -87,6 +87,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
             services.AddScoped(typeof(EntityHooksService<>));
+            services.AddScoped<SendEmailService>();
             services.AddScoped<OrganizationMembershipService>();
             services.AddScoped<OrganizationMembershipInviteService>();
 

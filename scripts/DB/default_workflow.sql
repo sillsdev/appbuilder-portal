@@ -36,20 +36,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Continue" />
     <Command Name="Back" />
     <Command Name="Rebuild" />
+    <Command Name="Email Reviewers" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
   </Timers>
   <Activities>
-    <Activity Name="Definition" State="Definition" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
-      <Implementation>
-        <ActionRef Order="1" NameRef="UpdateProductTransition" />
-      </Implementation>
-      <PreExecutionImplementation>
-        <ActionRef Order="1" NameRef="WriteProductTransition" />
-      </PreExecutionImplementation>
-      <Designer X="40" Y="100" />
-    </Activity>
     <Activity Name="Product Creation" State="Product Creation" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
@@ -69,7 +61,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="700" Y="260" />
     </Activity>
-    <Activity Name="Approval" State="Approval" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Approval" State="Approval" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -180,6 +172,14 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="990" Y="890" />
     </Activity>
+    <Activity Name="Email Reviewers" State="Email Reviewers" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="SendReviewerLinkToProductFiles">
+          <ActionParameter><![CDATA[{"types":["apk","play-listing"]}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <Designer X="1010" Y="580" />
+    </Activity>
   </Activities>
   <Transitions>
     <Transition Name="Job Creation_Activity_1_1" To="Check Product Creation" From="Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
@@ -190,19 +190,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Condition Type="Always" />
       </Conditions>
       <Designer />
-    </Transition>
-    <Transition Name="Definition_Approval_1" To="Approval" From="Definition" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
-      <Restrictions>
-        <Restriction Type="Allow" NameRef="Owner" />
-        <Restriction Type="Allow" NameRef="Admins" />
-      </Restrictions>
-      <Triggers>
-        <Trigger Type="Command" NameRef="Continue" />
-      </Triggers>
-      <Conditions>
-        <Condition Type="Always" />
-      </Conditions>
-      <Designer X="300" Y="116" />
     </Transition>
     <Transition Name="Approval_Job Creation_1" To="Product Creation" From="Approval" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -216,19 +203,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Condition Type="Always" />
       </Conditions>
       <Designer />
-    </Transition>
-    <Transition Name="Approval_Definition_1" To="Definition" From="Approval" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
-      <Restrictions>
-        <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
-      </Restrictions>
-      <Triggers>
-        <Trigger Type="Command" NameRef="Reject" />
-      </Triggers>
-      <Conditions>
-        <Condition Type="Always" />
-      </Conditions>
-      <Designer X="301" Y="150" />
     </Transition>
     <Transition Name="Check Job Creation_Activity_1_1" To="Repo Configuration" From="Check Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -476,6 +450,33 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Condition Type="Always" />
       </Conditions>
       <Designer X="288" Y="842" />
+    </Transition>
+    <Transition Name="App Store Preview_Activity_1_2" To="Email Reviewers" From="App Store Preview" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+        <Restriction Type="Allow" NameRef="OrgAdmin" />
+        <Restriction Type="Allow" NameRef="Admins" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Email Reviewers" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Notify Reviewers_App Store Preview_1" To="App Store Preview" From="Email Reviewers" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+        <Restriction Type="Allow" NameRef="Admins" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="946" Y="541" />
     </Transition>
   </Transitions>
 </Process>')
