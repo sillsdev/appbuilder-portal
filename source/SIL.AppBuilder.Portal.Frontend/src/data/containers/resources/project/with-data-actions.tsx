@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { withData as withOrbit, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
 
 import {
   defaultOptions,
   ProjectResource,
   ProductResource,
+  UserResource,
   StoreResource,
   relationshipFor,
 } from '@data';
@@ -29,7 +30,22 @@ interface IOwnProps {
   products: ProductResource[];
 }
 
-type IProps = IOwnProps & WithDataProps;
+type IProps = IOwnProps;
+
+export function useDataActions(project) {
+  const { dataStore } = useOrbit();
+
+  return {
+    updateOwner(user: UserResource) {
+      const userId = idFromRecordIdentity(user);
+
+      return dataStore.update(
+        (q) => q.replaceRelatedRecord(project, 'owner', { type: 'user', id: userId }),
+        defaultOptions()
+      );
+    },
+  };
+}
 
 export function withDataActions<T>(WrappedComponent) {
   class ProjectDataActionWrapper extends React.Component<IProps & T> {
