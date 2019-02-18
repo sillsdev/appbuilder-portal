@@ -40,10 +40,7 @@ export default function ProductItem({ product, includeHeader }) {
   const { dateUpdated, datePublished, publishLink } = attributesFor(product);
 
   return (
-    <div
-      data-test-project-product-item
-      className='round-border-4 thin-border'
-    >
+    <div data-test-project-product-item className='round-border-4 thin-border'>
       <div
         className='
         flex-md flex-100 position-relative
