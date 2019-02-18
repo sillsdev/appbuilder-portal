@@ -48,6 +48,14 @@
       "groupName": "TypeScript type definitions"
     },
     {
+      "packagePatterns": ["^@orbit"],
+      "groupName": "Orbit.JS"
+    },
+    {
+      "packagePatterns": ["^@polly"],
+      "groupName": "Polly.JS"
+    },
+    {
       "sourceUrlPrefixes": [
         "https://github.com/aspnet/MetaPackages",
         "https://github.com/aspnet/AspNetCore"
