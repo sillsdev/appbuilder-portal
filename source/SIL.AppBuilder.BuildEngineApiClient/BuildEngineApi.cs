@@ -99,6 +99,13 @@ namespace SIL.AppBuilder.BuildEngineApiClient
             return response.StatusCode;
         }
 
+        public TokenResponse GetProjectAccessToken(int projectId, TokenRequest tokenRequest)
+        {
+            var request = CreateRequest("project/{projectId}/token", Method.POST)
+                .AddParameter("projectId", projectId, ParameterType.UrlSegment)
+                .AddJsonBody(tokenRequest);
+            return Execute<TokenResponse>(request);
+        }
         public JobResponse CreateJob(Job job)
         {
             Require.Argument("RequestId", job.RequestId);

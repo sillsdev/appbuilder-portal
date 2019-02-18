@@ -13,6 +13,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         ProjectResponse GetProject(int projectId);
         List<ProjectResponse> GetProjects();
         HttpStatusCode DeleteProject(int projectId);
+        TokenResponse GetProjectAccessToken(int projectId, TokenRequest tokenRequest);
         JobResponse CreateJob(Job job);
         JobResponse GetJob(int jobId);
         List<JobResponse> GetJobs();

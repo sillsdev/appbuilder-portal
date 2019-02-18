@@ -86,5 +86,24 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             var response = client.DeleteProject(projectId);
             Assert.Equal(System.Net.HttpStatusCode.OK, response);
         }
+        [Theory(Skip = skipIntegrationTest)]
+        [InlineData(1)]
+        public void GetTokenTest(int projectId)
+        {
+            var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
+            var request = new TokenRequest
+            {
+                Name = "auth0=1234324231423"
+            };
+            var response = client.GetProjectAccessToken(projectId, request);
+            Assert.NotNull(response.AccessKeyId);
+            Assert.NotEmpty(response.AccessKeyId);
+            Assert.NotNull(response.SessionToken);
+            Assert.NotEmpty(response.SessionToken);
+            Assert.NotNull(response.SecretAccessKey);
+            Assert.NotEmpty(response.SecretAccessKey);
+            Assert.NotNull(response.Expiration);
+            Assert.NotEmpty(response.Expiration);
+        }
     }
 }
