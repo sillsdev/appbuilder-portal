@@ -8,8 +8,8 @@ FROM nginx:1.15.8-alpine AS base
 RUN apk add --no-cache git curl bash
 RUN apk add --no-cache \
       --repository http://dl-3.alpinelinux.org/alpine/edge/community \
-      nodejs=8.14.0-r0 \
-      npm=8.14.0-r0 \
+      nodejs=10.14.2-r0 \
+      npm=10.14.2-r0 \
       build-base \
     && npm install -qg yarn
 WORKDIR /src
