@@ -46,7 +46,7 @@ export function useTimezoneFormatters() {
       return moment(inTz(dateTime)).fromNow(!label);
     },
     relativeTimeAgo(dateTime: string) {
-      return moment(inTz(dateTime)).fromNow(false);
+      return moment(inTz(dateTime)).fromNow(true);
     },
     format(dateTime, format = 'LLL') {
       return moment(inTz(dateTime)).format(format);
