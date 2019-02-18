@@ -1,41 +1,19 @@
 import React, { useMemo } from 'react';
-import { compose } from 'recompose';
-import { withData as withOrbit, useOrbit } from 'react-orbitjs';
+import { query, useOrbit } from 'react-orbitjs';
 
-import {
-  query,
-  defaultSourceOptions,
-  OrganizationResource,
-  UserResource,
-  GroupMembershipResource,
-} from '@data';
+import { defaultSourceOptions, OrganizationResource, UserResource } from '@data';
 
 import { TYPE_NAME as USER } from '@data/models/user';
-import { withCurrentUserContext, useCurrentUser } from '@data/containers/with-current-user';
+import { useCurrentUser } from '@data/containers/with-current-user';
 import { retrieveRelation } from '@data/containers/with-relationship';
-import { PageLoader as Loader } from '@ui/components/loaders';
 
-export interface IProvidedProps {
+interface IProps {
   users: UserResource[];
-  disableSelection: true;
-}
-
-interface IOwnProps {
-  users: UserResource[];
-  groupMemberships: GroupMembershipResource[];
-  currentUsersGroupMemberships: GroupMembershipResource[];
-  usersFromCache: UserResource[];
   currentUser: UserResource;
   selected: Id;
   groupId: Id;
   restrictToGroup: boolean;
   scopeToOrganization?: OrganizationResource;
-}
-
-type IProps = IOwnProps;
-
-interface IState {
-  users?: UserResource[];
 }
 
 export function withData(WrappedComponent) {
