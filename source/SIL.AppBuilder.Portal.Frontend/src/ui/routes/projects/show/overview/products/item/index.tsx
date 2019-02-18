@@ -42,14 +42,11 @@ export default function ProductItem({ product, includeHeader }) {
   return (
     <div
       data-test-project-product-item
-      className='
-
-        round-border-4 thin-border
-      '
+      className='round-border-4 thin-border'
     >
       <div
         className='
-        flex-md flex-100 m-b-sm position-relative
+        flex-md flex-100 position-relative
         justify-content-space-between align-items-center
         w-100-xs-only
         p-md fs-13 light-gray-text
@@ -81,9 +78,8 @@ export default function ProductItem({ product, includeHeader }) {
           <ItemActions />
         </div>
       </div>
-      <div className='w-100 p-sm p-b-md m-l-md fs-13'>
-        <ProductTasksForCurrentUser {...{ product }} />
-      </div>
+
+      <ProductTasksForCurrentUser {...{ product }} />
     </div>
   );
 }
