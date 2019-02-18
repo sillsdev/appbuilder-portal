@@ -7,6 +7,7 @@ import { ProjectResource } from '@data';
 import { useCurrentUser } from '@data/containers/with-current-user';
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import { useTranslations } from '@lib/i18n';
+import * as toast from '@lib/toast';
 
 import Overview from './overview';
 import Header from './header';
@@ -34,16 +35,14 @@ export default function ProjectShowDisplay({ project, toggleArchiveProject }: IP
   const { currentUser } = useCurrentUser();
   const { updateOwner } = useDataActions(project);
 
-  const toggleArchive = (e) => {
-    e.preventDefault();
+  const claimOwnership = async () => {
+    try {
+      await updateOwner(currentUser);
 
-    toggleArchiveProject(project);
-  };
-
-  const claimOwnership = (e) => {
-    e.preventDefault();
-
-    updateOwner(currentUser);
+      toast.success(t('project.claimSuccess'));
+    } catch (e) {
+      toast.error(e);
+    }
   };
 
   if (!project || !project.attributes) {
@@ -56,8 +55,10 @@ export default function ProjectShowDisplay({ project, toggleArchiveProject }: IP
         {...{
           t,
           project,
-          toggleArchive,
           claimOwnership,
+          toggleArchive() {
+            toggleArchiveProject(project);
+          },
         }}
       />
 

@@ -214,6 +214,7 @@
     "organizationContact": "Organization Contact: ",
     "projectOwner": "Project Owner: ",
     "claimOwnership": "Claim Ownership",
+    "claimSuccess": "Succesfully Claimed",
     "newProject": "New Project",
     "projectName": "Project Name",
     "noAvailableGroups": "There are no available groups for the selected organization",
