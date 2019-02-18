@@ -5,9 +5,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import { OrganizationResource, ProductDefinitionResource, ProjectResource } from '@data';
 
 import { i18nProps } from '@lib/i18n';
+import { attributesFor } from 'react-orbitjs/dist';
 
 import ProductDefinitionMultiSelect from './multi-select';
-import { attributesFor } from 'react-orbitjs/dist';
 
 interface IProps {
   toggleModal: () => void;

@@ -23,6 +23,7 @@ const mapNetworkToProps = (passedProps) => {
         include: [
           'products.product-builds.product-artifacts',
           'products.user-tasks.user',
+          'products.user-tasks.product.product-definition.workflow',
           'products.product-definition',
           'organization.organization-product-definitions.product-definition.workflow.store-type',
           GROUP,

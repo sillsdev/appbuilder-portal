@@ -42,6 +42,7 @@
     "reactivate": "Reactivate",
     "build": "Build / Rebuild",
     "updated": "Updated",
+    "continue": "Continue",
     "error": "Error"
   },
   "auth": {
@@ -179,7 +180,9 @@
     "unclaimed": "[unclaimed]",
     "noTasksTitle": "No tasks are assigned to you.",
     "noTasksDescription": "Tasks that require your attention will appear here.",
-    "reassign": "Reassign"
+    "reassign": "Reassign",
+    "waiting": "Waiting {waitTime}",
+    "forYou": "for you to {activityName}"
   },
   "projects": {
     "noBuilds": "No Builds Yet",

@@ -3,6 +3,7 @@ import Store from '@orbit/store';
 import { compose, withProps, getDisplayName } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
 import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
+import { Record } from '@orbit/data';
 import { assert } from '@orbit/utils';
 
 type RelationshipArgs = [ResourceObject, string, string] | [ResourceObject, string];
@@ -100,4 +101,24 @@ async function retriveDirectRelationship(
 ) {
   // TODO: add detection for hasOne vs hasMany, via lookup of the schema from dataStore
   throw new Error('not implemented');
+}
+
+export function relationsFromPath(
+  dataStore: Store,
+  sourceModel: Record,
+  relationshipPath: string[]
+) {
+  let segment;
+  let model = sourceModel;
+  let models = [];
+
+  for (let i = 0; i < relationshipPath.length; i++) {
+    segment = relationshipPath[i];
+    assert(`can't access segment (${segment}) on falsey model.`, !!model);
+
+    model = dataStore.cache.query((q) => q.findRelatedRecord(model, segment));
+    models.push(model);
+  }
+
+  return models;
 }
