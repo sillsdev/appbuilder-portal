@@ -1,48 +1,60 @@
 import * as React from 'react';
-import { compose } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
+import { compose, withProps } from 'recompose';
+import { withData as withOrbit, useOrbit } from 'react-orbitjs';
 
-import { ProductResource, ProductDefinitionResource, withLoader, attributesFor } from '@data';
+import {
+  ProductResource,
+  ProductDefinitionResource,
+  withLoader,
+  attributesFor,
+  UserTaskResource,
+} from '@data';
 
 import LaunchIcon from '@material-ui/icons/Launch';
 import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { isEmpty } from '@lib/collection';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { useTranslations } from '@lib/i18n';
 
 import ItemActions from './actions';
+import ProductTasksForCurrentUser from './tasks';
 
 interface IOwnProps {
   includeHeader?: boolean;
   product: ProductResource;
   productDefinition: ProductDefinitionResource;
+  tasks: UserTaskResource[];
 }
 
-type IProps = IOwnProps & i18nProps;
+type IProps = IOwnProps;
 
-const mapRecordsToProps = (passedProps) => {
-  const { product } = passedProps;
+export default function ProductItem({ product, includeHeader }) {
+  const { t } = useTranslations();
+  const { dataStore } = useOrbit();
 
-  return {
-    productDefinition: (q) => q.findRelatedRecord(product, 'productDefinition'),
-  };
-};
+  const productDefinition = dataStore.cache.query((q) =>
+    q.findRelatedRecord(product, 'productDefinition')
+  );
 
-class ProductItem extends React.Component<IProps> {
-  render() {
-    const { product, productDefinition, t, includeHeader } = this.props;
-    const { description, name } = attributesFor(productDefinition);
-    const { dateUpdated, datePublished, publishLink } = attributesFor(product);
+  const { description, name } = attributesFor(productDefinition);
+  const { dateUpdated, datePublished, publishLink } = attributesFor(product);
 
-    return (
+  return (
+    <div
+      data-test-project-product-item
+      className='
+
+        round-border-4 thin-border
+      '
+    >
       <div
-        className='flex-md w-100-xs-only
-        flex-100 m-b-sm position-relative
-        justify-content-space-between
-        align-items-center
+        className='
+        flex-md flex-100 m-b-sm position-relative
+        justify-content-space-between align-items-center
+        w-100-xs-only
         p-md fs-13 light-gray-text
-        round-border-4 thin-border'
-        data-test-project-product-item
+        bg-lightest-gray round-border-4 thin-bottom-border
+        '
       >
         <div className='flex align-items-center w-55-md'>
           <ProductIcon product={productDefinition} selected={true} />
@@ -69,12 +81,9 @@ class ProductItem extends React.Component<IProps> {
           <ItemActions />
         </div>
       </div>
-    );
-  }
+      <div className='w-100 p-sm p-b-md m-l-md fs-13'>
+        <ProductTasksForCurrentUser {...{ product }} />
+      </div>
+    </div>
+  );
 }
-
-export default compose(
-  withTranslations,
-  withOrbit(mapRecordsToProps),
-  withLoader(({ productDefinition }) => !productDefinition)
-)(ProductItem);

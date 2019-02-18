@@ -29,7 +29,7 @@ export function parseError(error: any): ParsedError {
   if (error instanceof ClientError) {
     const maybeJsonApiError = getFirstJSONAPIError(error);
 
-    if (!isEmpty(maybeJsonApiError)) {
+    if (Object.keys(maybeJsonApiError).length > 0) {
       return { title: maybeJsonApiError.title, body: maybeJsonApiError.detail };
     }
 

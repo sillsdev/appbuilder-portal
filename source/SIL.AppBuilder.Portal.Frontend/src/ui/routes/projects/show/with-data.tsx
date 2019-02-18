@@ -22,6 +22,9 @@ const mapNetworkToProps = (passedProps) => {
       buildOptions({
         include: [
           'products.product-builds.product-artifacts',
+          'products.user-tasks.user',
+          'products.user-tasks.product.product-definition.workflow',
+          'products.product-definition',
           'organization.organization-product-definitions.product-definition.workflow.store-type',
           GROUP,
           'owner.group-memberships.group',
@@ -48,7 +51,9 @@ const mapRecordsToProps = (passedProps) => {
 export function withData(WrappedComponent) {
   return compose(
     query(mapNetworkToProps, { passthroughError: true }),
-    withError('error', ({ error }) => error),
+    withError('error', (props) => {
+      return props.error;
+    }),
     withLoader(({ project }) => !project),
     withOrbit(mapRecordsToProps)
   )(WrappedComponent);

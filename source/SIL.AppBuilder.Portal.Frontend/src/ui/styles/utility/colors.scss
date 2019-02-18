@@ -2,6 +2,10 @@
   color: black;
 }
 
+.red-text {
+  color: darken($error-color, 30%);
+}
+
 .white-text {
   color: white;
 }

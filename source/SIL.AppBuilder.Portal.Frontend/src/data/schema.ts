@@ -258,6 +258,7 @@ const schemaDefinition: SchemaSettings = {
         waitTime: { type: 'number' },
       },
       relationships: {
+        user: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' },
         product: { type: 'hasOne', model: 'product', inverse: 'tasks' },
         assigned: { type: 'hasOne', model: 'user', inverse: 'assignedTasks' },
       },

@@ -1,3 +1,4 @@
+import { Record } from '@orbit/data';
 import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
 
 export type USER_TASK_TYPE = 'userTask';
@@ -12,4 +13,4 @@ export interface UserTaskAttributes extends AttributesObject {
   waitTime: number;
 }
 
-export type UserTaskResource = ResourceObject<USER_TASK_TYPE, UserTaskAttributes>;
+export type UserTaskResource = ResourceObject<USER_TASK_TYPE, UserTaskAttributes> & Record;

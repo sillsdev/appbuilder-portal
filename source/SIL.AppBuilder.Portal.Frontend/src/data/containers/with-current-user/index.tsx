@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useContext } from 'react';
 
 import { ICurrentUserProps } from './types';
 import { withFetcher } from './fetcher';
@@ -10,6 +11,10 @@ export const CurrentUserContext = React.createContext<ICurrentUserProps>({
   currentUser: undefined,
   currentUserProps: {},
 });
+
+export function useCurrentUser() {
+  return useContext(CurrentUserContext);
+}
 
 export const Provider = withFetcher()((props: ICurrentUserProps & { children: any }) => {
   const { currentUser, currentUserProps, children } = props;

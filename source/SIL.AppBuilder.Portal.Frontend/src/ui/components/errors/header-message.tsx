@@ -12,27 +12,22 @@ export interface IProps {
   showClose?: boolean;
 }
 
-export default class ErrorHeaderMessage extends React.Component<IProps> {
-  render() {
-    const { error } = this.props;
-    let { showClose } = this.props;
-
-    if (!error || error.length === 0) {
-      return null;
-    }
-
-    showClose = showClose === undefined ? true : showClose;
-
-    // title is required, but body is not.
-    const { title, body } = parseError(error);
-
-    return (
-      <div className='ui negative message'>
-        {showClose ? <CloseIcon className='close icon' /> : null}
-        <div className='header'>{title}</div>
-
-        {(body && <p>{body}</p>) || null}
-      </div>
-    );
+export default function ErrorHeaderMessage({ error, showClose }: IProps) {
+  if (!error || error.length === 0) {
+    return null;
   }
+
+  showClose = showClose === undefined ? true : showClose;
+
+  // title is required, but body is not.
+  const { title, body } = parseError(error);
+
+  return (
+    <div className='ui negative message'>
+      {showClose ? <CloseIcon className='close icon' /> : null}
+      <div className='header'>{title}</div>
+
+      {(body && <p>{body}</p>) || null}
+    </div>
+  );
 }

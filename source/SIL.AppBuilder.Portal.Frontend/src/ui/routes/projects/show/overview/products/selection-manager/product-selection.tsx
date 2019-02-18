@@ -5,6 +5,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { OrganizationResource, ProductDefinitionResource, ProjectResource } from '@data';
 
 import { i18nProps } from '@lib/i18n';
+import { attributesFor } from 'react-orbitjs/dist';
 
 import ProductDefinitionMultiSelect from './multi-select';
 
@@ -26,6 +27,7 @@ export default (props: IProps & i18nProps) => {
       className='ui button fs-13 bold uppercase
       round-border-4 dark-blue-text
       thin-inverted-border bg-transparent'
+      disabled={!attributesFor(project).workflowProjectUrl}
       onClick={toggleModal}
     >
       {t('project.products.addRemove')}

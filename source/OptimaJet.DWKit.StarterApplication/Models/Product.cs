@@ -18,6 +18,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public virtual Store Store { get; set; }
         public int? StoreId { get; set; }
 
+        [HasMany("user-tasks", Link.None)]
+        public virtual List<UserTask> UserTasks { get; set; }
+
         [HasOne("store-language")]
         public virtual StoreLanguage StoreLanguage { get; set; }
         public int? StoreLanguageId { get; set; }
