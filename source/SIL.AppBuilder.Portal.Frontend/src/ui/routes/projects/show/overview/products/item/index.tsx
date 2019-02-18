@@ -4,11 +4,9 @@ import { withData as withOrbit } from 'react-orbitjs';
 
 import { ProductResource, ProductDefinitionResource, withLoader, attributesFor } from '@data';
 
-import IconButton from '@material-ui/core/IconButton';
 import LaunchIcon from '@material-ui/icons/Launch';
 import ProductIcon from '@ui/components/product-icon';
 import TimezoneLabel from '@ui/components/labels/timezone';
-import { Link } from 'react-router-dom';
 import { isEmpty } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 
@@ -53,9 +51,9 @@ class ProductItem extends React.Component<IProps> {
           </div>
           {!isEmpty(publishLink) && (
             <div data-test-project-product-publishlink>
-              <IconButton component={Link} to={publishLink} target='_blank'>
+              <a className='m-l-sm' href={publishLink} target='_blank'>
                 <LaunchIcon />
-              </IconButton>
+              </a>
             </div>
           )}
         </div>
