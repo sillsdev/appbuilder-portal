@@ -213,6 +213,8 @@
     "title": "Proyecto",
     "organizationContact": "Organization Contact: ",
     "projectOwner": "Project Owner: ",
+    "claimOwnership": "Claim Ownership",
+    "claimSuccess": "Succesfully Claimed",
     "newProject": "Nuevo proyecto",
     "projectName": "Nombre de proyecto",
     "noAvailableGroups": "There are no available groups for the selected organization",
