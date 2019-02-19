@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { withOrbit, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
 
 import {
   defaultOptions,
   ProjectResource,
   ProductResource,
+  GroupResource,
+  UserResource,
   StoreResource,
   relationshipFor,
 } from '@data';
@@ -14,6 +16,7 @@ import { ProjectAttributes } from '@data/models/project';
 import { recordIdentityFromKeys } from '@data/store-helpers';
 import { requireProps } from '@lib/debug';
 import { ProductDefinitionResource } from '@data/models/product-definition';
+import { buildFindRecord } from '@data/store-helpers';
 
 export interface IProvidedProps {
   updateAttribute: (attribute: string, value: any) => Promise<any>;
@@ -29,7 +32,34 @@ interface IOwnProps {
   products: ProductResource[];
 }
 
-type IProps = IOwnProps & WithDataProps;
+type IProps = IOwnProps;
+
+export function useDataActions(project) {
+  const { dataStore } = useOrbit();
+
+  return {
+    updateOwner(user: UserResource | string) {
+      if (typeof user === 'string') {
+        user = dataStore.cache.query((q) => buildFindRecord(q, 'user', user));
+      }
+
+      return dataStore.update(
+        (t) => t.replaceRelatedRecord(project, 'owner', user),
+        defaultOptions()
+      );
+    },
+    updateGroup(group: GroupResource | string) {
+      if (typeof group === 'string') {
+        group = dataStore.cache.query((q) => buildFindRecord(q, 'group', group));
+      }
+
+      return dataStore.update(
+        (t) => t.replaceRelatedRecord(project, 'group', group),
+        defaultOptions()
+      );
+    },
+  };
+}
 
 export function withDataActions<T>(WrappedComponent) {
   class ProjectDataActionWrapper extends React.Component<IProps & T> {
