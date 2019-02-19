@@ -45,6 +45,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public Project project2 { get; set; }
         public Project project3 { get; set; }
         public Project project4 { get; set; }
+        public Project project5 { get; set; }
         public SystemStatus systemStatus1 { get; set; }
         public SystemStatus systemStatus2 { get; set; }
         public String DefaultBuildEngineUrl { get; set; }
@@ -69,7 +70,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             });
             user1 = AddEntity<AppDbContext, User>(new User
             {
-                ExternalId = "test-auth0-id1",
+                ExternalId = "google-oauth2|123432423142312345678",
                 Email = "test-email1@test.test",
                 Name = "Test Testenson1",
                 GivenName = "Test1",
@@ -77,7 +78,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             });
             user2 = AddEntity<AppDbContext, User>(new User
             {
-                ExternalId = "test-auth0-id2",
+                ExternalId = "auth0|5c3e04df7493d43852060b26",
                 Email = "test-email2@test.test",
                 Name = "Test Testenson2",
                 GivenName = "Test2",
@@ -207,6 +208,19 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Language = "eng-US",
                 IsPublic = true
             });
+            project5 = AddEntity<AppDbContext, Project>(new Project
+            {
+                Name = "Test Project5",
+                TypeId = type1.Id,
+                Description = "Test Description 5",
+                OwnerId = user2.Id,
+                GroupId = group1.Id,
+                OrganizationId = org1.Id,
+                Language = "eng-US",
+                WorkflowProjectId = 3,
+                WorkflowProjectUrl = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8",
+                IsPublic = true
+            });
             ur1 = AddEntity<AppDbContext, UserRole>(new UserRole
             {
                 UserId = user2.Id,
@@ -309,10 +323,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var projectResponse = new ProjectResponse
             {
                 Id = 1,
-                Status = "initialized",
-                Result = "",
+                Status = "completed",
+                Result = "SUCCESS",
                 Error = "",
-                Url = ""
+                Url = "s3://tst-stg-aps-projects/scriptureappbuilder/" + project1.Language + "-1-" + project1.Name.Replace(" ", "-")
             };
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns(projectResponse);
             await buildProjectService.ManageProjectAsync(project1.Id, null);
@@ -321,22 +335,26 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
             mockBuildEngine.Verify(x => x.CreateProject(
-                It.Is<BuildEngineProject>(b => b.UserId == user1.Email)
-            ));
-            mockBuildEngine.Verify(x => x.CreateProject(
-                It.Is<BuildEngineProject>(b => b.GroupId == group1.Abbreviation)
-            ));
-            mockBuildEngine.Verify(x => x.CreateProject(
                 It.Is<BuildEngineProject>(b => b.AppId == type1.Name)
             ));
             mockBuildEngine.Verify(x => x.CreateProject(
                 It.Is<BuildEngineProject>(b => b.ProjectName == project1.Name)
             ));
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
             var projects = ReadTestData<AppDbContext, Project>();
             var modifiedProject = projects.First(p => p.Id == project1.Id);
             Assert.Equal(1, modifiedProject.WorkflowProjectId);
+            Assert.Equal(projectResponse.Url, modifiedProject.WorkflowProjectUrl);
             var notifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Empty(notifications);
+            Assert.Single(notifications);
+            Assert.Equal("{\"projectName\":\"Test Project1\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("projectCreatedSuccessfully", notifications[0].MessageId);
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "DidUpdate" &&
+                           job.Type == typeof(IEntityHookHandler<Project,Int32>)),
+                It.IsAny<EnqueuedState>()));
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_DefaultConnection_Create_ProjectAsync()
@@ -348,22 +366,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var projectResponse = new ProjectResponse
             {
                 Id = 1,
-                Status = "initialized",
-                Result = "",
+                Status = "completed",
+                Result = "SUCCESS",
                 Error = "",
-                Url = ""
+                Url = "s3://tst-stg-aps-projects/scriptureappbuilder/" + project4.Language + "-1-" + project4.Name.Replace(" ", "-")
             };
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns(projectResponse);
             await buildProjectService.ManageProjectAsync(project4.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == DefaultBuildEngineUrl),
                 It.Is<String>(t => t == DefaultBuildEngineApiAccessToken)
-            ));
-            mockBuildEngine.Verify(x => x.CreateProject(
-                It.Is<BuildEngineProject>(b => b.UserId == user1.Email)
-            ));
-            mockBuildEngine.Verify(x => x.CreateProject(
-                It.Is<BuildEngineProject>(b => b.GroupId == group2.Abbreviation)
             ));
             mockBuildEngine.Verify(x => x.CreateProject(
                 It.Is<BuildEngineProject>(b => b.AppId == type1.Name)
@@ -374,8 +386,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var projects = ReadTestData<AppDbContext, Project>();
             var modifiedProject = projects.First(p => p.Id == project4.Id);
             Assert.Equal(1, modifiedProject.WorkflowProjectId);
+            Assert.Equal(projectResponse.Url, modifiedProject.WorkflowProjectUrl);
             var notifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Empty(notifications);
+            Assert.Single(notifications);
+            Assert.Equal("{\"projectName\":\"Test Project4\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("projectCreatedSuccessfully", notifications[0].MessageId);
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_Create_Project_FailedAsync()
@@ -397,60 +412,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Equal("projectFailedUnableToCreate", notifications[0].MessageId);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Project_Completed()
-        {
-            BuildTestData();
-            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
-            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
-            mockBuildEngine.Reset();
-            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
-            var mockHub = Mock.Get(hubContext);
-            mockHub.Reset();
-            var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
-            mockClients.Reset();
-            var projectResponse = new ProjectResponse
-            {
-                Id = 4,
-                Status = "completed",
-                Result = "SUCCESS",
-                Error = "",
-                Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
-            };
-            mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
-            await buildProjectService.ManageProjectAsync(project3.Id, null);
-            mockBuildEngine.Verify(x => x.SetEndpoint(
-                It.Is<String>(u => u == org1.BuildEngineUrl),
-                It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
-            ));
-            mockBuildEngine.Verify(x => x.GetProject(
-                It.Is<int>(b => b == project3.WorkflowProjectId)
-            ));
-            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
-            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
-
-            var projects = ReadTestData<AppDbContext, Project>();
-            var modifiedProject = projects.First(p => p.Id == project3.Id);
-            Assert.Equal(projectResponse.Url, modifiedProject.WorkflowProjectUrl);
-            // One notification should be sent to owner on successful build
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            var notifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Single(notifications);
-            Assert.Equal("{\"projectName\":\"Test Project3\"}", notifications[0].MessageSubstitutionsJson);
-            Assert.Equal("projectCreatedSuccessfully", notifications[0].MessageId);
-
-            backgroundJobClientMock.Verify(x => x.Create(
-                It.Is<Job>(job =>
-                           job.Method.Name == "DidUpdate" &&
-                           job.Type == typeof(IEntityHookHandler<Project, int>)),
-                It.IsAny<EnqueuedState>()));
-        }
-        [Fact(Skip = skipAcceptanceTest)]
         public async Task Project_Failed()
         {
             BuildTestData();
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             var projectResponse = new ProjectResponse
@@ -459,99 +424,96 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Status = "completed",
                 Result = "FAILURE",
                 Error = "",
-                Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
+                Url = ""
             };
-            mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
+            mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns(projectResponse);
             await buildProjectService.ManageProjectAsync(project3.Id, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
-            mockBuildEngine.Verify(x => x.GetProject(
-                It.Is<int>(b => b == project3.WorkflowProjectId)
+            mockBuildEngine.Verify(x => x.CreateProject(
+                It.Is<BuildEngineProject>(b => b.AppId == type1.Name)
+            ));
+            mockBuildEngine.Verify(x => x.CreateProject(
+                It.Is<BuildEngineProject>(b => b.ProjectName == project3.Name)
             ));
             var projects = ReadTestData<AppDbContext, Project>();
-            var modifiedProject = projects.First(p => p.Id == project1.Id);
+            var modifiedProject = projects.First(p => p.Id == project3.Id);
             Assert.Null(modifiedProject.WorkflowProjectUrl);
-            // Verify notification sent to OrgAdmin and User
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
             Assert.Equal("{\"projectName\":\"Test Project3\",\"projectStatus\":\"completed\",\"projectError\":\"\",\"buildEngineUrl\":\"https://buildengine.testorg1/project-admin/view?id=4\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("https://buildengine.testorg1/project-admin/view?id=4", notifications[0].LinkUrl);
             Assert.Equal("projectCreationFailedAdmin", notifications[0].MessageId);
-         }
-
-        [Fact(Skip = skipAcceptanceTest)]
-        public async Task Get_Project_Status_Success()
-        {
-            BuildTestData();
-            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
-            mockBuildEngine.Reset();
-            var projectResponse = new ProjectResponse
-            {
-                Id = 3,
-                Status = "completed",
-                Result = "SUCCESS",
-                Error = "",
-                Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
-            };
-            mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
-            var status = await buildProjectService.GetStatusAsync(project2.Id);
-            Assert.Equal(BuildEngineStatus.Success, status);
         }
         [Fact(Skip = skipAcceptanceTest)]
-        public async Task Get_Project_Status_Failure()
+        public async Task GetTokenTest()
         {
             BuildTestData();
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
-            var projectResponse = new ProjectResponse
+            var tokenResponse = new TokenResponse
             {
-                Id = 3,
-                Status = "completed",
-                Result = "FAILURE",
-                Error = "Error"
+                SecretAccessKey = "gBYo8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
+                AccessKeyId = "ASIARW6IRVMN2NLBQBU5",
+                Expiration = "2019-02-21T04:01:07+00:00",
+                SessionToken = "FQoGZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
             };
-            mockBuildEngine.Setup(x => x.GetProject(It.IsAny<int>())).Returns(projectResponse);
-            var status = await buildProjectService.GetStatusAsync(project2.Id);
-            Assert.Equal(BuildEngineStatus.Failure, status);
-        }
-        [Fact(Skip = skipAcceptanceTest)]
-        public async Task Project_Update_ProjectAsync()
-        {
-            BuildTestData();
-            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
-            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
-            mockBuildEngine.Reset();
-            var projectResponse = new ProjectResponse
-            {
-                Id = 3,
-                Status = "completed",
-                Result = "SUCCESS",
-                Error = "",
-                Url = "ssh://APKAJU5Y3VNN3GHK3LLQ@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-Test-Project8"
-            };
-            mockBuildEngine.Setup(x => x.UpdateProject(It.IsAny<int>(),It.IsAny<BuildEngineProject>())).Returns(projectResponse);
-            await buildProjectService.UpdateProjectAsync(project2.Id, null);
-            mockBuildEngine.Verify(x => x.SetEndpoint(
-                It.Is<String>(u => u == org1.BuildEngineUrl),
-                It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
-            ));
-            mockBuildEngine.Verify(x => x.UpdateProject(
+            mockBuildEngine.Setup(x => x.GetProjectAccessToken(It.IsAny<int>(), It.IsAny<TokenRequest>())).Returns(tokenResponse);
+            var response = await buildProjectService.GetProjectTokenAsync(project2.Id);
+            mockBuildEngine.Verify(x => x.GetProjectAccessToken(
                 It.Is<int>(i => i == project2.WorkflowProjectId),
-                It.Is<BuildEngineProject>(b => b.UserId == user1.Email)
+                It.Is<TokenRequest>(t => t.Name == "g2=123432423142312345678")
             ));
-            // One notification should be sent to owner on successful build
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            var notifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Single(notifications);
-            Assert.Equal("{\"projectName\":\"Test Project2\"}", notifications[0].MessageSubstitutionsJson);
-            Assert.Equal("projectUpdateComplete", notifications[0].MessageId);
+            Assert.NotNull(response);
+            Assert.Equal(tokenResponse.SessionToken, response.SessionToken);
+            Assert.Equal(tokenResponse.AccessKeyId, response.AccessKeyId);
+            Assert.Equal(tokenResponse.SecretAccessKey, response.SecretAccessKey);
+        }
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task GetTokenWithAuth0Test()
+        {
+            BuildTestData();
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
+            mockBuildEngine.Reset();
+            var tokenResponse = new TokenResponse
+            {
+                SecretAccessKey = "gBYo8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
+                AccessKeyId = "ASIARW6IRVMN2NLBQBU5",
+                Expiration = "2019-02-21T04:01:07+00:00",
+                SessionToken = "FQoGZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
+            };
+            mockBuildEngine.Setup(x => x.GetProjectAccessToken(It.IsAny<int>(), It.IsAny<TokenRequest>())).Returns(tokenResponse);
+            var response = await buildProjectService.GetProjectTokenAsync(project5.Id);
+            mockBuildEngine.Verify(x => x.GetProjectAccessToken(
+                It.Is<int>(i => i == project5.WorkflowProjectId),
+                It.Is<TokenRequest>(t => t.Name == "a0=5c3e04df7493d43852060b26")
+            ));
+            Assert.NotNull(response);
+            Assert.Equal(tokenResponse.SessionToken, response.SessionToken);
+            Assert.Equal(tokenResponse.AccessKeyId, response.AccessKeyId);
+            Assert.Equal(tokenResponse.SecretAccessKey, response.SecretAccessKey);
+        }
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task GetTokenFailedTest()
+        {
+            BuildTestData();
+            var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
+            var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
+            mockBuildEngine.Reset();
+            var tokenResponse = new TokenResponse
+            {
+                SecretAccessKey = "gBYo8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
+                AccessKeyId = "ASIARW6IRVMN2NLBQBU5",
+                Expiration = "2019-02-21T04:01:07+00:00",
+                SessionToken = "FQoGZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
+            };
+            mockBuildEngine.Setup(x => x.GetProjectAccessToken(It.IsAny<int>(), It.IsAny<TokenRequest>())).Returns(tokenResponse);
+            var response = await buildProjectService.GetProjectTokenAsync(999);
+            Assert.Null(response);
         }
     }
 }

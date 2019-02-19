@@ -42,6 +42,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
             services.AddScoped<BuildEngineReleaseService>();
             services.AddScoped<SendNotificationService>();
             services.AddScoped<SendEmailService>();
+            services.AddScoped<IBuildEngineProjectService, BuildEngineProjectService>();
             services.AddScoped<IOrganizationInviteRequestService, OrganizationInviteRequestService>();
             services.AddI18NextLocalization(i18n => i18n
                                             .IntegrateToAspNetCore()

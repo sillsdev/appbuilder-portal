@@ -93,7 +93,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             if (resource.OwnerId != 0)
             {
                 HangfireClient.Enqueue<WorkflowProjectService>(service => service.ReassignUserTasks(project.Id));
-                HangfireClient.Enqueue<BuildEngineProjectService>(service => service.UpdateProject(project.Id, null));
             }
             return project;
         }

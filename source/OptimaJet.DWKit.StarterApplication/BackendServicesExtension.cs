@@ -46,8 +46,8 @@ namespace OptimaJet.DWKit.StarterApplication
                 options.BuildResourceGraph((builder) =>
                 {
                     builder.AddResource<ProductActions,Guid>("product-actions");
+                    builder.AddResource<ProjectToken>("project-tokens");
                 });
-
             });
 
             services.AddHttpContextAccessor();
@@ -130,6 +130,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped(typeof(IJobRepository<,>), typeof(JobRepository<,>));
             services.AddScoped<IJobRepository<Email>, JobEmailRepository>();
             services.AddScoped<BuildEngineSystemMonitor>();
+            services.AddScoped<IBuildEngineProjectService, BuildEngineProjectService>();
             services.AddScoped<BuildEngineProjectService>();
             services.AddScoped<BuildEngineProductService>();
             services.AddScoped<BuildEngineBuildService>();
