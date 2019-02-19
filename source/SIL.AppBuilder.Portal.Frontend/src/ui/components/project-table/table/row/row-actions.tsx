@@ -1,67 +1,57 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
-import { withData as withOrbit } from 'react-orbitjs';
+import { useOrbit } from 'react-orbitjs';
+import { useCurrentUser } from '@data/containers/with-current-user';
+import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
 
 import { attributesFor, ProjectResource, UserResource } from '@data';
 
-import { withProjectOperations } from '@ui/routes/projects/show/with-project-operations';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { useTranslations } from '@lib/i18n';
 
-interface IOwnProps {
+interface IProps {
   project: ProjectResource;
-  owner: UserResource;
-  toggleArchiveProject: () => void;
 }
 
-type IProps = IOwnProps & i18nProps;
+export default function RowActions({ project }: IProps) {
+  const { t } = useTranslations();
+  const { dataStore } = useOrbit();
+  const { currentUser } = useCurrentUser();
+  const { claimOwnership, toggleArchiveProject } = useDataActions(project);
 
-class RowActions extends React.Component<IProps> {
-  render() {
-    const { t, toggleArchiveProject, project, owner } = this.props;
-    const { dateArchived } = attributesFor(project);
+  const owner = dataStore.cache.query((q) => q.findRelatedRecord(project, 'owner'));
 
-    const dropdownItemText = !dateArchived
-      ? t('project.dropdown.archive')
-      : t('project.dropdown.reactivate');
+  const { dateArchived } = attributesFor(project);
 
-    const claimOwnership = () => {};
+  const dropdownItemText = !dateArchived
+    ? t('project.dropdown.archive')
+    : t('project.dropdown.reactivate');
 
-    return (
-      <Dropdown
-        className='project-actions'
-        pointing='top right'
-        data-test-row-actions
-        icon={null}
-        trigger={<MoreVerticalIcon />}
-      >
-        <Dropdown.Menu>
-          <Dropdown.Item text={t('project.dropdown.build')} />
-          <RequireRole
-            {...{
-              roleName: ROLE.OrganizationAdmin,
-              owner,
-              overrideIf({ owner, currentUser }) {
-                return owner.id === currentUser.id;
-              },
-            }}
-          >
-            <Dropdown.Item text={dropdownItemText} onClick={toggleArchiveProject} />
-            <Dropdown.Item text={t('project.claimOwnership')} onClick={claimOwnership} />
-          </RequireRole>
-        </Dropdown.Menu>
-      </Dropdown>
-    );
-  }
+  return (
+    <Dropdown
+      className='project-actions'
+      pointing='top right'
+      data-test-row-actions
+      icon={null}
+      trigger={<MoreVerticalIcon />}
+    >
+      <Dropdown.Menu>
+        <Dropdown.Item text={t('project.dropdown.build')} />
+        <RequireRole
+          {...{
+            roleName: ROLE.OrganizationAdmin,
+            owner,
+            overrideIf({ owner, currentUser }) {
+              return owner.id === currentUser.id;
+            },
+          }}
+        >
+          <Dropdown.Item text={dropdownItemText} onClick={toggleArchiveProject} />
+          <Dropdown.Item text={t('project.claimOwnership')} onClick={claimOwnership} />
+        </RequireRole>
+      </Dropdown.Menu>
+    </Dropdown>
+  );
 }
-
-export default compose(
-  withTranslations,
-  withOrbit(({ project }) => ({
-    owner: (q) => q.findRelatedRecord(project, 'owner'),
-  })),
-  withProjectOperations
-)(RowActions);

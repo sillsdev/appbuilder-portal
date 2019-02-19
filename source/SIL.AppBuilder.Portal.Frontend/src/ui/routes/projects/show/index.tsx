@@ -10,7 +10,6 @@ import { withTranslations } from '@lib/i18n';
 import Display from './display';
 import { withAccessRestriction } from './with-access-restriction';
 import { withData } from './with-data';
-import { withProjectOperations } from './with-project-operations';
 
 export const pathName = '/projects/:id';
 
@@ -18,7 +17,6 @@ export default compose(
   withTranslations,
   withCurrentUserContext,
   withData,
-  withProjectOperations,
   // todo - extract this to a more general thing?
   withAccessRestriction,
   withRole(ROLE.OrganizationAdmin, {

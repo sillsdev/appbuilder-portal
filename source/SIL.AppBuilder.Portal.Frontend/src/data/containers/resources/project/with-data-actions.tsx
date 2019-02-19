@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withOrbit, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
+import { withOrbit, useOrbit, idFromRecordIdentity, attributesFor } from 'react-orbitjs';
 
 import {
   defaultOptions,
@@ -12,9 +12,12 @@ import {
   relationshipFor,
 } from '@data';
 
+import { useCurrentUser } from '@data/containers/with-current-user';
 import { ProjectAttributes } from '@data/models/project';
 import { recordIdentityFromKeys } from '@data/store-helpers';
 import { requireProps } from '@lib/debug';
+import * as toast from '@lib/toast';
+import { useTranslations } from '@lib/i18n';
 import { ProductDefinitionResource } from '@data/models/product-definition';
 import { buildFindRecord } from '@data/store-helpers';
 
@@ -35,32 +38,72 @@ interface IOwnProps {
 type IProps = IOwnProps;
 
 export function useDataActions(project) {
+  const { t } = useTranslations();
   const { dataStore } = useOrbit();
+  const { currentUser } = useCurrentUser();
+
+  const updateAttribute = async (attribute: string, value: any) => {
+    await dataStore.update((q) => q.replaceAttribute(project, attribute, value), defaultOptions());
+  };
+
+  const updateOwner = (user: UserResource | string) => {
+    if (typeof user === 'string') {
+      user = dataStore.cache.query((q) => buildFindRecord(q, 'user', user));
+    }
+
+    return dataStore.update(
+      (t) => t.replaceRelatedRecord(project, 'owner', user),
+      defaultOptions()
+    );
+  };
+
+  const updateGroup = (group: GroupResource | string) => {
+    if (typeof group === 'string') {
+      group = dataStore.cache.query((q) => buildFindRecord(q, 'group', group));
+    }
+
+    return dataStore.update(
+      (t) => t.replaceRelatedRecord(project, 'group', group),
+      defaultOptions()
+    );
+  };
+
+  const claimOwnership = async () => {
+    try {
+      await updateOwner(currentUser);
+
+      toast.success(t('project.claimSuccess'));
+    } catch (e) {
+      toast.error(e);
+    }
+  };
+
+  const toggleArchiveProject = async () => {
+    const { dateArchived } = attributesFor(project);
+    const nextValue = !dateArchived ? new Date() : null;
+
+    try {
+      await updateAttribute('dateArchived', nextValue);
+      toast.success(
+        !dateArchived
+          ? t('project.operations.archive.success')
+          : t('project.operations.reactivate.success')
+      );
+    } catch (e) {
+      toast.error(e);
+    }
+  };
 
   return {
-    updateOwner(user: UserResource | string) {
-      if (typeof user === 'string') {
-        user = dataStore.cache.query((q) => buildFindRecord(q, 'user', user));
-      }
-
-      return dataStore.update(
-        (t) => t.replaceRelatedRecord(project, 'owner', user),
-        defaultOptions()
-      );
-    },
-    updateGroup(group: GroupResource | string) {
-      if (typeof group === 'string') {
-        group = dataStore.cache.query((q) => buildFindRecord(q, 'group', group));
-      }
-
-      return dataStore.update(
-        (t) => t.replaceRelatedRecord(project, 'group', group),
-        defaultOptions()
-      );
-    },
+    updateAttribute,
+    updateOwner,
+    updateGroup,
+    toggleArchiveProject,
+    claimOwnership,
   };
 }
 
+// TODO: remove this when withDataActions has been fully replaced by useDataACtions
 export function withDataActions<T>(WrappedComponent) {
   class ProjectDataActionWrapper extends React.Component<IProps & T> {
     updateAttribute = async (attribute: string, value: any) => {
