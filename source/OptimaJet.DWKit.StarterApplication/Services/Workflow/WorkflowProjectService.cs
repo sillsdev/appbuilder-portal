@@ -19,30 +19,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
     {
 
         public IJobRepository<Project> ProjectRepository { get; }
-        public IJobRepository<UserTask> TaskRepository { get; }
-        public IJobRepository<User> UserRepository { get; }
         public WorkflowProductService WorkflowProductService { get; }
 
         public WorkflowProjectService(
             IJobRepository<Project> projectRepository,
-            IJobRepository<UserTask> taskRepository,
-            IJobRepository<User> userRepository,
             WorkflowProductService productService
         )
         {
             ProjectRepository = projectRepository;
-            TaskRepository = taskRepository;
-            UserRepository = userRepository;
             WorkflowProductService = productService;
         }
 
-        public async Task ReassignUserTasks(int projectId, int previousOwnerId, int newOwnerId) {
+        public async Task ReassignUserTasks(int projectId) {
             var project = await this.ProjectRepository.Get()
                 .Include(p => p.Products)
                 .Where(p => p.Id == projectId)
                 .FirstOrDefaultAsync();
-            var previousOwner = await this.UserRepository.GetAsync(previousOwnerId);
-            var newOwner = await this.UserRepository.GetAsync(newOwnerId);
 
             project.Products.ForEach(async product => {
                 await this.WorkflowProductService.ReassignUserTasksForProduct(product);

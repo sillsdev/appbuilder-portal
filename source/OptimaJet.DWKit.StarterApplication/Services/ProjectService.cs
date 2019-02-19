@@ -75,8 +75,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public override async Task<Project> UpdateAsync(int id, Project resource)
         {
-            var previous = (await this.GetAsync(id)).OwnerId;
-
             //If changing organization, validate the change
             var updateForm = new UpdateForm(UserRepository,
                                            GroupRepository,
@@ -94,7 +92,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // If the owner is changing, call the build engine to update the project iam permissions
             if (resource.OwnerId != 0)
             {
-                HangfireClient.Enqueue<WorkflowProjectService>(service => service.ReassignUserTasks(project.Id, previous, project.OwnerId));
+                HangfireClient.Enqueue<WorkflowProjectService>(service => service.ReassignUserTasks(project.Id));
                 HangfireClient.Enqueue<BuildEngineProjectService>(service => service.UpdateProject(project.Id, null));
             }
             return project;

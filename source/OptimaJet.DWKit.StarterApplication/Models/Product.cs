@@ -21,10 +21,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("user-tasks", Link.None)]
         public virtual List<UserTask> UserTasks { get; set; }
 
-        [HasOne("workflow-process-instance", Link.None)]
         public virtual WorkflowProcessInstance WorkflowProcessInstance { get; set; }
 
-        [HasMany("transitions", Link.None)]
         public virtual List<ProductTransition> Transitions { get; set; }
 
         [HasOne("store-language")]
