@@ -31,14 +31,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         }
 
         public async Task ReassignUserTasks(int projectId) {
-            var project = await this.ProjectRepository.Get()
+            var project = this.ProjectRepository.Get()
                 .Include(p => p.Products)
                 .Where(p => p.Id == projectId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync().Result;
 
-            project.Products.ForEach(async product => {
+            foreach (var product in project.Products) {
                 await this.WorkflowProductService.ReassignUserTasksForProduct(product);
-            });
+            }
         }
     }
 }

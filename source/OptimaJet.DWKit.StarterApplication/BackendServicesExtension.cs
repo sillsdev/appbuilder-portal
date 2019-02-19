@@ -140,6 +140,8 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
             services.AddScoped(typeof(SIL.AppBuilder.BuildEngineApiClient.IBuildEngineApi), typeof(SIL.AppBuilder.BuildEngineApiClient.BuildEngineApi));
 
+            services.AddScoped<WorkflowProjectService>();
+            services.AddScoped<WorkflowProductService>();
             services.AddSingleton<WorkflowActivityMonitorService>();
             services.AddTransient<IWorkflowRuleProvider, WorkflowProductRuleProvider>();
             services.AddTransient<IWorkflowActionProvider, WorkflowProductActionProvider>();

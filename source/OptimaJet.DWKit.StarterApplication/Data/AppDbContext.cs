@@ -133,11 +133,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .WithOne(ut => ut.Product)
                 .HasForeignKey(ut => ut.ProductId);
 
-            productEntity
-                .HasMany(p => p.WorkflowProcessInstances)
-                .WithOne(i => i.Product)
-                .HasPrincipalKey(i => i.Id);
-
             productBuildEntity
                 .HasMany(pb => pb.ProductArtifacts)
                 .WithOne(pa => pa.ProductBuild)
