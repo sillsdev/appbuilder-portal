@@ -42,6 +42,7 @@
     "reactivate": "Reactivate",
     "build": "Build / Rebuild",
     "updated": "Updated",
+    "continue": "Continue",
     "error": "Error"
   },
   "models": {
@@ -187,7 +188,9 @@
     "unclaimed": "[unclaimed]",
     "noTasksTitle": "No tasks are assigned to you.",
     "noTasksDescription": "Tasks that require your attention will appear here.",
-    "reassign": "Reassign"
+    "reassign": "Reassign",
+    "waiting": "Waiting {waitTime}",
+    "forYou": "for you to {activityName}"
   },
   "projects": {
     "noBuilds": "No Builds Yet",
@@ -210,6 +213,8 @@
     "title": "Project",
     "organizationContact": "Organization Contact: ",
     "projectOwner": "Project Owner: ",
+    "claimOwnership": "Claim Ownership",
+    "claimSuccess": "Succesfully Claimed",
     "newProject": "New Project",
     "projectName": "Project Name",
     "noAvailableGroups": "There are no available groups for the selected organization",
