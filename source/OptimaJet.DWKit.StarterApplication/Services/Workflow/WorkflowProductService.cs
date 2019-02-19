@@ -28,6 +28,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         IJobRepository<Product, Guid> ProductRepository { get; set; }
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
+        public IJobRepository<WorkflowProcessInstance, Guid> WorkflowInstanceRepository { get; }
         public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
         public SendNotificationService SendNotificationService { get; }
         public WorkflowRuntime Runtime { get; }
@@ -36,6 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<UserTask> taskRepository,
             IJobRepository<User> userRepository,
+            IJobRepository<WorkflowProcessInstance, Guid> workflowInstanceRepository,
             IJobRepository<ProductTransition> productTransitionRepository,
             SendNotificationService sendNotificationService,
             WorkflowRuntime runtime
@@ -44,6 +46,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             ProductRepository = productRepository;
             TaskRepository = taskRepository;
             UserRepository = userRepository;
+            WorkflowInstanceRepository = workflowInstanceRepository;
             ProductTransitionRepository = productTransitionRepository;
             SendNotificationService = sendNotificationService;
             Runtime = runtime;
@@ -181,6 +184,35 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 // Clear the comment
                 product.WorkflowComment = "";
                 await ProductRepository.UpdateAsync(product);
+            }
+        }
+
+        public async Task ReassignUserTasksForProduct(Product product) {    
+            var instance = await WorkflowInstanceRepository.GetAsync(product.Id);
+            
+            await RemoveTasksByProductId(product.Id);
+
+            // Find all users who could perform the current activity and create tasks for them
+            var workflowUserIds = Runtime
+                .GetAllActorsForDirectCommandTransitions(product.Id, activityName: instance.ActivityName)
+                .ToList();
+
+            var users = UserRepository.Get()
+                .Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
+                .ToList();
+
+            foreach (var user in users)
+            {
+                var userTask = new UserTask
+                {
+                    UserId = user.Id,
+                    ProductId = product.Id,
+                    ActivityName = instance.ActivityName,
+                    Status = instance.StateName,
+                    Comment = product.WorkflowComment
+                };
+
+                await TaskRepository.CreateAsync(userTask);
             }
         }
 

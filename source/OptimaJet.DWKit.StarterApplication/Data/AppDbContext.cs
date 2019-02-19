@@ -133,6 +133,11 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .WithOne(ut => ut.Product)
                 .HasForeignKey(ut => ut.ProductId);
 
+            productEntity
+                .HasMany(p => p.WorkflowProcessInstances)
+                .WithOne(i => i.Product)
+                .HasPrincipalKey(i => i.Id);
+
             productBuildEntity
                 .HasMany(pb => pb.ProductArtifacts)
                 .WithOne(pa => pa.ProductBuild)
@@ -144,6 +149,16 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             productEntity
                 .Property(p => p.Id)
                 .HasDefaultValueSql("uuid_generate_v4()");
+
+            productEntity
+                .HasMany(p => p.Transitions)
+                .WithOne(t => t.Product)
+                .HasForeignKey(p => p.ProductId);
+
+            productEntity
+                .HasOne(p => p.WorkflowProcessInstance)
+                .WithOne(i => i.Product)
+                .HasForeignKey<WorkflowProcessInstance>(i => i.Id);
 
             projectEntity
                 .Property(p => p.WorkflowProjectId)
