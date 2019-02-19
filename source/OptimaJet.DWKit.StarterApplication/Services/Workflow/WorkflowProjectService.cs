@@ -16,44 +16,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowProjectService
     {
-        public class ProductProcessChangedArgs
-        {
-            public Guid ProcessId { get; set; }
-            public string CurrentActivityName { get; set; }
-            public string PreviousActivityName { get; set; }
-            public string CurrentState { get; set; }
-            public string PreviousState { get; set; }
-            public string ExecutingCommand { get; set; }
-        };
 
-    public IJobRepository<Project> ProjectRepository { get; }
-    IJobRepository<Product, Guid> ProductRepository { get; set; }
+        public IJobRepository<Project> ProjectRepository { get; }
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
-        public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
-        public SendNotificationService SendNotificationService { get; }
-        public WorkflowRuntime Runtime { get; }
 
         public WorkflowProjectService(
             IJobRepository<Project> projectRepository,
-            IJobRepository<Product, Guid> productRepository,
             IJobRepository<UserTask> taskRepository,
-            IJobRepository<User> userRepository,
-            IJobRepository<ProductTransition> productTransitionRepository,
-            SendNotificationService sendNotificationService,
-            WorkflowRuntime runtime
+            IJobRepository<User> userRepository
         )
         {
             ProjectRepository = projectRepository;
-            ProductRepository = productRepository;
             TaskRepository = taskRepository;
             UserRepository = userRepository;
-            ProductTransitionRepository = productTransitionRepository;
-            SendNotificationService = sendNotificationService;
-            Runtime = runtime;
         }
 
-        public async Task ReassignUserTasks(int projectId, int previousOwnerId, int newOwnerId, PerformContext context) {
+        public async Task ReassignUserTasks(int projectId, int previousOwnerId, int newOwnerId) {
           var project = await this.ProjectRepository.Get()
               .Include(p => p.Products)
               .ThenInclude(product => product.UserTasks)
