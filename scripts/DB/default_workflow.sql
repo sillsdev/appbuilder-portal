@@ -163,7 +163,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="700" Y="920" />
     </Activity>
-    <Activity Name="Published" State="Published" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Published" State="Published" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -194,7 +194,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Approval_Job Creation_1" To="Product Creation" From="Approval" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Approve" />
@@ -225,7 +224,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="RepoConfig_SynchronizeData_1" To="Product Build" From="Repo Configuration" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Continue" />
@@ -238,7 +236,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="SynchronizeData_Activity_1_1" To="Product Build" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Continue" />
@@ -287,7 +284,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="App Store Preview_SynchronizeData_1" To="Synchronize Data" From="App Store Preview" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Reject" />
@@ -300,7 +296,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="App Store Preview_Activity_1_1" To="Create App Store Entry" From="App Store Preview" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Approve" />
@@ -313,7 +308,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Create App Store Entry_SynchronizeData_1" To="Synchronize Data" From="Create App Store Entry" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Reject" />
@@ -326,7 +320,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Create App Store Entry_App Store Preview_1" To="App Store Preview" From="Create App Store Entry" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Back" />
@@ -339,7 +332,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Create App Store Entry_Activity_1_1" To="Verify and Publish" From="Create App Store Entry" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Continue" />
@@ -352,7 +344,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Verify and Publish_Activity_1_1" To="Product Publish" From="Verify and Publish" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Approve" />
@@ -365,7 +356,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Verify and Publish_SynchronizeData_1" To="Synchronize Data" From="Verify and Publish" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Reject" />
@@ -414,7 +404,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Make It Live_Activity_1_1" To="Published" From="Make It Live" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Continue" />
@@ -427,7 +416,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Make It Live_SynchronizeData_1" To="Synchronize Data" From="Make It Live" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Reject" />
@@ -437,25 +425,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="275" Y="885" />
     </Transition>
-    <Transition Name="Published_SynchronizeData_1" To="Synchronize Data" From="Published" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
-      <Restrictions>
-        <Restriction Type="Allow" NameRef="Owner" />
-        <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
-      </Restrictions>
-      <Triggers>
-        <Trigger Type="Command" NameRef="Rebuild" />
-      </Triggers>
-      <Conditions>
-        <Condition Type="Always" />
-      </Conditions>
-      <Designer X="288" Y="842" />
-    </Transition>
     <Transition Name="App Store Preview_Activity_1_2" To="Email Reviewers" From="App Store Preview" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
-        <Restriction Type="Allow" NameRef="OrgAdmin" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Email Reviewers" />
@@ -468,7 +440,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Transition Name="Notify Reviewers_App Store Preview_1" To="App Store Preview" From="Email Reviewers" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
-        <Restriction Type="Allow" NameRef="Admins" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Auto" />
