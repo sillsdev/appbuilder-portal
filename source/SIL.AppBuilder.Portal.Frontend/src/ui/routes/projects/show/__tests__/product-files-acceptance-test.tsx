@@ -119,7 +119,7 @@ describe('Acceptance | Project View | Product Files', () => {
     });
 
     it('renders no artifacts', () => {
-      expect(page.projectFiles.products(0).artifactCount).equal('No Artifacts');
+      expect(page.projectFiles.products(0).artifactCount).equal('No Product Files');
     });
   });
 });
