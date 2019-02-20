@@ -24,6 +24,7 @@ wget --output-document $targetPath $url
 echo "downloaded all supported languages"
 
 echo "downloading transaltion support for the language data..."
+npm install -g fast-xml-parser # Needed for Travis? wut
 npm install -g xml2js
 
 function downloadAndConvert {
