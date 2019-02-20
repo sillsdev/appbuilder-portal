@@ -1,49 +1,35 @@
-import * as React from 'react';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { compose, branch, renderComponent } from 'recompose';
+import { useEffect, useMemo } from 'react';
+import { useOrbit } from 'react-orbitjs';
 import { HubConnectionFactory } from '@ssv/signalr-client';
+
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 import { isTesting } from '@env';
 
-import { withCurrentUserContext, ICurrentUserProps } from '~/data/containers/with-current-user';
-
 import { NotificationsClient } from './clients';
 
-interface IOwnProps {}
+export default function SocketManager({ children }) {
+  const { dataStore } = useOrbit();
+  const { currentUser } = useCurrentUser();
 
-type IProps = IOwnProps | WithDataProps;
+  const isLoggedIn = !!currentUser;
+  const hubFactory = useMemo(() => new HubConnectionFactory(), [isLoggedIn]);
+  const notificationsClient = useMemo(() => new NotificationsClient(hubFactory, dataStore), [
+    isLoggedIn,
+  ]);
 
-class SocketManager extends React.Component<IProps> {
-  notificationsClient: NotificationsClient;
-  hubFactory: HubConnectionFactory;
+  useEffect(() => {
+    if (!isTesting && !isLoggedIn) {
+      return;
+    }
 
-  constructor(props) {
-    super(props);
+    notificationsClient.start();
 
-    const { dataStore } = props;
-    this.hubFactory = new HubConnectionFactory();
+    return function disconnect() {
+      notificationsClient.stop();
+      hubFactory.disconnectAll();
+    };
+  });
 
-    this.notificationsClient = new NotificationsClient(this.hubFactory, dataStore);
-  }
-
-  componentDidMount() {
-    this.notificationsClient.start();
-  }
-
-  componentWillUnmount() {
-    this.notificationsClient.stop();
-    this.hubFactory.disconnectAll();
-  }
-
-  render() {
-    return this.props.children;
-  }
+  return children;
 }
-
-export default compose<{}, {}>(
-  withCurrentUserContext,
-  branch(
-    ({ currentUser }: ICurrentUserProps) => !isTesting && !!currentUser,
-    renderComponent(withOrbit({})(SocketManager))
-  )
-)(({ children }: any) => children);

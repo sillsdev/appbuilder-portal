@@ -4,6 +4,8 @@ import { HubConnectionFactory } from '@ssv/signalr-client';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
+import { isTesting } from '~/env';
+
 import { DataClient } from './clients';
 
 export default function SocketManager({ children }) {
@@ -15,7 +17,7 @@ export default function SocketManager({ children }) {
   const dataClient = useMemo(() => new DataClient(hubFactory, dataStore), [isLoggedIn]);
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isTesting && !isLoggedIn) {
       return;
     }
 

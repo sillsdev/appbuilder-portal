@@ -21,20 +21,6 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
       Log.Logger.Warning("uhhhh does this work?");
     }
 
-    public async Task SubscribeToGroupAsync(string groupName, string auth0Id)
-    {
-      Log.Logger.Warning("sub -- uhhhh does this work?");
-
-      await Groups.AddToGroupAsync(auth0Id, groupName);
-    }
-    public async Task UnsubscribeFromGroupAsync(string groupName, string auth0Id)
-    {
-      Log.Logger.Warning("un   -- uhhhh does this work?");
-
-      await Groups.RemoveFromGroupAsync(auth0Id, groupName);
-    }
-
-
     public async Task PerformOperation(dynamic someData)
     {
       var document = (OperationsDocument)someData;
