@@ -9,6 +9,7 @@ using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
@@ -573,7 +574,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             var response = await Patch("/api/projects/" + project1.Id.ToString(), content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            backgroundJobClientMock.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Exactly(2));
+            backgroundJobClientMock.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Exactly(3));
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "UpdateProject" &&
@@ -585,7 +586,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                            job.Method.Name == "DidUpdate" &&
                            job.Type == typeof(IEntityHookHandler<Project>)),
                 It.IsAny<EnqueuedState>()));
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job => 
+                           job.Method.Name == "ReassignUserTasks" &&
+                           job.Type == typeof(WorkflowProjectService)
+                ),
+                It.IsAny<EnqueuedState>()));
         }
+        
+
         [Fact]
         public async Task Patch_Owner_No_Publishing_Key()
         {
