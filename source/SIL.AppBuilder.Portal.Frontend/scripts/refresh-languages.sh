@@ -24,7 +24,7 @@ wget --output-document $targetPath $url
 echo "downloaded all supported languages"
 
 echo "downloading transaltion support for the language data..."
-npm install -g xml2js
+# npm install -g xml2js
 
 function downloadAndConvert {
   local lang=$1
