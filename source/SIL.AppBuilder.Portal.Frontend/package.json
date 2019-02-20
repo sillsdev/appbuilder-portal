@@ -182,6 +182,7 @@
     "prettier": "^1.14.3",
     "react-test-renderer": "^16.4.0",
     "redux-devtools-extension": "^2.13.5",
+    "rxjs-compat": "^6.3.3",
     "serve-static": "^1.13.2",
     "sinon": "7.2.4",
     "sinon-chai": "^3.2.0",

@@ -7,7 +7,7 @@ import { isTesting } from '@env';
 
 import { withCurrentUserContext, ICurrentUserProps } from '~/data/containers/with-current-user';
 
-import { NotificationsClient } from './clients';
+import { NotificationsClient, DataClient } from './clients';
 
 
 interface IOwnProps {}
@@ -16,6 +16,7 @@ type IProps = IOwnProps | WithDataProps;
 
 class SocketManager extends React.Component<IProps> {
   notificationsClient: NotificationsClient;
+  dataClient: DataClient;
   hubFactory: HubConnectionFactory;
 
   constructor(props) {
@@ -24,20 +25,26 @@ class SocketManager extends React.Component<IProps> {
     const { dataStore } = props;
     this.hubFactory = new HubConnectionFactory();
 
-    this.notificationsClient = new NotificationsClient(this.hubFactory, dataStore);
+    this.dataClient = new DataClient(this.hubFactory, dataStore);
   }
 
   componentDidMount() {
-    this.notificationsClient.start();
+    this.dataClient.start();
   }
 
   componentWillUnmount() {
-    this.notificationsClient.stop();
+    this.dataClient.stop();
     this.hubFactory.disconnectAll();
   }
 
+  pushOperations = (data: any) => {
+    console.log('data pushing... ', data);
+  }
+
   render() {
-    return this.props.children;
+    return this.props.children({
+      pushOperations: this.pushOperations
+    });
   }
 }
 

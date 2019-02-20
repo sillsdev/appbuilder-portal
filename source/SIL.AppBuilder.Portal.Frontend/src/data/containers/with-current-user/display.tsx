@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { onlyUpdateForKeys, compose } from 'recompose';
 import { Redirect } from 'react-router-dom';
 
 import { hasRelationship } from '@data';

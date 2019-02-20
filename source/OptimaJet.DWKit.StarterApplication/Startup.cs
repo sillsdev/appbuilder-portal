@@ -193,6 +193,7 @@ namespace OptimaJet.DWKit.StarterApplication
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ScriptoriaHub>("/hubs/notifications");
+                routes.MapHub<JSONAPIHub>("/hubs/data");
             });
 
             app.UseJsonApi();
