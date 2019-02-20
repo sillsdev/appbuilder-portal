@@ -5,9 +5,9 @@ import Store from '@orbit/store';
 import { defaultOptions } from '@data';
 
 import { buildFindRecord } from '@data/store-helpers';
+import { QueryBuilder } from '@orbit/data';
 
 import { Socket } from './socket-client';
-import { QueryBuilder } from '@orbit/data';
 
 const NOTIFICATION_METHOD = 'Notification';
 

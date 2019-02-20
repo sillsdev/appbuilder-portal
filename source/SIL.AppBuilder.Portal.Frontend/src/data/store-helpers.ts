@@ -40,7 +40,7 @@ export function buildFindRelatedRecord(q: QueryBuilder, record: any, relationshi
   return q.findRelatedRecord(record, relationship);
 }
 
-export function buildFindRecord(q: QueryBuilder, type: string, id: string): FindRecordTerm{
+export function buildFindRecord(q: QueryBuilder, type: string, id: string): FindRecordTerm {
   const recordIdentity = recordIdentityFrom(id, type);
 
   return q.findRecord(recordIdentity);

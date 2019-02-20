@@ -9,7 +9,6 @@ import { withCurrentUserContext, ICurrentUserProps } from '~/data/containers/wit
 
 import { NotificationsClient } from './clients';
 
-
 interface IOwnProps {}
 
 type IProps = IOwnProps | WithDataProps;
@@ -44,8 +43,7 @@ class SocketManager extends React.Component<IProps> {
 export default compose<{}, {}>(
   withCurrentUserContext,
   branch(
-    ({ currentUser }: ICurrentUserProps) => !isTesting && !!currentUser, 
-    renderComponent(withOrbit({})(SocketManager)))
-)(
-  ({ children }: any) => children
-);
+    ({ currentUser }: ICurrentUserProps) => !isTesting && !!currentUser,
+    renderComponent(withOrbit({})(SocketManager))
+  )
+)(({ children }: any) => children);

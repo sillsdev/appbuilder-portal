@@ -1,58 +1,41 @@
-import * as React from 'react';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { compose, branch, renderComponent } from 'recompose';
+import { useEffect, useMemo } from 'react';
+import { useOrbit } from 'react-orbitjs';
 import { HubConnectionFactory } from '@ssv/signalr-client';
 
-import { isTesting } from '@env';
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
-import { withCurrentUserContext, ICurrentUserProps } from '~/data/containers/with-current-user';
+import { DataClient } from './clients';
 
-import { NotificationsClient, DataClient } from './clients';
+export default function SocketManager({ children }) {
+  const { dataStore } = useOrbit();
+  const { currentUser } = useCurrentUser();
 
+  const isLoggedIn = !!currentUser;
+  const hubFactory = useMemo(() => new HubConnectionFactory(), [isLoggedIn]);
+  const dataClient = useMemo(() => new DataClient(hubFactory, dataStore), [isLoggedIn]);
 
-interface IOwnProps {}
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
 
-type IProps = IOwnProps | WithDataProps;
+    dataClient.start();
 
-class SocketManager extends React.Component<IProps> {
-  notificationsClient: NotificationsClient;
-  dataClient: DataClient;
-  hubFactory: HubConnectionFactory;
+    return function disconnect() {
+      dataClient.stop();
+      hubFactory.disconnectAll();
+    };
+  });
 
-  constructor(props) {
-    super(props);
+  const pushOperations = (data: any) => {
+    // TODO: build operations payload
+    // TODO: data should be a number of things possible, like with
+    //       withOrbit
 
-    const { dataStore } = props;
-    this.hubFactory = new HubConnectionFactory();
-
-    this.dataClient = new DataClient(this.hubFactory, dataStore);
-  }
-
-  componentDidMount() {
-    this.dataClient.start();
-  }
-
-  componentWillUnmount() {
-    this.dataClient.stop();
-    this.hubFactory.disconnectAll();
-  }
-
-  pushOperations = (data: any) => {
     console.log('data pushing... ', data);
-  }
+  };
 
-  render() {
-    return this.props.children({
-      pushOperations: this.pushOperations
-    });
-  }
+  return children({
+    pushOperations,
+  });
 }
-
-export default compose<{}, {}>(
-  withCurrentUserContext,
-  branch(
-    ({ currentUser }: ICurrentUserProps) => !isTesting && !!currentUser, 
-    renderComponent(withOrbit({})(SocketManager)))
-)(
-  ({ children }: any) => children
-);

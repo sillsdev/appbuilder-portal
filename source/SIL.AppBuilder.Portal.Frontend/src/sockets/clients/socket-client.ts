@@ -1,9 +1,7 @@
-import { ISubscription } from "rxjs/Subscription";
+import { ISubscription } from 'rxjs/Subscription';
 import { HubConnectionFactory, HubConnection } from '@ssv/signalr-client';
 import { LogLevel, HttpTransportType } from '@aspnet/signalr';
-
 import Store from '@orbit/store';
-
 import { getToken } from '@lib/auth0';
 
 export interface SocketClient {
@@ -35,7 +33,7 @@ export class Socket<THub> {
       endpointUri: options.url,
       options: {
         accessTokenFactory: () => `${getToken()}`,
-        logger: LogLevel.Trace,
+        logger: LogLevel.Information,
         transport:
           HttpTransportType.WebSockets |
           HttpTransportType.ServerSentEvents |
@@ -57,7 +55,7 @@ export class Socket<THub> {
       .subscribe(
         () => console.log(`${this.hubName} connected`),
         (error) => console.log(`${this.hubName} error: ${error}`),
-        () => console.log(`${this.hubName} completed`),
+        () => console.log(`${this.hubName} completed`)
       );
   }
 

@@ -1,7 +1,6 @@
 import { ISubscription } from 'rxjs/Subscription';
 import { HubConnectionFactory } from '@ssv/signalr-client';
-
-import Store from "@orbit/store";
+import Store from '@orbit/store';
 
 import { Socket } from './socket-client';
 
@@ -22,9 +21,7 @@ export default class DataSocketClient extends Socket<DataHub> {
   start() {
     super.start();
 
-    this.onData$$ = this.connection
-      .on<string>("Data")
-      .subscribe(this.onData.bind(this));
+    this.onData$$ = this.connection.on<string>('Data').subscribe(this.onData.bind(this));
   }
 
   onData(data: string) {

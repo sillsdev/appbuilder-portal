@@ -6,7 +6,9 @@ import { Provider as CurrentUserProvider } from '@data/containers/with-current-u
 import { baseUrl } from '@data/store';
 
 import { ReduxProvider } from '@store';
+
 import { SocketManager } from '@sockets';
+
 import { LiveDataProvider } from '@data/live';
 import { ScrollToTop } from '@lib/routing';
 
@@ -54,21 +56,21 @@ export default class Application extends React.Component<IProps> {
             }
           >
             <CurrentUserProvider>
-              <LiveDataProvider>
-                <SocketManager>
-                  <ReduxProvider initialState={initialState || {}}>
-                    <Router {...routerProps}>
-                      <>
-                        <RouteListener />
-                        <ScrollToTop>
-                          <Component />
-                        </ScrollToTop>
-                        <DebugInfo />
-                      </>
-                    </Router>
-                  </ReduxProvider>
-                </SocketManager>
-                </LiveDataProvider>
+              {/* <LiveDataProvider> */}
+              <SocketManager>
+                <ReduxProvider initialState={initialState || {}}>
+                  <Router {...routerProps}>
+                    <>
+                      <RouteListener />
+                      <ScrollToTop>
+                        <Component />
+                      </ScrollToTop>
+                      <DebugInfo />
+                    </>
+                  </Router>
+                </ReduxProvider>
+              </SocketManager>
+              {/* </LiveDataProvider> */}
             </CurrentUserProvider>
           </APIProvider>
         </L10nLoader>
