@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { memo } from 'react';
 import { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
 
 import { ICurrentUserProps } from './types';
-import { withFetcher } from './fetcher';
+import { withFetcher, useFetcher } from './fetcher';
 
 export { ICurrentUserProps } from './types';
 
@@ -22,15 +22,27 @@ export function useCurrentUser() {
   return useContext(CurrentUserContext);
 }
 
-export const Provider = withFetcher()((props: ICurrentUserProps & { children: any }) => {
-  const { currentUser, currentUserProps, children } = props;
+export const Provider = memo(
+  ({ children }) => {
+    const { currentUser, isLoading, error, fetchCurrentUser } = useFetcher();
 
-  return (
-    <CurrentUserContext.Provider value={{ currentUser, currentUserProps }}>
-      {children}
-    </CurrentUserContext.Provider>
-  );
-});
+    if (isLoading) {
+      return <PageLoader />;
+    }
+
+    return (
+      <CurrentUserContext.Provider
+        value={{
+          currentUser,
+          currentUserProps: { isLoading, error, fetchCurrentUser, currentUser },
+        }}
+      >
+        {children}
+      </CurrentUserContext.Provider>
+    );
+  },
+  () => true
+);
 
 export function withCurrentUserContext(InnerComponent) {
   return (props) => {
@@ -100,6 +112,7 @@ function withDisplay(opts = {}) {
       if (options.redirectOnFailure) {
         toast.error(error);
 
+        console.debug('redirect to login because an error occurred', error);
         return <Redirect push={true} to={'/login'} />;
       }
 
@@ -118,6 +131,7 @@ function withDisplay(opts = {}) {
       return <Redirect push={true} to={'/organization-membership-required'} />;
     }
 
+    console.debug('Redirecting to login because the currentUser does not exist');
     // TODO: would it ever make sense to do an inline login instead of a redirect?
     return <Redirect push={true} to={'/login'} />;
   };

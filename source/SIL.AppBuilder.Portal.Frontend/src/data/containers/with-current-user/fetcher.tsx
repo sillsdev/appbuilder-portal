@@ -1,24 +1,68 @@
-import * as React from 'react';
-import { withData, ILegacyProvidedProps, pushPayload } from 'react-orbitjs';
-import { compose } from 'recompose';
-import { TYPE_NAME } from '@data/models/user';
-import { getAuth0Id } from '@lib/auth0';
-import { get as authenticatedGet, tryParseJson } from '@lib/fetch';
+import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { pushPayload, useOrbit } from 'react-orbitjs';
+import Store from '@orbit/store';
 
 import { firstError } from '@data';
 
-import { deleteToken } from '@lib/auth0';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { deleteToken, getAuth0Id } from '@lib/auth0';
+import { get as authenticatedGet, tryParseJson } from '@lib/fetch';
+import { useTranslations } from '@lib/i18n';
 import { attributesFor } from '@data/helpers';
 import { ServerError } from '@data/errors/server-error';
 import { CurrentUserFetchError } from '@data/errors/current-user-fetch-error';
 
-import { IProps, IState, IFetchCurrentUserOptions } from './types';
+export function useFetcher() {
+  const { t } = useTranslations();
+  const { dataStore } = useOrbit();
+  const request = useRef<boolean>();
+  const [state, setState] = useState(() => ({
+    currentUser: currentUserFromCache(dataStore),
+    error: undefined,
+    isLoading: true,
+  }));
+  const { currentUser, error, isLoading } = state;
+
+  const needsFetch = doesNeedFetch(dataStore);
+
+  useLayoutEffect(() => {
+    request.current = !needsFetch;
+  });
+
+  async function fetchCurrentUser() {
+    if (request.current) {
+      return;
+    }
+
+    request.current = true;
+    setState((prevState) => ({ ...prevState, isLoading: true }));
+
+    try {
+      const userFromCache = await getCurrentUser(dataStore, t);
+
+      setState(() => ({ isLoading: false, error: undefined, currentUser: userFromCache }));
+    } catch (error) {
+      setState((prevState) => ({ ...prevState, isLoading: false, error }));
+    }
+
+    request.current = false;
+  }
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, [request, needsFetch]);
+
+  return {
+    currentUser,
+    isLoading,
+    error,
+    fetchCurrentUser,
+  };
+}
 
 const cacheQuery = () => {
   const auth0Id = getAuth0Id();
 
-  return (q) => q.findRecords(TYPE_NAME).filter({ attribute: 'auth0Id', value: auth0Id });
+  return (q) => q.findRecords('user').filter({ attribute: 'auth0Id', value: auth0Id });
 };
 
 async function handleResponse(response, t) {
@@ -52,143 +96,40 @@ async function handleResponse(response, t) {
   return json;
 }
 
-// TODO: store the attempted URL so that after login,
-//     we can navigate back.
-export function withFetcher() {
-  return (InnerComponent) => {
-    class WrapperClass extends React.Component<IProps & ILegacyProvidedProps & i18nProps, IState> {
-      makingRequest: boolean;
-      forceComponentUpdate: boolean = false;
+function currentUserFromCache(dataStore: Store) {
+  const usersFromCache = dataStore.cache.query(cacheQuery());
 
-      constructor(props) {
-        super(props);
+  return usersFromCache[0];
+}
 
-        this.state = {
-          currentUser: undefined,
-          isLoading: true,
-          error: undefined,
-          networkFetchComplete: false,
-          fetchCurrentUser: this.fetchCurrentUser,
-        };
-      }
+function doesNeedFetch(dataStore: Store) {
+  const fromCache = currentUserFromCache(dataStore);
+  const auth0IdFromJWT = getAuth0Id();
 
-      componentDidMount() {
-        this.fetchCurrentUser();
-      }
+  const existingId = attributesFor(fromCache).auth0Id;
+  const differsFromJWT = existingId !== auth0IdFromJWT;
 
-      componentDidUpdate() {
-        this.fetchCurrentUser();
-      }
+  return !fromCache || differsFromJWT;
+}
 
-      shouldComponentUpdate(nProps, nState) {
-        if (this.forceComponentUpdate) {
-          this.forceComponentUpdate = false;
+const currentUserUrl = [
+  '/api/users/current-user',
+  '?include=organization-memberships.organization,',
+  'group-memberships.group,',
+  'user-roles.role',
+].join('');
 
-          return true;
-        }
-        const { currentUser } = this.state;
-        // if we have a currentUser from cache, and the currentUser
-        // matches the auth0Id we have from the JWT, then don't
-        // make a network request.
-        //
-        // NOTE: this whole lifecycle hook is kind of a hack for lack
-        //       of a better 'get the current user' pattern.
-        const existingId = attributesFor(currentUser).auth0Id;
-        const nextExistingId = attributesFor(nState.currentUser).auth0Id;
+async function getCurrentUser(dataStore: Store, t) {
+  const response = await authenticatedGet(currentUserUrl);
+  const json = await handleResponse(response, t);
 
-        const idsHaveChanged = existingId !== nextExistingId;
-        const tokenChanged = this.didTokenChange;
+  await pushPayload(dataStore, json);
 
-        return idsHaveChanged || tokenChanged || nState.networkFetchComplete === false;
-      }
+  const currentFromCache = currentUserFromCache(dataStore);
 
-      get didTokenChange() {
-        const { currentUser } = this.state;
-        const auth0IdFromJWT = getAuth0Id();
+  if (!currentFromCache) {
+    throw new CurrentUserFetchError('fetch was made, but user was not found in cache');
+  }
 
-        const existingId = attributesFor(currentUser).auth0Id;
-
-        return auth0IdFromJWT !== existingId;
-      }
-
-      fetchCurrentUser = async (
-        options: IFetchCurrentUserOptions = {
-          forceReloadFromCache: false,
-          forceReloadFromServer: false,
-        }
-      ) => {
-        let { forceReloadFromServer, forceReloadFromCache } = options;
-        forceReloadFromCache = forceReloadFromCache || false;
-        forceReloadFromServer = forceReloadFromServer || false;
-
-        if (forceReloadFromCache || forceReloadFromServer) {
-          this.forceComponentUpdate = true;
-        }
-
-        const { t, dataStore } = this.props;
-        const { currentUser } = this.state;
-
-        if (this.makingRequest) {
-          return;
-        }
-        let needsUpdate = true;
-        if (currentUser && !this.didTokenChange) {
-          needsUpdate = false;
-        }
-        if (!getAuth0Id()) {
-          return;
-        }
-
-        try {
-          if (needsUpdate || forceReloadFromServer) {
-            this.makingRequest = true;
-
-            const response = await authenticatedGet(
-              [
-                '/api/users/current-user',
-                '?include=organization-memberships.organization,group-memberships.group,user-roles.role',
-              ].join('')
-            );
-
-            const json = await handleResponse(response, t);
-
-            await pushPayload(dataStore, json);
-          }
-
-          if (needsUpdate || forceReloadFromServer || forceReloadFromCache) {
-            const usersFromCache = await dataStore.cache.query(cacheQuery());
-            const currentFromCache = usersFromCache[0];
-
-            if (!currentFromCache) {
-              throw new CurrentUserFetchError('fetch was made, but user was not found in cache');
-            }
-
-            this.setState(
-              { currentUser: currentFromCache, isLoading: false, networkFetchComplete: true },
-              () => {
-                this.makingRequest = false;
-              }
-            );
-          }
-        } catch (e) {
-          this.setState({ error: e, networkFetchComplete: true, isLoading: false }, () => {
-            this.makingRequest = false;
-          });
-        }
-      };
-
-      render() {
-        const { currentUser } = this.state;
-
-        return (
-          <InnerComponent {...this.props} currentUserProps={this.state} currentUser={currentUser} />
-        );
-      }
-    }
-
-    return compose(
-      withTranslations,
-      withData({})
-    )(WrapperClass);
-  };
+  return currentFromCache;
 }

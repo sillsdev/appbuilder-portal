@@ -1,18 +1,13 @@
 import * as React from 'react';
 import { RouterProps, Redirect } from 'react-router';
-import { withCurrentUser, withCurrentUserContext } from '@data/containers/with-current-user';
+import { withCurrentUser } from '@data/containers/with-current-user';
 import { isLoggedIn, hasVerifiedEmail } from '@lib/auth0';
-import * as toast from '@lib/toast';
 
-import { requireAuthHelper } from './require-auth-helper';
 import { storePath } from './return-to';
 
 export function requireAuth(opts = {}) {
   return (Component) => {
-    // this.displayName = 'RequireAuth';
-
     function checkForAuth(propsWithRouting: RouterProps) {
-      // const { }
       const authenticated = isLoggedIn();
 
       if (authenticated) {
@@ -30,11 +25,10 @@ export function requireAuth(opts = {}) {
 
       storePath(attemptedLocation);
 
+      console.debug('redirecting to login because the user was not authenticated');
       return <Redirect push={true} to={'/login'} />;
     }
 
     return checkForAuth;
   };
 }
-
-requireAuth.displayName = 'RequireAuth';
