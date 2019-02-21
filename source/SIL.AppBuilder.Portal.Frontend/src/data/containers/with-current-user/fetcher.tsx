@@ -1,55 +1,68 @@
-import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { useEffect, useState, useRef, useLayoutEffect, useMemo, useCallback } from 'react';
 import { pushPayload, useOrbit } from 'react-orbitjs';
+import useAbortableFetch from 'use-abortable-fetch';
 import Store from '@orbit/store';
 
 import { firstError } from '@data';
 
-import { deleteToken, getAuth0Id } from '@lib/auth0';
-import { get as authenticatedGet, tryParseJson } from '@lib/fetch';
+import { deleteToken, getAuth0Id, isLoggedIn, getToken } from '@lib/auth0';
+import { get as authenticatedGet, tryParseJson, defaultHeaders } from '@lib/fetch';
 import { useTranslations } from '@lib/i18n';
 import { attributesFor } from '@data/helpers';
 import { ServerError } from '@data/errors/server-error';
 import { CurrentUserFetchError } from '@data/errors/current-user-fetch-error';
+import { useFetch } from 'react-hooks-fetch';
+import { getCurrentOrganizationId } from '~/lib/current-organization';
 
 export function useFetcher() {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
-  const request = useRef<boolean>();
-  const [state, setState] = useState(() => ({
-    currentUser: currentUserFromCache(dataStore),
-    error: undefined,
-    isLoading: true,
-  }));
-  const { currentUser, error, isLoading } = state;
+  // const request = useRef<boolean>();
+  // const []
+  // const [state, setState] = useState(() => ({
+  //   currentUser: currentUserFromCache(dataStore),
+  //   error: undefined,
+  //   isLoading: true,
+  // }));
+  // const { currentUser, error, isLoading } = state;
 
   const needsFetch = doesNeedFetch(dataStore);
 
-  useLayoutEffect(() => {
-    request.current = !needsFetch;
-  });
-
-  async function fetchCurrentUser() {
-    if (request.current) {
-      return;
+  const opts = useMemo(() => ({
+    headers: {
+      ...defaultHeaders(),
     }
+  }), [getToken(), needsFetch, isLoggedIn()]);
+  console.log(opts);
+  const { error, data } = useFetch(currentUserUrl, opts);
 
-    request.current = true;
-    setState((prevState) => ({ ...prevState, isLoading: true }));
+  return { error, currentUser: data, fetchCurrentUser: () => {} };
+  // useLayoutEffect(() => {
+  //   request.current = !needsFetch;
+  // });
 
-    try {
-      const userFromCache = await getCurrentUser(dataStore, t);
+  // async function fetchCurrentUser() {
+  //   if (request.current) {
+  //     return;
+  //   }
 
-      setState(() => ({ isLoading: false, error: undefined, currentUser: userFromCache }));
-    } catch (error) {
-      setState((prevState) => ({ ...prevState, isLoading: false, error }));
-    }
+  //   request.current = true;
+  //   setState((prevState) => ({ ...prevState, isLoading: true }));
 
-    request.current = false;
-  }
+  //   try {
+  //     const userFromCache = await getCurrentUser(dataStore, t);
 
-  useEffect(() => {
-    fetchCurrentUser();
-  }, [request, needsFetch]);
+  //     setState(() => ({ isLoading: false, error: undefined, currentUser: userFromCache }));
+  //   } catch (error) {
+  //     setState((prevState) => ({ ...prevState, isLoading: false, error }));
+  //   }
+
+  //   request.current = false;
+  // }
+
+  // useEffect(() => {
+  //   fetchCurrentUser();
+  // }, [request, needsFetch]);
 
   return {
     currentUser,
@@ -76,9 +89,10 @@ async function handleResponse(response, t) {
       errorJson = await tryParseJson(response);
     } catch (e) {
       // body is not json
-      console.log(getAuth0Id());
+      console.log('auth0 id: ', getAuth0Id(), response);
       console.error('response body is not json', e);
     }
+
     const errorTitle = firstError(errorJson).title;
     const defaultMessage = unauthorized ? t('errors.notAuthorized') : t('errors.userForbidden');
 
@@ -103,13 +117,16 @@ function currentUserFromCache(dataStore: Store) {
 }
 
 function doesNeedFetch(dataStore: Store) {
+  if (!isLoggedIn()) { return false; }
+  
   const fromCache = currentUserFromCache(dataStore);
   const auth0IdFromJWT = getAuth0Id();
 
+  const isAuthMissing = !auth0IdFromJWT;
   const existingId = attributesFor(fromCache).auth0Id;
   const differsFromJWT = existingId !== auth0IdFromJWT;
 
-  return !fromCache || differsFromJWT;
+  return isAuthMissing || !fromCache || differsFromJWT;
 }
 
 const currentUserUrl = [

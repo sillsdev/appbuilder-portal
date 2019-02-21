@@ -284,6 +284,7 @@ describe('Acceptance | User groups', () => {
 
       beforeEach(async function() {
         await visit('/users');
+        userTable = new UserTableInteractor();
       });
 
       it('does not render second organization', () => {

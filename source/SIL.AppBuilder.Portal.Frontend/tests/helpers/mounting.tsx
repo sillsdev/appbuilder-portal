@@ -1,7 +1,6 @@
 import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting } from '@bigtest/react';
-// import MirageServer, { Factory } from '@bigtest/mirage';
-import createHistory from 'history/createMemoryHistory';
+import * as History from 'history';
 
 import i18n from '@translations';
 
@@ -20,7 +19,7 @@ export function setupApplicationTest(initialState = {}, history?: History) {
   beforeEach(async function() {
     resetBrowser();
 
-    const historyForTesting = history || createHistory();
+    const historyForTesting = history || History.createMemoryHistory();
 
     this.app = await setupAppForTesting(Application, {
       props: {

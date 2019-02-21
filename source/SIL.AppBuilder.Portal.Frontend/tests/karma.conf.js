@@ -20,13 +20,13 @@ module.exports = function(config) {
     basePath: '',
     frameworks: ['mocha'],
     reporters: ['mocha'],
-    browsers: ['Chrome', 'ChromeDebug'],
-    customLaunchers: {
-      ChromeDebug: {
-        base: 'Chrome',
-        flags: ['--remote-debugging-port=9333'],
-      },
-    },
+    // browsers: ['Chrome', 'ChromeDebug'],
+    // customLaunchers: {
+    //   ChromeDebug: {
+    //     base: 'Chrome',
+    //     flags: ['--remote-debugging-port=9333'],
+    //   },
+    // },
     mime: { 'text/x-typescript': ['ts', 'tsx'] },
 
     files: [{ pattern: path.resolve(root, 'tests/index.ts'), watched: false }],

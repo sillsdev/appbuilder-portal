@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, Suspense } from 'react';
 import { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
 
 import { ICurrentUserProps } from './types';
-import { withFetcher, useFetcher } from './fetcher';
+import { useFetcher } from './fetcher';
 
 export { ICurrentUserProps } from './types';
 
@@ -22,16 +22,11 @@ export function useCurrentUser() {
   return useContext(CurrentUserContext);
 }
 
-export const Provider = memo(
-  ({ children }) => {
-    const { currentUser, isLoading, error, fetchCurrentUser } = useFetcher();
+function CurrentUserLoader({ children }) {
+  const { currentUser, isLoading, error, fetchCurrentUser } = useFetcher();
 
-    if (isLoading) {
-      return <PageLoader />;
-    }
-
-    return (
-      <CurrentUserContext.Provider
+  return (
+    <CurrentUserContext.Provider
         value={{
           currentUser,
           currentUserProps: { isLoading, error, fetchCurrentUser, currentUser },
@@ -39,10 +34,23 @@ export const Provider = memo(
       >
         {children}
       </CurrentUserContext.Provider>
-    );
-  },
-  () => true
-);
+  )
+}
+
+let i = 0;
+export function Provider({ children }) {
+
+
+
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <CurrentUserLoader>
+        {children}
+      </CurrentUserLoader>
+    </Suspense>
+    
+  );
+}
 
 export function withCurrentUserContext(InnerComponent) {
   return (props) => {
@@ -121,7 +129,9 @@ function withDisplay(opts = {}) {
 
     if (isLoading) {
       return <PageLoader />;
-    } else if (currentUser) {
+    }
+
+    if (currentUser) {
       const hasMembership = hasRelationship(currentUser, 'organizationMemberships');
 
       if (hasMembership || !options.redirectOnMissingMemberships) {

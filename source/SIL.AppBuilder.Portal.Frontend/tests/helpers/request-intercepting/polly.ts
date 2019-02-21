@@ -1,6 +1,7 @@
 import { Polly } from '@pollyjs/core';
-import * as XHRAdapter from '@pollyjs/adapter-xhr';
-import * as FetchAdapter from '@pollyjs/adapter-fetch';
+import { beforeEach, afterEach } from '@bigtest/mocha';
+import XHRAdapter from '@pollyjs/adapter-xhr';
+import FetchAdapter from '@pollyjs/adapter-fetch';
 import Orbit from '@orbit/data';
 
 import { roles } from '../fixtures';
@@ -103,19 +104,6 @@ const setup = function(config) {
   this.mockPatch = mockPatch(server);
   this.mockPost = mockPost(server);
   this.mockDelete = mockDelete(server);
-  this.stubOrbit = () => (Orbit.fetch = window.fetch);
-
-  this.debugFetch = () => {
-    const originalFetch = window.fetch;
-
-    const fakeFetch = (...args) => {
-      // debugger;
-      return originalFetch(...args);
-    };
-
-    window.fetch = fakeFetch.bind(window);
-    Orbit.fetch = fakeFetch.bind(window);
-  };
 
   this.server = server;
 
@@ -155,16 +143,4 @@ const setup = function(config) {
     data: [roles.superAdmin, roles.orgAdmin, roles.appBuilder],
     meta: { 'total-records': 3 },
   });
-
-  // This won't work unless we create a polly adapter for
-  // https://github.com/auth0/auth0.js/blob/fb53e8c318416ab1b29c99907a9e3cf63fe25164/src/helper/request-builder.js
-  // server.host('https://cdn.auth0.com', () => {
-  //   server.get('*').on('request', (req, res) => {
-  //     res.status(200);
-  //     res.headers['Content-Type'] = 'application/x-javascript; charset=utf-8';
-  //     res.send(
-  //       'Auth0.setClient({"id":"n8IAE2O17FBrlQ667x5mydhpqelCBUWG","tenant":"sil-appbuilder","subscription":"oss","authorize":"https://sil-appbuilder.auth0.com/authorize","callback":"http://localhost:1234","hasAllowedOrigins":true,"strategies":[{"name":"auth0","connections":[{"name":"Username-Password-Authentication","forgot_password_url":"https://login.auth0.com/lo/forgot?wtrealm=urn:auth0:sil-appbuilder:Username-Password-Authentication","signup_url":"https://login.auth0.com/lo/signup?wtrealm=urn:auth0:sil-appbuilder:Username-Password-Authentication","passwordPolicy":"good","showSignup":true,"showForgot":true}]},{"name":"email","connections":[{"name":"email"}]},{"name":"google-oauth2","connections":[{"name":"google-oauth2","scope":["email","profile"]}]},{"name":"samlp","connections":[{"name":"SIL-IdP-Hub"}]}]});'
-  //     );
-  //   });
-  // });
 };

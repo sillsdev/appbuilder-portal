@@ -1,7 +1,3 @@
-declare module '@pollyjs/adapter-fetch';
-declare module '@pollyjs/adapter-xhr';
-declare module '@pollyjs/core';
-
 type Troolean = boolean | undefined;
 
 type Id = string | number;
