@@ -32,8 +32,8 @@ export function RouteListener() {
 
       // TODO: if in some debug mode, log transitions and such
       //      (handy for debugging tests)
-      // console.log(`The current URL is ${location.pathname}${location.search}${location.hash}`);
-      // console.log(`The last navigation action was ${action}`);
+      console.debug(`The current URL is ${location.pathname}${location.search}${location.hash}`);
+      console.debug(`The last navigation action was ${action}`);
     });
   });
 

@@ -46,10 +46,11 @@ class Lock extends React.Component<IProps & i18nProps> {
     const lock = getAuth0LockInstance(auth0Options);
 
     lock.on('authenticated', (authResult) => {
+      console.debug('setting token');
       setToken(authResult.idToken);
 
       lock.hide();
-      this.props.afterLogin();
+      this.props.afterLogin(authResult.idToken);
     });
 
     showLock();

@@ -11,9 +11,9 @@ export const tryParseJson = async (response) => {
 
     return json;
   } catch (e) {
-    if (!isTesting) {
-      console.error(e);
-    }
+    // if (!isTesting) {
+    //   console.error(e);
+    // }
 
     throw e;
   }

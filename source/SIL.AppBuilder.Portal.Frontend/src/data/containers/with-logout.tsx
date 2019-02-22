@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { withData as withOrbit, DataProviderProps as IOrbitProps } from 'react-orbitjs';
 import { deleteToken } from '@lib/auth0';
@@ -6,6 +6,7 @@ import { compose } from 'recompose';
 import { connect } from 'react-redux';
 
 import { APP_RESET } from '~/redux-store/reducers';
+import { useRouter } from '~/lib/hooks';
 
 export interface IProvidedProps {
   logout: (e: any) => void;

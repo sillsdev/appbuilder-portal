@@ -7759,6 +7759,11 @@ react-event-listener@^0.6.2:
     prop-types "^15.6.0"
     warning "^4.0.1"
 
+react-hooks-async@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-hooks-async/-/react-hooks-async-1.1.0.tgz#0425a4721b06b35c536c015306e0f959d07fd5b9"
+  integrity sha512-/wgyF4iqjBIlFL8mx8Ca6vQsNtfafnXI8u32pxonNLx3m47jasyQXiyuQThCQgE1dR7dBuIGj3EIDydK6YgH/w==
+
 react-hooks-fetch@^0.8.0:
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/react-hooks-fetch/-/react-hooks-fetch-0.8.0.tgz#e85c97d8811942d6c07ca1dd9426aa4cf5389597"

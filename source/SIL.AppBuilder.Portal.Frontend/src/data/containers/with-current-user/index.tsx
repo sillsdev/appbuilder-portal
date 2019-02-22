@@ -5,6 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { hasRelationship } from '@data';
 
 import * as toast from '@lib/toast';
+import { isLoggedIn as isValidToken, isTokenExpired, hasVerifiedEmail, getToken } from '@lib/auth0';
 import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
 
@@ -15,42 +16,40 @@ export { ICurrentUserProps } from './types';
 
 export const CurrentUserContext = React.createContext<ICurrentUserProps>({
   currentUser: undefined,
+  isLoggedIn: false,
   currentUserProps: {},
 });
 
 export function useCurrentUser() {
-  return useContext(CurrentUserContext);
+  return useContext<ICurrentUserProps>(CurrentUserContext);
 }
 
-function CurrentUserLoader({ children }) {
+export function Provider({ children }) {
   const { currentUser, isLoading, error, fetchCurrentUser } = useFetcher();
+
+  const isLoggedIn = !!(isValidToken() && currentUser);
 
   return (
     <CurrentUserContext.Provider
         value={{
           currentUser,
-          currentUserProps: { isLoading, error, fetchCurrentUser, currentUser },
+          isLoggedIn,
+          currentUserProps: { 
+            isLoading, error, 
+            fetchCurrentUser, 
+            currentUser,
+            isLoggedIn,
+            isTokenExpired: isTokenExpired(),
+            hasVerifiedEmail: hasVerifiedEmail(),
+            token: getToken(),
+           },
         }}
       >
         {children}
       </CurrentUserContext.Provider>
-  )
-}
-
-let i = 0;
-export function Provider({ children }) {
-
-
-
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <CurrentUserLoader>
-        {children}
-      </CurrentUserLoader>
-    </Suspense>
-    
   );
 }
+
 
 export function withCurrentUserContext(InnerComponent) {
   return (props) => {
@@ -108,6 +107,8 @@ function withDisplay(opts = {}) {
   };
 
   return function CurrentUserValidation({ children }) {
+    const userData = useCurrentUser();
+    console.log('userData', userData);
     const {
       currentUserProps: { error, currentUser, isLoading },
     } = useCurrentUser();

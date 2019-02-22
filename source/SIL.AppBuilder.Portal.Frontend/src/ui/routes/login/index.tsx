@@ -16,10 +16,12 @@ export default function LoginRoute() {
   const { t } = useTranslations();
   const { history } = useRouter();
   const {
+    // isLoggedIn,
     currentUserProps: { fetchCurrentUser },
   } = useCurrentUser();
 
   if (isLoggedIn()) {
+    console.debug('redirecting to tasks because isLoggedIn is true');
     return <Redirect push={true} to={'/tasks'} />;
   }
 
@@ -27,7 +29,9 @@ export default function LoginRoute() {
     if (!hasVerifiedEmail()) {
       history.push('/verify-email');
     } else {
-      await fetchCurrentUser();
+      console.debug('calling fetchCurrentUser');
+      fetchCurrentUser();
+      console.debug('navigating to tasks...');
       history.push(retrievePath(true) || '/tasks');
     }
   };

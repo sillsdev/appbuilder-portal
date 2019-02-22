@@ -1,23 +1,23 @@
-import { SingleResourceDoc, ResourceObject } from 'jsonapi-typescript';
+import { SingleResourceDoc } from 'jsonapi-typescript';
 
-import { UserResource, OrganizationResource } from '@data';
+import { UserResource } from '@data';
 
 import { USERS_TYPE } from '@data';
 
 import { UserAttributes } from '@data/models/user';
 
-export interface IFetchCurrentUserOptions {
-  forceReloadFromServer?: boolean;
-  forceReloadFromCache?: boolean;
-}
-
 export interface ICurrentUserProps {
   currentUser?: UserResource;
+  isLoggedIn: boolean;
   currentUserProps?: {
     currentUser?: UserResource;
     error?: any;
     isLoading?: boolean;
-    fetchCurrentUser?: (opts?: IFetchCurrentUserOptions) => Promise<void>;
+    fetchCurrentUser?: () => void;
+    isLoggedIn?: boolean;
+    isTokenExpired?: boolean;
+    hasVerifiedEmail?: boolean;
+    token?: string;
   };
 }
 

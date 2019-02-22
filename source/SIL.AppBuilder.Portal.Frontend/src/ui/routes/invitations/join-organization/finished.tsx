@@ -34,7 +34,7 @@ class JoinOrganizationFinishedRoute extends React.Component<IProps, IState> {
     const {
       currentUserProps: { fetchCurrentUser },
     } = this.props;
-    await fetchCurrentUser({ forceReloadFromServer: true });
+    await fetchCurrentUser();
   };
 
   componentDidMount() {
