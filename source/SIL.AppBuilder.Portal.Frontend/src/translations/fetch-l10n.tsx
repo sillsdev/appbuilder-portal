@@ -1,15 +1,20 @@
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useFetch } from 'react-hooks-fetch';
 
 import { PageLoader } from '~/ui/components/loaders';
+import { ErrorBoundary, PageError } from '~/ui/components/errors';
+import { useTranslations } from '~/lib/i18n';
 
 const namespace = 'ldml';
 
 function LocaleLoader() {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslations();
   const { language } = i18n;
   const { error, data } = useFetch(`/assets/language/${language}/${namespace}.json`);
+
+  if (error) {
+    return <PageError error={error} />;
+  }
 
   if (!data) {
     return null;
@@ -22,7 +27,7 @@ function LocaleLoader() {
 }
 
 export function L10nLoader({ children }) {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslations();
   const { language } = i18n;
 
   if (i18n.hasResourceBundle(language, namespace)) {
@@ -30,9 +35,11 @@ export function L10nLoader({ children }) {
   }
 
   return (
-    <React.Suspense fallback={<PageLoader />}>
-      <LocaleLoader />
-      {children}
-    </React.Suspense>
+    <ErrorBoundary>
+      <React.Suspense fallback={<PageLoader />}>
+        <LocaleLoader />
+        {children}
+      </React.Suspense>
+    </ErrorBoundary>
   );
 }

@@ -48,7 +48,7 @@ export function useDataActions(project) {
 
   const updateOwner = (user: UserResource | string) => {
     if (typeof user === 'string') {
-      user = dataStore.cache.query((q) => buildFindRecord(q, 'user', user));
+      user = dataStore.cache.query((q) => q.findRecord({ type: 'user', id: user}));
     }
 
     return dataStore.update(
