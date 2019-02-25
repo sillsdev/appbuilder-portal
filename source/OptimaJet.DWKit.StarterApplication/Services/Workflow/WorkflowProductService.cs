@@ -135,8 +135,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
             }
 
-            await RemoveTasksByProductId(product.Id);
-
             var tasks = await ReassignUserTasksForProduct(product);
 
             await SendNotifications(tasks, product, args);
