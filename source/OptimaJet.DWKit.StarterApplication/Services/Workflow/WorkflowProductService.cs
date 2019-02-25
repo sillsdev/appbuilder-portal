@@ -163,7 +163,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 .ToList();
 
             var workflowComment = product.WorkflowComment;
-            
+
             foreach (var user in users)
             {
                 var task = tasks.Find(t => t.UserId == user.Id && t.ActivityName == args.CurrentActivityName && t.Status == args.CurrentState);
@@ -191,6 +191,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
             var instance = await WorkflowInstanceRepository.GetAsync(product.Id);
 
+            var comment = GetCurrentTaskComment(product);
+
             await RemoveTasksByProductId(product.Id);
 
             // Find all users who could perform the current activity and create tasks for them
@@ -212,7 +214,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     ProductId = product.Id,
                     ActivityName = instance.ActivityName,
                     Status = instance.StateName,
-                    Comment = product.WorkflowComment
+                    Comment = comment
                 };
 
                 var createdUserTask = await TaskRepository.CreateAsync(userTask);
@@ -221,6 +223,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
 
             return result;
+        }
+
+        private string GetCurrentTaskComment(Product product)
+        {
+
+            var oldTasks = TaskRepository.Get().Where(t => t.ProductId == product.Id).ToList();
+            // tasks all have the same comment - Chris
+            var taskComment = oldTasks[0].Comment;
+
+            if (String.IsNullOrWhiteSpace(taskComment))
+            {
+                return product.WorkflowComment;
+            }
+
+            return taskComment;
         }
 
 
