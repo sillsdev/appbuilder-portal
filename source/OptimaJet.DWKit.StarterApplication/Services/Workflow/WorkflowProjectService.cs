@@ -37,6 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 .FirstOrDefaultAsync().Result;
 
             foreach (var product in project.Products) {
+                await this.WorkflowProductService.RecreatePreExecuteEntries(product.Id);
                 await this.WorkflowProductService.ReassignUserTasksForProduct(product);
             }
         }

@@ -110,24 +110,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 new CreateInstanceParams(
                     product.ProductDefinition.Workflow.WorkflowScheme,
                     product.Id)
-                    {
-                        IdentityId = product.Project.Owner.WorkflowUserId.Value.ToString()
-                    }
+                {
+                    IdentityId = product.Project.Owner.WorkflowUserId.Value.ToString()
+                }
             );
         }
 
+
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)
         {
-            // Clear PreExecute entries
-            var emptyItems = ProductTransitionRepository.Get()
-                .Where(pt => pt.WorkflowUserId == null && pt.ProductId == args.ProcessId)
-                .Select(pt => pt.Id).ToList();
-            foreach (var item in emptyItems)
-            {
-                await ProductTransitionRepository.DeleteAsync(item);
-            }
-            // Create PreExecute entries
-            await Runtime.PreExecuteFromCurrentActivityAsync(args.ProcessId);
+            await RecreatePreExecuteEntries(args.ProcessId);
 
             // Find the Product assoicated with the ProcessId
             var product = await ProductRepository.Get()
@@ -136,6 +128,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                  .Include(p => p.Project)
                  .ThenInclude(pr => pr.Owner)
                  .FirstOrDefaultAsync();
+
             if (product == null)
             {
                 Log.Error($"Could find Product for ProcessId={args.ProcessId}");
@@ -144,21 +137,36 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             await RemoveTasksByProductId(product.Id);
 
+            var tasks = await ReassignUserTasksForProduct(product);
+
+            await SendNotifications(tasks, product, args);
+
+
+            // Clear the WorkflowComment
+            if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
+            {
+                // Clear the comment
+                product.WorkflowComment = "";
+                await ProductRepository.UpdateAsync(product);
+            }
+        }
+
+        private async Task SendNotifications(List<UserTask> tasks, Product product, ProductProcessChangedArgs args)
+        {
             // Find all users who could perform the current activity and create tasks for them
-            var workflowUserIds = Runtime.GetAllActorsForDirectCommandTransitions(args.ProcessId, activityName: args.CurrentActivityName).ToList();
-            var users = UserRepository.Get().Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString())).ToList();
+            var workflowUserIds = Runtime
+                .GetAllActorsForDirectCommandTransitions(args.ProcessId, activityName: args.CurrentActivityName)
+                .ToList();
+
+            var users = UserRepository.Get()
+                .Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
+                .ToList();
+
             var workflowComment = product.WorkflowComment;
+            
             foreach (var user in users)
             {
-                var task = new UserTask
-                {
-                    UserId = user.Id,
-                    ProductId = product.Id,
-                    ActivityName = args.CurrentActivityName,
-                    Status = args.CurrentState,
-                    Comment = workflowComment
-                };
-                task = await TaskRepository.CreateAsync(task);
+                var task = tasks.Find(t => t.UserId == user.Id && t.ActivityName == args.CurrentActivityName && t.Status == args.CurrentState);
 
                 var messageParms = new Dictionary<string, object>()
                 {
@@ -171,25 +179,18 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     { "to", product.Project.Owner.Name},
                     { "comment", task.Comment ?? ""}
                 };
-                await SendNotificationService.SendNotificationToUserAsync( user,
+                await SendNotificationService.SendNotificationToUserAsync(user,
                                                                            "userTaskAdded",
                                                                            messageParms);
 
                 Log.Information($"Notification: user={user.Name}, command={args.ExecutingCommand}, fromActivity:{args.PreviousActivityName}, toActivity:{args.CurrentState}, comment:{product.WorkflowComment}");
             }
-
-            // Clear the WorkflowComment
-            if (!String.IsNullOrWhiteSpace(workflowComment)) 
-            {
-                // Clear the comment
-                product.WorkflowComment = "";
-                await ProductRepository.UpdateAsync(product);
-            }
         }
 
-        public async Task ReassignUserTasksForProduct(Product product) {    
+        public async Task<List<UserTask>> ReassignUserTasksForProduct(Product product)
+        {
             var instance = await WorkflowInstanceRepository.GetAsync(product.Id);
-            
+
             await RemoveTasksByProductId(product.Id);
 
             // Find all users who could perform the current activity and create tasks for them
@@ -200,6 +201,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             var users = UserRepository.Get()
                 .Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
                 .ToList();
+
+            List<UserTask> result = new List<UserTask>();
 
             foreach (var user in users)
             {
@@ -212,8 +215,33 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     Comment = product.WorkflowComment
                 };
 
-                await TaskRepository.CreateAsync(userTask);
+                var createdUserTask = await TaskRepository.CreateAsync(userTask);
+
+                result.Add(createdUserTask);
             }
+
+            return result;
+        }
+
+
+        protected async Task ClearPreExecuteEntries(Guid processId)
+        {
+            var emptyItems = ProductTransitionRepository.Get()
+                .Where(pt => pt.WorkflowUserId == null && pt.ProductId == processId)
+                .Select(pt => pt.Id).ToList();
+
+            foreach (var item in emptyItems)
+            {
+                await ProductTransitionRepository.DeleteAsync(item);
+            }
+        }
+
+        public async Task RecreatePreExecuteEntries(Guid processId)
+        {
+            await ClearPreExecuteEntries(processId);
+
+            // Create PreExecute entries
+            await Runtime.PreExecuteFromCurrentActivityAsync(processId);
         }
 
         private async Task RemoveTasksByProductId(Guid productId)
@@ -227,4 +255,4 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         }
     }
 }
-    
+
