@@ -3,7 +3,7 @@ using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class WorkflowProcessInstance : Identifiable<Guid>
+    public class ProductWorkflow : Identifiable<Guid>
     {
         public string StateName { get; set; }
 

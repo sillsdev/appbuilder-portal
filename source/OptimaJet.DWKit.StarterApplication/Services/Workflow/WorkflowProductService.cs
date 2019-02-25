@@ -28,7 +28,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         IJobRepository<Product, Guid> ProductRepository { get; set; }
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
-        public IJobRepository<WorkflowProcessInstance, Guid> WorkflowInstanceRepository { get; }
+        public IJobRepository<ProductWorkflow, Guid> WorkflowInstanceRepository { get; }
         public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
         public SendNotificationService SendNotificationService { get; }
         public WorkflowRuntime Runtime { get; }
@@ -37,7 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<UserTask> taskRepository,
             IJobRepository<User> userRepository,
-            IJobRepository<WorkflowProcessInstance, Guid> workflowInstanceRepository,
+            IJobRepository<ProductWorkflow, Guid> workflowInstanceRepository,
             IJobRepository<ProductTransition> productTransitionRepository,
             SendNotificationService sendNotificationService,
             WorkflowRuntime runtime

@@ -32,6 +32,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var productEntity = modelBuilder.Entity<Product>();
             var productBuildEntity = modelBuilder.Entity<ProductBuild>();
             var notificationEntity = modelBuilder.Entity<Notification>();
+            var productWorkflowEntity = modelBuilder.Entity<ProductWorkflow>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
@@ -151,9 +152,11 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasForeignKey(p => p.ProductId);
 
             productEntity
-                .HasOne(p => p.WorkflowProcessInstance)
+                .HasOne(p => p.ProductWorkflow)
                 .WithOne(i => i.Product)
-                .HasForeignKey<WorkflowProcessInstance>(i => i.Id);
+                .HasForeignKey<ProductWorkflow>(i => i.Id);
+
+            productWorkflowEntity.ToTable("WorkflowProcessInstance"); 
 
             projectEntity
                 .Property(p => p.WorkflowProjectId)
