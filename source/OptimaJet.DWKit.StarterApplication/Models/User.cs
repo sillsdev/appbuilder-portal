@@ -44,9 +44,6 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("email-notification")]
         public bool? EmailNotification { get; set; } = true;
 
-        [Attr("publishing-key")]
-        public string PublishingKey { get; set; }
-
         [Attr("workflow-user-id")]
         public Guid? WorkflowUserId { get; set; }
 

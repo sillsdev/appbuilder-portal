@@ -6,7 +6,6 @@ using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Services;
 using Microsoft.Extensions.Logging;
-using OptimaJet.DWKit.StarterApplication.Forms.Users;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
@@ -82,11 +81,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             if (user == null)
             {
                 throw new JsonApiException(404, $"User Id '{id}' not found."); ;
-            }
-            var updateForm = new UpdateForm(UserRepository, CurrentUserContext, UserRolesRepository);
-            if (!updateForm.IsValid(id, resource))
-            {
-                throw new JsonApiException(updateForm.Errors);
             }
             return await base.UpdateAsync(id, resource);
         }

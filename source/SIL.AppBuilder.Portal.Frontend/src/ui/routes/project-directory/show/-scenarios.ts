@@ -90,8 +90,6 @@ export const projectOne = {
         auth0Id: 'google-oauth2|111802484969448690930',
         'profile-visibility': 1,
         'email-notification': true,
-        'publishing-key':
-          'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCHSzEF6dEIiukeBeusI9qdQ3E8f/wCdtKOv5NItePwfXE3LLEOw5Kx7rZquhO9z6/58lTBK8flFpefOXsL2sYHHaAF40lcAJ6FBUsycehN12NThFDcGT+DbauARToXx/ypz4zJcdWJ8R0qQRm4vJgJL5xIKWR2cK8T7jA1FC0ZcltQdXw1yiSYiV7j1QIfNDTLtMIBg0M+HNVDPYDAC05h6Dnz9XDCA9sgCYt8CMey0wjqbzX+Qn3KxPmz000dRCtgiHYMj+oClZMVPPqltQuDJUiDpztNCAWpL1U6rF7vCC6xl2cXUwK8kT82CesCuKafOd336KZkUphkqP2bYRrz lprestonsegoiii@Tyche',
         'workflow-user-id': '079d6e50-769c-4607-b66f-e668b6171a19',
         'date-created': null,
         'date-updated': '2018-12-03T21:29:37.254778',

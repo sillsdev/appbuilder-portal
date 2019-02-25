@@ -60,8 +60,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Email = "test-email1@test.test",
                 Name = "Test Testenson1",
                 GivenName = "Test1",
-                FamilyName = "Testenson1",
-                PublishingKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTF+wTVdaMDYmgeAZd7voe/b5MEHJWBXQDik14sqqj0aXtwV4+qxPU2ptqcjGpRk3ynmxp9i6Venw1JVf39iDFhWgd7VGBA7QEfApRm1v1FRI0wuN user1@user1MBP.local"
+                FamilyName = "Testenson1"
             });
             user2 = AddEntity<AppDbContext, User>(new User
             {
@@ -69,8 +68,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Email = "test-email2@test.test",
                 Name = "Test Testenson2",
                 GivenName = "Test2",
-                FamilyName = "Testenson2",
-                PublishingKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTF+wTVdaMDYmgeAZd7voe/b5MEHJWBXQDik14sqqj0aXtwV4+qxPU2ptqcjGpRk3ynmxp9i6Venw1JVf39iDFhWgd7VGBA7QEfApRm1v1FRI0wuN user2@user2.local"
+                FamilyName = "Testenson2"
             });
             user3 = AddEntity<AppDbContext, User>(new User
             {
@@ -86,8 +84,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Email = "test-email3@test.test",
                 Name = "Test Testenson3",
                 GivenName = "Test3",
-                FamilyName = "Testenson3",
-                PublishingKey = "invalidkey"
+                FamilyName = "Testenson3"
             });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {

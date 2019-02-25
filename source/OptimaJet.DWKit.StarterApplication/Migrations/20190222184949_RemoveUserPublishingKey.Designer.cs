@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OptimaJet.DWKit.StarterApplication.Data;
@@ -10,9 +11,10 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190222184949_RemoveUserPublishingKey")]
+    partial class RemoveUserPublishingKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -396,19 +398,11 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int?>("RebuildWorkflowId");
-
-                    b.Property<int?>("RepublishWorkflowId");
-
                     b.Property<int>("TypeId");
 
                     b.Property<int>("WorkflowId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RebuildWorkflowId");
-
-                    b.HasIndex("RepublishWorkflowId");
 
                     b.HasIndex("TypeId");
 
@@ -441,35 +435,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductTransitions");
-                });
-
-            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflow", b =>
-                {
-                    b.Property<Guid>("Id");
-
-                    b.Property<string>("ActivityName");
-
-                    b.Property<Guid>("SchemeId");
-
-                    b.Property<string>("StateName");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SchemeId");
-
-                    b.ToTable("WorkflowProcessInstance");
-                });
-
-            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflowScheme", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("SchemeCode");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("WorkflowProcessScheme");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Project", b =>
@@ -737,10 +702,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int?>("StoreTypeId");
 
-                    b.Property<int>("Type")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(1);
-
                     b.Property<string>("WorkflowBusinessFlow");
 
                     b.Property<string>("WorkflowScheme");
@@ -885,14 +846,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductDefinition", b =>
                 {
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.WorkflowDefinition", "RebuildWorkflow")
-                        .WithMany()
-                        .HasForeignKey("RebuildWorkflowId");
-
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.WorkflowDefinition", "RepublishWorkflow")
-                        .WithMany()
-                        .HasForeignKey("RepublishWorkflowId");
-
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ApplicationType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
@@ -907,21 +860,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductTransition", b =>
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
-                        .WithMany("Transitions")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflow", b =>
-                {
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
-                        .WithOne("ProductWorkflow")
-                        .HasForeignKey("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflow", "Id")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflowScheme", "Scheme")
                         .WithMany()
-                        .HasForeignKey("SchemeId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -136,7 +136,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
         [Fact]
-        public async Task Patch_SomeUser_Good_PublishingKey()
+        public async Task Patch_SomeUser_Good()
         {
             var tuple = NeedsConfiguredCurrentUser();
             var user = AddEntity<AppDbContext, User>(new User { ExternalId = "n/a" });
@@ -147,13 +147,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
                 OrganizationId = tuple.Item2.OrganizationId
             });
 
-            var publishingKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTF+wTVdaMDYmgeAZd7voe/b5MEHJWBXQDik14sqqj0aXtwV4+qxPU2ptqcjGpRk3ynmxp9i6Venw1JVf39iDFhWgd7VGBA7QEfApRm1v1FRI0wuN user1@user1MBP.local";
             var expectedGivenName = user.GivenName + "-updated!";
             var payload = ResourcePatchPayload(
                 "users", user.Id, new Dictionary<string, object>()
                 {
-                    { "given-name", expectedGivenName },
-                    { "publishing-key", publishingKey}
+                    { "given-name", expectedGivenName }
                 });
 
             var response = await Patch("/api/users/" + user.Id, payload, tuple.Item2.OrganizationId.ToString());
@@ -163,32 +161,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Users
             var updatedUser = await Deserialize<User>(response);
 
             Assert.Equal(expectedGivenName, updatedUser.GivenName);
-            Assert.Equal(publishingKey, updatedUser.PublishingKey);
-        }
-        [Fact]
-        public async Task Patch_SomeUser_Bad_PublishingKey()
-        {
-            var tuple = NeedsConfiguredCurrentUser();
-            var user = AddEntity<AppDbContext, User>(new User { ExternalId = "n/a" });
-
-            AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
-            {
-                UserId = user.Id,
-                OrganizationId = tuple.Item2.OrganizationId
-            });
-
-            var publishingKey = "This is junk";
-            var expectedGivenName = user.GivenName + "-updated!";
-            var payload = ResourcePatchPayload(
-                "users", user.Id, new Dictionary<string, object>()
-                {
-                    { "given-name", expectedGivenName },
-                    { "publishing-key", publishingKey}
-                });
-
-            var response = await Patch("/api/users/" + user.Id, payload, tuple.Item2.OrganizationId.ToString());
-
-            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         }
     }
 }
