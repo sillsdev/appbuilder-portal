@@ -28,7 +28,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         IJobRepository<Product, Guid> ProductRepository { get; set; }
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
-        public IJobRepository<ProductWorkflow, Guid> WorkflowInstanceRepository { get; }
+        public IJobRepository<ProductWorkflow, Guid> ProductWorkflowRepository { get; }
         public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
         public SendNotificationService SendNotificationService { get; }
         public WorkflowRuntime Runtime { get; }
@@ -37,7 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<UserTask> taskRepository,
             IJobRepository<User> userRepository,
-            IJobRepository<ProductWorkflow, Guid> workflowInstanceRepository,
+            IJobRepository<ProductWorkflow, Guid> productWorkflowRepository,
             IJobRepository<ProductTransition> productTransitionRepository,
             SendNotificationService sendNotificationService,
             WorkflowRuntime runtime
@@ -45,7 +45,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             ProductRepository = productRepository;
             TaskRepository = taskRepository;
             UserRepository = userRepository;
-            WorkflowInstanceRepository = workflowInstanceRepository;
+            ProductWorkflowRepository = productWorkflowRepository;
             ProductTransitionRepository = productTransitionRepository;
             SendNotificationService = sendNotificationService;
             Runtime = runtime;
@@ -144,7 +144,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public async Task<List<UserTask>> ReassignUserTasksForProduct(Product product)
         {
-            var instance = await WorkflowInstanceRepository.GetAsync(product.Id);
+            var instance = await ProductWorkflowRepository.GetAsync(product.Id);
 
             var comment = GetCurrentTaskComment(product);
 
