@@ -224,5 +224,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ProductTransition> ProductTransitions { get; set; }
         public DbSet<ProductBuild> ProductBuilds { get; set; }
+        //public DbSet<ProductActionDefinition> ProductActionDefinitions { get; set; }
     }
 }

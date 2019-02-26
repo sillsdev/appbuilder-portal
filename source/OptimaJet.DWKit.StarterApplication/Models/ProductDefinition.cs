@@ -1,4 +1,5 @@
-﻿using JsonApiDotNetCore.Models;
+﻿using System.Collections.Generic;
+using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
@@ -17,5 +18,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasOne("workflow")]
         public virtual WorkflowDefinition Workflow { get; set; }
         public int WorkflowId { get; set; }
+
+        [HasMany("actions", Link.None)]
+        public virtual List<ProductActionDefinition> Actions { get; set; }
     }
 }
