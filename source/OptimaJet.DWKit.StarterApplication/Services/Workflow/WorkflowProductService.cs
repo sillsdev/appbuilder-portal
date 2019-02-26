@@ -131,7 +131,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
             }
 
-            var tasks = await ReassignUserTasksForProduct(product);
+            var tasks = await ReassignUserTasksForProduct(product, args);
 
             // Clear the WorkflowComment
             if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
@@ -142,7 +142,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
-        public async Task<List<UserTask>> ReassignUserTasksForProduct(Product product)
+        public async Task<List<UserTask>> ReassignUserTasksForProduct(Product product, ProductProcessChangedArgs args = null)
         {
             var instance = await ProductWorkflowRepository.GetAsync(product.Id);
 
@@ -174,7 +174,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
                 var createdUserTask = await TaskRepository.CreateAsync(userTask);
 
-                await SendNotificationForTask(userTask, product);
+                await SendNotificationForTask(userTask, product, args);
 
                 result.Add(createdUserTask);
             }
