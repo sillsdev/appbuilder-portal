@@ -115,15 +115,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)
         {
-            await RecreatePreExecuteEntries(args.ProcessId);
-
             // Find the Product assoicated with the ProcessId
             var product = await ProductRepository.Get()
-                 .Where(p => p.Id == args.ProcessId)
-                 .Include(p => p.ProductDefinition)
-                 .Include(p => p.Project)
-                 .ThenInclude(pr => pr.Owner)
-                 .FirstOrDefaultAsync();
+                .Where(p => p.Id == args.ProcessId)
+                .Include(p => p.ProductDefinition)
+                .Include(p => p.Project)
+                    .ThenInclude(pr => pr.Owner)
+                .FirstOrDefaultAsync();
 
             if (product == null)
             {
@@ -144,6 +142,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public async Task<List<UserTask>> ReassignUserTasksForProduct(Product product, ProductProcessChangedArgs args = null)
         {
+            await ClearPreExecuteEntries(product.Id);
+
             var instance = await ProductWorkflowRepository.GetAsync(product.Id);
 
             var comment = GetCurrentTaskComment(product);
@@ -178,6 +178,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
                 result.Add(createdUserTask);
             }
+
+            await CreatePreExecuteEntries(product.Id);
 
             return result;
         }
@@ -234,11 +236,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
-        public async Task RecreatePreExecuteEntries(Guid processId)
+        public async Task CreatePreExecuteEntries(Guid processId)
         {
-            await ClearPreExecuteEntries(processId);
-
-            // Create PreExecute entries
             await Runtime.PreExecuteFromCurrentActivityAsync(processId);
         }
 

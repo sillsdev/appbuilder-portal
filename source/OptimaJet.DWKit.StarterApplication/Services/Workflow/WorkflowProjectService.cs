@@ -26,8 +26,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             WorkflowProductService productService
         )
         {
-            ProjectRepository = projectRepository;
-            WorkflowProductService = productService;
+            this.ProjectRepository = projectRepository;
+            this.WorkflowProductService = productService;
         }
 
         public async Task ReassignUserTasks(int projectId) {
@@ -41,7 +41,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 .FirstOrDefaultAsync().Result;
 
             foreach (var product in project.Products) {
-                await this.WorkflowProductService.RecreatePreExecuteEntries(product.Id);
                 await this.WorkflowProductService.ReassignUserTasksForProduct(product);
             }
         }
