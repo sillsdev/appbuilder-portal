@@ -129,7 +129,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
             }
 
-            var tasks = await ReassignUserTasksForProduct(product, args);
+            await ReassignUserTasksForProduct(product);
 
             // Clear the WorkflowComment
             if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
@@ -140,7 +140,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
-        public async Task<List<UserTask>> ReassignUserTasksForProduct(Product product, ProductProcessChangedArgs args = null)
+        public async Task ReassignUserTasksForProduct(Product product)
         {
             await ClearPreExecuteEntries(product.Id);
 
@@ -158,9 +158,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             var users = UserRepository.Get()
                 .Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
                 .ToList();
-
-            List<UserTask> result = new List<UserTask>();
-
+                
             foreach (var user in users)
             {
                 var userTask = new UserTask
@@ -172,25 +170,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     Comment = comment
                 };
 
-                var createdUserTask = await TaskRepository.CreateAsync(userTask);
+                await TaskRepository.CreateAsync(userTask);
 
-                await SendNotificationForTask(userTask, user, product, args);
-
-                result.Add(createdUserTask);
+                await SendNotificationForTask(userTask, user, product);
             }
 
             await CreatePreExecuteEntries(product.Id);
-
-            return result;
         }
 
-        private async Task SendNotificationForTask (UserTask task, User user, Product product, ProductProcessChangedArgs args = null)
+        private async Task SendNotificationForTask (UserTask task, User user, Product product)
         {
+            var comment = task.Comment ?? "";
             var messageParms = new Dictionary<string, object>() {
                 { "activityName", task.ActivityName },
                 { "project", product.Project.Name },
                 { "productName", product.ProductDefinition.Name },
-                { "fromActivity", args?.PreviousActivityName ?? "" },
                 { "status", task.Status },
                 { "originator", user.Name },
                 { "to", product.Project.Owner.Name },
@@ -201,7 +195,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 "userTaskAdded",
                 messageParms);
 
-            Log.Information($"Notification: user={user.Name}, command={args?.ExecutingCommand}, fromActivity:{args?.PreviousActivityName}, toActivity:{args?.CurrentState}, comment:{product.WorkflowComment}");
+            Log.Information($"Notification: task={task.Id}, user={user.Name}, product={product.Id}, messageParms={messageParms}");
         }
 
         private string GetCurrentTaskComment(Product product)
