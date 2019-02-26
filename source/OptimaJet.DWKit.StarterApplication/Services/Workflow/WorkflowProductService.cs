@@ -174,7 +174,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
                 var createdUserTask = await TaskRepository.CreateAsync(userTask);
 
-                await SendNotificationForTask(userTask, product, args);
+                await SendNotificationForTask(userTask, user, product, args);
 
                 result.Add(createdUserTask);
             }
@@ -182,9 +182,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             return result;
         }
 
-        private async Task SendNotificationForTask (UserTask task, Product product, ProductProcessChangedArgs args = null)
+        private async Task SendNotificationForTask (UserTask task, User user, Product product, ProductProcessChangedArgs args = null)
         {
-            var user = task.User;
             var messageParms = new Dictionary<string, object>() {
                 { "activityName", task.ActivityName },
                 { "project", product.Project.Name },

@@ -32,7 +32,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public async Task ReassignUserTasks(int projectId) {
             var project = this.ProjectRepository.Get()
-                .Include(p => p.Products)
+                .Include(proj => proj.Products)
+                    .ThenInclude(prod => prod.Project)
+                        .ThenInclude(proj => proj.Owner)
+                .Include(proj => proj.Products)
+                    .ThenInclude(prod => prod.ProductDefinition)
                 .Where(p => p.Id == projectId)
                 .FirstOrDefaultAsync().Result;
 
