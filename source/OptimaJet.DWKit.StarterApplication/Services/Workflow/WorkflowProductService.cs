@@ -206,20 +206,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
 
             var oldTasks = TaskRepository.Get().Where(t => t.ProductId == product.Id).ToList();
-            // tasks all have the same comment - Chris
-
-            if (oldTasks.Count > 0) {
-                var taskComment = oldTasks[0].Comment;
-
-                if (String.IsNullOrWhiteSpace(taskComment))
-                {
-                    return product.WorkflowComment;
-                }
-
-                return taskComment;
-            }
             
-            return product.WorkflowComment;
+            // tasks all have the same comment - Chris
+            if (oldTasks.Count == 0) {
+                return product.WorkflowComment;
+            }
+
+            var taskComment = oldTasks[0].Comment;
+
+            if (String.IsNullOrWhiteSpace(taskComment))
+            {
+                return product.WorkflowComment;
+            }
+
+            return taskComment;
         }
 
         protected async Task ClearPreExecuteEntries(Guid processId)
