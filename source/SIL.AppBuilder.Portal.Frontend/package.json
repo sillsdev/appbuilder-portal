@@ -85,7 +85,7 @@
     "sass-loader": "^7.0.3",
     "semantic-ui-css": "^2.3.3",
     "semantic-ui-react": "^0.85.0",
-    "use-debounce": "^0.0.9",
+    "use-debounce": "^1.0.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
