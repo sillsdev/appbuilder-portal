@@ -24,7 +24,8 @@ wget --output-document $targetPath $url
 echo "downloaded all supported languages"
 
 echo "downloading transaltion support for the language data..."
-npm install -g fast-xml-parser
+npm install -g fast-xml-parser # Needed for Travis? wut
+npm install -g xml2js
 
 function downloadAndConvert {
   local lang=$1
@@ -34,9 +35,9 @@ function downloadAndConvert {
 
   mkdir -p "${folder}${fileName}"
 
-  wget -qO- "https://ldml.api.sil.org/$lang?inc[0]=localeDisplayNames" | xml2js -o $tmpName
+  wget -qO- "https://ldml.api.sil.org/$lang?inc[0]=localeDisplayNames" | npx xml2js -o $tmpName
 
-  # TODO: use a custom node script to convert the language 
+  # TODO: use a custom node script to convert the language
   # list to something more easily consumeable by a javascript app.
   node scripts/clean-up-ldml-json.js $tmpName $finalName
 
@@ -46,7 +47,7 @@ function downloadAndConvert {
 downloadAndConvert "es-419"
 # TODO: should we rename our en-us translations to en?
 #       this would _only_ be because the ldml endpoint does not have an en-us entry
-downloadAndConvert "en" "en-US" 
+downloadAndConvert "en" "en-US"
 downloadAndConvert "fr-FR"
 
 ls -la $folder

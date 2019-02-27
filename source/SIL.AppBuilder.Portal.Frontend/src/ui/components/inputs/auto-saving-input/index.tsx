@@ -1,6 +1,6 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Form } from 'semantic-ui-react';
-import { debounceInput } from '@lib/debounce';
+import { useDebouncedCallback } from 'use-debounce';
 
 interface IProps {
   value: string;
@@ -13,40 +13,31 @@ interface IState {
   value: string;
 }
 
-export default class AutoSavingInput extends React.Component<IProps, IState> {
-  state = { value: '' };
-  onInputChange: (e: React.FormEvent<any>) => void;
+export default function AutoSavingInput({ value, onChange, InputElement, timeout }: IProps) {
+  const Input = InputElement || Form.TextArea;
+  const [localValue, setLocalValue] = useState(value);
+  const save = useDebouncedCallback((newValue) => onChange(newValue), timeout, []);
 
-  constructor(props: IProps) {
-    super(props);
+  const onInputChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const newValue = e.currentTarget.value;
 
-    this.state = { value: props.value };
-    this.onInputChange = debounceInput(this, {
-      delayMs: this.props.timeout || 750,
-      onTrigger() {
-        const { value } = this.state;
+    if (localValue === newValue) {
+      return;
+    }
 
-        this.props.onChange(value);
-      },
-    });
-  }
-
-  onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    this.props.onChange(this.state.value);
+    setLocalValue(newValue);
+    save(newValue);
   };
 
-  render() {
-    const { value: sValue } = this.state;
-    const { value: pValue, InputElement } = this.props;
-    const Input = InputElement || Form.TextArea;
-    const value = sValue || pValue;
+  const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    return (
-      <Form onSubmit={this.onFormSubmit}>
-        <Input value={value} onBlur={this.onInputChange} onChange={this.onInputChange} />
-      </Form>
-    );
-  }
+    onChange(localValue);
+  };
+
+  return (
+    <Form onSubmit={onFormSubmit}>
+      <Input value={localValue} onBlur={onInputChange} onChange={onInputChange} />
+    </Form>
+  );
 }

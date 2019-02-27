@@ -11,6 +11,7 @@ using OptimaJet.DWKit.StarterApplication.Forms.Projects;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using static OptimaJet.DWKit.StarterApplication.Utility.ServiceExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
@@ -91,6 +92,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // If the owner is changing, call the build engine to update the project iam permissions
             if (resource.OwnerId != 0)
             {
+                HangfireClient.Enqueue<WorkflowProjectService>(service => service.ReassignUserTasks(project.Id));
                 HangfireClient.Enqueue<BuildEngineProjectService>(service => service.UpdateProject(project.Id, null));
             }
             return project;
