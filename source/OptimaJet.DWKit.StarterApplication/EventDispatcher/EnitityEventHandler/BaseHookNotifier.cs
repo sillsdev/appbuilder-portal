@@ -3,6 +3,7 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Models;
+using JsonApiDotNetCore.Serialization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -19,14 +20,20 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
 
         public DbContext DbContext { get; }
         public IHubContext<ScriptoriaHub> HubContext { get; }
+        public IHubContext<JSONAPIHub> DataHub { get; }
+        public IJsonApiSerializer DataSerializer { get; }
 
         public BaseHookNotifier(
             IDbContextResolver dbContextResolver,
-            IHubContext<ScriptoriaHub> hubContext
+            IHubContext<ScriptoriaHub> hubContext,
+            IHubContext<JSONAPIHub> dataHub,
+            IJsonApiSerializer dataSerializer
             )
         {
             DbContext = dbContextResolver.GetContext();
             HubContext = hubContext;
+            DataHub = dataHub;
+            DataSerializer = dataSerializer;
         }
 
         public string GetTableName()
@@ -73,6 +80,15 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             foreach (var groupName in updateGroups)
             {
                 await HubContext.Clients.Group(groupName).SendAsync("StatusUpdate", message);
+            }
+        }
+
+        public async Task SendDataUpdateAsync(IEnumerable<string> updateGroups, string message) {
+
+            foreach (var groupName in updateGroups) {
+                await DataHub.Clients
+                    .Group(groupName)
+                    .SendAsync("RemoteDataHasUpdated", message);
             }
         }
 

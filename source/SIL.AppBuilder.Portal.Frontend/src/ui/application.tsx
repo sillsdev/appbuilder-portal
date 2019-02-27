@@ -9,6 +9,7 @@ import { ReduxProvider } from '@store';
 
 import { SocketManager } from '@sockets';
 
+import { LiveDataProvider } from '@data/live';
 import { ScrollToTop } from '@lib/routing';
 
 import i18n from '~/translations';
@@ -55,19 +56,21 @@ export default class Application extends React.Component<IProps> {
             }
           >
             <CurrentUserProvider>
-              <SocketManager>
-                <ReduxProvider initialState={initialState || {}}>
-                  <Router {...routerProps}>
-                    <>
-                      <RouteListener />
-                      <ScrollToTop>
-                        <Component />
-                      </ScrollToTop>
-                      <DebugInfo />
-                    </>
-                  </Router>
-                </ReduxProvider>
-              </SocketManager>
+              <LiveDataProvider>
+                <SocketManager>
+                  <ReduxProvider initialState={initialState || {}}>
+                    <Router {...routerProps}>
+                      <>
+                        <RouteListener />
+                        <ScrollToTop>
+                          <Component />
+                        </ScrollToTop>
+                        <DebugInfo />
+                      </>
+                    </Router>
+                  </ReduxProvider>
+                </SocketManager>
+              </LiveDataProvider>
             </CurrentUserProvider>
           </APIProvider>
         </L10nLoader>

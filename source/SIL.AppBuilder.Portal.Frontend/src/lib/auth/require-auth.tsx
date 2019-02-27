@@ -11,7 +11,8 @@ export function requireAuth(opts = {}) {
   return (Component) => {
     // this.displayName = 'RequireAuth';
 
-    const checkForAuth = (propsWithRouting: RouterProps) => {
+    function checkForAuth(propsWithRouting: RouterProps) {
+      // const { }
       const authenticated = isLoggedIn();
 
       if (authenticated) {
@@ -30,9 +31,9 @@ export function requireAuth(opts = {}) {
       storePath(attemptedLocation);
 
       return <Redirect push={true} to={'/login'} />;
-    };
+    }
 
-    return requireAuthHelper(checkForAuth);
+    return checkForAuth;
   };
 }
 

@@ -17,7 +17,7 @@ export interface ICurrentUserProps {
     currentUser?: UserResource;
     error?: any;
     isLoading?: boolean;
-    fetchCurrentUser?: (opts: IFetchCurrentUserOptions) => Promise<void>;
+    fetchCurrentUser?: (opts?: IFetchCurrentUserOptions) => Promise<void>;
   };
 }
 

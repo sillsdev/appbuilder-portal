@@ -1,6 +1,7 @@
 import { Polly } from '@pollyjs/core';
-import * as XHRAdapter from '@pollyjs/adapter-xhr';
-import * as FetchAdapter from '@pollyjs/adapter-fetch';
+import { beforeEach, afterEach } from '@bigtest/mocha';
+import XHRAdapter from '@pollyjs/adapter-xhr';
+import FetchAdapter from '@pollyjs/adapter-fetch';
 import Orbit from '@orbit/data';
 
 import { roles } from '../fixtures';
