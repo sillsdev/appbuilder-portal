@@ -32,6 +32,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import JSONAPISource, { Resource, JSONAPIDocument } from '@orbit/jsonapi';
 import { ResourceDocument } from '@orbit/jsonapi/dist/modules/es2017';
+import Store from '@orbit/store';
 
 export interface OperationsResponse {
   operations: JSONAPIDocument[];
@@ -66,20 +67,21 @@ export default function LiveDataManager({ children }) {
       transforms
     );
 
-    return dataClient.connection.invoke<string>('PerformOperations', JSON.stringify(data)).pipe(
-      map<string, OperationsResponse>((json: string) => {
-        const response: OperationsResponse = JSON.parse(json);
-
-        pushPayload(dataStore, {
-          data: response.operations.map((operation: JSONAPIDocument) => operation.data),
-        });
-
-        return response;
-      })
-    );
+    return dataClient.connection
+      .invoke<string>('PerformOperations', JSON.stringify(data))
+      .pipe(map<string, OperationsResponse>((json) => handleSocketPayload(dataStore, json)));
   };
 
   return children({ socket: dataClient, pushData, subscriptions });
+}
+
+function handleSocketPayload(dataStore: Store, json: string) {
+  const response: OperationsResponse = JSON.parse(json);
+  const data = response.operations.map((operation: JSONAPIDocument) => operation.data);
+
+  pushPayload(dataStore, { data });
+
+  return response;
 }
 
 /**

@@ -21,17 +21,5 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
         ) : base(dbContextResolver, hubContext, dataHub, dataSerializer)
         {
         }
-
-        public override void DidUpdate(string id) {
-            base.DidUpdate(id);
-
-            var tableName = GetTableName();
-
-            var entity = DbContext.Set<Project>().Find(id);
-            var message = DataSerializer.Serialize(entity);
-
-            var updateGroups = GetUpdateGroups(tableName, id);
-            SendDataUpdateAsync(updateGroups, message).Wait();
-        }
     }
 }
