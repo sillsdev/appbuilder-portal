@@ -18,7 +18,7 @@ describe('Acceptance | Project Edit | Archive Project', () => {
     beforeEach(async function() {
       await visit('/projects/1');
     });
-    
+
     it('is in detail page', () => {
       expect(location().pathname).to.equal('/projects/1');
     });

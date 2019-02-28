@@ -143,4 +143,3 @@ const setup = function(config) {
     meta: { 'total-records': 3 },
   });
 };
-
