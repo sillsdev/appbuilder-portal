@@ -25,6 +25,7 @@ export function withData(WrappedComponent) {
     groupId,
     ...otherProps
   }) {
+    console.log('ahhh', users);
     const { dataStore } = useOrbit();
     const { currentUser } = useCurrentUser();
 

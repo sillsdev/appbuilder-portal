@@ -8,6 +8,7 @@ stats.json
 tests/coverage/
 tests/cypress/screenshots/
 tests/cypress/videos/
+/test.results
 
 src/public/assets/language/alltags.json
 src/public/assets/language/**/ldml*

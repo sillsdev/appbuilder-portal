@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 if [[ ! -d node_modules/semantic-ui-react/dist ]]; then
   echo "semantic-ui-react has not been built!"

@@ -49,5 +49,3 @@ downloadAndConvert "es-419"
 #       this would _only_ be because the ldml endpoint does not have an en-us entry
 downloadAndConvert "en" "en-US"
 downloadAndConvert "fr-FR"
-
-ls -la $folder

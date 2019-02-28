@@ -21,12 +21,6 @@ module.exports = function(config) {
     frameworks: ['mocha'],
     reporters: ['mocha'],
     browsers: ['Chrome', 'ChromeDebug'],
-    customLaunchers: {
-      ChromeDebug: {
-        base: 'Chrome',
-        flags: ['--remote-debugging-port=9333'],
-      },
-    },
     mime: { 'text/x-typescript': ['ts', 'tsx'] },
 
     files: [{ pattern: path.resolve(root, 'tests/index.ts'), watched: false }],
@@ -43,26 +37,6 @@ module.exports = function(config) {
         ui: 'bdd',
         globals: false,
         opts: root + '/tests/mocha.opts',
-      },
-    },
-
-    coverageIstanbulReporter: {
-      reports: ['html', 'lcov', 'text-summary'],
-      dir: path.join(root, './coverage'),
-      combineBrowserReports: true,
-      fixWebpackSourcePaths: true,
-      skipFilesWithNoCoverage: false,
-      'report-config': {
-        html: { subdir: 'html' },
-      },
-      thresholds: {
-        emitWarning: true,
-        global: {
-          statements: 85,
-          lines: 85,
-          branches: 75,
-          functions: 85,
-        },
       },
     },
 
@@ -85,9 +59,31 @@ module.exports = function(config) {
   if (process.env.COVERAGE) {
     config.reporters.push('coverage-istanbul');
     config.plugins.push('karma-coverage-istanbul-reporter');
+    config.coverageIstanbulReporter = {
+      reports: ['html', 'lcov', 'text-summary'],
+      dir: path.join(root, './coverage'),
+      combineBrowserReports: true,
+      fixWebpackSourcePaths: true,
+      skipFilesWithNoCoverage: false,
+      'report-config': {
+        html: { subdir: 'html' },
+      },
+      thresholds: {
+        emitWarning: true,
+        global: {
+          statements: 85,
+          lines: 85,
+          branches: 75,
+          functions: 85,
+        },
+      },
+    };
   }
 
   if (process.env.CI) {
+    // TODO: why isn't the min reporter used?
+    config.client.mocha.reporter = 'min';
+
     config.customLaunchers = {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
@@ -106,7 +102,6 @@ module.exports = function(config) {
     };
 
     config.browsers = ['ChromeHeadlessNoSandbox'];
-    // config.browsers = ['FirefoxHeadless'];
     config.colors = true;
   }
 };
