@@ -16,6 +16,8 @@ import { mutCreator, Mut } from 'react-state-helpers';
 
 import { withTranslations } from '~/lib/i18n';
 
+import LocaleSelect from '@ui/components/inputs/locale-select';
+
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
 }
@@ -30,6 +32,7 @@ class AddReviewerForm extends React.Component<IProps> {
     nameError: '',
     email: '',
     emailError: '',
+    locale: '',
   };
 
   constructor(props) {
@@ -69,12 +72,12 @@ class AddReviewerForm extends React.Component<IProps> {
   addReviewer = (e) => {
     e.preventDefault();
 
-    const { name, email } = this.state;
+    const { name, email, locale } = this.state;
     const { createRecord, project } = this.props;
 
     try {
       if (this.isValidForm()) {
-        const attributes = { name, email };
+        const attributes = { name, email, locale };
         const relationships = { project: { data: { type: 'project', id: project.id } } };
 
         createRecord(attributes, relationships);
@@ -88,7 +91,7 @@ class AddReviewerForm extends React.Component<IProps> {
   render() {
     const { mut } = this;
     const { t } = this.props;
-    const { name, nameError, email, emailError } = this.state;
+    const { name, nameError, email, emailError, locale } = this.state;
 
     return (
       <form
@@ -115,6 +118,9 @@ class AddReviewerForm extends React.Component<IProps> {
             onChange={mut('email')}
           />
           {emailError && <span className='error'>{emailError}</span>}
+        </div>
+        <div className='field'>
+          <LocaleSelect selected={locale} onChange={mut('locale')} />
         </div>
         <button data-test-project-reviewers-add-form-submit className='ui button'>
           {t('project.side.reviewers.form.submit')}

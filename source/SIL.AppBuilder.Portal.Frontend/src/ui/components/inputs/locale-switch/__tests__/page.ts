@@ -1,7 +1,7 @@
 import { interactor, text, clickable, findAll, isPresent, selectable } from '@bigtest/interactor';
 
 @interactor
-export class LocaleSelectInteractor {
+export class LocaleSwitchInteractor {
   constructor(selector?: string) {}
 
   selected = text('.selected');
@@ -18,4 +18,4 @@ export class LocaleSelectInteractor {
   }
 }
 
-export default new LocaleSelectInteractor('[data-test-locale-selector]');
+export default new LocaleSwitchInteractor('[data-test-locale-switcher]');

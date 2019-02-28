@@ -2,7 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import MenuIcon from '@material-ui/icons/Menu';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import LocaleSelect from '@ui/components/inputs/locale-select';
+import LocaleSwitch from '@ui/components/inputs/locale-switch';
 
 import Notifications from './notifications';
 import UserDropdown from './user-dropdown';
@@ -48,7 +48,7 @@ class Header extends React.Component<IProps> {
             </div>
 
             <div className='item'>
-              <LocaleSelect />
+              <LocaleSwitch />
             </div>
 
             <div className='item'>

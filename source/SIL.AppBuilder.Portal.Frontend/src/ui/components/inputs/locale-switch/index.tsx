@@ -21,44 +21,29 @@ export type IProps = IOwnProps & WithDataProps & i18nProps;
 
 const translationMap = { 'en-US': 'en', 'es-419': 'es', 'fr-FR': 'fr' };
 
-class LocaleSelect extends React.Component<IProps> {
-  defaultValue = '';
-
-  componentDidMount() {
-    this.defaultToFirst();
-  }
-
-  componentDidUpdate() {
-    this.defaultToFirst();
-  }
-
-  defaultToFirst = () => {
-    const { onChange, selected } = this.props;
-    if (!selected) {
-      onChange(this.defaultValue);
-    }
-  };
-
+class LocaleSwitch extends React.Component<IProps> {
   onSelect = async (e, { value }) => {
     e.preventDefault();
 
-    const { onChange, selected } = this.props;
+    const { i18n } = this.props;
+    const { currentUser, dataStore } = this.props;
 
-    if (value === selected) {
-      return;
-    }
+    i18n.changeLanguage(value);
 
-    onChange(value);
+    await update(dataStore, currentUser, {
+      attributes: { locale: value },
+    });
   };
 
   render() {
-    const { currentUser, i18n, onChange } = this.props;
+    const { currentUser, i18n } = this.props;
     const attributes = attributesFor(currentUser) as UserAttributes;
     const userLocale = attributes.locale;
     const { options, language } = i18n;
     const languages = Object.keys(options.resources);
 
-    this.defaultValue = userLocale || language;
+    const selected = userLocale || language;
+
     const languageOptions = languages.map((locale) => ({
       text: translationMap[locale],
       value: locale,
@@ -66,10 +51,10 @@ class LocaleSelect extends React.Component<IProps> {
 
     return (
       <Dropdown
-        data-test-locale-selector
+        data-test-locale-switcher
         inline
         options={languageOptions}
-        defaultValue={this.defaultValue}
+        defaultValue={selected}
         onChange={this.onSelect}
       />
     );
@@ -79,4 +64,4 @@ class LocaleSelect extends React.Component<IProps> {
 export default compose(
   withTranslations,
   withCurrentUserContext
-)(LocaleSelect);
+)(LocaleSwitch);

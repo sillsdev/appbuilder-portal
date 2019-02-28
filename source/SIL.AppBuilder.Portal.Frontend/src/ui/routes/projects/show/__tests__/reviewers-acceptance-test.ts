@@ -75,11 +75,15 @@ describe('Acceptance | Project View | Reviewers', () => {
     it('Add Reviewer form shows up', () => {
       expect(page.reviewers.isAddFormPresent).to.be.true;
     });
+    it('Default language english', () => {
+      expect(page.reviewers.localeSelect.selected).to.eq('en');
+    });
 
     describe('Add a reviewer', () => {
       beforeEach(async function() {
         await page.reviewers.fillReviewerName('fake user 1');
         await page.reviewers.fillReviewerEmail('fake@fakerland.com');
+        await page.reviewers.localeSelect.chooseLanguage('es');
         await page.reviewers.clickAddReviewerSubmitButton();
       });
 
@@ -91,12 +95,19 @@ describe('Acceptance | Project View | Reviewers', () => {
             attributes: {
               email: 'fake@fakerland.com',
               name: 'fake user 1',
+              locale: 'en-US',
             },
             relationships: {
               project: { data: { type: 'projects', id: 1 } },
             },
           },
         });
+      });
+
+      it('selected is now es and entries are empty', () => {
+        expect(page.reviewers.localeSelect.selected).to.eq('es');
+        expect(page.reviewers.reviewerName).to.be.empty;
+        expect(page.reviewers.reviewerEmail).to.be.empty;
       });
 
       it('A new reviewer is added to the list', () => {
