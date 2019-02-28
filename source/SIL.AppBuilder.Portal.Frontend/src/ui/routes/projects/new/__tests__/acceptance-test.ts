@@ -12,8 +12,8 @@ import page from './page';
 
 const scenarios = {
   appWithSelectedOrg(orgId = '') {
-    setupApplicationTest({ data: { currentOrganizationId: orgId } });
     setupRequestInterceptor();
+    setupApplicationTest({ data: { currentOrganizationId: orgId } });
   },
   userHasNoGroups() {
     useFakeAuthentication({

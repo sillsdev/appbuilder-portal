@@ -30,10 +30,10 @@ interface QueriedProps {
 
 type IProps = PassedProps & QueriedProps;
 
-export default function ProjectShowDisplay({ project, toggleArchiveProject }: IProps) {
+export default function ProjectShowDisplay({ project }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
-  const { updateOwner } = useDataActions(project);
+  const { updateOwner, toggleArchiveProject } = useDataActions(project);
 
   const claimOwnership = async () => {
     try {
@@ -56,9 +56,7 @@ export default function ProjectShowDisplay({ project, toggleArchiveProject }: IP
           t,
           project,
           claimOwnership,
-          toggleArchive() {
-            toggleArchiveProject(project);
-          },
+          toggleArchive: toggleArchiveProject,
         }}
       />
 

@@ -18,6 +18,7 @@ describe('Acceptance | Project Edit | Archive Project', () => {
     beforeEach(async function() {
       await visit('/projects/1');
     });
+    
     it('is in detail page', () => {
       expect(location().pathname).to.equal('/projects/1');
     });
@@ -47,6 +48,7 @@ describe('Acceptance | Project Edit | Archive Project', () => {
         ],
       });
     });
+
     describe('archiving the project', () => {
       beforeEach(function() {
         this.mockPatch(200, 'projects/1', {
@@ -59,11 +61,13 @@ describe('Acceptance | Project Edit | Archive Project', () => {
           },
         });
       });
+
       describe('the archive button is clicked', () => {
         beforeEach(async () => {
           await visit('/projects/1');
           await page.clickArchiveLink();
         });
+
         it('changes the button text', () => {
           expect(page.archiveText).to.equal('Reactivate');
         });
@@ -95,6 +99,7 @@ describe('Acceptance | Project Edit | Archive Project', () => {
         ],
       });
     });
+
     describe('reactivating a project', () => {
       beforeEach(function() {
         this.mockPatch(200, 'projects/1', {
@@ -107,11 +112,13 @@ describe('Acceptance | Project Edit | Archive Project', () => {
           },
         });
       });
+
       describe('the reactivate button is clicked', () => {
         beforeEach(async function() {
           await visit('/projects/1');
           await page.clickArchiveLink();
         });
+
         it('changes the button text', () => {
           expect(page.archiveText).to.equal('Archive');
         });
