@@ -5,6 +5,7 @@ import { HubConnectionFactory } from '@ssv/signalr-client';
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
 import { isTesting } from '~/env';
+
 import { serializer } from '~/data/store';
 
 import {
@@ -26,13 +27,13 @@ import {
   TransformBuilder,
 } from '@orbit/data';
 import { clone, deepSet, Dict } from '@orbit/utils';
-
-import { DataClient } from './clients';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import JSONAPISource, { Resource, JSONAPIDocument } from '@orbit/jsonapi';
 import { ResourceDocument } from '@orbit/jsonapi/dist/modules/es2017';
 import Store from '@orbit/store';
+
+import { DataClient } from './clients';
 
 export interface OperationsResponse {
   operations: JSONAPIDocument[];

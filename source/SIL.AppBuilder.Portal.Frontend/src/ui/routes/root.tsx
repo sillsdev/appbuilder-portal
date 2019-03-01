@@ -17,6 +17,7 @@ import ErrorRootRoute from '@ui/routes/errors';
 
 import Workflow from './workflow';
 import * as paths from './paths';
+
 import { SocketTest } from '~/sockets';
 
 export default class RootPage extends React.Component {

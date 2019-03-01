@@ -4,7 +4,9 @@ import { useOrbit } from 'react-orbitjs';
 import { DataSocket } from '~/sockets';
 
 import Store from '@orbit/store';
+
 import DataSocketClient, { DataHub } from '~/sockets/clients/data';
+
 import { ConnectionState, ConnectionStatus, HubConnection } from '@ssv/signalr-client';
 import { TransformOrOperations } from '@orbit/data';
 import { Observable } from 'rxjs';
@@ -27,13 +29,18 @@ export function useLiveData(subscribeTo?: string) {
   const dataCtx = useContext(DataContext);
   const [isConnected, setIsConnected] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const { socket: { connection } } = dataCtx;
+  const {
+    socket: { connection },
+  } = dataCtx;
 
   watchConnectionState(connection, setIsConnected);
   subscribeToResource(connection, subscribeTo, isConnected, isSubscribed, setIsSubscribed);
 
   return {
-    ...dataCtx, isSubscribed, isConnected, pushData: (transforms) => {
+    ...dataCtx,
+    isSubscribed,
+    isConnected,
+    pushData: (transforms) => {
       if (!isConnected) {
         throw new Error('Not connected to socket');
       }
@@ -43,7 +50,7 @@ export function useLiveData(subscribeTo?: string) {
       }
 
       return dataCtx.pushData(transforms);
-    }
+    },
   };
 }
 
@@ -63,8 +70,13 @@ export function LiveDataProvider({ children }) {
   );
 }
 
-
-function subscribeToResource(connection: HubConnection<DataHub>, subscribeTo, isConnected, isSubscribed, setIsSubscribed) {
+function subscribeToResource(
+  connection: HubConnection<DataHub>,
+  subscribeTo,
+  isConnected,
+  isSubscribed,
+  setIsSubscribed
+) {
   useEffect(() => {
     if (!subscribeTo || !isConnected) {
       return;
@@ -73,10 +85,11 @@ function subscribeToResource(connection: HubConnection<DataHub>, subscribeTo, is
     let resourceSubscription$;
 
     if (!isSubscribed) {
-      resourceSubscription$ = connection.invoke('SubscribeTo', subscribeTo)
+      resourceSubscription$ = connection
+        .invoke('SubscribeTo', subscribeTo)
         .subscribe(
-          (/* success */) => setIsSubscribed(true),
-          (/* error */) => setIsSubscribed(false)
+          () => /* success */ setIsSubscribed(true),
+          () => /* error */ setIsSubscribed(false)
         );
     }
 
@@ -88,19 +101,21 @@ function subscribeToResource(connection: HubConnection<DataHub>, subscribeTo, is
       if (!isConnected) return;
 
       connection.send('UnsubscribeFrom', subscribeTo);
-    }
+    };
   }, [connection, subscribeTo, isConnected]);
 }
 
-function watchConnectionState(connection: HubConnection<DataHub>, setIsConnected: (b: boolean) => void) {
+function watchConnectionState(
+  connection: HubConnection<DataHub>,
+  setIsConnected: (b: boolean) => void
+) {
   useEffect(() => {
-    const stateSubscription$ = connection.connectionState$
-      .subscribe(state => {
-        setIsConnected(state.status === ConnectionStatus.connected);
-      });
+    const stateSubscription$ = connection.connectionState$.subscribe((state) => {
+      setIsConnected(state.status === ConnectionStatus.connected);
+    });
 
     return () => {
       stateSubscription$.unsubscribe();
-    }
+    };
   }, [connection]);
 }

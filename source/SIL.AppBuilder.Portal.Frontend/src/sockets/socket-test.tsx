@@ -4,11 +4,16 @@ import { TransformBuilder, QueryBuilder } from '@orbit/data';
 import { withValue } from 'react-state-helpers';
 
 import { useLiveData } from '~/data/live';
+
 import * as toast from '~/lib/toast';
+
 import { buildOptions, buildFindRecord, withLoader } from '~/data';
-import { OperationsResponse } from './data-socket';
-import { ProjectResource } from '~/data/models/project';
+
 import { compose } from 'recompose';
+
+import { OperationsResponse } from './data-socket';
+
+import { ProjectResource } from '~/data/models/project';
 
 interface IProps {
   project: ProjectResource;
@@ -21,7 +26,7 @@ const ViewProject = compose<{}, IProps>(
   withLoader(({ project }) => !project),
   withOrbit(({ project }: IProps) => ({
     project: (q) => q.findRecord(project),
-  })),
+  }))
 )(function ViewProjectDisplay({ project }: IProps) {
   const attrs = attributesFor(project);
 
@@ -85,10 +90,10 @@ function Form({ project }: IProps) {
       Name: <input value={name} onChange={withValue(setName)} />
       Description: <input value={description} onChange={withValue(setDescription)} />
       Language: <input value={language} onChange={withValue(setLanguage)} /> <br />
-      
       <hr className='m-md' />
-      <button className='m-b-lg' onClick={didClickSubmit}>Submit</button>
-
+      <button className='m-b-lg' onClick={didClickSubmit}>
+        Submit
+      </button>
       Response: <br />
       <pre>{JSON.stringify(response, null, 4)}</pre>
     </fieldset>
