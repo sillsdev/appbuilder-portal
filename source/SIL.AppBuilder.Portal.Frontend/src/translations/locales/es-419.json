@@ -258,7 +258,7 @@
       "filename": "Filename",
       "published": "Published",
       "unpublished": "Unpublished",
-      "numArtifacts": "{amount, plural, =0 {No Artifacts} other {{ amount } Product Files}}",
+      "numArtifacts": "{amount, plural, =0 {No Product Files} other {{ amount } Product Files}}",
       "noArtifacts": "No Product Files",
       "rebuild": "rebuild",
       "creationInProgress": "Pending: You cannot add a product until the project setup has been completed."
