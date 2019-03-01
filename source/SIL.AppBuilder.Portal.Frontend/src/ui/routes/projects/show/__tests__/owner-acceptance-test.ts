@@ -63,6 +63,9 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
           id: 1,
           attributes: { familyName: 'fake', givenName: 'fake' },
           relationships: {
+            ['organization-memberships']: {
+              data: [{ id: 1, type: 'organization-memberships' }],
+            },
             ['group-memberships']: {
               data: [{ id: 4, type: 'group-membership' }],
             },
@@ -73,6 +76,9 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
           id: 2,
           attributes: { familyName: 'last', givenName: 'first' },
           relationships: {
+            ['organization-memberships']: {
+              data: [{ id: 2, type: 'organization-memberships' }],
+            },
             ['group-memberships']: {
               data: [{ id: 5, type: 'group-membership' }],
             },
@@ -83,6 +89,9 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
           id: 3,
           attributes: { familyName: 'last3', givenName: 'first3' },
           relationships: {
+            ['organization-memberships']: {
+              data: [{ id: 3, type: 'organization-memberships' }],
+            },
             ['group-memberships']: {
               data: [{ id: 6, type: 'group-membership' }],
             },
@@ -93,6 +102,9 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
           id: 4,
           attributes: { familyName: 'last4', givenName: 'first4' },
           relationships: {
+            ['organization-memberships']: {
+              data: [{ id: 4, type: 'organization-memberships' }],
+            },
             ['group-memberships']: {
               data: [{ id: 7, type: 'group-membership' }],
             },
@@ -129,6 +141,42 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
           relationships: {
             group: { data: { id: 2, type: 'groups' } },
             user: { data: { id: 4, type: 'users' } },
+          },
+        },
+        {
+          type: 'organization-memberships',
+          id: 1,
+          attributes: {},
+          relationships: {
+            user: { data: { id: 1, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+        {
+          type: 'organization-memberships',
+          id: 2,
+          attributes: {},
+          relationships: {
+            user: { data: { id: 2, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+        {
+          type: 'organization-memberships',
+          id: 3,
+          attributes: {},
+          relationships: {
+            user: { data: { id: 3, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+        {
+          type: 'organization-memberships',
+          id: 4,
+          attributes: {},
+          relationships: {
+            user: { data: { id: 4, type: 'users' } },
+            organization: { data: { id: 1, type: 'organizations' } },
           },
         },
       ],

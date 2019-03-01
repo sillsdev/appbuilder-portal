@@ -18,15 +18,18 @@ interface IProps {
 
 export function withData(WrappedComponent) {
   function DataWrapper({
-    users,
+    // users,
     scopeToOrganization,
     selected,
     restrictToGroup,
     groupId,
     ...otherProps
   }) {
+    // console.log('ahhh', users);
     const { dataStore } = useOrbit();
     const { currentUser } = useCurrentUser();
+
+    const users = dataStore.cache.query((q) => q.findRecords('user'));
 
     // remove users who _can't_ be assigned to this project
     // due to not having organization overlap

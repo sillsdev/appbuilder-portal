@@ -44,6 +44,8 @@ export function findLanguageInfo(data: ILanguageInfo[]) {
 }
 
 export function highlightIfPresent(term: string, highlight: string) {
+  term = term || '';
+
   let termLower = term.toLowerCase();
   let highLower = highlight.toLowerCase();
 
