@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
-import { WithDataProps } from 'react-orbitjs';
-import { withTranslations, i18nProps } from '@lib/i18n';
-import { attributesFor } from '@data/helpers';
 import { UserAttributes } from '@data/models/user';
 import { ResourceObject } from 'jsonapi-typescript';
 
 import { USERS_TYPE, update } from '@data';
 
-import { withCurrentUserContext } from '@data/containers/with-current-user';
+import { useCurrentUser } from '~/data/containers/with-current-user';
+
+import { useTranslations } from '~/lib/i18n';
+
+import { useOrbit, attributesFor } from 'react-orbitjs';
 
 export interface IOwnProps {
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
@@ -17,16 +18,17 @@ export interface IOwnProps {
   className?: string;
 }
 
-export type IProps = IOwnProps & WithDataProps & i18nProps;
+export type IProps = IOwnProps;
 
 const translationMap = { 'en-US': 'en', 'es-419': 'es', 'fr-FR': 'fr' };
 
-class LocaleSwitch extends React.Component<IProps> {
-  onSelect = async (e, { value }) => {
-    e.preventDefault();
+export default function LocaleSwitch({ onChange, className }: IProps) {
+  const { i18n } = useTranslations();
+  const { currentUser } = useCurrentUser();
+  const { dataStore } = useOrbit();
 
-    const { i18n } = this.props;
-    const { currentUser, dataStore } = this.props;
+  const onSelect = async (e, { value }) => {
+    e.preventDefault();
 
     i18n.changeLanguage(value);
 
@@ -35,33 +37,25 @@ class LocaleSwitch extends React.Component<IProps> {
     });
   };
 
-  render() {
-    const { currentUser, i18n } = this.props;
-    const attributes = attributesFor(currentUser) as UserAttributes;
-    const userLocale = attributes.locale;
-    const { options, language } = i18n;
-    const languages = Object.keys(options.resources);
+  const attributes = attributesFor(currentUser) as UserAttributes;
+  const userLocale = attributes.locale;
+  const { options, language } = i18n;
+  const languages = Object.keys(options.resources);
 
-    const selected = userLocale || language;
+  const selected = userLocale || language;
 
-    const languageOptions = languages.map((locale) => ({
-      text: translationMap[locale],
-      value: locale,
-    }));
+  const languageOptions = languages.map((locale) => ({
+    text: translationMap[locale],
+    value: locale,
+  }));
 
-    return (
-      <Dropdown
-        data-test-locale-switcher
-        inline
-        options={languageOptions}
-        defaultValue={selected}
-        onChange={this.onSelect}
-      />
-    );
-  }
+  return (
+    <Dropdown
+      data-test-locale-switcher
+      inline
+      options={languageOptions}
+      defaultValue={selected}
+      onChange={onSelect}
+    />
+  );
 }
-
-export default compose(
-  withTranslations,
-  withCurrentUserContext
-)(LocaleSwitch);

@@ -17,27 +17,21 @@ export interface IOwnProps {
   className?: string;
 }
 
-export type IProps = IOwnProps & WithDataProps & i18nProps;
+type IProps = IOwnProps & WithDataProps & i18nProps;
+
+interface IState {
+  firstTime: boolean;
+}
 
 const translationMap = { 'en-US': 'en', 'es-419': 'es', 'fr-FR': 'fr' };
 
-class LocaleSelect extends React.Component<IProps> {
-  defaultValue = '';
-
-  componentDidMount() {
-    this.defaultToFirst();
+class LocaleSelect extends React.Component<IProps, IState> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      firstTime: true,
+    };
   }
-
-  componentDidUpdate() {
-    this.defaultToFirst();
-  }
-
-  defaultToFirst = () => {
-    const { onChange, selected } = this.props;
-    if (!selected) {
-      onChange(this.defaultValue);
-    }
-  };
 
   onSelect = async (e, { value }) => {
     e.preventDefault();
@@ -53,12 +47,16 @@ class LocaleSelect extends React.Component<IProps> {
 
   render() {
     const { currentUser, i18n, onChange } = this.props;
+    const { firstTime } = this.state;
     const attributes = attributesFor(currentUser) as UserAttributes;
     const userLocale = attributes.locale;
     const { options, language } = i18n;
     const languages = Object.keys(options.resources);
-
-    this.defaultValue = userLocale || language;
+    const defaultLocale = userLocale || language;
+    if (firstTime) {
+      this.setState({ firstTime: false });
+      onChange(defaultLocale);
+    }
     const languageOptions = languages.map((locale) => ({
       text: translationMap[locale],
       value: locale,
@@ -69,7 +67,7 @@ class LocaleSelect extends React.Component<IProps> {
         data-test-locale-selector
         inline
         options={languageOptions}
-        defaultValue={this.defaultValue}
+        defaultValue={defaultLocale}
         onChange={this.onSelect}
       />
     );
