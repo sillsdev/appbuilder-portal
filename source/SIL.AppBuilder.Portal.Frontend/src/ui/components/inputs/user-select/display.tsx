@@ -34,8 +34,6 @@ export default class UserSelectDisplay extends React.Component<IProps> {
         };
       });
 
-    console.log('nhdnthdnhnthd', users, selected);
-
     return (
       <Dropdown
         data-test-user-select
