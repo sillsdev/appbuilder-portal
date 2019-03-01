@@ -55,7 +55,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<Notification>, NotificationRepository>();
             services.AddScoped<IEntityRepository<Product,Guid>, ProductRepository>();
             services.AddScoped<IEntityRepository<OrganizationStore>, OrganizationStoreRepository>();
-
+            services.AddScoped(typeof(IUpdateService<Project, int>), typeof(ProjectService));
 
             // services
             services.AddScoped<IResourceService<User>, UserService>();
@@ -72,7 +72,8 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
 
             // EventDispatchers
-            services.AddScoped<IEntityHookHandler<Project>, ProjectHookNotifier>();
+            services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
+            // services.AddScoped<IEntityHookHandler<Project>, ProjectHookNotifier>();
 
 
             services.AddScoped<UserRepository>();

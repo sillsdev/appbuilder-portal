@@ -53,9 +53,9 @@ export class Socket<THub> {
     this.subscription$$ = this.connection
       .connect()
       .subscribe(
-        () => console.log(`${this.hubName} connected`),
-        (error) => console.log(`${this.hubName} error: ${error}`),
-        () => console.log(`${this.hubName} completed`)
+        () => console.debug(`${this.hubName} connected`),
+        (error) => console.error(`${this.hubName} error: ${error}`),
+        () => console.debug(`${this.hubName} completed`)
       );
   }
 

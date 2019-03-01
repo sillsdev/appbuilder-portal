@@ -8,6 +8,7 @@ using Microsoft.AspNetCore;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using static OptimaJet.DWKit.StarterApplication.Utility.ConfigurationExtensions;
 
+
 namespace OptimaJet.DWKit.StarterApplication
 {
     public class Program
@@ -23,6 +24,11 @@ namespace OptimaJet.DWKit.StarterApplication
             dotenv.net.DotEnv.Config(false, ".env.dev");
             dotenv.net.DotEnv.Config(false, ".env");
 
+
+// #if !DEBUG
+    // Log is too noisy in development...
+    Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = "instrumentation key";
+// #endif
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
