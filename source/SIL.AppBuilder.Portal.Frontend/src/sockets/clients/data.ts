@@ -31,8 +31,6 @@ export default class DataSocketClient extends Socket<DataHub> {
   }
 
   onData(json: string) {
-    console.log('received', json, typeof json);
-
     let data = JSON.parse(json);
 
     pushPayload(this.dataStore, data);

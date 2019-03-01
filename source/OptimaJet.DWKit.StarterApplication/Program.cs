@@ -7,7 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using static OptimaJet.DWKit.StarterApplication.Utility.ConfigurationExtensions;
-
+using System.Diagnostics;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -24,11 +25,8 @@ namespace OptimaJet.DWKit.StarterApplication
             dotenv.net.DotEnv.Config(false, ".env.dev");
             dotenv.net.DotEnv.Config(false, ".env");
 
+            DisableApplicationInsightsOnDebug();
 
-// #if !DEBUG
-    // Log is too noisy in development...
-    Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = "instrumentation key";
-// #endif
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
@@ -37,6 +35,12 @@ namespace OptimaJet.DWKit.StarterApplication
                 .CreateLogger();
 
                 BuildWebHost(args).Run();
+        }
+
+        [Conditional("DEBUG")]
+        private static void DisableApplicationInsightsOnDebug()
+        {
+            TelemetryConfiguration.Active.DisableTelemetry = true;
         }
 
         public static IWebHost BuildWebHost(string[] args)

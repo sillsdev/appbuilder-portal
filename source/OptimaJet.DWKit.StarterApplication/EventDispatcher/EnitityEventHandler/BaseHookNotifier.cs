@@ -106,10 +106,10 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
                 return;
             }
 
-            this.PublishResource(entity);
+            this.PublishResource(entity, operation);
         }
 
-        private void PublishResource(Identifiable resource) {
+        private void PublishResource(Identifiable resource, string operation) {
             var graphNode = this._resourceGraph.GetContextEntity(resource.GetType());
 
             // resource may not be in the context graph
@@ -128,13 +128,30 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             var pathForGet = $"{entityType}/{resource.Id}";
  
             // The { json:api } formatted string / document
-            
+            // TODO: send an operations document so that we know what event happened.
             var document = this._documentBuilder.Build(resource);
+            var operationsPayload = new {
+                Operations = new {
+                    Op = JsonApiOpForOperation(operation),
+                    Data = document.Data
+                }
+            };
+
+            // TODO: Orbit doesn't yet know how to process operations payloads
             var json = this._serializer.Serialize(document);
 
             // send to any who are subscribed...
             this.DataHub.Clients.Group(entityType).SendAsync(JSONAPIHub.RemoteDataHasUpdated, json);
             this.DataHub.Clients.Group(pathForGet).SendAsync(JSONAPIHub.RemoteDataHasUpdated, json);  
+        }
+
+        private string JsonApiOpForOperation(string operation) {
+            switch (operation) {
+                case Insert: return "add";
+                case Update: return "update";
+                case Delete: return "remove";
+                default: return "get";
+            }
         }
     }
 }
