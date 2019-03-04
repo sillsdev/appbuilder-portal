@@ -73,6 +73,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             // EventDispatchers
             services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
+            services.AddScoped(typeof(IEntityHookHandler<,>), typeof(BaseHookNotifier<,>));
             // services.AddScoped<IEntityHookHandler<Project>, ProjectHookNotifier>();
 
 
@@ -87,6 +88,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<GroupService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
+            services.AddScoped(typeof(EntityHooksService<,>));
             services.AddScoped(typeof(EntityHooksService<>));
             services.AddScoped<SendEmailService>();
             services.AddScoped<OrganizationMembershipService>();

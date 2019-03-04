@@ -1,9 +1,9 @@
 import { ISubscription } from 'rxjs/Subscription';
 import { HubConnectionFactory } from '@ssv/signalr-client';
 import Store from '@orbit/store';
-import { pushPayload } from 'react-orbitjs';
 
 import { Socket } from './socket-client';
+import { dataToLocalCache } from '~/data/orbitjs-operations-support/serialize-from-api';
 
 export interface DataHub {
   RemoteDataHasUpdated: string;
@@ -32,7 +32,9 @@ export default class DataSocketClient extends Socket<DataHub> {
 
   onData(json: string) {
     let data = JSON.parse(json);
+    console.log('received', data);
 
-    pushPayload(this.dataStore, data);
+    dataToLocalCache(this.dataStore, data);
   }
 }
+

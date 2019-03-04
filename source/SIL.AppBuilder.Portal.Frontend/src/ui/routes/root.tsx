@@ -18,19 +18,15 @@ import ErrorRootRoute from '@ui/routes/errors';
 import Workflow from './workflow';
 import * as paths from './paths';
 
-import { SocketTest } from '~/sockets';
-
 export default class RootPage extends React.Component {
   render() {
     return (
       <div className='app-container flex-column align-items-stretch'>
         <div className='ui container'>
-          {/* <Notifications /> */}
           <ToastContainer draggable={false} />
         </div>
-        <SocketTest />
 
-        {/* <section className='flex flex-grow'>
+        <section className='flex flex-grow'>
           <Switch>
             <Route path={paths.loginPath} component={LoginRoute} />
             <Route path={paths.adminPath} component={AdminRoute} />
@@ -59,7 +55,7 @@ export default class RootPage extends React.Component {
 
             <Route component={ErrorRootRoute} />
           </Switch>
-        </section> */}
+        </section>
       </div>
     );
   }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,23 @@ using OptimaJet.DWKit.StarterApplication.Utility.Extensions.EntityFramework;
 
 namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
 {
-    public class BaseHookNotifier<TEntity> : IEntityHookHandler<TEntity> where TEntity : Identifiable
+    public class BaseHookNotifier<TEntity> : BaseHookNotifier<TEntity, int> 
+        where TEntity : Identifiable<int>
+    {
+        public BaseHookNotifier(
+            IOperationsProcessor operationsProcessor,
+            IJsonApiSerializer serializer,
+            IResourceGraph resourceGraph,
+            IDbContextResolver dbContextResolver,
+            IHubContext<ScriptoriaHub> hubContext,
+            IHubContext<JSONAPIHub> dataHub
+            ) : base(operationsProcessor, serializer, resourceGraph, dbContextResolver, hubContext, dataHub)
+        {
+
+        }
+
+    }
+    public class BaseHookNotifier<TEntity, TKey> : IEntityHookHandler<TEntity, TKey> where TEntity : Identifiable<TKey>
     {
         private const string Insert = "INSERT";
         private const string Update = "UPDATE";
@@ -35,8 +52,8 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
         private readonly IDocumentBuilder _documentBuilder;
 
         public BaseHookNotifier(
-            IOperationsProcessor operationsProcessor, 
-            IJsonApiSerializer serializer, 
+            IOperationsProcessor operationsProcessor,
+            IJsonApiSerializer serializer,
             IResourceGraph resourceGraph,
             IDbContextResolver dbContextResolver,
             IHubContext<ScriptoriaHub> hubContext,
@@ -59,8 +76,10 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
                 genericProcessorFactory: null,
                 queryParser: null,
                 controllerContext: null
-            ) {
-                PageManager = new PageManager {
+            )
+            {
+                PageManager = new PageManager
+                {
                     DefaultPageSize = 20,
                     CurrentPage = 0,
                     PageSize = 20
@@ -97,24 +116,35 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
                 .FirstOrDefault()
                 ?.PropertyType;
 
-            var idInEntityType = System.Convert.ChangeType(id, idType);
+
+            dynamic idInEntityType; // Guid | int | string
+
+            if (idType == typeof(Guid)) {
+                idInEntityType = Guid.Parse(id);
+            } else {
+                idInEntityType = System.Convert.ChangeType(id, idType);
+            }
+            
             var entity = DbContext.Set<TEntity>().Find(idInEntityType);
 
             // entity does not exist
             // TODO: handle deletion
-            if (entity == null) {
+            if (entity == null)
+            {
                 return;
             }
 
             this.PublishResource(entity, operation);
         }
 
-        private void PublishResource(Identifiable resource, string operation) {
+        private void PublishResource(TEntity resource, string operation)
+        {
             var graphNode = this._resourceGraph.GetContextEntity(resource.GetType());
 
             // resource may not be in the context graph
             // (non-api model)
-            if (graphNode == null) {
+            if (graphNode == null)
+            {
                 return;
             }
 
@@ -126,12 +156,14 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             // at this time, I don't know if there is a way to get a list of groups.
             var entityType = graphNode.EntityName;
             var pathForGet = $"{entityType}/{resource.Id}";
- 
+
             // The { json:api } formatted string / document
             // TODO: send an operations document so that we know what event happened.
             var document = this._documentBuilder.Build(resource);
-            var operationsPayload = new {
-                Operations = new {
+            var operationsPayload = new
+            {
+                Operations = new
+                {
                     Op = JsonApiOpForOperation(operation),
                     Data = document.Data
                 }
@@ -142,11 +174,13 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
 
             // send to any who are subscribed...
             this.DataHub.Clients.Group(entityType).SendAsync(JSONAPIHub.RemoteDataHasUpdated, json);
-            this.DataHub.Clients.Group(pathForGet).SendAsync(JSONAPIHub.RemoteDataHasUpdated, json);  
+            this.DataHub.Clients.Group(pathForGet).SendAsync(JSONAPIHub.RemoteDataHasUpdated, json);
         }
 
-        private string JsonApiOpForOperation(string operation) {
-            switch (operation) {
+        private string JsonApiOpForOperation(string operation)
+        {
+            switch (operation)
+            {
                 case Insert: return "add";
                 case Update: return "update";
                 case Delete: return "remove";

@@ -12,6 +12,7 @@ import * as toast from '@lib/toast';
 import Overview from './overview';
 import Header from './header';
 import Files from './files';
+import { useLiveData } from '~/data/live';
 
 export const pathName = '/projects/:id';
 
@@ -34,6 +35,8 @@ export default function ProjectShowDisplay({ project }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
   const { updateOwner, toggleArchiveProject } = useDataActions(project);
+  useLiveData(`projects/${project.id}`);
+
 
   const claimOwnership = async () => {
     try {

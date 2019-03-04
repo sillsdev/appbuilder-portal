@@ -17,7 +17,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
     {
         public JobRepository(
             IDbContextResolver contextResolver,
-            EntityHooksService<TEntity> statusUpdateService)
+            EntityHooksService<TEntity, int> statusUpdateService)
             : base(contextResolver, statusUpdateService)
         {}
     }
@@ -29,11 +29,11 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         protected readonly DbSet<TEntity> dbSet;
         protected readonly DbContext dbContext;
 
-        public EntityHooksService<TEntity> StatusUpdateService { get; }
+        public EntityHooksService<TEntity, TId> StatusUpdateService { get; }
 
         public JobRepository(
             IDbContextResolver contextResolver,
-            EntityHooksService<TEntity> statusUpdateService
+            EntityHooksService<TEntity, TId> statusUpdateService
         )
         {
             this.dbContext = contextResolver.GetContext();

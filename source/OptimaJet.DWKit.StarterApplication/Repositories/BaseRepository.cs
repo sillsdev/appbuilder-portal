@@ -16,7 +16,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         public BaseRepository(ILoggerFactory loggerFactory,
                               IJsonApiContext jsonApiContext,
                               CurrentUserRepository currentUserRepository,
-                              EntityHooksService<TEntity> statusUpdateService,
+                              EntityHooksService<TEntity, int> statusUpdateService,
                               IDbContextResolver contextResolver)
             : base(loggerFactory, jsonApiContext, currentUserRepository, statusUpdateService, contextResolver)
         {
@@ -28,14 +28,14 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
     {
         protected readonly DbSet<TEntity> dbSet;
         protected readonly CurrentUserRepository currentUserRepository;
-        protected readonly EntityHooksService<TEntity> statusUpdateService;
+        protected readonly EntityHooksService<TEntity, TId> statusUpdateService;
         protected readonly DbContext dbContext;
 
         public BaseRepository(
             ILoggerFactory loggerFactory,
             IJsonApiContext jsonApiContext,
             CurrentUserRepository currentUserRepository,
-            EntityHooksService<TEntity> statusUpdateService,
+            EntityHooksService<TEntity, TId> statusUpdateService,
             IDbContextResolver contextResolver
             ) : base(loggerFactory, jsonApiContext, contextResolver)
         {
