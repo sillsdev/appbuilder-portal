@@ -21,7 +21,7 @@ using OptimaJet.DWKit.StarterApplication.Utility.Extensions.EntityFramework;
 namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
 {
     public class BaseHookNotifier<TEntity> : BaseHookNotifier<TEntity, int> 
-        where TEntity : Identifiable<int>
+        where TEntity : class, IIdentifiable<int>
     {
         public BaseHookNotifier(
             IOperationsProcessor operationsProcessor,
@@ -36,7 +36,8 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
         }
 
     }
-    public class BaseHookNotifier<TEntity, TKey> : IEntityHookHandler<TEntity, TKey> where TEntity : Identifiable<TKey>
+    public class BaseHookNotifier<TEntity, TKey> : IEntityHookHandler<TEntity, TKey> 
+        where TEntity : class, IIdentifiable<TKey>
     {
         private const string Insert = "INSERT";
         private const string Update = "UPDATE";
@@ -169,7 +170,6 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
                 }
             };
 
-            // TODO: Orbit doesn't yet know how to process operations payloads
             var json = this._serializer.Serialize(document);
 
             // send to any who are subscribed...

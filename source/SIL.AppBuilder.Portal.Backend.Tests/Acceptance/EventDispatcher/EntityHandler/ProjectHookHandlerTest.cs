@@ -72,20 +72,18 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.EventDispatcher.EntityH
         {
             BuildTestData();
 
-            var handler = _fixture.GetService<IEntityHookHandler<Project>>();
-            var hubContext = _fixture.GetService<IHubContext<ScriptoriaHub>>();
-            var mockScriptoriaHub = Mock.Get(hubContext);
-            mockScriptoriaHub.Reset();
+            var handler = _fixture.GetService<IEntityHookHandler<Project, int>>();
+            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
+            var mockHub = Mock.Get(hubContext);
+            mockHub.Reset();
             var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
             mockClients.Reset();
 
             handler.DidInsert(project1.StringId);
 
             // Verify that project status update sent
-            var dbContext = _fixture.GetService<AppDbContext>();
-            var tableName = dbContext.GetTableName(typeof(Project));
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Exactly(1));
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == $"/{tableName}/{project1.Id.ToString()}")));
+            mockHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Exactly(2));
+            mockHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == $"projects/{project1.Id.ToString()}")));
         }
 
         [Fact]
@@ -93,20 +91,18 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.EventDispatcher.EntityH
         {
             BuildTestData();
 
-            var handler = _fixture.GetService<IEntityHookHandler<Project>>();
-            var hubContext = _fixture.GetService<IHubContext<ScriptoriaHub>>();
-            var mockScriptoriaHub = Mock.Get(hubContext);
-            mockScriptoriaHub.Reset();
+            var handler = _fixture.GetService<IEntityHookHandler<Project, int>>();
+            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
+            var mockHub = Mock.Get(hubContext);
+            mockHub.Reset();
             var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
             mockClients.Reset();
 
             handler.DidUpdate(project1.StringId);
 
             // Verify that project status update sent
-            var dbContext = _fixture.GetService<AppDbContext>();
-            var tableName = dbContext.GetTableName(typeof(Project));
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Exactly(1));
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == $"/{tableName}/{project1.Id.ToString()}")));
+            mockHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Exactly(2));
+            mockHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == $"projects/{project1.Id.ToString()}")));
         }
 
         [Fact]
@@ -114,20 +110,18 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.EventDispatcher.EntityH
         {
             BuildTestData();
 
-            var handler = _fixture.GetService<IEntityHookHandler<Project>>();
-            var hubContext = _fixture.GetService<IHubContext<ScriptoriaHub>>();
-            var mockScriptoriaHub = Mock.Get(hubContext);
-            mockScriptoriaHub.Reset();
+            var handler = _fixture.GetService<IEntityHookHandler<Project, int>>();
+            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
+            var mockHub = Mock.Get(hubContext);
+            mockHub.Reset();
             var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
             mockClients.Reset();
 
             handler.DidDelete(project1.StringId);
 
             // Verify that project status update sent
-            var dbContext = _fixture.GetService<AppDbContext>();
-            var tableName = dbContext.GetTableName(typeof(Project));
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Exactly(1));
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == $"/{tableName}/{project1.Id.ToString()}")));
+            mockHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Exactly(2));
+            mockHub.Verify(x => x.Clients.Group(It.Is<string>(i => i == $"projects/{project1.Id.ToString()}")));
         }
 
     }

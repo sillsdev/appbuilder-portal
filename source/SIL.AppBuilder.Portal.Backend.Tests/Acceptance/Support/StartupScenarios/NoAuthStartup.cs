@@ -19,11 +19,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
     {
         private Mock<IBackgroundJobClient> backgroundJobClient;
         private Mock<IHubContext<ScriptoriaHub>> hubContext;
+        private Mock<IHubContext<JSONAPIHub>> dataHubContext;
 
         public NoAuthStartup(IHostingEnvironment env) : base(env)
         {
             backgroundJobClient = new Mock<IBackgroundJobClient>();
             hubContext = new Mock<IHubContext<ScriptoriaHub>> { DefaultValue = DefaultValue.Mock};
+            dataHubContext = new Mock<IHubContext<JSONAPIHub>> { DefaultValue = DefaultValue.Mock };
         }
 
         public IServiceCollection ConfiguredServices { get; private set; }
@@ -65,6 +67,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 services.AddScoped<IScopedServiceProvider, TestScopedServiceProvider>();
 
                 services.AddScoped<IHubContext<ScriptoriaHub>>(s => hubContext.Object);
+                services.AddScoped<IHubContext<JSONAPIHub>>(s => dataHubContext.Object);
 
                 services.AddScoped<IBackgroundJobClient>(s => backgroundJobClient.Object);
 
