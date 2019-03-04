@@ -3,6 +3,7 @@ import { HubConnectionFactory } from '@ssv/signalr-client';
 import Store from '@orbit/store';
 
 import { Socket } from './socket-client';
+
 import { dataToLocalCache } from '~/data/orbitjs-operations-support/serialize-from-api';
 
 export interface DataHub {
@@ -37,4 +38,3 @@ export default class DataSocketClient extends Socket<DataHub> {
     dataToLocalCache(this.dataStore, data);
   }
 }
-

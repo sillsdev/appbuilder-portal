@@ -4,6 +4,7 @@ import { isEmpty } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
 
 import Row from './row';
+
 import { useLiveData } from '~/data/live';
 
 export default function Display({ userTasks }: IUserTaskListProps) {

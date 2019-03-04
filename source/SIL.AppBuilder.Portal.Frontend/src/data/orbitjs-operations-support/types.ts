@@ -1,4 +1,4 @@
-import { Resource } from "@orbit/jsonapi";
+import { Resource } from '@orbit/jsonapi';
 
 export interface JSONAPIOperation {
   op: 'get' | 'add' | 'update' | 'remove';

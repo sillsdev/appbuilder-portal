@@ -2,9 +2,7 @@ import * as React from 'react';
 import { withOrbit as withSubscribedUpdates, useOrbit } from 'react-orbitjs';
 import { isEmpty } from '@lib/collection';
 
-import {
-  ProjectResource,
-} from '@data';
+import { ProjectResource } from '@data';
 
 import { useTranslations } from '@lib/i18n';
 
@@ -19,21 +17,19 @@ interface IProps {
   isEmptyWorkflowProjectUrl: boolean;
 }
 
-export default withSubscribedUpdates(({project}) => {
+export default withSubscribedUpdates(({ project }) => {
   return {
-    project: q => q.findRecord(project),
-    products: q => q.findRelatedRecords(project, 'products'),
-  }
-})(
-function Products({ project }: IProps) {
+    project: (q) => q.findRecord(project),
+    products: (q) => q.findRelatedRecords(project, 'products'),
+  };
+})(function Products({ project }: IProps) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
   useLiveData(`projects/${project.id}`);
   useLiveData(`products`);
 
-  const organization = dataStore.cache.query(q => q.findRelatedRecord(project, 'organization'));
-  const products = dataStore.cache.query(q => q.findRelatedRecords(project, 'products'));
-  
+  const organization = dataStore.cache.query((q) => q.findRelatedRecord(project, 'organization'));
+  const products = dataStore.cache.query((q) => q.findRelatedRecords(project, 'products'));
 
   let productList;
 
@@ -65,12 +61,7 @@ function Products({ project }: IProps) {
       )}
       <div className='m-b-lg'>{productList}</div>
 
-      <ProductSelectionManager
-        organization={organization}
-        selected={products}
-        project={project}
-      />
+      <ProductSelectionManager organization={organization} selected={products} project={project} />
     </div>
   );
-}
-);
+});

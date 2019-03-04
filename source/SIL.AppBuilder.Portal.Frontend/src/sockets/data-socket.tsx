@@ -3,13 +3,12 @@ import { useOrbit, pushPayload } from 'react-orbitjs';
 import { HubConnectionFactory } from '@ssv/signalr-client';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
+
 import { transformsToJSONAPIOperations } from '~/data/orbitjs-operations-support';
 
 import { isTesting } from '~/env';
 
-import {
-  TransformOrOperations,
-} from '@orbit/data';
+import { TransformOrOperations } from '@orbit/data';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import JSONAPISource, { JSONAPIDocument } from '@orbit/jsonapi';
@@ -66,4 +65,3 @@ function handleSocketPayload(dataStore: Store, json: string) {
 
   return response;
 }
-

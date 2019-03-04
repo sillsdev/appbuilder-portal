@@ -1,7 +1,8 @@
-import Store from "@orbit/store";
-import { JSONAPIDocument } from "@orbit/jsonapi";
-import { pushPayload, localIdFromRecordIdentity } from "react-orbitjs";
-import { JSONAPIOperationsPayload } from "./types";
+import Store from '@orbit/store';
+import { JSONAPIDocument } from '@orbit/jsonapi';
+import { pushPayload, localIdFromRecordIdentity } from 'react-orbitjs';
+
+import { JSONAPIOperationsPayload } from './types';
 
 export function dataToLocalCache(store: Store, data: JSONAPIOperationsPayload | JSONAPIDocument) {
   if ((data as JSONAPIDocument).data) {
@@ -9,25 +10,30 @@ export function dataToLocalCache(store: Store, data: JSONAPIOperationsPayload | 
   }
 
   if ((data as JSONAPIOperationsPayload).operations) {
-    (data as JSONAPIOperationsPayload).operations.forEach(operation => {
+    (data as JSONAPIOperationsPayload).operations.forEach((operation) => {
+      let removedRecords = [];
+
       switch (operation.op) {
         case 'get':
         case 'update':
         case 'add':
           pushPayload(store, operation.data);
+          break;
         case 'remove':
-          let removedRecords = Array.isArray(operation.data) ? operation.data : [operation.data];
+          removedRecords = Array.isArray(operation.data) ? operation.data : [operation.data];
 
-          store.update(q => (removedRecords.map(record => {
-            let localId = localIdFromRecordIdentity(store, record);
+          store.update(
+            (q) =>
+              removedRecords.map((record) => {
+                let localId = localIdFromRecordIdentity(store, record);
 
-            return q.removedRecord({ type: record.type, id: localId });
-          })),
+                return q.removedRecord({ type: record.type, id: localId });
+              }),
             { skipRemote: true }
           );
 
-          removedRecords.forEach(resource => {
-          });
+          removedRecords.forEach((resource) => {});
+          break;
         default:
           throw new Error('op is not a valid operation');
       }

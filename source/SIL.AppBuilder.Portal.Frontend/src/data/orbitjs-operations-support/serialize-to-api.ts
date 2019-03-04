@@ -1,4 +1,3 @@
-
 import {
   buildTransform,
   TransformOrOperations,
@@ -15,15 +14,14 @@ import {
   ReplaceRecordOperation,
   TransformBuilder,
 } from '@orbit/data';
-
 import { deepSet, Dict } from '@orbit/utils';
 import JSONAPISource, { Resource } from '@orbit/jsonapi';
+
 import { JSONAPIOperationsPayload, JSONAPIOperation } from './types';
 
 /**
  * TODO: import everything below from orbit.js when Operations stuff is merged
  */
-
 
 export function transformsToJSONAPIOperations(
   source: JSONAPISource,
@@ -50,7 +48,6 @@ function transformsToOperationsData(
     return converter(source, orbitOperation);
   });
 }
-
 
 function toRecordIdentity(record: Resource): RecordIdentity {
   const { type, id } = record;
