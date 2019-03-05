@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useOrbit } from 'react-orbitjs';
 
 import { DataSocket } from '~/sockets';
@@ -7,9 +7,9 @@ import Store from '@orbit/store';
 
 import DataSocketClient, { DataHub } from '~/sockets/clients/data';
 
-import { ConnectionState, ConnectionStatus, HubConnection } from '@ssv/signalr-client';
+import { ConnectionStatus, HubConnection } from '@ssv/signalr-client';
 import { TransformOrOperations } from '@orbit/data';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 interface ILiveDataContext {
   dataStore: Store;
@@ -77,15 +77,15 @@ function subscribeToResource(
   isSubscribed,
   setIsSubscribed
 ) {
+  const subscription = useRef<Subscription>();
+
   useEffect(() => {
     if (!subscribeTo || !isConnected) {
       return;
     }
 
-    let resourceSubscription$;
-
     if (!isSubscribed) {
-      resourceSubscription$ = connection.invoke('SubscribeTo', subscribeTo).subscribe(
+      subscription.current = connection.invoke('SubscribeTo', subscribeTo).subscribe(
         () => {
           /* success */
 
@@ -102,28 +102,34 @@ function subscribeToResource(
     }
 
     return () => {
-      if (resourceSubscription$) {
-        resourceSubscription$.unsubscribe();
+      if (subscription.current) {
+        subscription.current.unsubscribe();
       }
 
       if (!isConnected) return;
 
       connection.send('UnsubscribeFrom', subscribeTo);
     };
-  }, [connection, subscribeTo, isConnected]);
+  }, [subscribeTo, isConnected]);
 }
 
 function watchConnectionState(
   connection: HubConnection<DataHub>,
   setIsConnected: (b: boolean) => void
 ) {
+  const subscription = useRef<Subscription>();
+
   useEffect(() => {
-    const stateSubscription$ = connection.connectionState$.subscribe((state) => {
-      setIsConnected(state.status === ConnectionStatus.connected);
-    });
+    if (!subscription.current) {
+      subscription.current = connection.connectionState$.subscribe((state) => {
+        setIsConnected(state.status === ConnectionStatus.connected);
+      });
+    }
 
     return () => {
-      stateSubscription$.unsubscribe();
+      if (subscription.current) {
+        subscription.current.unsubscribe();
+      }
     };
-  }, [connection]);
+  });
 }

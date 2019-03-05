@@ -27,6 +27,7 @@ export default withSubscribedUpdates(({ project }) => {
   const { dataStore } = useOrbit();
   useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
   useLiveData(`products`);
+  useLiveData(`user-tasks`);
 
   const organization = dataStore.cache.query((q) => q.findRelatedRecord(project, 'organization'));
   const products = dataStore.cache.query((q) => q.findRelatedRecords(project, 'products'));

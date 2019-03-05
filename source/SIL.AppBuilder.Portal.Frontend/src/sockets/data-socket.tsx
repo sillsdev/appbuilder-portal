@@ -1,24 +1,25 @@
 import { useEffect, useMemo } from 'react';
-import { useOrbit, pushPayload } from 'react-orbitjs';
+import { useOrbit } from 'react-orbitjs';
 import { HubConnectionFactory } from '@ssv/signalr-client';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
-import { transformsToJSONAPIOperations } from '~/data/orbitjs-operations-support';
+import {
+  transformsToJSONAPIOperations,
+  JSONAPIOperationsPayload,
+} from '~/data/orbitjs-operations-support';
 
 import { isTesting } from '~/env';
 
 import { TransformOrOperations } from '@orbit/data';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import JSONAPISource, { JSONAPIDocument } from '@orbit/jsonapi';
+import JSONAPISource from '@orbit/jsonapi';
 import Store from '@orbit/store';
 
 import { DataClient } from './clients';
 
-export interface OperationsResponse {
-  operations: JSONAPIDocument[];
-}
+import { dataToLocalCache } from '~/data/orbitjs-operations-support/serialize-from-api';
 
 export default function LiveDataManager({ children }) {
   const { dataStore, sources } = useOrbit();
@@ -42,7 +43,7 @@ export default function LiveDataManager({ children }) {
     };
   }, [isLoggedIn]);
 
-  const pushData = (transforms: TransformOrOperations): Observable<OperationsResponse> => {
+  const pushData = (transforms: TransformOrOperations): Observable<JSONAPIOperationsPayload> => {
     const data = transformsToJSONAPIOperations(
       sources.remote as JSONAPISource,
       dataStore.transformBuilder,
@@ -51,17 +52,16 @@ export default function LiveDataManager({ children }) {
 
     return dataClient.connection
       .invoke<string>('PerformOperations', JSON.stringify(data))
-      .pipe(map<string, OperationsResponse>((json) => handleSocketPayload(dataStore, json)));
+      .pipe(map<string, JSONAPIOperationsPayload>((json) => handleSocketPayload(dataStore, json)));
   };
 
   return children({ socket: dataClient, pushData, subscriptions });
 }
 
 function handleSocketPayload(dataStore: Store, json: string) {
-  const response: OperationsResponse = JSON.parse(json);
-  const data = response.operations.map((operation: JSONAPIDocument) => operation.data);
+  const response: JSONAPIOperationsPayload = JSON.parse(json);
 
-  pushPayload(dataStore, { data });
+  dataToLocalCache(dataStore, response);
 
   return response;
 }
