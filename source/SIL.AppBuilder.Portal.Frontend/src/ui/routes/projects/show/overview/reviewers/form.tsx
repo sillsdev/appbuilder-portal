@@ -4,9 +4,13 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { isEmpty } from '@lib/collection';
 import { isValidEmail } from '@lib/validations';
 import { ResourceObject } from 'jsonapi-typescript';
+import { attributesFor } from '@data/helpers';
 import { ProjectAttributes } from '@data/models/project';
+import { UserAttributes } from '@data/models/user';
 
 import { PROJECTS_TYPE } from '@data';
+
+import { USERS_TYPE } from '@data';
 
 import {
   withDataActions,
@@ -16,13 +20,16 @@ import { mutCreator, Mut } from 'react-state-helpers';
 
 import { withTranslations } from '~/lib/i18n';
 
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 import LocaleSelect from '@ui/components/inputs/locale-select';
 
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
 }
-
-type IProps = Params & i18nProps & IProvidedProps;
+interface IOwnProps {
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
+}
+type IProps = Params & i18nProps & IProvidedProps & IOwnProps;
 
 class AddReviewerForm extends React.Component<IProps> {
   mut: Mut;
@@ -50,6 +57,19 @@ class AddReviewerForm extends React.Component<IProps> {
     });
   };
 
+  setEmptyLocale = () => {
+    const { currentUser, i18n } = this.props;
+    const { locale } = this.state;
+    var defaultLocale = locale;
+    if (isEmpty(locale)) {
+      const attributes = attributesFor(currentUser) as UserAttributes;
+      const userLocale = attributes.locale;
+      const { language } = i18n;
+      defaultLocale = userLocale || language;
+    }
+    return defaultLocale;
+  };
+
   isValidForm = () => {
     const { name, email } = this.state;
     const { t } = this.props;
@@ -72,10 +92,11 @@ class AddReviewerForm extends React.Component<IProps> {
   addReviewer = (e) => {
     e.preventDefault();
 
-    const { name, email, locale } = this.state;
+    const { name, email } = this.state;
     const { createRecord, project } = this.props;
 
     try {
+      var locale = this.setEmptyLocale();
       if (this.isValidForm()) {
         const attributes = { name, email, locale };
         const relationships = { project: { data: { type: 'project', id: project.id } } };
@@ -132,5 +153,6 @@ class AddReviewerForm extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
-  withDataActions
+  withDataActions,
+  withCurrentUserContext
 )(AddReviewerForm);
