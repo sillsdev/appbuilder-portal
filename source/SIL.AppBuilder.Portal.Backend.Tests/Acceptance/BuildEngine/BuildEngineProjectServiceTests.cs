@@ -404,9 +404,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
-            var hubContext = _fixture.GetService<IHubContext<ScriptoriaHub>>();
-            var mockScriptoriaHub = Mock.Get(hubContext);
-            mockScriptoriaHub.Reset();
+            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
+            var mockHub = Mock.Get(hubContext);
+            mockHub.Reset();
             var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
             mockClients.Reset();
             var projectResponse = new ProjectResponse
@@ -442,7 +442,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "DidUpdate" &&
-                           job.Type == typeof(IEntityHookHandler<Project>)),
+                           job.Type == typeof(IEntityHookHandler<Project, int>)),
                 It.IsAny<EnqueuedState>()));
         }
         [Fact(Skip = skipAcceptanceTest)]

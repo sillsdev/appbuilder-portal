@@ -268,7 +268,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                        job.Method.Name == "DidUpdate" &&
-                       job.Type == typeof(IEntityHookHandler<Project>)),
+                       job.Type == typeof(IEntityHookHandler<Project, int>)),
                 It.IsAny<EnqueuedState>()));
         }
         [Fact]
@@ -379,7 +379,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "DidUpdate" &&
-                           job.Type == typeof(IEntityHookHandler<Project>)),
+                           job.Type == typeof(IEntityHookHandler<Project, int>)),
                 It.IsAny<EnqueuedState>()));
 
 
@@ -584,7 +584,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "DidUpdate" &&
-                           job.Type == typeof(IEntityHookHandler<Project>)),
+                           job.Type == typeof(IEntityHookHandler<Project, int>)),
                 It.IsAny<EnqueuedState>()));
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job => 
