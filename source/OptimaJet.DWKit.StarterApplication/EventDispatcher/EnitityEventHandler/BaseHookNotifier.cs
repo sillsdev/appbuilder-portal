@@ -9,6 +9,7 @@ using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Internal.Generics;
 using JsonApiDotNetCore.Models;
+using JsonApiDotNetCore.Models.Operations;
 using JsonApiDotNetCore.Serialization;
 using JsonApiDotNetCore.Services;
 using JsonApiDotNetCore.Services.Operations;
@@ -161,30 +162,32 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             // The { json:api } formatted string / document
             // TODO: send an operations document so that we know what event happened.
             var document = this._documentBuilder.Build(resource);
-            var operationsPayload = new
-            {
-                Operations = new
+            var operationsPayload = new OperationsDocument(
+                new List<Operation> 
                 {
-                    Op = JsonApiOpForOperation(operation),
-                    Data = document.Data
+                    new Operation
+                    {
+                        Op = JsonApiOpForOperation(operation),
+                        Data = document.Data
+                    }
                 }
-            };
+            );
 
-            var json = this._serializer.Serialize(document);
+            var json = this._serializer.Serialize(operationsPayload);
 
             // send to any who are subscribed...
             this.DataHub.Clients.Group(entityType).SendAsync(JSONAPIHub.RemoteDataHasUpdated, json);
             this.DataHub.Clients.Group(pathForGet).SendAsync(JSONAPIHub.RemoteDataHasUpdated, json);
         }
 
-        private string JsonApiOpForOperation(string operation)
+        private OperationCode JsonApiOpForOperation(string operation)
         {
             switch (operation)
             {
-                case Insert: return "add";
-                case Update: return "update";
-                case Delete: return "remove";
-                default: return "get";
+                case Insert: return OperationCode.add;
+                case Update: return OperationCode.update;
+                case Delete: return OperationCode.remove;
+                default: return OperationCode.get;
             }
         }
     }

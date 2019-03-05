@@ -28,12 +28,11 @@ export default class DataSocketClient extends Socket<DataHub> {
 
     this.onData$$ = this.connection
       .on<string>('RemoteDataHasUpdated')
-      .subscribe(this.onData.bind(this));
+      .subscribe(this.onDataReceived.bind(this));
   }
 
-  onData(json: string) {
+  onDataReceived(json: string) {
     let data = JSON.parse(json);
-    console.log('received', data);
 
     dataToLocalCache(this.dataStore, data);
   }

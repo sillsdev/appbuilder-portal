@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import { Tab, Menu } from 'semantic-ui-react';
+import { idFromRecordIdentity, useOrbit } from 'react-orbitjs';
 
 import { ProjectResource } from '@data';
 
@@ -34,9 +35,10 @@ type IProps = PassedProps & QueriedProps;
 
 export default function ProjectShowDisplay({ project }: IProps) {
   const { t } = useTranslations();
+  const { dataStore } = useOrbit();
   const { currentUser } = useCurrentUser();
   const { updateOwner, toggleArchiveProject } = useDataActions(project);
-  useLiveData(`projects/${project.id}`);
+  useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
 
   const claimOwnership = async () => {
     try {

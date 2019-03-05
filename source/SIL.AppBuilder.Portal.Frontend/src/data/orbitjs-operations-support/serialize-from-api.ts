@@ -17,7 +17,7 @@ export function dataToLocalCache(store: Store, data: JSONAPIOperationsPayload | 
         case 'get':
         case 'update':
         case 'add':
-          pushPayload(store, operation.data);
+          pushPayload(store, { ...operation });
           break;
         case 'remove':
           removedRecords = Array.isArray(operation.data) ? operation.data : [operation.data];

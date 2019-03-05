@@ -85,12 +85,20 @@ function subscribeToResource(
     let resourceSubscription$;
 
     if (!isSubscribed) {
-      resourceSubscription$ = connection
-        .invoke('SubscribeTo', subscribeTo)
-        .subscribe(
-          () => /* success */ setIsSubscribed(true),
-          () => /* error */ setIsSubscribed(false)
-        );
+      resourceSubscription$ = connection.invoke('SubscribeTo', subscribeTo).subscribe(
+        () => {
+          /* success */
+
+          // console.log('subscribing to', subscribeTo, 'succeeded');
+          setIsSubscribed(true);
+        },
+        () => {
+          /* error */
+
+          // console.log('subscribing to', subscribeTo, 'failed');
+          setIsSubscribed(false);
+        }
+      );
     }
 
     return () => {

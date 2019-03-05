@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withOrbit as withSubscribedUpdates, useOrbit } from 'react-orbitjs';
+import { withOrbit as withSubscribedUpdates, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
 import { isEmpty } from '@lib/collection';
 
 import { ProjectResource } from '@data';
@@ -25,7 +25,7 @@ export default withSubscribedUpdates(({ project }) => {
 })(function Products({ project }: IProps) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
-  useLiveData(`projects/${project.id}`);
+  useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
   useLiveData(`products`);
 
   const organization = dataStore.cache.query((q) => q.findRelatedRecord(project, 'organization'));
