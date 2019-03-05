@@ -12,6 +12,8 @@ import { useCurrentUser } from '~/data/containers/with-current-user';
 
 import { useUserTaskHelpers } from '~/data/containers/resources/user-task';
 
+import { useLiveData } from '~/data/live';
+
 interface IProps {
   product: ProductResource;
 }
@@ -19,17 +21,18 @@ interface IProps {
 export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
-  const { dataStore } = useOrbit();
-  const { relativeTimeAgo } = useTimezoneFormatters();
-  const { navigateToTaskWorkflow, pathToWorkflow } = useUserTaskHelpers();
-
-  const tasks =
-    dataStore.cache.query((q) =>
+  const {
+    subscriptions: { tasks },
+  } = useOrbit({
+    tasks: (q) =>
       q
         .findRecords('userTask')
         .filter({ relation: 'product', record: product })
-        .filter({ relation: 'user', record: currentUser })
-    ) || [];
+        .filter({ relation: 'user', record: currentUser }),
+  });
+  const { relativeTimeAgo } = useTimezoneFormatters();
+  const { navigateToTaskWorkflow, pathToWorkflow } = useUserTaskHelpers();
+  useLiveData(`user-tasks`);
 
   if (tasks.length === 0) {
     return <div className='w-100 p-sm p-b-md m-l-md fs-13'>{t('tasks.noTasksTitle')}</div>;

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { withOrbit as withSubscribedUpdates, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
 import { isEmpty } from '@lib/collection';
 
-import { ProjectResource } from '@data';
+import { ProjectResource, ProductResource, OrganizationResource } from '@data';
 
 import { useTranslations } from '@lib/i18n';
 
@@ -17,20 +17,30 @@ interface IProps {
   isEmptyWorkflowProjectUrl: boolean;
 }
 
-export default withSubscribedUpdates(({ project }) => {
-  return {
+interface ISubscriptions {
+  products: ProductResource[];
+  organization: OrganizationResource;
+}
+
+// export default withSubscribedUpdates(({ project }) => {
+//   return {
+//     project: (q) => q.findRecord(project),
+//     products: (q) => q.findRelatedRecords(project, 'products'),
+//   };
+// })
+export default (function Products({ project }: IProps) {
+  const { t } = useTranslations();
+  const {
+    dataStore,
+    subscriptions: { products, organization },
+  } = useOrbit<ISubscriptions>({
     project: (q) => q.findRecord(project),
     products: (q) => q.findRelatedRecords(project, 'products'),
-  };
-})(function Products({ project }: IProps) {
-  const { t } = useTranslations();
-  const { dataStore } = useOrbit();
+    organization: (q) => q.findRelatedRecord(project, 'organization'),
+  });
   useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
   useLiveData(`products`);
   useLiveData(`user-tasks`);
-
-  const organization = dataStore.cache.query((q) => q.findRelatedRecord(project, 'organization'));
-  const products = dataStore.cache.query((q) => q.findRelatedRecords(project, 'products'));
 
   let productList;
 

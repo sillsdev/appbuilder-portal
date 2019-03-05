@@ -27,13 +27,15 @@ const DataContext = React.createContext<ILiveDataContext>({
 
 export function useLiveData(subscribeTo?: string) {
   const dataCtx = useContext(DataContext);
-  const [isConnected, setIsConnected] = useState(false);
+  // const [isConnected, setIsConnected] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const {
     socket: { connection },
   } = dataCtx;
 
-  watchConnectionState(connection, setIsConnected);
+  const isConnected = connection.hubConnection.connectionState === ConnectionStatus.connected;
+  console.log('connection...', connection.hubConnection.connectionState);
+  // watchConnectionState(connection, setIsConnected);
   subscribeToResource(connection, subscribeTo, isConnected, isSubscribed, setIsSubscribed);
 
   return {
@@ -85,7 +87,7 @@ function subscribeToResource(
     }
 
     if (!isSubscribed) {
-      subscription.current = connection.invoke('SubscribeTo', subscribeTo).subscribe(
+      subscription.current = connection.send('SubscribeTo', subscribeTo).subscribe(
         () => {
           /* success */
 
