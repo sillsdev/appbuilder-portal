@@ -129,19 +129,12 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             
             var entity = DbContext.Set<TEntity>().Find(idInEntityType);
 
-            // entity does not exist
-            // TODO: handle deletion
-            if (entity == null)
-            {
-                return;
-            }
-
-            this.PublishResource(entity, operation);
+            this.PublishResource(idInEntityType, entity, operation);
         }
 
-        private void PublishResource(TEntity resource, string operation)
+        private void PublishResource(TKey id, TEntity resource, string operation)
         {
-            var graphNode = this._resourceGraph.GetContextEntity(resource.GetType());
+            var graphNode = this._resourceGraph.GetContextEntity(typeof(TEntity));
 
             // resource may not be in the context graph
             // (non-api model)
@@ -157,23 +150,42 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             //
             // at this time, I don't know if there is a way to get a list of groups.
             var entityType = graphNode.EntityName;
-            var pathForGet = $"{entityType}/{resource.Id}";
+            var pathForGet = $"{entityType}/{id}";
 
             // The { json:api } formatted string / document
-            // TODO: send an operations document so that we know what event happened.
-            var document = this._documentBuilder.Build(resource);
-            var operationsPayload = new OperationsDocument(
-                new List<Operation> 
-                {
-                    new Operation
-                    {
-                        Op = JsonApiOpForOperation(operation),
-                        Data = document.Data
-                    }
-                }
-            );
+            string json;
 
-            var json = this._serializer.Serialize(operationsPayload);
+            if (operation == Delete) {
+                var operationsPayload = new OperationsDocument(
+                    new List<Operation>
+                    {
+                        new Operation
+                        {
+                            Op = JsonApiOpForOperation(operation),
+                            Ref = new ResourceReference {
+                                Id = id.ToString(),
+                                Type = entityType
+                            }
+                        }
+                    }
+                );
+
+                json = this._serializer.Serialize(operationsPayload);
+            } else {
+                var document = this._documentBuilder.Build(resource);
+                var operationsPayload = new OperationsDocument(
+                    new List<Operation>
+                    {
+                        new Operation
+                        {
+                            Op = JsonApiOpForOperation(operation),
+                            Data = document.Data
+                        }
+                    }
+                );
+
+                json = this._serializer.Serialize(operationsPayload);
+            }
 
             // send to any who are subscribed...
             this.DataHub.Clients.Group(entityType).SendAsync(JSONAPIHub.RemoteDataHasUpdated, json);

@@ -1,5 +1,6 @@
 import Store from '@orbit/store';
 import { JSONAPIDocument } from '@orbit/jsonapi';
+import { TransformBuilder } from '@orbit/data';
 import { pushPayload, localIdFromRecordIdentity } from 'react-orbitjs';
 
 import { JSONAPIOperationsPayload } from './types';
@@ -12,6 +13,7 @@ export function dataToLocalCache(store: Store, data: JSONAPIOperationsPayload | 
   if ((data as JSONAPIOperationsPayload).operations) {
     (data as JSONAPIOperationsPayload).operations.forEach((operation) => {
       let removedRecords = [];
+      let operationData;
 
       switch (operation.op) {
         case 'get':
@@ -20,19 +22,18 @@ export function dataToLocalCache(store: Store, data: JSONAPIOperationsPayload | 
           pushPayload(store, { ...operation });
           break;
         case 'remove':
-          removedRecords = Array.isArray(operation.data) ? operation.data : [operation.data];
+          operationData = operation.data || operation.ref;
+          removedRecords = Array.isArray(operationData) ? operationData : [operationData];
 
           store.update(
-            (q) =>
+            (t: TransformBuilder) =>
               removedRecords.map((record) => {
                 let localId = localIdFromRecordIdentity(store, record);
 
-                return q.removedRecord({ type: record.type, id: localId });
+                return t.removeRecord({ type: record.type, id: localId });
               }),
             { skipRemote: true }
           );
-
-          removedRecords.forEach((resource) => {});
           break;
         default:
           throw new Error('op is not a valid operation');

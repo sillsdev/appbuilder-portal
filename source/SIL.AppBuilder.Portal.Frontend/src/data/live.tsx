@@ -7,7 +7,7 @@ import Store from '@orbit/store';
 
 import DataSocketClient, { DataHub } from '~/sockets/clients/data';
 
-import { ConnectionStatus, HubConnection } from '@ssv/signalr-client';
+import { ConnectionStatus, HubConnection, ConnectionState } from '@ssv/signalr-client';
 import { TransformOrOperations } from '@orbit/data';
 import { Observable, Subscription } from 'rxjs';
 
@@ -27,15 +27,12 @@ const DataContext = React.createContext<ILiveDataContext>({
 
 export function useLiveData(subscribeTo?: string) {
   const dataCtx = useContext(DataContext);
-  // const [isConnected, setIsConnected] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
   const {
     socket: { connection },
   } = dataCtx;
 
-  const isConnected = connection.hubConnection.connectionState === ConnectionStatus.connected;
-
-  subscribeToResource(connection, subscribeTo, isConnected, isSubscribed, setIsSubscribed);
+  const { isConnected } = useConnectionStateWatcher(connection);
+  const { isSubscribed } = useSubscribeToResource(connection, subscribeTo, isConnected);
 
   return {
     ...dataCtx,
@@ -71,31 +68,22 @@ export function LiveDataProvider({ children }) {
   );
 }
 
-function subscribeToResource(
-  connection: HubConnection<DataHub>,
-  subscribeTo,
-  isConnected,
-  isSubscribed,
-  setIsSubscribed
-) {
+function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo, isConnected) {
   const subscription = useRef<Subscription>();
+  const [isSubscribed, setIsSubscribed] = useState();
 
   useEffect(() => {
     if (!subscribeTo || !isConnected) {
       return;
     }
 
-    if (!isSubscribed) {
+    if (!isSubscribed && !subscription.current) {
       subscription.current = connection.send('SubscribeTo', subscribeTo).subscribe(
         () => {
-          /* success */
-
           // console.log('subscribing to', subscribeTo, 'succeeded');
           setIsSubscribed(true);
         },
         () => {
-          /* error */
-
           // console.log('subscribing to', subscribeTo, 'failed');
           setIsSubscribed(false);
         }
@@ -108,8 +96,34 @@ function subscribeToResource(
       }
 
       if (!isConnected) return;
+      if (connection.hubConnection.state !== ConnectionStatus.connected) return;
 
       connection.send('UnsubscribeFrom', subscribeTo);
     };
   }, [subscribeTo, isConnected]);
+
+  return { isSubscribed };
+}
+
+function useConnectionStateWatcher(connection: HubConnection<DataHub>) {
+  const subscription = useRef<Subscription>();
+  const [isConnected, setIsConnected] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState>();
+
+  useEffect(() => {
+    if (!subscription.current) {
+      subscription.current = connection.connectionState$.subscribe((state) => {
+        setIsConnected(state.status === ConnectionStatus.connected);
+        setConnectionState(state);
+      });
+    }
+
+    return () => {
+      if (subscription.current) {
+        subscription.current.unsubscribe();
+      }
+    };
+  });
+
+  return { isConnected, connectionState };
 }

@@ -33,7 +33,7 @@ export default class DataSocketClient extends Socket<DataHub> {
 
   onDataReceived(json: string) {
     let data = JSON.parse(json);
-    console.log('received', data);
+
     dataToLocalCache(this.dataStore, data);
   }
 }

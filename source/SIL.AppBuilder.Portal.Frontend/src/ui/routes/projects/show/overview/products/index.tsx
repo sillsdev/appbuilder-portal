@@ -31,7 +31,9 @@ export default function Products({ project }: IProps) {
     project: (q) => q.findRecord(project),
     products: (q) => q.findRelatedRecords(project, 'products'),
     organization: (q) => q.findRelatedRecord(project, 'organization'),
+    _throwaway: (q) => q.findRecords('product'),
   });
+
   useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
   useLiveData(`products`);
   useLiveData(`user-tasks`);
