@@ -22,6 +22,7 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
   const {
+    dataStore,
     subscriptions: { tasks },
   } = useOrbit({
     tasks: (q) =>
@@ -32,7 +33,6 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   });
   const { relativeTimeAgo } = useTimezoneFormatters();
   const { navigateToTaskWorkflow, pathToWorkflow } = useUserTaskHelpers();
-  useLiveData(`user-tasks`);
 
   if (tasks.length === 0) {
     return <div className='w-100 p-sm p-b-md m-l-md fs-13'>{t('tasks.noTasksTitle')}</div>;

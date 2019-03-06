@@ -22,13 +22,7 @@ interface ISubscriptions {
   organization: OrganizationResource;
 }
 
-// export default withSubscribedUpdates(({ project }) => {
-//   return {
-//     project: (q) => q.findRecord(project),
-//     products: (q) => q.findRelatedRecords(project, 'products'),
-//   };
-// })
-export default (function Products({ project }: IProps) {
+export default function Products({ project }: IProps) {
   const { t } = useTranslations();
   const {
     dataStore,
@@ -75,4 +69,4 @@ export default (function Products({ project }: IProps) {
       <ProductSelectionManager organization={organization} selected={products} project={project} />
     </div>
   );
-});
+}

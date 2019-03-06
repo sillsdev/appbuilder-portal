@@ -34,8 +34,7 @@ export function useLiveData(subscribeTo?: string) {
   } = dataCtx;
 
   const isConnected = connection.hubConnection.connectionState === ConnectionStatus.connected;
-  console.log('connection...', connection.hubConnection.connectionState);
-  // watchConnectionState(connection, setIsConnected);
+
   subscribeToResource(connection, subscribeTo, isConnected, isSubscribed, setIsSubscribed);
 
   return {
@@ -113,25 +112,4 @@ function subscribeToResource(
       connection.send('UnsubscribeFrom', subscribeTo);
     };
   }, [subscribeTo, isConnected]);
-}
-
-function watchConnectionState(
-  connection: HubConnection<DataHub>,
-  setIsConnected: (b: boolean) => void
-) {
-  const subscription = useRef<Subscription>();
-
-  useEffect(() => {
-    if (!subscription.current) {
-      subscription.current = connection.connectionState$.subscribe((state) => {
-        setIsConnected(state.status === ConnectionStatus.connected);
-      });
-    }
-
-    return () => {
-      if (subscription.current) {
-        subscription.current.unsubscribe();
-      }
-    };
-  });
 }
