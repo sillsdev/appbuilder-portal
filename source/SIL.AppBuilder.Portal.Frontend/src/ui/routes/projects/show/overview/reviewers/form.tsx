@@ -57,15 +57,13 @@ class AddReviewerForm extends React.Component<IProps> {
     });
   };
 
-  setEmptyLocale = () => {
+  getLocale = () => {
     const { currentUser, i18n } = this.props;
-    const { locale } = this.state;
-    var defaultLocale = locale;
-    if (isEmpty(locale)) {
+    let { locale: defaultLocale } = this.state;
+    if (isEmpty(defaultLocale)) {
       const attributes = attributesFor(currentUser) as UserAttributes;
       const userLocale = attributes.locale;
-      const { language } = i18n;
-      defaultLocale = userLocale || language;
+      defaultLocale = userLocale || i18n.language;
     }
     return defaultLocale;
   };
@@ -96,7 +94,7 @@ class AddReviewerForm extends React.Component<IProps> {
     const { createRecord, project } = this.props;
 
     try {
-      var locale = this.setEmptyLocale();
+      let locale = this.getLocale();
       if (this.isValidForm()) {
         const attributes = { name, email, locale };
         const relationships = { project: { data: { type: 'project', id: project.id } } };
