@@ -43,6 +43,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                               .Include(p => p.Project)
                                     .ThenInclude(pr => pr.Owner)
                               .Include(p => p.Store)
+                              .Include(p => p.ProductDefinition)
                               .FirstOrDefaultAsync();
             if (product == null)
             {
