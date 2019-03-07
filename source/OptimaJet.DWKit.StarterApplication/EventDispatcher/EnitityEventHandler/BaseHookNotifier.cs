@@ -120,7 +120,7 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
                 idInEntityType = System.Convert.ChangeType(id, typeof(TKey));
             }
             
-            var entity = DbContext.Set<TEntity>().Find(idInEntityType);
+            var entity = DbContext.Set<TEntity>().Find((TKey)idInEntityType);
 
             this.PublishResource(idInEntityType, entity, operation);
         }
