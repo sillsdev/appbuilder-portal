@@ -17,6 +17,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         //        both sides in a single fluent builder chain)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresExtension("uuid-ossp");
 
             var userEntity = modelBuilder.Entity<User>();
@@ -165,6 +166,9 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             notificationEntity
                 .Property(p => p.SendEmail)
                 .HasDefaultValue(true);
+
+            modelBuilder.Ignore<ProductWorkflow>();
+
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
