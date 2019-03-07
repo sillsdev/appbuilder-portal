@@ -122,12 +122,12 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             
             var entity = DbContext.Set<TEntity>().Find((TKey)idInEntityType);
 
-            this.PublishResource(idInEntityType, entity, operation);
+            this.PublishResource((TKey)idInEntityType, entity, operation);
         }
 
 
         //
-        private void PublishResource(object id, TEntity resource, string operation)
+        private void PublishResource(TKey id, TEntity resource, string operation)
         {
             var graphNode = this._resourceGraph.GetContextEntity(typeof(TEntity));
 
