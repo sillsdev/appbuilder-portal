@@ -112,19 +112,12 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
 
         public void NotifyOperation(string id, string operation)
         {
-            var idType = typeof(TEntity)
-                .GetProperties()
-                .Where(p => p.Name.Equals("Id"))
-                .FirstOrDefault()
-                ?.PropertyType;
+            object idInEntityType; // Guid | int | string
 
-
-            dynamic idInEntityType; // Guid | int | string
-
-            if (idType == typeof(Guid)) {
+            if (typeof(TKey) == typeof(Guid)) {
                 idInEntityType = Guid.Parse(id);
             } else {
-                idInEntityType = System.Convert.ChangeType(id, idType);
+                idInEntityType = System.Convert.ChangeType(id, typeof(TKey));
             }
             
             var entity = DbContext.Set<TEntity>().Find(idInEntityType);
@@ -132,7 +125,9 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             this.PublishResource(idInEntityType, entity, operation);
         }
 
-        private void PublishResource(TKey id, TEntity resource, string operation)
+
+        //
+        private void PublishResource(object id, TEntity resource, string operation)
         {
             var graphNode = this._resourceGraph.GetContextEntity(typeof(TEntity));
 
