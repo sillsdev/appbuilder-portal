@@ -34,6 +34,8 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var productBuildEntity = modelBuilder.Entity<ProductBuild>();
             var notificationEntity = modelBuilder.Entity<Notification>();
             var productWorkflowEntity = modelBuilder.Entity<ProductWorkflow>();
+            var workflowDefinitionEntity = modelBuilder.Entity<WorkflowDefinition>();
+            var productWorkflowSchemeEntity = modelBuilder.Entity<ProductWorkflowScheme>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
@@ -166,6 +168,13 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             notificationEntity
                 .Property(p => p.SendEmail)
                 .HasDefaultValue(true);
+
+            workflowDefinitionEntity
+                .Property(w => w.Type)
+                .HasDefaultValue(WorkflowType.Startup);
+
+            productWorkflowSchemeEntity.ToTable("WorkflowProcessScheme");
+
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/

@@ -8,6 +8,8 @@ using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using OptimaJet.DWKit.StarterApplication.Utility;
+using OptimaJet.Workflow.Core.Persistence;
 using OptimaJet.Workflow.Core.Runtime;
 using Serilog;
 
@@ -15,7 +17,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowProductService
     {
-        public class ProductProcessChangedArgs
+        public class ProductActivityChangedArgs
         {
             public Guid ProcessId { get; set; }
             public string CurrentActivityName { get; set; }
@@ -24,6 +26,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             public string PreviousState { get; set; }
             public string ExecutingCommand { get; set; }
         };
+
+        public class ProductProcessChangedArgs
+        {
+            public Guid ProcessId { get; set; }
+            public string OldStatus { get; set; }
+            public string NewStatus { get; set; }
+            public string SchemaCode { get; set; }
+        }
 
         IJobRepository<Product, Guid> ProductRepository { get; set; }
         public IJobRepository<UserTask> TaskRepository { get; }
@@ -61,9 +71,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             DeleteWorkflowProcessInstance(workflowProcessId);
         }
 
+        public void ProductActivityChanged(ProductActivityChangedArgs args)
+        {
+            ProductActivityChangedAsync(args).Wait();
+        }
+
         public void ProductProcessChanged(ProductProcessChangedArgs args)
         {
-            ProductProcessChangedAsync(args).Wait();
+
         }
 
         public async Task ManageNewProductAsync(Guid productId)
@@ -114,6 +129,33 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         }
 
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)
+        {
+            // Find the Product assoicated with the ProcessId
+            var product = await ProductRepository.Get()
+                .Where(p => p.Id == args.ProcessId)
+                .FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                Log.Error($"Could find Product for ProcessId={args.ProcessId}");
+                return;
+            }
+
+            if (args.NewStatus == ProcessStatus.Finalized.StatusString())
+            {
+                // Remove any future transition entries
+                await ClearPreExecuteEntries(args.ProcessId);
+
+                // Remove any tasks
+                await RemoveTasksByProductId(product.Id);
+
+                // Delete the ProcessInstance
+                Log.Information($"Process Finalized.  Deleting ProcessId={args.ProcessId}, Schema={args.SchemaCode}");
+                DeleteWorkflowProcessInstance(args.ProcessId);
+            }
+        }
+
+        public async Task ProductActivityChangedAsync(ProductActivityChangedArgs args)
         {
             // Find the Product assoicated with the ProcessId
             var product = await ProductRepository.Get()

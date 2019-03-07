@@ -1,5 +1,5 @@
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
-(1,	'sil_android_google_play',	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
+(1,	'sil_android_google_play',	1,	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1)
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
@@ -9,9 +9,30 @@ DO UPDATE SET
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId";
 
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
+(2,	'sil_android_google_play_rebuild',	2,	'1',	'SIL Default Workflow for Rebuilding to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay_Rebuild',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1)
+ON CONFLICT ("Id")
+DO UPDATE SET 
+	"Name" = excluded."Name", 
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId";
+	
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
+(3,	'sil_android_google_play_republish',	3,	'1',	'SIL Default Workflow for Republish to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay_Republish',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1)
+ON CONFLICT ("Id")
+DO UPDATE SET 
+	"Name" = excluded."Name", 
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId";
 
-INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
-(1,	'Android App to Google Play',	1,	'Build an Android App from a Scripture App Builder project and publish to a Google Play Store',	1)
+INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId", "RebuildWorkflowId", "RepublishWorkflowId") VALUES
+(1,	'Android App to Google Play',	1,	'Build an Android App from a Scripture App Builder project and publish to a Google Play Store',	1, 2, 3)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",
@@ -450,6 +471,20 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer X="946" Y="541" />
     </Transition>
   </Transitions>
+</Process>')
+ON CONFLICT("Code") DO UPDATE SET
+	"Scheme" = excluded."Scheme";
+	
+INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
+('SIL_Default_AppBuilders_Android_GooglePlay_Rebuild', '<Process>
+
+</Process>')
+ON CONFLICT("Code") DO UPDATE SET
+	"Scheme" = excluded."Scheme";
+
+INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
+('SIL_Default_AppBuilders_Android_GooglePlay_Republish', '<Process>
+
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";

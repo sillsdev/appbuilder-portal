@@ -54,7 +54,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
 
             Log.Information($":::::::::: ActivityChanged: pid={args.ProcessId.ToString()}, scheme={args.SchemeCode}, activity={args.CurrentActivityName}, state={args.CurrentState}, last={args.PreviousState}");
-            var serviceArgs = new WorkflowProductService.ProductProcessChangedArgs
+            var serviceArgs = new WorkflowProductService.ProductActivityChangedArgs
             {
                 ProcessId = args.ProcessId,
                 CurrentActivityName = args.CurrentActivityName,
@@ -63,16 +63,27 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 PreviousState = args.PreviousState,
                 ExecutingCommand = args.ProcessInstance.CurrentCommand
             };
-            // There is a bit of a timing window before the ProcessId is assigned to the Product.  So delay this a little bit (15 seconds in the default minimum time.
-            BackgroundJob.Enqueue<WorkflowProductService>(service => service.ProductProcessChanged(serviceArgs));
 
-            //TODO change Document transition history and WorkflowInbox
+            BackgroundJob.Enqueue<WorkflowProductService>(service => service.ProductActivityChanged(serviceArgs));
         }
 
         private void ProcessChanged(ProcessStatusChangedEventArgs args, WorkflowRuntime runtime)
         {
             Log.Information($":::::::::: ProcessChanged: pid={args.ProcessId.ToString()}, scheme={args.SchemeCode}, new={args.NewStatus.StatusString()}, old={args.OldStatus.StatusString()}");
             if (String.IsNullOrWhiteSpace(args.ProcessInstance.CurrentActivityName)) return;
+
+            // Delete the Workflow once completed
+            if (args.NewStatus == ProcessStatus.Finalized)
+            {
+                var serviceArgs = new WorkflowProductService.ProductProcessChangedArgs
+                {
+                    ProcessId = args.ProcessId,
+                    OldStatus = args.OldStatus.StatusString(),
+                    NewStatus = args.NewStatus.StatusString(),
+                    SchemaCode = args.SchemeCode
+                };
+                BackgroundJob.Schedule<WorkflowProductService>(service => service.ProductProcessChanged(serviceArgs), TimeSpan.FromSeconds(15));
+            }
         }
 
         public void CheckActivityStatus()

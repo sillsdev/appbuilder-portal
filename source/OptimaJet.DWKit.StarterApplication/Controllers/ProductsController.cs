@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 
@@ -12,12 +14,32 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
     {
         public ProductsController(
             IJsonApiContext jsonApiContext,
-            IResourceService<Product, Guid> resourceService,
             ICurrentUserContext currentUserContext,
             OrganizationService organizationService,
+            ProductService productService,
             UserService userService)
-            : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
+            : base(jsonApiContext, productService, currentUserContext, organizationService, userService)
         {
+            ProductService = productService;
+        }
+
+        public ProductService ProductService { get; }
+
+        [HttpGet("{id}/actions")]
+        public async Task<IActionResult> GetProductActions(Guid id)
+        {
+            var actions = await ProductService.GetProductActionsAsync(id);
+            if (actions == null)
+            {
+                return NotFound();
+            }
+
+            var productActions = new ProductActions
+            {
+                Id = id,
+                Types = actions
+            };
+            return Ok(productActions);
         }
     }
 }

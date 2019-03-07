@@ -19,35 +19,35 @@ INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngin
 (	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru:8443',	'replace',	3,	false),
 (	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false);
 
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
-(2,     'sil_android_amazon_store',      '1',    'SIL Default Workflow for Publishing to Amazon App Store',   'SIL_Default_AppBuilders_Android_AmazonAppStore',	'SIL_Default_AppBuilders_Android_AmazonAppStore',   1),
-(3,     'sil_android_scripture_earth',      '1',    'SIL Default Workflow for Publishing to Scripture Earth',   'SIL_Default_AppBuilders_Android_ScriptureEarth',	'SIL_Default_AppBuilders_Android_ScriptureEarth',   NULL),
-(4,	'sil_android_s3',	'1',	'SIL Default Workflow for Publishing to S3', 'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_S3', NULL),
-(5,	'kalaam_android_website',	'1',	'Kalaam Default Workflow for Publishing to a Kalaam Website', 'Kalaam_Default_AppBuilders_Android_Site',	'Kalaam_Default_AppBuilders_Android_Site', NULL);
+-- INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
+-- (4,     'sil_android_amazon_store',      '1',    'SIL Default Workflow for Publishing to Amazon App Store',   'SIL_Default_AppBuilders_Android_AmazonAppStore',	'SIL_Default_AppBuilders_Android_AmazonAppStore',   1),
+-- (5,     'sil_android_scripture_earth',      '1',    'SIL Default Workflow for Publishing to Scripture Earth',   'SIL_Default_AppBuilders_Android_ScriptureEarth',	'SIL_Default_AppBuilders_Android_ScriptureEarth',   NULL),
+-- (6,	'sil_android_s3',	'1',	'SIL Default Workflow for Publishing to S3', 'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_S3', NULL),
+-- (7,	'kalaam_android_website',	'1',	'Kalaam Default Workflow for Publishing to a Kalaam Website', 'Kalaam_Default_AppBuilders_Android_Site',	'Kalaam_Default_AppBuilders_Android_Site', NULL);
 
-INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
-(2,     'Android App in Amazon App Store',  1,      'Build an Android App from Scripture App Builder project and publish to Amazon App Store',   2),
-(3,     'Android App in Scripture Earth',  1,      'Build an Android App from Scripture App Builder project and publish to Scripture Earth',   3),
-(4,	'Android App uploaded to S3', 1,	'Build an Android App from Scripture App Build project and uploaded to S3', 4),
-(5,	'Android App uploaded to Kalaam Site', 1, 'Build an Android App from Scripture App Builder project and uploaded to a Kalaam Site', 5),
-(6,	'Android Reading App uploaded to S3', 2,	'Build an Android App from a Reading App Builder project and uploaded to S3', 4),
-(7,	'Android Dictionary App uploaded to S3', 3,	'Build an Android App from a Dictionary App Builder project uploaded to S3', 4);
+-- INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
+-- (2,     'Android App in Amazon App Store',  1,      'Build an Android App from Scripture App Builder project and publish to Amazon App Store',   4),
+-- (3,     'Android App in Scripture Earth',  1,      'Build an Android App from Scripture App Builder project and publish to Scripture Earth',   5),
+-- (4,	'Android App uploaded to S3', 1,	'Build an Android App from Scripture App Build project and uploaded to S3', 6),
+-- (5,	'Android App uploaded to Kalaam Site', 1, 'Build an Android App from Scripture App Builder project and uploaded to a Kalaam Site', 7),
+-- (6,	'Android Reading App uploaded to S3', 2,	'Build an Android App from a Reading App Builder project and uploaded to S3', 6),
+-- (7,	'Android Dictionary App uploaded to S3', 3,	'Build an Android App from a Dictionary App Builder project uploaded to S3', 6);
 
 
 INSERT INTO "OrganizationProductDefinitions" ("OrganizationId", "ProductDefinitionId") VALUES
 (1,      1),
 (2,      1),
-(3,      1),
-(1,      2),
-(2,      2),
-(3,      2),
-(1,      3),
-(2,      3),
-(3,      3),
-(1,      4),
-(2,      4),
-(3,      4),
-(3,	 5);
+(3,      1);
+-- (1,      4),
+-- (2,      4),
+-- (3,      4),
+-- (1,      5),
+-- (2,      5),
+-- (3,      5),
+-- (1,      6),
+-- (2,      6),
+-- (3,      6),
+-- (3,	 7);
 
 INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
 (2, 'amazon_app_store',	'Amazon App Store');
@@ -123,6 +123,7 @@ INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 
 INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	1,	1,	1), -- chris_hubbard@sil.org - SuperAdmin - SIL
+(	1,	2,	1), -- chris_hubbard@sil.org - OrgAmin - SIL
 (	8,	2,	1), -- bill_dyck@sil.org - OrgAdmin - SIL
 (	2,	3,	1), -- david_moore1@sil.org - AppBuilder - SIL
 (	7,	1,	1), -- psego@developertown.com - AppBuilder - SIL

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OptimaJet.DWKit.StarterApplication.Data;
@@ -10,9 +11,10 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190307170913_AddWorkflowActions")]
+    partial class AddWorkflowActions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -449,27 +451,11 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<string>("ActivityName");
 
-                    b.Property<Guid>("SchemeId");
-
                     b.Property<string>("StateName");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SchemeId");
-
                     b.ToTable("WorkflowProcessInstance");
-                });
-
-            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflowScheme", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("SchemeCode");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("WorkflowProcessScheme");
                 });
 
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Project", b =>
@@ -919,11 +905,6 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
                         .WithOne("ProductWorkflow")
                         .HasForeignKey("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflow", "Id")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflowScheme", "Scheme")
-                        .WithMany()
-                        .HasForeignKey("SchemeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

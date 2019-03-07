@@ -13,6 +13,7 @@ using static OptimaJet.DWKit.StarterApplication.Utility.ServiceExtensions;
 using JsonApiDotNetCore.Internal.Query;
 using Hangfire;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
+using Microsoft.EntityFrameworkCore;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
@@ -20,12 +21,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     {
         IEntityRepository<Product, Guid> ProductRepository { get; set; }
         IEntityRepository<ProductDefinition> ProductDefinitionRepository { get; set; }
+        public IEntityRepository<WorkflowDefinition> WorkflowDefinitionRepository { get; }
         IEntityRepository<Store> StoreRepository { get; }
         public IEntityRepository<UserRole> UserRolesRepository { get; }
         IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
         ICurrentUserContext CurrentUserContext { get; set; }
+
         IJsonApiContext JsonApiContext { get; }
         public IOrganizationContext OrganizationContext { get; private set; }
 
@@ -37,6 +40,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ProjectRepository projectRepository,
             ICurrentUserContext currentUserContext,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
+            IEntityRepository<WorkflowDefinition> workflowDefinitionRepository,
             IEntityRepository<Store> storeRepository,
             IEntityRepository<UserRole> userRolesRepository,
             IBackgroundJobClient hangfireClient,
@@ -44,6 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         {
             ProductRepository = productRepository;
             ProductDefinitionRepository = productDefinitionRepository;
+            WorkflowDefinitionRepository = workflowDefinitionRepository;
             StoreRepository = storeRepository;
             UserRolesRepository = userRolesRepository;
             HangfireClient = hangfireClient;
@@ -101,7 +106,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(createForm.Errors);
             }
-            
+
             var product = await base.CreateAsync(resource);
 
             // TODO: figure out why this throws a NullReferenceException
@@ -124,6 +129,54 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             }
 
             return await base.DeleteAsync(id);
+        }
+
+        public async Task<List<string>> GetProductActionsAsync(Guid id)
+        {
+            var product = await ProductRepository.Get()
+                .Where(p => p.Id == id)
+                .Include(p => p.ProductWorkflow)
+                    .ThenInclude(pw => pw.Scheme)
+                .Include(p => p.ProductDefinition)
+                .FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            if (product.ProductWorkflow == null)
+            {
+                // No running workflow.  Provide actions that are defined
+                var result = new List<string>();
+                if (product.ProductDefinition.RebuildWorkflowId.HasValue)
+                {
+                    result.Add(WorkflowType.Rebuild.ToString());
+                }
+                if (product.ProductDefinition.RepublishWorkflowId.HasValue)
+                {
+                    result.Add(WorkflowType.Republish.ToString());
+                }
+                return result;
+            }
+
+            var wd = await WorkflowDefinitionRepository.Get()
+                .Where(w => w.WorkflowScheme == product.ProductWorkflow.Scheme.SchemeCode)
+                .FirstOrDefaultAsync();
+
+            if (wd == null)
+            {
+                return null; 
+            }
+
+            if (wd.Type != WorkflowType.Startup)
+            {
+                // Running a action workflow.  Provide cancel action
+                return new List<string> { "Cancel" };
+            }
+
+            // Running the startup workflow.  Return empty list
+            return new List<string> { };
         }
     }
 }
