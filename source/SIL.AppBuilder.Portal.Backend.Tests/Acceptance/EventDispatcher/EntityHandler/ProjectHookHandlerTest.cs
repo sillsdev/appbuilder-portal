@@ -67,17 +67,25 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.EventDispatcher.EntityH
             });
         }
 
-        [Fact]
-        public void Notify_Project_Insert()
+        private (IEntityHookHandler<Project, int> handler, Mock<IHubContext<JSONAPIHub>>) MockServices() 
         {
-            BuildTestData();
-
+            
             var handler = _fixture.GetService<IEntityHookHandler<Project, int>>();
             var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
             var mockHub = Mock.Get(hubContext);
             mockHub.Reset();
             var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
             mockClients.Reset();
+
+            return (handler, mockHub);
+        }
+
+        [Fact]
+        public void Notify_Project_Insert()
+        {
+            BuildTestData();
+
+            (var handler, var mockHub) = MockServices();
 
             handler.DidInsert(project1.StringId);
 
@@ -91,12 +99,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.EventDispatcher.EntityH
         {
             BuildTestData();
 
-            var handler = _fixture.GetService<IEntityHookHandler<Project, int>>();
-            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
-            var mockHub = Mock.Get(hubContext);
-            mockHub.Reset();
-            var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
-            mockClients.Reset();
+            (var handler, var mockHub) = MockServices();
 
             handler.DidUpdate(project1.StringId);
 
@@ -110,12 +113,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.EventDispatcher.EntityH
         {
             BuildTestData();
 
-            var handler = _fixture.GetService<IEntityHookHandler<Project, int>>();
-            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
-            var mockHub = Mock.Get(hubContext);
-            mockHub.Reset();
-            var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
-            mockClients.Reset();
+            (var handler, var mockHub) = MockServices();
 
             handler.DidDelete(project1.StringId);
 
