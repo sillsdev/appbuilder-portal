@@ -435,6 +435,19 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.ToTable("ProductTransitions");
                 });
 
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflow", b =>
+                {
+                    b.Property<Guid>("Id");
+
+                    b.Property<string>("ActivityName");
+
+                    b.Property<string>("StateName");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkflowProcessInstance");
+                });
+
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -860,8 +873,16 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductTransition", b =>
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
-                        .WithMany()
+                        .WithMany("Transitions")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflow", b =>
+                {
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                        .WithOne("ProductWorkflow")
+                        .HasForeignKey("OptimaJet.DWKit.StarterApplication.Models.ProductWorkflow", "Id")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -933,7 +954,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.UserTask", b =>
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
-                        .WithMany()
+                        .WithMany("UserTasks")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
 

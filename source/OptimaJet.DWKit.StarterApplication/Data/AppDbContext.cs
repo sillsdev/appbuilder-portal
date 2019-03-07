@@ -166,9 +166,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             notificationEntity
                 .Property(p => p.SendEmail)
                 .HasDefaultValue(true);
-
-            modelBuilder.Ignore<ProductWorkflow>();
-
         }
 
         //// https://benjii.me/2014/03/track-created-and-modified-fields-automatically-with-entity-framework-code-first/
