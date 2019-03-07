@@ -6,7 +6,9 @@ import {
   fillable,
   count,
   collection,
+  value,
 } from '@bigtest/interactor';
+import localeSelectInteractor from '@ui/components/inputs/locale-select/__tests__/page';
 
 @interactor
 export class ReviewerInteractor {
@@ -23,6 +25,10 @@ export class ReviewerInteractor {
   clickAddReviewerSubmitButton = clickable('[data-test-project-reviewers-add-form-submit]');
 
   clickRemoveReviewer = clickable('[data-test-project-reviewers-remove-item]:first-child');
+
+  reviewerName = value('[data-test-project-reviewers-add-form-name]');
+  reviewerEmail = value('[data-test-project-reviewers-add-form-email]');
+  localeSelect = localeSelectInteractor;
 }
 
 export default new ReviewerInteractor('[data-test-project-reviewers]');

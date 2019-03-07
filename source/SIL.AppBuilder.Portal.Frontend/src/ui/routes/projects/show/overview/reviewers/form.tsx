@@ -4,9 +4,13 @@ import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { isEmpty } from '@lib/collection';
 import { isValidEmail } from '@lib/validations';
 import { ResourceObject } from 'jsonapi-typescript';
+import { attributesFor } from '@data/helpers';
 import { ProjectAttributes } from '@data/models/project';
+import { UserAttributes } from '@data/models/user';
 
 import { PROJECTS_TYPE } from '@data';
+
+import { USERS_TYPE } from '@data';
 
 import {
   withDataActions,
@@ -16,11 +20,16 @@ import { mutCreator, Mut } from 'react-state-helpers';
 
 import { withTranslations } from '~/lib/i18n';
 
+import { withCurrentUserContext } from '@data/containers/with-current-user';
+import LocaleSelect from '@ui/components/inputs/locale-select';
+
 interface Params {
   project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
 }
-
-type IProps = Params & i18nProps & IProvidedProps;
+interface IOwnProps {
+  currentUser: ResourceObject<USERS_TYPE, UserAttributes>;
+}
+type IProps = Params & i18nProps & IProvidedProps & IOwnProps;
 
 class AddReviewerForm extends React.Component<IProps> {
   mut: Mut;
@@ -30,6 +39,7 @@ class AddReviewerForm extends React.Component<IProps> {
     nameError: '',
     email: '',
     emailError: '',
+    locale: '',
   };
 
   constructor(props) {
@@ -45,6 +55,17 @@ class AddReviewerForm extends React.Component<IProps> {
       email: '',
       emailError: '',
     });
+  };
+
+  getLocale = () => {
+    const { currentUser, i18n } = this.props;
+    let { locale: defaultLocale } = this.state;
+    if (isEmpty(defaultLocale)) {
+      const attributes = attributesFor(currentUser) as UserAttributes;
+      const userLocale = attributes.locale;
+      defaultLocale = userLocale || i18n.language;
+    }
+    return defaultLocale;
   };
 
   isValidForm = () => {
@@ -73,8 +94,9 @@ class AddReviewerForm extends React.Component<IProps> {
     const { createRecord, project } = this.props;
 
     try {
+      let locale = this.getLocale();
       if (this.isValidForm()) {
-        const attributes = { name, email };
+        const attributes = { name, email, locale };
         const relationships = { project: { data: { type: 'project', id: project.id } } };
 
         createRecord(attributes, relationships);
@@ -88,7 +110,7 @@ class AddReviewerForm extends React.Component<IProps> {
   render() {
     const { mut } = this;
     const { t } = this.props;
-    const { name, nameError, email, emailError } = this.state;
+    const { name, nameError, email, emailError, locale } = this.state;
 
     return (
       <form
@@ -116,6 +138,9 @@ class AddReviewerForm extends React.Component<IProps> {
           />
           {emailError && <span className='error'>{emailError}</span>}
         </div>
+        <div className='field'>
+          <LocaleSelect selected={locale} onChange={mut('locale')} />
+        </div>
         <button data-test-project-reviewers-add-form-submit className='ui button'>
           {t('project.side.reviewers.form.submit')}
         </button>
@@ -126,5 +151,6 @@ class AddReviewerForm extends React.Component<IProps> {
 
 export default compose(
   withTranslations,
-  withDataActions
+  withDataActions,
+  withCurrentUserContext
 )(AddReviewerForm);
