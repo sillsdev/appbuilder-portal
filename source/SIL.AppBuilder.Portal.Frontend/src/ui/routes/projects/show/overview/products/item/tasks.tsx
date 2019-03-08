@@ -19,28 +19,25 @@ interface IProps {
 export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
-  let cacheQuery = {};
 
-  if (product) {
-    cacheQuery = {
-      // tasks: (q) =>
-      //   q
-      //     .findRecords('userTask')
-      //     .filter({ relation: 'product', record: product })
-      //     .filter({ relation: 'user', record: currentUser }),
-    };
+  const { dataStore } = useOrbit();
+
+  let tasks = [];
+
+  try {
+    tasks = dataStore.cache.query((q) =>
+      q
+        .findRecords('userTask')
+        .filter({ relation: 'product', record: product })
+        .filter({ relation: 'user', record: currentUser })
+    );
+  } catch (e) {
+    console.debug(
+      'error occurred',
+      e,
+      'we probably need to PR to orbit.js, as this is a race condition scenario that causes the error'
+    );
   }
-
-  const {
-    dataStore,
-    // subscriptions: { tasks },
-  } = useOrbit(cacheQuery);
-
-  const tasks = dataStore.cache.query((q) =>
-    q
-      .findRecords('userTask')
-      .filter({ relation: 'product', record: product })
-      .filter({ relation: 'user', record: currentUser }));
 
   const { relativeTimeAgo } = useTimezoneFormatters();
   const { navigateToTaskWorkflow, pathToWorkflow } = useUserTaskHelpers();
