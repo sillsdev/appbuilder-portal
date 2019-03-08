@@ -39,6 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public IJobRepository<UserTask> TaskRepository { get; }
         public IJobRepository<User> UserRepository { get; }
         public IJobRepository<ProductWorkflow, Guid> ProductWorkflowRepository { get; }
+        public IJobRepository<WorkflowDefinition> WorkflowDefinitionRepository { get; }
         public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
         public SendNotificationService SendNotificationService { get; }
         public WorkflowRuntime Runtime { get; }
@@ -48,6 +49,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             IJobRepository<UserTask> taskRepository,
             IJobRepository<User> userRepository,
             IJobRepository<ProductWorkflow, Guid> productWorkflowRepository,
+            IJobRepository<WorkflowDefinition> workflowDefinitionRepository,
             IJobRepository<ProductTransition> productTransitionRepository,
             SendNotificationService sendNotificationService,
             WorkflowRuntime runtime
@@ -56,6 +58,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             TaskRepository = taskRepository;
             UserRepository = userRepository;
             ProductWorkflowRepository = productWorkflowRepository;
+            WorkflowDefinitionRepository = workflowDefinitionRepository;
             ProductTransitionRepository = productTransitionRepository;
             SendNotificationService = sendNotificationService;
             Runtime = runtime;
@@ -78,17 +81,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public void ProductProcessChanged(ProductProcessChangedArgs args)
         {
-
+            ProductProcessChangedAsync(args).Wait();
         }
 
         public async Task ManageNewProductAsync(Guid productId)
         {
+
             var product = await ProductRepository.Get()
                               .Where(p => p.Id == productId)
                               .Include(p => p.ProductDefinition)
-                                    .ThenInclude(pd => pd.Workflow)
-                              .Include(p => p.Project)
-                                    .ThenInclude(pr => pr.Owner)
                               .FirstOrDefaultAsync();
 
             if (product == null)
@@ -99,33 +100,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
             }
 
-            if (!product.Project.Owner.WorkflowUserId.HasValue)
-            {
-                // TODO: Send notification record
-                // If user does not have a WorkflowUserId, then User to DwSecurityUser
-                // synchronization is not working or hasn't been done yet?
-                // Throw exception to retry
-                throw new Exception("WorkflowUserId not available");
-            }
-
-            await CreateWorkflowProcessInstance(product);
-        }
+            await StartProductWorkflowAsync(productId, product.ProductDefinition.WorkflowId);
+         }
 
         protected void DeleteWorkflowProcessInstance(Guid processId)
         {
             WorkflowInit.Runtime.DeleteInstance(processId);
         }
 
-        protected async Task CreateWorkflowProcessInstance(Product product)
+        protected async Task CreateWorkflowProcessInstance(Product product, WorkflowDefinition workflowDefinition)
         {
-            await WorkflowInit.Runtime.CreateInstanceAsync(
-                new CreateInstanceParams(
-                    product.ProductDefinition.Workflow.WorkflowScheme,
-                    product.Id)
-                {
-                    IdentityId = product.Project.Owner.WorkflowUserId.Value.ToString()
-                }
-            );
+            var parms = new CreateInstanceParams(workflowDefinition.WorkflowScheme, product.Id)
+            {
+                IdentityId = product.Project.Owner.WorkflowUserId.Value.ToString()
+            };
+
+            await WorkflowInit.Runtime.CreateInstanceAsync(parms);
         }
 
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)
@@ -143,15 +133,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             if (args.NewStatus == ProcessStatus.Finalized.StatusString())
             {
-                // Remove any future transition entries
-                await ClearPreExecuteEntries(args.ProcessId);
-
-                // Remove any tasks
-                await RemoveTasksByProductId(product.Id);
-
-                // Delete the ProcessInstance
                 Log.Information($"Process Finalized.  Deleting ProcessId={args.ProcessId}, Schema={args.SchemaCode}");
-                DeleteWorkflowProcessInstance(args.ProcessId);
+                await StopProductWorkflowAsync(args.ProcessId);
             }
         }
 
@@ -220,6 +203,50 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             await CreatePreExecuteEntries(product.Id);
         }
 
+        public void StartProductWorkflow(Guid productId, int workflowDefinitionId)
+        {
+            StartProductWorkflowAsync(productId, workflowDefinitionId).Wait();
+        }
+
+        private async Task StartProductWorkflowAsync(Guid productId, int workflowDefinitionId)
+        {
+            var product = await ProductRepository.Get()
+                  .Where(p => p.Id == productId)
+                  .Include(p => p.ProductDefinition)
+                        .ThenInclude(pd => pd.Workflow)
+                  .Include(p => p.Project)
+                        .ThenInclude(pr => pr.Owner)
+                  .FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                // TODO: Send notification record
+                // Don't send exception because if the record is not there
+                // there doesn't seem much point in retrying
+                return;
+            }
+
+            if (!product.Project.Owner.WorkflowUserId.HasValue)
+            {
+                // TODO: Send notification record
+                // If user does not have a WorkflowUserId, then User to DwSecurityUser
+                // synchronization is not working or hasn't been done yet?
+                // Throw exception to retry
+                throw new Exception("WorkflowUserId not available");
+            }
+
+            var workflowDefinition = await WorkflowDefinitionRepository.GetAsync(workflowDefinitionId);
+            if (workflowDefinition == null)
+            {
+                // TODO: Send notification record
+                // Don't send exception because if the record is not there
+                // there doesn't seem much point in retrying
+                return;
+            }
+
+            await CreateWorkflowProcessInstance(product, workflowDefinition);
+        }
+
         private async Task SendNotificationForTask (UserTask task, User user, Product product)
         {
             var comment = task.Comment ?? "";
@@ -238,6 +265,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 messageParms);
 
             Log.Information($"Notification: task={task.Id}, user={user.Name}, product={product.Id}, messageParms={messageParms}");
+        }
+
+        public void StopProductWorkflow(Guid id)
+        {
+            StopProductWorkflowAsync(id).Wait();
+        }
+
+        private async Task StopProductWorkflowAsync(Guid processId)
+        {
+            // Remove any future transition entries
+            await ClearPreExecuteEntries(processId);
+
+            // Remove any tasks
+            await RemoveTasksByProductId(processId);
+
+            // Delete the ProcessInstance
+            DeleteWorkflowProcessInstance(processId);
         }
 
         private string GetCurrentTaskComment(Product product)

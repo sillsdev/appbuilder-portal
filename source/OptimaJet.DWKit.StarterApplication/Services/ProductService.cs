@@ -59,6 +59,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             JsonApiContext = jsonApiContext;
 
         }
+
         public override async Task<IEnumerable<Product>> GetAsync()
         {
             return await GetScopedToOrganization<Product>(base.GetAsync,
@@ -133,12 +134,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public async Task<List<string>> GetProductActionsAsync(Guid id)
         {
-            var product = await ProductRepository.Get()
-                .Where(p => p.Id == id)
-                .Include(p => p.ProductWorkflow)
-                    .ThenInclude(pw => pw.Scheme)
-                .Include(p => p.ProductDefinition)
-                .FirstOrDefaultAsync();
+            Product product = await GetProductForActions(id);
 
             if (product == null)
             {
@@ -160,13 +156,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 return result;
             }
 
-            var wd = await WorkflowDefinitionRepository.Get()
-                .Where(w => w.WorkflowScheme == product.ProductWorkflow.Scheme.SchemeCode)
-                .FirstOrDefaultAsync();
+            var wd = await GetExecutingWorkflowDefintion(product);
 
             if (wd == null)
             {
-                return null; 
+                return null;
             }
 
             if (wd.Type != WorkflowType.Startup)
@@ -177,6 +171,70 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             // Running the startup workflow.  Return empty list
             return new List<string> { };
+        }
+
+        private async Task<WorkflowDefinition> GetExecutingWorkflowDefintion(Product product)
+        {
+            return await WorkflowDefinitionRepository.Get()
+                .Where(w => w.WorkflowScheme == product.ProductWorkflow.Scheme.SchemeCode)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task<Product> GetProductForActions(Guid id)
+        {
+            return await ProductRepository.Get()
+                .Where(p => p.Id == id)
+                .Include(p => p.ProductWorkflow)
+                    .ThenInclude(pw => pw.Scheme)
+                .Include(p => p.ProductDefinition)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<WorkflowDefinition> RunProductActionAsync(Guid id, string type)
+        {
+            var product = await GetProductForActions(id);
+            if (product == null)
+            {
+                return null;
+            }
+
+            if (product.ProductWorkflow == null)
+            {
+                // No running workflow.  Start one.
+                if (type == WorkflowType.Rebuild.ToString() && product.ProductDefinition.RebuildWorkflowId.HasValue)
+                {
+                    HangfireClient.Enqueue<WorkflowProductService>(service => service.StartProductWorkflow(id, product.ProductDefinition.RebuildWorkflowId.Value));
+                    return product.ProductDefinition.RebuildWorkflow;
+                }
+                else if (type == WorkflowType.Republish.ToString() && product.ProductDefinition.RepublishWorkflowId.HasValue)
+                {
+                    HangfireClient.Enqueue<WorkflowProductService>(service => service.StartProductWorkflow(id, product.ProductDefinition.RepublishWorkflowId.Value));
+                    return product.ProductDefinition.RepublishWorkflow;
+                }
+
+                throw new Exception("Invalid type");
+            }
+
+            // Handle special case for "Cancel" action
+            if (type == "Cancel")
+            {
+                var wd = await GetExecutingWorkflowDefintion(product);
+                if (wd == null)
+                {
+                    throw new Exception("Could not find workflow definition!");
+                }
+
+                if (wd.Type == WorkflowType.Startup)
+                {
+                    throw new Exception("Cannot cancel a startup workflow");
+                }
+
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.StopProductWorkflow(id));
+                return wd;
+            }
+
+            // Trying to start an action workflow while one is already running
+            throw new Exception("Cannot start a workflow while one is running");
         }
     }
 }
