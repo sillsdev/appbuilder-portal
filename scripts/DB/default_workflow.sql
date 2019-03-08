@@ -199,7 +199,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
           <ActionParameter><![CDATA[{"types":["apk","play-listing"]}]]></ActionParameter>
         </ActionRef>
       </Implementation>
-      <Designer X="1010" Y="580" />
+      <Designer X="20" Y="910" />
     </Activity>
   </Activities>
   <Transitions>
@@ -446,7 +446,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="275" Y="885" />
     </Transition>
-    <Transition Name="App Store Preview_Activity_1_2" To="Email Reviewers" From="App Store Preview" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="App Store Preview_Activity_1_2" To="Email Reviewers" From="Verify and Publish" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
@@ -458,7 +458,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
-    <Transition Name="Notify Reviewers_App Store Preview_1" To="App Store Preview" From="Email Reviewers" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Notify Reviewers_App Store Preview_1" To="Verify and Publish" From="Email Reviewers" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
@@ -468,7 +468,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="946" Y="541" />
+      <Designer />
     </Transition>
   </Transitions>
 </Process>')
@@ -477,14 +477,492 @@ ON CONFLICT("Code") DO UPDATE SET
 	
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
 ('SIL_Default_AppBuilders_Android_GooglePlay_Rebuild', '<Process>
-
+  <Designer />
+  <Actors>
+    <Actor Name="Owner" Rule="IsOwner" Value="" />
+    <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
+    <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+  </Actors>
+  <Parameters>
+    <Parameter Name="Comment" Type="String" Purpose="Temporary" />
+  </Parameters>
+  <Commands>
+    <Command Name="Approve" />
+    <Command Name="Reject" />
+    <Command Name="Continue" />
+    <Command Name="Back" />
+    <Command Name="Rebuild" />
+    <Command Name="Email Reviewers" />
+  </Commands>
+  <Timers>
+    <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
+  </Timers>
+  <Activities>
+    <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="280" Y="450" />
+    </Activity>
+    <Activity Name="Product Rebuild" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
+          <ActionParameter><![CDATA[{"targets":"apk play-listing"}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="390" Y="260" />
+    </Activity>
+    <Activity Name="Check Product Build" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="720" Y="260" />
+    </Activity>
+    <Activity Name="Verify and Publish" State="Verify and Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="750" Y="420" />
+    </Activity>
+    <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="700" Y="570" />
+    </Activity>
+    <Activity Name="Check Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="700" Y="720" />
+    </Activity>
+    <Activity Name="Published" State="Published" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="1020" Y="720" />
+    </Activity>
+    <Activity Name="Email Reviewers" State="Email Reviewers" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="SendReviewerLinkToProductFiles">
+          <ActionParameter><![CDATA[{"types":["apk","play-listing"]}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <Designer X="1060" Y="420" />
+    </Activity>
+    <Activity Name="Initial" State="Initial" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Designer X="40" Y="250" />
+    </Activity>
+  </Activities>
+  <Transitions>
+    <Transition Name="SynchronizeData_Activity_1_1" To="Product Rebuild" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Product Build_Activity_1_1" To="Check Product Build" From="Product Rebuild" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Build_SynchronizeData_1" To="Synchronize Data" From="Check Product Build" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildFailed" ConditionInversion="false" />
+      </Conditions>
+      <Designer X="690" Y="389" />
+    </Transition>
+    <Transition Name="Check Product Build_Check Product Build_1" To="Check Product Build" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Timer" NameRef="CheckReady" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_Activity_1_1" To="Product Publish" From="Verify and Publish" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Approve" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_SynchronizeData_1" To="Synchronize Data" From="Verify and Publish" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Reject" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Product Publish_Activity_1_1" To="Check Product Publish" From="Product Publish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Publish_Check Product Publish_1" To="Check Product Publish" From="Check Product Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Timer" NameRef="CheckReady" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer X="925" Y="687" />
+    </Transition>
+    <Transition Name="Check Product Publish_SynchronizeData_1" To="Synchronize Data" From="Check Product Publish" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishFailed" ConditionInversion="false" />
+      </Conditions>
+      <Designer X="536" Y="616" />
+    </Transition>
+    <Transition Name="Initial_Product Build_1" To="Product Rebuild" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Build_Verify and Publish_1" To="Verify and Publish" From="Check Product Build" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_Email Reviewers_1" To="Email Reviewers" From="Verify and Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Email Reviewers" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Email Reviewers_Verify and Publish_1" To="Verify and Publish" From="Email Reviewers" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="1006" Y="378" />
+    </Transition>
+    <Transition Name="Check Product Publish_Published_1" To="Published" From="Check Product Publish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+  </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
 ('SIL_Default_AppBuilders_Android_GooglePlay_Republish', '<Process>
-
+  <Designer />
+  <Actors>
+    <Actor Name="Owner" Rule="IsOwner" Value="" />
+    <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
+    <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+  </Actors>
+  <Parameters>
+    <Parameter Name="Comment" Type="String" Purpose="Temporary" />
+  </Parameters>
+  <Commands>
+    <Command Name="Approve" />
+    <Command Name="Reject" />
+    <Command Name="Continue" />
+    <Command Name="Back" />
+    <Command Name="Rebuild" />
+    <Command Name="Email Reviewers" />
+  </Commands>
+  <Timers>
+    <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
+  </Timers>
+  <Activities>
+    <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="280" Y="450" />
+    </Activity>
+    <Activity Name="Product Republish" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
+          <ActionParameter><![CDATA[{"targets":"play-listing"}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="390" Y="260" />
+    </Activity>
+    <Activity Name="Check Product Build" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="720" Y="260" />
+    </Activity>
+    <Activity Name="Verify and Publish" State="Verify and Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="750" Y="420" />
+    </Activity>
+    <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="700" Y="570" />
+    </Activity>
+    <Activity Name="Check Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="700" Y="720" />
+    </Activity>
+    <Activity Name="Published" State="Published" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="1020" Y="720" />
+    </Activity>
+    <Activity Name="Email Reviewers" State="Email Reviewers" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="SendReviewerLinkToProductFiles">
+          <ActionParameter><![CDATA[{"types":["play-listing"]}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <Designer X="1060" Y="420" />
+    </Activity>
+    <Activity Name="Initial" State="Initial" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Designer X="40" Y="250" />
+    </Activity>
+  </Activities>
+  <Transitions>
+    <Transition Name="SynchronizeData_Activity_1_1" To="Product Republish" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Product Build_Activity_1_1" To="Check Product Build" From="Product Republish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Build_SynchronizeData_1" To="Synchronize Data" From="Check Product Build" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildFailed" ConditionInversion="false" />
+      </Conditions>
+      <Designer X="690" Y="389" />
+    </Transition>
+    <Transition Name="Check Product Build_Check Product Build_1" To="Check Product Build" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Timer" NameRef="CheckReady" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_Activity_1_1" To="Product Publish" From="Verify and Publish" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Approve" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_SynchronizeData_1" To="Synchronize Data" From="Verify and Publish" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Reject" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Product Publish_Activity_1_1" To="Check Product Publish" From="Product Publish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Publish_Check Product Publish_1" To="Check Product Publish" From="Check Product Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Timer" NameRef="CheckReady" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer X="925" Y="687" />
+    </Transition>
+    <Transition Name="Check Product Publish_SynchronizeData_1" To="Synchronize Data" From="Check Product Publish" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishFailed" ConditionInversion="false" />
+      </Conditions>
+      <Designer X="536" Y="616" />
+    </Transition>
+    <Transition Name="Initial_Product Build_1" To="Product Republish" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Build_Verify and Publish_1" To="Verify and Publish" From="Check Product Build" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_Email Reviewers_1" To="Email Reviewers" From="Verify and Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Email Reviewers" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Email Reviewers_Verify and Publish_1" To="Verify and Publish" From="Email Reviewers" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="1006" Y="378" />
+    </Transition>
+    <Transition Name="Check Product Publish_Published_1" To="Published" From="Check Product Publish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+  </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";

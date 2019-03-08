@@ -201,18 +201,27 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             if (product.ProductWorkflow == null)
             {
                 // No running workflow.  Start one.
-                if (type == WorkflowType.Rebuild.ToString() && product.ProductDefinition.RebuildWorkflowId.HasValue)
+                int? workflowDefinitionId = null;
+                if (type == WorkflowType.Rebuild.ToString())
                 {
-                    HangfireClient.Enqueue<WorkflowProductService>(service => service.StartProductWorkflow(id, product.ProductDefinition.RebuildWorkflowId.Value));
-                    return product.ProductDefinition.RebuildWorkflow;
+                    workflowDefinitionId = product.ProductDefinition.RebuildWorkflowId;
                 }
-                else if (type == WorkflowType.Republish.ToString() && product.ProductDefinition.RepublishWorkflowId.HasValue)
+                else if (type == WorkflowType.Republish.ToString())
                 {
-                    HangfireClient.Enqueue<WorkflowProductService>(service => service.StartProductWorkflow(id, product.ProductDefinition.RepublishWorkflowId.Value));
-                    return product.ProductDefinition.RepublishWorkflow;
+                    workflowDefinitionId = product.ProductDefinition.RepublishWorkflowId;
+                }
+                else
+                {
+                    throw new Exception($"Invalid type '{type}'");
                 }
 
-                throw new Exception("Invalid type");
+                if (workflowDefinitionId.HasValue)
+                {
+                    HangfireClient.Enqueue<WorkflowProductService>(service => service.StartProductWorkflow(id, workflowDefinitionId.Value));
+                    return await WorkflowDefinitionRepository.GetAsync(workflowDefinitionId.Value);
+                }
+
+                throw new Exception($"Type '{type}' does not have workflow defined");
             }
 
             // Handle special case for "Cancel" action
