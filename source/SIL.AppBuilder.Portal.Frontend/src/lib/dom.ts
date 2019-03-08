@@ -53,5 +53,5 @@ export function preventDefault<T extends Function>(fn: T) {
     e.preventDefault();
 
     fn();
-  }
+  };
 }

@@ -8,7 +8,10 @@ import './notification.scss';
 
 export default compose(
   query({
-    notifications: [(q) => q.findRecords('notification').sort('-dateCreated', '-dateRead'), { ...defaultOptions() }],
+    notifications: [
+      (q) => q.findRecords('notification').sort('-dateCreated', '-dateRead'),
+      { ...defaultOptions() },
+    ],
   }),
-  withLoader(({ notifications }) => !notifications),
+  withLoader(({ notifications }) => !notifications)
 )(Display);

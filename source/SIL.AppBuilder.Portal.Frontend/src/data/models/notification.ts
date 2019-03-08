@@ -13,4 +13,5 @@ export interface NotificationAttributes extends AttributesObject {
   dateUpdated: string;
 }
 
-export type NotificationResource = ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes> & Record;
+export type NotificationResource = ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes> &
+  Record;

@@ -3,11 +3,17 @@ import NotificationIcon from '@material-ui/icons/Notifications';
 import NotificationActiveIcon from '@material-ui/icons/NotificationsActive';
 
 import Row from './row';
+
 import { useTranslations } from '~/lib/i18n';
+
 import { useToggle } from '~/lib/hooks';
+
 import { useOrbit, attributesFor } from 'react-orbitjs/dist';
+
 import { NotificationResource } from '~/data';
+
 import { useCollectionDataActions } from '~/data/containers/resources/notification/with-collection-data-actions';
+
 import { preventDefault } from '~/lib/dom';
 
 interface ISubscribedTo {

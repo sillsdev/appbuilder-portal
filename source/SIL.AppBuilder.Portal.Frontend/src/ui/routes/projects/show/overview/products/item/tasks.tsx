@@ -4,10 +4,13 @@ import { Link } from 'react-router-dom';
 import { uniqBy } from 'lodash';
 
 import { useTranslations } from '~/lib/i18n';
+
 import { useTimezoneFormatters } from '~/lib/hooks';
 
 import { ProductResource } from '~/data';
+
 import { useCurrentUser } from '~/data/containers/with-current-user';
+
 import { useUserTaskHelpers } from '~/data/containers/resources/user-task';
 
 interface IProps {
