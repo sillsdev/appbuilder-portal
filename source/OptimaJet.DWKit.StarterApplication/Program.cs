@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 using static OptimaJet.DWKit.StarterApplication.Utility.ConfigurationExtensions;
+using System.Diagnostics;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -23,14 +25,22 @@ namespace OptimaJet.DWKit.StarterApplication
             dotenv.net.DotEnv.Config(false, ".env.dev");
             dotenv.net.DotEnv.Config(false, ".env");
 
+            DisableApplicationInsightsOnDebug();
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
 
                 BuildWebHost(args).Run();
+        }
+
+        [Conditional("DEBUG")]
+        private static void DisableApplicationInsightsOnDebug()
+        {
+            TelemetryConfiguration.Active.DisableTelemetry = true;
         }
 
         public static IWebHost BuildWebHost(string[] args)

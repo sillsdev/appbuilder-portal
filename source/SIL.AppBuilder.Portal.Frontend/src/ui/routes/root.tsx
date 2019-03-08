@@ -23,7 +23,6 @@ export default class RootPage extends React.Component {
     return (
       <div className='app-container flex-column align-items-stretch'>
         <div className='ui container'>
-          {/* <Notifications /> */}
           <ToastContainer draggable={false} />
         </div>
 

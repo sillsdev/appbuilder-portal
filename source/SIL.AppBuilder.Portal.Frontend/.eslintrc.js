@@ -9,6 +9,7 @@ module.exports = {
     'typescript',
     'import',
     '@typescript-eslint',
+    'react-hooks',
   ],
   extends: [
     'eslint:recommended',
@@ -31,6 +32,10 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': 'off', // this doesn't matter for side-effect-free modules
     '@typescript-eslint/no-empty-interface': 'off', // better to have conventions for react prop interfaces
     // '@typescript-eslint/no-unused-vars': 'error', // why isn't this a default?
+
+    // hooks
+    "react-hooks/rules-of-hooks": "warn",
+    "react-hooks/exhaustive-deps": "warn",
 
     // cleanliness
     'no-undef': 'off',

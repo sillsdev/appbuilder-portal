@@ -28,6 +28,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         public IJobRepository<Product, Guid> ProductRepository { get; }
 
+
         public void ManageProduct(Guid productId, PerformContext context)
         {
             ManageProductAsync(productId, null).Wait();

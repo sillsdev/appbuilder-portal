@@ -30,11 +30,9 @@ const loader = (
 export default function LocaleInputLoader(props: IProps) {
   return (
     <ErrorBoundary>
-      <ConcurrentMode>
-        <Suspense fallback={loader}>
-          <LocaleInput {...props} />
-        </Suspense>
-      </ConcurrentMode>
+      <Suspense fallback={loader}>
+        <LocaleInput {...props} />
+      </Suspense>
     </ErrorBoundary>
   );
 }

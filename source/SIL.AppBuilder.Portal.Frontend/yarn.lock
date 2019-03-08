@@ -1174,7 +1174,7 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
-"@types/history@*":
+"@types/history@*", "@types/history@^4.7.2":
   version "4.7.2"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.2.tgz#0e670ea254d559241b6eeb3894f8754991e73220"
   integrity sha512-ui3WwXmjTaY73fOQ3/m3nnajU/Orhi6cEu5rzX+BrAAJxa3eITXZ5ch9suPqtM03OWhAHhPSyBGCN4UKoxO20Q==
@@ -1221,9 +1221,9 @@
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
 "@types/jss@^9.5.6":
-  version "9.5.7"
-  resolved "https://registry.yarnpkg.com/@types/jss/-/jss-9.5.7.tgz#fa57a6d0b38a3abef8a425e3eb6a53495cb9d5a0"
-  integrity sha512-OZimStu2QdDMtZ0h72JXqvLVbWUjXd5ZLk8vxLmfuC/nM1AabRyyGoxSufnzixrbpEcVcyy/JV5qeQu2JnjVZw==
+  version "9.5.8"
+  resolved "https://registry.yarnpkg.com/@types/jss/-/jss-9.5.8.tgz#258391f42211c042fc965508d505cbdc579baa5b"
+  integrity sha512-bBbHvjhm42UKki+wZpR89j73ykSXg99/bhuKuYYePtpma3ZAnmeGnl0WxXiZhPGsIfzKwCUkpPC0jlrVMBfRxA==
   dependencies:
     csstype "^2.0.0"
     indefinite-observable "^1.0.1"
@@ -1266,6 +1266,37 @@
   version "11.9.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-11.9.5.tgz#011eece9d3f839a806b63973e228f85967b79ed3"
   integrity sha512-vVjM0SVzgaOUpflq4GYBvCpozes8OgIIS5gVXVka+OfK3hvnkC1i93U8WiY2OtNE4XUWyyy/86Kf6e0IHTQw1Q==
+
+"@types/pollyjs__adapter-fetch@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/pollyjs__adapter-fetch/-/pollyjs__adapter-fetch-2.0.0.tgz#a2001be8aaa31d332d0cb7c7f792338cb196408e"
+  integrity sha512-VCDA6M1HTeUlWKGDLzRE4eB3AiHcw1B9rcYRNuA02Wk4xBX7ohbN1GK9oAjtEfvnOCR1nc+d5dHZ7uQBtscBWg==
+  dependencies:
+    "@types/pollyjs__adapter" "*"
+
+"@types/pollyjs__adapter@*", "@types/pollyjs__adapter@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/pollyjs__adapter/-/pollyjs__adapter-2.0.0.tgz#5b08f53a59971d0d3e31e84af386785f495c89d1"
+  integrity sha512-H2q5UvmTKj/DTPJ8dg76UPS3kGTEui50jcU4oXW7Kjl3fpdxn1EkCnCHqhQduZrCDzYrQkbtqBkavzSqBtmwMg==
+
+"@types/pollyjs__core@^2.0.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@types/pollyjs__core/-/pollyjs__core-2.2.0.tgz#895e109745a3c59a3156f5b15c4df9c416da37f5"
+  integrity sha512-vmBKWyThS2B+k83qiby5NJqtcnCxhBtEtUlh/RFfFQ4Mo2cCGVKGlVKWvRaTAEAnjKQK0z4uh1qTHJAmW8D9zg==
+  dependencies:
+    "@types/pollyjs__adapter" "*"
+    "@types/pollyjs__persister" "*"
+    "@types/pollyjs__utils" "*"
+
+"@types/pollyjs__persister@*":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/pollyjs__persister/-/pollyjs__persister-2.0.0.tgz#00e163978177616f7b8ed99bfc92e7792c51da76"
+  integrity sha512-BU9iLAZEsQ4lQVCGqOUiXAqG6K1H7gsMf5luaaCe/R12FfM3Jt/6/6elpDltzAFLj/eznSgkpe+NC6dpUa8mAA==
+
+"@types/pollyjs__utils@*":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/pollyjs__utils/-/pollyjs__utils-2.0.0.tgz#987d7bc27874537bde77edb7d7337eea2183a7d7"
+  integrity sha512-5IIcyRbD07qYGnFoMrOn9SLiNJhkJy3TfXOmgAsGIYuI3GxW8qPhxtE09OOFYPKeLYD7MQRUlIhlVM/BZCrquQ==
 
 "@types/pretty-ms@^4.0.0":
   version "4.0.0"
@@ -3769,6 +3800,11 @@ eslint-plugin-prettier@^3.0.1:
   integrity sha512-/PMttrarPAY78PLvV3xfWibMOdMDl57hmlQ2XqFeA37wd+CJ7WSxV7txqjVPHi/AAFKd2lX0ZqfsOc/i5yFCSQ==
   dependencies:
     prettier-linter-helpers "^1.0.0"
+
+eslint-plugin-react-hooks@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-1.4.0.tgz#ad86001e05519368e55a888b1b31004b8e2ae8f6"
+  integrity sha512-fMGlzztW/5hSQT0UBnlPwulao0uF8Kyp0Uv6PA81lzmcDz2LBtthkWQaE8Wz2F2kEe7mSRDgK8ABEFK1ipeDxw==
 
 eslint-plugin-react@^7.12.4:
   version "7.12.4"
@@ -7762,9 +7798,9 @@ react-onclickoutside@^6.7.1:
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.8.0.tgz#9f91b5b3ed59f4d9e43fd71620dc200773a4d569"
   integrity sha512-5Q4Rn7QLEoh7WIe66KFvYIpWJ49GeHoygP1/EtJyZjXKgrWH19Tf0Ty3lWyQzrEEDyLOwUvvmBFSE3dcDdvagA==
 
-"react-orbitjs@github:DeveloperTown/react-orbitjs#9e56d891e2765faaa3d906a1a72c4d61ddf551b0":
+"react-orbitjs@github:DeveloperTown/react-orbitjs#286b0d082a68f6d255745a9a6f054847e0de0a4c":
   version "0.1.10"
-  resolved "https://codeload.github.com/DeveloperTown/react-orbitjs/tar.gz/9e56d891e2765faaa3d906a1a72c4d61ddf551b0"
+  resolved "https://codeload.github.com/DeveloperTown/react-orbitjs/tar.gz/286b0d082a68f6d255745a9a6f054847e0de0a4c"
   dependencies:
     "@types/recompose" "0.30.3"
     hoist-non-react-statics "3.3.0"
@@ -8312,6 +8348,11 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   integrity sha1-6Eg5bwV9Ij8kOGkkYY4laUFh7Ec=
   dependencies:
     aproba "^1.1.1"
+
+rxjs-compat@^6.3.3:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.4.0.tgz#800923c15697948e1f30f18c531b12b49451c75c"
+  integrity sha512-eo/O8RS83hJdJukCtA+IF6qnqa8FPOuVo+OPCzgVi+dbTle9KCdNv97IcQO0WwNVik7DJLKmf0F8uwzc0q40vw==
 
 rxjs@^6.3.3, rxjs@^6.4.0:
   version "6.4.0"

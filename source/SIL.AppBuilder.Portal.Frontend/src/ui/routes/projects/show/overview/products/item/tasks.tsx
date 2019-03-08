@@ -19,17 +19,25 @@ interface IProps {
 export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
-  const { dataStore } = useOrbit();
+  let cacheQuery = {};
+
+  if (product) {
+    cacheQuery = {
+      tasks: (q) =>
+        q
+          .findRecords('userTask')
+          .filter({ relation: 'product', record: product })
+          .filter({ relation: 'user', record: currentUser }),
+    };
+  }
+
+  const {
+    dataStore,
+    subscriptions: { tasks },
+  } = useOrbit(cacheQuery);
+
   const { relativeTimeAgo } = useTimezoneFormatters();
   const { navigateToTaskWorkflow, pathToWorkflow } = useUserTaskHelpers();
-
-  const tasks =
-    dataStore.cache.query((q) =>
-      q
-        .findRecords('userTask')
-        .filter({ relation: 'product', record: product })
-        .filter({ relation: 'user', record: currentUser })
-    ) || [];
 
   if (tasks.length === 0) {
     return <div className='w-100 p-sm p-b-md m-l-md fs-13'>{t('tasks.noTasksTitle')}</div>;
@@ -42,6 +50,11 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
         //       need to sync on names of those, or a strategy of how to translate.
         const { activityName, dateCreated, status } = attributesFor(task);
         const waitTime = relativeTimeAgo(dateCreated);
+        const taskProduct = dataStore.cache.query((q) => q.findRelatedRecord(task, 'product'));
+
+        // NOTE: without this check, we can enter a race condition where a product is removed
+        //       from the store, but the task still exists.
+        if (!taskProduct) return 'Task has no product!';
 
         return (
           <div key={task.id}>

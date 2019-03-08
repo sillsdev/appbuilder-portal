@@ -1,38 +1,45 @@
-import * as React from 'react';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-import { compose, branch, renderComponent } from 'recompose';
+import { useEffect, useMemo } from 'react';
+import { useOrbit } from 'react-orbitjs';
 import { HubConnectionFactory } from '@ssv/signalr-client';
+
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 import { isTesting } from '@env';
 
-import NotificationsClient from './notifications';
+import { NotificationsClient } from './clients';
 
-interface IOwnProps {}
-
-type IProps = IOwnProps | WithDataProps;
-
-class SocketManager extends React.Component<IProps> {
-  hubFactory = new HubConnectionFactory();
-  notificationsClient = new NotificationsClient();
-  constructor(props) {
-    super(props);
-
-    const { dataStore } = props;
-    this.notificationsClient.init(this.hubFactory, dataStore);
-  }
-  componentDidMount() {
-    this.notificationsClient.start();
-  }
-
-  componentWillUnmount() {
-    this.notificationsClient.stop();
-  }
-
-  render() {
-    return this.props.children;
-  }
+function useMemoIf(fn, condition, memoOn) {
+  return useMemo(() => {
+    if (condition) {
+      return fn();
+    }
+  }, memoOn);
 }
 
-export default compose(branch(() => !isTesting, renderComponent(withOrbit({})(SocketManager))))(
-  ({ children }) => children
-);
+export default function SocketManager({ children }) {
+  const { dataStore } = useOrbit();
+  const { currentUser } = useCurrentUser();
+
+  const isLoggedIn = !!currentUser;
+  const hubFactory = useMemoIf(() => new HubConnectionFactory(), !isTesting, [isLoggedIn]);
+  const notificationsClient = useMemoIf(
+    () => new NotificationsClient(hubFactory, dataStore),
+    !isTesting,
+    [isLoggedIn]
+  );
+
+  useEffect(() => {
+    if (isTesting || !isLoggedIn) {
+      return;
+    }
+
+    notificationsClient.start();
+
+    return function disconnect() {
+      notificationsClient.stop();
+      hubFactory.disconnectAll();
+    };
+  });
+
+  return children;
+}

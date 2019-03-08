@@ -1,23 +1,14 @@
-import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import { withRouter } from 'react-router-dom';
+import React, { useEffect } from 'react';
 
-class ScrollToTopOnLocationChange extends React.Component<any, any> {
-  componentDidUpdate(prevProps: RouteComponentProps) {
-    const props = this.props as RouteComponentProps;
-    const didLocationChange = props.location !== prevProps.location;
+import { useRouter } from './hooks';
 
-    if (didLocationChange) {
-      window.scrollTo(0, 0);
-    }
-  }
+export function ScrollToTop({ children }) {
+  const { location } = useRouter();
 
-  render() {
-    return this.props.children;
-  }
+  useEffect(() => window.scrollTo(0, 0), [location]);
+
+  return children;
 }
-
-export const ScrollToTop = withRouter(ScrollToTopOnLocationChange);
 
 export function withResetScroll(WrappedComponent) {
   return (props) => (

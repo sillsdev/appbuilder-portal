@@ -13,6 +13,8 @@ export function useUserTaskHelpers() {
   const { dataStore } = useOrbit();
 
   const pathToWorkflow = (task: TaskResource) => {
+    if (!task) return null;
+
     const [product, _, workflow] = relationsFromPath(dataStore, task, [
       'product',
       'productDefinition',

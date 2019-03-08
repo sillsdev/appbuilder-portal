@@ -52,7 +52,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                 .FirstOrDefaultAsync();
 
             try {
-                await DWKitRuntime.Security.SignInAsync(currentUser.Email, remember: false);
+                await DWKitRuntime.Security.SignInAsync(currentUser?.Email, remember: false);
             } catch (System.Exception e) {
                 // do nothing for now, we want normal JWT sign in to work always
                 // if there is an exeption, it means the users

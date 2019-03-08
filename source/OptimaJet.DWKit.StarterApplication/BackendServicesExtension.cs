@@ -11,6 +11,7 @@ using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
@@ -55,7 +56,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<Notification>, NotificationRepository>();
             services.AddScoped<IEntityRepository<Product,Guid>, ProductRepository>();
             services.AddScoped<IEntityRepository<OrganizationStore>, OrganizationStoreRepository>();
-
+            services.AddScoped<IUpdateService<Project, int>, ProjectService>();
 
             // services
             services.AddScoped<IResourceService<User>, UserService>();
@@ -72,8 +73,10 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
 
             // EventDispatchers
-            services.AddScoped<IEntityHookHandler<Project>, ProjectHookNotifier>();
-
+            services.AddScoped(typeof(EntityHooksService<>));
+            services.AddScoped(typeof(EntityHooksService<,>));
+            services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
+            services.AddScoped(typeof(IEntityHookHandler<,>), typeof(BaseHookNotifier<,>));
 
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();
@@ -86,7 +89,6 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<GroupService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
-            services.AddScoped(typeof(EntityHooksService<>));
             services.AddScoped<SendEmailService>();
             services.AddScoped<OrganizationMembershipService>();
             services.AddScoped<OrganizationMembershipInviteService>();

@@ -1,7 +1,13 @@
 import * as qs from 'querystring';
 
 import Store from '@orbit/store';
-import { QueryBuilder, QueryOrExpression } from '@orbit/data';
+import {
+  QueryBuilder,
+  QueryOrExpression,
+  FindRecordTerm,
+  FindRecord,
+  QueryExpression,
+} from '@orbit/data';
 import { camelize } from '@orbit/utils';
 import { ResourceObject, AttributesObject } from 'jsonapi-typescript';
 
@@ -40,7 +46,7 @@ export function buildFindRelatedRecord(q: QueryBuilder, record: any, relationshi
   return q.findRelatedRecord(record, relationship);
 }
 
-export function buildFindRecord(q: QueryBuilder, type: string, id: string) {
+export function buildFindRecord(q: QueryBuilder, type: string, id: string): any {
   const recordIdentity = recordIdentityFrom(id, type);
 
   return q.findRecord(recordIdentity);

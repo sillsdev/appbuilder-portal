@@ -282,7 +282,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "DidInsert" &&
-                           job.Type == typeof(IEntityHookHandler<Project>)),
+                           job.Type == typeof(IEntityHookHandler<Project, int>)),
                 It.IsAny<EnqueuedState>()));
         }
         [Fact]

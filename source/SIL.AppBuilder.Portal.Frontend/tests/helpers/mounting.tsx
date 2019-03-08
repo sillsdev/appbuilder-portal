@@ -1,6 +1,5 @@
 import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting } from '@bigtest/react';
-// import MirageServer, { Factory } from '@bigtest/mirage';
 import * as History from 'history';
 
 import i18n from '@translations';
