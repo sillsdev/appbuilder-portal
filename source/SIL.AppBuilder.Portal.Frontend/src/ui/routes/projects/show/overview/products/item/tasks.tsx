@@ -12,6 +12,8 @@ import { useCurrentUser } from '~/data/containers/with-current-user';
 
 import { useUserTaskHelpers } from '~/data/containers/resources/user-task';
 
+import { useLiveData } from '~/data/live';
+
 interface IProps {
   product: ProductResource;
 }
@@ -19,8 +21,8 @@ interface IProps {
 export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
-
   const { dataStore } = useOrbit();
+  useLiveData('user-tasks');
 
   let tasks = [];
 
