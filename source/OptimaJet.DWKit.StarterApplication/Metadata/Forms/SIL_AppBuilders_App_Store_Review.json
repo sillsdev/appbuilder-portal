@@ -174,8 +174,8 @@
             "type": "link"
           },
           {
-            "key": "artifactid",
-            "name": "ArtifactId",
+            "key": "fileid",
+            "name": "FileId",
             "type": "number",
             "width": 100,
             "sortable": true,
@@ -199,7 +199,7 @@
             "parameters": []
           }
         },
-        "defaultSort": "artifactid ASC"
+        "defaultSort": "fileid ASC"
       }
     ]
   }

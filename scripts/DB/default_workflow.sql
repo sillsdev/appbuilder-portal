@@ -60,7 +60,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Email Reviewers" />
   </Commands>
   <Timers>
-    <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
+    <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
   </Timers>
   <Activities>
     <Activity Name="Product Creation" State="Product Creation" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
@@ -495,7 +495,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Email Reviewers" />
   </Commands>
   <Timers>
-    <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
+    <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
   </Timers>
   <Activities>
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
@@ -741,7 +741,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Email Reviewers" />
   </Commands>
   <Timers>
-    <Timer Name="CheckReady" Type="Interval" Value="60s" NotOverrideIfExists="false" />
+    <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
   </Timers>
   <Activities>
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
