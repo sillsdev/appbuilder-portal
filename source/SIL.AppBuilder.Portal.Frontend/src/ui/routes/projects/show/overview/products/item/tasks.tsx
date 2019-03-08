@@ -23,18 +23,24 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
 
   if (product) {
     cacheQuery = {
-      tasks: (q) =>
-        q
-          .findRecords('userTask')
-          .filter({ relation: 'product', record: product })
-          .filter({ relation: 'user', record: currentUser }),
+      // tasks: (q) =>
+      //   q
+      //     .findRecords('userTask')
+      //     .filter({ relation: 'product', record: product })
+      //     .filter({ relation: 'user', record: currentUser }),
     };
   }
 
   const {
     dataStore,
-    subscriptions: { tasks },
+    // subscriptions: { tasks },
   } = useOrbit(cacheQuery);
+
+  const tasks = dataStore.cache.query((q) =>
+    q
+      .findRecords('userTask')
+      .filter({ relation: 'product', record: product })
+      .filter({ relation: 'user', record: currentUser }));
 
   const { relativeTimeAgo } = useTimezoneFormatters();
   const { navigateToTaskWorkflow, pathToWorkflow } = useUserTaskHelpers();

@@ -14,7 +14,10 @@ i18n
   // https://github.com/i18next/i18next-browser-languageDetector
   .use(LanguageDetector)
   .use(initReactI18next)
-  .use(XHR)
+  // .use(XHR) 
+  // need a custom plugin that allows local translations _as well as_ remote ones
+  // currently the XHR plugin makes everything remote only (it tries to make requsets)
+  // to the backend even when translations already exist
   .init({
     resources: {},
     fallbackLng: 'en-US',
