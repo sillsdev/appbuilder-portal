@@ -26,7 +26,7 @@ const DataContext = React.createContext<ILiveDataContext>({
 });
 
 export function useLiveData(subscribeTo?: string) {
-  const dataCtx = useContext(DataContext);
+  const dataCtx = useContext<ILiveDataContext>(DataContext);
   const {
     socket: { connection },
   } = dataCtx;
@@ -38,7 +38,7 @@ export function useLiveData(subscribeTo?: string) {
     ...dataCtx,
     isSubscribed,
     isConnected,
-    pushData: (transforms) => {
+    pushData: (transforms: TransformOrOperations) => {
       if (!isConnected) {
         throw new Error('Not connected to socket');
       }

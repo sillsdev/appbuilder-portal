@@ -18,6 +18,7 @@ export interface IOwnProps {
 
 export type IProps = IOwnProps & IDataProps & i18nProps;
 
+// TODO: REFACTOR THIS TO HOOKS< BECAUSE IT IS TOO COMPLICATED
 class Row extends React.Component<IProps> {
   state = { visible: false };
 

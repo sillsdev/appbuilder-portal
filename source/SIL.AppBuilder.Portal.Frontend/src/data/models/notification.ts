@@ -1,4 +1,5 @@
 import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
+import { Record } from '@orbit/data';
 
 export type NOTIFICATIONS_TYPE = 'notifications';
 
@@ -12,4 +13,4 @@ export interface NotificationAttributes extends AttributesObject {
   dateUpdated: string;
 }
 
-export type NotificationResource = ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes>;
+export type NotificationResource = ResourceObject<NOTIFICATIONS_TYPE, NotificationAttributes> & Record;

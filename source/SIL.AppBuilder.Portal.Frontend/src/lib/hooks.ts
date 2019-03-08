@@ -11,10 +11,11 @@ export function useRouter() {
   return useContext(__RouterContext);
 }
 
-export function useToggle(defaultValue: boolean = false) {
+export function useToggle(defaultValue: boolean = false): [boolean, () => void] {
   const [value, setValue] = useState(defaultValue);
+  const toggle = () => setValue(!value);
 
-  return [value, () => setValue(!value)];
+  return [value, toggle];
 }
 
 export function useMoment() {
