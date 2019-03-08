@@ -52,7 +52,7 @@ jobs:
           - source/SIL.AppBuilder.Portal.Frontend/node_modules
 
       # TODO: upload coverage to somewhere
-      script: 
+      script:
        - npm install -g xml2js
        - COVERAGE=true ./run yarn && ./run yarn test:ci
 
