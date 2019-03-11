@@ -14,7 +14,7 @@ export function useCollectionDataActions(notifications: NotificationResource[]) 
 
     pushData((t) =>
       notifications.map((notification) => {
-        return t.replaceAttribute(notification, 'dateRead', date);
+        return t.replaceAttribute(notification, 'date-read', date);
       })
     );
   };

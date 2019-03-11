@@ -1,20 +1,14 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useOrbit } from 'react-orbitjs';
 import { HubConnectionFactory } from '@ssv/signalr-client';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
+import { useMemoIf } from '~/lib/hooks';
+
 import { isTesting } from '@env';
 
 import { NotificationsClient } from './clients';
-
-function useMemoIf(fn, condition, memoOn) {
-  return useMemo(() => {
-    if (condition) {
-      return fn();
-    }
-  }, memoOn);
-}
 
 export default function SocketManager({ children }) {
   const { dataStore } = useOrbit();
@@ -36,6 +30,8 @@ export default function SocketManager({ children }) {
     notificationsClient.start();
 
     return function disconnect() {
+      if (isTesting) return;
+
       notificationsClient.stop();
       hubFactory.disconnectAll();
     };

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useOrbit } from 'react-orbitjs';
-import { HubConnectionFactory } from '@ssv/signalr-client';
+import { HubConnectionFactory, HubConnection } from '@ssv/signalr-client';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
@@ -21,23 +21,50 @@ import { DataClient } from './clients';
 
 import { dataToLocalCache } from '~/data/orbitjs-operations-support/serialize-from-api';
 
+import { useMemoIf } from '~/lib/hooks';
+
+import { DataHub } from './clients/data';
+
+const mockClient: DataClient = {
+  connection: {
+    connectionState$: {
+      subscribe() {},
+    },
+    send() {},
+    invoke() {},
+    hubConnection: { state: undefined },
+  },
+  start() {},
+  stop() {},
+  dataStore: undefined,
+  hubFactory: undefined,
+  hubName: undefined,
+  onData$$: undefined,
+  onDataReceived: undefined,
+  onReceive: undefined,
+  subscription$$: {},
+};
+
 export default function LiveDataManager({ children }) {
   const { dataStore, sources } = useOrbit();
   const { currentUser } = useCurrentUser();
 
   const isLoggedIn = !!currentUser;
-  const hubFactory = useMemo(() => new HubConnectionFactory(), [isLoggedIn]);
-  const dataClient = useMemo(() => new DataClient(hubFactory, dataStore), [isLoggedIn]);
+  const hubFactory = useMemoIf(() => new HubConnectionFactory(), !isTesting, [isLoggedIn]);
+  const dataClient =
+    useMemoIf(() => new DataClient(hubFactory, dataStore), !isTesting, [isLoggedIn]) || mockClient;
   const subscriptions = useMemo(() => [], [isLoggedIn]);
 
   useEffect(() => {
-    if (!isTesting && !isLoggedIn) {
+    if (isTesting || !isLoggedIn) {
       return;
     }
 
     dataClient.start();
 
     return function disconnect() {
+      if (isTesting) return;
+
       dataClient.stop();
       hubFactory.disconnectAll();
     };
@@ -49,6 +76,8 @@ export default function LiveDataManager({ children }) {
       dataStore.transformBuilder,
       transforms
     );
+
+    if (!isTesting) return;
 
     return dataClient.connection
       .invoke<string>('PerformOperations', JSON.stringify(data))

@@ -18,17 +18,42 @@ describe('Acceptance | Notifications', () => {
   setupApplicationTest();
   setupRequestInterceptor();
   useFakeAuthentication();
+
   let page = null;
   let mockNotifications;
+
   beforeEach(async function() {
     mockNotifications = notifications(10, 3);
 
-    this.mockGet(200, '/notifications', { data: mockNotifications });
+    let requestCount = 0;
+    this.server.get('/api/notifications').intercept((req, res) => {
+      res.headers['Content-Type'] = 'application/vnd.api+json';
+      res.status(200);
+
+      if (requestCount === 0) {
+        res.json({ data: mockNotifications });
+      } else if (requestCount === 1) {
+        res.json({
+          data: mockNotifications.map((n) => {
+            return {
+              ...n,
+              attributes: {
+                ...n.attributes,
+                'date-read': new Date(),
+              },
+            };
+          }),
+        });
+      }
+
+      requestCount++;
+    });
+
     this.server.delete(['/api/notifications', '/api/notifications/:id']).intercept((req, res) => {
-      console.log('DELETE', req.url, req.body, req.params);
       res.status(204);
     });
     this.mockDelete(204, '/notifications');
+
     this.server.patch(['/api/notifications/:id', '/api/notifications']).intercept((req, res) => {
       const patch = JSON.parse(req.body);
       const n = find(mockNotifications, ['id', patch.data.id]);
@@ -38,6 +63,7 @@ describe('Acceptance | Notifications', () => {
       respondWithJsonApi(200, { data: responseJSON })(req, res);
     });
     page = new Page();
+
     await visit('/');
     await page.isPresent;
   });
@@ -50,6 +76,7 @@ describe('Acceptance | Notifications', () => {
     describe('Open Notification dropdown', () => {
       beforeEach(async () => {
         await page.toggleNotificationMenu();
+        await when(() => page.menu.isVisible);
       });
 
       it('is open', () => {

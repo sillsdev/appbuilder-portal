@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useMemo } from 'react';
 import { __RouterContext } from 'react-router';
 import { attributesFor } from 'react-orbitjs';
 import moment from 'moment-timezone';
@@ -9,6 +9,14 @@ import { useCurrentUser } from '~/data/containers/with-current-user';
 
 export function useRouter() {
   return useContext(__RouterContext);
+}
+
+export function useMemoIf<TReturn>(fn: () => TReturn, condition, memoOn) {
+  return useMemo<TReturn | undefined>(() => {
+    if (condition) {
+      return fn();
+    }
+  }, memoOn);
 }
 
 export function useToggle(defaultValue: boolean = false): [boolean, () => void] {

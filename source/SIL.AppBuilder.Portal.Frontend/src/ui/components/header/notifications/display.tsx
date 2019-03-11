@@ -16,11 +16,13 @@ import { useCollectionDataActions } from '~/data/containers/resources/notificati
 
 import { preventDefault } from '~/lib/dom';
 
+import { useLiveData } from '~/data/live';
+
 interface ISubscribedTo {
   notifications: NotificationResource[];
 }
 
-export default function Notifications() {
+export default function Notifications({ refetch }) {
   const { t } = useTranslations();
   const [visible, toggleVisible] = useToggle(false);
   const {
@@ -28,6 +30,7 @@ export default function Notifications() {
   } = useOrbit<ISubscribedTo>({
     notifications: (q) => q.findRecords('notification').sort('-dateCreated', '-dateRead'),
   });
+
   const { clearAll, markAllAsViewed } = useCollectionDataActions(notifications);
 
   const haveAllNotificationsBeenSeen = notifications.every(
@@ -38,6 +41,7 @@ export default function Notifications() {
   const toggle = () => {
     if (visible) {
       markAllAsViewed();
+      refetch();
     }
 
     toggleVisible();

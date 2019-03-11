@@ -11,6 +11,8 @@ import { ConnectionStatus, HubConnection, ConnectionState } from '@ssv/signalr-c
 import { TransformOrOperations } from '@orbit/data';
 import { Observable, Subscription } from 'rxjs';
 
+import { isTesting } from '~/env';
+
 interface ILiveDataContext {
   dataStore: Store;
   socket?: DataSocketClient;
@@ -39,6 +41,10 @@ export function useLiveData(subscribeTo?: string) {
     isSubscribed,
     isConnected,
     pushData: (transforms: TransformOrOperations) => {
+      if (isTesting) {
+        console.debug('testing early return: figure out how to test websocket communication');
+        return;
+      }
       if (!isConnected) {
         throw new Error('Not connected to socket');
       }
@@ -73,7 +79,7 @@ function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo,
   const [isSubscribed, setIsSubscribed] = useState();
 
   useEffect(() => {
-    if (!subscribeTo || !isConnected) {
+    if (isTesting || !subscribeTo || !isConnected) {
       return;
     }
 
@@ -111,6 +117,8 @@ function useConnectionStateWatcher(connection: HubConnection<DataHub>) {
   const [connectionState, setConnectionState] = useState<ConnectionState>();
 
   useEffect(() => {
+    if (isTesting) return;
+
     if (!subscription.current) {
       subscription.current = connection.connectionState$.subscribe((state) => {
         setIsConnected(state.status === ConnectionStatus.connected);
