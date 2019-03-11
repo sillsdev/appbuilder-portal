@@ -21,10 +21,6 @@ jobs:
       name: "Frontend Linting"
       language: node_js
       node_js: "8"
-      cache:
-        yarn: true
-        directories:
-          - source/SIL.AppBuilder.Portal.Frontend/node_modules
 
       script: ./run yarn && ./run yarn lint --quiet
 
@@ -32,11 +28,6 @@ jobs:
       name: "Frontend Typechecking"
       language: node_js
       node_js: "8"
-      cache:
-        yarn: true
-        directories:
-          - source/SIL.AppBuilder.Portal.Frontend/node_modules
-
       script: ./run yarn && ./run yarn tsc --noEmit
 
     - stage: "Tests"
@@ -46,10 +37,6 @@ jobs:
 
       language: node_js
       node_js: "8"
-      cache:
-        yarn: true
-        directories:
-          - source/SIL.AppBuilder.Portal.Frontend/node_modules
 
       # TODO: upload coverage to somewhere
       script:
