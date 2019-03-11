@@ -28,10 +28,11 @@ export default function Products({ project }: IProps) {
     dataStore,
     subscriptions: { products, organization },
   } = useOrbit<ISubscriptions>({
-    project: (q) => q.findRecord(project),
     products: (q) => q.findRelatedRecords(project, 'products'),
     organization: (q) => q.findRelatedRecord(project, 'organization'),
-    _throwaway: (q) => q.findRecords('product'),
+    // cache busters
+    userTasks: (q) => q.findRecords('userTask'),
+    project: (q) => q.findRecord(project),
   });
 
   useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);

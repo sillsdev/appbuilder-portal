@@ -1,91 +1,92 @@
-import * as React from 'react';
-import { InjectedTranslateProps as i18nProps } from 'react-i18next';
+import React from 'react';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import NotificationActiveIcon from '@material-ui/icons/NotificationsActive';
 
-import { DataProps, ActionProps } from './data';
 import Row from './row';
 
-export type IProps = DataProps & ActionProps & i18nProps;
+import { useTranslations } from '~/lib/i18n';
 
-class Notifications extends React.Component<IProps> {
-  state = {
-    visible: false,
-  };
+import { useToggle } from '~/lib/hooks';
 
-  toggle = () => {
-    const { markAllAsViewed } = this.props;
-    if (this.state.visible) {
-      markAllAsViewed();
-    }
-    this.setState({
-      visible: !this.state.visible,
-    });
-  };
+import { useOrbit, attributesFor } from 'react-orbitjs/dist';
 
-  clearAll = (e) => {
-    const { clearAll } = this.props;
+import { NotificationResource } from '~/data';
 
-    e.preventDefault();
+import { useCollectionDataActions } from '~/data/containers/resources/notification/with-collection-data-actions';
 
-    clearAll();
-  };
+import { preventDefault } from '~/lib/dom';
 
-  render() {
-    const { t } = this.props;
+import { useLiveData } from '~/data/live';
 
-    const {
-      notifications,
-      haveAllNotificationsBeenSeen,
-      isThereAtLeastOneNotificationToShow,
-    } = this.props;
-
-    const hasNotifications =
-      notifications && notifications.length > 0 && isThereAtLeastOneNotificationToShow;
-
-    const isMenuVisible = this.state.visible ? 'visible' : '';
-
-    return (
-      <div className='ui top right pointing dropdown' data-test-header-notification>
-        <div
-          style={{ zIndex: 1 }}
-          className={`full-overlay transition ${this.state.visible ? 'visible invisible' : ''}`}
-          onClick={this.toggle}
-        />
-
-        <div
-          data-test-notification-trigger
-          data-test-notification-active={!haveAllNotificationsBeenSeen}
-          style={{ position: 'relative' }}
-          onClick={this.toggle}
-        >
-          {haveAllNotificationsBeenSeen ? <NotificationIcon /> : <NotificationActiveIcon />}
-        </div>
-
-        <div className={`ui menu transition notifications ${isMenuVisible}`}>
-          {hasNotifications && (
-            <>
-              <div className='notification-buttons'>
-                <a href='#' data-test-clear-all onClick={this.clearAll}>
-                  {t('header.clearAll')}
-                </a>
-              </div>
-
-              <div className={notifications.length > 3 ? 'scrollable-menu' : ''}>
-                {notifications.map((notification) => (
-                  <Row key={notification.id} notification={notification} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {!hasNotifications && (
-            <div className='notification-no-data'>{t('header.emptyNotifications')}</div>
-          )}
-        </div>
-      </div>
-    );
-  }
+interface ISubscribedTo {
+  notifications: NotificationResource[];
 }
 
-export default Notifications;
+export default function Notifications({ refetch }) {
+  const { t } = useTranslations();
+  const [visible, toggleVisible] = useToggle(false);
+  const {
+    subscriptions: { notifications },
+  } = useOrbit<ISubscribedTo>({
+    notifications: (q) => q.findRecords('notification').sort('-dateCreated', '-dateRead'),
+  });
+
+  const { clearAll, markAllAsViewed } = useCollectionDataActions(notifications);
+
+  const haveAllNotificationsBeenSeen = notifications.every(
+    (n) => attributesFor(n).dateRead !== null
+  );
+  const hasNotifications = notifications.length > 0;
+
+  const toggle = () => {
+    if (visible) {
+      markAllAsViewed();
+      refetch();
+    }
+
+    toggleVisible();
+  };
+
+  const isMenuVisible = visible ? 'visible' : '';
+
+  return (
+    <div className='ui top right pointing dropdown' data-test-header-notification>
+      <div
+        style={{ zIndex: 1 }}
+        className={`full-overlay transition ${visible ? 'visible invisible' : ''}`}
+        onClick={toggle}
+      />
+
+      <div
+        data-test-notification-trigger
+        data-test-notification-active={!haveAllNotificationsBeenSeen}
+        style={{ position: 'relative' }}
+        onClick={toggle}
+      >
+        {haveAllNotificationsBeenSeen ? <NotificationIcon /> : <NotificationActiveIcon />}
+      </div>
+
+      <div className={`ui menu transition notifications ${isMenuVisible}`}>
+        {hasNotifications && (
+          <>
+            <div className='notification-buttons'>
+              <a href='#' data-test-clear-all onClick={preventDefault(clearAll)}>
+                {t('header.clearAll')}
+              </a>
+            </div>
+
+            <div className={notifications.length > 3 ? 'scrollable-menu' : ''}>
+              {notifications.map((notification) => (
+                <Row key={notification.id} notification={notification} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {!hasNotifications && (
+          <div className='notification-no-data'>{t('header.emptyNotifications')}</div>
+        )}
+      </div>
+    </div>
+  );
+}

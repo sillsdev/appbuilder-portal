@@ -47,3 +47,11 @@ export function filterForValidAttributes(input: object) {
     return key.startsWith('data-') || key.startsWith('aria-');
   });
 }
+
+export function preventDefault<T extends Function>(fn: T) {
+  return (e: any) => {
+    e.preventDefault();
+
+    fn();
+  };
+}

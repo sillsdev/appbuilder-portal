@@ -1,6 +1,7 @@
 import React from 'react';
 import { useOrbit, attributesFor } from 'react-orbitjs';
 import { Link } from 'react-router-dom';
+import { uniqBy } from 'lodash';
 
 import { useTranslations } from '~/lib/i18n';
 
@@ -19,25 +20,33 @@ interface IProps {
 export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
-  let cacheQuery = {};
+  const { dataStore } = useOrbit();
 
-  if (product) {
-    cacheQuery = {
-      tasks: (q) =>
-        q
-          .findRecords('userTask')
-          .filter({ relation: 'product', record: product })
-          .filter({ relation: 'user', record: currentUser }),
-    };
+  let tasks = [];
+
+  try {
+    tasks = dataStore.cache.query((q) =>
+      q
+        .findRecords('userTask')
+        .filter({ relation: 'product', record: product })
+        .filter({ relation: 'user', record: currentUser })
+    );
+
+    // for some reason the backend is sending task creations to the frontend qucik
+    // enough where the key-checking mechanisms hasn't yet added the first task,
+    // so a subsequent task will become a duplicate because both received tasks
+    // have yet to be added to the local cache.
+    tasks = uniqBy(tasks, (task) => (task.keys || {}).remoteId);
+  } catch (e) {
+    console.debug(
+      'error occurred',
+      e,
+      'we probably need to PR to orbit.js, as this is a race condition scenario that causes the error'
+    );
   }
 
-  const {
-    dataStore,
-    subscriptions: { tasks },
-  } = useOrbit(cacheQuery);
-
   const { relativeTimeAgo } = useTimezoneFormatters();
-  const { navigateToTaskWorkflow, pathToWorkflow } = useUserTaskHelpers();
+  const { pathToWorkflow } = useUserTaskHelpers();
 
   if (tasks.length === 0) {
     return <div className='w-100 p-sm p-b-md m-l-md fs-13'>{t('tasks.noTasksTitle')}</div>;

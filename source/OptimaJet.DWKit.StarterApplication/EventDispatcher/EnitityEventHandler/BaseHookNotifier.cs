@@ -138,6 +138,13 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
                 return;
             }
 
+            // Hitting this could be there is a race condition between
+            // when the job to Notify was published and the deletion
+            // of the resource. (Resource not found, was deleted after job queueing)
+            if (operation != Delete && resource == null) {
+                return;
+            }
+
             // potential groups the user could be subscribed to.
             // this is why this doesn't yet suppor the `include` notation
             // because we need to figure out how to get a _list_ of groups that the 

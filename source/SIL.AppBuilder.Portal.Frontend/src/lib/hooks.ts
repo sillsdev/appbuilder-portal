@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useMemo } from 'react';
 import { __RouterContext } from 'react-router';
 import { attributesFor } from 'react-orbitjs';
 import moment from 'moment-timezone';
@@ -11,10 +11,19 @@ export function useRouter() {
   return useContext(__RouterContext);
 }
 
-export function useToggle(defaultValue: boolean = false) {
-  const [value, setValue] = useState(defaultValue);
+export function useMemoIf<TReturn>(fn: () => TReturn, condition, memoOn) {
+  return useMemo<TReturn | undefined>(() => {
+    if (condition) {
+      return fn();
+    }
+  }, memoOn);
+}
 
-  return [value, () => setValue(!value)];
+export function useToggle(defaultValue: boolean = false): [boolean, () => void] {
+  const [value, setValue] = useState(defaultValue);
+  const toggle = () => setValue(!value);
+
+  return [value, toggle];
 }
 
 export function useMoment() {
