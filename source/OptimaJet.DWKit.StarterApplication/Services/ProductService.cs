@@ -13,6 +13,7 @@ using static OptimaJet.DWKit.StarterApplication.Utility.ServiceExtensions;
 using JsonApiDotNetCore.Internal.Query;
 using Hangfire;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
+using Microsoft.EntityFrameworkCore;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
@@ -20,12 +21,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
     {
         IEntityRepository<Product, Guid> ProductRepository { get; set; }
         IEntityRepository<ProductDefinition> ProductDefinitionRepository { get; set; }
+        public IEntityRepository<WorkflowDefinition> WorkflowDefinitionRepository { get; }
         IEntityRepository<Store> StoreRepository { get; }
         public IEntityRepository<UserRole> UserRolesRepository { get; }
         IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
         ICurrentUserContext CurrentUserContext { get; set; }
+
         IJsonApiContext JsonApiContext { get; }
         public IOrganizationContext OrganizationContext { get; private set; }
 
@@ -37,6 +40,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ProjectRepository projectRepository,
             ICurrentUserContext currentUserContext,
             IEntityRepository<ProductDefinition> productDefinitionRepository,
+            IEntityRepository<WorkflowDefinition> workflowDefinitionRepository,
             IEntityRepository<Store> storeRepository,
             IEntityRepository<UserRole> userRolesRepository,
             IBackgroundJobClient hangfireClient,
@@ -44,6 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         {
             ProductRepository = productRepository;
             ProductDefinitionRepository = productDefinitionRepository;
+            WorkflowDefinitionRepository = workflowDefinitionRepository;
             StoreRepository = storeRepository;
             UserRolesRepository = userRolesRepository;
             HangfireClient = hangfireClient;
@@ -54,6 +59,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             JsonApiContext = jsonApiContext;
 
         }
+
         public override async Task<IEnumerable<Product>> GetAsync()
         {
             return await GetScopedToOrganization<Product>(base.GetAsync,
@@ -101,7 +107,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(createForm.Errors);
             }
-            
+
             var product = await base.CreateAsync(resource);
 
             // TODO: figure out why this throws a NullReferenceException
@@ -124,6 +130,120 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             }
 
             return await base.DeleteAsync(id);
+        }
+
+        public async Task<List<string>> GetProductActionsAsync(Guid id)
+        {
+            Product product = await GetProductForActions(id);
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            if (product.ProductWorkflow == null)
+            {
+                // No running workflow.  Provide actions that are defined
+                var result = new List<string>();
+                if (product.ProductDefinition.RebuildWorkflowId.HasValue)
+                {
+                    result.Add(WorkflowType.Rebuild.ToString());
+                }
+                if (product.ProductDefinition.RepublishWorkflowId.HasValue)
+                {
+                    result.Add(WorkflowType.Republish.ToString());
+                }
+                return result;
+            }
+
+            var wd = await GetExecutingWorkflowDefintion(product);
+
+            if (wd == null)
+            {
+                return null;
+            }
+
+            if (wd.Type != WorkflowType.Startup)
+            {
+                // Running a action workflow.  Provide cancel action
+                return new List<string> { "Cancel" };
+            }
+
+            // Running the startup workflow.  Return empty list
+            return new List<string> { };
+        }
+
+        private async Task<WorkflowDefinition> GetExecutingWorkflowDefintion(Product product)
+        {
+            return await WorkflowDefinitionRepository.Get()
+                .Where(w => w.WorkflowScheme == product.ProductWorkflow.Scheme.SchemeCode)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task<Product> GetProductForActions(Guid id)
+        {
+            return await ProductRepository.Get()
+                .Where(p => p.Id == id)
+                .Include(p => p.ProductWorkflow)
+                    .ThenInclude(pw => pw.Scheme)
+                .Include(p => p.ProductDefinition)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<WorkflowDefinition> RunProductActionAsync(Guid id, string type)
+        {
+            var product = await GetProductForActions(id);
+            if (product == null)
+            {
+                return null;
+            }
+
+            if (product.ProductWorkflow == null)
+            {
+                // No running workflow.  Start one.
+                int? workflowDefinitionId = null;
+                if (type == WorkflowType.Rebuild.ToString())
+                {
+                    workflowDefinitionId = product.ProductDefinition.RebuildWorkflowId;
+                }
+                else if (type == WorkflowType.Republish.ToString())
+                {
+                    workflowDefinitionId = product.ProductDefinition.RepublishWorkflowId;
+                }
+                else
+                {
+                    throw new Exception($"Invalid type '{type}'");
+                }
+
+                if (workflowDefinitionId.HasValue)
+                {
+                    HangfireClient.Enqueue<WorkflowProductService>(service => service.StartProductWorkflow(id, workflowDefinitionId.Value));
+                    return await WorkflowDefinitionRepository.GetAsync(workflowDefinitionId.Value);
+                }
+
+                throw new Exception($"Type '{type}' does not have workflow defined");
+            }
+
+            // Handle special case for "Cancel" action
+            if (type == "Cancel")
+            {
+                var wd = await GetExecutingWorkflowDefintion(product);
+                if (wd == null)
+                {
+                    throw new Exception("Could not find workflow definition!");
+                }
+
+                if (wd.Type == WorkflowType.Startup)
+                {
+                    throw new Exception("Cannot cancel a startup workflow");
+                }
+
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.StopProductWorkflow(id));
+                return wd;
+            }
+
+            // Trying to start an action workflow while one is already running
+            throw new Exception("Cannot start a workflow while one is running");
         }
     }
 }

@@ -42,6 +42,11 @@ namespace OptimaJet.DWKit.StarterApplication
                 options.Namespace = "api";
                 options.IncludeTotalRecordCount = true;
                 options.EnableOperations = true;
+                options.BuildResourceGraph((builder) =>
+                {
+                    builder.AddResource<ProductActions,Guid>("product-actions");
+                });
+
             });
 
             services.AddHttpContextAccessor();
@@ -87,6 +92,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<UserService>();
             services.AddScoped<OrganizationService>();
             services.AddScoped<GroupService>();
+            services.AddScoped<ProductService>();
             services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
             services.AddScoped<SendEmailService>();

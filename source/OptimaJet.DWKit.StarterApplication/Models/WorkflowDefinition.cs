@@ -7,6 +7,16 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("name")]
         public string Name { get; set; }
 
+        [Attr("type")]
+        public WorkflowType Type { get; set; }
+
+        [Attr("type-name")]
+        public string TypeNameString {
+            get {
+                return Type.ToString();
+            }
+        }
+
         [Attr("enabled")]
         public bool Enabled { get; set; }
 

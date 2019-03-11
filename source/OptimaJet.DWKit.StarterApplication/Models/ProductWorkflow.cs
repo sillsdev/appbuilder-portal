@@ -10,5 +10,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public string ActivityName { get; set; }
 
         public virtual Product Product { get; set; }
+
+        public virtual ProductWorkflowScheme Scheme { get; set; }
+        public Guid SchemeId { get; set; }
+
     }
 }
