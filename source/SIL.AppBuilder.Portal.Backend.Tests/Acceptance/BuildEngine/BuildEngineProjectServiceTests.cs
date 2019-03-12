@@ -456,10 +456,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockBuildEngine.Reset();
             var tokenResponse = new TokenResponse
             {
-                SecretAccessKey = "gBYo8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
-                AccessKeyId = "ASIARW6IRVMN2NLBQBU5",
+                SecretAccessKey = "FAKE8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
+                AccessKeyId = "FAKERW6IRVMN2NLBQBU5",
                 Expiration = "2019-02-21T04:01:07+00:00",
-                SessionToken = "FQoGZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
+                SessionToken = "FAKEZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
             };
             mockBuildEngine.Setup(x => x.GetProjectAccessToken(It.IsAny<int>(), It.IsAny<TokenRequest>())).Returns(tokenResponse);
             var response = await buildProjectService.GetProjectTokenAsync(project2.Id);
@@ -481,10 +481,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockBuildEngine.Reset();
             var tokenResponse = new TokenResponse
             {
-                SecretAccessKey = "gBYo8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
-                AccessKeyId = "ASIARW6IRVMN2NLBQBU5",
+                SecretAccessKey = "FAKE8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
+                AccessKeyId = "FAKERW6IRVMN2NLBQBU5",
                 Expiration = "2019-02-21T04:01:07+00:00",
-                SessionToken = "FQoGZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
+                SessionToken = "FAKEZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
             };
             mockBuildEngine.Setup(x => x.GetProjectAccessToken(It.IsAny<int>(), It.IsAny<TokenRequest>())).Returns(tokenResponse);
             var response = await buildProjectService.GetProjectTokenAsync(project5.Id);
@@ -506,10 +506,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             mockBuildEngine.Reset();
             var tokenResponse = new TokenResponse
             {
-                SecretAccessKey = "gBYo8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
-                AccessKeyId = "ASIARW6IRVMN2NLBQBU5",
+                SecretAccessKey = "FAKE8eoBaiULHZcu80MtbUTJzjyQRzr6D+2lM6S0",
+                AccessKeyId = "FAKERW6IRVMN2NLBQBU5",
                 Expiration = "2019-02-21T04:01:07+00:00",
-                SessionToken = "FQoGZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
+                SessionToken = "FAKEZXIvYXdzECkaDIKOGv4uY00Tzz/9PCK0A2w4pLinn/vXTqABzc8d0xdhk62qimQ+SG015SpqMt2uY1KgYhd/I1HYaJamTZ54YLRZJbIQ/MYHvoqGXojfWahtb4rHgwFC2cz9q44BMhPuPFfzHny3Qlwtb2Q1YBc6nhJ6e9aFP9AS+zhM4oU60dHmzhL3961OSpsHhrIw/7c0sjl9MQnurl9eJOIJVB11+eNFIeIVqKRnsPpapVqo/zoi+a0nxO6VTHWYwKKj1vbOeM0vJpcQHZpGxraiL5k5d7Hmvv3jCKlogoCaB0N0kU8794sG3MwnRTrvQgPAR14BvUgIrurk1BP3YCMDDDKgrYXYMRnODnxMXgbLxgLqBUtvpP30Au1gjAQ3nJNn5iZgfGuamLeoRMG3trjascqAMoL6gsKOmJg2OYqN5HLVFfqlMWcLyLG42+zXAF3FjzOCNyuBYcD6ULQst49AaS+qXTYn4uSTfyAhov4jos8tmvySkO3yIzbCL1Ra4E6obbls+xU6MDv2lNM23NnKdEnLfc6JffuJgPDmChOLPus3fCqcv0JIteAw2balOPH+VCoFLzfAutuhGc7gTKmAjOCn9uEKG5gow/O14wU="
             };
             mockBuildEngine.Setup(x => x.GetProjectAccessToken(It.IsAny<int>(), It.IsAny<TokenRequest>())).Returns(tokenResponse);
             var response = await buildProjectService.GetProjectTokenAsync(999);
