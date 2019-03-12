@@ -91,7 +91,6 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 ### Running
 
 ```bash
-./run refresh-languages
 ./run up:build
 
 # first time only, after up:build, separate terminal
