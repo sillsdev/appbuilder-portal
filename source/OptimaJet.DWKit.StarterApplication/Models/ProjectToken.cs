@@ -12,5 +12,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public String AccessKeyId { get; set; }
         [Attr("expiration")]
         public String Expiration { get; set; }
+        [Attr("url")]
+        public String Url { get; set; }
     }
 }

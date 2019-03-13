@@ -30,6 +30,12 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         [HttpPost("{id}/token")]
         public async Task<IActionResult> GetProjectToken(int id)
         {
+            var project = await service.GetAsync(id);
+            if (project == null || project.WorkflowProjectUrl == null)
+            {
+                return NotFound();
+            }
+
             var token = await BuildEngineProjectService.GetProjectTokenAsync(id);
             if (token == null || token.SecretAccessKey == null)
             {
@@ -41,7 +47,8 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 SessionToken = token.SessionToken,
                 SecretAccessKey = token.SecretAccessKey,
                 AccessKeyId = token.AccessKeyId,
-                Expiration = token.Expiration
+                Expiration = token.Expiration,
+                Url = project.WorkflowProjectUrl
             };
             return Ok(projectToken);
         }
