@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using OptimaJet.DWKit.StarterApplication.Utility;
+using Serilog;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
@@ -113,6 +114,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             int sendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MIN_MINUTES", 60);
             int dontSendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MAX_MINUTES", 180);
             var now = DateTime.UtcNow;
+            Log.Information($"NotificationsEmailMonitor: Min={sendNotificationEmailMinutes}, Max={dontSendNotificationEmailMinutes}, Now={now.ToString()}");
             var notifications = NotificationRepository.Get()
                                                     .Where(n => n.DateEmailSent == null
                                                            && n.DateRead == null
@@ -124,6 +126,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                                     .ToList();
             foreach (var notification in notifications)
             {
+                Log.Information($"Send Notification {notification.Id} to {notification.User.Email}: {notification.Message}");
                 SendEmailService.SendNotificationEmailAsync(notification).Wait();
                 notification.DateEmailSent = DateTime.UtcNow;
                 NotificationRepository.UpdateAsync(notification).Wait();

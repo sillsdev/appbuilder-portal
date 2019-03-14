@@ -16,7 +16,8 @@ import TimezoneLabel from '@ui/components/labels/timezone';
 import { isEmpty } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
 
-import ItemActions from './actions';
+import ItemActions from '~/ui/components/product-artifact/actions';
+
 import ProductTasksForCurrentUser from './tasks';
 
 interface IOwnProps {
@@ -72,7 +73,7 @@ export default function ProductItem({ product, includeHeader }) {
           <TimezoneLabel dateTime={datePublished} emptyLabel='--' />
         </div>
         <div className='flex w-5-md p-l-md-md move-right'>
-          <ItemActions />
+          <ItemActions product={product} />
         </div>
       </div>
 
