@@ -3518,10 +3518,10 @@ domutils@^1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
-dotenv@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-7.0.0.tgz#a2be3cd52736673206e8a85fb5210eea29628e7c"
-  integrity sha512-M3NhsLbV1i6HuGzBUH8vXrtxOk+tWmzWKDMbAVSUp3Zsjm7ywFeuwrUXhmhQyRK1q5B5GGy7hcXPbj3bnfZg2g==
+dotenv@^6.0.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.2.0.tgz#941c0410535d942c8becf28d3f357dbd9d476064"
+  integrity sha512-HygQCKUBSFl8wKQZBSemMywRWcEDNidvNbjGVyZu3nbZ8qq9ubiPoGLMdRDpfSrpkkm9BXYFkpKxxFX38o/76w==
 
 dropzone@^5.4.0:
   version "5.5.1"
@@ -7798,9 +7798,9 @@ react-onclickoutside@^6.7.1:
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.8.0.tgz#9f91b5b3ed59f4d9e43fd71620dc200773a4d569"
   integrity sha512-5Q4Rn7QLEoh7WIe66KFvYIpWJ49GeHoygP1/EtJyZjXKgrWH19Tf0Ty3lWyQzrEEDyLOwUvvmBFSE3dcDdvagA==
 
-"react-orbitjs@github:DeveloperTown/react-orbitjs#fd60dcba749efe5ef5bc453fb94986f65b59040f":
+"react-orbitjs@github:DeveloperTown/react-orbitjs#a93a02e5e6c3c8295c519060562a217b98b2ab85":
   version "0.1.10"
-  resolved "https://codeload.github.com/DeveloperTown/react-orbitjs/tar.gz/fd60dcba749efe5ef5bc453fb94986f65b59040f"
+  resolved "https://codeload.github.com/DeveloperTown/react-orbitjs/tar.gz/a93a02e5e6c3c8295c519060562a217b98b2ab85"
   dependencies:
     "@types/recompose" "0.30.3"
     hoist-non-react-statics "3.3.0"
@@ -9713,6 +9713,11 @@ use-debounce@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-1.0.0.tgz#2e0a7f7805d7b534781d3b704dabd26612d87a22"
   integrity sha512-ATojFL78Qsyi4AsxIT5kxuFci7FIPK8mlQKwe8tPPsu3/UOMYkxWThwU2t57Y5vBgTQ77L6EmL6yyLQaxXKOkA==
+
+use-redux@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/use-redux/-/use-redux-2.1.1.tgz#cfbd0f8053da58eac11906ed7265dd6f0c3ee895"
+  integrity sha512-fZB5ATGTcVDEurJDv6YbJqfwvVtl/icTI7h4qkW8twuLHqQZJBj+BFSXUrUqn9g5C0Yr5zAF0nr+7ruWzawT9Q==
 
 use@^3.1.0:
   version "3.1.1"
