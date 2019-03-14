@@ -66,7 +66,7 @@
     "react-hooks-fetch": "^0.9.0",
     "react-i18next": "^10.0.2",
     "react-notify-toast": "^0.5.0",
-    "react-orbitjs": "github:DeveloperTown/react-orbitjs#fd60dcba749efe5ef5bc453fb94986f65b59040f",
+    "react-orbitjs": "github:DeveloperTown/react-orbitjs#a93a02e5e6c3c8295c519060562a217b98b2ab85",
     "react-redux": "^6.0.0",
     "react-router": "^4.4.0-beta.6",
     "react-router-dom": "^4.4.0-beta.6",
@@ -83,6 +83,7 @@
     "semantic-ui-css": "^2.3.3",
     "semantic-ui-react": "^0.85.0",
     "use-debounce": "^1.0.0",
+    "use-redux": "^2.1.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
@@ -148,7 +149,7 @@
     "copy-webpack-plugin": "^5.0.0",
     "crypto-js": "^3.1.9-1",
     "css-loader": "^2.0.0",
-    "dotenv": "^7.0.0",
+    "dotenv": "^6.0.0",
     "eslint": "^5.8.0",
     "eslint-config-prettier": "^3.1.0",
     "eslint-config-typescript": "^2.0.0",

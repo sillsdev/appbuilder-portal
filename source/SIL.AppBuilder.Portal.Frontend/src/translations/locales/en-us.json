@@ -131,7 +131,15 @@
   "products": {
     "definition": "Useful files that result from a series of steps.",
     "storeSelect": "Select a store for {name}",
-    "noStoresAvailable": "There are no stores available for the selected product. Please contact your organization administrator."
+    "noStoresAvailable": "There are no stores available for the selected product. Please contact your organization administrator.",
+    "actions": {
+      "executed": "{actionName} was successfully executed.",
+      "cancelled": "{actionName} was successfully cancelled.",
+      "rebuild": "Rebuild",
+      "republish": "Republish",
+      "cancel": "Cancel",
+      "noneAvailable": "No actions are currently available for this product."
+    }
   },
   "profile": {
     "title": "Profile",

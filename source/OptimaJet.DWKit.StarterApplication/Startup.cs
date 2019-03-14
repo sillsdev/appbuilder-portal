@@ -26,6 +26,7 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 using OptimaJet.DWKit.StarterApplication.Filters;
+using static RequestResponseLoggingMiddleware;
 
 namespace OptimaJet.DWKit.StarterApplication
 {
@@ -46,6 +47,7 @@ namespace OptimaJet.DWKit.StarterApplication
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
 
             return builder;
         }
@@ -143,6 +145,18 @@ namespace OptimaJet.DWKit.StarterApplication
                                       IServiceProvider serviceProvider)
         {
             app.UseAuthentication();
+
+            if (env.IsDevelopment()) {
+                Action<RequestProfilerModel> requestResponseHandler = model =>
+                {
+                    Console.WriteLine("_______");
+                    Console.WriteLine($"{model.Request}");
+                    Console.WriteLine($"↳ Responded with [{model.Status}] in {model.Duration}ms");
+                    Console.WriteLine("⎻⎻⎻⎻⎻⎻⎻");
+
+                };
+                app.UseMiddleware<RequestResponseLoggingMiddleware>(requestResponseHandler);
+            }
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();

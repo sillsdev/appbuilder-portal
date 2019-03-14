@@ -21,7 +21,7 @@ const cacheQuery = () => {
   return (q) => q.findRecords(TYPE_NAME).filter({ attribute: 'auth0Id', value: auth0Id });
 };
 
-async function handleResponse(response, t) {
+export async function handleResponse(response, t) {
   const status = response.status;
   const unauthorized = status === 401;
 

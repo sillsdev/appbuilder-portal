@@ -19,6 +19,13 @@ function getFirstJSONAPIErrorMessage(error) {
 }
 
 export function parseError(error: any): ParsedError {
+  if (typeof error === 'string') {
+    return {
+      title: error,
+      body: undefined,
+    };
+  }
+
   if (error instanceof RecordNotFoundException) {
     return {
       title: error.description,
