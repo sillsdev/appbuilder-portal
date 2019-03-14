@@ -58,23 +58,14 @@ namespace SIL.AppBuilder.BuildEngineApiClient
 
         public ProjectResponse CreateProject(Project project)
         {
-            Require.Argument("UserId", project.UserId);
-            Require.Argument("GroupId", project.GroupId);
+            //Require.Argument("UserId", project.UserId);
+            //Require.Argument("GroupId", project.GroupId);
             Require.Argument("AppId", project.AppId);
             Require.Argument("ProjectName", project.ProjectName);
             Require.Argument("LanguageCode", project.LanguageCode);
-            Require.Argument("PublishingKey", project.PublishingKey);
+            //Require.Argument("PublishingKey", project.PublishingKey);
 
             var request = CreateRequest("project", Method.POST)
-                .AddJsonBody(project);
-            return Execute<ProjectResponse>(request);
-        }
-        public ProjectResponse UpdateProject(int projectId, Project project)
-        {
-            Require.Argument("UserId", project.UserId);
-            Require.Argument("PublishingKey", project.PublishingKey);
-            var request = CreateRequest("project/{projectId}", Method.PUT)
-                .AddParameter("projectId", projectId, ParameterType.UrlSegment)
                 .AddJsonBody(project);
             return Execute<ProjectResponse>(request);
         }
@@ -99,6 +90,14 @@ namespace SIL.AppBuilder.BuildEngineApiClient
             return response.StatusCode;
         }
 
+        public TokenResponse GetProjectAccessToken(int projectId, TokenRequest tokenRequest)
+        {
+            var request = CreateRequest("project/{projectId}/token", Method.POST)
+                .AddParameter("projectId", projectId, ParameterType.UrlSegment)
+                .AddJsonBody(tokenRequest);
+            var response = Execute<TokenResponse>(request);
+            return response;
+        }
         public JobResponse CreateJob(Job job)
         {
             Require.Argument("RequestId", job.RequestId);

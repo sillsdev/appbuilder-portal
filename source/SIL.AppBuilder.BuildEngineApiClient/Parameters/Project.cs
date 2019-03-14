@@ -11,5 +11,6 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         public string ProjectName { get; set; }
         public string LanguageCode { get; set; }
         public string PublishingKey { get; set; }
+        public string StorageType { get; set; }
     }
 }

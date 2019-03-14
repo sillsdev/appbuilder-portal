@@ -574,13 +574,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             var response = await Patch("/api/projects/" + project1.Id.ToString(), content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            backgroundJobClientMock.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Exactly(3));
-            backgroundJobClientMock.Verify(x => x.Create(
-                It.Is<Job>(job =>
-                           job.Method.Name == "UpdateProject" &&
-                           job.Type == typeof(BuildEngineProjectService) &&
-                           job.Args.Count == 2),
-                It.IsAny<EnqueuedState>()));
+            backgroundJobClientMock.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Exactly(2));
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "DidUpdate" &&

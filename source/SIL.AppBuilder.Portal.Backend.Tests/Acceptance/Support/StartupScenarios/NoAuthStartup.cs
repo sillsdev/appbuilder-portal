@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.SignalR;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using System.Linq;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 {
@@ -20,12 +22,14 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
         private Mock<IBackgroundJobClient> backgroundJobClient;
         private Mock<IHubContext<ScriptoriaHub>> hubContext;
         private Mock<IHubContext<JSONAPIHub>> dataHubContext;
+        private Mock<IBuildEngineProjectService> projectService;
 
         public NoAuthStartup(IHostingEnvironment env) : base(env)
         {
             backgroundJobClient = new Mock<IBackgroundJobClient>();
             hubContext = new Mock<IHubContext<ScriptoriaHub>> { DefaultValue = DefaultValue.Mock};
             dataHubContext = new Mock<IHubContext<JSONAPIHub>> { DefaultValue = DefaultValue.Mock };
+            projectService = new Mock<IBuildEngineProjectService>();
         }
 
         public IServiceCollection ConfiguredServices { get; private set; }
@@ -70,6 +74,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 services.AddScoped<IHubContext<JSONAPIHub>>(s => dataHubContext.Object);
 
                 services.AddScoped<IBackgroundJobClient>(s => backgroundJobClient.Object);
+                var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IBuildEngineProjectService));
+                if (serviceDescriptor == null)
+                {
+                    services.AddScoped(s => projectService.Object);
+                }
+
 
                 base.ConfigureDatabase(services);
 

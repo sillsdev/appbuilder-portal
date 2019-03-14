@@ -63,19 +63,27 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.NotEqual(DateTime.MinValue, response.Created);
             Assert.NotEqual(DateTime.MinValue, response.Updated);
         }
-        [Theory(Skip = skipIntegrationTest)]
-        [InlineData(1, "new_user")]
-        public void ModifyTestProject(int projectId, string newUserId)
+        [Fact(Skip = skipIntegrationTest)]
+        public void CreateS3Project()
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
             var project = new Project
             {
-                UserId = newUserId,
-                PublishingKey = this.PublishingKey
+                AppId = "scriptureappbuilder",
+                LanguageCode = "eng",
+                ProjectName = Guid.NewGuid().ToString(),
+                StorageType = "s3"
             };
-            var response = client.UpdateProject(projectId, project);
+            var response = client.CreateProject(project);
             Assert.NotNull(response);
-            Assert.Equal(response.Id, projectId);
+            Assert.NotEqual(0, response.Id);
+            Assert.Equal(project.AppId, response.AppId);
+            Assert.Equal(project.LanguageCode, response.LanguageCode);
+            Assert.Equal("completed", response.Status);
+            Assert.Equal("SUCCESS", response.Result);
+            // URL is like this with a GUID at the end s3://dem-stg-aps-projects/scriptureappbuilder/eng-5-ebb7a893-b4af-4b14-9bdf-e91d60c0f766
+            var projectNamePart = project.AppId + "/" + project.LanguageCode + "-" + response.Id.ToString() + "-";
+            Assert.Contains(projectNamePart, response.Url);
         }
 
         [Theory(Skip = skipIntegrationTest)]
@@ -85,6 +93,25 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
             var response = client.DeleteProject(projectId);
             Assert.Equal(System.Net.HttpStatusCode.OK, response);
+        }
+        [Theory(Skip = skipIntegrationTest)]
+        [InlineData(8)]
+        public void GetTokenTest(int projectId)
+        {
+            var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
+            var request = new TokenRequest
+            {
+                Name = "g2=123432423142312345678"
+            };
+            var response = client.GetProjectAccessToken(projectId, request);
+            Assert.NotNull(response.AccessKeyId);
+            Assert.NotEmpty(response.AccessKeyId);
+            Assert.NotNull(response.SessionToken);
+            Assert.NotEmpty(response.SessionToken);
+            Assert.NotNull(response.SecretAccessKey);
+            Assert.NotEmpty(response.SecretAccessKey);
+            Assert.NotNull(response.Expiration);
+            Assert.NotEmpty(response.Expiration);
         }
     }
 }
