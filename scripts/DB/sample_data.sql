@@ -124,7 +124,7 @@ INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	1,	1,	1), -- chris_hubbard@sil.org - SuperAdmin - SIL
 (	1,	2,	1), -- chris_hubbard@sil.org - OrgAmin - SIL
-(	8,	2,	1), -- bill_dyck@sil.org - OrgAdmin - SIL
+(	8,	1,	1), -- bill_dyck@sil.org - AppBuilder - SIL
 (	2,	3,	1), -- david_moore1@sil.org - AppBuilder - SIL
 (	7,	1,	1), -- psego@developertown.com - AppBuilder - SIL
 (	9,	3,	1), -- loren_hawthorne@sil.org - AppBuilder - SIL
@@ -135,7 +135,7 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	3,	3,	2), -- lt.sego@gmail.com - AppBuilder - DT
 (	4,	3,	2), -- gian.corzo@gmail.com - AppBuilder - DT
 (	1,	1,	3), -- chris_hubbard@sil.org - SuperAdmin - Kalaam
-(	8,	2,	3), -- bill_dyck@sil.org - OrgAdmin - Kalaam
+(	8,	1,	3), -- bill_dyck@sil.org - AppBuilder - Kalaam
 (	2,	2,	3), -- david_moore1@sil.org - OrgAdmin - Kalaam
 (	6,	3,	3), -- chris.kalaam@gmail.com - AppBuilder - Kalaam
 (	10,	3,	1), -- liztabor19+1@gmail.com - AppBuilder - SIL
