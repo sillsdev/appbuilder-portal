@@ -12,7 +12,8 @@ INSERT INTO "Users" (
 (	'liztabor19@gmail.com',   'liztabor19@gmail.com',	     'google-oauth2|104286798726238637666', 'Liz',	        'Tabor',	   '0',	NULL, NULL, NULL),
 (	'other@sil.org',          'other@sil.org',	           'auth0|5c07e78511bf6d2f2ce0fcff',      'Other'	,       'SIL',       '0',	NULL, NULL, NULL),
 (	'Nate Canada',            'ncanada@developertown.com', 'google-oauth2|107093754016949028816', 'Nate', 	      'Canada',	   '0',	NULL, NULL, NULL),
-(   'Jon Nolen',              'jnolen@developertown.com',  'google-oauth2|113544451794352875093', 'Jon',  	      'Nolen', 	   '0', NULL, NULL, NULL);
+(   'Jon Nolen',              'jnolen@developertown.com',  'google-oauth2|113544451794352875093', 'Jon',  	      'Nolen', 	   '0', NULL, NULL, NULL),
+(	'Alex Billingsley',       'abillingsley@developertown.com', 'google-oauth2|106243064761677479593', 'Alex', 	      'Billingsley',	   '0',	NULL, NULL, NULL);
 
 INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId", "UseDefaultBuildEngine") VALUES
 (	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false),
@@ -103,7 +104,8 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 (	11,  1), -- other@sil.org - SIL
 (	12,	2), -- ncanada@developertown.com - DT
 ( 13, 2), -- jnolen@developertown.com - DT
-(	5,	1); -- ltabor@developertown.com - SIL
+(	5,	1), -- ltabor@developertown.com - SIL
+(	14,	2); -- abillingsley@developertown.com - DT
 
 
 
@@ -119,7 +121,8 @@ INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 ( 7,  14),
 ( 7,   1),
 ( 5,  14),
-( 12,  14);
+( 12,  14),
+( 14, 14);
 
 INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	1,	1,	1), -- chris_hubbard@sil.org - SuperAdmin - SIL
@@ -143,8 +146,9 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 (	11,	3,	1), -- other@sil.org - AppBuilder - SIL
 (	12,	1,	2), -- ncanada@developertown.com - SuperAdmin - DT
 (	12,	2,	2), -- ncanada@developertown.com - OrgAdmin - DT
-(	13,	2,	2); -- jnolen@developertown.com - OrgAdmin - DT
-
+(	13,	2,	2), -- jnolen@developertown.com - OrgAdmin - DT
+( 14,	1,	2), -- jnolen@developertown.com - SuperAdmin - DT
+( 14,	2,	2); -- jnolen@developertown.com - OrgAdmin - DT
 
 /* Fix sequences ids */
 SELECT SETVAL('"ApplicationTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
