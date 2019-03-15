@@ -614,37 +614,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 
             var response = await Patch("/api/projects/" + project1.Id.ToString(), content);
 
-            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
-        }
-        [Fact]
-        public async Task Patch_Owner_Bad_Publishing_Key()
-        {
-            BuildTestData();
-            var content = new
-            {
-                data = new
-                {
-                    type = "projects",
-                    id = project1.Id.ToString(),
-                    relationships = new
-                    {
-                        owner = new
-                        {
-                            data = new
-                            {
-                                type = "users",
-                                id = user4.Id.ToString()
-                            }
-                        }
-                    }
-                }
-            };
-            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
-            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
-
-            var response = await Patch("/api/projects/" + project1.Id.ToString(), content);
-
-            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
