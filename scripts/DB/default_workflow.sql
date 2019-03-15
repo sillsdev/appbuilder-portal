@@ -112,7 +112,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Product Build" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
-        <ActionRef Order="2" NameRef="BuildEngine_BuildProduct" />
+        <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
+          <ActionParameter><![CDATA[{"targets":"apk play-listing"}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
