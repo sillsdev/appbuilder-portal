@@ -22,7 +22,7 @@ class Page {
   products = scoped('[data-test-products]', {
     artifacts: scoped('[data-test-product-artifacts]', {
       toggle: clickable('[data-test-artifact-header]'),
-      amount: text('[data-test-artifact-header] [data-test-count'),
+      amount: text('[data-test-artifact-header] [data-test-count]'),
     }),
   });
 }
