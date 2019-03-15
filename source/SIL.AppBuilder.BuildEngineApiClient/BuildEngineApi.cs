@@ -126,9 +126,10 @@ namespace SIL.AppBuilder.BuildEngineApiClient
             var response = restClient.Execute(request);
             return response.StatusCode;
         }
-        public BuildResponse CreateBuild(int jobId)
+        public BuildResponse CreateBuild(int jobId, Build build)
         {
             var request = CreateRequest("job/{jobId}/build", Method.POST)
+                .AddJsonBody(build)
                 .AddParameter("jobId", jobId, ParameterType.UrlSegment);
             return Execute<BuildResponse>(request);
         }

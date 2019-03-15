@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xunit;
+using Newtonsoft.Json;
 
 namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
 {
@@ -11,7 +13,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         //
         const string skipIntegrationTest = "Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public string BaseUrl { get; set; } = "https://buildengine.gtis.guru:8443"; // This is our staging version of BuildEngine
-        public string ApiAccessKey { get; set; } = "";
+        public string ApiAccessKey { get; set; } = "replace";
 
         // This test assumes that the job exists and that the build ID being passed has
         // completed successfully
@@ -70,7 +72,17 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         public void CreateTestBuild(int jobId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
-            var response = client.CreateBuild(jobId);
+            var env = new Dictionary<string, string>
+            {
+                {"VAR1", "VALUE1"},
+                {"VAR2", "VALUE2"}
+            };
+            var build = new Build
+            {
+                Targets = "apk play-listing",
+                Environment = env
+            };
+            var response = client.CreateBuild(jobId, build);
             Assert.NotNull(response);
             Assert.Equal("initialized", response.Status);
             Assert.NotEqual(0, response.Id);
