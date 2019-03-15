@@ -94,7 +94,6 @@
     <Folder Include="Forms\GroupMemberships\" />
     <Folder Include="source\" />
     <Folder Include="source\locales\" />
-    <Folder Include="Forms\Users\" />
     <Folder Include="Utility\Extensions\EntityFramework\" />
     <Folder Include="EventDispatcher\" />
     <Folder Include="EventDispatcher\EnitityEventHandler\" />

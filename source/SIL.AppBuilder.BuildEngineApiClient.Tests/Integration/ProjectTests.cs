@@ -14,7 +14,6 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         public string ApiAccessKey { get; set; } = "";
         public string UserId { get; set; } = ""; // Email address
         public string GroupId { get; set; } = ""; // Some shared group
-        public string PublishingKey { get; set; } = ""; // Get this from Scripture App Builder
 
         [Theory(Skip = skipIntegrationTest)]
         [InlineData(4)]
@@ -46,7 +45,6 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
                 AppId = "scriptureappbuilder",
                 LanguageCode = "eng",
                 ProjectName = Guid.NewGuid().ToString(),
-                PublishingKey = this.PublishingKey
             };
 
             var response = client.CreateProject(project);

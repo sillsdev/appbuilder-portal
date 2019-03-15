@@ -74,19 +74,6 @@ namespace OptimaJet.DWKit.StarterApplication.Forms
                 .FirstOrDefault();
             return userRole != null;
         }
-        protected bool ValidPublishingKey(string publishingKeyString)
-        {
-            try
-            {
-                var sshKeyPattern = new Regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)");
-                var match = sshKeyPattern.Match(publishingKeyString);
-                return match.Success;
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
     }
 }

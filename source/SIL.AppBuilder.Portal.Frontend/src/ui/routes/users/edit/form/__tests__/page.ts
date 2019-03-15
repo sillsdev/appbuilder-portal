@@ -17,7 +17,6 @@ export class FormInteractor {
   fillEmail = fillable('[data-test-profile-email]');
   fillPhone = fillable('[data-test-profile-phone]');
   fillLocalization = fillable('[data-test-profile-localization]');
-  fillPublishingKey = fillable('[data-test-profile-publishing-key]');
 
   clickEmailNotification = clickable('[data-test-profile-email-notification] input');
   clickProfileVisibility = clickable('[data-test-profile-visible-profile] input');
@@ -31,7 +30,6 @@ export class FormInteractor {
   isEmailNotificationChecked = isPresent('[data-test-profile-email-notification].checked');
   profileVisibility = isPresent('[data-test-profile-visible-profile].checked');
   profileVisibilityText = value('[data-test-profile-visible-text]');
-  publishingKeyText = value('[data-test-profile-publishing-key]');
 }
 
 export default new FormInteractor('[data-test-edit-profile]');

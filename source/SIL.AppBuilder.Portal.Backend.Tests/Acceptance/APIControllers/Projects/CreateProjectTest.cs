@@ -56,9 +56,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Email = "test-email1@test.test",
                 Name = "Test Testenson1",
                 GivenName = "Test1",
-                FamilyName = "Testenson1",
-                PublishingKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTF+wTVdaMDYmgeAZd7voe/b5MEHJWBXQDik14sqqj0aXtwV4+qxPU2ptqcjGpRk3ynmxp9i6Venw1JVf39iDFhWgd7VGBA7QEfApRm1v1FRI0wuN user1@user1MBP.local"
-
+                FamilyName = "Testenson1"
             });
             user2 = AddEntity<AppDbContext, User>(new User
             {
@@ -74,8 +72,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Email = "test-email1@test.test",
                 Name = "Test Testenson1",
                 GivenName = "Test1",
-                FamilyName = "Testenson1",
-                PublishingKey = "invalidkey"
+                FamilyName = "Testenson1"
             });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {
@@ -267,8 +264,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             var project = await Deserialize<Project>(response);
 
-            Assert.Equal(CurrentUser.Id, project.OwnerId );
-            Assert.Equal(org1.Id, project.OrganizationId );
+            Assert.Equal(CurrentUser.Id, project.OwnerId);
+            Assert.Equal(org1.Id, project.OrganizationId);
             Assert.Equal(group1.Id, project.GroupId);
             Assert.Equal(type1.Id, project.TypeId);
             Assert.Equal("project5", project.Name);
@@ -473,102 +470,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-        }
-        [Fact]
-        public async Task Create_Project_No_Publishing_Key()
-        {
-            BuildTestData();
-
-            var content = new
-            {
-                data = new
-                {
-                    type = "projects",
-                    attributes = new
-                    {
-                        name = "project5",
-                        type = "scriptureappbuilder",
-                        description = "description",
-                        language = "eng-US"
-                    },
-                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
-                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
-                                { "data", new Dictionary<string, string>() {
-                                    { "type", "users" },
-                                        { "id", user2.Id.ToString() }
-                                }}}},
-                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
-                                { "data", new Dictionary<string, string>() {
-                                    { "type", "organizations" },
-                                    { "id", org1.Id.ToString() }
-                            }}}},
-                            {"group", new Dictionary<string, Dictionary<string, string>>() {
-                                { "data", new Dictionary<string, string>() {
-                                    { "type", "groups" },
-                                    { "id", group1.Id.ToString() }
-                            }}}},
-                            {"type", new Dictionary<string, Dictionary<string, string>>() {
-                                { "data", new Dictionary<string, string>() {
-                                    { "type", "application-types" },
-                                    { "id", type1.Id.ToString() }
-                            }}}}
-                        }
-                }
-            };
-            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
-            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
-
-            var response = await Post("/api/projects/", content);
-
-            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
-        }
-        [Fact]
-        public async Task Create_Project_Bad_Publishing_Key()
-        {
-            BuildTestData();
-
-            var content = new
-            {
-                data = new
-                {
-                    type = "projects",
-                    attributes = new
-                    {
-                        name = "project5",
-                        type = "scriptureappbuilder",
-                        description = "description",
-                        language = "eng-US"
-                    },
-                    relationships = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>() {
-                            {"owner", new Dictionary<string, Dictionary<string, string>>() {
-                                { "data", new Dictionary<string, string>() {
-                                    { "type", "users" },
-                                    { "id", user3.Id.ToString() }
-                                }}}},
-                            {"organization", new Dictionary<string, Dictionary<string, string>>() {
-                                { "data", new Dictionary<string, string>() {
-                                    { "type", "organizations" },
-                                    { "id", org1.Id.ToString() }
-                            }}}},
-                            {"group", new Dictionary<string, Dictionary<string, string>>() {
-                                { "data", new Dictionary<string, string>() {
-                                    { "type", "groups" },
-                                    { "id", group1.Id.ToString() }
-                            }}}},
-                            {"type", new Dictionary<string, Dictionary<string, string>>() {
-                                { "data", new Dictionary<string, string>() {
-                                    { "type", "application-types" },
-                                    { "id", type1.Id.ToString() }
-                            }}}}
-                        }
-                }
-            };
-            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
-            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
-
-            var response = await Post("/api/projects/", content);
-
-            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         }
     }
 }

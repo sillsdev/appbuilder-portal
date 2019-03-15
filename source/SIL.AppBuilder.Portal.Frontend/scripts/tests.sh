@@ -29,7 +29,7 @@ completed_tests=$(cat test.results | grep " tests completed" | cut -d " " -f2)
 
 # This is kind of a hack, but for now it'll work as C.I. is passing with only 77 tests ran.
 # and ... that's only a third of the suite at the time of writing this...
-if [ "$completed_tests" -lt "288" ]; then
+if [ "$completed_tests" -lt "286" ]; then
   echo "the entire test suite didn't run. Something is very wrong"
   exit 1
 fi

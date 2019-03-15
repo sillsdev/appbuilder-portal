@@ -44,16 +44,6 @@ namespace OptimaJet.DWKit.StarterApplication.Forms.Projects
                 var message = ("The current user is not a member of the project organization");
                 AddError(message);
             }
-            if (ProjectOwner.PublishingKey == null)
-            {
-                var message = ("The project owner's publishing key is not set");
-                AddError(message);
-            }
-            else if (!ValidPublishingKey(ProjectOwner.PublishingKey))
-            {
-                var message = ("The project owner's publishing key is not valid");
-                AddError(message);
-            }
         }
     }
 }

@@ -28,7 +28,6 @@ describe('Acceptance | Edit Profile Form', () => {
             phone: 'no',
             profileVisibility: false,
             emailNotification: false,
-            publishingKey: 'no',
           },
         },
       });
@@ -47,7 +46,6 @@ describe('Acceptance | Edit Profile Form', () => {
       it('renders lastname', () => expect(page.lastname).to.equal('last'));
       it('renders email', () => expect(page.email).to.equal('whatever@w.ver'));
       it('renders phone number', () => expect(page.phone).to.equal('no'));
-      it('renders publishing key text', () => expect(page.publishingKeyText).to.equal('no'));
       it('renders email notification', () => expect(page.isEmailNotificationChecked).to.be.false);
       it('renders profile visibility', () => expect(page.profileVisibility).to.be.false);
 
@@ -57,7 +55,6 @@ describe('Acceptance | Edit Profile Form', () => {
           await page.fillLastName('Name');
           await page.fillEmail('fake@domain.com');
           await page.fillPhone('997528963');
-          await page.fillPublishingKey('ssh-rsa 1234');
           await page.clickEmailNotification();
           await page.clickProfileVisibility();
         });
@@ -66,8 +63,6 @@ describe('Acceptance | Edit Profile Form', () => {
         it('updates lastname', () => expect(page.lastname).to.equal('Name'));
         it('updates email', () => expect(page.email).to.equal('fake@domain.com'));
         it('updates phone number', () => expect(page.phone).to.equal('997528963'));
-        it('updates publishing key text', () =>
-          expect(page.publishingKeyText).to.equal('ssh-rsa 1234'));
         it('updates email notification', () => expect(page.isEmailNotificationChecked).to.be.true);
         it('updates profile visibility', () => expect(page.profileVisibility).to.be.true);
       });

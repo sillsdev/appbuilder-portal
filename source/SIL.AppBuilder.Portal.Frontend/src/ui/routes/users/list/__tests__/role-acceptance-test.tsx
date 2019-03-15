@@ -317,7 +317,6 @@ describe('Acceptance | User List | Role Management', () => {
               auth0Id: 'google-oauth2|116747902156680384840',
               'profile-visibility': 1,
               'email-notification': true,
-              'publishing-key': null,
               'workflow-user-id': '75dcb91c-0ec5-4711-b7a7-fcfd90dc8983',
               'date-created': null,
               'date-updated': '2019-02-04T19:10:02.63153',

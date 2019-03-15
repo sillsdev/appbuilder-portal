@@ -63,7 +63,6 @@ namespace SIL.AppBuilder.BuildEngineApiClient
             Require.Argument("AppId", project.AppId);
             Require.Argument("ProjectName", project.ProjectName);
             Require.Argument("LanguageCode", project.LanguageCode);
-            //Require.Argument("PublishingKey", project.PublishingKey);
 
             var request = CreateRequest("project", Method.POST)
                 .AddJsonBody(project);
