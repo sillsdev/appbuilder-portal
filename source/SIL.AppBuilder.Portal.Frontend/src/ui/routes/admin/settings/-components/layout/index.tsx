@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useTranslations } from '@lib/i18n';
-import { withLayout } from '@ui/components/layout';
 
 import Navigation from './navigation';
 
@@ -19,10 +18,8 @@ function AdminLayout({ children }) {
   );
 }
 
-const ComposeAdminLayout = withLayout(AdminLayout);
-
 export const withAdminLayout = (Component) => (props) => (
-  <ComposeAdminLayout>
+  <AdminLayout>
     <Component {...props} />
-  </ComposeAdminLayout>
+  </AdminLayout>
 );

@@ -7,16 +7,17 @@ import { baseUrl } from '@data/store';
 
 import { ReduxProvider } from '@store';
 
-import { SocketManager } from '@sockets';
+import { Sockets } from '~/sockets';
 
-import { LiveDataProvider } from '@data/live';
-import { ScrollToTop } from '@lib/routing';
+import { AuthProvider } from '~/data/containers/with-auth';
+
+import { ScrollToTop } from '~/lib/routing';
 
 import i18n from '~/translations';
 
 import { L10nLoader } from '~/translations/fetch-l10n';
 
-import { RouteListener } from './components/route-listener';
+import { RouteListener } from './components/routing/route-listener';
 import DebugInfo from './components/debug-info';
 import RootRoute from './routes/root';
 
@@ -55,9 +56,9 @@ export default class Application extends React.Component<IProps> {
               strategies.pessimisticWithRemoteIds.createStore(baseUrl, schema, keyMap)
             }
           >
-            <CurrentUserProvider>
-              <LiveDataProvider>
-                <SocketManager>
+            <AuthProvider>
+              <CurrentUserProvider>
+                <Sockets>
                   <ReduxProvider initialState={initialState || {}}>
                     <Router {...routerProps}>
                       <>
@@ -69,9 +70,9 @@ export default class Application extends React.Component<IProps> {
                       </>
                     </Router>
                   </ReduxProvider>
-                </SocketManager>
-              </LiveDataProvider>
-            </CurrentUserProvider>
+                </Sockets>
+              </CurrentUserProvider>
+            </AuthProvider>
           </APIProvider>
         </L10nLoader>
       </I18nextProvider>

@@ -8,9 +8,13 @@ import app from 'tests/helpers/pages/app';
 import scenarios, { threeOrgs, lotsOfOrgs, oneOrg } from './scenarios';
 import switcher from './page';
 
+import { isLoggedIn } from '~/lib/auth0';
+
 async function visitRootPageAndOpenSidebar() {
-  visit('/');
-  await when(() => expect(location().pathname).to.eq('/'));
+  await visit('/');
+  expect(isLoggedIn()).to.be.true;
+
+  await when(() => expect(location().pathname).to.eq('/tasks'));
 
   await app.openSidebar();
   await when(() => expect(app.isSidebarVisible).to.be.true);
@@ -25,6 +29,7 @@ async function makeOrgSwitcherVisible() {
 describe('Acceptance | Organization Switcher', () => {
   setupApplicationTest();
   setupRequestInterceptor();
+
   describe('The Current user is a member of a single organization', () => {
     scenarios.userIsInOneOrganization();
 

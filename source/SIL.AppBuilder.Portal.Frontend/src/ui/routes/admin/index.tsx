@@ -20,7 +20,6 @@ function AdminRoute() {
 }
 
 export default compose(
-  requireAuth(),
   withRole(ROLE.SuperAdmin, {
     redirectTo: '/',
   })

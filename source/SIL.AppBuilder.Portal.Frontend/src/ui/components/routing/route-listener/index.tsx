@@ -5,8 +5,11 @@ import { useRouter } from '~/lib/hooks';
 
 import { isTesting } from '~/env';
 
+import { useAuth } from '~/data/containers/with-auth';
+
 export function RouteListener() {
   const { history } = useRouter();
+  const { refreshAuth } = useAuth();
   const {
     currentUserProps: { fetchCurrentUser },
   } = useCurrentUser();
@@ -26,6 +29,8 @@ export function RouteListener() {
     // Since current user is retrieved on mount of the app,
     // this is sort of a hack to trigger the fetching of the current user data.
     history.listen((location, action) => {
+      // in testing, authentication will always be handled after initial application load.
+      refreshAuth();
       // this method takes care of
       // knowing when it needs to not actually do anything
       fetchCurrentUser();

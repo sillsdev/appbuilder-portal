@@ -4,8 +4,6 @@ import { withData as withOrbit } from 'react-orbitjs';
 import { query, buildFindRecord, buildOptions } from '@data';
 
 import { TYPE_NAME as PROJECT } from '@data/models/project';
-import { TYPE_NAME as GROUP } from '@data/models/group';
-import { PLURAL_NAME as REVIEWERS } from '@data/models/reviewer';
 import { withLoader } from '@data/containers/with-loader';
 import { withError } from '@data/containers/with-error';
 
@@ -23,13 +21,14 @@ const mapNetworkToProps = (passedProps) => {
         include: [
           'products.product-builds.product-artifacts',
           'products.user-tasks.user',
-          'products.user-tasks.product.product-definition.workflow',
+          // 'products.user-tasks.product.product-definition.workflow',
           'products.product-definition',
+          // 'products.product-workflow',
           'organization.organization-product-definitions.product-definition.workflow.store-type',
-          GROUP,
+          'group',
           'owner.group-memberships.group',
           'owner.organization-memberships.organization',
-          REVIEWERS,
+          'reviewers',
           'type',
         ],
       }),

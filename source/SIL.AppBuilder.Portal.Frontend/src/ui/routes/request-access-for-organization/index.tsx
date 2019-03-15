@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { RequestAccessForOrganizationAttributes as Attributes } from '@data/models/organization-invite';
 import { requestOrgAccessSuccessPath as successPath } from '@ui/routes/paths';
@@ -55,4 +54,4 @@ class RequestAccessForOrganizationRoute extends React.Component<IProps, IState> 
   }
 }
 
-export default compose(withRouter)(RequestAccessForOrganizationRoute);
+export default withRouter(RequestAccessForOrganizationRoute);

@@ -72,6 +72,12 @@ export function withCurrentUser(opts = {}) {
   };
 }
 
+export function LoadCurrentUser({ children }) {
+  const CurrentUserValidation = withDisplay();
+
+  return <CurrentUserValidation>{children}</CurrentUserValidation>;
+}
+
 /**
  * Private Helpers
  */

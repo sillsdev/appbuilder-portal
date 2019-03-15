@@ -3,6 +3,7 @@ import { Menu } from 'semantic-ui-react';
 import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import SearchIcon from '@material-ui/icons/Search';
 import { WithDataProps } from 'react-orbitjs';
+import { uniqBy } from 'lodash';
 
 import { idFromRecordIdentity } from '@data';
 
@@ -30,75 +31,71 @@ export type IProps = IGivenProps &
   IProvidedDataProps &
   i18nProps;
 
-class OrgSwitcherDisplay extends React.Component<IProps> {
-  render() {
-    const {
-      t,
-      organizations,
-      currentOrganizationId,
-      allOrgsSelected,
-      searchTerm,
-      didTypeInSearch,
-      selectOrganization,
-      searchResults,
-    } = this.props;
+export default function OrgSwitcherDisplay(props: IProps) {
+  const {
+    t,
+    organizations,
+    currentOrganizationId,
+    allOrgsSelected,
+    searchTerm,
+    didTypeInSearch,
+    selectOrganization,
+    searchResults,
+  } = props;
 
-    const showSearch = organizations.length > 4;
-    const results = searchResults || organizations;
-    const noResults = !results || results.length === 0;
+  const showSearch = organizations.length > 4;
+  const results = uniqBy(searchResults || organizations, (org) => org.id);
+  const noResults = !results || results.length === 0;
 
-    return (
-      <Menu
-        data-test-org-switcher
-        className='m-t-none no-borders h-100 overflows'
-        pointing
-        secondary
-        vertical
-      >
-        {showSearch && (
-          <Menu.Item
-            data-test-org-switcher-search
-            className='flex-row align-items-center border-bottom'
-          >
-            <SearchIcon />
-            <div className='ui input'>
-              <input
-                value={searchTerm}
-                className='no-borders bg-white'
-                onChange={didTypeInSearch}
-                placeholder={t('search')}
-                type='text'
-              />
-            </div>
-          </Menu.Item>
-        )}
-
-        {results.map((organization) => {
-          const id = idFromRecordIdentity(organization as any);
-
-          return (
-            <Row
-              key={organization.id}
-              organization={organization}
-              onClick={selectOrganization(id)}
-              isActive={currentOrganizationId === id}
-            />
-          );
-        })}
-
-        {noResults && <Menu.Item>{t('common.noResults')}</Menu.Item>}
-
-        <hr />
-
+  return (
+    <Menu
+      data-test-org-switcher
+      className='m-t-none no-borders h-100 overflows'
+      pointing
+      secondary
+      vertical
+    >
+      {showSearch && (
         <Menu.Item
-          data-test-select-item-all-org
-          className={(allOrgsSelected && 'active') || ''}
-          name={t('org.allOrganizations')}
-          onClick={selectOrganization('')}
-        />
-      </Menu>
-    );
-  }
-}
+          data-test-org-switcher-search
+          className='flex-row align-items-center border-bottom'
+        >
+          <SearchIcon />
+          <div className='ui input'>
+            <input
+              value={searchTerm}
+              className='no-borders bg-white'
+              onChange={didTypeInSearch}
+              placeholder={t('search')}
+              type='text'
+            />
+          </div>
+        </Menu.Item>
+      )}
 
-export default OrgSwitcherDisplay;
+      {results.map((organization) => {
+        const id = idFromRecordIdentity(organization as any);
+
+        return (
+          <Row
+            key={organization.id}
+            organization={organization}
+            onClick={selectOrganization(id)}
+            isActive={currentOrganizationId === id}
+          />
+        );
+      })}
+
+      {noResults && <Menu.Item>{t('common.noResults')}</Menu.Item>}
+
+      <hr />
+
+      <Menu.Item
+        data-test-select-item-all-org
+        className={(allOrgsSelected && 'active') || ''}
+        name={t('org.allOrganizations')}
+        onClick={selectOrganization('')}
+      />
+    </Menu>
+  );
+}

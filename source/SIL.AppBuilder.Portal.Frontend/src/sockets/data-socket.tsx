@@ -2,8 +2,6 @@ import { useEffect, useMemo } from 'react';
 import { useOrbit } from 'react-orbitjs';
 import { HubConnectionFactory, HubConnection } from '@ssv/signalr-client';
 
-import { useCurrentUser } from '~/data/containers/with-current-user';
-
 import {
   transformsToJSONAPIOperations,
   JSONAPIOperationsPayload,
@@ -24,6 +22,8 @@ import { dataToLocalCache } from '~/data/orbitjs-operations-support/serialize-fr
 import { useMemoIf } from '~/lib/hooks';
 
 import { DataHub } from './clients/data';
+
+import { useAuth } from '~/data/containers/with-auth';
 
 const mockClient: DataClient = {
   connection: {
@@ -47,9 +47,8 @@ const mockClient: DataClient = {
 
 export default function LiveDataManager({ children }) {
   const { dataStore, sources } = useOrbit();
-  const { currentUser } = useCurrentUser();
+  const { isLoggedIn, auth0Id } = useAuth();
 
-  const isLoggedIn = !!currentUser;
   const hubFactory = useMemoIf(() => new HubConnectionFactory(), !isTesting, [isLoggedIn]);
   const dataClient =
     useMemoIf(() => new DataClient(hubFactory, dataStore), !isTesting, [isLoggedIn]) || mockClient;
@@ -68,7 +67,7 @@ export default function LiveDataManager({ children }) {
       dataClient.stop();
       hubFactory.disconnectAll();
     };
-  }, [isLoggedIn]);
+  }, [isLoggedIn, auth0Id]);
 
   const pushData = (transforms: TransformOrOperations): Observable<JSONAPIOperationsPayload> => {
     const data = transformsToJSONAPIOperations(

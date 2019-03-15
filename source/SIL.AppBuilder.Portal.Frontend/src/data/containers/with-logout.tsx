@@ -1,53 +1,45 @@
 import * as React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router';
-import { withData as withOrbit, DataProviderProps as IOrbitProps } from 'react-orbitjs';
+import { useRedux } from 'use-redux';
+import { useOrbit } from 'react-orbitjs';
 import { deleteToken } from '@lib/auth0';
-import { compose } from 'recompose';
-import { connect } from 'react-redux';
 
 import { APP_RESET } from '~/redux-store/reducers';
+
+import { useAuth } from './with-auth';
+
+import { useRouter } from '~/lib/hooks';
 
 export interface IProvidedProps {
   logout: (e: any) => void;
 }
 
-interface IComposedProps {
-  resetRedux: () => void;
+export function LogoutProvider({ children }) {
+  const [, dispatch] = useRedux();
+  const { dataStore } = useOrbit();
+  const { history } = useRouter();
+  const { refreshAuth } = useAuth();
+
+  const logout = (e) => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
+
+    dispatch({ type: APP_RESET });
+    deleteToken();
+    localStorage.clear();
+    dataStore.cache.reset();
+    refreshAuth();
+
+    history.push('/login');
+  };
+
+  return children({ logout });
 }
 
-export type IProps = IOrbitProps & RouteComponentProps<{}> & IComposedProps;
-
-export function withLogout<TWrappedProps>(WrappedComponent) {
-  class LogoutProvider extends React.Component<IProps & TWrappedProps> {
-    logout = (e) => {
-      if (e && e.preventDefault) {
-        e.preventDefault();
-      }
-
-      const { history, resetRedux, dataStore } = this.props;
-
-      resetRedux();
-      deleteToken();
-      localStorage.clear();
-      dataStore.cache.reset();
-      history.push('/login');
-    };
-
-    render() {
-      return <WrappedComponent {...this.props} logout={this.logout} />;
-    }
-  }
-
-  return compose<IProps, TWrappedProps>(
-    withRouter,
-    connect(
-      null,
-      (dispatch) => {
-        return {
-          resetRedux: () => dispatch({ type: APP_RESET }),
-        };
-      }
-    ),
-    withOrbit({})
-  )(LogoutProvider);
+export function withLogout(WrappedComponent) {
+  return (props) => (
+    <LogoutProvider>
+      {({ logout }) => <WrappedComponent {...{ ...props, logout }} />}
+    </LogoutProvider>
+  );
 }

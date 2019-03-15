@@ -96,11 +96,11 @@ describe('Acceptance | Authentication', () => {
 
     describe('navigates to a route that does not require authentication', () => {
       beforeEach(async () => {
-        await visit('/not-found');
+        await visit('/open-source');
       });
 
       it('it is allowed', () => {
-        expect(location().pathname).to.equal('/not-found');
+        expect(location().pathname).to.equal('/open-source');
       });
     });
 
@@ -139,11 +139,11 @@ describe('Acceptance | Authentication', () => {
 
     describe('navigates to a route that does not require authentication', () => {
       beforeEach(async () => {
-        await visit('/not-found');
+        await visit('/open-source');
       });
 
       it('it is allowed', () => {
-        expect(location().pathname).to.equal('/not-found');
+        expect(location().pathname).to.equal('/open-source');
       });
     });
 
