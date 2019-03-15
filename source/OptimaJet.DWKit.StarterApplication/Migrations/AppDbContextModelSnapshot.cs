@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OptimaJet.DWKit.StarterApplication.Data;
-using OptimaJet.DWKit.StarterApplication.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Migrations
 {
@@ -663,6 +662,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(1);
 
+                    b.Property<string>("PublishingKey");
+
                     b.Property<string>("Timezone");
 
                     b.Property<Guid?>("WorkflowUserId");
@@ -993,7 +994,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
             modelBuilder.Entity("OptimaJet.DWKit.StarterApplication.Models.UserTask", b =>
                 {
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
-                        .WithMany("UserTasks")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
 
