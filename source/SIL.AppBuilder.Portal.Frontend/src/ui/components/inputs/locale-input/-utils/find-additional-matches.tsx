@@ -57,12 +57,8 @@ export function findAdditionalMatches(
     }
     let rawValue = suggestion[key];
     // TODO: localize separator, and values
-    let value = Array.isArray(rawValue) ? rawValue.join(', ') : rawValue;
-    let num = Array.isArray(rawValue) ? rawValue.length : 1;
-
-    if (rawValue && key === 'regions') {
-      num = rawValue.split(' ').length;
-    }
+    const value = Array.isArray(rawValue) ? rawValue.join(', ') : rawValue;
+    const num = Array.isArray(rawValue) ? rawValue.length : 1;
 
     if (has(value)) {
       updateResult({ key: translationMap[key], value, num });
