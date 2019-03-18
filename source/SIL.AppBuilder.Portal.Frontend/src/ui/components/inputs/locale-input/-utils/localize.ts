@@ -36,7 +36,6 @@ export function localizeTagData(data: ILanguageInfo[], t): ILanguageInfo[] {
         info.regions &&
         info.regions
           .map((region) => tryLocalize('territories', region, region))
-          .join(', '),
     };
   });
 }
