@@ -13,9 +13,9 @@
 set -e
 
 
-url="https://raw.githubusercontent.com/silnrsi/sldr/master/extras/alltags.json"
+url="https://raw.githubusercontent.com/silnrsi/sldr/master/extras/langtags.json"
 folder="./src/public/assets/language/"
-targetPath="${folder}alltags.json"
+targetPath="${folder}langtags.json"
 
 mkdir -p $folder
 

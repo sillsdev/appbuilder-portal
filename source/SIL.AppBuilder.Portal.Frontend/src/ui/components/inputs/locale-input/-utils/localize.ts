@@ -27,6 +27,7 @@ export function localizeTagData(data: ILanguageInfo[], t): ILanguageInfo[] {
       //  - sldr: boolean;
       //  - tag: string;
       //  - tags?: string[];
+      //  - variants?: string[];
       nameInLocale: tryLocalize('languages', info.tag, info.name),
 
       // These are the only fields that need localization
@@ -34,7 +35,6 @@ export function localizeTagData(data: ILanguageInfo[], t): ILanguageInfo[] {
       regions:
         info.regions &&
         info.regions
-          .split(' ')
           .map((region) => tryLocalize('territories', region, region))
           .join(', '),
     };

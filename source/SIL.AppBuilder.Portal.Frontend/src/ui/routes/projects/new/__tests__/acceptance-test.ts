@@ -144,7 +144,7 @@ describe('Acceptance | New Project', () => {
 
       beforeEach(function() {
         this.mockGet(200, '/application-types', scenarios.applicationTypes());
-        this.server.get('/assets/language/alltags.json').intercept((req, res) => {
+        this.server.get('/assets/language/langtags.json').intercept((req, res) => {
           res.status(200);
           res.json([
             {

@@ -56,10 +56,11 @@ interface ILanguageInfo {
   names?: string[];
   region: string;
   regionname: string;
-  regions?: string;
+  regions?: string[];
   sldr: boolean;
   tag: string;
   tags?: string[];
+  variants?: string[];
 
   // app-managed
   nameInLocale: string;

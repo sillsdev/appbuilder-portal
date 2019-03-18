@@ -119,7 +119,7 @@ const setup = function(config) {
   this.mockGet(200, '/user-tasks', { data: [] });
   this.mockGet(200, '/notifications', { data: [] });
 
-  server.get('/assets/language/alltags.json').intercept((req, res) => {
+  server.get('/assets/language/langtags.json').intercept((req, res) => {
     res.status(200);
     res.json([]);
   });

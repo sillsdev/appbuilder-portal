@@ -11,4 +11,5 @@ tests/cypress/videos/
 /test.results
 
 src/public/assets/language/alltags.json
+src/public/assets/language/langtags.json
 src/public/assets/language/**/ldml*

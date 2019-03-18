@@ -41,7 +41,7 @@ describe('Acceptance | Project Directory | Filtering | By Organization', () => {
       });
     });
 
-    server.get('/assets/language/alltags.json').intercept((req, res) => {
+    server.get('/assets/language/langtgs.json').intercept((req, res) => {
       res.status(200);
       res.json([]);
     });
