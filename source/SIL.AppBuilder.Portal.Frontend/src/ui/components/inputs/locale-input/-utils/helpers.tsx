@@ -24,7 +24,7 @@ export const getSuggestions = (data: ILanguageInfo[]) => (value) => {
       has(region) ||
       has((variants || []).join()) ||
       has(tag)
-   );
+  );
 };
 
 export const getSuggestionValue = (suggestion: ILanguageInfo) => suggestion.tag;

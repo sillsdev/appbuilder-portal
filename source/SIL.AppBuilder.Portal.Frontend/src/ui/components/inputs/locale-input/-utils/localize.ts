@@ -33,9 +33,7 @@ export function localizeTagData(data: ILanguageInfo[], t): ILanguageInfo[] {
       // These are the only fields that need localization
       region: info.region && tryLocalize('territories', info.region, info.region),
       regions:
-        info.regions &&
-        info.regions
-          .map((region) => tryLocalize('territories', region, region))
+        info.regions && info.regions.map((region) => tryLocalize('territories', region, region)),
     };
   });
 }
