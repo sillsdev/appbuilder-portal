@@ -36,14 +36,14 @@ echo "on branch: $CURRENT_BRANCH"
 
 export DEPLOY_LEVEL=staging
 case "$CURRENT_BRANCH" in
-  master)  export DEPLOY_LEVEL=alpha ;;
+  master)  export DEPLOY_LEVEL=production ;;
   develop) export DEPLOY_LEVEL=staging ;;
   "")      export DEPLOY_LEVEL=unknown ;;
   *)       export DEPLOY_LEVEL=$CURRENT_BRANCH ;;
 esac
 
 case "$CURRENT_BRANCH" in
-  master)  export ECS_CLUSTER=aps-alpha ;;
+  master)  export ECS_CLUSTER=aps-prd ;;
   develop) export ECS_CLUSTER=aps-stg ;;
 esac
 
