@@ -16,6 +16,7 @@ const translationMap = {
   region: 'region',
   regions: 'region',
   regionname: 'regionName',
+  variants: 'variant',
   tag: 'tag',
   tags: 'tag',
 };
@@ -59,10 +60,6 @@ export function findAdditionalMatches(
     // TODO: localize separator, and values
     let value = Array.isArray(rawValue) ? rawValue.join(', ') : rawValue;
     let num = Array.isArray(rawValue) ? rawValue.length : 1;
-
-    if (rawValue && key === 'regions') {
-      num = rawValue.split(' ').length;
-    }
 
     if (has(value)) {
       updateResult({ key: translationMap[key], value, num });

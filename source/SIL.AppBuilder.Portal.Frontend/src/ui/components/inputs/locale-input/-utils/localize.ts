@@ -27,16 +27,13 @@ export function localizeTagData(data: ILanguageInfo[], t): ILanguageInfo[] {
       //  - sldr: boolean;
       //  - tag: string;
       //  - tags?: string[];
+      //  - variants?: string[];
       nameInLocale: tryLocalize('languages', info.tag, info.name),
 
       // These are the only fields that need localization
       region: info.region && tryLocalize('territories', info.region, info.region),
       regions:
-        info.regions &&
-        info.regions
-          .split(' ')
-          .map((region) => tryLocalize('territories', region, region))
-          .join(', '),
+        info.regions && info.regions.map((region) => tryLocalize('territories', region, region)),
     };
   });
 }

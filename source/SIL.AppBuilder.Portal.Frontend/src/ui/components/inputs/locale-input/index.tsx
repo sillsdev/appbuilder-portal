@@ -13,7 +13,7 @@ export interface IProps {
 }
 
 function LocaleInput(props: IProps) {
-  const { error, data } = useFetch('/assets/language/alltags.json');
+  const { error, data } = useFetch('/assets/language/langtags.json');
 
   if (error) return <ErrorMessage error={error} />;
   if (!data) return null;

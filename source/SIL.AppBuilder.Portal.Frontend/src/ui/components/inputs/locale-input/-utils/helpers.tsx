@@ -16,11 +16,13 @@ export const getSuggestions = (data: ILanguageInfo[]) => (value) => {
   const has = hasSearchTerm(value);
 
   return data.filter(
-    ({ name, nameInLocale, region, tag, localname, regions, names }) =>
+    ({ name, nameInLocale, region, tag, localname, regions, names, variants }) =>
       has(nameInLocale) ||
       has((names || []).join()) ||
       has(localname || name) ||
-      has(regions || region) ||
+      has((regions || []).join()) ||
+      has(region) ||
+      has((variants || []).join()) ||
       has(tag)
   );
 };

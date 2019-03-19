@@ -13,14 +13,17 @@
 set -e
 
 
-url="https://raw.githubusercontent.com/silnrsi/sldr/master/extras/alltags.json"
+url="https://raw.githubusercontent.com/silnrsi/sldr/master/extras/langtags.json"
 folder="./src/public/assets/language/"
-targetPath="${folder}alltags.json"
+tempPath="${folder}langtags.tmp.json"
+target1Path="${folder}langtags.json"
+target2Path="${folder}specialtags.json"
 
 mkdir -p $folder
 
 echo "downloading all supported languages..."
-wget --output-document $targetPath $url
+wget --output-document $tempPath $url
+node scripts/split-langtags-json.js $tempPath $target1Path $target2Path
 echo "downloaded all supported languages"
 
 echo "downloading transaltion support for the language data..."
