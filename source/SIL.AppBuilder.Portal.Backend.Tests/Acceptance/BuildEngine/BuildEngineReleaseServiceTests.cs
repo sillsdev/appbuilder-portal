@@ -204,7 +204,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             BuildTestData(false);
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
             var mockNotificationService = Mock.Get(buildReleaseService.sendNotificationService.HubContext);
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildReleaseService.CreateReleaseAsync(product1.Id, "production", null));
+            var paramsDictionary = new Dictionary<string, object>
+            {
+                {"targets", "google-play" },
+                {"channel", "production"}
+            };
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildReleaseService.CreateReleaseAsync(product1.Id, paramsDictionary, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify that notifications are sent to the user and the org admin
             mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
@@ -232,11 +237,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Error = ""
             };
             mockBuildEngine.Setup(x => x.CreateRelease(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Release>())).Returns(releaseResponse);
-            var release = new Release
+            var paramsDictionary = new Dictionary<string, object>
             {
-                Channel = "production"
+                {"targets", "google-play" },
+                {"channel", "production"}
             };
-            await buildReleaseService.CreateReleaseAsync(product1.Id, "production", null);
+
+            await buildReleaseService.CreateReleaseAsync(product1.Id, paramsDictionary, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)

@@ -32,15 +32,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             this.sendNotificationService = sendNotificationService;
             ProductRepository = productRepository;
         }
-        public void CreateRelease(Guid productId, string channel, PerformContext context)
+        public void CreateRelease(Guid productId, Dictionary<string, object> paramsDictionary, PerformContext context)
         {
-            CreateReleaseAsync(productId, channel, context).Wait();
+            CreateReleaseAsync(productId, paramsDictionary, context).Wait();
         }
         public void CheckRelease(Guid productId)
         {
             CheckReleaseAsync(productId).Wait();
         }
-        public async Task CreateReleaseAsync(Guid productId, string channel, PerformContext context)
+        public async Task CreateReleaseAsync(Guid productId, Dictionary<string, object> paramsDictionary, PerformContext context)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
@@ -78,7 +78,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 await SendNotificationOnFinalRetryAsync(context, product.Project.Organization, product.Project.Owner, "releaseFailedUnableToConnect", messageParms);
                 throw new Exception("Connection not available");
             }
-            await CreateBuildEngineReleaseAsync(product, channel, context);
+            await CreateBuildEngineReleaseAsync(product, paramsDictionary, context);
             return;
         }
         public async Task CheckReleaseAsync(Guid productId)
@@ -149,11 +149,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             }
         }
 
-        protected async Task CreateBuildEngineReleaseAsync(Product product, string channel, PerformContext context)
+        protected async Task CreateBuildEngineReleaseAsync(Product product, Dictionary<string, object> paramsDictionary, PerformContext context)
         {
+            var channel = GetChannel(paramsDictionary);
+            var targets = GetTargets(paramsDictionary, "google-play");
+            var environment = GetEnvironment(paramsDictionary);
             var release = new Release
             {
-                Channel = channel
+                Channel = channel,
+                Targets = targets,
+                Environment = environment
             };
             ClearRecurringJob(product.Id);
             ReleaseResponse releaseResponse = null;
@@ -248,6 +253,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             var jobToken = GetHangfireToken(productId);
             RecurringJobManager.RemoveIfExists(jobToken);
             return;
+        }
+        protected static string GetChannel(Dictionary<string, object> paramsDict)
+        {
+            var retVal = "production";
+            if (paramsDict.ContainsKey("channel"))
+            {
+                retVal = paramsDict["channel"] as string;
+            }
+            return retVal;
         }
 
     }
