@@ -77,7 +77,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                                                                                messageParms);
 
                 return;
-
             }
             if (!BuildEngineLinkAvailable(product.Project.Organization))
             {
