@@ -16,6 +16,7 @@ const translationMap = {
   region: 'region',
   regions: 'region',
   regionname: 'regionName',
+  variants: 'variant',
   tag: 'tag',
   tags: 'tag',
 };
