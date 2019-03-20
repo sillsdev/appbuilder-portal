@@ -60,7 +60,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
     // default to public if not set
     const profileVisibility = !visibilityIsSet(this.state.profileVisibility)
       ? PUBLIC_PROFILE
-      : PRIVATE_PROFILE;
+      : this.state.profileVisibility;
     await this.props.onSubmit({ ...this.state, profileVisibility });
   };
 
