@@ -43,7 +43,7 @@ case "$CURRENT_BRANCH" in
 esac
 
 case "$CURRENT_BRANCH" in
-  master)  export ECS_CLUSTER=aps-prd ;;
+  master)  export ECS_CLUSTER=aps-alpha ;;
   develop) export ECS_CLUSTER=aps-stg ;;
 esac
 
