@@ -43,7 +43,8 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             var notification = new Notification()
             {
                 User = user,
-                Message = message
+                Message = message,
+                SendEmail = true
             };
             notification =  await _notificationService.CreateAsync(notification);
             await _hubContext.Clients.User(user.ExternalId).SendAsync("Notification", notification.Id);
