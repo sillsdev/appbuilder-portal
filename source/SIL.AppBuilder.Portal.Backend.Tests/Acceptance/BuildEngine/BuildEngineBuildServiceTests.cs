@@ -204,7 +204,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
             var mockNotificationService = Mock.Get(buildBuildService.SendNotificationSvc.HubContext);
             var productId = Guid.NewGuid();
-            await buildBuildService.CreateBuildAsync(productId, null);
+            var parmsDictionary = new Dictionary<string, object>
+            {
+                {"targets", "apk play-listing" }
+            };
+            await buildBuildService.CreateBuildAsync(productId, parmsDictionary, null);
             mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user3.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Single(notifications);
@@ -218,7 +222,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             BuildTestData(false);
             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
             var mockNotificationService = Mock.Get(buildBuildService.SendNotificationSvc.HubContext);
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, null));
+            var parmsDictionary = new Dictionary<string, object>
+            {
+                {"targets", "apk play-listing" }
+            };
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, parmsDictionary, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify that notifications are sent to the user and the org admin
             mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
@@ -246,13 +254,17 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Result = "",
                 Error = ""
             };
-            mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>())).Returns(buildResponse);
-            await buildBuildService.CreateBuildAsync(product1.Id, null);
+            var parmsDictionary = new Dictionary<string, object>
+            {
+                {"targets", "apk play-listing" }
+            };
+            mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>(), It.IsAny<Build>())).Returns(buildResponse);
+            await buildBuildService.CreateBuildAsync(product1.Id, parmsDictionary, null);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
-            mockBuildEngine.Verify(x => x.CreateBuild(It.Is<int>(b => b == product1.WorkflowJobId)));
+            mockBuildEngine.Verify(x => x.CreateBuild(It.Is<int>(b => b == product1.WorkflowJobId), It.IsAny<Build>()));
             var token = "CreateBuildMonitor" + product1.Id.ToString();
             mockRecurringTaskManager.Verify(x => x.AddOrUpdate(
                 It.Is<string>(t => t == token),
@@ -525,8 +537,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var mockRecurringTaskManager = Mock.Get(buildBuildService.RecurringJobManager);
             mockRecurringTaskManager.Reset();
             mockBuildEngine.Reset();
-            mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>())).Returns<BuildResponse>(null);
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, null));
+            mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>(), It.IsAny<Build>())).Returns<BuildResponse>(null);
+            var parmsDictionary = new Dictionary<string, object>
+            {
+                {"targets", "apk play-listing" }
+            };
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await buildBuildService.CreateBuildAsync(product1.Id, parmsDictionary,null));
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)

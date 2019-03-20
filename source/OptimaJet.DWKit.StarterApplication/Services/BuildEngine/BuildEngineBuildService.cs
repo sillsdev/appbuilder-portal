@@ -12,6 +12,7 @@ using OptimaJet.DWKit.StarterApplication.Utility;
 using Newtonsoft.Json;
 using Serilog;
 using Hangfire.Server;
+using Newtonsoft.Json.Linq;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -48,11 +49,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ProductBuildRepository = productBuildRepository;
             LanguageRepository = languageRepository;
         }
-        public void CreateBuild(Guid productId, PerformContext context)
+        public void CreateBuild(Guid productId, Dictionary<string, object> parmsDictionary, PerformContext context)
         {
-            CreateBuildAsync(productId, context).Wait();
+            CreateBuildAsync(productId, parmsDictionary, context).Wait();
         }
-        public async Task CreateBuildAsync(Guid productId, PerformContext context)
+        public async Task CreateBuildAsync(Guid productId, Dictionary<string, object> parmsDictionary, PerformContext context)
         {
             var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
@@ -76,7 +77,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                                                                                messageParms);
 
                 return;
-
             }
             if (!BuildEngineLinkAvailable(product.Project.Organization))
             {
@@ -95,7 +95,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             product.WorkflowBuildId = 0;
             await ProductRepository.UpdateAsync(product);
 
-            await CreateBuildEngineBuildAsync(product, context);
+            await CreateBuildEngineBuildAsync(product, parmsDictionary, context);
         }
 
         public void CheckBuild(Guid productId)
@@ -158,13 +158,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 }
             }
         }
-        protected async Task CreateBuildEngineBuildAsync(Product product, PerformContext context)
+        protected async Task CreateBuildEngineBuildAsync(Product product, Dictionary<string, object> parmsDictionary, PerformContext context)
         {
             await ResetPreviousBuildAsync(product);
             BuildResponse buildResponse = null;
             if (SetBuildEngineEndpoint(product.Project.Organization))
             {
-                buildResponse = BuildEngineApi.CreateBuild(product.WorkflowJobId);
+                var targets = GetTargets(parmsDictionary, "apk play-listing");
+                var environment = GetEnvironment(parmsDictionary);
+                var build = new Build
+                {
+                    Targets = targets,
+                    Environment = environment
+                };
+                buildResponse = BuildEngineApi.CreateBuild(product.WorkflowJobId, build);
             }
             if ((buildResponse != null) && (buildResponse.Id != 0))
             {
@@ -381,6 +388,5 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     return BuildEngineStatus.Unavailable;
             }
         }
-
     }
 }

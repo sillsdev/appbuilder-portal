@@ -129,7 +129,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
                             {"owner", new Dictionary<string, Dictionary<string, string>>() {
                                 { "data", new Dictionary<string, string>() {
                                     { "type", "users" },
-                                        { "id", user2.Id.ToString() }
+                                    { "id", user2.Id.ToString() }
                                 }}}}
                     }
                 }

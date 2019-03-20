@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using SIL.AppBuilder.BuildEngineApiClient;
@@ -113,6 +114,25 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                                                                ownerMessageId, adminMessageId, subs, linkUrl);
 
             }
+        }
+        protected static Dictionary<string, string> GetEnvironment(Dictionary<string, object> paramsDict)
+        {
+            var environment = new Dictionary<string, string>();
+            if (paramsDict.ContainsKey("environment"))
+            {
+                var myObject = paramsDict["environment"] as JObject;
+                environment = myObject.ToObject<Dictionary<string, string>>();
+            }
+            return environment;
+        }
+        protected static string GetTargets(Dictionary<string, object> paramsDict, string defaultValue)
+        {
+            var retVal = defaultValue;
+            if (paramsDict.ContainsKey("targets"))
+            {
+                retVal = paramsDict["targets"] as string;
+            }
+            return retVal;
         }
     }
 }

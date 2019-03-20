@@ -186,7 +186,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowBuildId = 0;
                     await productRepository.UpdateAsync(product);
-                    BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id, null));
+                    var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+                    BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id, parmsDict, null));
                     Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
                 }
                 else 
@@ -198,7 +199,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private async Task BuildEnginePublishProductAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
-            var channel = actionParameter ?? "production";
             using (var scope = ServiceProvider.CreateScope())
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
@@ -207,7 +207,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowPublishId = 0;
                     await productRepository.UpdateAsync(product);
-                    BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, channel, null));
+                    var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+                    BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, parmsDict, null));
                     Log.Information($"BuildEnginePublishProduct: productId={product.Id}, projectName={product.Project.Name}");
                 }
                 else

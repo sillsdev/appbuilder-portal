@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
@@ -9,9 +10,9 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         // tests are not intended to be automated, just to interact with a real 
         // system and show how the API is used.
         //
-        const string skipIntegrationTest =  "Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
+        const string skipIntegrationTest = "Integration Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
         public string BaseUrl { get; set; } = "https://buildengine.gtis.guru:8443"; // This is our staging version of BuildEngine
-        public string ApiAccessKey { get; set; } = "9389043";
+        public string ApiAccessKey { get; set; } = "replace";
 
         // This test assumes that the job exists and that the build ID being passed has
         // completed successfully
@@ -32,13 +33,20 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         // This test assumes that a job and build with the IDs being passed in already exists before the
         // test is run
         [Theory(Skip = skipIntegrationTest)]
-        [InlineData(4, 5)]
+        [InlineData(1, 8)]
         public void CreateTestBuild(int jobId,int buildId)
         {
+            var env = new Dictionary<string, string>
+            {
+                {"VAR1", "VALUE1"},
+                {"VAR2", "VALUE2"}
+            };
             var release = new Release
             {
-                Channel = "alpha"
-            };
+                Channel = "alpha",
+                Targets = "google-play",
+                Environment = env
+             };
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
             var response = client.CreateRelease(jobId, buildId, release);
             Assert.NotNull(response);
