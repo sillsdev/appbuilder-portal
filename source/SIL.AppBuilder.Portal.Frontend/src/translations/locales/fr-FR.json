@@ -16,6 +16,7 @@
     "region": "{num, plural, one {Region} other {Regions}}",
     "name": "{num, plural, one {Name} other {Names}}",
     "tag": "{num, plural, one {Tag} other {Tags}}",
+    "variant": "{num, plural, one {Variant} other {Variants}}",
     "regionName": "Region Name"
   },
   "attributions": {
@@ -131,7 +132,15 @@
   "products": {
     "definition": "Useful files that result from a series of steps.",
     "storeSelect": "Select a store for {name}",
-    "noStoresAvailable": "There are no stores available for the selected product. Please contact your organization administrator."
+    "noStoresAvailable": "There are no stores available for the selected product. Please contact your organization administrator.",
+    "actions": {
+      "executed": "{actionName} was successfully executed.",
+      "cancelled": "{actionName} was successfully cancelled.",
+      "rebuild": "Rebuild",
+      "republish": "Republish",
+      "cancel": "Cancel",
+      "noneAvailable": "No actions are currently available for this product."
+    }
   },
   "profile": {
     "title": "Profile",
@@ -258,8 +267,8 @@
       "filename": "Filename",
       "published": "Published",
       "unpublished": "Unpublished",
-      "numArtifacts": "{amount, plural, =0 {No Artifacts} other {{ amount } Artifacts}}",
-      "noArtifacts": "No artifacts",
+      "numArtifacts": "{amount, plural, =0 {No Product Files} other {{ amount } Product Files}}",
+      "noArtifacts": "No Product Files",
       "rebuild": "rebuild",
       "creationInProgress": "Pending: You cannot add a product until the project setup has been completed."
     },
