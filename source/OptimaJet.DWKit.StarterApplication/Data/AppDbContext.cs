@@ -165,10 +165,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .Property(p => p.WorkflowProjectId)
                 .HasDefaultValue(0);
 
-            notificationEntity
-                .Property(p => p.SendEmail)
-                .HasDefaultValue(true);
-
             workflowDefinitionEntity
                 .Property(w => w.Type)
                 .HasDefaultValue(WorkflowType.Startup);
