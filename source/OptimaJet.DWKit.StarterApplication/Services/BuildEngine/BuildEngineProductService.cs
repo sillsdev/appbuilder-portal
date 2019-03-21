@@ -85,6 +85,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             }
             await CreateBuildEngineProductAsync(product, context);
         }
+        public void ClearComment(Guid productId)
+        {
+            ClearCommentAsync(productId).Wait();
+        }
+        public async Task ClearCommentAsync(Guid productId)
+        {
+            var product = await ProductRepository.Get()
+                              .Where(p => p.Id == productId)
+                              .FirstOrDefaultAsync();
+            if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
+            {
+                // Clear the comment
+                product.WorkflowComment = "";
+                await ProductRepository.UpdateAsync(product);
+            }
+        }
 
         private bool ProjectUrlSet(Models.Project project)
         {

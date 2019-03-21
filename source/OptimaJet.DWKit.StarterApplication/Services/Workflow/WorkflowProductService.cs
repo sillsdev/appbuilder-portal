@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using OptimaJet.Workflow.Core.Persistence;
 using OptimaJet.Workflow.Core.Runtime;
@@ -41,6 +43,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public IJobRepository<ProductWorkflow, Guid> ProductWorkflowRepository { get; }
         public IJobRepository<WorkflowDefinition> WorkflowDefinitionRepository { get; }
         public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
+        public IBackgroundJobClient BackgroundJobClient { get; }
         public SendNotificationService SendNotificationService { get; }
         public WorkflowRuntime Runtime { get; }
 
@@ -51,6 +54,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             IJobRepository<ProductWorkflow, Guid> productWorkflowRepository,
             IJobRepository<WorkflowDefinition> workflowDefinitionRepository,
             IJobRepository<ProductTransition> productTransitionRepository,
+            IBackgroundJobClient backgroundJobClient,
             SendNotificationService sendNotificationService,
             WorkflowRuntime runtime
         ) {
@@ -60,6 +64,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             ProductWorkflowRepository = productWorkflowRepository;
             WorkflowDefinitionRepository = workflowDefinitionRepository;
             ProductTransitionRepository = productTransitionRepository;
+            BackgroundJobClient = backgroundJobClient;
             SendNotificationService = sendNotificationService;
             Runtime = runtime;
         }
@@ -159,9 +164,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             // Clear the WorkflowComment
             if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
             {
-                // Clear the comment
-                product.WorkflowComment = "";
-                await ProductRepository.UpdateAsync(product);
+                BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ClearComment(product.Id));
             }
         }
 
