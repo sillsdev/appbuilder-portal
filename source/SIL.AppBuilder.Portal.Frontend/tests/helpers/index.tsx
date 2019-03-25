@@ -2,6 +2,8 @@ import { visit, location } from '@bigtest/react';
 import Convergence, { when } from '@bigtest/convergence';
 import { expect, assert } from 'chai';
 
+import i18n from '@translations';
+
 import app from './pages/app';
 
 export { fakeAuth0Id } from './jwt';
@@ -11,6 +13,21 @@ export { respondWithJsonApi } from './request-intercepting/jsonapi';
 export { setupApplicationTest, mountWithContext } from './mounting';
 
 export { mockGet } from './request-intercepting/requests';
+
+export function resetBrowser() {
+  localStorage.clear();
+  i18n.changeLanguage('en-US');
+}
+
+export function setupBrowser() {
+  beforeEach(function() {
+    resetBrowser();
+  });
+
+  afterEach(function() {
+    resetBrowser();
+  });
+}
 
 export function wait(ms: number): Promise<void> {
   return new Promise((resolve, reject) => {

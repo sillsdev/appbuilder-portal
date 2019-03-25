@@ -93,7 +93,7 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       };
     }
 
-    async function mapResultsFn(props, result) {
+    function mapResultsFn(props, result) {
       const { dataStore, currentUser } = props;
       const { projects } = result;
 
@@ -102,25 +102,17 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       }
 
       const currentUserId = parseInt(idFromRecordIdentity(currentUser), 10);
-      const promises = projects.map((p) => {
+      const withCanArchivePermission = projects.map((p) => {
         const projectOwnerId = parseInt(attributesFor(p).ownerId, 10);
         const isOwner = projectOwnerId === currentUserId;
+        const canArchive = isOwner || roleInOrganizationOfResource(currentUser, dataStore, p, ROLE.OrganizationAdmin);
 
-        if (isOwner) {
-          return Promise.resolve(isOwner);
-        }
-
-        return roleInOrganizationOfResource(currentUser, dataStore, p, ROLE.OrganizationAdmin);
-      });
-
-      const canArchive = await Promise.all(promises);
-      const projectResult = projects.map((p, idx) => {
-        p.currentUserCanArchive = canArchive[idx];
+        p.currentUserCanArchive = canArchive;
 
         return p;
       });
 
-      return Promise.resolve({ ...result, projects: projectResult });
+      return { ...result, projects: withCanArchivePermission };
     }
 
     return compose(

@@ -8,14 +8,15 @@ import { storePath } from '~/lib/auth';
 import { useAuth } from '~/data/containers/with-auth';
 
 export function VerifyAccess() {
-  const { history } = useRouter();
+  const { location } = useRouter();
   const { isLoggedIn, hasVerifiedEmail } = useAuth();
 
-  const attemptedPath = history.location.pathname;
+  const attemptedPath = location.pathname;
 
   if (!isLoggedIn) {
     storePath(attemptedPath);
 
+    console.log('not logged in, redirecting...');
     return <Redirect push={true} to={'/login'} />;
   }
 

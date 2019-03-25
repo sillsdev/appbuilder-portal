@@ -23,6 +23,7 @@ export default function LoginRoute() {
   } = useCurrentUser();
 
   if (isLoggedIn) {
+    console.log('logged in, redirecting...')
     return <Redirect push={true} to={'/tasks'} />;
   }
 

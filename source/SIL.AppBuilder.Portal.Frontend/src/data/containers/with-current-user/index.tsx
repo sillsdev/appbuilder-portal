@@ -9,7 +9,8 @@ import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
 
 import { ICurrentUserProps } from './types';
-import { withFetcher } from './fetcher';
+import { withFetcher, CurrentUserFetcher } from './fetcher';
+import { CurrentUserFetchError } from '~/data/errors/current-user-fetch-error';
 
 export { ICurrentUserProps } from './types';
 
@@ -22,15 +23,37 @@ export function useCurrentUser() {
   return useContext(CurrentUserContext);
 }
 
-export const Provider = withFetcher()((props: ICurrentUserProps & { children: any }) => {
-  const { currentUser, currentUserProps, children } = props;
-
+export function Provider({ children }) {
   return (
-    <CurrentUserContext.Provider value={{ currentUser, currentUserProps }}>
-      {children}
-    </CurrentUserContext.Provider>
+    <CurrentUserFetcher>
+      {({ currentUser, refetch }) => {
+        return (
+          <CurrentUserContext.Provider
+            value={{
+              currentUser,
+              currentUserProps: {
+                currentUser,
+                fetchCurrentUser: refetch,
+              },
+            }}
+          >
+            {children}
+          </CurrentUserContext.Provider>
+        );
+      }}
+    </CurrentUserFetcher>
   );
-});
+}
+
+// export const Provider = withFetcher()((props: ICurrentUserProps & { children: any }) => {
+//   const { currentUser, currentUserProps, children } = props;
+
+//   return (
+//     <CurrentUserContext.Provider value={{ currentUser, currentUserProps }}>
+//       {children}
+//     </CurrentUserContext.Provider>
+//   );
+// });
 
 export function withCurrentUserContext(InnerComponent) {
   return (props) => {
@@ -106,6 +129,7 @@ function withDisplay(opts = {}) {
       if (options.redirectOnFailure) {
         toast.error(error);
 
+        console.log('there was an error getting the current user...', error, isLoading);
         return <Redirect push={true} to={'/login'} />;
       }
 
@@ -125,6 +149,7 @@ function withDisplay(opts = {}) {
     }
 
     // TODO: would it ever make sense to do an inline login instead of a redirect?
+    console.log('current user does not exist.... how?');
     return <Redirect push={true} to={'/login'} />;
   };
 }

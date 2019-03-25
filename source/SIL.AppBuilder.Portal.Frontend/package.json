@@ -204,6 +204,7 @@
     "typescript": "^3.0.1",
     "typescript-eslint-parser": "^22.0.0",
     "url-loader": "^1.0.1",
+    "use-abortable-fetch": "^2.4.0",
     "webpack": "^4.2.0",
     "webpack-bundle-analyzer": "^3.0.2",
     "webpack-cli": "^3.0.3",

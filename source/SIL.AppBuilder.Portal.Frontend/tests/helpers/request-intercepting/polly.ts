@@ -18,14 +18,18 @@ Polly.register(FetchAdapter);
 // https://github.com/Netflix/pollyjs/blob/master/packages/%40pollyjs/core/src/test-helpers/mocha.js
 export function setupRequestInterceptor(config: any = {}) {
   beforeEach(function() {
-    this.setupIntercepting = () => setup.call(this, config);
-    this.teardownIntercepting = () => teardown.call(this, context);
-
-    this.setupIntercepting(config);
+    if (!this.polly) {
+      this.setupIntercepting = () => setup.call(this, config);
+      this.teardownIntercepting = () => teardown.call(this, context);
+  
+      this.setupIntercepting(config);
+    }
   });
 
   afterEach(async function() {
-    await this.teardownIntercepting();
+    if (this.polly) {
+      await this.teardownIntercepting();
+    }
   });
 }
 
@@ -72,7 +76,7 @@ const setup = function(config) {
     persisterOptions: {
       keepUnusedRequests: false,
     },
-    // logging: true,
+    logging: true,
     recordFailedRequests: false,
     recordIfMissing: false,
     recordIfExpired: false,

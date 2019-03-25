@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { isLoggedIn, hasVerifiedEmail, getAuth0Id, isTokenExpired } from '~/lib/auth0';
+import { isLoggedIn, hasVerifiedEmail, getAuth0Id, isTokenExpired, getToken } from '~/lib/auth0';
 
 interface IAuthContextInfo {
   isLoggedIn: boolean;
   hasVerifiedEmail: boolean;
   isTokenExpired: boolean;
   auth0Id: string;
+  jwt: string;
 }
 
 type IAuthContext = IAuthContextInfo & {
@@ -14,6 +15,7 @@ type IAuthContext = IAuthContextInfo & {
 };
 
 export const AuthContext = createContext<IAuthContext>({
+  jwt: '',
   isLoggedIn: false,
   hasVerifiedEmail: false,
   isTokenExpired: true,
@@ -23,6 +25,7 @@ export const AuthContext = createContext<IAuthContext>({
 
 export function AuthProvider({ children }) {
   const [info, setInfo] = useState({
+    jwt: getToken(),
     isLoggedIn: isLoggedIn(),
     hasVerifiedEmail: hasVerifiedEmail(),
     auth0Id: getAuth0Id(),
@@ -35,6 +38,7 @@ export function AuthProvider({ children }) {
         ...info,
         refreshAuth: () =>
           setInfo({
+            jwt: getToken(),
             isLoggedIn: isLoggedIn(),
             hasVerifiedEmail: hasVerifiedEmail(),
             auth0Id: getAuth0Id(),

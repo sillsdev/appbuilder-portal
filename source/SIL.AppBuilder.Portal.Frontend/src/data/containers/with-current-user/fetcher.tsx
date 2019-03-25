@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { withData, ILegacyProvidedProps, pushPayload } from 'react-orbitjs';
 import { compose } from 'recompose';
 import { TYPE_NAME } from '@data/models/user';
@@ -14,6 +14,11 @@ import { ServerError } from '@data/errors/server-error';
 import { CurrentUserFetchError } from '@data/errors/current-user-fetch-error';
 
 import { IProps, IState, IFetchCurrentUserOptions } from './types';
+import { useAuth } from '../with-auth';
+import useAbortableFetch from 'use-abortable-fetch';
+import { PageLoader } from '~/ui/components/loaders';
+import { ErrorMessage } from '~/ui/components/errors';
+import { useFetch } from 'react-hooks-fetch';
 
 const cacheQuery = () => {
   const auth0Id = getAuth0Id();
@@ -50,6 +55,34 @@ export async function handleResponse(response, t) {
   const json = await tryParseJson(response);
 
   return json;
+}
+
+export function CurrentUserFetcher({ children }) {
+  const { jwt, isLoggedIn } = useAuth();
+  const [refetchCount, setCount] = useState();
+  const refetch = useCallback(() => setCount(refetchCount + 1), [refetchCount])
+  const options = useMemo(() => {
+    return {
+      method: 'GET',
+      headers: {
+        ['Authorization']: `Bearer ${jwt}`,
+        ['X-Refetch-Count']: refetchCount,
+      }
+    }
+  }, [jwt, isLoggedIn, refetchCount]);
+
+  const { error, data } = useFetch([
+      '/api/users/current-user',
+      '?include=organization-memberships.organization,group-memberships.group,user-roles.role',
+    ].join(''), options);
+
+  if (error) {
+    return <ErrorMessage error={error} />
+  }
+
+  if (!data) return null;
+
+  return children({ currentUser: data, refetch });
 }
 
 // TODO: store the attempted URL so that after login,
