@@ -39,11 +39,17 @@ export default function RootPage() {
       <section className='flex flex-grow'>
         <AuthConsumer>
           {({ isLoggedIn }) => {
-            if (!isLoggedIn) {
-              return <UnauthenticatedRoutes />;
-            }
-
-            return <AuthenticatedRoutes />;
+            // if (!isLoggedIn) {
+            //   return <UnauthenticatedRoutes />;
+            // }
+            // return <AuthenticatedRoutes />;
+            //
+            return (
+              <>
+                <UnauthenticatedRoutes />
+                { isLoggedIn && <AuthenticatedRoutes /> }
+              </>
+            );
           }}
         </AuthConsumer>
       </section>
