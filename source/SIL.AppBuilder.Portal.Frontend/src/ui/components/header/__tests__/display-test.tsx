@@ -9,9 +9,8 @@ import {
 import headerHelper from 'tests/helpers/components/header';
 
 describe('Acceptance | Component | Header', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     this.mockGet(200, '/organizations', {

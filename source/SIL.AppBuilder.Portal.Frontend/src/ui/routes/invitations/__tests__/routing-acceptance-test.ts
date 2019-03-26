@@ -13,9 +13,8 @@ import {
 import app from 'tests/helpers/pages/app';
 
 describe('Acceptance | Invitations | routing', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('navigates to /invitations', () => {
     beforeEach(async () => {

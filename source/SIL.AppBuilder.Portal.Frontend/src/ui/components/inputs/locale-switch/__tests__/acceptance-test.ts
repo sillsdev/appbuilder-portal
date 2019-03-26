@@ -12,9 +12,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Locale Select', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('user is on a page that shows the selector', () => {
     beforeEach(async function() {

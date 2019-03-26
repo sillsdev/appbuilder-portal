@@ -11,9 +11,8 @@ import {
 import page from '../form/__tests__/page';
 
 describe('Acceptance | Invitations | Create Organization', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     this.mockGet(200, '/organizations', {

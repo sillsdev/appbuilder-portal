@@ -27,11 +27,9 @@ async function makeOrgSwitcherVisible() {
 }
 
 describe('Acceptance | Organization Switcher', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
-
   describe('The Current user is a member of a single organization', () => {
     scenarios.userIsInOneOrganization();
+    setupApplicationTest();
 
     beforeEach(async () => {
       await visitRootPageAndOpenSidebar();
@@ -53,6 +51,7 @@ describe('Acceptance | Organization Switcher', () => {
   });
   describe('The Current User is a member of multiple organizations', () => {
     scenarios.userIsIn3Organizations();
+    setupApplicationTest();
 
     beforeEach(function() {
       this.mockGet(200, '/organizations', {
@@ -96,6 +95,7 @@ describe('Acceptance | Organization Switcher', () => {
 
   describe('The current user is a member of lots of organizations', () => {
     scenarios.userIsInLotsOfOrganizations();
+    setupApplicationTest();
 
     beforeEach(function() {
       this.mockGet(200, '/organizations', {

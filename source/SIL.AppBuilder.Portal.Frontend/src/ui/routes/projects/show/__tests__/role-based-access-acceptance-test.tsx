@@ -26,14 +26,12 @@ function attemptsToVisitTheProject() {
 }
 
 describe('Acceptance | Project View | Role Based Access', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
-
   describe('Current User Owns the Project', () => {
     const projectName = 'owned by current user';
 
     currentUserHasNoRoles();
     currentUserOwnsProject(projectName);
+    setupApplicationTest();
     attemptsToVisitTheProject();
 
     it('shows the project page', () => {
@@ -48,6 +46,7 @@ describe('Acceptance | Project View | Role Based Access', () => {
     describe('Current User is a Super Admin', () => {
       currentUserIsSuperAdmin();
       currentUserDoesNotOwnProject(projectName);
+      setupApplicationTest();
       attemptsToVisitTheProject();
 
       it('shows the project page', () => {
@@ -60,6 +59,7 @@ describe('Acceptance | Project View | Role Based Access', () => {
       describe('for the organization that the project belongs to', () => {
         currentUserIsOrgAdmin({ orgId: 1 });
         currentUserDoesNotOwnProject(projectName);
+        setupApplicationTest();
         attemptsToVisitTheProject();
 
         it('shows the project page', () => {
@@ -71,6 +71,7 @@ describe('Acceptance | Project View | Role Based Access', () => {
       describe('for a different organization than what the project belongs to', () => {
         currentUserIsOrgAdmin({ orgId: 2 });
         currentUserDoesNotOwnProject(projectName);
+        setupApplicationTest();
         attemptsToVisitTheProject();
 
         it('does not show the page', () => {
@@ -82,6 +83,7 @@ describe('Acceptance | Project View | Role Based Access', () => {
     describe('Current User is an AppBuilder', () => {
       currentUserIsAppBuilder();
       currentUserDoesNotOwnProject(projectName);
+      setupApplicationTest();
       attemptsToVisitTheProject();
 
       it('does not show the page', () => {

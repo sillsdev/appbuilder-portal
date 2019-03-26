@@ -27,9 +27,7 @@ export function setupRequestInterceptor(config: any = {}) {
   });
 
   afterEach(async function() {
-    if (this.polly) {
-      await this.teardownIntercepting();
-    }
+    await this.teardownIntercepting();
   });
 }
 
@@ -48,7 +46,9 @@ export function generateRecordingName(context) {
   return parts.reverse().join('/');
 }
 
-const teardown = async function(context) {
+export const teardown = async function(context) {
+  if (!this.polly) return;
+
   await this.polly.stop();
 
   Object.defineProperty(context, 'polly', {
@@ -62,7 +62,7 @@ const teardown = async function(context) {
   });
 };
 
-const setup = function(config) {
+export const setup = function(config) {
   const name = generateRecordingName(this);
   const pollyConfig = {
     // passthorugh bypasses Polly's request recording feature

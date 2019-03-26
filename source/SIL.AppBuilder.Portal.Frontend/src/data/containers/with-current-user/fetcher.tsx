@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { withData, ILegacyProvidedProps, pushPayload } from 'react-orbitjs';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import { withData, ILegacyProvidedProps, pushPayload, useOrbit } from 'react-orbitjs';
 import { compose } from 'recompose';
 import { TYPE_NAME } from '@data/models/user';
 import { getAuth0Id } from '@lib/auth0';
@@ -17,7 +17,7 @@ import { IProps, IState, IFetchCurrentUserOptions } from './types';
 import { useAuth } from '../with-auth';
 import useAbortableFetch from 'use-abortable-fetch';
 import { PageLoader } from '~/ui/components/loaders';
-import { ErrorMessage } from '~/ui/components/errors';
+import { ErrorMessage, PageError } from '~/ui/components/errors';
 import { useFetch } from 'react-hooks-fetch';
 
 const cacheQuery = () => {
@@ -58,31 +58,48 @@ export async function handleResponse(response, t) {
 }
 
 export function CurrentUserFetcher({ children }) {
+  const {
+    dataStore,
+    subscriptions: { users },
+  } = useOrbit({
+    users: cacheQuery(),
+  });
   const { jwt, isLoggedIn } = useAuth();
   const [refetchCount, setCount] = useState();
-  const refetch = useCallback(() => setCount(refetchCount + 1), [refetchCount])
+  const refetch = useCallback(() => setCount(refetchCount + 1), [refetchCount]);
   const options = useMemo(() => {
     return {
       method: 'GET',
       headers: {
         ['Authorization']: `Bearer ${jwt}`,
         ['X-Refetch-Count']: refetchCount,
-      }
-    }
+      },
+    };
   }, [jwt, isLoggedIn, refetchCount]);
 
-  const { error, data } = useFetch([
+  const { error, data } = useFetch(
+    [
       '/api/users/current-user',
       '?include=organization-memberships.organization,group-memberships.group,user-roles.role',
-    ].join(''), options);
+    ].join(''),
+    options
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    pushPayload(dataStore, data);
+  }, [data]);
 
   if (error) {
-    return <ErrorMessage error={error} />
+    console.log('ciu', error);
+    return <PageError error={error} />;
   }
 
-  if (!data) return null;
+  const currentUser = users && users[0];
+  if (!data || !currentUser) return null;
 
-  return children({ currentUser: data, refetch });
+  return children({ currentUser, refetch });
 }
 
 // TODO: store the attempted URL so that after login,

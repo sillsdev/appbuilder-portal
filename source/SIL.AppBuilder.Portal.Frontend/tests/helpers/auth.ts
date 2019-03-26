@@ -5,14 +5,13 @@ import { setToken, deleteToken, isLoggedIn, getToken } from '@lib/auth0';
 import { fakeAuth0JWT, fakeAuth0Id } from './jwt';
 import { respondWithJsonApi } from './request-intercepting/jsonapi';
 import { roles, userRoleFrom } from './fixtures';
-import { setupRequestInterceptor } from './request-intercepting/polly';
+import { setupRequestInterceptor, setup, teardown } from './request-intercepting/polly';
 
 // this requires the request interceptor
 // by default: this user is a super admin
 export function useFakeAuthentication(currentUser?: object) {
-  setupRequestInterceptor(); // required
-
   beforeEach(function() {
+    setup.call(this, {});
     setToken(fakeAuth0JWT());
 
     expect(isLoggedIn()).to.eq(true, 'user should be logged in, but is unauthenticated');
@@ -74,5 +73,7 @@ export function useFakeAuthentication(currentUser?: object) {
     deleteToken();
 
     expect(isLoggedIn()).to.eq(false, 'user should be logged out, but is not');
+    
+    teardown.call(this, context);
   });
 }

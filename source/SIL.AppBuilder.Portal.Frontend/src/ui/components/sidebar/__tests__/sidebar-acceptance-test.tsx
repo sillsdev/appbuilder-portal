@@ -11,9 +11,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Sidebar', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('navigate to tasks page', () => {
     beforeEach(async () => {

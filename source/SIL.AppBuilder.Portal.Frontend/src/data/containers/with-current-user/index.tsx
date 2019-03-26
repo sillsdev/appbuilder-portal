@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { Suspense } from 'react';
 import { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -25,23 +25,26 @@ export function useCurrentUser() {
 
 export function Provider({ children }) {
   return (
-    <CurrentUserFetcher>
-      {({ currentUser, refetch }) => {
-        return (
-          <CurrentUserContext.Provider
-            value={{
-              currentUser,
-              currentUserProps: {
+    <Suspense fallback={<PageLoader />}>
+      <CurrentUserFetcher>
+        {({ currentUser, refetch }) => {
+          return (
+            <CurrentUserContext.Provider
+              value={{
                 currentUser,
-                fetchCurrentUser: refetch,
-              },
-            }}
-          >
-            {children}
-          </CurrentUserContext.Provider>
-        );
-      }}
-    </CurrentUserFetcher>
+                currentUserProps: {
+                  currentUser,
+                  fetchCurrentUser: refetch,
+                },
+              }}
+            >
+              {children}
+            </CurrentUserContext.Provider>
+          );
+        }}
+      </CurrentUserFetcher>
+    </Suspense>
+
   );
 }
 
