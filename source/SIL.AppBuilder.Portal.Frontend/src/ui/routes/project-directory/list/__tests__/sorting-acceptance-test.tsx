@@ -56,17 +56,17 @@ const screens = [
 ];
 
 describe('Acceptance | Sorting', () => {
-  setupRequestInterceptor();
-
-  beforeEach(function() {
-    this.mockGet(200, 'product-definitions', { data: [] });
-  });
+  useFakeAuthentication();
 
   screens.forEach((screen) => {
     setupApplicationTest(screen.config);
-    useFakeAuthentication();
 
     describe(`on the ${screen.name} page`, () => {
+
+      beforeEach(function() {
+        this.mockGet(200, 'product-definitions', { data: [] });
+      });
+
       describe('there are 0 projects', () => {
         beforeEach(function() {
           this.mockGet(200, 'projects', zeroProjects);

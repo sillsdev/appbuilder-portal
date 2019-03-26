@@ -1,11 +1,7 @@
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
-import {
-  setupApplicationTest,
-  useFakeAuthentication,
-  setupBrowser,
-} from 'tests/helpers/index';
+import { setupApplicationTest, useFakeAuthentication, setupBrowser } from 'tests/helpers/index';
 import { userIsAppBuilderOf, userIsOrgAdminOf } from 'tests/helpers/factories/user';
 import app from 'tests/helpers/pages/app';
 
@@ -38,12 +34,12 @@ describe('Acceptance | Accessing Organization Settings', () => {
 
     it('does not redirect back to tasks', () => {
       expect(location().pathname).to.not.equal('/tasks');
-    })
+    });
   });
 
   describe('the current user is a super admin', () => {
     const url = '/organizations/1/settings';
-    
+
     useFakeAuthentication();
     setupApplicationTest();
 
@@ -66,7 +62,7 @@ describe('Acceptance | Accessing Organization Settings', () => {
 
     it('does not redirect back to tasks', () => {
       expect(location().pathname).to.not.equal('/tasks');
-    })
+    });
   });
 
   describe('the current user is an org admin of a different org', () => {
@@ -92,10 +88,9 @@ describe('Acceptance | Accessing Organization Settings', () => {
           },
         },
       });
-      
+
       await visit(url);
     });
-
 
     it('is redirected away from the target URL', () => {
       expect(location().pathname).to.equal('/tasks');

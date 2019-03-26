@@ -58,9 +58,7 @@ async function visitOrgProjectsPage() {
   await when(() =>
     assert(location().pathname === '/projects/organization', 'is on the organization page')
   );
-  await when(() =>
-    assert(pageInteractor.projectTable.isPresent, 'project table is rendered')
-  );
+  await when(() => assert(pageInteractor.projectTable.isPresent, 'project table is rendered'));
   await when(() =>
     assert(pageInteractor.projectTable.rows().length === 2, 'two projects are visible')
   );
@@ -152,45 +150,46 @@ const scenarios = [
     title: 'when I am an org Admin',
     user: users.orgAdmin,
     hasBulkArchive: true,
-  }, {
+  },
+  {
     title: 'when I am an app builder',
     user: users.appBuilder,
     hasBulkArchive: false,
-  }
-]
+  },
+];
 
 describe('Acceptance | Projects | Bulk Action Permissions', () => {
   setupBrowser();
 
-  scenarios.forEach(scenario => {
+  scenarios.forEach((scenario) => {
     context(scenario.title, () => {
       useFakeAuthentication(scenario.user);
       setupProjects();
-      setupApplicationTest({ data: { currentOrganizationId: '1' }});
+      setupApplicationTest({ data: { currentOrganizationId: '1' } });
 
       describe('the project list', () => {
         beforeEach(async function() {
           await visitOrgProjectsPage();
         });
-  
+
         it('has nothing checked initially', () => {
           const rows = pageInteractor.projectTable.rows();
-  
+
           expect(rows[0].isSelected).to.equal(false);
           expect(rows[1].isSelected).to.equal(false);
         });
-  
+
         context('when I select all projects (including those that I do not own)', () => {
           beforeEach(async () => {
             const rows = await pageInteractor.projectTable.rows();
-  
+
             await rows[0].select();
             await rows[1].select();
-  
+
             await when(() => rows[0].isSelected === true);
             await when(() => rows[1].isSelected === true);
           });
-  
+
           it('has available bulk archive action', () => {
             expect(pageInteractor.actionHeader.archive.isPresent).to.equal(scenario.hasBulkArchive);
           });
@@ -200,12 +199,12 @@ describe('Acceptance | Projects | Bulk Action Permissions', () => {
           beforeEach(async () => {
             await pageInteractor.projectTable.rowForProjectId(1).select();
           });
-  
+
           it('has available bulk archive action', () => {
             expect(pageInteractor.actionHeader.archive.isPresent).to.be.true;
           });
         });
       });
     });
-  })
+  });
 });

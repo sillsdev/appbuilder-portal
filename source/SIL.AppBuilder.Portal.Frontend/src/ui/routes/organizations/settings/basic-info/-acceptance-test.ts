@@ -11,13 +11,11 @@ import app from 'tests/helpers/pages/app';
 
 import page from './-page';
 
-describe('Acceptance | Organization Settings', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
-
+describe('Acceptance | Organization Settings | Basic Info', () => {
   describe('current user is a super admin', () => {
     useFakeAuthentication();
-
+    setupApplicationTest();
+    
     describe('the user visits the settings page', () => {
       beforeEach(async function() {
         this.mockGet(200, '/organizations/1', {

@@ -23,7 +23,6 @@ import AuthenticatedLayout from '~/ui/components/layout';
 
 import { VerifyAccess } from '~/ui/components/authorization/verify-access';
 
-
 import Workflow from './workflow';
 import * as paths from './paths';
 
@@ -35,13 +34,8 @@ export default function RootPage() {
       </div>
 
       <section className='flex flex-grow'>
-
         <Switch>
-          <Route
-            exact
-            path={paths.rootPath}
-            render={() => <Redirect to={paths.tasksPath} />}
-          />
+          <Route exact path={paths.rootPath} render={() => <Redirect to={paths.tasksPath} />} />
 
           {/* All authenticatable root paths must be specified here */}
           <Route
@@ -63,7 +57,6 @@ export default function RootPage() {
 
           <Route component={ErrorRootRoute} />
         </Switch>
-       
       </section>
     </div>
   );

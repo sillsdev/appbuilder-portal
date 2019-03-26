@@ -50,10 +50,10 @@ const screens = [
 ];
 
 describe('Acceptance | Pagination', () => {
-  setupRequestInterceptor({ matchRequestby: { order: false, headers: false } });
+  useFakeAuthentication();
+
   screens.forEach((screen) => {
     setupApplicationTest(screen.config);
-    useFakeAuthentication();
 
     beforeEach(function() {
       this.mockGet(200, 'product-definitions', { data: [] });

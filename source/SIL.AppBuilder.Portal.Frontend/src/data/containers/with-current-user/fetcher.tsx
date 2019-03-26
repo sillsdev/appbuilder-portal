@@ -12,13 +12,17 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { attributesFor } from '@data/helpers';
 import { ServerError } from '@data/errors/server-error';
 import { CurrentUserFetchError } from '@data/errors/current-user-fetch-error';
+import useAbortableFetch from 'use-abortable-fetch';
+
+import { PageLoader } from '~/ui/components/loaders';
+
+import { ErrorMessage, PageError } from '~/ui/components/errors';
+
+import { useFetch } from 'react-hooks-fetch';
+
+import { useAuth } from '../with-auth';
 
 import { IProps, IState, IFetchCurrentUserOptions } from './types';
-import { useAuth } from '../with-auth';
-import useAbortableFetch from 'use-abortable-fetch';
-import { PageLoader } from '~/ui/components/loaders';
-import { ErrorMessage, PageError } from '~/ui/components/errors';
-import { useFetch } from 'react-hooks-fetch';
 
 const cacheQuery = () => {
   const auth0Id = getAuth0Id();
@@ -92,8 +96,9 @@ export function CurrentUserFetcher({ children }) {
   }, [data]);
 
   if (error) {
-    console.log('ciu', error);
-    return <PageError error={error} />;
+    // errors are not handled here.
+    // also, this is the only way we can have 'unauthenticated routes'
+    return children({ currentUser: undefined, refetch });
   }
 
   const currentUser = users && users[0];

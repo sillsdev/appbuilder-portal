@@ -11,9 +11,8 @@ import page from './-page';
 import * as scenarios from './-scenarios';
 
 describe('Acceptance | Project Directory | Public View', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('the user visits the public project page', () => {
     const url = '/directory/1';

@@ -10,6 +10,7 @@ import PageError from '@ui/components/errors/page';
 
 import { ICurrentUserProps } from './types';
 import { withFetcher, CurrentUserFetcher } from './fetcher';
+
 import { CurrentUserFetchError } from '~/data/errors/current-user-fetch-error';
 
 export { ICurrentUserProps } from './types';
@@ -44,7 +45,6 @@ export function Provider({ children }) {
         }}
       </CurrentUserFetcher>
     </Suspense>
-
   );
 }
 

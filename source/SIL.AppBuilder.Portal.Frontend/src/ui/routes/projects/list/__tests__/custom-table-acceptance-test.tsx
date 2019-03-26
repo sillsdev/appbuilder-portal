@@ -13,9 +13,8 @@ import * as ProjectsFactory from './-factory';
 
 describe('Acceptance | My Projects | Column selector', () => {
   let pageInteractor;
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     this.mockGet(200, 'product-definitions', { data: [] });

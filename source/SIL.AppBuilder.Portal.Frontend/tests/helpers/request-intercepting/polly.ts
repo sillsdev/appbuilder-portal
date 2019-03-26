@@ -21,7 +21,7 @@ export function setupRequestInterceptor(config: any = {}) {
     if (!this.polly) {
       this.setupIntercepting = () => setup.call(this, config);
       this.teardownIntercepting = () => teardown.call(this, context);
-  
+
       this.setupIntercepting(config);
     }
   });

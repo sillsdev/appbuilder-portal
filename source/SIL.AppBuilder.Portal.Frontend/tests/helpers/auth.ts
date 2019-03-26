@@ -73,7 +73,7 @@ export function useFakeAuthentication(currentUser?: object) {
     deleteToken();
 
     expect(isLoggedIn()).to.eq(false, 'user should be logged out, but is not');
-    
+
     teardown.call(this, context);
   });
 }

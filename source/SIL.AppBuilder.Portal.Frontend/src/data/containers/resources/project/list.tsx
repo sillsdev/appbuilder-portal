@@ -105,7 +105,9 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       const withCanArchivePermission = projects.map((p) => {
         const projectOwnerId = parseInt(attributesFor(p).ownerId, 10);
         const isOwner = projectOwnerId === currentUserId;
-        const canArchive = isOwner || roleInOrganizationOfResource(currentUser, dataStore, p, ROLE.OrganizationAdmin);
+        const canArchive =
+          isOwner ||
+          roleInOrganizationOfResource(currentUser, dataStore, p, ROLE.OrganizationAdmin);
 
         p.currentUserCanArchive = canArchive;
 

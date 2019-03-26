@@ -1,7 +1,6 @@
 import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting } from '@bigtest/react';
 import * as History from 'history';
-
 import Application from '@ui/application';
 
 import 'semantic-ui-css/semantic.min.css';

@@ -13,9 +13,8 @@ import page from './page';
 import { threeProjects, DTProjects } from './scenarios';
 
 describe('Acceptance | Project Directory | Filtering | By Date', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     const { server } = this.polly;
