@@ -11,9 +11,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Project View | Product Files', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('no builds yet', () => {
     let customizer: (server, req, resp) => Promise<void>;

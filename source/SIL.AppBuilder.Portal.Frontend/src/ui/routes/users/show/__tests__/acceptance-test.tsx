@@ -12,9 +12,8 @@ import page from './page';
 const gravatarURLRegex = /https:\/\/www\.gravatar\.com\/avatar\/[a-f0-9]{32}\?s=130&d=identicon/g;
 
 describe('Acceptance | Show User', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('navigates to users page', () => {
     beforeEach(function() {

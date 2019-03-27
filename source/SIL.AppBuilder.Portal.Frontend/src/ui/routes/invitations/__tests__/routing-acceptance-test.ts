@@ -9,10 +9,12 @@ import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
+  resetBrowser,
 } from 'tests/helpers/index';
 import app from 'tests/helpers/pages/app';
 
 describe('Acceptance | Invitations | routing', () => {
+  resetBrowser();
   useFakeAuthentication();
   setupApplicationTest();
 

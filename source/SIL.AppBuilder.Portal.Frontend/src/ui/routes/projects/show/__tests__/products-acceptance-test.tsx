@@ -11,9 +11,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Project View | Products', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('Show list of products', () => {
     let customizer: (server, req, resp) => Promise<void>;

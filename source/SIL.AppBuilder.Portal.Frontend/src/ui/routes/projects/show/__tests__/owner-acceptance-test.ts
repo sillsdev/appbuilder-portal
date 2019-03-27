@@ -12,9 +12,7 @@ import {
 import { userInSameOrgDifferentGroup, userInSameOrgAndGroup } from './user-scenarios';
 import page from './page';
 
-describe('Acceptance | Project Edit | re-assigning the owner', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
+function setupMockData() {
 
   beforeEach(function() {
     this.mockGet(200, 'projects/1', {
@@ -182,9 +180,14 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
       ],
     });
   });
+}
+
+describe('Acceptance | Project Edit | re-assigning the owner', () => {
 
   describe('the user is not in the same group as the project', () => {
     userInSameOrgDifferentGroup(1, 2);
+    setupApplicationTest();
+    setupMockData();
 
     beforeEach(async function() {
       await visit('/projects/1');
@@ -202,6 +205,8 @@ describe('Acceptance | Project Edit | re-assigning the owner', () => {
 
   describe('the user is in the same group as the project', () => {
     userInSameOrgAndGroup(1, 1);
+    setupApplicationTest();
+    setupMockData();
 
     beforeEach(async function() {
       await visit('/projects/1');

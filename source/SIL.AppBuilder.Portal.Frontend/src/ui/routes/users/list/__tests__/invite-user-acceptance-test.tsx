@@ -10,6 +10,8 @@ import {
   setupRequestInterceptor,
   useFakeAuthentication,
   wait,
+  resetBrowser,
+  switchToOrg,
 } from 'tests/helpers';
 import appPage from 'tests/helpers/pages/app';
 import InviteUserModalInteractor from '@ui/routes/users/list/__tests__/-invite-user-modal';
@@ -17,12 +19,9 @@ import { Simulate } from 'react-dom/test-utils';
 
 import page from './-page';
 
-describe('Acceptance | User list | Invite User', () => {
-  setupRequestInterceptor();
-  let usersData;
-  let user;
+function mockUsersAndGroups() {
   beforeEach(async function() {
-    user = {
+    let user = {
       type: 'users',
       id: '1',
       attributes: {
@@ -31,7 +30,7 @@ describe('Acceptance | User list | Invite User', () => {
         'is-locked': false,
       },
     };
-    usersData = {
+    let usersData = {
       data: [user],
     };
     this.mockGet(200, '/users', usersData);
@@ -48,11 +47,12 @@ describe('Acceptance | User list | Invite User', () => {
       ],
     });
   });
+}
 
+describe('Acceptance | User list | Invite User', () => {
+  resetBrowser();
+  
   describe('in all orgs context', () => {
-    setupApplicationTest({
-      data: { currentOrganizationId: '' },
-    });
     useFakeAuthentication({
       data: {
         id: 1,
@@ -109,8 +109,15 @@ describe('Acceptance | User list | Invite User', () => {
         roles.superAdmin,
       ],
     });
+    setupApplicationTest({
+      data: { currentOrganizationId: '' },
+    });
+    mockUsersAndGroups();
+
     beforeEach(async () => {
-      visit('/users');
+      await visit('/');
+      await switchToOrg('All Organizations');
+      await visit('/users');
       await when(() => page.isVisible);
       await when(() => page.userTable.isVisible);
     });
@@ -121,10 +128,12 @@ describe('Acceptance | User list | Invite User', () => {
   });
 
   describe('in current org context', () => {
+    useFakeAuthentication();
     setupApplicationTest({
       data: { currentOrganizationId: '1' },
     });
-    useFakeAuthentication();
+    mockUsersAndGroups();
+
     beforeEach(async () => {
       await visit('/users');
       await when(() => page.isVisible);
@@ -146,6 +155,7 @@ describe('Acceptance | User list | Invite User', () => {
 
         describe('successuful invite', () => {
           const existingEmail = 'existing@foo.com';
+
           beforeEach(async function() {
             this.mockPost(201, '/organization-membership-invites', {
               data: {

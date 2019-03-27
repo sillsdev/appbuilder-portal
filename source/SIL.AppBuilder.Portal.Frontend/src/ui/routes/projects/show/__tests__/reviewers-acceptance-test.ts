@@ -10,9 +10,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Project View | Reviewers', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     this.mockGet(200, 'users', { data: [] });

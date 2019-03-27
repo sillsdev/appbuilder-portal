@@ -10,9 +10,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Project view | project visibility', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('Navigate to a project view with visibility set as Private', () => {
     beforeEach(function() {

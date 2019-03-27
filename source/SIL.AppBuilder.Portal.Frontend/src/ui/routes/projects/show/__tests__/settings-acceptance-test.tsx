@@ -10,9 +10,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Project View | Settings toggles', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('Toggle default to true', () => {
     beforeEach(function() {

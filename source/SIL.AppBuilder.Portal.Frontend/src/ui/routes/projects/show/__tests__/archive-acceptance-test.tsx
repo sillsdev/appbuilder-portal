@@ -10,9 +10,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Project Edit | Archive Project', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('navigates to project details page', () => {
     beforeEach(async function() {

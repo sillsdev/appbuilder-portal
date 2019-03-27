@@ -58,7 +58,13 @@ export async function openOrgSwitcher() {
 
 export async function switchToOrg(orgName: string) {
   await openOrgSwitcher();
-  await app.orgSwitcher.chooseOrganization(orgName);
+
+  if (orgName.includes('All')) {
+    await app.orgSwitcher.selectAllOrg();
+  } else {
+    await app.orgSwitcher.chooseOrganization(orgName);
+  }
+
   await when(() => app.selectedOrg);
   expect(app.selectedOrg).to.equal(orgName);
 }

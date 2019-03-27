@@ -4,68 +4,129 @@ import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 import {
   setupApplicationTest,
-  setupRequestInterceptor,
   useFakeAuthentication,
   fakeAuth0Id,
-  wait,
   switchToOrg,
+  resetBrowser,
 } from 'tests/helpers';
 import app from 'tests/helpers/pages/app';
-import switcher from '@ui/components/sidebar/org-switcher/__tests__/page';
 
 import UserTableInteractor from './-user-table';
 let userTable = null;
-describe('Acceptance | User list | Filtering users by organization', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
-  useFakeAuthentication({
-    data: {
+
+// TODO: need a record graph generator...
+let organizations = {
+  records: [
+    {
+      type: 'organizations',
+      id: 1,
+      attributes: {
+        name: 'SIL International',
+      },
+    },
+    {
+      type: 'organizations',
+      id: 2,
+      attributes: {
+        name: 'DeveloperTown',
+      },
+    },
+  ]
+}
+
+let orgMemberships = {
+  relations: [
+    { data: [{ id: 1, type: 'organization-memberships' }, { id: 4, type: 'organization-memberships' }] },
+    { data: [{ id: 2, type: 'organization-memberships' }] },
+    { data: [{ id: 3, type: 'organization-memberships' }] },
+  ],
+  records: [
+    {
+      id: 1,
+      type: 'organization-memberships',
+      attributes: {},
+      relationships: {
+        user: { data: { id: 1, type: 'users' } },
+        organization: { data: { id: 1, type: 'organizations' } },
+      },
+    },
+    {
+      id: 2,
+      type: 'organization-memberships',
+      attributes: {},
+      relationships: {
+        user: { data: { id: 2, type: 'users' } },
+        organization: { data: { id: 1, type: 'organizations' } },
+      },
+    },
+    {
+      id: 3,
+      type: 'organization-memberships',
+      attributes: {},
+      relationships: {
+        user: { data: { id: 3, type: 'users' } },
+        organization: { data: { id: 2, type: 'organizations' } },
+      },
+    },
+    {
+      id: 4,
+      type: 'organization-memberships',
+      attributes: {},
+      relationships: {
+        user: { data: { id: 1, type: 'users' } },
+        organization: { data: { id: 2, type: 'organizations' } },
+      },
+    },
+  ],
+};
+
+let users = {
+  records: [
+    {
       id: 1,
       type: 'users',
       attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
       relationships: {
-        ['organization-memberships']: {
-          data: [
-            { id: 1, type: 'organization-memberships' },
-            { id: 4, type: 'organization-memberships' },
-          ],
-        },
+        ['organization-memberships']: orgMemberships.relations[0],
+      },
+    },
+    {
+      type: 'users',
+      id: 2,
+      attributes: { familyName: 'fake', givenName: 'One' },
+      relationships: {
+        ['organization-memberships']: orgMemberships.relations[1],
+        'group-memberships': {},
+      },
+    },
+    {
+      type: 'users',
+      id: 3,
+      attributes: { familyName: 'fake', givenName: 'Two' },
+      relationships: {
+        ['organization-memberships']: orgMemberships.relations[2],
+        'group-memberships': {},
+      },
+    },
+
+  ]
+}
+
+describe('Acceptance | User list | Filtering users by organization', () => {
+  resetBrowser();
+
+  useFakeAuthentication({
+    data: {
+      ...users.records[0],
+      relationships: {
+        ...users.records[0].relationships['organization-memberships'],
         ['user-roles']: { data: [{ id: 1, type: 'user-roles' }] },
       },
     },
     included: [
-      {
-        id: 1,
-        type: 'organization-memberships',
-        attributes: {},
-        relationships: {
-          user: { data: { id: 1, type: 'users' } },
-          organization: { data: { id: 1, type: 'organizations' } },
-        },
-      },
-      {
-        id: 4,
-        type: 'organization-memberships',
-        attributes: {},
-        relationships: {
-          user: { data: { id: 1, type: 'users' } },
-          organization: { data: { id: 2, type: 'organizations' } },
-        },
-      },
-      {
-        type: 'organizations',
-        id: 1,
-        attributes: {
-          name: 'SIL International',
-        },
-      },
-      {
-        type: 'organizations',
-        id: 2,
-        attributes: {
-          name: 'DeveloperTown',
-        },
-      },
+      orgMemberships.records[0],
+      orgMemberships.records[3],
+      ...organizations.records,
       {
         id: 1,
         type: 'groups',
@@ -91,6 +152,7 @@ describe('Acceptance | User list | Filtering users by organization', () => {
       },
     ],
   });
+  setupApplicationTest();
 
   describe('User belongs multiple organizations', () => {
     beforeEach(function() {
@@ -108,134 +170,23 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         if (allOrganizations) {
           res.json({
             data: [
-              {
-                id: 1,
-                type: 'users',
-                attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
-                relationships: {
-                  ['organization-memberships']: {
-                    data: [{ id: 1, type: 'organization-memberships' }],
-                  },
-                },
-              },
-              {
-                type: 'users',
-                id: 2,
-                attributes: { familyName: 'fake', givenName: 'One' },
-                relationships: {
-                  ['organization-memberships']: {
-                    data: [{ id: 2, type: 'organization-memberships' }],
-                  },
-                  'group-memberships': {},
-                },
-              },
-              {
-                type: 'users',
-                id: 3,
-                attributes: { familyName: 'fake', givenName: 'Two' },
-                relationships: {
-                  ['organization-memberships']: {
-                    data: [{ id: 3, type: 'organization-memberships' }],
-                  },
-                  'group-memberships': {},
-                },
-              },
+              ...users.records
             ],
             included: [
-              {
-                id: 1,
-                type: 'organization-memberships',
-                attributes: {},
-                relationships: {
-                  user: { data: { id: 1, type: 'users' } },
-                  organization: { data: { id: 1, type: 'organizations' } },
-                },
-              },
-              {
-                id: 2,
-                type: 'organization-memberships',
-                attributes: {},
-                relationships: {
-                  user: { data: { id: 2, type: 'users' } },
-                  organization: { data: { id: 1, type: 'organizations' } },
-                },
-              },
-              {
-                id: 3,
-                type: 'organization-memberships',
-                attributes: {},
-                relationships: {
-                  user: { data: { id: 3, type: 'users' } },
-                  organization: { data: { id: 2, type: 'organizations' } },
-                },
-              },
-              {
-                type: 'organizations',
-                id: 1,
-                attributes: {
-                  name: 'SIL International',
-                },
-              },
-              {
-                type: 'organizations',
-                id: 2,
-                attributes: {
-                  name: 'DeveloperTown',
-                },
-              },
+              ...orgMemberships.records,
+              ...organizations.records,
             ],
           });
         } else if (selectedOrganization) {
           res.json({
             data: [
-              {
-                id: 1,
-                type: 'users',
-                attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
-                relationships: {
-                  ['organization-memberships']: {
-                    data: [{ id: 1, type: 'organization-memberships' }],
-                  },
-                },
-              },
-              {
-                type: 'users',
-                id: 2,
-                attributes: { familyName: 'fake', givenName: 'One' },
-                relationships: {
-                  ['organization-memberships']: {
-                    data: [{ id: 2, type: 'organization-memberships' }],
-                  },
-                  'group-memberships': {},
-                },
-              },
+              users.records[0],
+              users.records[1],
             ],
             included: [
-              {
-                id: 1,
-                type: 'organization-memberships',
-                attributes: {},
-                relationships: {
-                  user: { data: { id: 1, type: 'users' } },
-                  organization: { data: { id: 1, type: 'organizations' } },
-                },
-              },
-              {
-                id: 2,
-                type: 'organization-memberships',
-                attributes: {},
-                relationships: {
-                  user: { data: { id: 2, type: 'users' } },
-                  organization: { data: { id: 1, type: 'organizations' } },
-                },
-              },
-              {
-                type: 'organizations',
-                id: 1,
-                attributes: {
-                  name: 'SIL International',
-                },
-              },
+              orgMemberships.records[0],
+              orgMemberships.records[1],
+              organizations.records[0],
             ],
           });
         } else {
@@ -251,13 +202,11 @@ describe('Acceptance | User list | Filtering users by organization', () => {
         await visit('/users');
         userTable = new UserTableInteractor();
 
-        await app.openSidebar();
-        await app.openOrgSwitcher();
-        await switcher.selectAllOrg();
-
-        expect(app.selectedOrg).to.equal('All Organizations');
+        await switchToOrg('All Organizations');
         visit('/users');
+
         await when(() => userTable.isPresent);
+        expect(app.selectedOrg).to.equal('All Organizations');
       });
 
       describe('Renders users page', () => {

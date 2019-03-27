@@ -174,7 +174,7 @@
     "generic": "¡Ha ocurrido un error! {errorMessage}",
     "requiredField": "The {field} is required, but has no value",
     "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
-    "notFoundTitle": "\n¡No encontrado!",
+    "notFoundTitle": "¡No encontrado!",
     "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
     "groupRequired": "Debe ser un miembro de al menos un grupo.",
     "userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",

@@ -12,9 +12,8 @@ import UserTableInteractor from './-user-table';
 
 let userTable = null;
 describe('Acceptance | Disable User', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('navigates to users page', () => {
     beforeEach(async function() {

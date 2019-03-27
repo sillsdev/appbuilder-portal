@@ -7,11 +7,13 @@ import {
   useFakeAuthentication,
   setupRequestInterceptor,
   visitTheHomePage,
+  resetBrowser,
 } from 'tests/helpers/index';
 
 import page from './page';
 
 describe('Acceptance | Locale Select', () => {
+  resetBrowser();
   useFakeAuthentication();
   setupApplicationTest();
 

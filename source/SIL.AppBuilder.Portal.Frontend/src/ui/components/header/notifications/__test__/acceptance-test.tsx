@@ -4,7 +4,7 @@ import { location, visit } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 import { find } from 'lodash';
-import { respondWithJsonApi } from 'tests/helpers/index';
+import { respondWithJsonApi, resetBrowser } from 'tests/helpers/index';
 import {
   setupRequestInterceptor,
   useFakeAuthentication,
@@ -15,6 +15,7 @@ import Page from './-page';
 import { notifications } from './-factory';
 
 describe('Acceptance | Notifications', () => {
+  resetBrowser();
   useFakeAuthentication();
   setupApplicationTest();
 

@@ -15,9 +15,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Request Access For Organization', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     this.mockGet(200, '/organizations', {
