@@ -164,6 +164,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             // Clear the WorkflowComment
             if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
             {
+                Log.Information($"Clearing WorkflowComment={product.WorkflowComment}, Project={product.ProjectId}");
                 BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ClearComment(product.Id));
             }
         }

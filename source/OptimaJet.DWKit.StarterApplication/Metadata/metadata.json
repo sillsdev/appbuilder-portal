@@ -3047,16 +3047,6 @@
         },
         {
           "states": [
-            "RepoConfig",
-            "Repo Configuration"
-          ],
-          "roles": [
-            "*"
-          ],
-          "form": "SIL_AppBuilders_Repo_Config"
-        },
-        {
-          "states": [
             "SynchronizeData",
             "Synchronize Data"
           ],
@@ -3097,21 +3087,21 @@
         },
         {
           "states": [
-            "Published"
-          ],
-          "roles": [
-            "*"
-          ],
-          "form": "SIL_AppBuilders_Published"
-        },
-        {
-          "states": [
             "Make It Live"
           ],
           "roles": [
             "*"
           ],
           "form": "SIL_AppBuilders_Make_It_Live"
+        },
+        {
+          "states": [
+            "Repo Configuration"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Repo_Config"
         }
       ]
     }
