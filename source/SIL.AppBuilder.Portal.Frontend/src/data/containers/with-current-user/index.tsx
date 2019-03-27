@@ -48,16 +48,6 @@ export function Provider({ children }) {
   );
 }
 
-// export const Provider = withFetcher()((props: ICurrentUserProps & { children: any }) => {
-//   const { currentUser, currentUserProps, children } = props;
-
-//   return (
-//     <CurrentUserContext.Provider value={{ currentUser, currentUserProps }}>
-//       {children}
-//     </CurrentUserContext.Provider>
-//   );
-// });
-
 export function withCurrentUserContext(InnerComponent) {
   return (props) => {
     return (
@@ -105,6 +95,7 @@ export function LoadCurrentUser({ children }) {
 }
 
 /**
+ * TODO: remove all this:
  * Private Helpers
  */
 
