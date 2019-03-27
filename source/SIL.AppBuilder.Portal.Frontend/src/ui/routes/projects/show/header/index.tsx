@@ -4,15 +4,22 @@ import MoreVerticalIcon from '@material-ui/icons/MoreVert';
 import TimezoneLabel from '@ui/components/labels/timezone';
 
 import { attributesFor } from '@data';
+import { useOrbit } from 'react-orbitjs';
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 export default ({ project, t, toggleArchive, claimOwnership }) => {
   const { name, dateCreated, dateArchived, isPublic } = attributesFor(project);
+  const { dataStore } = useOrbit();
+  const { currentUser } = useCurrentUser();
 
   const toggleText = !dateArchived
     ? t('project.dropdown.archive')
     : t('project.dropdown.reactivate');
 
   const visibility = isPublic ? t('project.public') : t('project.private');
+
+  const owner = dataStore.cache.query((q) => q.findRelatedRecord(project, 'owner'));
+  const isOwner = owner.id === currentUser.id;
 
   return (
     <div className='page-heading page-heading-border-sm'>
@@ -32,11 +39,13 @@ export default ({ project, t, toggleArchive, claimOwnership }) => {
           <Dropdown pointing='top right' icon={null} trigger={<MoreVerticalIcon />}>
             <Dropdown.Menu>
               <Dropdown.Item data-test-archive text={toggleText} onClick={toggleArchive} />
-              <Dropdown.Item
-                data-test-claim-ownership
-                text={t('project.claimOwnership')}
-                onClick={claimOwnership}
-              />
+              {!isOwner && (
+                <Dropdown.Item
+                  data-test-claim-ownership
+                  text={t('project.claimOwnership')}
+                  onClick={claimOwnership}
+                />
+              )}
             </Dropdown.Menu>
           </Dropdown>
         </div>

@@ -144,6 +144,7 @@ function withDisplay(opts = {}) {
 
     // TODO: would it ever make sense to do an inline login instead of a redirect?
     console.log('current user does not exist.... how?');
-    return <Redirect push={true} to={'/login'} />;
+    return null;
+    // return <Redirect push={true} to={'/login'} />;
   };
 }
