@@ -4,7 +4,9 @@ import MoreVerticalIcon from '@material-ui/icons/MoreVert';
 import TimezoneLabel from '@ui/components/labels/timezone';
 
 import { attributesFor } from '@data';
+
 import { useOrbit } from 'react-orbitjs';
+
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
 export default ({ project, t, toggleArchive, claimOwnership }) => {
