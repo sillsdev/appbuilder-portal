@@ -53,24 +53,19 @@ export default function RootPage() {
             <AuthenticatedRoutes />
           </Route>
 
-          <UnauthenticatedRoutes />
+          <Route path={paths.loginPath} component={LoginRoute} />
+          <Route path={paths.invitationsPath} component={InvitationsRoute} />
+          <Route path={paths.openSourcePath} component={OpenSourceRoute} />
+          <Route exact path={paths.requestOrgAccessPath} component={RequestOrgAccessRoute} />
+          <Route
+            path={paths.requestOrgAccessSuccessPath}
+            component={RequestOrgAccessSuccessRoute}
+          />
 
           <Route component={ErrorRootRoute} />
         </Switch>
       </section>
     </div>
-  );
-}
-
-function UnauthenticatedRoutes() {
-  return (
-    <>
-      <Route path={paths.loginPath} component={LoginRoute} />
-      <Route path={paths.invitationsPath} component={InvitationsRoute} />
-      <Route path={paths.openSourcePath} component={OpenSourceRoute} />
-      <Route exact path={paths.requestOrgAccessPath} component={RequestOrgAccessRoute} />
-      <Route path={paths.requestOrgAccessSuccessPath} component={RequestOrgAccessSuccessRoute} />
-    </>
   );
 }
 

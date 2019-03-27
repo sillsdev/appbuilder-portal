@@ -51,7 +51,7 @@ function mockUsersAndGroups() {
 
 describe('Acceptance | User list | Invite User', () => {
   resetBrowser();
-  
+
   describe('in all orgs context', () => {
     useFakeAuthentication({
       data: {

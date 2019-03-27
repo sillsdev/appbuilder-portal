@@ -13,7 +13,6 @@ import { userInSameOrgDifferentGroup, userInSameOrgAndGroup } from './user-scena
 import page from './page';
 
 function setupMockData() {
-
   beforeEach(function() {
     this.mockGet(200, 'projects/1', {
       data: {
@@ -183,7 +182,6 @@ function setupMockData() {
 }
 
 describe('Acceptance | Project Edit | re-assigning the owner', () => {
-
   describe('the user is not in the same group as the project', () => {
     userInSameOrgDifferentGroup(1, 2);
     setupApplicationTest();

@@ -62,7 +62,6 @@ describe('Acceptance | Sorting', () => {
     setupApplicationTest(screen.config);
 
     describe(`on the ${screen.name} page`, () => {
-
       beforeEach(function() {
         this.mockGet(200, 'product-definitions', { data: [] });
       });

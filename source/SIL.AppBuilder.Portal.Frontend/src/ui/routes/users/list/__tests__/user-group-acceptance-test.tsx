@@ -280,7 +280,6 @@ describe('Acceptance | User groups', () => {
           ],
         });
       });
-  
     }
 
     describe('Current user belongs to one organization', () => {

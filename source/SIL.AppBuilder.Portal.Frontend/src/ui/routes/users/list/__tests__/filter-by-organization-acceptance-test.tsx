@@ -31,12 +31,17 @@ let organizations = {
         name: 'DeveloperTown',
       },
     },
-  ]
-}
+  ],
+};
 
 let orgMemberships = {
   relations: [
-    { data: [{ id: 1, type: 'organization-memberships' }, { id: 4, type: 'organization-memberships' }] },
+    {
+      data: [
+        { id: 1, type: 'organization-memberships' },
+        { id: 4, type: 'organization-memberships' },
+      ],
+    },
     { data: [{ id: 2, type: 'organization-memberships' }] },
     { data: [{ id: 3, type: 'organization-memberships' }] },
   ],
@@ -108,9 +113,8 @@ let users = {
         'group-memberships': {},
       },
     },
-
-  ]
-}
+  ],
+};
 
 describe('Acceptance | User list | Filtering users by organization', () => {
   resetBrowser();
@@ -169,20 +173,12 @@ describe('Acceptance | User list | Filtering users by organization', () => {
 
         if (allOrganizations) {
           res.json({
-            data: [
-              ...users.records
-            ],
-            included: [
-              ...orgMemberships.records,
-              ...organizations.records,
-            ],
+            data: [...users.records],
+            included: [...orgMemberships.records, ...organizations.records],
           });
         } else if (selectedOrganization) {
           res.json({
-            data: [
-              users.records[0],
-              users.records[1],
-            ],
+            data: [users.records[0], users.records[1]],
             included: [
               orgMemberships.records[0],
               orgMemberships.records[1],

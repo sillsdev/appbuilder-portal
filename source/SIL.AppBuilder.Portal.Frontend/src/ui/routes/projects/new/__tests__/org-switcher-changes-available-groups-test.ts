@@ -33,11 +33,9 @@ function setupMockData() {
     this.mockGet(200, 'users', { data: [] });
     this.mockGet(200, 'application-types', { data: applicationTypesData });
   });
-
 }
 
 describe('Acceptance | Project New | group select', () => {
-
   describe('the user does not have an organization selected', () => {
     userInTwoOrganizationsAndNoGroups();
     setupApplicationTest();
