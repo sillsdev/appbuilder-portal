@@ -8,6 +8,7 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Threading.Tasks;
 using Hangfire.Server;
 using System.Collections.Generic;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -124,6 +125,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             if ((jobResponse != null) && (jobResponse.Id != 0))
             {
                 product.WorkflowJobId = jobResponse.Id;
+
                 await ProductRepository.UpdateAsync(product);
                 var messageParms = new Dictionary<string, object>()
                 {
