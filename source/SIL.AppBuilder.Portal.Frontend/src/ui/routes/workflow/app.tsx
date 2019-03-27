@@ -10,6 +10,8 @@ import {
   Thunks,
   Store,
   Actions,
+  // TODO: swap this out with the local one.
+  //       this way we can customize authentication
   SignalRConnector,
   StateBindedForm,
   API,

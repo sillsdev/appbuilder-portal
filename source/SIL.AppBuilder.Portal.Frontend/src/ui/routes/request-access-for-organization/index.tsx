@@ -19,7 +19,7 @@ class RequestAccessForOrganizationRoute extends React.Component<IProps, IState> 
       const response = await this.sendRequestForAccess(data);
 
       if (response.status >= 400) {
-        this.setState({ error: response.statusText });
+        this.setState({ error: response.statusText || 'An error occurred' });
         return;
       }
 

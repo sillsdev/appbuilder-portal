@@ -7,6 +7,7 @@ import Display from './display';
 import './notification.scss';
 
 export default compose(
+  // initial loading of the notifications
   query(() => {
     return {
       notifications: [

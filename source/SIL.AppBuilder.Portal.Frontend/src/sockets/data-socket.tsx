@@ -76,11 +76,13 @@ export default function LiveDataManager({ children }) {
       transforms
     );
 
-    if (!isTesting) return;
+    if (isTesting) return;
 
-    return dataClient.connection
-      .invoke<string>('PerformOperations', JSON.stringify(data))
-      .pipe(map<string, JSONAPIOperationsPayload>((json) => handleSocketPayload(dataStore, json)));
+    return dataClient.connection.invoke<string>('PerformOperations', JSON.stringify(data)).pipe(
+      map<string, JSONAPIOperationsPayload>((json) => {
+        return handleSocketPayload(dataStore, json);
+      })
+    );
   };
 
   return children({ socket: dataClient, pushData, subscriptions });
