@@ -174,7 +174,7 @@
     "generic": "¡Ha ocurrido un error! {errorMessage}",
     "requiredField": "The {field} is required, but has no value",
     "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
-    "notFoundTitle": "¡No encontrado!",
+    "notFoundTitle": "\n¡No encontrado!",
     "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
     "groupRequired": "Debe ser un miembro de al menos un grupo.",
     "userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",
@@ -280,7 +280,7 @@
       },
       "organizationDownloads": {
         "title": "Permitir descargar a otras organizaciones",
-        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files"
+        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files be able to download the outputs of the products"
       },
       "visibility": {
         "title": "Public Visibility",
