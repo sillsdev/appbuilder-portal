@@ -2,6 +2,8 @@ import { visit, location } from '@bigtest/react';
 import Convergence, { when } from '@bigtest/convergence';
 import { expect, assert } from 'chai';
 
+import i18n from '@translations';
+
 import app from './pages/app';
 
 export { fakeAuth0Id } from './jwt';
@@ -11,6 +13,21 @@ export { respondWithJsonApi } from './request-intercepting/jsonapi';
 export { setupApplicationTest, mountWithContext } from './mounting';
 
 export { mockGet } from './request-intercepting/requests';
+
+export function resetBrowser() {
+  localStorage.clear();
+  i18n.changeLanguage('en-US');
+}
+
+export function setupBrowser() {
+  beforeEach(function() {
+    resetBrowser();
+  });
+
+  afterEach(function() {
+    resetBrowser();
+  });
+}
 
 export function wait(ms: number): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -41,7 +58,13 @@ export async function openOrgSwitcher() {
 
 export async function switchToOrg(orgName: string) {
   await openOrgSwitcher();
-  await app.orgSwitcher.chooseOrganization(orgName);
+
+  if (orgName.includes('All')) {
+    await app.orgSwitcher.selectAllOrg();
+  } else {
+    await app.orgSwitcher.chooseOrganization(orgName);
+  }
+
   await when(() => app.selectedOrg);
   expect(app.selectedOrg).to.equal(orgName);
 }

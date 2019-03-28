@@ -10,9 +10,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Organization Settings | Groups', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('Organization group page', () => {
     beforeEach(function() {

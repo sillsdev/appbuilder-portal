@@ -7,14 +7,15 @@ import {
   useFakeAuthentication,
   setupRequestInterceptor,
   visitTheHomePage,
+  resetBrowser,
 } from 'tests/helpers/index';
 
 import page from './page';
 
 describe('Acceptance | Locale Select', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
+  resetBrowser();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('user is on a page that shows the selector', () => {
     beforeEach(async function() {

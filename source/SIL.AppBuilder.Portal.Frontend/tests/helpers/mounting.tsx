@@ -1,24 +1,14 @@
 import { beforeEach, afterEach } from '@bigtest/mocha';
 import { setupAppForTesting } from '@bigtest/react';
 import * as History from 'history';
-
-import i18n from '@translations';
-
 import Application from '@ui/application';
 
 import 'semantic-ui-css/semantic.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import '@ui/styles/app.scss';
 
-function resetBrowser() {
-  localStorage.clear();
-  i18n.changeLanguage('en-US');
-}
-
 export function setupApplicationTest(initialState = {}, history?: History) {
   beforeEach(async function() {
-    resetBrowser();
-
     const historyForTesting = history || History.createMemoryHistory();
 
     this.app = await setupAppForTesting(Application, {
@@ -27,10 +17,6 @@ export function setupApplicationTest(initialState = {}, history?: History) {
         history: historyForTesting,
       },
     });
-  });
-
-  afterEach(() => {
-    resetBrowser();
   });
 }
 

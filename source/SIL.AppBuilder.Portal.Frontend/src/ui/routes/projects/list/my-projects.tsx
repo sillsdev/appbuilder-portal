@@ -31,7 +31,7 @@ export default compose(
     };
   }),
   withNetwork(),
-  withLoader(({ error, projects }) => !error && !projects),
+  withLoader(({ projects }) => !projects),
   withProps(({ projects }) => ({
     tableName: 'my-projects',
     rowCount: projects.length,

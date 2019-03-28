@@ -19,7 +19,23 @@ class OrgSwitcher {
       return el;
     }).do((el) => el.click());
   }
-  selectAllOrg = clickable('[data-test-select-item-all-org]');
+
+  selectAllOrg(this: Interactor) {
+    return this.when<HTMLElement>(() => {
+      const el = this.$$('[data-test-select-item-all-org]').find((item) =>
+        item.innerText.includes('All Organizations')
+      );
+
+      if (!el) {
+        throw new Error(
+          `cannot find 'All Organizations' button. Is the user a member of multiple organiztaions?`
+        );
+      }
+
+      return el;
+    }).do((el) => el.click());
+  }
+
   isSearchVisible = isPresent('[data-test-org-switcher-search]');
 }
 

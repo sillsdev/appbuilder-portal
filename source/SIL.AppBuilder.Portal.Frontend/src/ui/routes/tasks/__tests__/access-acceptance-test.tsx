@@ -14,9 +14,8 @@ import page from './-page';
 import { build } from '~/data/store-helpers';
 
 describe('Acceptance | Accessing Tasks', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     this.mockGet(200, '/organizations', {

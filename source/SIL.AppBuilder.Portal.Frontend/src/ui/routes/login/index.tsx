@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useCurrentUser } from '@data/containers/with-current-user';
 import { retrievePath } from '@lib/auth';
 import { useTranslations } from '@lib/i18n';
-import { hasVerifiedEmail, isLoggedIn } from '@lib/auth0';
+import { hasVerifiedEmail } from '@lib/auth0';
 
 import { useRouter } from '~/lib/hooks';
 
@@ -12,18 +12,24 @@ import * as paths from '@ui/routes/paths';
 
 import AutoMountingLock from './auth0-lock-auto-mount';
 
+import { useAuth } from '~/data/containers/with-auth';
+
 export default function LoginRoute() {
   const { t } = useTranslations();
   const { history } = useRouter();
+  const { refreshAuth, isLoggedIn } = useAuth();
   const {
     currentUserProps: { fetchCurrentUser },
   } = useCurrentUser();
 
-  if (isLoggedIn()) {
+  if (isLoggedIn) {
+    console.log('logged in, redirecting...');
     return <Redirect push={true} to={'/tasks'} />;
   }
 
   const afterLogin = async () => {
+    refreshAuth();
+
     if (!hasVerifiedEmail()) {
       history.push('/verify-email');
     } else {

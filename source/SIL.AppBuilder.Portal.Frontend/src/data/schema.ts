@@ -164,6 +164,17 @@ const schemaDefinition: SchemaSettings = {
         productBuilds: { type: 'hasMany', model: 'productBuild', inverse: 'product' },
         productArtifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'product' },
         tasks: { type: 'hasMany', model: 'userTask', inverse: 'product' },
+        productActions: { type: 'hasOne', model: 'productAction', inverse: 'products' },
+        productWorkflow: { type: 'hasOne', model: 'productWorkflow', inverse: 'products' },
+      },
+    },
+    productAction: {
+      keys: { remoteId: {} },
+      attributes: {
+        types: { type: 'array' },
+      },
+      relationships: {
+        products: { type: 'hasMany', model: 'product', inverse: 'productActions' },
       },
     },
     productBuild: {
@@ -208,6 +219,16 @@ const schemaDefinition: SchemaSettings = {
         },
         type: { type: 'hasOne', model: 'applicationType', inverse: 'productDefinitions' },
         workflow: { type: 'hasOne', model: 'workflowDefinition', inverse: 'productDefinitions' },
+        rebuildWorkflow: {
+          type: 'hasOne',
+          model: 'workflowDefinition',
+          inverse: 'productsForRebuild',
+        },
+        republishWorkflow: {
+          type: 'hasOne',
+          model: 'workflowDefinition',
+          inverse: 'productsForRepublish',
+        },
       },
     },
     store: {
@@ -342,6 +363,7 @@ const schemaDefinition: SchemaSettings = {
       attributes: {
         name: { type: 'string' },
         description: { type: 'string' },
+        type: { type: 'number' },
         enabled: { type: 'boolean' },
         workflowBusinessFlow: { type: 'string' },
         workflowScheme: { type: 'string' },
@@ -349,6 +371,16 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         productDefinitions: { type: 'hasMany', model: 'productDefinition', inverse: 'workflow' },
         storeType: { type: 'hasOne', model: 'storeType', inverse: 'workflowDefinitions' },
+        productsForRebuild: {
+          type: 'hasMany',
+          model: 'productDefinition',
+          inverse: 'rebuildWorkflow',
+        },
+        productsForRepublish: {
+          type: 'hasMany',
+          model: 'productDefinition',
+          inverse: 'republishWorkflow',
+        },
       },
     },
     notification: {

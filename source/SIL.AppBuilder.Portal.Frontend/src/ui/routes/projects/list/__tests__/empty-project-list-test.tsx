@@ -13,9 +13,9 @@ import PageInteractor from './-page-interactor';
 import Page from '~/ui/routes/project-directory/show/-page';
 
 describe('Acceptance | Project Table | Empty list', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
+
   let pageInteractor;
   describe('Render an empty project list page', () => {
     beforeEach(function() {

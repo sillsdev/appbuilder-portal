@@ -16,11 +16,9 @@ import UserTableInteractor from './-user-table';
 let userTable = new UserTableInteractor();
 
 describe('Acceptance | User List | Role Management', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
-
   describe('current user is in one organization', () => {
     useFakeAuthentication();
+    setupApplicationTest();
 
     beforeEach(function() {
       this.mockGet(200, '/users', {
@@ -121,72 +119,76 @@ describe('Acceptance | User List | Role Management', () => {
   });
 
   describe('A User belongs to two organizations', () => {
-    beforeEach(function() {
-      this.mockGet(200, '/users', {
-        data: [
-          {
-            type: 'users',
-            id: 2,
-            attributes: {
-              name: 'Fake user',
-              email: 'fake.user@fake.com',
-            },
-            relationships: {
-              'user-roles': {
-                data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
+    function setupData() {
+      beforeEach(function() {
+        this.mockGet(200, '/users', {
+          data: [
+            {
+              type: 'users',
+              id: 2,
+              attributes: {
+                name: 'Fake user',
+                email: 'fake.user@fake.com',
               },
-              'organization-memberships': {
-                data: [
-                  {
-                    type: 'organization-memberships',
-                    id: 2,
-                  },
-                  {
-                    type: 'organization-memberships',
-                    id: 3,
-                  },
-                ],
+              relationships: {
+                'user-roles': {
+                  data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
+                },
+                'organization-memberships': {
+                  data: [
+                    {
+                      type: 'organization-memberships',
+                      id: 2,
+                    },
+                    {
+                      type: 'organization-memberships',
+                      id: 3,
+                    },
+                  ],
+                },
               },
             },
-          },
-        ],
-        included: [
-          {
-            type: 'organizations',
-            id: 1,
-            attributes: { name: 'DeveloperTown' },
-          },
-          {
-            type: 'organizations',
-            id: 2,
-            attributes: { name: 'SIL' },
-          },
-          {
-            type: 'organization-memberships',
-            id: 2,
-            relationships: {
-              organization: { data: { type: 'organization', id: 1 } },
-              user: { data: { type: 'user', id: 2 } },
+          ],
+          included: [
+            {
+              type: 'organizations',
+              id: 1,
+              attributes: { name: 'DeveloperTown' },
             },
-          },
-          {
-            type: 'organization-memberships',
-            id: 3,
-            relationships: {
-              organization: { data: { type: 'organization', id: 2 } },
-              user: { data: { type: 'user', id: 2 } },
+            {
+              type: 'organizations',
+              id: 2,
+              attributes: { name: 'SIL' },
             },
-          },
-          userRoleFrom(roles.orgAdmin, { id: 2, userId: 2, orgId: 1 }),
-          userRoleFrom(roles.appBuilder, { id: 3, userId: 2, orgId: 1 }),
-          roles.orgAdmin,
-          roles.appBuilder,
-        ],
+            {
+              type: 'organization-memberships',
+              id: 2,
+              relationships: {
+                organization: { data: { type: 'organization', id: 1 } },
+                user: { data: { type: 'user', id: 2 } },
+              },
+            },
+            {
+              type: 'organization-memberships',
+              id: 3,
+              relationships: {
+                organization: { data: { type: 'organization', id: 2 } },
+                user: { data: { type: 'user', id: 2 } },
+              },
+            },
+            userRoleFrom(roles.orgAdmin, { id: 2, userId: 2, orgId: 1 }),
+            userRoleFrom(roles.appBuilder, { id: 3, userId: 2, orgId: 1 }),
+            roles.orgAdmin,
+            roles.appBuilder,
+          ],
+        });
       });
-    });
+    }
 
     describe('Current user belongs to one organization', () => {
       useFakeAuthentication();
+      setupApplicationTest();
+      setupData();
 
       beforeEach(async function() {
         await visit('/users');
@@ -252,6 +254,8 @@ describe('Acceptance | User List | Role Management', () => {
           roles.superAdmin,
         ],
       });
+      setupApplicationTest();
+      setupData();
 
       beforeEach(async function() {
         await visit('/users');
@@ -270,6 +274,7 @@ describe('Acceptance | User List | Role Management', () => {
 
   describe('current user is editing itself', () => {
     useFakeAuthentication();
+    setupApplicationTest();
 
     beforeEach(function() {
       const paylo1ad = {

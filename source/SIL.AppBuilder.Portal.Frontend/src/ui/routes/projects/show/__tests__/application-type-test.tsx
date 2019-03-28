@@ -10,9 +10,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Project view | Application Type', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('Use dictonary app Builder type', () => {
     beforeEach(function() {

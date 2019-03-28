@@ -24,11 +24,16 @@ export default function ItemActions({ product }) {
   useEffect(() => {
     async function fetcher() {
       let response = await get(`/api/products/${productRemoteId}/actions`);
-      let json = await response.json();
 
-      let { types } = attributesFor(json.data);
+      try {
+        let json = await response.json();
 
-      setActions(types || []);
+        let { types } = attributesFor(json.data);
+
+        setActions(types || []);
+      } catch (e) {
+        console.debug('actions not ready, or do not exist');
+      }
     }
 
     fetcher();

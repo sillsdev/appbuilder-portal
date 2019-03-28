@@ -15,9 +15,8 @@ import {
 import page from './page';
 
 describe('Acceptance | Request Access For Organization', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     this.mockGet(200, '/organizations', {
@@ -41,19 +40,20 @@ describe('Acceptance | Request Access For Organization', () => {
     });
 
     describe('the form is filled', () => {
-      beforeEach(async function() {
-        await page.fillName('Acme Inc.');
-        await page.fillEmail('orgAdmin@acmeinc.org');
-        await page.fillSite('acmeinc.org');
-        await page.clickSubmit();
-      });
+      function fillForm() {
+        beforeEach(async function() {
+          await page.fillName('Acme Inc.');
+          await page.fillEmail('orgAdmin@acmeinc.org');
+          await page.fillSite('acmeinc.org');
+          await page.clickSubmit();
+        });
+      }
 
       describe('an error occurs', () => {
-        beforeEach(async function() {
-          const { server } = this.polly;
-
-          server.post('/url-tbd').intercept((req, res) => res.sendStatus(422));
+        beforeEach(function() {
+          this.mockPost(422, '/organization-invite-requests', 'error?');
         });
+        fillForm();
 
         it('shows an error message', () => {
           expect(page.hasError).to.be.true;
@@ -61,11 +61,10 @@ describe('Acceptance | Request Access For Organization', () => {
       });
 
       describe('an error does not occur', () => {
-        beforeEach(async function() {
-          const { server } = this.polly;
-
-          server.post('/url-tbd').intercept((req, res) => res.sendStatus(200));
+        beforeEach(function() {
+          this.mockPost(200, '/organization-invite-requests', {});
         });
+        fillForm();
 
         xit('is redirected to the success screen', () => {
           expect(location().pathname).to.eq(successPath);

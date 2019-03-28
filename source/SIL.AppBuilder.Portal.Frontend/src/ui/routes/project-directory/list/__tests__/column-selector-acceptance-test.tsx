@@ -12,9 +12,8 @@ import ProjectTableInteractor from '@ui/components/project-table/__tests__/page'
 const page = new ProjectTableInteractor();
 
 describe('Acceptance | Project Directory | Column selector', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   beforeEach(function() {
     this.mockGet(200, 'product-definitions', { data: [] });

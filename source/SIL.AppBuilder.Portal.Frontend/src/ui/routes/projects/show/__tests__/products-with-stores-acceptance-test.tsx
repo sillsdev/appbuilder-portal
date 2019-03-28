@@ -14,10 +14,9 @@ import { ProductsInteractor } from '~/ui/routes/projects/show/overview/products/
 
 import i18n from '@translations';
 
-describe('Acceptance | Project View | Products', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
+describe('Acceptance | Project View | Products With Stores', () => {
   useFakeAuthentication();
+  setupApplicationTest();
 
   let page;
 

@@ -12,7 +12,6 @@ import page from './page';
 
 const scenarios = {
   appWithSelectedOrg(orgId = '') {
-    setupRequestInterceptor();
     setupApplicationTest({ data: { currentOrganizationId: orgId } });
   },
   userHasNoGroups() {
@@ -108,8 +107,8 @@ const scenarios = {
 
 describe('Acceptance | New Project', () => {
   describe('the user has no groups', () => {
-    scenarios.appWithSelectedOrg();
     scenarios.userHasNoGroups();
+    scenarios.appWithSelectedOrg();
 
     describe('navigates to new project page', () => {
       beforeEach(async function() {
@@ -124,8 +123,8 @@ describe('Acceptance | New Project', () => {
 
   describe('the user has groups', () => {
     describe('but has all organizations selected', () => {
-      scenarios.appWithSelectedOrg('');
       scenarios.userHasNoGroups();
+      scenarios.appWithSelectedOrg('');
 
       describe('navigates to the new project page', () => {
         beforeEach(async function() {
@@ -139,8 +138,8 @@ describe('Acceptance | New Project', () => {
     });
 
     describe('navigates to the new project page', () => {
-      scenarios.appWithSelectedOrg('1');
       scenarios.userHasGroups();
+      scenarios.appWithSelectedOrg('1');
 
       beforeEach(function() {
         this.mockGet(200, '/application-types', scenarios.applicationTypes());

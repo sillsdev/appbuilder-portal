@@ -7,6 +7,7 @@ import {
   setupRequestInterceptor,
   useFakeAuthentication,
   fakeAuth0Id,
+  resetBrowser,
 } from 'tests/helpers';
 
 import UserTableInteractor from './-user-table';
@@ -14,11 +15,11 @@ import UserTableInteractor from './-user-table';
 let userTable = null;
 
 describe('Acceptance | User groups', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
+  resetBrowser();
 
   describe('In users page', () => {
     useFakeAuthentication();
+    setupApplicationTest();
 
     beforeEach(function() {
       this.mockGet(200, '/users', {
@@ -172,115 +173,119 @@ describe('Acceptance | User groups', () => {
   });
 
   describe('User belongs to two organizations', () => {
-    beforeEach(function() {
-      this.mockGet(200, '/users', {
-        data: [
-          {
-            type: 'users',
-            id: 2,
-            attributes: {
-              name: 'Fake user',
-              email: 'fake-email@fake.email',
-            },
-            relationships: {
-              'group-memberships': {
-                data: [
-                  { type: 'group-memberships', id: 4 },
-                  { type: 'group-memberships', id: 5 },
-                  { type: 'group-memberships', id: 6 },
-                ],
+    function setupUsersMock() {
+      beforeEach(function() {
+        this.mockGet(200, '/users', {
+          data: [
+            {
+              type: 'users',
+              id: 2,
+              attributes: {
+                name: 'Fake user',
+                email: 'fake-email@fake.email',
               },
-              'organization-memberships': {
-                data: [
-                  {
-                    type: 'organization-memberships',
-                    id: 2,
-                  },
-                  {
-                    type: 'organization-memberships',
-                    id: 3,
-                  },
-                ],
+              relationships: {
+                'group-memberships': {
+                  data: [
+                    { type: 'group-memberships', id: 4 },
+                    { type: 'group-memberships', id: 5 },
+                    { type: 'group-memberships', id: 6 },
+                  ],
+                },
+                'organization-memberships': {
+                  data: [
+                    {
+                      type: 'organization-memberships',
+                      id: 2,
+                    },
+                    {
+                      type: 'organization-memberships',
+                      id: 3,
+                    },
+                  ],
+                },
               },
             },
-          },
-        ],
-        included: [
-          {
-            type: 'organizations',
-            id: 2,
-            attributes: { name: 'SIL' },
-          },
-          {
-            type: 'organization-memberships',
-            id: 2,
-            relationships: {
-              organization: { data: { type: 'organization', id: 1 } },
-              user: { data: { type: 'user', id: 2 } },
+          ],
+          included: [
+            {
+              type: 'organizations',
+              id: 2,
+              attributes: { name: 'SIL' },
             },
-          },
-          {
-            type: 'organization-memberships',
-            id: 3,
-            relationships: {
-              organization: { data: { type: 'organization', id: 2 } },
-              user: { data: { type: 'user', id: 2 } },
+            {
+              type: 'organization-memberships',
+              id: 2,
+              relationships: {
+                organization: { data: { type: 'organization', id: 1 } },
+                user: { data: { type: 'user', id: 2 } },
+              },
             },
-          },
-          {
-            type: 'group-memberships',
-            id: 4,
-            relationships: {
-              group: { data: { type: 'groups', id: 1 } },
-              user: { data: { type: 'users', id: 2 } },
+            {
+              type: 'organization-memberships',
+              id: 3,
+              relationships: {
+                organization: { data: { type: 'organization', id: 2 } },
+                user: { data: { type: 'user', id: 2 } },
+              },
             },
-          },
-          {
-            type: 'group-memberships',
-            id: 5,
-            relationships: {
-              group: { data: { type: 'groups', id: 2 } },
-              user: { data: { type: 'users', id: 2 } },
+            {
+              type: 'group-memberships',
+              id: 4,
+              relationships: {
+                group: { data: { type: 'groups', id: 1 } },
+                user: { data: { type: 'users', id: 2 } },
+              },
             },
-          },
-          {
-            type: 'group-memberships',
-            id: 6,
-            relationships: {
-              group: { data: { type: 'groups', id: 3 } },
-              user: { data: { type: 'users', id: 2 } },
+            {
+              type: 'group-memberships',
+              id: 5,
+              relationships: {
+                group: { data: { type: 'groups', id: 2 } },
+                user: { data: { type: 'users', id: 2 } },
+              },
             },
-          },
-          {
-            type: 'groups',
-            id: 1,
-            attributes: { name: 'Fake group', abbreviation: 'FG' },
-            relationships: {
-              owner: { data: { type: 'organizations', id: 1 } },
+            {
+              type: 'group-memberships',
+              id: 6,
+              relationships: {
+                group: { data: { type: 'groups', id: 3 } },
+                user: { data: { type: 'users', id: 2 } },
+              },
             },
-          },
-          {
-            type: 'groups',
-            id: 2,
-            attributes: { name: 'Another Fake group', abbreviation: 'AFG' },
-            relationships: {
-              owner: { data: { type: 'organizations', id: 1 } },
+            {
+              type: 'groups',
+              id: 1,
+              attributes: { name: 'Fake group', abbreviation: 'FG' },
+              relationships: {
+                owner: { data: { type: 'organizations', id: 1 } },
+              },
             },
-          },
-          {
-            type: 'groups',
-            id: 3,
-            attributes: { name: 'SIL fake group', abbreviation: 'SFG' },
-            relationships: {
-              owner: { data: { type: 'organizations', id: 2 } },
+            {
+              type: 'groups',
+              id: 2,
+              attributes: { name: 'Another Fake group', abbreviation: 'AFG' },
+              relationships: {
+                owner: { data: { type: 'organizations', id: 1 } },
+              },
             },
-          },
-        ],
+            {
+              type: 'groups',
+              id: 3,
+              attributes: { name: 'SIL fake group', abbreviation: 'SFG' },
+              relationships: {
+                owner: { data: { type: 'organizations', id: 2 } },
+              },
+            },
+          ],
+        });
       });
-    });
+    }
 
     describe('Current user belongs to one organization', () => {
       useFakeAuthentication();
+      setupApplicationTest();
+      setupUsersMock();
 
       beforeEach(async function() {
         await visit('/users');
@@ -355,6 +360,8 @@ describe('Acceptance | User groups', () => {
           },
         ],
       });
+      setupApplicationTest();
+      setupUsersMock();
 
       beforeEach(async function() {
         await visit('/users');

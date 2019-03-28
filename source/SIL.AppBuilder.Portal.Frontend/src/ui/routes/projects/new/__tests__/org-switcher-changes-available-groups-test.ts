@@ -28,17 +28,18 @@ async function newProjectWithSelectedOrg(orgName: string) {
   await visit('/projects/new');
 }
 
-describe('Acceptance | Project New | group select', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
-
+function setupMockData() {
   beforeEach(function() {
     this.mockGet(200, 'users', { data: [] });
     this.mockGet(200, 'application-types', { data: applicationTypesData });
   });
+}
 
+describe('Acceptance | Project New | group select', () => {
   describe('the user does not have an organization selected', () => {
     userInTwoOrganizationsAndNoGroups();
+    setupApplicationTest();
+    setupMockData();
 
     beforeEach(async function() {
       await visitTheHomePage();
@@ -57,6 +58,8 @@ describe('Acceptance | Project New | group select', () => {
   describe('the user has an organization selected', () => {
     describe('the user is not in a group', () => {
       userInTwoOrganizationsAndNoGroups();
+      setupApplicationTest();
+      setupMockData();
 
       beforeEach(async function() {
         await visitTheHomePage();
@@ -71,6 +74,8 @@ describe('Acceptance | Project New | group select', () => {
 
     describe('the user is in one group', () => {
       userInTwoOrganizationsButOnlyOneGroup();
+      setupApplicationTest();
+      setupMockData();
 
       beforeEach(async function() {
         await visitTheHomePage();

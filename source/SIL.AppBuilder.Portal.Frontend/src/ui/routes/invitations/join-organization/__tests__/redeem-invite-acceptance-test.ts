@@ -14,10 +14,10 @@ import i18n from '@translations';
 import page from './-page';
 
 describe('Acceptance | Organization Membership Invites', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   describe('follow an invitation link', () => {
-    context('when not logged in', () => {
+    describe('when not logged in', () => {
+      setupApplicationTest();
+
       beforeEach(() => {
         visit('/invitations/organization-membership/any-token');
       });
@@ -27,7 +27,7 @@ describe('Acceptance | Organization Membership Invites', () => {
       });
     });
 
-    context('when logged in', () => {
+    describe('when logged in', () => {
       useFakeAuthentication({
         data: {
           attributes: {
@@ -113,8 +113,9 @@ describe('Acceptance | Organization Membership Invites', () => {
           },
         ],
       });
+      setupApplicationTest();
 
-      context('invite is not redeemed', () => {
+      describe('invite is not redeemed', () => {
         beforeEach(function() {
           this.mockPatch(404, '/organization-membership-invites/redeem/any-token', {
             errors: [{ title: 'organization-membership.invite.error.not-found', status: '404' }],
@@ -133,7 +134,7 @@ describe('Acceptance | Organization Membership Invites', () => {
       });
 
       describe('error handling', () => {
-        context('invite is expired', () => {
+        describe('invite is expired', () => {
           beforeEach(function() {
             this.mockPatch(403, '/organization-membership-invites/redeem/any-token', {
               errors: [
@@ -158,7 +159,7 @@ describe('Acceptance | Organization Membership Invites', () => {
           });
         });
 
-        context('invite is already redeemed', () => {
+        describe('invite is already redeemed', () => {
           beforeEach(function() {
             this.mockPatch(403, '/organization-membership-invites/redeem/any-token', {
               errors: [
@@ -182,7 +183,7 @@ describe('Acceptance | Organization Membership Invites', () => {
             expect(page.homeLink.isPresent).to.be.true;
           });
         });
-        context('invite is not found', () => {
+        describe('invite is not found', () => {
           beforeEach(function() {
             this.mockPatch(404, '/organization-membership-invites/redeem/any-token', {
               errors: [
@@ -207,7 +208,7 @@ describe('Acceptance | Organization Membership Invites', () => {
           });
         });
 
-        context('unexpected error', () => {
+        describe('unexpected error', () => {
           beforeEach(function() {
             this.mockPatch(
               400,

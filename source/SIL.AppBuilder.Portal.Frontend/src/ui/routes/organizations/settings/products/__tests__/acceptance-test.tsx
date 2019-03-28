@@ -9,9 +9,8 @@ import {
 import multiSelect from '@ui/components/inputs/multi-select/-page';
 
 describe('Acceptance | Organization Settings | Product view', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('Products and publishing setting page', () => {
     beforeEach(function() {

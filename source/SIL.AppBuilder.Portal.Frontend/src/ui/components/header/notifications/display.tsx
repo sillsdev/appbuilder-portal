@@ -23,8 +23,11 @@ interface ISubscribedTo {
 }
 
 export default function Notifications({ refetch }) {
+  useLiveData('notifications');
+
   const { t } = useTranslations();
   const [visible, toggleVisible] = useToggle(false);
+
   const {
     subscriptions: { notifications },
   } = useOrbit<ISubscribedTo>({
@@ -41,7 +44,7 @@ export default function Notifications({ refetch }) {
   const toggle = () => {
     if (visible) {
       markAllAsViewed();
-      refetch();
+      // refetch();
     }
 
     toggleVisible();
@@ -70,7 +73,14 @@ export default function Notifications({ refetch }) {
         {hasNotifications && (
           <>
             <div className='notification-buttons'>
-              <a href='#' data-test-clear-all onClick={preventDefault(clearAll)}>
+              <a
+                href='#'
+                data-test-clear-all
+                onClick={preventDefault(() => {
+                  clearAll();
+                  // refetch();
+                })}
+              >
                 {t('header.clearAll')}
               </a>
             </div>

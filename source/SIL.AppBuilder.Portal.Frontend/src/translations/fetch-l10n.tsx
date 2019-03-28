@@ -7,6 +7,8 @@ import { ErrorBoundary, PageError } from '~/ui/components/errors';
 
 import { useTranslations } from '~/lib/i18n';
 
+import { isTesting } from '~/env';
+
 const namespace = 'ldml';
 
 function LocaleLoader() {

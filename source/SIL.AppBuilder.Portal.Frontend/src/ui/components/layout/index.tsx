@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { useActionCreators, useSelectors } from 'use-redux';
 import Header from '@ui/components/header';
 import Sidebar from '@ui/components/sidebar';
 import {
@@ -7,60 +7,37 @@ import {
   hideSidebar as hideSidebarInStore,
 } from '@store/user-interface';
 
-interface IOwnProps {
-  isSidebarVisible: boolean;
-  showSidebar: () => void;
-  hideSidebar: () => void;
-}
+function Layout({ children }) {
+  const [isSidebarVisible] = useSelectors((state) => state.ui.isSidebarVisible);
+  const [showSidebar, hideSidebar] = useActionCreators(showSidebarInStore, hideSidebarInStore);
 
-const mapStateToProps = ({ ui }) => ({
-  isSidebarVisible: ui.isSidebarVisible,
-});
+  const sidebarStatus = isSidebarVisible ? 'is-sidebar-visible' : 'is-sidebar-hidden';
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    showSidebar: () => dispatch(showSidebarInStore()),
-    hideSidebar: () => dispatch(hideSidebarInStore()),
-  };
-};
+  return (
+    <div className='flex-row-lg flex-grow h-100vh no-overflow'>
+      <div
+        className={`
+        sidebar-container flex-row transition-all h-100vh
+        align-items-stretch ${sidebarStatus}`}
+      >
+        <Sidebar className='sidebar-wrapper' closeSidebar={hideSidebar} />
 
-class Layout extends React.Component<IOwnProps> {
-  render() {
-    const { hideSidebar, isSidebarVisible } = this.props;
-
-    const sidebarStatus = isSidebarVisible ? 'is-sidebar-visible' : 'is-sidebar-hidden';
-
-    return (
-      <div className='flex-row-lg flex-grow h-100vh no-overflow'>
-        <div
-          className={`
-          sidebar-container flex-row transition-all h-100vh
-          align-items-stretch ${sidebarStatus}`}
-        >
-          <Sidebar className='sidebar-wrapper' closeSidebar={hideSidebar} />
-
-          <div className='no-select sidebar-underlay full-overlay' onClick={hideSidebar} />
-        </div>
-
-        <div className={`flex-column flex-grow h-100vh overflows ${sidebarStatus}`}>
-          <Header />
-
-          {this.props.children}
-        </div>
+        <div className='no-select sidebar-underlay full-overlay' onClick={hideSidebar} />
       </div>
-    );
-  }
-}
 
-const ConnectedLayout = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Layout);
+      <div className={`flex-column flex-grow h-100vh overflows ${sidebarStatus}`}>
+        <Header />
+
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export const withLayout = (Component) => (props) => (
-  <ConnectedLayout>
+  <Layout>
     <Component {...props} />
-  </ConnectedLayout>
+  </Layout>
 );
 
-export default ConnectedLayout;
+export default Layout;

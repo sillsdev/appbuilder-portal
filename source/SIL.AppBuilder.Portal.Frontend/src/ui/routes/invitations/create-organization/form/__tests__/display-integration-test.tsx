@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as sinon from 'sinon';
 import { describe, beforeEach, it } from '@bigtest/mocha';
 import { expect } from 'chai';
-import { mountWithContext } from 'tests/helpers';
+import { mountWithContext, useFakeAuthentication } from 'tests/helpers';
 
 import Display from '../display';
 
@@ -10,6 +10,7 @@ import page from './page';
 
 describe('Integration | Component | Create Organization Form', () => {
   let fakeSubmit;
+  useFakeAuthentication();
 
   beforeEach(async () => {
     fakeSubmit = sinon.spy();

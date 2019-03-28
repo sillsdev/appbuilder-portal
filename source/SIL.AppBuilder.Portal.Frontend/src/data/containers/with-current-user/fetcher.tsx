@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { withData, ILegacyProvidedProps, pushPayload } from 'react-orbitjs';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import { withData, ILegacyProvidedProps, pushPayload, useOrbit } from 'react-orbitjs';
 import { compose } from 'recompose';
 import { TYPE_NAME } from '@data/models/user';
 import { getAuth0Id } from '@lib/auth0';
@@ -12,6 +12,15 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { attributesFor } from '@data/helpers';
 import { ServerError } from '@data/errors/server-error';
 import { CurrentUserFetchError } from '@data/errors/current-user-fetch-error';
+import useAbortableFetch from 'use-abortable-fetch';
+
+import { PageLoader } from '~/ui/components/loaders';
+
+import { ErrorMessage, PageError } from '~/ui/components/errors';
+
+import { useFetch } from 'react-hooks-fetch';
+
+import { useAuth } from '../with-auth';
 
 import { IProps, IState, IFetchCurrentUserOptions } from './types';
 
@@ -50,6 +59,52 @@ export async function handleResponse(response, t) {
   const json = await tryParseJson(response);
 
   return json;
+}
+
+export function CurrentUserFetcher({ children }) {
+  const {
+    dataStore,
+    subscriptions: { users },
+  } = useOrbit({
+    users: cacheQuery(),
+  });
+  const { jwt, isLoggedIn } = useAuth();
+  const [refetchCount, setCount] = useState();
+  const refetch = useCallback(() => setCount(refetchCount + 1), [refetchCount]);
+  const options = useMemo(() => {
+    return {
+      method: 'GET',
+      headers: {
+        ['Authorization']: `Bearer ${jwt}`,
+        ['X-Refetch-Count']: refetchCount,
+      },
+    };
+  }, [jwt, isLoggedIn, refetchCount]);
+
+  const { error, data } = useFetch(
+    [
+      '/api/users/current-user',
+      '?include=organization-memberships.organization,group-memberships.group,user-roles.role',
+    ].join(''),
+    options
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    pushPayload(dataStore, data);
+  }, [data]);
+
+  if (error) {
+    // errors are not handled here.
+    // also, this is the only way we can have 'unauthenticated routes'
+    return children({ currentUser: undefined, refetch });
+  }
+
+  const currentUser = users && users[0];
+  if (!data || !currentUser) return null;
+
+  return children({ currentUser, refetch });
 }
 
 // TODO: store the attempted URL so that after login,

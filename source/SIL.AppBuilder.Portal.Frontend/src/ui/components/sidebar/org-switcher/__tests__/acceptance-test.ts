@@ -8,9 +8,13 @@ import app from 'tests/helpers/pages/app';
 import scenarios, { threeOrgs, lotsOfOrgs, oneOrg } from './scenarios';
 import switcher from './page';
 
+import { isLoggedIn } from '~/lib/auth0';
+
 async function visitRootPageAndOpenSidebar() {
-  visit('/');
-  await when(() => expect(location().pathname).to.eq('/'));
+  await visit('/');
+  expect(isLoggedIn()).to.be.true;
+
+  await when(() => expect(location().pathname).to.eq('/tasks'));
 
   await app.openSidebar();
   await when(() => expect(app.isSidebarVisible).to.be.true);
@@ -23,10 +27,9 @@ async function makeOrgSwitcherVisible() {
 }
 
 describe('Acceptance | Organization Switcher', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   describe('The Current user is a member of a single organization', () => {
     scenarios.userIsInOneOrganization();
+    setupApplicationTest();
 
     beforeEach(async () => {
       await visitRootPageAndOpenSidebar();
@@ -48,6 +51,7 @@ describe('Acceptance | Organization Switcher', () => {
   });
   describe('The Current User is a member of multiple organizations', () => {
     scenarios.userIsIn3Organizations();
+    setupApplicationTest();
 
     beforeEach(function() {
       this.mockGet(200, '/organizations', {
@@ -91,6 +95,7 @@ describe('Acceptance | Organization Switcher', () => {
 
   describe('The current user is a member of lots of organizations', () => {
     scenarios.userIsInLotsOfOrganizations();
+    setupApplicationTest();
 
     beforeEach(function() {
       this.mockGet(200, '/organizations', {

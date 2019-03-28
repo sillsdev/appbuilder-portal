@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { useOrbit, attributesFor } from 'react-orbitjs';
 
 import { ProjectResource } from '@data';

@@ -1,20 +1,65 @@
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import { showSidebar } from '@store/user-interface';
+import React from 'react';
+import MenuIcon from '@material-ui/icons/Menu';
+import { useActionCreators } from 'use-redux';
+import LocaleSwitch from '@ui/components/inputs/locale-switch';
 
-import HeaderDisplay from './display';
+import Notifications from './notifications';
+import UserDropdown from './user-dropdown';
 
-const mapStateToProps = ({ ui }) => ({
-  isSidebarVisible: ui.isSidebarVisible,
-});
+import { showSidebar as showSidebarInStore } from '@store/user-interface';
 
-const mapDispatchToProps = (dispatch) => ({
-  showSidebar: () => dispatch(showSidebar()),
-});
+import { useRouter } from '~/lib/hooks';
 
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(HeaderDisplay);
+import './header.scss';
+
+function AppName() {
+  const { history } = useRouter();
+
+  return (
+    <div data-test-header-appname className='item header logo' onClick={() => history.push('/')}>
+      SCRIPTORIA
+    </div>
+  );
+}
+
+export default function Header() {
+  const [showSidebar] = useActionCreators(showSidebarInStore);
+
+  return (
+    <div data-test-header-menu className='ui menu menu-navbar'>
+      <div className='ui container'>
+        <div className='item sidebar-button-item d-lg-none'>
+          <button
+            data-test-header-sidebar-button
+            className='ui button sidebar-button'
+            onClick={showSidebar}
+          >
+            <MenuIcon />
+          </button>
+        </div>
+
+        <AppName />
+
+        <div className='right menu'>
+          <div className='item'>
+            <button data-test-header-addproject className='ui button add-project d-xs-none'>
+              Add Project
+            </button>
+          </div>
+
+          <div className='item'>
+            <LocaleSwitch />
+          </div>
+
+          <div className='item'>
+            <Notifications />
+          </div>
+
+          <div className='item'>
+            <UserDropdown />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

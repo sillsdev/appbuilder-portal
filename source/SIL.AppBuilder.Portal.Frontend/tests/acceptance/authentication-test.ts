@@ -7,19 +7,53 @@ import {
   setupRequestInterceptor,
   respondWithJsonApi,
   wait,
+  resetBrowser,
+  useFakeAuthentication,
 } from 'tests/helpers/index';
 import { fakeAuth0JWT, fakeAuth0Id } from 'tests/helpers/jwt';
 import { setToken, deleteToken, isLoggedIn } from '@lib/auth0';
 import app from 'tests/helpers/pages/app';
 
+let user = {
+  data: {
+    id: 1,
+    type: 'users',
+    attributes: { id: 1, auth0Id: fakeAuth0Id },
+    relationships: {
+      ['organization-memberships']: {
+        data: [{ id: 1, type: 'organization-memberships' }],
+      },
+    },
+  },
+  included: [
+    {
+      type: 'organization-memberships',
+      id: 1,
+      attributes: {},
+      relationships: {
+        organization: { data: { id: 1, type: 'organizations' } },
+        user: { data: { id: 1, type: 'users' } },
+      },
+    },
+    { type: 'organizations', id: 1, attributes: {} },
+  ],
+};
+
 // usage: https://github.com/bigtestjs/react/blob/master/tests/setup-app-test.js
 describe('Acceptance | Authentication', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
+  resetBrowser();
 
   describe('authenticated with user that does not have a verified email', () => {
-    beforeEach(async () => {
+    setupRequestInterceptor();
+    setupApplicationTest();
+
+    beforeEach(async function() {
+      const { server } = this.polly;
+
       setToken(fakeAuth0JWT({ ['email_verified']: false }));
+
+      server.get('/api/users/current-user').intercept(respondWithJsonApi(200, user));
+
       await visit('/tasks');
     });
 
@@ -29,49 +63,13 @@ describe('Acceptance | Authentication', () => {
   });
 
   describe('is authenticated', () => {
-    beforeEach(function() {
-      const { server } = this.polly;
-
-      setToken(fakeAuth0JWT());
-
-      server.get('/api/users/current-user').intercept(
-        respondWithJsonApi(200, {
-          data: {
-            id: 1,
-            type: 'users',
-            attributes: { id: 1, auth0Id: fakeAuth0Id },
-            relationships: {
-              ['organization-memberships']: {
-                data: [{ id: 1, type: 'organization-memberships' }],
-              },
-            },
-          },
-          included: [
-            {
-              type: 'organization-memberships',
-              id: 1,
-              attributes: {},
-              relationships: {
-                organization: { data: { id: 1, type: 'organizations' } },
-                user: { data: { id: 1, type: 'users' } },
-              },
-            },
-            { type: 'organizations', id: 1, attributes: {} },
-          ],
-        })
-      );
-
-      expect(isLoggedIn()).to.be.true;
-    });
-
-    afterEach(() => {
-      deleteToken();
-    });
+    useFakeAuthentication();
+    setupApplicationTest();
 
     describe('logging out', () => {
       beforeEach(async function() {
         await visit('/tasks');
-        await when(() => app.isLogoutPresent);
+        await when(() => assert(app.isLogoutPresent, 'logout button should be available'));
         await app.clickLogout();
       });
 
@@ -96,11 +94,11 @@ describe('Acceptance | Authentication', () => {
 
     describe('navigates to a route that does not require authentication', () => {
       beforeEach(async () => {
-        await visit('/not-found');
+        await visit('/open-source');
       });
 
       it('it is allowed', () => {
-        expect(location().pathname).to.equal('/not-found');
+        expect(location().pathname).to.equal('/open-source');
       });
     });
 
@@ -123,6 +121,9 @@ describe('Acceptance | Authentication', () => {
   });
 
   describe('is not authenticated', () => {
+    setupRequestInterceptor();
+    setupApplicationTest();
+
     beforeEach(function() {
       deleteToken();
     });
@@ -139,11 +140,11 @@ describe('Acceptance | Authentication', () => {
 
     describe('navigates to a route that does not require authentication', () => {
       beforeEach(async () => {
-        await visit('/not-found');
+        await visit('/open-source');
       });
 
       it('it is allowed', () => {
-        expect(location().pathname).to.equal('/not-found');
+        expect(location().pathname).to.equal('/open-source');
       });
     });
 

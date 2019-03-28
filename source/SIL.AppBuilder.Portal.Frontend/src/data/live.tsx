@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useOrbit } from 'react-orbitjs';
 
-import { DataSocket } from '~/sockets';
+import DataSocket from '~/sockets/data-socket';
 
 import Store from '@orbit/store';
 

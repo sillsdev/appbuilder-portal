@@ -13,9 +13,8 @@ import page from './page';
 import { threeProjects, DTProjects } from './scenarios';
 
 describe('Acceptance | Project Directory | Filtering | By Organization', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   let requestCount = 0;
 

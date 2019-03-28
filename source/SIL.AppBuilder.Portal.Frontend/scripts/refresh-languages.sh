@@ -27,8 +27,6 @@ node scripts/split-langtags-json.js $tempPath $target1Path $target2Path
 echo "downloaded all supported languages"
 
 echo "downloading transaltion support for the language data..."
-npm install -g fast-xml-parser # Needed for Travis? wut
-npm install -g xml2js
 
 function downloadAndConvert {
   local lang=$1
@@ -38,7 +36,7 @@ function downloadAndConvert {
 
   mkdir -p "${folder}${fileName}"
 
-  wget -qO- "https://ldml.api.sil.org/$lang?inc[0]=localeDisplayNames" | npx xml2js -o $tmpName
+  wget -qO- "https://ldml.api.sil.org/$lang?inc[0]=localeDisplayNames" | npx fast-xml-parser -o $tmpName
 
   # TODO: use a custom node script to convert the language
   # list to something more easily consumeable by a javascript app.

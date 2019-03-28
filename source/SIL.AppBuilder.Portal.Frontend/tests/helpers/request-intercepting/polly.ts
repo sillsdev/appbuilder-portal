@@ -18,10 +18,12 @@ Polly.register(FetchAdapter);
 // https://github.com/Netflix/pollyjs/blob/master/packages/%40pollyjs/core/src/test-helpers/mocha.js
 export function setupRequestInterceptor(config: any = {}) {
   beforeEach(function() {
-    this.setupIntercepting = () => setup.call(this, config);
-    this.teardownIntercepting = () => teardown.call(this, context);
+    if (!this.polly) {
+      this.setupIntercepting = () => setup.call(this, config);
+      this.teardownIntercepting = () => teardown.call(this, context);
 
-    this.setupIntercepting(config);
+      this.setupIntercepting(config);
+    }
   });
 
   afterEach(async function() {
@@ -44,7 +46,9 @@ export function generateRecordingName(context) {
   return parts.reverse().join('/');
 }
 
-const teardown = async function(context) {
+export const teardown = async function(context) {
+  if (!this.polly) return;
+
   await this.polly.stop();
 
   Object.defineProperty(context, 'polly', {
@@ -58,7 +62,7 @@ const teardown = async function(context) {
   });
 };
 
-const setup = function(config) {
+export const setup = function(config) {
   const name = generateRecordingName(this);
   const pollyConfig = {
     // passthorugh bypasses Polly's request recording feature

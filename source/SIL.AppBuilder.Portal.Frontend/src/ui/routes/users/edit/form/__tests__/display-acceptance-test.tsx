@@ -11,9 +11,8 @@ import * as enUS from '@translations/locales/en-us.json';
 import page from './page';
 
 describe('Acceptance | Edit Profile Form', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
   useFakeAuthentication();
+  setupApplicationTest();
 
   describe('a user exists', () => {
     beforeEach(function() {

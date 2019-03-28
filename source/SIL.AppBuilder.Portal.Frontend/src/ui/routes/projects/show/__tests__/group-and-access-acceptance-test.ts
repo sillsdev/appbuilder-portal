@@ -12,10 +12,7 @@ import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 import { userInDifferentOrganization, userInSameOrgDifferentGroup } from './user-scenarios';
 import page from './page';
 
-describe('Acceptance | Project Edit | re-assigning the group', () => {
-  setupApplicationTest();
-  setupRequestInterceptor();
-
+function setupData() {
   beforeEach(function() {
     this.mockGet(200, 'users', { data: [] });
 
@@ -44,9 +41,13 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
       ],
     });
   });
+}
 
+describe('Acceptance | Project Edit | re-assigning the group', () => {
   describe('the user is not in the same organization as the project', () => {
     userInDifferentOrganization(2);
+    setupApplicationTest();
+    setupData();
 
     beforeEach(async function() {
       await visit('/projects/1');
@@ -60,6 +61,8 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
 
   describe('the user is in the same organization as the project, but not in the same group', () => {
     userInSameOrgDifferentGroup(1, 2);
+    setupApplicationTest();
+    setupData();
 
     beforeEach(async function() {
       await visit('/projects/1');
@@ -154,6 +157,8 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
         roles.superAdmin,
       ],
     });
+    setupApplicationTest();
+    setupData();
 
     beforeEach(async function() {
       await visit('/projects/1');
