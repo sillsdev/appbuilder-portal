@@ -1,5 +1,7 @@
 import { withRouter } from 'react-router';
-import { query } from 'react-orbitjs';
+
+import { query } from '@data';
+
 import { compose, withProps } from 'recompose';
 import { paths } from '@ui/routes/admin/paths';
 

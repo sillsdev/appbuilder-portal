@@ -1,5 +1,8 @@
 import React, { useMemo } from 'react';
-import { query, useOrbit } from 'react-orbitjs';
+
+import { query } from '@data';
+
+import { useOrbit } from 'react-orbitjs';
 
 import { defaultSourceOptions, OrganizationResource, UserResource } from '@data';
 
