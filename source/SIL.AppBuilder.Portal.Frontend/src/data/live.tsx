@@ -86,11 +86,11 @@ function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo,
     if (!isSubscribed && !subscription.current) {
       subscription.current = connection.send('SubscribeTo', subscribeTo).subscribe(
         () => {
-          // console.log('subscribing to', subscribeTo, 'succeeded');
+          console.log('subscribing to', subscribeTo, 'succeeded');
           setIsSubscribed(true);
         },
         () => {
-          // console.log('subscribing to', subscribeTo, 'failed');
+          console.log('subscribing to', subscribeTo, 'failed');
           setIsSubscribed(false);
         }
       );
