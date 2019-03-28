@@ -64,8 +64,15 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<OrganizationStore>, OrganizationStoreRepository>();
             
             // for operations
-            services.AddScoped<IUpdateService<Project, int>, ProjectService>();
-            services.AddScoped<IUpdateService<Notification, int>, NotificationService>();
+            services.AddScoped<IUpdateService<Project>, ProjectService>();
+            services.AddScoped<ICreateService<Project>, ProjectService>();
+            services.AddScoped<IUpdateService<Notification>, NotificationService>();
+            services.AddScoped<ICreateService<Notification>, NotificationService>();
+            services.AddScoped<IUpdateService<Product, Guid>, ProductService>();
+            services.AddScoped<ICreateService<Product, Guid>, ProductService>();
+            services.AddScoped<IUpdateService<UserTask>, UserTaskService>();
+            services.AddScoped<ICreateService<UserTask>, UserTaskService>();
+
 
             // services
             services.AddScoped<IResourceService<User>, UserService>();
