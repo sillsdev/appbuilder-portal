@@ -26,6 +26,7 @@ export default function Builds({ product }) {
       <ResourceSelect
         items={sortedBuilds}
         labelField={(build: ProductBuildResource) => {
+          console.log(build);
           const version = attributesFor(build).version;
 
           if (build === sortedBuilds[0]) {

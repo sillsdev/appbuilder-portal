@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
-import { APIProvider, strategies } from 'react-orbitjs';
+import { APIProvider, strategies, useOrbit } from 'react-orbitjs';
 import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
 import { baseUrl } from '@data/store';
 
@@ -27,6 +27,7 @@ interface IProps {
   initialState: any;
   entryComponent?: React.ComponentType;
   history: any;
+  initialRecords: any;
 }
 
 export default class Application extends React.Component<IProps> {

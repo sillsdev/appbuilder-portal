@@ -14,15 +14,13 @@ import {
   withBulkActions,
   IProvidedProps as IBulkActions,
 } from '@data/containers/resources/project/with-bulk-actions';
-import { withRole, IProvidedProps as IRoleProps } from '@data/containers/with-role';
-import { ROLE } from '@data/models/role';
 
 import { PROJECT_ROUTES } from './routes';
 
 import './styles.scss';
-import { attributesFor } from '~/data';
+import { connect } from 'react-redux';
 
-import { idFromRecordIdentity } from '~/data/store-helpers';
+import { rowSelectionsFor, allCheckboxStateFor } from '~/redux-store/data/selectors';
 
 interface IOwnProps {
   filter: string;
@@ -92,7 +90,7 @@ class Header extends React.Component<IProps> {
   }
 
   render() {
-    const { t, filter, onSearch, location } = this.props;
+    const { t, filter, onSearch, selectedRows } = this.props;
     const dropdownText = {
       'all-projects': t('projects.switcher.dropdown.all'),
       'my-projects': t('projects.switcher.dropdown.myProjects'),
@@ -165,6 +163,7 @@ class Header extends React.Component<IProps> {
           <div>
             {this.isInActiveProject && this.canArchiveOrReactivate ? (
               <button
+                disabled={selectedRows.length === 0}
                 data-test-archive-button
                 className='ui button basic blue m-r-md'
                 onClick={this.onBulkArchive}
@@ -175,13 +174,18 @@ class Header extends React.Component<IProps> {
             {this.isInArchivedProject && this.canArchiveOrReactivate ? (
               <button
                 data-test-reactivate-button
+                disabled={selectedRows.length === 0}
                 className='ui button basic blue m-r-md'
                 onClick={this.onBulkReactivate}
               >
                 {t('common.reactivate')}
               </button>
             ) : null}
-            <button className='ui button basic blue m-r-md' onClick={this.onBulkBuild}>
+            <button
+              disabled={selectedRows.length === 0}
+              className='ui button basic blue m-r-md'
+              onClick={this.onBulkBuild}
+            >
               {t('common.build')}
             </button>
           </div>
@@ -207,5 +211,11 @@ class Header extends React.Component<IProps> {
 export default compose<IOwnProps, IOwnProps>(
   withTranslations,
   withRouter,
-  withBulkActions
+  withBulkActions,
+  connect(function mapStateToProps(state, { filter: tableName }) {
+    return {
+      selectedRows: rowSelectionsFor(state, tableName),
+      allCheckboxState: allCheckboxStateFor(state, tableName),
+    };
+  })
 )(Header);

@@ -27,7 +27,7 @@ class Display extends React.Component<IProps> {
   render() {
     const { t, organizations, defaultValue, ...otherProps } = this.props;
     const organizationOptions = [{ text: t('org.allOrganizations'), value: 'all' }].concat(
-      organizations.map((o) => ({
+      (organizations || []).map((o) => ({
         text: attributesFor(o).name || '',
         value: o.id,
       }))

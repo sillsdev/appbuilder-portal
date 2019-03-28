@@ -162,7 +162,7 @@ describe('Acceptance | Projects | Bulk Action Permissions', () => {
   setupBrowser();
 
   scenarios.forEach((scenario) => {
-    context(scenario.title, () => {
+    describe(scenario.title, () => {
       useFakeAuthentication(scenario.user);
       setupProjects();
       setupApplicationTest({ data: { currentOrganizationId: '1' } });
@@ -179,15 +179,19 @@ describe('Acceptance | Projects | Bulk Action Permissions', () => {
           expect(rows[1].isSelected).to.equal(false);
         });
 
-        context('when I select all projects (including those that I do not own)', () => {
+        describe('when I select all projects (including those that I do not own)', () => {
           beforeEach(async () => {
             const rows = await pageInteractor.projectTable.rows();
 
             await rows[0].select();
             await rows[1].select();
 
-            await when(() => rows[0].isSelected === true);
-            await when(() => rows[1].isSelected === true);
+            await when(() =>
+              assert(rows[0].isSelected === true, `expected ${rows[0].text} to be checked`)
+            );
+            await when(() =>
+              assert(rows[1].isSelected === true, `expected ${rows[1].text} to be checked`)
+            );
           });
 
           it('has available bulk archive action', () => {
@@ -195,7 +199,7 @@ describe('Acceptance | Projects | Bulk Action Permissions', () => {
           });
         });
 
-        context('when I have selected only projects that I own', () => {
+        describe('when I have selected only projects that I own', () => {
           beforeEach(async () => {
             await pageInteractor.projectTable.rowForProjectId(1).select();
           });

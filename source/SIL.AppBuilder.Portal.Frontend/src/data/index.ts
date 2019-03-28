@@ -31,13 +31,13 @@ export { withError } from './containers/with-error';
 export { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/with-logout';
 
 import { query as remoteQuery } from 'react-orbitjs';
-
-export function query(queries, opts = {}) {
-  return remoteQuery(queries, {
-    noTimeout: true,
-    ...opts,
-  });
-}
+export { query } from './query';
+// export function query(queries, opts = {}) {
+//   return remoteQuery(queries, {
+//     noTimeout: true,
+//     ...opts,
+//   });
+// }
 
 export { pushPayload } from './push-payload';
 export { PUSH_PAYLOAD_OPERATION } from './push-payload-operations';
