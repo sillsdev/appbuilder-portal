@@ -1442,6 +1442,26 @@
           "isVirtual": false,
           "isCalculated": false,
           "isExtension": false
+        },
+        {
+          "id": "2dd25cd6-48ed-4ddc-90a4-bc71bf086f20",
+          "referenceEntityId": "7bd25e2a-69c1-4c18-a788-4a9c63fc56e0",
+          "name": "RebuildWorkflowId",
+          "typeId": 1,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "0d3696fc-bf48-4eb5-8954-17f1e421ea2e",
+          "referenceEntityId": "7bd25e2a-69c1-4c18-a788-4a9c63fc56e0",
+          "name": "RepublishWorkflowId",
+          "typeId": 1,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
         }
       ],
       "primaryKeyAttribute": "Id"
@@ -1577,6 +1597,16 @@
         {
           "id": "da31659f-07de-4af3-b377-7ac8109c00fd",
           "name": "WorkflowComment",
+          "type": "String",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
+          "name": "PublishLink",
           "type": "String",
           "typeId": 0,
           "isNullable": true,
@@ -1755,6 +1785,16 @@
           "isVirtual": false,
           "isCalculated": false,
           "isExtension": false
+        },
+        {
+          "id": "9ad0eb42-710a-4e92-8304-d055d8deee30",
+          "name": "WorkflowAppProjectUrl",
+          "type": "String",
+          "typeId": 0,
+          "isNullable": true,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
         }
       ],
       "primaryKeyAttribute": "Id"
@@ -1802,6 +1842,16 @@
           "name": "ProjectId",
           "typeId": 1,
           "isNullable": false,
+          "isVirtual": false,
+          "isCalculated": false,
+          "isExtension": false
+        },
+        {
+          "id": "aedb1af9-33c9-4d91-a292-e172c0043ec9",
+          "name": "Locale",
+          "type": "String",
+          "typeId": 0,
+          "isNullable": true,
           "isVirtual": false,
           "isCalculated": false,
           "isExtension": false
@@ -2062,16 +2112,6 @@
           "type": "Int32",
           "typeId": 0,
           "isNullable": false,
-          "isVirtual": false,
-          "isCalculated": false,
-          "isExtension": false
-        },
-        {
-          "id": "d804bfe5-ea63-4d58-a3af-47cabee966fb",
-          "name": "PublishingKey",
-          "type": "String",
-          "typeId": 0,
-          "isNullable": true,
           "isVirtual": false,
           "isCalculated": false,
           "isExtension": false
@@ -3048,12 +3088,15 @@
         {
           "states": [
             "RepoConfig",
-            "Repo Configuration"
+            "Repo Configuration",
+            "Project Configuration",
+            "App Configuration",
+            "App Builder Configuration"
           ],
           "roles": [
             "*"
           ],
-          "form": "SIL_AppBuilders_Repo_Config"
+          "form": "SIL_AppBuilders_App_Configuration"
         },
         {
           "states": [

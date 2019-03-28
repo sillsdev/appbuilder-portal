@@ -64,5 +64,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
     
         [Attr("workflow-project-url")]
         public String WorkflowProjectUrl { get; set; }
+
+        [Attr("workflow-app-project-url")]
+        public String WorkflowAppProjectUrl { get; set; }
     }
 }

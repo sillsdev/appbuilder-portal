@@ -11,6 +11,7 @@ using SIL.AppBuilder.BuildEngineApiClient;
 using BuildEngineProject = SIL.AppBuilder.BuildEngineApiClient.Project;
 using Job = Hangfire.Common.Job;
 using Project = OptimaJet.DWKit.StarterApplication.Models.Project;
+using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -150,6 +151,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected async Task ProjectCompletedAsync(Project project, ProjectResponse projectResponse)
         {
             project.WorkflowProjectUrl = projectResponse.Url;
+
+            // Assign at the same time as WorkflowProjectUrl now that it is available.
+            project.WorkflowAppProjectUrl = GetVarOrDefault("UI_URL", "http://localhost:9091") + "/projects/" + project.Id;
+
             await ProjectRepository.UpdateAsync(project);
             var messageParms = new Dictionary<string, object>()
             {

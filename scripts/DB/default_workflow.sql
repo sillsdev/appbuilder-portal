@@ -100,7 +100,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="40" Y="420" />
     </Activity>
-    <Activity Name="Repo Configuration" State="Repo Configuration" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="App Builder Configuration" State="App Builder Configuration" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -226,7 +226,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
-    <Transition Name="Check Job Creation_Activity_1_1" To="Repo Configuration" From="Check Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Check Job Creation_Activity_1_1" To="App Builder Configuration" From="Check Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
         <Trigger Type="Auto" />
       </Triggers>
@@ -244,7 +244,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
-    <Transition Name="RepoConfig_SynchronizeData_1" To="Product Build" From="Repo Configuration" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="RepoConfig_SynchronizeData_1" To="Product Build" From="App Builder Configuration" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
