@@ -66,7 +66,7 @@
     "react-hooks-fetch": "^0.9.0",
     "react-i18next": "^10.0.2",
     "react-notify-toast": "^0.5.0",
-    "react-orbitjs": "github:DeveloperTown/react-orbitjs#a93a02e5e6c3c8295c519060562a217b98b2ab85",
+    "react-orbitjs": "github:DeveloperTown/react-orbitjs#e27be1dbf9423920a87ac8b2e62f2645ce81ad4b",
     "react-redux": "^6.0.0",
     "react-router": "^4.4.0-beta.6",
     "react-router-dom": "^4.4.0-beta.6",
