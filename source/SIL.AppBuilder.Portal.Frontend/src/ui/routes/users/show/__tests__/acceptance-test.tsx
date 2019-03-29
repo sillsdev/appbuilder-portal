@@ -88,20 +88,18 @@ describe('Acceptance | Show User', () => {
   describe('When profile visibility is on, show phone and timezone', () => {
     beforeEach(function() {
       this.mockGet(200, '/users/1', {
-        data: [
-          {
-            type: 'users',
-            id: '1',
-            attributes: {
-              'family-name': 'Fake',
-              'given-name': 'User',
-              email: 'fake@acme.com',
-              phone: '987654123',
-              timezone: 'GMT-5',
-              'profile-visibility': 1,
-            },
+        data: {
+          type: 'users',
+          id: '1',
+          attributes: {
+            'family-name': 'Fake',
+            'given-name': 'User',
+            email: 'fake@acme.com',
+            phone: '987654123',
+            timezone: 'GMT-5',
+            'profile-visibility': 1,
           },
-        ],
+        },
       });
     });
 

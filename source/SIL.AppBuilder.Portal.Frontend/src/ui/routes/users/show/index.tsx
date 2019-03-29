@@ -22,7 +22,7 @@ export type IProps = IOwnProps & i18nProps;
 class User extends React.Component<IProps> {
   render() {
     const { t, user: userData } = this.props;
-    const user = userData.attributes;
+    const user = attributesFor(userData);
 
     const fullname = user.name;
     const phone = user.phone ? user.phone : t('profile.noPhone');

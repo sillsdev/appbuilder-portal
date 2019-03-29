@@ -37,22 +37,22 @@ const defaultFetchOptions = {
 
 // TODO: abstract this more into something similar to the query HoC
 //       - needs to take a queryBuilder object / function
-export function useQuery(url, options: any = {}) {
-  const fetchOptions = useMemo(() => {
-    return {
-      ...defaultFetchOptions,
-      ...options,
-      headers: {
-        ...defaultFetchOptions.headers,
-        ...(options.headers || {}),
-      },
-    };
-  }, [options]);
+// export function useQuery(url, options: any = {}) {
+//   const fetchOptions = useMemo(() => {
+//     return {
+//       ...defaultFetchOptions,
+//       ...options,
+//       headers: {
+//         ...defaultFetchOptions.headers,
+//         ...(options.headers || {}),
+//       },
+//     };
+//   }, [options]);
 
-  const info = useAbortableFetch(url, fetchOptions);
+//   const info = useAbortableFetch(url, fetchOptions);
 
-  return info;
-}
+//   return info;
+// }
 
 const START = 'start';
 const FINISH = 'finish';
@@ -119,6 +119,8 @@ function buildQueryTermMap(queryBuilderMap, queryBuilder) {
 
   return queryTermMap;
 }
+
+export function useQuery(mapRecordsToProps) {}
 
 // Example Usage
 //
@@ -219,7 +221,9 @@ export function query(mapRecordsToProps: any, options?: IQueryOptions) {
 
         Promise.all(requestPromises)
           .then(async () => {
-            let mapped = mapResultsFn ? await mapResultsFn(props, responses) : responses;
+            let mapped = mapResultsFn
+              ? await mapResultsFn({ ...props, dataStore }, responses)
+              : responses;
 
             console.log(mapped);
             dispatch({ type: FINISH, result: mapped });
