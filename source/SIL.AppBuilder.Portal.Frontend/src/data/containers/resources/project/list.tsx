@@ -93,35 +93,33 @@ export function withNetwork<TWrappedProps>(options: IOptions = {}) {
       };
     }
 
-    function mapResultsFn(props, result) {
-      const { dataStore, currentUser } = props;
-      const { projects } = result;
-
-      if (projects && projects.length === 0) {
-        return result;
-      }
-
-      const currentUserId = parseInt(idFromRecordIdentity(currentUser), 10);
-      const withCanArchivePermission = projects.map((p) => {
-        const projectOwnerId = parseInt(attributesFor(p).ownerId, 10);
-        const isOwner = projectOwnerId === currentUserId;
-        const canArchive =
-          isOwner ||
-          roleInOrganizationOfResource(currentUser, dataStore, p, ROLE.OrganizationAdmin);
-
-        p.currentUserCanArchive = canArchive;
-
-        return p;
-      });
-
-      return { ...result, projects: withCanArchivePermission };
-    }
-
     return compose(
       query(mapNetworkToProps, {
         passthroughError: true,
         useRemoteDirectly: true,
-        mapResultsFn,
+        mapResultsFn(dataStore, result, hocProps) {
+          const { currentUser } = hocProps;
+          const { projects } = result;
+
+          if (projects && projects.length === 0) {
+            return result;
+          }
+
+          const currentUserId = parseInt(idFromRecordIdentity(currentUser), 10);
+          const withCanArchivePermission = projects.map((p) => {
+            const projectOwnerId = parseInt(attributesFor(p).ownerId, 10);
+            const isOwner = projectOwnerId === currentUserId;
+            const canArchive =
+              isOwner ||
+              roleInOrganizationOfResource(currentUser, dataStore, p, ROLE.OrganizationAdmin);
+
+            p.currentUserCanArchive = canArchive;
+
+            return p;
+          });
+
+          return { ...result, projects: withCanArchivePermission };
+        },
       })
     )(WrappedComponent);
   };

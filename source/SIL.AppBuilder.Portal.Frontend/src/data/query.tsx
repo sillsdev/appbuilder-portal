@@ -1,8 +1,7 @@
-import React, { useMemo, useState, useReducer, useEffect, useCallback, Reducer } from 'react';
-import useAbortableFetch from 'use-abortable-fetch';
+import React, { useState, useReducer, useEffect, useCallback, Reducer } from 'react';
 import { ErrorMessage, useOrbit } from 'react-orbitjs';
 import JSONAPISource from '@orbit/jsonapi';
-import { QueryBuilder, QueryExpression } from '@orbit/data';
+import { QueryExpression } from '@orbit/data';
 
 interface IProvidedDefaultProps {
   error?: Error;
@@ -17,7 +16,8 @@ export interface IQueryOptions {
   useRemoteDirectly?: boolean;
   noTimeout?: boolean;
   timeout?: number;
-  mapResultsFn?: (props: any, result: any) => Promise<any>;
+  mapResultsFn?: (props: any, result: any, hocProps?: any) => Promise<any>;
+  additionalProps?: any;
 }
 
 const defaultOptions = {
@@ -27,32 +27,6 @@ const defaultOptions = {
   noTimeout: false,
   timeout: 5000,
 };
-
-const defaultFetchOptions = {
-  headers: {
-    ['Accept']: 'application/vnd.api+json',
-    ['Content-Type']: 'application/vnd.api+json',
-  },
-};
-
-// TODO: abstract this more into something similar to the query HoC
-//       - needs to take a queryBuilder object / function
-// export function useQuery(url, options: any = {}) {
-//   const fetchOptions = useMemo(() => {
-//     return {
-//       ...defaultFetchOptions,
-//       ...options,
-//       headers: {
-//         ...defaultFetchOptions.headers,
-//         ...(options.headers || {}),
-//       },
-//     };
-//   }, [options]);
-
-//   const info = useAbortableFetch(url, fetchOptions);
-
-//   return info;
-// }
 
 const START = 'start';
 const FINISH = 'finish';
@@ -120,7 +94,88 @@ function buildQueryTermMap(queryBuilderMap, queryBuilder) {
   return queryTermMap;
 }
 
-export function useQuery(mapRecordsToProps) {}
+export function useQuery(queryBuilderMap: IQueryTermMap, options: IQueryOptions = {}) {
+  const { /* useRemoteDirectly, */ mapResultsFn, additionalProps } = options;
+
+  const {
+    dataStore,
+    dataStore: { queryBuilder },
+    sources: { remote },
+  } = useOrbit();
+
+  const queryTermMap = buildQueryTermMap(queryBuilderMap, queryBuilder);
+  const queryKeys = Object.keys(queryTermMap);
+  const hasQueries = queryKeys.length > 0;
+
+  const [{ result, error, isLoading }, dispatch] = useReducer<Reducer<IState, any>>(
+    reducer,
+    initialState
+  );
+
+  const hasResults = Object.keys(result).length > 0;
+  const [needsFetch, setNeedsFetch] = useState(!hasResults);
+
+  // TODO: there may be a bug with dataStore.query in some situations
+  //       where the promise never resolves?
+  const querier = remote; //useRemoteDirectly ? remote : dataStore;
+
+  const refetch = useCallback(() => {
+    setNeedsFetch(true);
+  }, []);
+
+  const tryFetch = useCallback(() => {
+    if (isLoading) return;
+    if (!hasQueries) return;
+    if (hasResults && !needsFetch) return;
+
+    const responses = {};
+
+    dispatch({ type: START });
+
+    const requestPromises = queryKeys.map(async (key: string) => {
+      const query = queryTermMap[key];
+
+      try {
+        const queryResult = await (querier as JSONAPISource).query(...query);
+        responses[key] = queryResult;
+
+        return queryResult;
+      } catch (e) {
+        if (querier === remote) {
+          querier.requestQueue.skip();
+        }
+
+        throw e;
+      }
+    });
+
+    Promise.all(requestPromises)
+      .then(async () => {
+        let mapped = mapResultsFn
+          ? await mapResultsFn(dataStore, responses, additionalProps || {})
+          : responses;
+
+        dispatch({ type: FINISH, result: mapped });
+
+        setNeedsFetch(false);
+      })
+      .catch((error) => {
+        dispatch({ type: ERROR, error });
+      });
+  }, [queryTermMap, needsFetch, hasResults]);
+
+  useEffect(() => {
+    if (needsFetch) {
+      tryFetch();
+    }
+  }, [needsFetch]);
+
+  useEffect(() => {
+    setNeedsFetch(true);
+  }, [JSON.stringify(queryTermMap)]);
+
+  return { error, isLoading, refetch, result };
+}
 
 // Example Usage
 //
@@ -164,86 +219,13 @@ export function query(mapRecordsToProps: any, options?: IQueryOptions) {
 
   return (InnerComponent: any) => {
     return function DataWrapper(props) {
-      const {
-        dataStore,
-        dataStore: { queryBuilder },
-        sources: { remote },
-      } = useOrbit();
-
-      // map of key
       const queryBuilderMap = map(props);
-      const queryTermMap = buildQueryTermMap(queryBuilderMap, queryBuilder);
 
-      const queryKeys = Object.keys(queryTermMap);
-      const hasQueries = queryKeys.length > 0;
-
-      const [{ result, error, isLoading }, dispatch] = useReducer<Reducer<IState, any>>(
-        reducer,
-        initialState
-      );
-
-      const hasResults = Object.keys(result).length > 0;
-      const [needsFetch, setNeedsFetch] = useState(!hasResults);
-
-      // TODO: there may be a bug with dataStore.query in some situations
-      //       where the promise never resolves?
-      const querier = remote; //useRemoteDirectly ? remote : dataStore;
-
-      const refetch = useCallback(() => {
-        setNeedsFetch(true);
-      }, []);
-
-      const tryFetch = useCallback(() => {
-        if (isLoading) return;
-        if (!hasQueries) return;
-        if (hasResults && !needsFetch) return;
-
-        const responses = {};
-
-        dispatch({ type: START });
-
-        const requestPromises = queryKeys.map(async (key: string) => {
-          const query = queryTermMap[key];
-
-          try {
-            const queryResult = await (querier as JSONAPISource).query(...query);
-            responses[key] = queryResult;
-
-            return queryResult;
-          } catch (e) {
-            if (querier === remote) {
-              querier.requestQueue.skip();
-            }
-
-            throw e;
-          }
-        });
-
-        Promise.all(requestPromises)
-          .then(async () => {
-            let mapped = mapResultsFn
-              ? await mapResultsFn({ ...props, dataStore }, responses)
-              : responses;
-
-            console.log(mapped);
-            dispatch({ type: FINISH, result: mapped });
-
-            setNeedsFetch(false);
-          })
-          .catch((error) => {
-            dispatch({ type: ERROR, error });
-          });
-      }, [queryTermMap, needsFetch, hasResults]);
-
-      useEffect(() => {
-        if (needsFetch) {
-          tryFetch();
-        }
-      }, [needsFetch]);
-
-      useEffect(() => {
-        setNeedsFetch(true);
-      }, [JSON.stringify(queryTermMap)]);
+      const { error, result, isLoading, refetch } = useQuery(queryBuilderMap, {
+        mapResultsFn,
+        useRemoteDirectly,
+        additionalProps: props,
+      });
 
       if (!passthroughError && error) {
         return <ErrorMessage error={error} />;

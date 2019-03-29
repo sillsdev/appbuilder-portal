@@ -6,11 +6,13 @@ import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
+  resetBrowser,
 } from 'tests/helpers/index';
 
 import page from './page';
 
 describe('Acceptance | Project View | Product Files', () => {
+  resetBrowser();
   useFakeAuthentication();
   setupApplicationTest();
 
