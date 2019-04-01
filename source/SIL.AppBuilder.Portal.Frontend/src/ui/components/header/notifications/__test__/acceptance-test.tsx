@@ -15,16 +15,14 @@ import Page from './-page';
 import { notifications } from './-factory';
 
 describe('Acceptance | Notifications', () => {
+  let page = null;
+  let mockNotifications = notifications(10, 3);
+
   resetBrowser();
   useFakeAuthentication();
   setupApplicationTest();
 
-  let page = null;
-  let mockNotifications;
-
   beforeEach(async function() {
-    mockNotifications = notifications(10, 3);
-
     let requestCount = 0;
     this.server.get('/api/notifications').intercept((req, res) => {
       res.headers['Content-Type'] = 'application/vnd.api+json';

@@ -7,6 +7,7 @@ import {
   setupRequestInterceptor,
   useFakeAuthentication,
   fakeAuth0Id,
+  resetBrowser,
 } from 'tests/helpers/index';
 
 import { userInSameOrgDifferentGroup, userInSameOrgAndGroup } from './user-scenarios';
@@ -182,6 +183,8 @@ function setupMockData() {
 }
 
 describe('Acceptance | Project Edit | re-assigning the owner', () => {
+  resetBrowser();
+
   describe('the user is not in the same group as the project', () => {
     userInSameOrgDifferentGroup(1, 2);
     setupApplicationTest();

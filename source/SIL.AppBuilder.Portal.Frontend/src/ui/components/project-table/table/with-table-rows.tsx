@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import { ProjectResource, idFromRecordIdentity } from '@data';
 
+import { rowSelectionsFor, allCheckboxStateFor } from '~/redux-store/data/selectors';
+
 import {
   setRowSelection as setRowSelectionData,
   setAllCheckboxState as setAllCheckboxStateData,
@@ -35,30 +37,13 @@ interface IOptions {
   tableName: string;
 }
 
-const ROWS_DEFAULT_VALUE = [];
-const TOGGLE_DEFAULT_VALUE = ALL_CHECKBOX_STATE.NONE;
-
 export function withTableRows(options: IOptions) {
-  function mapStateToProps({ data }) {
+  function mapStateToProps(state) {
     const { tableName } = options;
 
-    const selectedRows =
-      (data &&
-        data.rowSelections &&
-        data.rowSelections[tableName] &&
-        data.rowSelections[tableName].rows) ||
-      ROWS_DEFAULT_VALUE;
-
-    const allCheckboxState =
-      (data &&
-        data.rowSelections &&
-        data.rowSelections[tableName] &&
-        data.rowSelections[tableName].allCheckboxState) ||
-      TOGGLE_DEFAULT_VALUE;
-
     return {
-      selectedRows,
-      allCheckboxState,
+      selectedRows: rowSelectionsFor(state, tableName),
+      allCheckboxState: allCheckboxStateFor(state, tableName),
     };
   }
 

@@ -38,10 +38,10 @@ export function wait(ms: number): Promise<void> {
 export async function visitTheHomePage() {
   await visit('/');
 
-  new Convergence()
-    .when(() => app.headers)
-    .do(() => expect(location().pathname).to.eq('/tasks'))
-    .run();
+  await when(() => assert(app.headers, 'expected headers to exist on the page'));
+  await when(() =>
+    assert(location().pathname === '/tasks', 'expected the page to be on the tasks page')
+  );
 }
 
 export async function openOrgSwitcher() {

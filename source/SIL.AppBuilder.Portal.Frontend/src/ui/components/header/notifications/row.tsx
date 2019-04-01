@@ -1,9 +1,6 @@
 import * as React from 'react';
 import CloseIcon from '@material-ui/icons/Close';
 import { attributesFor } from '@data/helpers';
-
-import { NotificationResource } from '@data';
-
 import { useDataActions } from '@data/containers/resources/notification/with-data-actions';
 import TimezoneLabel from '@ui/components/labels/timezone';
 

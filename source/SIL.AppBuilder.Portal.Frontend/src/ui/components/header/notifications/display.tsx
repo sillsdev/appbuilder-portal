@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import NotificationActiveIcon from '@material-ui/icons/NotificationsActive';
 
@@ -27,6 +27,7 @@ export default function Notifications({ refetch }) {
 
   const { t } = useTranslations();
   const [visible, toggleVisible] = useToggle(false);
+  const element = useRef<HTMLElement>();
 
   const {
     subscriptions: { notifications },
@@ -41,25 +42,42 @@ export default function Notifications({ refetch }) {
   );
   const hasNotifications = notifications.length > 0;
 
-  const toggle = () => {
-    if (visible) {
-      markAllAsViewed();
-      // refetch();
-    }
+  const toggle = useCallback(
+    (e) => {
+      const isWithinDropdown = element.current && element.current.contains(e.target);
 
-    toggleVisible();
-  };
+      if (visible && isWithinDropdown) {
+        // the click is inside the notifications dropdown,
+        // we do not toggle.
+        return;
+      }
+
+      if (visible) {
+        markAllAsViewed();
+        // refetch();
+      }
+
+      toggleVisible();
+    },
+    [visible]
+  );
+
+  useEffect(() => {
+    if (visible) {
+      document.addEventListener('click', toggle);
+
+      return () => document.removeEventListener('click', toggle);
+    }
+  }, [visible]);
 
   const isMenuVisible = visible ? 'visible' : '';
 
   return (
-    <div className='ui top right pointing dropdown' data-test-header-notification>
-      <div
-        style={{ zIndex: 1 }}
-        className={`full-overlay transition ${visible ? 'visible invisible' : ''}`}
-        onClick={toggle}
-      />
-
+    <div
+      ref={(node) => (element.current = node)}
+      className='ui top right pointing dropdown'
+      data-test-header-notification
+    >
       <div
         data-test-notification-trigger
         data-test-notification-active={!haveAllNotificationsBeenSeen}

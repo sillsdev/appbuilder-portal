@@ -1,43 +1,18 @@
 import * as React from 'react';
-import { compose } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
-
-import { ProductResource, ProjectResource } from '@data';
-
+import { useOrbit } from 'react-orbitjs';
 import ProductArtifact from '@ui/components/product-artifact';
 
 import './styles.scss';
 
-interface IExpectedProps {
-  project: ProjectResource;
+export default function Files({ project }) {
+  const { dataStore } = useOrbit();
+  const products = dataStore.cache.query((q) => q.findRelatedRecords(project, 'products'));
+
+  return (
+    <div data-test-project-files className='flex flex-column'>
+      {products.map((product) => (
+        <ProductArtifact key={product.id} product={product} />
+      ))}
+    </div>
+  );
 }
-
-interface IOwnProps {
-  products: ProductResource[];
-}
-
-type IProps = IExpectedProps & IOwnProps;
-
-class Files extends React.Component<IProps> {
-  render() {
-    const { products } = this.props;
-
-    return (
-      <div data-test-project-files className='flex flex-column'>
-        {products.map((product) => (
-          <ProductArtifact key={product.id} product={product} />
-        ))}
-      </div>
-    );
-  }
-}
-
-export default compose<IProps, IExpectedProps>(
-  withOrbit((passedProps: IExpectedProps) => {
-    const { project } = passedProps;
-
-    return {
-      products: (q) => q.findRelatedRecords(project, 'products'),
-    };
-  })
-)(Files);

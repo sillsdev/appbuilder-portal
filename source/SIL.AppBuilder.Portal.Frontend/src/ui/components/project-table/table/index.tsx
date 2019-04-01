@@ -1,86 +1,63 @@
 import * as React from 'react';
-import { compose } from 'recompose';
-
-import { ProjectResource } from '@data';
-
-import { ISortProps } from '@data/containers/api/sorting';
 import { isEmpty } from '@lib/collection';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { useTranslations } from '@lib/i18n';
 import LoadingWrapper from '@ui/components/loading-wrapper';
 
-import { IProvidedProps as ITableColumns } from './with-table-columns';
 import Header from './header';
 import Row from './row';
-import { IProvidedProps as ITableRows } from './with-table-rows';
 
-interface IOwnProps {
-  projects: ProjectResource[];
-  isLoading?: boolean;
-  projectPath?: (id: string) => string;
-  showSelection?: boolean;
-  showProjectActions?: boolean;
-}
+export default function Table(props) {
+  let {
+    projects,
+    selectedColumns,
+    activeProjectColumns,
+    activeProductColumns,
+    isLoading,
+    projectPath,
+    selectedRows,
+    toggleRowSelection,
+    showSelection,
+    showProjectActions,
+  } = props;
 
-type IProps = IOwnProps & ITableColumns & ITableRows & ISortProps & i18nProps;
+  const { t } = useTranslations();
+  const isProjectListEmpty = isEmpty(projects);
 
-class Table extends React.Component<IProps> {
-  static defaultProps = {
-    showProjectActions: true,
-  };
+  let projectList;
 
-  render() {
-    const {
-      projects,
-      selectedColumns,
-      activeProjectColumns,
-      activeProductColumns,
-      t,
-      isLoading,
-      projectPath,
-      selectedRows,
-      toggleRowSelection,
-      showSelection,
-      showProjectActions,
-    } = this.props;
+  if (isProjectListEmpty) {
+    projectList = <div data-test-project-list-empty>{t('projectTable.empty')}</div>;
+  } else {
+    showProjectActions = showProjectActions !== undefined ? showProjectActions : true;
 
-    const isProjectListEmpty = isEmpty(projects);
-
-    let projectList;
-
-    if (isProjectListEmpty) {
-      projectList = <div data-test-project-list-empty>{t('projectTable.empty')}</div>;
-    } else {
-      projectList = (
-        <>
-          <Header {...this.props} />
-          {projects.map((project) => {
-            return (
-              <Row
-                key={project.id}
-                {...{
-                  project,
-                  selectedColumns,
-                  activeProjectColumns,
-                  activeProductColumns,
-                  projectPath,
-                  selectedRows,
-                  toggleRowSelection,
-                  showSelection,
-                  showProjectActions,
-                }}
-              />
-            );
-          })}
-        </>
-      );
-    }
-
-    return (
-      <LoadingWrapper data-test-project-table isLoading={isLoading} className='project-table'>
-        {projectList}
-      </LoadingWrapper>
+    projectList = (
+      <>
+        <Header {...props} />
+        {projects.map((project) => {
+          return (
+            <Row
+              key={project.id}
+              {...{
+                project,
+                selectedColumns,
+                activeProjectColumns,
+                activeProductColumns,
+                projectPath,
+                selectedRows,
+                toggleRowSelection,
+                showSelection,
+                showProjectActions,
+              }}
+            />
+          );
+        })}
+      </>
     );
   }
-}
 
-export default compose(withTranslations)(Table);
+  return (
+    <LoadingWrapper data-test-project-table isLoading={isLoading} className='project-table'>
+      {projectList}
+    </LoadingWrapper>
+  );
+}
