@@ -4,6 +4,8 @@ import { defaultOptions, NotificationResource } from '@data';
 
 import { recordIdentityFromKeys } from '@data/store-helpers';
 
+import * as toast from '~/lib/toast';
+
 export interface IProvidedProps {
   clear: () => Promise<void>;
   markAsSeen: () => Promise<void>;
@@ -14,14 +16,14 @@ export function useDataActions(notification: NotificationResource) {
   if (!notification) return;
 
   const clear = async () => {
-    await dataStore.update((t) => t.removeRecord(recordIdentityFromKeys(notification)), {
-      ...defaultOptions(),
-    });
-
-    // TODO: this is an issue with remote ids not matching local ids.
-    //       this probably means there is a bug in the sync strategies.
-    //       we shouldn't need to manually remove the notification.
-    dataStore.update((t) => t.removeRecord(notification), { skipRemote: true });
+    try {
+      await dataStore.update((t) => t.removeRecord(notification), {
+        ...defaultOptions(),
+      });
+    } catch (e) {
+      // TODO: figure out why a DELETE and a PATCH happens here
+      console.warn(e);
+    }
   };
 
   const markAsSeen = async () => {
@@ -31,9 +33,13 @@ export function useDataActions(notification: NotificationResource) {
 
     const date = new Date().toISOString();
 
-    await dataStore.update((t) => t.replaceAttribute(notification, 'dateRead', date), {
-      ...defaultOptions(),
-    });
+    try {
+      await dataStore.update((t) => t.replaceAttribute(notification, 'dateRead', date), {
+        ...defaultOptions(),
+      });
+    } catch (e) {
+      toast.error(e);
+    }
   };
 
   return { clear, markAsSeen };

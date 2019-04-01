@@ -29,9 +29,8 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             IJsonApiSerializer serializer,
             IResourceGraph resourceGraph,
             IDbContextResolver dbContextResolver,
-            IHubContext<ScriptoriaHub> hubContext,
             IHubContext<JSONAPIHub> dataHub
-            ) : base(operationsProcessor, serializer, resourceGraph, dbContextResolver, hubContext, dataHub)
+            ) : base(operationsProcessor, serializer, resourceGraph, dbContextResolver, dataHub)
         {
 
         }
@@ -45,7 +44,6 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
         private const string Delete = "DELETE";
 
         public DbContext DbContext { get; }
-        public IHubContext<ScriptoriaHub> HubContext { get; }
         public IHubContext<JSONAPIHub> DataHub { get; }
 
         private readonly IOperationsProcessor _operationsProcessor;
@@ -58,12 +56,10 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             IJsonApiSerializer serializer,
             IResourceGraph resourceGraph,
             IDbContextResolver dbContextResolver,
-            IHubContext<ScriptoriaHub> hubContext,
             IHubContext<JSONAPIHub> dataHub
             )
         {
             this.DbContext = dbContextResolver.GetContext();
-            this.HubContext = hubContext;
             this.DataHub = dataHub;
 
             this._operationsProcessor = operationsProcessor;

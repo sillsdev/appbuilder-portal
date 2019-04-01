@@ -52,6 +52,10 @@ export function preventDefault<T extends Function>(fn: T) {
   return (e: any) => {
     e.preventDefault();
 
-    fn();
+    fn(e);
   };
+}
+
+export function matchesOrIsChildOf(target: Element, container: Element) {
+  return target === container || Array.from(container.children).includes(target);
 }

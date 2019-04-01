@@ -8,31 +8,38 @@ import { useTranslations } from '~/lib/i18n';
 
 import { useToggle } from '~/lib/hooks';
 
-import { useOrbit, attributesFor } from 'react-orbitjs/dist';
+import { useOrbit, attributesFor } from 'react-orbitjs';
 
 import { NotificationResource } from '~/data';
+
+import { useLiveData } from '~/data/live';
+
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 import { useCollectionDataActions } from '~/data/containers/resources/notification/with-collection-data-actions';
 
 import { preventDefault } from '~/lib/dom';
 
-import { useLiveData } from '~/data/live';
-
 interface ISubscribedTo {
   notifications: NotificationResource[];
 }
 
-export default function Notifications({ refetch }) {
+export default function Notifications() {
   useLiveData('notifications');
 
   const { t } = useTranslations();
+  const { currentUser } = useCurrentUser();
   const [visible, toggleVisible] = useToggle(false);
   const element = useRef<HTMLElement>();
 
   const {
     subscriptions: { notifications },
   } = useOrbit<ISubscribedTo>({
-    notifications: (q) => q.findRecords('notification').sort('-dateCreated', '-dateRead'),
+    notifications: (q) =>
+      q
+        .findRecords('notification')
+        .filter({ relation: 'user', record: currentUser })
+        .sort('-dateCreated', '-dateRead'),
   });
 
   const { clearAll, markAllAsViewed } = useCollectionDataActions(notifications);

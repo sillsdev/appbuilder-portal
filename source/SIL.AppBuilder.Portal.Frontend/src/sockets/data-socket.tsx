@@ -1,6 +1,11 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useOrbit } from 'react-orbitjs';
-import { HubConnectionFactory, HubConnection } from '@ssv/signalr-client';
+import {
+  HubConnectionFactory,
+  HubConnection,
+  ConnectionState,
+  ConnectionStatus,
+} from '@ssv/signalr-client';
 
 import {
   transformsToJSONAPIOperations,
@@ -10,7 +15,7 @@ import {
 import { isTesting } from '~/env';
 
 import { TransformOrOperations } from '@orbit/data';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import JSONAPISource from '@orbit/jsonapi';
 import Store from '@orbit/store';
@@ -69,23 +74,31 @@ export default function LiveDataManager({ children }) {
     };
   }, [isLoggedIn, auth0Id]);
 
-  const pushData = (transforms: TransformOrOperations): Observable<JSONAPIOperationsPayload> => {
-    const data = transformsToJSONAPIOperations(
-      sources.remote as JSONAPISource,
-      dataStore.transformBuilder,
-      transforms
-    );
+  const { isConnected, connectionState } = useConnectionStateWatcher(dataClient.connection);
 
-    if (isTesting) return;
+  const pushData = useCallback(
+    (transforms: TransformOrOperations): Observable<JSONAPIOperationsPayload> => {
+      const data = transformsToJSONAPIOperations(
+        sources.remote as JSONAPISource,
+        dataStore.transformBuilder,
+        transforms
+      );
 
-    return dataClient.connection.invoke<string>('PerformOperations', JSON.stringify(data)).pipe(
-      map<string, JSONAPIOperationsPayload>((json) => {
+      if (isTesting) return;
+
+      let observer = dataClient.connection.invoke<string>(
+        'PerformOperations',
+        JSON.stringify(data)
+      );
+
+      observer.toPromise().then((json) => {
         return handleSocketPayload(dataStore, json);
-      })
-    );
-  };
+      });
+    },
+    [isConnected, isTesting]
+  );
 
-  return children({ socket: dataClient, pushData, subscriptions });
+  return children({ socket: dataClient, pushData, subscriptions, isConnected, connectionState });
 }
 
 function handleSocketPayload(dataStore: Store, json: string) {
@@ -94,4 +107,29 @@ function handleSocketPayload(dataStore: Store, json: string) {
   dataToLocalCache(dataStore, response);
 
   return response;
+}
+
+function useConnectionStateWatcher(connection: HubConnection<DataHub>) {
+  const subscription = useRef<Subscription>();
+  const [isConnected, setIsConnected] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState>();
+
+  useEffect(() => {
+    if (isTesting) return;
+
+    if (!subscription.current) {
+      subscription.current = connection.connectionState$.subscribe((state) => {
+        setIsConnected(state.status === ConnectionStatus.connected);
+        setConnectionState(state);
+      });
+    }
+
+    return () => {
+      if (subscription.current) {
+        subscription.current.unsubscribe();
+      }
+    };
+  }, [connection]);
+
+  return { isConnected, connectionState };
 }

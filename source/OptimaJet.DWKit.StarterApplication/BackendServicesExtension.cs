@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentEmail.Core.Interfaces;
 using Hangfire;
 using Hangfire.PostgreSql;
+using JsonApiDotNetCore.Configuration;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
@@ -38,6 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication
         {
             // add jsonapi dotnet core
             // - includes IHttpContextAccessor as a singleton
+            JsonApiOptions.ResourceNameFormatter = new ScriptoriaResourceFormatter();
             services.AddJsonApi<AppDbContext>(options => {
                 options.Namespace = "api";
                 options.IncludeTotalRecordCount = true;

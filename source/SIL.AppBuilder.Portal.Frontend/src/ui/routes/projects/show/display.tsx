@@ -38,7 +38,7 @@ export default function ProjectShowDisplay({ project }: IProps) {
   const { dataStore } = useOrbit();
   const { currentUser } = useCurrentUser();
   const { updateOwner, toggleArchiveProject } = useDataActions(project);
-  useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
+  useLiveData(`project/${idFromRecordIdentity(dataStore, project)}`);
 
   const claimOwnership = async () => {
     try {

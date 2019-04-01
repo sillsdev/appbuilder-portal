@@ -22,9 +22,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public async Task Create_Product()
         {
             BuildTestData();
-            var hubContext = _fixture.GetService<IHubContext<ScriptoriaHub>>();
-            var mockScriptoriaHub = Mock.Get(hubContext);
-            mockScriptoriaHub.Reset();
+            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
+            var mockHub = Mock.Get(hubContext);
+            mockHub.Reset();
             var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
             mockClients.Reset();
 
@@ -55,7 +55,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             Assert.Equal(project1.Id, product.ProjectId);
             Assert.Equal(productDefinition1.Id, product.ProductDefinitionId);
             // Verify that status update not sent for non project
-            mockScriptoriaHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Never());
+            mockHub.Verify(x => x.Clients.Group(It.IsAny<string>()), Times.Never());
         }
 
         [Fact(Skip = "Enabling the updating of a Project in the Product service throws a NullReferenceException. Reason unknown. Unable to debug libraries with VS Code - Preston")]

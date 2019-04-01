@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { useOrbit } from 'react-orbitjs';
 
 import DataSocket from '~/sockets/data-socket';
@@ -7,7 +7,7 @@ import Store from '@orbit/store';
 
 import DataSocketClient, { DataHub } from '~/sockets/clients/data';
 
-import { ConnectionStatus, HubConnection, ConnectionState } from '@ssv/signalr-client';
+import { ConnectionStatus, HubConnection } from '@ssv/signalr-client';
 import { TransformOrOperations } from '@orbit/data';
 import { Observable, Subscription } from 'rxjs';
 
@@ -18,6 +18,8 @@ interface ILiveDataContext {
   socket?: DataSocketClient;
   pushData: (transforms: TransformOrOperations) => Observable<{}>;
   subscriptions: string[];
+  isConnected: boolean;
+  connectionState: ConnectionStatus;
 }
 
 const DataContext = React.createContext<ILiveDataContext>({
@@ -25,22 +27,21 @@ const DataContext = React.createContext<ILiveDataContext>({
   socket: undefined,
   pushData: undefined,
   subscriptions: [],
+  isConnected: false,
+  connectionState: ConnectionStatus.disconnected,
 });
 
 export function useLiveData(subscribeTo?: string) {
   const dataCtx = useContext<ILiveDataContext>(DataContext);
   const {
     socket: { connection },
+    isConnected,
   } = dataCtx;
 
-  const { isConnected } = useConnectionStateWatcher(connection);
   const { isSubscribed } = useSubscribeToResource(connection, subscribeTo, isConnected);
 
-  return {
-    ...dataCtx,
-    isSubscribed,
-    isConnected,
-    pushData: (transforms: TransformOrOperations) => {
+  const pushData = useCallback(
+    (transforms: TransformOrOperations) => {
       if (isTesting) {
         console.debug('testing early return: figure out how to test websocket communication');
         return;
@@ -49,12 +50,16 @@ export function useLiveData(subscribeTo?: string) {
         throw new Error('Not connected to socket');
       }
 
-      if (subscribeTo && !isSubscribed) {
-        throw new Error('Not subscribed to resource');
-      }
-
       return dataCtx.pushData(transforms);
     },
+    [isConnected, isTesting]
+  );
+
+  return {
+    ...dataCtx,
+    isSubscribed,
+    isConnected,
+    pushData,
   };
 }
 
@@ -63,9 +68,11 @@ export function LiveDataProvider({ children }) {
 
   return (
     <DataSocket>
-      {({ pushData, socket, subscriptions }) => {
+      {({ pushData, socket, subscriptions, isConnected, connectionState }) => {
         return (
-          <DataContext.Provider value={{ dataStore, pushData, socket, subscriptions }}>
+          <DataContext.Provider
+            value={{ dataStore, pushData, socket, subscriptions, isConnected, connectionState }}
+          >
             {children}
           </DataContext.Provider>
         );
@@ -86,11 +93,9 @@ function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo,
     if (!isSubscribed && !subscription.current) {
       subscription.current = connection.send('SubscribeTo', subscribeTo).subscribe(
         () => {
-          console.log('subscribing to', subscribeTo, 'succeeded');
           setIsSubscribed(true);
         },
         () => {
-          console.log('subscribing to', subscribeTo, 'failed');
           setIsSubscribed(false);
         }
       );
@@ -109,29 +114,4 @@ function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo,
   }, [subscribeTo, isConnected]);
 
   return { isSubscribed };
-}
-
-function useConnectionStateWatcher(connection: HubConnection<DataHub>) {
-  const subscription = useRef<Subscription>();
-  const [isConnected, setIsConnected] = useState(false);
-  const [connectionState, setConnectionState] = useState<ConnectionState>();
-
-  useEffect(() => {
-    if (isTesting) return;
-
-    if (!subscription.current) {
-      subscription.current = connection.connectionState$.subscribe((state) => {
-        setIsConnected(state.status === ConnectionStatus.connected);
-        setConnectionState(state);
-      });
-    }
-
-    return () => {
-      if (subscription.current) {
-        subscription.current.unsubscribe();
-      }
-    };
-  });
-
-  return { isConnected, connectionState };
 }

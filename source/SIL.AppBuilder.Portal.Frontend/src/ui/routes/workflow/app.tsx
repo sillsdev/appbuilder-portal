@@ -19,6 +19,7 @@ import {
 import * as toast from '@lib/toast';
 
 import '~/global-config';
+import { PageLoader } from '~/ui/components/loaders';
 
 window.alertify = {
   error(...args) {
@@ -57,6 +58,7 @@ export default class App extends React.Component<any, any> {
     super(props);
     this.state = {
       pagekey: 0,
+      isLoading: false,
     };
 
     resetFormState();
@@ -79,6 +81,7 @@ export default class App extends React.Component<any, any> {
   }
 
   render() {
+    const { isLoading } = this.state;
     const sectorprops = {
       eventFunc: this.actionsFetch.bind(this),
       getAdditionalDataForControl: this.additionalFetch.bind(this, undefined),
@@ -86,9 +89,24 @@ export default class App extends React.Component<any, any> {
 
     return (
       <div
-        className='p-lg flex-column flex-grow dwkit-form-container align-items-center'
+        className='p-lg flex-column flex-grow dwkit-form-container align-items-center p-relative'
         key={this.state.pagekey}
       >
+        {isLoading && (
+          <div
+            style={{
+              zIndex: 1,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(255, 255, 255, 0.5)',
+            }}
+          >
+            <PageLoader />
+          </div>
+        )}
         <DWKitForm
           className='dwkit-header w-100'
           {...sectorprops}
@@ -141,7 +159,7 @@ export default class App extends React.Component<any, any> {
                 exact
                 path='/'
                 render={() => {
-                  return <Redirect to='/tasks' />;
+                  return <Redirect to='/tasks' push={true} />;
                 }}
               />
 
@@ -169,27 +187,32 @@ export default class App extends React.Component<any, any> {
   }
 
   onFetchStarted = () => {
-    $('body').loadingModal({
-      text: 'Loading...',
-      animation: 'foldingCube',
-      backgroundColor: '#1262E2',
-    });
+    this.setState({ isLoading: true });
   };
 
   onFetchFinished = () => {
-    $('body').loadingModal('destroy');
+    this.setState({ isLoading: false });
+    // this.onRefresh();
+    // resetFormState();
+    // this.forceUpdate();
   };
 
   onRefresh = () => {
+    console.log('on refresh');
     this.onFetchStarted();
-    Store.resetForm();
-    this.setState({
-      pagekey: this.state.pagekey + 1,
-    });
-    SignalRConnector.Connect(Store);
+
+    // TODO: HACK: because the state management in this
+    //       DWKit / workflow stuff is... unfortunate
+    // Store.resetForm();
+    // this.setState({
+    //   pagekey: this.state.pagekey + 1,
+    // });
+    // SignalRConnector.Connect(Store);
+    location.reload();
   };
 
   actionsFetch = (args) => {
+    console.log('actions fetch');
     Store.dispatch(Thunks.form.executeActions(args));
   };
 
@@ -199,6 +222,7 @@ export default class App extends React.Component<any, any> {
     { startIndex, pageSize, filters, sort, model },
     callback
   ) => {
+    console.log('additional fetch');
     Store.dispatch(
       Thunks.additional.fetch({
         type: controlRef.props['data-buildertype'],
