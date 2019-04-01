@@ -24,7 +24,7 @@ export default compose(
     requiredFilters: [{ attribute: 'date-archived', value: 'isnull:' }],
   }),
   withNetwork(),
-  withLoader(({ projects }) => !projects),
+  withLoader(({ error, projects }) => !error && !projects),
   withProps(({ projects }) => ({
     tableName: 'organization',
     rowCount: projects ? projects.length : 0,
