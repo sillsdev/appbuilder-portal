@@ -43,7 +43,7 @@ export default function Builds({ product }) {
             return t('projects.latestBuild', { version });
           }
 
-          return version;
+          return version || t('projects.buildPending');
         }}
         value={activeVersion}
         onChange={setActiveVersion}
