@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -12,12 +13,21 @@ using Newtonsoft.Json;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.Core.View;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     public class DataController : Controller
     {
+        public IBackgroundJobClient BackgroundJobClient { get; }
+
+        public DataController(
+            IBackgroundJobClient backgroundJobClient
+        )
+        {
+            BackgroundJobClient = backgroundJobClient;
+        }
         [Route("data/get")]
         public async Task<ActionResult> GetData(string name, string control, string urlFilter, string options,
             string filter, string paging, string sort)
@@ -118,7 +128,23 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 {
                     throw new Exception("Access denied!");
                 }
-
+                switch (name)
+                {
+                    case "SIL_AppBuilders_Verify_And_Publish":
+                    case "SIL_AppBuilders_Create_App_Entry":
+                    case "SIL_AppBuilders_App_Store_Review":
+                        var dataDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
+                        if (dataDictionary.ContainsKey("textarea_comment"))
+                        {
+                            string comment = (string)dataDictionary["textarea_comment"];
+                            string idString = (string)dataDictionary["Id"];
+                            Guid id = Guid.Parse(idString);
+                            BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.SetComment(id, comment));
+                        }
+                        return Json(new SuccessResponse("Data change successfully"));
+                    default:
+                        break;
+                }
                 var postRequest = new ChangeDataRequest(name, data)
                 {
                     BaseUrl = string.Format("{0}://{1}", Request.Scheme, Request.Host.Value),

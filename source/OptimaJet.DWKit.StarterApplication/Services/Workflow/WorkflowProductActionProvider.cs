@@ -295,8 +295,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
 
+
             using (var scope = ServiceProvider.CreateScope())
             {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
                 var userRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<User>>();
                 var userNames = userRepository.Get()
                     .Where(u => processInstance.IdentityIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
@@ -311,6 +314,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     DestinationState = nextState,
                     Command = command
                 };
+
                 await productTransitionsRepository.CreateAsync(history);
             }
         }
@@ -330,6 +334,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             using (var scope = ServiceProvider.CreateScope())
             {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
                 var productTransitionsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<ProductTransition>>();
                 var history = await productTransitionsRepository.Get()
                     .Where(h => h.ProductId == processInstance.ProcessId
@@ -353,6 +359,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 if (Guid.TryParse(processInstance.IdentityId, out Guid identityId))
                 {
                     history.WorkflowUserId = identityId;
+                }
+                // Clear the WorkflowComment
+                if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
+                {
+                    history.Comment = product.WorkflowComment;
+                    product.WorkflowComment = "";
+                    await productRepository.UpdateAsync(product);
                 }
                 await productTransitionsRepository.UpdateAsync(history);
             }

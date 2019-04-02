@@ -24,6 +24,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("command")]
         public string Command { get; set; }
 
+        [Attr("comment")]
+        public string Comment { get; set; }
+
         [Attr("date-transition")]
         public DateTime? DateTransition { get; set; }
     }

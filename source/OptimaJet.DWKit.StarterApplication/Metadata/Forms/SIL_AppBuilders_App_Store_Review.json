@@ -6,14 +6,24 @@
       "onCommandClick": {
         "active": true,
         "actions": [
-          "workflowExecuteCommand"
-        ]
+          "validate",
+          "save",
+          "workflowExecuteCommand",
+          "refresh"
+        ],
+        "targets": [],
+        "parameters": []
       },
       "onSetStateClick": {
         "active": true,
         "actions": [
-          "workflowSetState"
-        ]
+          "validate",
+          "save",
+          "workflowSetState",
+          "gridRefresh"
+        ],
+        "targets": [],
+        "parameters": []
       }
     },
     "blockSetState": true,
@@ -140,7 +150,7 @@
         "data-buildertype": "gridview",
         "columns": [
           {
-            "key": "buildid",
+            "key": "buildId",
             "name": "BuildId",
             "type": "number",
             "width": 100,
