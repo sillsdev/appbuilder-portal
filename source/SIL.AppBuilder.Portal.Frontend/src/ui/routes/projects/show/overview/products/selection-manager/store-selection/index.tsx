@@ -13,7 +13,6 @@ import {
 import { i18nProps, useTranslations } from '@lib/i18n';
 
 import StoreSelect from './multi-select';
-
 import { OverlayLoader } from '~/ui/components/loaders';
 
 interface INeededProps {

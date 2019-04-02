@@ -95,6 +95,8 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped(typeof(EntityHooksService<,>));
             services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
             services.AddScoped(typeof(IEntityHookHandler<,>), typeof(BaseHookNotifier<,>));
+            services.AddScoped<IEntityHookHandler<Notification, int>, NotificationHookNotifier>();
+            services.AddScoped<IEntityHookHandler<UserTask, int>, UserTaskHookNotifier>(); 
 
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();

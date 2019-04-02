@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Json;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Internal;
@@ -14,22 +18,121 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OptimaJet.DWKit.StarterApplication.Models;
+using OptimaJet.DWKit.StarterApplication.Repositories;
 using Serilog;
 using Serilog.Events;
 
 namespace OptimaJet.DWKit.StarterApplication.Utility
 {
+    // TODO: connections should probably live in redis or something to help with multi-server
+    //       concurrency.  This may not be needed for a while though -- depends on how resource heavy 
+    //       this api is.
+    // 
+    // https://docs.microsoft.com/en-us/aspnet/signalr/overview/guide-to-the-api/mapping-users-to-connections
+    public class ConnectionMapping<T>
+    {
+        private readonly Dictionary<T, HashSet<string>> _connections =
+            new Dictionary<T, HashSet<string>>();
+
+        public int Count
+        {
+            get
+            {
+                return _connections.Count;
+            }
+        }
+
+        public void Add(T key, string connectionId)
+        {
+            lock (_connections)
+            {
+                HashSet<string> connections;
+                if (!_connections.TryGetValue(key, out connections))
+                {
+                    connections = new HashSet<string>();
+                    _connections.Add(key, connections);
+                }
+
+                lock (connections)
+                {
+                    connections.Add(connectionId);
+                }
+            }
+        }
+
+        public IEnumerable<string> GetConnections(T key)
+        {
+            HashSet<string> connections;
+            if (_connections.TryGetValue(key, out connections))
+            {
+                return connections;
+            }
+
+            return Enumerable.Empty<string>();
+        }
+
+        public void Remove(T key, string connectionId)
+        {
+            lock (_connections)
+            {
+                HashSet<string> connections;
+                if (!_connections.TryGetValue(key, out connections))
+                {
+                    return;
+                }
+
+                lock (connections)
+                {
+                    connections.Remove(connectionId);
+
+                    if (connections.Count == 0)
+                    {
+                        _connections.Remove(key);
+                    }
+                }
+            }
+        }
+    }
+
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class JSONAPIHub : Hub
     {
         public static string RemoteDataHasUpdated = "RemoteDataHasUpdated";
 
+        private readonly static ConnectionMapping<string> _connections = 
+            new ConnectionMapping<string>();
+
         private readonly IOperationsProcessor _operationsProcessor;
 
-        public JSONAPIHub(IOperationsProcessor operationsProcessor)
+        private readonly UserRepository _userRepository;
+
+        public JSONAPIHub(IOperationsProcessor operationsProcessor, UserRepository userRepository)
         {
             this._operationsProcessor = operationsProcessor;
+            this._userRepository = userRepository;
+        }
+        
+        public static async Task SendTo(IHubContext<JSONAPIHub> hub, string userId, string message)
+        {
+            foreach (var connectionId in _connections.GetConnections(userId))
+            {
+                await hub.Clients.Client(connectionId).SendAsync(message);
+            }
+        }
+
+        public override Task OnConnectedAsync()
+        {
+            _connections.Add(GetConnectedUserId(), Context.ConnectionId);
+            
+            return base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            _connections.Remove(GetConnectedUserId(), Context.ConnectionId);
+            
+            return base.OnDisconnectedAsync(exception);
         }
 
         // example paths:
@@ -69,6 +172,20 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             var response = new OperationsDocument(results);
 
             return JsonConvert.SerializeObject(response);
+        }
+
+        private string GetConnectedUserId() 
+        {
+            var auth0Id = Context.User.Claims.FirstOrDefault(c => c.Type == HttpContextHelpers.TYPE_NAME_IDENTIFIER)?.Value;
+            
+            if (auth0Id == null) {
+                return null;
+            }
+            
+            var user = this._userRepository.GetByAuth0Id(auth0Id);
+
+            return user.Id.ToString();
+
         }
     }
 }

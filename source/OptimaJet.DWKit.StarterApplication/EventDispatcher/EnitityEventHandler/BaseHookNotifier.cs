@@ -118,38 +118,11 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
             
             var entity = DbContext.Set<TEntity>().Find((TKey)idInEntityType);
 
-            this.PublishResource((TKey)idInEntityType, entity, operation);
+            this.PublishResourceAsync((TKey)idInEntityType, entity, operation);
         }
 
-
-        //
-        private void PublishResource(TKey id, TEntity resource, string operation)
+        protected string BuildDocument(TKey id, TEntity resource, string entityType, string operation) 
         {
-            var graphNode = this._resourceGraph.GetContextEntity(typeof(TEntity));
-
-            // resource may not be in the context graph
-            // (non-api model)
-            if (graphNode == null)
-            {
-                return;
-            }
-
-            // Hitting this could be there is a race condition between
-            // when the job to Notify was published and the deletion
-            // of the resource. (Resource not found, was deleted after job queueing)
-            if (operation != Delete && resource == null) {
-                return;
-            }
-
-            // potential groups the user could be subscribed to.
-            // this is why this doesn't yet suppor the `include` notation
-            // because we need to figure out how to get a _list_ of groups that the 
-            // user is subscribed to and check substrings within each of those.
-            //
-            // at this time, I don't know if there is a way to get a list of groups.
-            var entityType = graphNode.EntityName;
-            var pathForGet = $"{entityType}/{id}";
-
             // The { json:api } formatted string / document
             string json;
 
@@ -183,6 +156,51 @@ namespace OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler
                 );
 
                 json = this._serializer.Serialize(operationsPayload);
+            }
+
+            return json;
+        }
+
+        protected (string json, string entityType, string pathForGet) BuildResource(TKey id, TEntity resource, string operation)
+        {
+            var graphNode = this._resourceGraph.GetContextEntity(typeof(TEntity));
+
+            // resource may not be in the context graph
+            // (non-api model)
+            if (graphNode == null)
+            {
+                return (null, null, null);
+            }
+
+            // Hitting this could be there is a race condition between
+            // when the job to Notify was published and the deletion
+            // of the resource. (Resource not found, was deleted after job queueing)
+            if (operation != Delete && resource == null) {
+                return (null, null, null);
+            }
+
+            // potential groups the user could be subscribed to.
+            // this is why this doesn't yet suppor the `include` notation
+            // because we need to figure out how to get a _list_ of groups that the 
+            // user is subscribed to and check substrings within each of those.
+            //
+            // at this time, I don't know if there is a way to get a list of groups.
+            var entityType = graphNode.EntityName;
+            var pathForGet = $"{entityType}/{id}";
+
+            var json = BuildDocument(id, resource, entityType, operation);
+
+            return (json, entityType, pathForGet);
+        }
+
+
+        //
+        protected virtual void PublishResourceAsync(TKey id, TEntity resource, string operation)
+        {
+            var (json, entityType, pathForGet) = BuildResource(id, resource, operation);
+
+            if (json == null) {
+                return;
             }
 
             // send to any who are subscribed...

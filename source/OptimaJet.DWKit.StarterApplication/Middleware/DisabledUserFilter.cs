@@ -66,7 +66,7 @@ namespace OptimaJet.DWKit.StarterApplication.Middleware
 
         protected bool IsUserLocked(ActionExecutingContext context)
         {
-            var user = currentUserRepository.GetCurrentUser().Result;
+            var user = currentUserRepository.GetCurrentUser()?.Result;
             return user != null && user.IsLocked;
         }
 

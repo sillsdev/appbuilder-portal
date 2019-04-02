@@ -1,5 +1,4 @@
 import React from 'react';
-
 import RectLoader from './rect-loader';
 
 export default function OverlayLoader(props: any) {
