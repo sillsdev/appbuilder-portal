@@ -19,4 +19,6 @@ else
   echo "semantic-ui-react has already been built"
 fi
 
+# Semantic-UI's types are wrong and cause the build to break.
+# Even though we don't block building with invalid types....
 rm -rf "$1/node_modules/semantic-ui-react/index.d.ts"

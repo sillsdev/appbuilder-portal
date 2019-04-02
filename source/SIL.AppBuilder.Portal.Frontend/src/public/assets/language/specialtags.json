@@ -1,0 +1,19 @@
+[
+  {
+    "tag": "_globalvar",
+    "variants": [
+      "simple"
+    ]
+  },
+  {
+    "tag": "_phonvar",
+    "variants": [
+      "alalc97",
+      "fonipa",
+      "fonkirsh",
+      "fonnapa",
+      "fonupa",
+      "fonxsamp"
+    ]
+  }
+]

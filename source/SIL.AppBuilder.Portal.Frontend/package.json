@@ -8,13 +8,9 @@
   ],
   "scripts": {
     "build-deps": "scripts/build-dependencies.sh $PWD",
-    "ts-node": "./node_modules/.bin/ts-node",
-    "tsc": "./node_modules/.bin/tsc",
     "karma": "./node_modules/.bin/karma",
     "webpack": "./node_modules/.bin/webpack-cli",
-    "polly": "./node_modules/.bin/polly",
     "webpack-dev": "./node_modules/.bin/webpack-dev-server",
-    "tslint": "./node_modules/.bin/tslint -c ./tslint.json --project ./tsconfig.json",
     "start:dev": "yarn build-deps && REVISION=$(git rev-parse HEAD) BUILD_DATE=$(date) yarn webpack-dev",
     "webpack:build": "BUILD_DATE=$(date) NODE_ENV=production yarn webpack --env production",
     "webpack:build:analyze": "./scripts/analyze.sh",
@@ -25,8 +21,6 @@
     "test:ci": "./scripts/tests.sh",
     "lint": "yarn lint:js",
     "lint:js": "yarn eslint . --ext .js --ext .ts --ext .jsx --ext .tsx",
-    "lint:js:fix": "yarn lint --fix",
-    "tslint-check": "./node_modules/.bin/tslint-config-prettier-check ./tslint.json",
     "typecheck": "yarn tsc --noEmit"
   },
   "dependencies": {
