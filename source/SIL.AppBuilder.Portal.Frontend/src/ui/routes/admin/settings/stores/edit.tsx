@@ -1,8 +1,5 @@
-import { withRouter } from 'react-router';
-
-import { query } from '@data';
-
-import { compose, withProps } from 'recompose';
+import React from 'react';
+import { useQuery } from 'react-orbitjs';
 import { paths } from '@ui/routes/admin/paths';
 
 import { useTranslations } from '~/lib/i18n';
@@ -10,31 +7,41 @@ import { useTranslations } from '~/lib/i18n';
 import * as toast from '@lib/toast';
 import { useDataActions } from '@data/containers/resources/store/use-data-actions';
 
-import { buildOptions, buildFindRecord, withLoader } from '~/data';
+import { buildOptions, buildFindRecord } from '~/data';
 
 import Form from './-components/form';
 
-export default compose(
-  withRouter,
-  query(({ match: { params: { id } } }) => ({
+import { useRouter } from '~/lib/hooks';
+
+import { RectLoader } from '~/ui/components/loaders';
+
+export default function EditForm() {
+  const { t } = useTranslations();
+  const { update } = useDataActions();
+  const { history, match } = useRouter();
+  const { id } = match.params || {};
+
+  const {
+    result: { store },
+    isLoading,
+  } = useQuery({
     store: [(q) => buildFindRecord(q, 'store', id), buildOptions({ include: ['store-type'] })],
-  })),
-  withLoader(({ store }) => !store),
-  withProps(({ history, store }) => {
-    const { update } = useDataActions();
-    const { t } = useTranslations();
+  });
 
-    return {
-      async save(attributes, relationships) {
-        await update(store, attributes, relationships);
+  if (isLoading) {
+    return <RectLoader />;
+  }
 
-        toast.success(t('models.updateSuccess', { name: t('stores.name') }));
+  const save = async (attributes, relationships) => {
+    await update(store, attributes, relationships);
 
-        history.push(paths.settings.stores.path());
-      },
-      cancel() {
-        history.push(paths.settings.stores.path());
-      },
-    };
-  })
-)(Form);
+    toast.success(t('models.updateSuccess', { name: t('stores.name') }));
+
+    history.push(paths.settings.stores.path());
+  };
+  const cancel = () => {
+    history.push(paths.settings.stores.path());
+  };
+
+  return <Form {...{ store, save, cancel }} />;
+}
