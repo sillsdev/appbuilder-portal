@@ -17,17 +17,27 @@ export default function Builds({ product }) {
     productBuilds: (q) => q.findRelatedRecords(product, 'productBuilds'),
   });
 
-  const [activeVersion, setActiveVersion] = useState((productBuilds || [])[0]);
-
-  const sortedBuilds = productBuilds.sort(compareVia((build) => attributesFor(build).version));
+  const sortedBuilds = productBuilds.sort(
+    compareVia((build) => attributesFor(build).version, true)
+  );
+  const [activeVersion, setActiveVersion] = useState((sortedBuilds || [])[0]);
 
   return (
     <div data-test-build>
       <ResourceSelect
         items={sortedBuilds}
         labelField={(build: ProductBuildResource) => {
-          console.log(build);
-          const version = attributesFor(build).version;
+          // Looking at the default value here, you may notice that there are extra spaces
+          // around the t(...). This is intentional, as the outputs are either:
+          //
+          // `Current Build (v1.0.0)`
+          // or
+          // `Current Build ( Build Pending )`
+          //
+          // without the spaces it does:
+          // `Current Build (build Pending)`
+          // TODO: see: https://developertown.visualstudio.com/SIL%20International%20Scriptoria/_workitems/edit/34532
+          const version = attributesFor(build).version || ` ${t('projects.buildPending')} `;
 
           if (build === sortedBuilds[0]) {
             return t('projects.latestBuild', { version });
