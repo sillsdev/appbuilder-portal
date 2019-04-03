@@ -17,23 +17,23 @@ export default function Builds({ product }) {
     productBuilds: (q) => q.findRelatedRecords(product, 'productBuilds'),
   });
 
-  const [activeVersion, setActiveVersion] = useState((productBuilds || [])[0]);
-
-  const sortedBuilds = productBuilds.sort(compareVia((build) => attributesFor(build).version));
+  const sortedBuilds = productBuilds.sort(
+    compareVia((build) => attributesFor(build).version, true)
+  );
+  const [activeVersion, setActiveVersion] = useState((sortedBuilds || [])[0]);
 
   return (
     <div data-test-build>
       <ResourceSelect
         items={sortedBuilds}
         labelField={(build: ProductBuildResource) => {
-          console.log(build);
           const version = attributesFor(build).version;
 
           if (build === sortedBuilds[0]) {
             return t('projects.latestBuild', { version });
           }
 
-          return version;
+          return version || t('projects.buildPending');
         }}
         value={activeVersion}
         onChange={setActiveVersion}
