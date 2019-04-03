@@ -3155,6 +3155,24 @@
             "*"
           ],
           "form": "SIL_AppBuilders_Make_It_Live"
+        },
+        {
+          "states": [
+            "Readiness Check"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Readiness_Check"
+        },
+        {
+          "states": [
+            "Approval Pending"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Approval_Pending"
         }
       ]
     }

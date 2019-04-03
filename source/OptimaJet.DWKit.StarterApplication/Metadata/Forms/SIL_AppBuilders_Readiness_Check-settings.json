@@ -1,7 +1,98 @@
 {
-  "lastUpdate": "2018-10-15T14:15:50.9916774+00:00",
+  "name": "SIL_AppBuilders_Readiness_Check",
+  "lastUpdate": "2019-04-03T21:47:04.111028+00:00",
+  "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
+  "triggers": [],
   "schemes": [
     "SIL_Default_AppBuilders_Android_GooglePlay"
-  ]
+  ],
+  "dataMap": [
+    {
+      "id": "aad58944-30b9-d3c7-0969-905692fe3507",
+      "attributeId": "441e60ec-8a68-4c74-bcc4-853a678f11c3",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "d69f695a-93c7-8dd6-b538-a0df2d78fe31",
+      "attributeId": "37ecc7d1-c69e-4b7b-b611-409fe36392f7",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "287e84a4-c810-6d07-4b86-3687ff1b8e50",
+      "attributeId": "7fc91699-2b16-4ab1-a91a-1d0d3401f5e3",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "93dcd8db-d386-2b00-b1bf-ea61d0bf47cc",
+      "attributeId": "1018080e-7abe-4a87-bd07-721dc54fc6b0",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "ff193081-0de3-a9df-6e2b-ec8b6d0ea312",
+      "attributeId": "e079ff30-3aec-49eb-824b-fea61e4da080",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "39e1c76c-2bc2-aa7e-3170-ee17756035ea",
+      "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "b1b888a7-afc7-1830-7a99-5ecfc9322888",
+      "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "42ac5189-8972-479e-ec35-973649aa9bbc",
+      "attributeId": "cc8522c4-bc11-4669-a876-3ab71cfeba1f",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "1e040cef-bbb3-c23f-8a01-ced8fc2c8f60",
+      "attributeId": "8759b596-a767-45c0-9e30-387b41e190c9",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "e725d0d5-787a-d793-1ffb-731b61aa0e8c",
+      "attributeId": "46ebc3ca-16f9-4cf2-bea0-5d52f30e031e",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "6c0ea023-dad7-b053-5ded-229a1a3a2cc1",
+      "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "504c326a-9b57-5de8-a157-33b88947b8af",
+      "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "e63d852c-9c18-af12-cd10-cf8a9204bc26",
+      "attributeId": "da31659f-07de-4af3-b377-7ac8109c00fd",
+      "control": "textarea_comment",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "6d8c3eee-73e3-6ec5-ad6d-077c76f42250",
+      "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
+      "isEditable": true,
+      "isLoadable": true
+    }
+  ],
+  "dataColl": []
 }

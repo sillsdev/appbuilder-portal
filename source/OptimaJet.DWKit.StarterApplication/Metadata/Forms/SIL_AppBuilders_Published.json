@@ -29,25 +29,6 @@
     "blockSetState": true
   },
   {
-    "key": "form_2",
-    "data-buildertype": "form",
-    "children": [
-      {
-        "key": "textarea_comment",
-        "data-buildertype": "textarea",
-        "label": "Comment",
-        "fluid": true,
-        "rows": "2"
-      },
-      {
-        "key": "staticcontent_hr",
-        "data-buildertype": "staticcontent",
-        "content": "<hr style=\"height:5px;\"/>",
-        "isHtml": true
-      }
-    ]
-  },
-  {
     "key": "form_1",
     "data-buildertype": "form",
     "children": [
@@ -56,13 +37,6 @@
         "data-buildertype": "header",
         "content": "Published",
         "size": "medium"
-      },
-      {
-        "key": "staticcontent_instructions",
-        "data-buildertype": "staticcontent",
-        "content": "<p>The app is published! The Back action will take the app back to Synchronize Data and will build and publish the app again. </p>",
-        "isHtml": true,
-        "style-marginBottom": ""
       },
       {
         "key": "formgroup_2",
@@ -498,72 +472,6 @@
             ]
           }
         ]
-      },
-      {
-        "key": "header_2",
-        "data-buildertype": "header",
-        "content": "Product Files",
-        "size": "small"
-      },
-      {
-        "key": "gridview_1",
-        "data-buildertype": "gridview",
-        "columns": [
-          {
-            "key": "buildid",
-            "name": "BuildId",
-            "type": "number",
-            "width": 100,
-            "sortable": true,
-            "filterable": false,
-            "resizable": false
-          },
-          {
-            "key": "type",
-            "name": "Type",
-            "sortable": true,
-            "filterable": false,
-            "resizable": false,
-            "width": 150
-          },
-          {
-            "key": "size",
-            "name": "Size",
-            "sortable": true,
-            "filterable": false,
-            "resizable": false,
-            "type": "number",
-            "width": 100
-          },
-          {
-            "key": "link",
-            "name": "Link",
-            "sortable": true,
-            "filterable": false,
-            "resizable": false,
-            "type": "link"
-          }
-        ],
-        "events": {
-          "onRowDblClick": {
-            "active": false,
-            "actions": [],
-            "targets": [],
-            "parameters": []
-          },
-          "onRowClick": {
-            "actions": [
-              "openArtifactLink"
-            ],
-            "active": true,
-            "targets": [],
-            "parameters": []
-          }
-        },
-        "defaultSort": "buildid DESC",
-        "autoHeight": false,
-        "minHeight": "",
-        "pageSize": ""
       }
     ]
   }
