@@ -6,14 +6,29 @@
       "onCommandClick": {
         "active": true,
         "actions": [
-          "workflowExecuteCommand"
+          "validate",
+          "save",
+          "workflowExecuteCommand",
+          "redirect"
+        ],
+        "targets": [],
+        "parameters": [
+          {
+            "name": "target",
+            "value": "/tasks"
+          }
         ]
       },
       "onSetStateClick": {
         "active": true,
         "actions": [
-          "workflowSetState"
-        ]
+          "validate",
+          "save",
+          "workflowSetState",
+          "refresh"
+        ],
+        "targets": [],
+        "parameters": []
       }
     },
     "blockSetState": true

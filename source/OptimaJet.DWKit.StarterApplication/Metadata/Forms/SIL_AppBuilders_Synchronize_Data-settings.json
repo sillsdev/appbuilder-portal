@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Synchronize_Data",
-  "lastUpdate": "2018-11-30T12:58:34.521145+00:00",
+  "lastUpdate": "2019-03-27T13:57:20.511824-04:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -42,6 +42,14 @@
       "isLoadable": true
     },
     {
+      "id": "2c2dc6cd-988c-74a8-ee50-b6fe941a09fa",
+      "attributeId": "8835d06d-a91a-4289-a632-96d0d4fb48c2",
+      "control": "input_repository_location",
+      "parentId": "c4075e68-bab0-e442-d551-2137911069f4",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "5752d24b-87ba-9897-5346-eeee48bba2f7",
       "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
       "isEditable": true,
@@ -78,11 +86,10 @@
       "isLoadable": true
     },
     {
-      "id": "2c2dc6cd-988c-74a8-ee50-b6fe941a09fa",
-      "attributeId": "8835d06d-a91a-4289-a632-96d0d4fb48c2",
-      "control": "input_repository_location",
-      "parentId": "c4075e68-bab0-e442-d551-2137911069f4",
-      "isEditable": false,
+      "id": "2529ca62-16bd-4994-d118-89a572adcfa2",
+      "attributeId": "da31659f-07de-4af3-b377-7ac8109c00fd",
+      "control": "textarea_comment",
+      "isEditable": true,
       "isLoadable": true
     }
   ],

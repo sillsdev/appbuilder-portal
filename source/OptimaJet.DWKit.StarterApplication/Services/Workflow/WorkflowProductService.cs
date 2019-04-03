@@ -161,11 +161,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             await ReassignUserTasksForProduct(product);
 
-            // Clear the WorkflowComment
-            if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
-            {
-                BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ClearComment(product.Id));
-            }
         }
 
         public async Task ReassignUserTasksForProduct(Product product)

@@ -13,10 +13,15 @@
               "validate",
               "save",
               "workflowExecuteCommand",
-              "refresh"
+              "redirect"
             ],
             "targets": [],
-            "parameters": []
+            "parameters": [
+              {
+                "name": "target",
+                "value": "/tasks"
+              }
+            ]
           },
           "onSetStateClick": {
             "active": true,
