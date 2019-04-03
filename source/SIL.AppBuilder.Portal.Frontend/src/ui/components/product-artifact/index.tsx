@@ -27,6 +27,16 @@ export default function Builds({ product }) {
       <ResourceSelect
         items={sortedBuilds}
         labelField={(build: ProductBuildResource) => {
+          // Looking at the default value here, you may notice that there are extra spaces
+          // around the t(...). This is intentional, as the outputs are either:
+          //
+          // `Current Build (v1.0.0)`
+          // or
+          // `Current Build ( Build Pending )`
+          //
+          // without the spaces it does:
+          // `Current Build (build Pending)`
+          // TODO: see: https://developertown.visualstudio.com/SIL%20International%20Scriptoria/_workitems/edit/34532
           const version = attributesFor(build).version || ` ${t('projects.buildPending')} `;
 
           if (build === sortedBuilds[0]) {
