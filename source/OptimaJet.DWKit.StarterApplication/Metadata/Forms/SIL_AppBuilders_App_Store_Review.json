@@ -20,7 +20,7 @@
           "validate",
           "save",
           "workflowSetState",
-          "gridRefresh"
+          "refresh"
         ],
         "targets": [],
         "parameters": []

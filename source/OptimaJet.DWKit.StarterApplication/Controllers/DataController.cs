@@ -130,6 +130,12 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 }
                 switch (name)
                 {
+                    /*
+                     * This section was added because DevKit attempts to update the read only grid
+                     * containing the product artifacts when validate/save are added to the actions
+                     * for these forms.
+                    */
+                    // TODO: Remove this section when DevKit does not attempt to update read only grid
                     case "SIL_AppBuilders_Verify_And_Publish":
                     case "SIL_AppBuilders_Create_App_Entry":
                     case "SIL_AppBuilders_App_Store_Review":
