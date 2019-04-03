@@ -204,6 +204,7 @@
   "projects": {
     "noBuilds": "No Builds Yet",
     "latestBuild": "Latest Build ({version})",
+    "buildPending": "Build Pending",
     "switcher": {
       "myProjects": "Mis proyectos ({numProjects})",
       "archived": "Archivados ({numProjects})",
