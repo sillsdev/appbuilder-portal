@@ -41,7 +41,10 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
     console.debug(
       'error occurred',
       e,
-      'we probably need to PR to orbit.js, as this is a race condition scenario that causes the error'
+      'we probably need to PR to orbit.js, as this is a race condition scenario that causes the error',
+      'variables that are in use that may be related to this error: ',
+      'product: ', product,
+      'currentUser: ', currentUser
     );
   }
 
