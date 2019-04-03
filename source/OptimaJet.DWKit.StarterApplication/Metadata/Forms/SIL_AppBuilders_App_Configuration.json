@@ -17,9 +17,9 @@
       "onSetStateClick": {
         "active": true,
         "actions": [
-          "workflowSetState",
           "validate",
           "save",
+          "workflowSetState",
           "refresh"
         ],
         "targets": [],
