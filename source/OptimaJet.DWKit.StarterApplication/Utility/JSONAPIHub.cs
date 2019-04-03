@@ -15,8 +15,10 @@ using JsonApiDotNetCore.Services.Operations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using Serilog;
@@ -104,13 +106,12 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             new ConnectionMapping<string>();
 
         private readonly IOperationsProcessor _operationsProcessor;
+        private readonly AppDbContext _db;
 
-        private readonly UserRepository _userRepository;
-
-        public JSONAPIHub(IOperationsProcessor operationsProcessor, UserRepository userRepository)
+        public JSONAPIHub(IOperationsProcessor operationsProcessor, AppDbContext db)
         {
             this._operationsProcessor = operationsProcessor;
-            this._userRepository = userRepository;
+            this._db = db;
         }
         
         public static async Task SendTo(IHubContext<JSONAPIHub> hub, string userId, string message)
@@ -181,11 +182,13 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             if (auth0Id == null) {
                 return null;
             }
-            
-            var user = this._userRepository.GetByAuth0Id(auth0Id);
 
-            return user.Id.ToString();
+        
+            var currentUser = this._db.Users
+                .Where(user => user.ExternalId == auth0Id)
+                .FirstOrDefault();
 
+            return currentUser.Id.ToString();
         }
     }
 }
