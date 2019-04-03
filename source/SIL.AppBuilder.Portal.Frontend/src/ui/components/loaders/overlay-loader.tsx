@@ -1,4 +1,5 @@
 import React from 'react';
+
 import RectLoader from './rect-loader';
 
 export default function OverlayLoader(props: any) {
@@ -14,7 +15,7 @@ export default function OverlayLoader(props: any) {
         left: 0,
         bottom: 0,
         right: 0,
-        ...(props.style || {})
+        ...(props.style || {}),
       }}
     >
       <RectLoader style={{ margin: 'auto' }} />
