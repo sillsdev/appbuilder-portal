@@ -27,13 +27,13 @@ export default function Builds({ product }) {
       <ResourceSelect
         items={sortedBuilds}
         labelField={(build: ProductBuildResource) => {
-          const version = attributesFor(build).version;
+          const version = attributesFor(build).version || ` ${t('projects.buildPending')} `;
 
           if (build === sortedBuilds[0]) {
             return t('projects.latestBuild', { version });
           }
 
-          return version || t('projects.buildPending');
+          return version;
         }}
         value={activeVersion}
         onChange={setActiveVersion}
