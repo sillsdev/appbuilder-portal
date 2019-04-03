@@ -186,7 +186,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowBuildId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+                    var parmsDict = GetActionParameters(actionParameter);
                     BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id, parmsDict, null));
                     Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
                 }
@@ -207,7 +207,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowPublishId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+                    var parmsDict = GetActionParameters(actionParameter);
+
                     BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, parmsDict, null));
                     Log.Information($"BuildEnginePublishProduct: productId={product.Id}, projectName={product.Project.Name}");
                 }
@@ -216,6 +217,27 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     throw new Exception($"Product \"{product.Id}\" does not have BuildEngine Product");
                 }
             }
+        }
+
+        private static Dictionary<string, object> GetActionParameters(string actionParameter)
+        {
+            var paramsDict = new Dictionary<string, object>();
+            if (String.IsNullOrEmpty(actionParameter))
+            {
+                return paramsDict;
+            }
+
+            try
+            {
+                paramsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Failed to parse actionParameters: {actionParameter}");
+                throw ex;
+            }
+
+            return paramsDict;
         }
 
         private static async Task<Product> GetProductForProcess(ProcessInstance processInstance, IJobRepository<Product, Guid> productRepository)
@@ -247,7 +269,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
-                var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+                var parmsDict = GetActionParameters(actionParameter);
                 if (parmsDict.ContainsKey("types"))
                 {
                     BackgroundJobClient.Enqueue<SendEmailService>(s => s.SendProductReviewEmail(product.Id, parmsDict));
