@@ -36,6 +36,7 @@ class MultiSelect {
   itemsText = collection('[data-test-item-text]');
   isListEmpty = isPresent('[data-test-empty-list]');
   emptyText = text('[data-test-empty-list]');
+  isOverlayLoaderVisible = isPresent('[data-test-overlay-loader]');
 }
 
 export type TInteractor = MultiSelect & Interactor;
