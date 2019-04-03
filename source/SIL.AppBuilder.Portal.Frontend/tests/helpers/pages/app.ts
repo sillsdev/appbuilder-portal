@@ -43,7 +43,6 @@ class App {
   isPaginationVisible = isPresent('[data-test-pagination-footer]');
 
   isLoaderVisible = isPresent('.spinner');
-  isOverlayLoaderVisible = isPresent('[data-test-overlay-loader]');
 
   waitForDoneLoading = new Interactor('.spinner')
     .when<boolean>((spinner) => {

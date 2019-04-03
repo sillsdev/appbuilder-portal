@@ -7,7 +7,6 @@ import {
   setupRequestInterceptor,
   useFakeAuthentication,
 } from 'tests/helpers/index';
-import app from 'tests/helpers/pages/app';
 
 import { MultiSelectInteractor } from '~/ui/components/inputs/multi-select/-page';
 
