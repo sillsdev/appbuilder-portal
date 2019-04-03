@@ -5,6 +5,7 @@ import RectLoader from './rect-loader';
 export default function OverlayLoader(props: any) {
   return (
     <div
+      data-test-overlay-loader
       className='flex-row flex-grow justify-content-conter align-items-center'
       {...props}
       style={{

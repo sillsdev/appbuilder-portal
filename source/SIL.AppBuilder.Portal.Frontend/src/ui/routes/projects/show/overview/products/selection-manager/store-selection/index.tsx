@@ -46,6 +46,9 @@ export default function StoreSelection({
       setLoading(true);
       setSelected([fakeResource]);
       onStoreSelect(store);
+      // onStoreSelect will unmount this component,
+      // so we don't need to worry about setting the
+      // loading state again
       // setLoading(false);
     },
     [selected]

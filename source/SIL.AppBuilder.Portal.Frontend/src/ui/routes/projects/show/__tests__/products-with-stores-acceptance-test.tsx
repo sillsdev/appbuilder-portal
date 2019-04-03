@@ -1,12 +1,13 @@
 import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import {
   setupApplicationTest,
   setupRequestInterceptor,
   useFakeAuthentication,
 } from 'tests/helpers/index';
+import app from 'tests/helpers/pages/app';
 
 import { MultiSelectInteractor } from '~/ui/components/inputs/multi-select/-page';
 
@@ -279,6 +280,9 @@ describe('Acceptance | Project View | Products With Stores', () => {
 
             await when(() => stores.items().length > 0);
             await stores.itemNamed('google play').toggle();
+            await when(() =>
+              assert(stores.isOverlayLoaderVisible, 'expected overlay loader to briefly be visible')
+            );
             await when(() => products.checkedItems().length > 0);
           });
 
