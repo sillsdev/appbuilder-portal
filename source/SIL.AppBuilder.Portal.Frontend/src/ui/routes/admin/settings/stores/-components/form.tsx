@@ -3,7 +3,7 @@ import { withValue } from 'react-state-helpers';
 
 import { query } from '@data';
 
-import { attributesFor, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
+import { attributesFor, useOrbit, useQuery, idFromRecordIdentity } from 'react-orbitjs';
 import { Dropdown } from 'semantic-ui-react';
 
 import { buildOptions } from '~/data';
@@ -18,9 +18,13 @@ function getStoreType(dataStore, store) {
   return dataStore.cache.query((q) => q.findRelatedRecord(store, 'storeType'));
 }
 
-function StoreForm({ save, cancel, store, storeTypes }) {
+export default function StoreForm({ save, cancel, store }) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
+
+  const {
+    result: { storeTypes },
+  } = useQuery({ storeTypes: [(q) => q.findRecords('storeType'), buildOptions()] });
 
   const attributes = attributesFor(store || {});
   const isEditing = !!store;
@@ -129,7 +133,3 @@ function StoreForm({ save, cancel, store, storeTypes }) {
     </>
   );
 }
-
-export default query({
-  storeTypes: [(q) => q.findRecords('storeType'), buildOptions()],
-})(StoreForm);
