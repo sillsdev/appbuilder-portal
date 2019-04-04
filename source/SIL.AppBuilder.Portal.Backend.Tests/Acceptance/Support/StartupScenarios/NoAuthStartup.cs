@@ -78,6 +78,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 }
 
 
+                services.AddEventDispatchers();
                 base.ConfigureDatabase(services);
 
 

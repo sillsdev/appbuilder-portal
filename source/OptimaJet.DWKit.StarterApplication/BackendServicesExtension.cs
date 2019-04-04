@@ -89,15 +89,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<OrganizationStore>, OrganizationStoreService>();
 
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
-
-            // EventDispatchers
-            services.AddScoped(typeof(EntityHooksService<>));
-            services.AddScoped(typeof(EntityHooksService<,>));
-            services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
-            services.AddScoped(typeof(IEntityHookHandler<,>), typeof(BaseHookNotifier<,>));
-            services.AddScoped<IEntityHookHandler<Notification, int>, NotificationHookNotifier>();
-            services.AddScoped<IEntityHookHandler<UserTask, int>, UserTaskHookNotifier>(); 
-
+            
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();
             services.AddScoped<ProjectRepository>();
@@ -113,6 +105,19 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<SendEmailService>();
             services.AddScoped<OrganizationMembershipService>();
             services.AddScoped<OrganizationMembershipInviteService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddEventDispatchers(this IServiceCollection services)
+        {
+            // EventDispatchers
+            services.AddScoped(typeof(EntityHooksService<>));
+            services.AddScoped(typeof(EntityHooksService<,>));
+            services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
+            services.AddScoped(typeof(IEntityHookHandler<,>), typeof(BaseHookNotifier<,>));
+            services.AddScoped<IEntityHookHandler<Notification, int>, NotificationHookNotifier>();
+            services.AddScoped<IEntityHookHandler<UserTask, int>, UserTaskHookNotifier>(); 
 
             return services;
         }

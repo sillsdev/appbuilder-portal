@@ -106,6 +106,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddSingleton<IUserIdProvider, ScriptoriaIdProvider>();
 
             services.AddApiServices();
+            services.AddEventDispatchers();
             services.AddContextServices();
             services.AddBackgroundServices(Configuration);
             // services.AddAppAuthorization();
