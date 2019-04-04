@@ -1,22 +1,24 @@
-import { compose } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
+import { useQuery } from 'react-orbitjs';
 
-import { query, buildFindRecord, buildOptions } from '@data';
+import { buildFindRecord, buildOptions } from '@data';
 
-import { TYPE_NAME as PROJECT } from '@data/models/project';
-import { withLoader } from '@data/containers/with-loader';
-import { withError } from '@data/containers/with-error';
+import { PageLoader } from '~/ui/components/loaders';
+import React from 'react';
+import { PageError } from '~/ui/components/errors';
+import { useRouter } from '~/lib/hooks';
 
-const mapNetworkToProps = (passedProps) => {
-  const { match } = passedProps;
-  const {
-    params: { id },
-  } = match;
-
-  return {
-    cacheKey: `project-${id}`,
-    project: [
-      (q) => buildFindRecord(q, PROJECT, id),
+export function withData(WrappedComponent) {
+  return function ProjectDataFetcher(props) {
+    const { match } = useRouter();
+    const {
+      params: { id },
+    } = match;
+    
+    // console.log('project id', id);
+    const { 
+      isLoading, error, result: { project }
+    } = useQuery({ project: [
+      (q) => q.findRecord({ type: 'project', id }),
       buildOptions({
         include: [
           'products.product-builds.product-artifacts',
@@ -32,28 +34,11 @@ const mapNetworkToProps = (passedProps) => {
           'type',
         ],
       }),
-    ],
-  };
-};
-
-const mapRecordsToProps = (passedProps) => {
-  const { match } = passedProps;
-  const {
-    params: { id },
-  } = match;
-
-  return {
-    project: (q) => buildFindRecord(q, PROJECT, id),
-  };
-};
-
-export function withData(WrappedComponent) {
-  return compose(
-    query(mapNetworkToProps, { passthroughError: true }),
-    withError('error', (props) => {
-      return props.error;
-    }),
-    withLoader(({ project }) => !project),
-    withOrbit(mapRecordsToProps)
-  )(WrappedComponent);
+    ] });
+  
+    if (isLoading || !project) return <PageLoader />;
+    if (error) return <PageError error={error} />;
+  
+    return <WrappedComponent {...props} {...{ project }} />
+  }
 }

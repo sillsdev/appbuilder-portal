@@ -39,7 +39,6 @@ namespace OptimaJet.DWKit.StarterApplication
         {
             // add jsonapi dotnet core
             // - includes IHttpContextAccessor as a singleton
-            JsonApiOptions.ResourceNameFormatter = new ScriptoriaResourceFormatter();
             services.AddJsonApi<AppDbContext>(options => {
                 options.Namespace = "api";
                 options.IncludeTotalRecordCount = true;
@@ -51,6 +50,7 @@ namespace OptimaJet.DWKit.StarterApplication
                     builder.AddResource<ProjectToken>("project-tokens");
                 });
             });
+            // JsonApiOptions.ResourceNameFormatter = new ScriptoriaResourceFormatter();
 
             services.AddHttpContextAccessor();
 
