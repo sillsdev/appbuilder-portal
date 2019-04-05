@@ -23,6 +23,8 @@ import { PageLoader } from '~/ui/components/loaders';
 
 import { useRouter } from '~/lib/hooks';
 
+import { initialState } from './initial-state';
+
 // Nasty overrides that DWKit assumes have been polluted
 // on the global / window namespace
 window.alertify = {
@@ -47,6 +49,7 @@ window.Pace = {
   start() {},
   stop() {},
 };
+const noop = () => {};
 
 function resetFormState() {
   // Without this, the form state becomes stale between
@@ -54,22 +57,29 @@ function resetFormState() {
   // TaskA -> form is shown
   // TaskB -> TaskA's form is shown
   // Refresh -> TaskB's form is shown
-  Store.resetForm();
+  //
+  // This is a giant anti pattern.
+  // the state should never be mutated.
+  // but DWKit does not provide the needed APIs to interact with their Redux Store.
+  // Additionally, they also mutate everything all over the place.
+  //
+  // What even are conventions?
+  Store.getState().app = initialState.app;
 }
 
-function RouteListener() {
+function RouteListener({ onLocationChange }) {
   const { history } = useRouter();
 
   useEffect(() => {
     history.listen((location, action) => {
-      resetFormState();
-      SignalRConnector.Connect(Store);
+      onLocationChange(history, location);
     });
   }, []);
 
   return null;
 }
 
+// TODO: the signalr integration with this is super broken / just doesn't seem to cause any updates
 export default class App extends React.Component<any, any> {
   constructor(props) {
     super(props);
@@ -78,6 +88,8 @@ export default class App extends React.Component<any, any> {
       isLoading: false,
     };
 
+    window.DWKitApp = this;
+    window.DWKitApp.API = API;
     this.resetDWKitState();
   }
 
@@ -85,15 +97,24 @@ export default class App extends React.Component<any, any> {
     this.resetDWKitState();
   }
 
-  resetDWKitState() {
+  resetDWKitState = () => {
     resetFormState();
 
     Store.dispatch(Thunks.userinfo.fetch(() => this.forceUpdate()));
+    SignalRConnector.Connect(Store);
 
-    window.DWKitApp = this;
-    window.DWKitApp.API = API;
     this.onFetchStarted();
-  }
+  };
+
+  onLocationChange = (history = undefined, location = undefined) => {
+    resetFormState();
+    if (history) {
+      Store.dispatch(Actions.router.routechanged(history, location));
+    }
+
+    SignalRConnector.Connect(Store);
+    this.setState({ pagekey: this.state.pagekey + 1 });
+  };
 
   render() {
     const { isLoading } = this.state;
@@ -130,12 +151,19 @@ export default class App extends React.Component<any, any> {
         />
         <Provider store={Store}>
           <>
-            <ApplicationRouter onRefresh={this.onRefresh} />
+            <RouteListener onLocationChange={this.onLocationChange} />
+            <ApplicationRouter
+              onRefresh={() => {
+                this.onLocationChange();
+                SignalRConnector.Connect(Store);
+              }}
+            />
+
             <NotificationComponent
               onFetchStarted={this.onFetchStarted}
               onFetchFinished={this.onFetchFinished}
             />
-            <RouteListener />
+
             <Switch>
               <Route
                 path='/form'
@@ -143,17 +171,6 @@ export default class App extends React.Component<any, any> {
                   return (
                     <div className='flex-row flex-grow form-layout-wrapper'>
                       <FormContent className='flex-grow' {...props} />
-                    </div>
-                  );
-                }}
-              />
-
-              <Route
-                path='/form-dashboard'
-                render={(props) => {
-                  return (
-                    <div className='flex-row flex-grow form-layout-wrapper'>
-                      <FormContent className='flex-grow' {...props} formName='dashboard' />
                     </div>
                   );
                 }}
@@ -209,16 +226,9 @@ export default class App extends React.Component<any, any> {
     this.setState({ isLoading: false });
   };
 
-  onRefresh = () => {
-    // TODO: HACK: because the state management in this
-    //       DWKit / workflow stuff is... unfortunate
-    Store.resetForm();
-    this.setState({ isLoading: false, pageKey: this.state.pagekey + 1 });
-    SignalRConnector.Connect(Store);
-  };
-
   actionsFetch = (args) => {
     Store.dispatch(Thunks.form.executeActions(args));
+    this.onLocationChange();
   };
 
   additionalFetch = (
@@ -239,5 +249,6 @@ export default class App extends React.Component<any, any> {
         callback,
       })
     );
+    this.onLocationChange();
   };
 }
