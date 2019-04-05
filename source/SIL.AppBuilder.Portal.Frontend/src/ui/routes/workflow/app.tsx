@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import { DWKitForm } from '@assets/vendor/dwkit/optimajet-form.js';
@@ -21,6 +21,10 @@ import * as toast from '@lib/toast';
 import '~/global-config';
 import { PageLoader } from '~/ui/components/loaders';
 
+import { useRouter } from '~/lib/hooks';
+
+// Nasty overrides that DWKit assumes have been polluted
+// on the global / window namespace
 window.alertify = {
   error(...args) {
     toast.error(...args);
@@ -53,6 +57,19 @@ function resetFormState() {
   Store.resetForm();
 }
 
+function RouteListener() {
+  const { history } = useRouter();
+
+  useEffect(() => {
+    history.listen((location, action) => {
+      resetFormState();
+      SignalRConnector.Connect(Store);
+    });
+  }, []);
+
+  return null;
+}
+
 export default class App extends React.Component<any, any> {
   constructor(props) {
     super(props);
@@ -61,23 +78,21 @@ export default class App extends React.Component<any, any> {
       isLoading: false,
     };
 
+    this.resetDWKitState();
+  }
+
+  componentDidMount() {
+    this.resetDWKitState();
+  }
+
+  resetDWKitState() {
     resetFormState();
 
-    const me = this;
-    Store.dispatch(
-      Thunks.userinfo.fetch(function() {
-        me.forceUpdate();
-      })
-    );
+    Store.dispatch(Thunks.userinfo.fetch(() => this.forceUpdate()));
 
     window.DWKitApp = this;
     window.DWKitApp.API = API;
     this.onFetchStarted();
-    SignalRConnector.Connect(Store);
-  }
-
-  componentWillUnmount() {
-    resetFormState();
   }
 
   render() {
@@ -120,7 +135,7 @@ export default class App extends React.Component<any, any> {
               onFetchStarted={this.onFetchStarted}
               onFetchFinished={this.onFetchFinished}
             />
-
+            <RouteListener />
             <Switch>
               <Route
                 path='/form'
@@ -192,27 +207,17 @@ export default class App extends React.Component<any, any> {
 
   onFetchFinished = () => {
     this.setState({ isLoading: false });
-    // this.onRefresh();
-    // resetFormState();
-    // this.forceUpdate();
   };
 
   onRefresh = () => {
-    console.log('on refresh');
-    this.onFetchStarted();
-
     // TODO: HACK: because the state management in this
     //       DWKit / workflow stuff is... unfortunate
-    // Store.resetForm();
-    // this.setState({
-    //   pagekey: this.state.pagekey + 1,
-    // });
-    // SignalRConnector.Connect(Store);
-    location.reload();
+    Store.resetForm();
+    this.setState({ isLoading: false, pageKey: this.state.pagekey + 1 });
+    SignalRConnector.Connect(Store);
   };
 
   actionsFetch = (args) => {
-    console.log('actions fetch');
     Store.dispatch(Thunks.form.executeActions(args));
   };
 
@@ -222,7 +227,6 @@ export default class App extends React.Component<any, any> {
     { startIndex, pageSize, filters, sort, model },
     callback
   ) => {
-    console.log('additional fetch');
     Store.dispatch(
       Thunks.additional.fetch({
         type: controlRef.props['data-buildertype'],
