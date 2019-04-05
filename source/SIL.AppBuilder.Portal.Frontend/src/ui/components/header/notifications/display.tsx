@@ -31,6 +31,7 @@ export default function Notifications() {
   const { currentUser } = useCurrentUser();
   const [visible, toggleVisible] = useToggle(false);
   const element = useRef<HTMLElement>();
+  const toggler = useRef<HTMLElement>();
 
   const {
     subscriptions: { notifications },
@@ -52,8 +53,9 @@ export default function Notifications() {
   const toggle = useCallback(
     (e) => {
       const isWithinDropdown = element.current && element.current.contains(e.target);
+      const isToggler = toggler.current === e.target || toggler.current.contains(e.target);
 
-      if (visible && isWithinDropdown) {
+      if (visible && isWithinDropdown && !isToggler) {
         // the click is inside the notifications dropdown,
         // we do not toggle.
         return;
@@ -88,6 +90,7 @@ export default function Notifications() {
       <div
         data-test-notification-trigger
         data-test-notification-active={!haveAllNotificationsBeenSeen}
+        ref={(node) => (toggler.current = node)}
         style={{ position: 'relative' }}
         onClick={toggle}
       >
