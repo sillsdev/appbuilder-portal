@@ -58,8 +58,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 // Enable view localization and register required I18Next services
                 .AddI18NextViewLocalization();
 
-            // services.AddEventDispatchers();
-
             services.AddScoped(typeof(EntityHooksService<>));
             services.AddScoped(typeof(EntityHooksService<,>));
             services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
@@ -68,7 +66,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
             base.ConfigureServices(services);
 
             services.AddScoped<IEntityHookHandler<Notification, int>>(s => mockNotificationHandler.Object);
-            // services.AddScoped<NotificationHookNotifier>(s => mockNotificationHandler.Object);
         }
         public override void Configure(IApplicationBuilder app,
                                IHostingEnvironment env,

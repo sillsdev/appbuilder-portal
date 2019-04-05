@@ -79,6 +79,24 @@ function RouteListener({ onLocationChange }) {
   return null;
 }
 
+function MaskingLoader() {
+  return (
+    <div
+      style={{
+        zIndex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(255, 255, 255, 0.5)',
+      }}
+    >
+      <PageLoader />
+    </div>
+  );
+}
+
 // TODO: the signalr integration with this is super broken / just doesn't seem to cause any updates
 export default class App extends React.Component<any, any> {
   constructor(props) {
@@ -128,21 +146,7 @@ export default class App extends React.Component<any, any> {
         className='p-lg flex-column flex-grow dwkit-form-container align-items-center p-relative'
         key={this.state.pagekey}
       >
-        {isLoading && (
-          <div
-            style={{
-              zIndex: 1,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(255, 255, 255, 0.5)',
-            }}
-          >
-            <PageLoader />
-          </div>
-        )}
+        {isLoading && <MaskingLoader />}
         <DWKitForm
           className='dwkit-header w-100'
           {...sectorprops}
