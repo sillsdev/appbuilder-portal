@@ -118,7 +118,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
         {
             foreach (var connectionId in _connections.GetConnections(userId))
             {
-                await hub.Clients.Client(connectionId).SendAsync(message);
+                await hub.Clients.Client(connectionId).SendAsync(JSONAPIHub.RemoteDataHasUpdated, message);
             }
         }
 

@@ -26,7 +26,7 @@ export default function Products({ project }: IProps) {
   const { t } = useTranslations();
   const {
     dataStore,
-    subscriptions: { products, organization },
+    subscriptions: { products, organization, userTasks },
   } = useOrbit<ISubscriptions>({
     products: (q) => q.findRelatedRecords(project, 'products'),
     organization: (q) => q.findRelatedRecord(project, 'organization'),
