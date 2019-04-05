@@ -58,6 +58,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Back" />
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
+    <Command Name="Hold" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -71,7 +72,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="100" />
+      <Designer X="700" Y="20" />
     </Activity>
     <Activity Name="Check Product Creation" State="Product Creation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -82,14 +83,14 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="700" Y="260" />
     </Activity>
-    <Activity Name="Approval" State="Approval" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Approval" State="Approval" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="360" Y="100" />
+      <Designer X="360" Y="20" />
     </Activity>
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -202,6 +203,21 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         </ActionRef>
       </Implementation>
       <Designer X="20" Y="910" />
+    </Activity>
+    <Activity Name="Readiness Check" State="Readiness Check" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Designer X="40" Y="20" />
+    </Activity>
+    <Activity Name="Approval Pending" State="Approval Pending" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="360" Y="200" />
+    </Activity>
+    <Activity Name="Terminated" State="Terminated" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Designer X="940" Y="130" />
     </Activity>
   </Activities>
   <Transitions>
@@ -471,6 +487,78 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Condition Type="Always" />
       </Conditions>
       <Designer />
+    </Transition>
+    <Transition Name="Readiness Check_Approval_1" To="Approval" From="Readiness Check" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Approval_Activity_1_1" To="Approval Pending" From="Approval" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="OrgAdmin" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Hold" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Approval Pending_Product Creation_1" To="Product Creation" From="Approval Pending" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="OrgAdmin" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Approve" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="641" Y="155" />
+    </Transition>
+    <Transition Name="Approval_Activity_1_2" To="Terminated" From="Approval" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="OrgAdmin" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Reject" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="519" Y="137" />
+    </Transition>
+    <Transition Name="Approval Pending_Terminated_1" To="Terminated" From="Approval Pending" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="OrgAdmin" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Reject" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="738" Y="236" />
+    </Transition>
+    <Transition Name="Approval Pending_Approval Pending_1" To="Approval Pending" From="Approval Pending" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="OrgAdmin" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Hold" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="583" Y="164" />
     </Transition>
   </Transitions>
 </Process>')

@@ -143,7 +143,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             if (product.ProductWorkflow == null)
             {
-                // No running workflow.  Provide actions that are defined
+                // No running workflow.  
+                
+                if (!product.DatePublished.HasValue)
+                {
+                    // Product has not been published
+                    return null;
+                }
+
+                //Provide actions that are defined
                 var result = new List<string>();
                 if (product.ProductDefinition.RebuildWorkflowId.HasValue)
                 {
