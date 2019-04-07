@@ -11,11 +11,6 @@ INSERT INTO "ApplicationTypes" ("Id", "Name", "Description") VALUES
 INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
 (1, 'google_play_store',	'Google Play Store');
 
-INSERT INTO "Stores" ("Id", "Name", "Description", "StoreTypeId") VALUES
-(1, 'wycliffeusa',			'Wycliffe USA - Google Play', 1),
-(2, 'internetpublishingservice', 	'Internet Publishing Service (Kalaam) - Google Play', 1),
-(3, 'indhack', 				'Indigitous Hack - Google Play', 1);
-
 INSERT INTO "StoreLanguages" ("Id", "Name", "Description", "StoreTypeId") VALUES
 (1, 'af',	'Afrikaans – af', 1),
 (2, 'am',	'Amharic – am', 1),

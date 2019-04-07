@@ -11,6 +11,11 @@ INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngin
 ( 'Faith Comes By Hearing', 'https://kalaam.org', 'https://replace.scriptoria.io:8443', 'replace', 'https://cdn.faithcomesbyhearing.com/resources/fcbh/img/media-kit/thumbs/fcbh-logo-white-two-line-v3.png', 1),
 ( 'Scripture Earth', 'https://scriptureearth.org', 'https://replace.scriptoria.io:8443', 'replace', 'https://s3.amazonaws.com/scriptureearth/scriptureearth.png', 1);
 
+INSERT INTO "Stores" ("Id", "Name", "Description", "StoreTypeId") VALUES
+(1, 'wycliffeusa',			'Wycliffe USA - Google Play', 1),
+(2, 'internetpublishingservice', 	'Internet Publishing Service (Kalaam) - Google Play', 1),
+(3, 'indhack', 				'Indigitous Hack - Google Play', 1);
+
 INSERT INTO "OrganizationProductDefinitions" ("OrganizationId", "ProductDefinitionId") VALUES
 (1, 1),
 (2, 1),
