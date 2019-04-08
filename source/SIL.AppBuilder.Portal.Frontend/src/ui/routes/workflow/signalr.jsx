@@ -33,10 +33,9 @@ export const SignalRConnector = {
     }
 
     var query = {};
-    var auth = `access_token=${getToken()}`;
     var encodedQuery = encodeQueryData(query);
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(`/hubs/notifications?${auth}${encodedQuery.length > 0 ? `&${encodedQuery}` : ''}`, {
+      .withUrl(`/hubs/notifications?${encodedQuery.length > 0 ? `&${encodedQuery}` : ''}`, {
         logger: LogLevel.Warning,
         transport:
           HttpTransportType.WebSockets |
@@ -52,6 +51,9 @@ export const SignalRConnector = {
   },
 };
 
+// This is likely a bug in DWKit, where this helper function reads from the store directly,
+// but the Connect method above requires the store be passed in.
+// These could be different stores.
 function encodeQueryData(data) {
   let ret = [];
   var state = store.getState();

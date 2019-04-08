@@ -22,7 +22,7 @@ import { PageLoader } from '~/ui/components/loaders';
 
 import { useRouter } from '~/lib/hooks';
 
-import { ConnectionStatus } from '@ssv/signalr-client';
+import { HubConnectionState } from '@aspnet/signalr';
 
 import { initialState } from './initial-state';
 import { SignalRConnector } from './signalr';
@@ -103,7 +103,7 @@ function ensureConnectedToHub() {
   let connection = SignalRConnector.connection;
 
   if (connection) {
-    if (connection.state === ConnectionStatus.connected) {
+    if (connection.state === HubConnectionState.Connected) {
       console.debug('dwkit signalr hub is already connected');
       return;
     }
@@ -112,7 +112,7 @@ function ensureConnectedToHub() {
       'connection exists but state is',
       connection.state,
       ' -- A connected state would be: ',
-      ConnectionStatus.connected
+      HubConnectionState.Connected
     );
     return;
   }
@@ -137,6 +137,10 @@ export default class App extends React.Component<any, any> {
 
   componentDidMount() {
     this.resetDWKitState();
+  }
+
+  componentWillUnmount() {
+    SignalRConnector.connection && SignalRConnector.connection.stop();
   }
 
   resetDWKitState = () => {
