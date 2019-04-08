@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageLoader as Loader } from '@ui/components/loaders';
 import { ErrorBoundary } from '@ui/components/errors';
 import { RouteBoundary } from '@ui/components/routing/boundaries';
@@ -20,43 +20,57 @@ async function appendScriptToHead(path: string) {
   head.appendChild(script);
 }
 
-class Deps extends React.Component {
-  async componentDidMount() {
-    const $ = await import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.js');
-    const jQuery = $.default;
-    jQuery.prototype = $.prototype;
-    global.jQuery = window.jQuery = global.$ = window.$ = jQuery;
+async function depFetcher() {
+  const $ = await import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.js');
+  const jQuery = $.default;
+  jQuery.prototype = $.prototype;
+  global.jQuery = window.jQuery = global.$ = window.$ = jQuery;
 
-    await Promise.all([
-      import(/* webpackChunkName: "workflow/konva" */ '@assets/vendor/dwkit/konva.min.js'),
-      import(/* webpackChunkName: "workflow/ace" */ '@assets/vendor/dwkit/ace.js'),
-      import(/* webpackChunkName: "workflow/Chart" */ '@assets/vendor/dwkit/Chart.min.js'),
-      import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.auto-complete.min.js'),
-      import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.loadingModal.min.js'),
-    ]);
+  await Promise.all([
+    import(/* webpackChunkName: "workflow/konva" */ '@assets/vendor/dwkit/konva.min.js'),
+    import(/* webpackChunkName: "workflow/ace" */ '@assets/vendor/dwkit/ace.js'),
+    import(/* webpackChunkName: "workflow/Chart" */ '@assets/vendor/dwkit/Chart.min.js'),
+    import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.auto-complete.min.js'),
+    import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.loadingModal.min.js'),
+  ]);
 
-    // runtime dependencies...
-    await appendScriptToHead('/ui/form/businessobjects.js');
+  // runtime dependencies...
+  await appendScriptToHead('/ui/form/businessobjects.js');
+}
+
+function DepsLoader({ children }) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isLoading) {
+      return;
+    }
+
+    (async () => {
+      await depFetcher();
+
+      setIsLoading(false);
+    })();
+  }, [isLoading]);
+
+  if (isLoading) {
+    return <Loader />;
   }
 
-  render() {
-    return this.props.children;
-  }
+  return children;
 }
 
 function WorkflowLoader() {
   const LazyWorkflowApp = React.lazy(() => import(/* webpackChunkName: "workflow/app" */ './app'));
 
   return (
-    <React.Suspense fallback={<Loader />}>
-      <ErrorBoundary>
-        <>
-          <Deps>
-            <LazyWorkflowApp />
-          </Deps>
-        </>
-      </ErrorBoundary>
-    </React.Suspense>
+    <ErrorBoundary>
+      <DepsLoader>
+        <React.Suspense fallback={<Loader />}>
+          <LazyWorkflowApp />
+        </React.Suspense>
+      </DepsLoader>
+    </ErrorBoundary>
   );
 }
 
