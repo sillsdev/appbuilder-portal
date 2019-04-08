@@ -16,7 +16,7 @@ import { notifications } from './-factory';
 
 describe('Acceptance | Notifications', () => {
   let page = null;
-  let mockNotifications = notifications(10, 3);
+  let mockNotifications = notifications(10, 3, 1);
 
   resetBrowser();
   useFakeAuthentication();
