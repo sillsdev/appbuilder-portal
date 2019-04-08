@@ -3,6 +3,10 @@
 env
 
 export NGINX_PORT=${NGINX_LISTEN_PORT:-80}
+export AUTH0_DOMAIN_HOST=$(basename ${AUTH0_DOMAIN})
+
+sed -i -r 's/(clientId:")([^"]+)?"/\1'"${AUTH0_CLIENT_ID}"'"/' /usr/share/nginx/html/app-*.js
+sed -i -r 's/(domain:")([^"]+)?"/\1'"${AUTH0_DOMAIN_HOST}"'"/' /usr/share/nginx/html/app-*.js
 
 echo "nginx will listen on port: ${NGINX_PORT}"
 
