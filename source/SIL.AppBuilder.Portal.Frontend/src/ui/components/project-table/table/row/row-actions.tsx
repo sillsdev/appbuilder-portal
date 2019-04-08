@@ -38,7 +38,7 @@ export default function RowActions({ project }: IProps) {
       trigger={<MoreVerticalIcon />}
     >
       <Dropdown.Menu>
-        <Dropdown.Item text={t('project.dropdown.build')} />
+        {/* <Dropdown.Item text={t('project.dropdown.build')} /> */}
         <RequireRole
           {...{
             roleName: ROLE.OrganizationAdmin,
