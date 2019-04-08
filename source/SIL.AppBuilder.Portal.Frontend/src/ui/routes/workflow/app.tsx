@@ -12,7 +12,6 @@ import {
   Actions,
   // TODO: swap this out with the local one.
   //       this way we can customize authentication
-  SignalRConnector,
   StateBindedForm,
   API,
 } from '@assets/vendor/dwkit/optimajet-app.js';
@@ -23,7 +22,10 @@ import { PageLoader } from '~/ui/components/loaders';
 
 import { useRouter } from '~/lib/hooks';
 
+import { ConnectionStatus } from '@ssv/signalr-client';
+
 import { initialState } from './initial-state';
+import { SignalRConnector } from './signalr';
 
 // Nasty overrides that DWKit assumes have been polluted
 // on the global / window namespace
@@ -97,6 +99,28 @@ function MaskingLoader() {
   );
 }
 
+function ensureConnectedToHub() {
+  let connection = SignalRConnector.connection;
+
+  if (connection) {
+    if (connection.state === ConnectionStatus.connected) {
+      console.debug('dwkit signalr hub is already connected');
+      return;
+    }
+
+    console.debug(
+      'connection exists but state is',
+      connection.state,
+      ' -- A connected state would be: ',
+      ConnectionStatus.connected
+    );
+    return;
+  }
+
+  console.debug('connection to dwkit signalr hub is not yet established');
+  SignalRConnector.Connect(Store);
+}
+
 // TODO: the signalr integration with this is super broken / just doesn't seem to cause any updates
 export default class App extends React.Component<any, any> {
   constructor(props) {
@@ -119,7 +143,7 @@ export default class App extends React.Component<any, any> {
     resetFormState();
 
     Store.dispatch(Thunks.userinfo.fetch(() => this.forceUpdate()));
-    SignalRConnector.Connect(Store);
+    ensureConnectedToHub();
 
     this.onFetchStarted();
   };
@@ -130,7 +154,7 @@ export default class App extends React.Component<any, any> {
       Store.dispatch(Actions.router.routechanged(history, location));
     }
 
-    SignalRConnector.Connect(Store);
+    ensureConnectedToHub();
     this.setState({ pagekey: this.state.pagekey + 1 });
   };
 
@@ -159,7 +183,7 @@ export default class App extends React.Component<any, any> {
             <ApplicationRouter
               onRefresh={() => {
                 this.onLocationChange();
-                SignalRConnector.Connect(Store);
+                ensureConnectedToHub();
               }}
             />
 
