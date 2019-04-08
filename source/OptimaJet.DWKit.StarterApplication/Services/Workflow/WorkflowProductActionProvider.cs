@@ -360,12 +360,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     history.WorkflowUserId = identityId;
                 }
-                // Clear the WorkflowComment
                 if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
                 {
                     history.Comment = product.WorkflowComment;
-                    product.WorkflowComment = "";
-                    await productRepository.UpdateAsync(product);
                 }
                 await productTransitionsRepository.UpdateAsync(history);
             }
