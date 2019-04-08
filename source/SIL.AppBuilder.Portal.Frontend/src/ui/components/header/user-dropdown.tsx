@@ -52,7 +52,7 @@ class UserDropdown extends React.Component<IProps> {
             className='item'
             target='_blank'
             rel='noopener noreferrer'
-            href='http://software.sil.org/scriptureappbuilder/service/help/'
+            href='https://s3.amazonaws.com/sil-prd-aps-resources/Help+Guide+for+Scriptoria.pdf'
           >
             {t('header.help')}
           </a>
