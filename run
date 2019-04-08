@@ -15,8 +15,6 @@ CI_COMPOSE="docker-compose -f deployment/ci/docker-compose.yml --project-directo
 PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER"
 
 function runstuff {
-  echo "./run $arguments"
-
   # First arg
   given_command=$1
   # The rest of the args
@@ -188,14 +186,7 @@ function runstuff {
         --project ./OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
         --msbuildprojectextensionspath ./out/OptimaJet.DWKit.StarterApplication/obj/
     ;;
-
     # dotnet:api)
-    #   runstuff dotnet ${arguments} \
-    #     --startup-project ./OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
-    #     --project ./OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
-    #     --msbuildprojectextensionspath ./out/OptimaJet.DWKit.StarterApplication/obj/
-
-    # ;;
 
     # Don't name any folders bin, obj, tmp, dist, or node_modules
     clean:all)
