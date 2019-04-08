@@ -47,12 +47,12 @@ export async function visitTheHomePage() {
 export async function openOrgSwitcher() {
   if (!app.isSidebarVisible) {
     await app.openSidebar();
-    await when(() => app.isSidebarVisible);
+    await when(() => assert(app.isSidebarVisible, 'expected sidebar to be visible'));
   }
 
   if (!app.isOrgSwitcherVisible) {
     await app.openOrgSwitcher();
-    await when(() => app.isOrgSwitcherVisible);
+    await when(() => assert(app.isOrgSwitcherVisible, 'expected org switcher to be visible'));
   }
 }
 

@@ -35,7 +35,7 @@ class App {
   myProfileText = text('[data-test-header-avatar] [data-test-profile]');
 
   openSidebar = clickable('[data-test-header-sidebar-button]');
-  isSidebarVisible = isPresent('.is-sidebar-visible [data-test-sidebar]');
+  isSidebarVisible = isPresent('[data-test-sidebar]');
   openOrgSwitcher = clickable('[data-test-org-switcher-toggler]');
   selectedOrg = text('[data-test-org-switcher-toggler]');
 
