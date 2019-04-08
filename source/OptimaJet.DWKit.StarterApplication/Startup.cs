@@ -106,6 +106,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddSingleton<IUserIdProvider, ScriptoriaIdProvider>();
 
             services.AddApiServices();
+            services.AddEventDispatchers();
             services.AddContextServices();
             services.AddBackgroundServices(Configuration);
             // services.AddAppAuthorization();
@@ -206,7 +207,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<ScriptoriaHub>("/hubs/notifications");
+                routes.MapHub<ClientNotificationHub>("/hubs/notifications");
                 routes.MapHub<JSONAPIHub>("/hubs/data");
             });
 

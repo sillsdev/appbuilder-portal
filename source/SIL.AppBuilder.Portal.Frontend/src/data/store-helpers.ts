@@ -38,6 +38,18 @@ type RecordIdentity<
   TAttrs extends AttributesObject = {}
 > = IOrbitTracking & IResourceIdentity<TType, TAttrs>;
 
+// sometimes there are race conditions with managing our own store
+// and handling responses back from the websocket connection.
+export function recordsThatStillExist(dataStore: Store, records: any[]) {
+  return records.filter((record) => {
+    try {
+      return dataStore.cache.query((q) => q.findRecord(record));
+    } catch (e) {
+      return false;
+    }
+  });
+}
+
 export function buildFindRelatedRecords(q: QueryBuilder, record: any, relationship: string) {
   return q.findRelatedRecords({ type: record.type, id: record.id }, relationship);
 }

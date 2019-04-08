@@ -15,7 +15,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 {
     public class SendNotificationService
     {
-        public IHubContext<ScriptoriaHub> HubContext { get; }
         public ITranslator Translator { get; }
         public IJobRepository<Email> EmailRepository { get; }
         public IJobRepository<UserRole> UserRolesRepository { get; }
@@ -27,7 +26,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             IJobRepository<Email> emailRepository,
             IJobRepository<UserRole> userRolesRepository,
             SendEmailService sendEmailService,
-            IHubContext<ScriptoriaHub> hubContext,
             IJobRepository<Notification> notificationRepository
         )
         {
@@ -36,7 +34,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             UserRolesRepository = userRolesRepository;
             SendEmailService = sendEmailService;
             NotificationRepository = notificationRepository;
-            HubContext = hubContext;
 
         }
         public async Task SendNotificationToOrgAdminsAndOwnerAsync(Organization organization, User owner, String messageId, Dictionary<string, object> subs, String linkUrl = "")
@@ -105,7 +102,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 LinkUrl = linkUrl
             };
             var updatedNotification = await NotificationRepository.CreateAsync(notification);
-            await HubContext.Clients.User(user.ExternalId).SendAsync("Notification", updatedNotification.Id);
         }
 
         public void NotificationEmailMonitor()

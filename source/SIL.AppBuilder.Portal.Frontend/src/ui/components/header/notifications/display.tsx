@@ -8,31 +8,39 @@ import { useTranslations } from '~/lib/i18n';
 
 import { useToggle } from '~/lib/hooks';
 
-import { useOrbit, attributesFor } from 'react-orbitjs/dist';
+import { useOrbit, attributesFor } from 'react-orbitjs';
 
 import { NotificationResource } from '~/data';
+
+import { useLiveData } from '~/data/live';
+
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 import { useCollectionDataActions } from '~/data/containers/resources/notification/with-collection-data-actions';
 
 import { preventDefault } from '~/lib/dom';
 
-import { useLiveData } from '~/data/live';
-
 interface ISubscribedTo {
   notifications: NotificationResource[];
 }
 
-export default function Notifications({ refetch }) {
+export default function Notifications() {
   useLiveData('notifications');
 
   const { t } = useTranslations();
+  const { currentUser } = useCurrentUser();
   const [visible, toggleVisible] = useToggle(false);
   const element = useRef<HTMLElement>();
+  const toggler = useRef<HTMLElement>();
 
   const {
     subscriptions: { notifications },
   } = useOrbit<ISubscribedTo>({
-    notifications: (q) => q.findRecords('notification').sort('-dateCreated', '-dateRead'),
+    notifications: (q) =>
+      q
+        .findRecords('notification')
+        .filter({ relation: 'user', record: currentUser })
+        .sort('-dateCreated', '-dateRead'),
   });
 
   const { clearAll, markAllAsViewed } = useCollectionDataActions(notifications);
@@ -45,8 +53,9 @@ export default function Notifications({ refetch }) {
   const toggle = useCallback(
     (e) => {
       const isWithinDropdown = element.current && element.current.contains(e.target);
+      const isToggler = toggler.current === e.target || toggler.current.contains(e.target);
 
-      if (visible && isWithinDropdown) {
+      if (visible && isWithinDropdown && !isToggler) {
         // the click is inside the notifications dropdown,
         // we do not toggle.
         return;
@@ -81,6 +90,7 @@ export default function Notifications({ refetch }) {
       <div
         data-test-notification-trigger
         data-test-notification-active={!haveAllNotificationsBeenSeen}
+        ref={(node) => (toggler.current = node)}
         style={{ position: 'relative' }}
         onClick={toggle}
       >

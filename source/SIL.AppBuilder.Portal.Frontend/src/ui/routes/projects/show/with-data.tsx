@@ -1,59 +1,51 @@
-import { compose } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
+import React from 'react';
+import { useQuery } from 'react-orbitjs';
 
-import { query, buildFindRecord, buildOptions } from '@data';
+import { buildFindRecord, buildOptions } from '@data';
 
-import { TYPE_NAME as PROJECT } from '@data/models/project';
-import { withLoader } from '@data/containers/with-loader';
-import { withError } from '@data/containers/with-error';
+import { PageLoader } from '~/ui/components/loaders';
 
-const mapNetworkToProps = (passedProps) => {
-  const { match } = passedProps;
-  const {
-    params: { id },
-  } = match;
+import { PageError } from '~/ui/components/errors';
 
-  return {
-    cacheKey: `project-${id}`,
-    project: [
-      (q) => buildFindRecord(q, PROJECT, id),
-      buildOptions({
-        include: [
-          'products.product-builds.product-artifacts',
-          'products.user-tasks.user',
-          // 'products.user-tasks.product.product-definition.workflow',
-          'products.product-definition',
-          // 'products.product-workflow',
-          'organization.organization-product-definitions.product-definition.workflow.store-type',
-          'group',
-          'owner.group-memberships.group',
-          'owner.organization-memberships.organization',
-          'reviewers',
-          'type',
-        ],
-      }),
-    ],
-  };
-};
+import { useRouter } from '~/lib/hooks';
 
-const mapRecordsToProps = (passedProps) => {
-  const { match } = passedProps;
-  const {
-    params: { id },
-  } = match;
-
-  return {
-    project: (q) => buildFindRecord(q, PROJECT, id),
-  };
-};
+import { useLiveData } from '~/data/live';
 
 export function withData(WrappedComponent) {
-  return compose(
-    query(mapNetworkToProps, { passthroughError: true }),
-    withError('error', (props) => {
-      return props.error;
-    }),
-    withLoader(({ project }) => !project),
-    withOrbit(mapRecordsToProps)
-  )(WrappedComponent);
+  return function ProjectDataFetcher(props) {
+    const { match } = useRouter();
+    const {
+      params: { id },
+    } = match;
+
+    const {
+      isLoading,
+      error,
+      result: { project },
+    } = useQuery({
+      project: [
+        (q) => buildFindRecord(q, 'project', id),
+        buildOptions({
+          include: [
+            'products.product-builds.product-artifacts',
+            'products.user-tasks.user',
+            // 'products.user-tasks.product.product-definition.workflow',
+            'products.product-definition',
+            // 'products.product-workflow',
+            'organization.organization-product-definitions.product-definition.workflow.store-type',
+            'group',
+            'owner.group-memberships.group',
+            'owner.organization-memberships.organization',
+            'reviewers',
+            'type',
+          ],
+        }),
+      ],
+    });
+
+    if (isLoading || !project) return <PageLoader />;
+    if (error) return <PageError error={error} />;
+
+    return <WrappedComponent {...props} {...{ project }} />;
+  };
 }

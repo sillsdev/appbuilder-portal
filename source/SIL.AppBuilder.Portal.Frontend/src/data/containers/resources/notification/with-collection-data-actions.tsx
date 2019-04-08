@@ -2,37 +2,55 @@ import { NotificationResource } from '@data';
 
 import { useLiveData } from '~/data/live';
 
+import { useCallback } from 'react';
+
+import { recordsThatStillExist } from '~/data/store-helpers';
+
+import { attributesFor } from 'react-orbitjs';
+
 export function useCollectionDataActions(notifications: NotificationResource[]) {
   const { pushData, dataStore } = useLiveData();
 
-  const markAllAsViewed = () => {
-    if (notifications.length === 0) {
+  const markAllAsViewed = useCallback(() => {
+    let records = recordsThatStillExist(dataStore, notifications).filter((record) => {
+      return !attributesFor(record).dateRead;
+    });
+
+    if (records.length === 0) {
       return;
     }
 
     const date = new Date().toISOString();
 
     pushData((t) =>
-      notifications.map((notification) => {
-        return t.replaceAttribute(notification, 'date-read', date);
+      records.map((notification) => {
+        return t.replaceRecord({
+          ...notification,
+          attributes: {
+            ...notification.attributes,
+            dateRead: date,
+          },
+        });
       })
     );
-  };
+  }, [notifications]);
 
-  const clearAll = async () => {
-    if (notifications.length === 0) {
+  const clearAll = useCallback(async () => {
+    let records = recordsThatStillExist(dataStore, notifications);
+
+    if (records.length === 0) {
       return;
     }
 
     pushData((t) =>
-      notifications.map((notification) => {
+      records.map((notification) => {
         return t.removeRecord(notification);
       })
     );
 
     // the backend doesn't return records in the operations payload when they are removed
-    dataStore.update((t) => notifications.map((n) => t.removeRecord(n)), { skipRemote: true });
-  };
+    dataStore.update((t) => records.map((n) => t.removeRecord(n)), { skipRemote: true });
+  }, [notifications]);
 
   return { markAllAsViewed, clearAll };
 }

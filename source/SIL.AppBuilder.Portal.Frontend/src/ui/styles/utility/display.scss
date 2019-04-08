@@ -28,6 +28,10 @@
   @include default-transition;
 }
 
+.slightly-transparent {
+  opacity: 0.8;
+}
+
 .invisible {
   background: transparent;
   opacity: 1;

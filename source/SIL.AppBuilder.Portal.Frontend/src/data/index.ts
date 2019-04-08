@@ -30,9 +30,8 @@ export { withLoader } from './containers/with-loader';
 export { withError } from './containers/with-error';
 export { withLogout, IProvidedProps as ILogoutProps } from '@data/containers/with-logout';
 
-export { query } from 'react-orbitjs';
+export { query, pushPayload } from 'react-orbitjs';
 
-export { pushPayload } from './push-payload';
 export { PUSH_PAYLOAD_OPERATION } from './push-payload-operations';
 
 export { APPLICATION_TYPES_TYPE, ApplicationTypeResource } from './models/application-type';

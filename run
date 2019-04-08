@@ -65,19 +65,23 @@ function runstuff {
     db:migrations) runstuff api:ef migrations ${arguments};;
 
     bootstrap)
+      set -e
       runstuff bootstrap:dwkit
       runstuff bootstrap:api
       runstuff bootstrap:sample
       runstuff bootstrap:dev
       runstuff bootstrap:ui-static
+      set +e
     ;;
 
     bootstrap:alpha)
+      set -e
       runstuff bootstrap:dwkit
       runstuff bootstrap:api
       runstuff bootstrap:orgs
       runstuff bootstrap:dev
       runstuff bootstrap:ui-static
+      set +e
     ;;
 
     bootstrap:dwkit)

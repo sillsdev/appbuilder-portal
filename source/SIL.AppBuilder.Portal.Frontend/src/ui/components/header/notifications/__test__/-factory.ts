@@ -34,7 +34,16 @@ function getRandomTimeAgo() {
     .toISOString();
 }
 
-function notificationFor(id, time, unread = false) {
+interface INotificationForOptions {
+  id: number | string;
+  time: string;
+  unread?: boolean;
+  userId?: number | string;
+}
+
+function notificationFor({ id, time, unread, userId }: INotificationForOptions) {
+  unread = unread || false;
+
   const notification = { ...protoNotification, id: id.toString() };
   notification.attributes = {
     ...notification.attributes,
@@ -46,22 +55,27 @@ function notificationFor(id, time, unread = false) {
     notification.attributes['date-read'] = time;
   }
 
+  if (userId) {
+    notification.relationships.user.data.id = userId.toString();
+  }
+
   return notification;
 }
 
-export function notifications(n: number, unreadCount?: number): any {
+export function notifications(n: number, unreadCount?: number, userId?: number): any {
   const result = [];
 
   if (unreadCount === undefined) {
     unreadCount = Math.floor(n / 2);
   }
+
   let i = 0;
 
   for (i; i < n; ++i) {
     const t = moment()
       .add(-i, 'hours')
       .toISOString();
-    result.push(notificationFor(i, t, i < unreadCount));
+    result.push(notificationFor({ id: i, time: t, unread: i < unreadCount, userId }));
   }
 
   return reverse(sortBy(result, ['attributes.date-created', 'attributes.date-read']));

@@ -14,6 +14,9 @@ using Hangfire;
 using System.Collections.Generic;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.EventDispatcher.EntityEventHandler;
+using Microsoft.AspNetCore.SignalR;
+using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 {
@@ -198,12 +201,35 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 OrganizationId = org1.Id
             });
         }
+
+        private (Mock<IEntityHookHandler<Notification, int>> handler, Mock<IHubContext<JSONAPIHub>>) MockServices() 
+        {
+            
+            var handler = _fixture.GetService<IEntityHookHandler<Notification, int>>();
+            var hubContext = _fixture.GetService<IHubContext<JSONAPIHub>>();
+            var mockHub = Mock.Get(hubContext);
+            var mockHandler = Mock.Get(handler);
+
+            mockHub.Reset();
+            mockHandler.Reset();
+
+            var mockClients = Mock.Get<IHubClients>(hubContext.Clients);
+            mockClients.Reset();
+
+
+            return (mockHandler, mockHub);
+        }
+
+
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Release_Connection_UnavailableAsync()
         {
             BuildTestData(false);
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
-            var mockNotificationService = Mock.Get(buildReleaseService.sendNotificationService.HubContext);
+            var hookHandler = _fixture.GetService<IEntityHookHandler<Notification, int>>();
+
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var paramsDictionary = new Dictionary<string, object>
             {
                 {"targets", "google-play" },
@@ -211,11 +237,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             };
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildReleaseService.CreateReleaseAsync(product1.Id, paramsDictionary, null));
             Assert.Equal("Connection not available", ex.Message);
+
             // Verify that notifications are sent to the user and the org admin
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
+    
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+            Assert.Contains(user2.Id, userIds);
+            
             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("releaseFailedUnableToConnect", notifications[0].MessageId);
         }
@@ -224,6 +254,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            
             var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             var mockRecurringTaskManager = Mock.Get(buildReleaseService.RecurringJobManager);
             mockRecurringTaskManager.Reset();
@@ -272,9 +303,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
-            var mockNotificationService = Mock.Get(buildReleaseService.sendNotificationService.HubContext);
+
             var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
+
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var releaseResponse = new ReleaseResponse
             {
                 Id = 3,
@@ -299,9 +333,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var modifiedProduct = products.First(p => p.Id == product2.Id);
             Assert.NotNull(modifiedProduct.DatePublished);
             // One notification should be sent to owner on successful build
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Single(notifications);
+    
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+
             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("releaseCompletedSuccessfully", notifications[0].MessageId);
         }
@@ -310,7 +347,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
-            var mockNotificationService = Mock.Get(buildReleaseService.sendNotificationService.HubContext);
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
 
@@ -329,10 +367,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                            .Returns(releaseResponse);
             await buildReleaseService.CheckReleaseAsync(product2.Id);
             // Verify that notifications are sent to the user and the org admin
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
+    
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+            Assert.Contains(user2.Id, userIds);
+            
             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("releaseFailedAdmin", notifications[0].MessageId);
             Assert.Equal("https://buildengine.testorg1", notifications[0].LinkUrl);

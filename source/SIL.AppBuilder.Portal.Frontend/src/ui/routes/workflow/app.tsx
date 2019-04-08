@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import { DWKitForm } from '@assets/vendor/dwkit/optimajet-form.js';
@@ -19,7 +19,14 @@ import {
 import * as toast from '@lib/toast';
 
 import '~/global-config';
+import { PageLoader } from '~/ui/components/loaders';
 
+import { useRouter } from '~/lib/hooks';
+
+import { initialState } from './initial-state';
+
+// Nasty overrides that DWKit assumes have been polluted
+// on the global / window namespace
 window.alertify = {
   error(...args) {
     toast.error(...args);
@@ -42,6 +49,7 @@ window.Pace = {
   start() {},
   stop() {},
 };
+const noop = () => {};
 
 function resetFormState() {
   // Without this, the form state becomes stale between
@@ -49,36 +57,85 @@ function resetFormState() {
   // TaskA -> form is shown
   // TaskB -> TaskA's form is shown
   // Refresh -> TaskB's form is shown
-  Store.resetForm();
+  //
+  // This is a giant anti pattern.
+  // the state should never be mutated.
+  // but DWKit does not provide the needed APIs to interact with their Redux Store.
+  // Additionally, they also mutate everything all over the place.
+  //
+  // What even are conventions?
+  Store.getState().app = initialState.app;
 }
 
+function RouteListener({ onLocationChange }) {
+  const { history } = useRouter();
+
+  useEffect(() => {
+    history.listen((location, action) => {
+      onLocationChange(history, location);
+    });
+  }, []);
+
+  return null;
+}
+
+function MaskingLoader() {
+  return (
+    <div
+      style={{
+        zIndex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(255, 255, 255, 0.5)',
+      }}
+    >
+      <PageLoader />
+    </div>
+  );
+}
+
+// TODO: the signalr integration with this is super broken / just doesn't seem to cause any updates
 export default class App extends React.Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {
       pagekey: 0,
+      isLoading: false,
     };
-
-    resetFormState();
-
-    const me = this;
-    Store.dispatch(
-      Thunks.userinfo.fetch(function() {
-        me.forceUpdate();
-      })
-    );
 
     window.DWKitApp = this;
     window.DWKitApp.API = API;
-    this.onFetchStarted();
-    SignalRConnector.Connect(Store);
+    this.resetDWKitState();
   }
 
-  componentWillUnmount() {
-    resetFormState();
+  componentDidMount() {
+    this.resetDWKitState();
   }
+
+  resetDWKitState = () => {
+    resetFormState();
+
+    Store.dispatch(Thunks.userinfo.fetch(() => this.forceUpdate()));
+    SignalRConnector.Connect(Store);
+
+    this.onFetchStarted();
+  };
+
+  onLocationChange = (history = undefined, location = undefined) => {
+    resetFormState();
+    if (history) {
+      Store.dispatch(Actions.router.routechanged(history, location));
+    }
+
+    SignalRConnector.Connect(Store);
+    this.setState({ pagekey: this.state.pagekey + 1 });
+  };
 
   render() {
+    const { isLoading } = this.state;
     const sectorprops = {
       eventFunc: this.actionsFetch.bind(this),
       getAdditionalDataForControl: this.additionalFetch.bind(this, undefined),
@@ -86,9 +143,10 @@ export default class App extends React.Component<any, any> {
 
     return (
       <div
-        className='p-lg flex-column flex-grow dwkit-form-container align-items-center'
+        className='p-lg flex-column flex-grow dwkit-form-container align-items-center p-relative'
         key={this.state.pagekey}
       >
+        {isLoading && <MaskingLoader />}
         <DWKitForm
           className='dwkit-header w-100'
           {...sectorprops}
@@ -97,7 +155,14 @@ export default class App extends React.Component<any, any> {
         />
         <Provider store={Store}>
           <>
-            <ApplicationRouter onRefresh={this.onRefresh} />
+            <RouteListener onLocationChange={this.onLocationChange} />
+            <ApplicationRouter
+              onRefresh={() => {
+                this.onLocationChange();
+                SignalRConnector.Connect(Store);
+              }}
+            />
+
             <NotificationComponent
               onFetchStarted={this.onFetchStarted}
               onFetchFinished={this.onFetchFinished}
@@ -110,17 +175,6 @@ export default class App extends React.Component<any, any> {
                   return (
                     <div className='flex-row flex-grow form-layout-wrapper'>
                       <FormContent className='flex-grow' {...props} />
-                    </div>
-                  );
-                }}
-              />
-
-              <Route
-                path='/form-dashboard'
-                render={(props) => {
-                  return (
-                    <div className='flex-row flex-grow form-layout-wrapper'>
-                      <FormContent className='flex-grow' {...props} formName='dashboard' />
                     </div>
                   );
                 }}
@@ -141,7 +195,7 @@ export default class App extends React.Component<any, any> {
                 exact
                 path='/'
                 render={() => {
-                  return <Redirect to='/tasks' />;
+                  return <Redirect to='/tasks' push={true} />;
                 }}
               />
 
@@ -169,28 +223,16 @@ export default class App extends React.Component<any, any> {
   }
 
   onFetchStarted = () => {
-    $('body').loadingModal({
-      text: 'Loading...',
-      animation: 'foldingCube',
-      backgroundColor: '#1262E2',
-    });
+    this.setState({ isLoading: true });
   };
 
   onFetchFinished = () => {
-    $('body').loadingModal('destroy');
-  };
-
-  onRefresh = () => {
-    this.onFetchStarted();
-    Store.resetForm();
-    this.setState({
-      pagekey: this.state.pagekey + 1,
-    });
-    SignalRConnector.Connect(Store);
+    this.setState({ isLoading: false });
   };
 
   actionsFetch = (args) => {
     Store.dispatch(Thunks.form.executeActions(args));
+    this.onLocationChange();
   };
 
   additionalFetch = (
@@ -211,5 +253,6 @@ export default class App extends React.Component<any, any> {
         callback,
       })
     );
+    this.onLocationChange();
   };
 }

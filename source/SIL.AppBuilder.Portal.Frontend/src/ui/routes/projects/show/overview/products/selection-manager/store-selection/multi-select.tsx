@@ -23,7 +23,7 @@ interface INeededProps {
 export default compose(
   withTranslations,
   withOrganizationStores(),
-  withLoader(({ error, organizationStores }) => !error && !organizationStores),
+  withLoader(({ organizationStores }) => !organizationStores),
   withOrbit({
     stores: (q) => q.findRecords('store'),
   }),

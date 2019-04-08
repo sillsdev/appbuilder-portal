@@ -189,12 +189,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
-            var mockNotificationService = Mock.Get(buildProductService.sendNotificationService.HubContext);
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var productId = Guid.NewGuid();
             await buildProductService.ManageProductAsync(productId, null);
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user3.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Single(notifications);
+
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user3.Id, userIds);
+
             var expectedJson = "{\"productId\":\"" + productId.ToString() + "\"}";
             Assert.Equal(expectedJson, notifications[0].MessageSubstitutionsJson);
             Assert.Equal("productRecordNotFound", notifications[0].MessageId);
@@ -204,7 +208,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
-            var mockNotificationService = Mock.Get(buildProductService.sendNotificationService.HubContext);
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
 
             var jobResponse = new JobResponse
@@ -221,9 +226,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var modifiedProduct = products.First(p => p.Id == product1.Id);
             Assert.Equal(5, modifiedProduct.WorkflowJobId);
             // One notification should be sent to owner on successful build
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Single(notifications);
+
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+
             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("productCreatedSuccessfully", notifications[0].MessageId);
         }
@@ -232,16 +240,20 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
-            var mockNotificationService = Mock.Get(buildProductService.sendNotificationService.HubContext);
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
             systemStatus1.SystemAvailable = false;
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProductService.ManageProductAsync(product1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify that notifications are sent to the user and the org admin
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
+    
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+            Assert.Contains(user2.Id, userIds);
+
             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("productFailedUnableToConnect", notifications[0].MessageId);
 

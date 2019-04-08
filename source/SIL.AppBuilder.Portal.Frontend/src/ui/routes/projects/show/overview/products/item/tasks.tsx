@@ -43,10 +43,7 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
       e,
       'we probably need to PR to orbit.js, as this is a race condition scenario that causes the error',
       'variables that are in use that may be related to this error: ',
-      'product: ',
-      product,
-      'currentUser: ',
-      currentUser
+      ['product: ', product, 'currentUser: ', currentUser]
     );
   }
 

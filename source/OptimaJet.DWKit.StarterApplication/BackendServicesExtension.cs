@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentEmail.Core.Interfaces;
 using Hangfire;
 using Hangfire.PostgreSql;
+using JsonApiDotNetCore.Configuration;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
@@ -49,6 +50,7 @@ namespace OptimaJet.DWKit.StarterApplication
                     builder.AddResource<ProjectToken>("project-tokens");
                 });
             });
+            // JsonApiOptions.ResourceNameFormatter = new ScriptoriaResourceFormatter();
 
             services.AddHttpContextAccessor();
 
@@ -87,13 +89,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<OrganizationStore>, OrganizationStoreService>();
 
             services.AddScoped<IQueryParser, OrbitJSQueryParser>();
-
-            // EventDispatchers
-            services.AddScoped(typeof(EntityHooksService<>));
-            services.AddScoped(typeof(EntityHooksService<,>));
-            services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
-            services.AddScoped(typeof(IEntityHookHandler<,>), typeof(BaseHookNotifier<,>));
-
+            
             services.AddScoped<UserRepository>();
             services.AddScoped<GroupRepository>();
             services.AddScoped<ProjectRepository>();
@@ -109,6 +105,19 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<SendEmailService>();
             services.AddScoped<OrganizationMembershipService>();
             services.AddScoped<OrganizationMembershipInviteService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddEventDispatchers(this IServiceCollection services)
+        {
+            // EventDispatchers
+            services.AddScoped(typeof(EntityHooksService<>));
+            services.AddScoped(typeof(EntityHooksService<,>));
+            services.AddScoped(typeof(IEntityHookHandler<>), typeof(BaseHookNotifier<>));
+            services.AddScoped(typeof(IEntityHookHandler<,>), typeof(BaseHookNotifier<,>));
+            services.AddScoped<IEntityHookHandler<Notification, int>, NotificationHookNotifier>();
+            services.AddScoped<IEntityHookHandler<UserTask, int>, UserTaskHookNotifier>(); 
 
             return services;
         }

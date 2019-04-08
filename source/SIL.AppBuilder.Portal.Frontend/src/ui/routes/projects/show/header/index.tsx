@@ -9,9 +9,15 @@ import { useOrbit } from 'react-orbitjs';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
-export default ({ project, t, toggleArchive, claimOwnership }) => {
+export default ({ project: { id }, t, toggleArchive, claimOwnership }) => {
+  const {
+    dataStore,
+    subscriptions: { project },
+  } = useOrbit({
+    project: (q) => q.findRecord({ type: 'project', id }),
+  });
+
   const { name, dateCreated, dateArchived, isPublic } = attributesFor(project);
-  const { dataStore } = useOrbit();
   const { currentUser } = useCurrentUser();
 
   const toggleText = !dateArchived

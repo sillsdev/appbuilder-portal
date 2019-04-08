@@ -255,12 +255,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             await buildProjectService.ManageProjectAsync(999, null);
             // Verify notification sent to Super Admin
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user3.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
+            var userIds = notifications.Select(n => n.UserId);
+
+            Assert.Contains(user3.Id, userIds);
             Assert.Single(notifications);
+
             var expectedJson = "{\"projectId\":\"999\"}";
             Assert.Equal(expectedJson, notifications[0].MessageSubstitutionsJson);
             Assert.Equal("projectRecordNotFound", notifications[0].MessageId);
@@ -270,15 +274,18 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify notification sent to OrgAdmin and User
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
-            Assert.Equal("{\"orgName\":\"TestOrg1\",\"projectName\":\"Test Project1\"}", notifications[0].MessageSubstitutionsJson);
+    
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+            Assert.Contains(user2.Id, userIds);
+                        Assert.Equal("{\"orgName\":\"TestOrg1\",\"projectName\":\"Test Project1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("projectFailedBuildEngine", notifications[0].MessageId);
 
         }
@@ -287,14 +294,18 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(true, "4323864");
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify notification sent to OrgAdmin and User
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
+    
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+            Assert.Contains(user2.Id, userIds);
+
             Assert.Equal("{\"orgName\":\"TestOrg1\",\"projectName\":\"Test Project1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("projectFailedBuildEngine", notifications[0].MessageId);
         }
@@ -303,13 +314,17 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project4.Id, null));
             Assert.Equal("Connection not available", ex.Message);
             // Verify notification sent to OrgAdmin and User (no org admin for this project defined)
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Single(notifications);
+    
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+
             Assert.Equal("{\"orgName\":\"TestOrg2\",\"projectName\":\"Test Project4\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("projectFailedBuildEngine", notifications[0].MessageId);
         }
@@ -397,17 +412,23 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            var mockNotificationService = Mock.Get(buildProjectService.SendNotificationSvc.HubContext);
+            
+            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
             mockBuildEngine.Setup(x => x.CreateProject(It.IsAny<BuildEngineProject>())).Returns((ProjectResponse)null);
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Create project failed", ex.Message);
+            
             // Verify notification sent to OrgAdmin and User
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user1.ExternalId)));
-            mockNotificationService.Verify(x => x.Clients.User(It.Is<string>(i => i == user2.ExternalId)));
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
+    
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+            Assert.Contains(user2.Id, userIds);
+            
             Assert.Equal("{\"projectName\":\"Test Project1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("projectFailedUnableToCreate", notifications[0].MessageId);
         }

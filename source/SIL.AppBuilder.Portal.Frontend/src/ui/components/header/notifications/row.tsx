@@ -1,12 +1,13 @@
-import * as React from 'react';
+import React, { useRef } from 'react';
 import CloseIcon from '@material-ui/icons/Close';
 import { attributesFor } from '@data/helpers';
 import { useDataActions } from '@data/containers/resources/notification/with-data-actions';
 import TimezoneLabel from '@ui/components/labels/timezone';
 
-import { preventDefault } from '~/lib/dom';
+import { preventDefault, matchesOrIsChildOf } from '~/lib/dom';
 
 export default function({ notification }) {
+  const closeButton = useRef<HTMLAnchorElement>();
   const { markAsSeen, clear } = useDataActions(notification);
   const { message, dateCreated, dateRead } = attributesFor(notification);
 
@@ -17,10 +18,17 @@ export default function({ notification }) {
     <div
       data-test-notification
       className={`notification-item ${viewState}`}
-      onClick={preventDefault(markAsSeen)}
+      onClick={preventDefault((e) => {
+        if (matchesOrIsChildOf(e.target, closeButton.current)) {
+          return;
+        }
+
+        markAsSeen();
+      })}
     >
       <a
         data-test-notification-close-one
+        ref={closeButton}
         className='close'
         href='#'
         onClick={preventDefault(clear)}
