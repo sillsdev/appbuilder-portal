@@ -58,8 +58,11 @@ docker ls
 docker run -it \
     -p 9091:80 \
     -e "API_URL=http://api.docker:7081" \
+    -e "AUTH0_DOMAIN=sil-appbuilder.auth0.com" \
+    -e "AUTH0_CLIENT_ID=n8IAE2O17FBrlQ667x5mydhpqelCBUWG" \
+    -e "DWKIT_UI_HOST=172.18.0.1" \
     --network appbuilder-portal_default \
-    --link 93a93b14287a:api.docker nginx-$CURRENT_VERSION
+    --link appbuilder-portal_api_1:api.docker nginx-$CURRENT_VERSION
 ```
 
 ## Production

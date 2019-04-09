@@ -21,3 +21,4 @@ envsubst "$VARS_TO_REPLACE" < $NGINX_CONF_DIR/dwkit.conf.template > $NGINX_CONF_
 
 echo "Starting NGINX"
 nginx -g 'daemon off;'
+# nginx-debug -g 'daemon off;'
