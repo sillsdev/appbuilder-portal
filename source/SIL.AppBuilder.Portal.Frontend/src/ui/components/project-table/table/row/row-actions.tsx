@@ -29,6 +29,8 @@ export default function RowActions({ project }: IProps) {
     ? t('project.dropdown.archive')
     : t('project.dropdown.reactivate');
 
+  const isCurrentUserOwner = currentUser.id === owner.id;
+
   return (
     <Dropdown
       className='project-actions'
@@ -49,7 +51,9 @@ export default function RowActions({ project }: IProps) {
           }}
         >
           <Dropdown.Item text={dropdownItemText} onClick={toggleArchiveProject} />
-          <Dropdown.Item text={t('project.claimOwnership')} onClick={claimOwnership} />
+          {!isCurrentUserOwner && (
+            <Dropdown.Item text={t('project.claimOwnership')} onClick={claimOwnership} />
+          )}
         </RequireRole>
       </Dropdown.Menu>
     </Dropdown>
