@@ -15,10 +15,10 @@ INSERT INTO "Users" (
 (   'Jon Nolen',              'jnolen@developertown.com',  'google-oauth2|113544451794352875093', 'Jon',  	      'Nolen', 	   '0', NULL, NULL, NULL),
 (	'Alex Billingsley',       'abillingsley@developertown.com', 'google-oauth2|106243064761677479593', 'Alex', 	      'Billingsley',	   '0',	NULL, NULL, NULL);
 
-INSERT INTO "Organizations" ("Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId", "UseDefaultBuildEngine") VALUES
-(	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false),
-(	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru:8443',	'replace',	3,	false),
-(	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false);
+INSERT INTO "Organizations" ("Id", "Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId", "UseDefaultBuildEngine") VALUES
+(1,	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false),
+(2,	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru:8443',	'replace',	3,	false),
+(3,	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false);
 
 -- INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
 -- (4,     'sil_android_amazon_store',      '1',    'SIL Default Workflow for Publishing to Amazon App Store',   'SIL_Default_AppBuilders_Android_AmazonAppStore',	'SIL_Default_AppBuilders_Android_AmazonAppStore',   1),
@@ -54,6 +54,9 @@ INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
 (2, 'amazon_app_store',	'Amazon App Store');
 
 INSERT INTO "Stores" ("Id", "Name", "Description", "StoreTypeId") VALUES
+(1, 'wycliffeusa',			'Wycliffe USA - Google Play', 1),
+(2, 'internetpublishingservice', 	'Internet Publishing Service (Kalaam) - Google Play', 1),
+(3, 'indhack', 				'Indigitous Hack - Google Play', 1),
 (4, 'wycliffeusa_ama',			'Wycliffe USA - Amazon App Store', 2),
 (5, 'internetpublishingservice_ama', 	'Internet Publishing Service (Kalaam) - Amazon App Store', 2),
 (6, 'indhack_ama', 	'Indigitous Hack - Amazon App Store', 2);
@@ -165,3 +168,7 @@ SELECT SETVAL('"ProductDefinitions_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "ProductDefinitions";
 SELECT SETVAL('"WorkflowDefinitions_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "WorkflowDefinitions";
+SELECT SETVAL('"Stores_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "Stores";
+SELECT SETVAL('"Organizations_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "Organizations";
