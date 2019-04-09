@@ -43,8 +43,8 @@ export function withData(WrappedComponent) {
       ],
     });
 
-    if (isLoading || !project) return <PageLoader />;
     if (error) return <PageError error={error} />;
+    if (isLoading || !project) return <PageLoader />;
 
     return <WrappedComponent {...props} {...{ project }} />;
   };
