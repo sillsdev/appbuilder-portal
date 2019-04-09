@@ -103,13 +103,13 @@ export default class Display extends React.Component<IProps, IState> {
             <Form data-test-new-project-form>
               <h2 className='form-title'>{t('project.title')}</h2>
 
-              <div className='flex justify-content-space-between'>
-                <Form.Field className='flex-50 m-r-md'>
+              <div className='grid-container'>
+                <Form.Field className='flex-50'>
                   <label className='required'>{t('project.projectName')}</label>
                   <input required data-test-name value={name || ''} onChange={mut('name')} />
                 </Form.Field>
 
-                <Form.Field className='flex-50 m-l-md'>
+                <Form.Field className='flex-50'>
                   <label>{t('project.projectGroup')}</label>
                   <GroupSelect
                     scopeToCurrentUser={true}
@@ -118,26 +118,23 @@ export default class Display extends React.Component<IProps, IState> {
                     onChange={mut('groupId')}
                   />
                 </Form.Field>
-              </div>
 
-              <div className='flex justify-content-space-between'>
-                <Form.Field className='flex-50 m-r-md'>
+                <Form.Field className='flex-50'>
                   <label className='required'>{t('project.languageCode')}</label>
                   <LocaleInput value={language} onChange={mut('language')} />
                 </Form.Field>
 
-                <Form.Field className='flex-50 m-l-md m-b-md'>
+                <Form.Field className='flex-50 m-b-md'>
                   <label>{t('project.type')}</label>
                   <ApplicationTypeSelect selected={typeId} onChange={mut('typeId')} />
                 </Form.Field>
-              </div>
 
-              <div className='flex justify-content-space-between'>
-                <Form.Field className='flex-50 m-r-md'>
+                <Form.Field className='flex-50'>
                   <label>{t('project.projectDescription')}</label>
                   <textarea value={description || ''} onChange={mut('description')} />
                 </Form.Field>
-                <Form.Field className='flex-50 m-l-md m-t-md p-t-sm'>
+
+                <Form.Field className='flex-50 m-t-md p-t-sm'>
                   <div className='flex-row'>
                     <div className='toggle-selector flex-row flex-grow justify-content-space-between'>
                       <span className='bold'>{t('project.visibilityLabel')}</span>
