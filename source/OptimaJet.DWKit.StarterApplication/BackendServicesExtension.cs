@@ -50,7 +50,6 @@ namespace OptimaJet.DWKit.StarterApplication
                     builder.AddResource<ProjectToken>("project-tokens");
                 });
             });
-            // JsonApiOptions.ResourceNameFormatter = new ScriptoriaResourceFormatter();
 
             services.AddHttpContextAccessor();
 

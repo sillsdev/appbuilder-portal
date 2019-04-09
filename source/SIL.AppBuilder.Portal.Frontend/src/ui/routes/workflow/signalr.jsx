@@ -1,10 +1,13 @@
 import * as signalR from '@aspnet/signalr';
-// import appActions from './actions.jsx'
-// import { encodeQueryData} from './utils.jsx'
+import { Actions as appActions, Store as store } from '@assets/vendor/dwkit/optimajet-app.js';
+
+import { getToken } from '~/lib/auth0';
+
+import { LogLevel, HttpTransportType } from '@aspnet/signalr';
 
 let connection = null;
 
-const SignalRConnector = {
+export const SignalRConnector = {
   connection: null,
   Connect(store) {
     const onStateChange = (data) => {
@@ -32,13 +35,34 @@ const SignalRConnector = {
     var query = {};
     var encodedQuery = encodeQueryData(query);
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(
-        encodedQuery.length > 0 ? '/hubs/notifications?' + encodedQuery : '/hubs/notifications'
-      )
+      .withUrl(`/hubs/notifications?${encodedQuery.length > 0 ? `&${encodedQuery}` : ''}`, {
+        logger: LogLevel.Warning,
+        transport:
+          HttpTransportType.WebSockets |
+          HttpTransportType.LongPolling |
+          HttpTransportType.ServerSentEvents,
+        accessTokenFactory: () => {
+          return getToken();
+        },
+      })
       .build();
     this.connection.on('StateChange', onStateChange);
     this.connection.start();
   },
 };
 
-export default SignalRConnector;
+// This is likely a bug in DWKit, where this helper function reads from the store directly,
+// but the Connect method above requires the store be passed in.
+// These could be different stores.
+function encodeQueryData(data) {
+  let ret = [];
+  var state = store.getState();
+
+  if (state.app.impersonatedUserId) {
+    ret.push('impersonatedUserId=' + encodeURIComponent(state.app.impersonatedUserId));
+  }
+
+  for (let d in data)
+    if (data.hasOwnProperty(d)) ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+  return ret.join('&');
+}

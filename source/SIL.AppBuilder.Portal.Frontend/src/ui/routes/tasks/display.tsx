@@ -10,7 +10,6 @@ import { useLiveData } from '~/data/live';
 export default function Display({ userTasks }: IUserTaskListProps) {
   const { t } = useTranslations();
   useLiveData('products');
-  useLiveData('user-tasks');
 
   const cellClasses = 'd-xs-none d-md-table-cell';
   const cellSecondaryClasses = 'd-xs-none d-sm-table-cell flex align-items-center';
