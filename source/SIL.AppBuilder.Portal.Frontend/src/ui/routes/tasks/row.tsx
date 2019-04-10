@@ -96,7 +96,7 @@ class TaskRow extends React.Component<IProps> {
               {projectName}
             </a>
           </td>
-          <td>{waitTime && prettyMs(waitTime)}</td>
+          {/* <td>{waitTime && prettyMs(waitTime)}</td> */}
         </tr>
         {comment && (
           <tr data-test-comment className='no-top-border'>

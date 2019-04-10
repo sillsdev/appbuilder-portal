@@ -5,6 +5,7 @@ import { buildOptions, UserTaskResource } from '@data';
 import { useQuery, useCache } from 'react-orbitjs';
 
 import { useLiveData } from '~/data/live';
+
 import { useCurrentUser } from '../../with-current-user';
 
 interface IOptions {
@@ -55,6 +56,8 @@ export function withNetwork<TWRappedProps>(options: IOptions = {}) {
         userTasks: (q) =>
           q.findRecords('userTask').filter({ relation: 'user', record: currentUser }),
       });
+
+      console.log('loaded from cache', userTasks);
 
       return <WrappedComponent {...{ ...props, error, userTasks }} />;
     }
