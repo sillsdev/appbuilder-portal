@@ -296,21 +296,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         private string GetCurrentTaskComment(Product product)
         {
 
-            var oldTasks = TaskRepository.Get().Where(t => t.ProductId == product.Id).ToList();
-            
-            // tasks all have the same comment - Chris
-            if (oldTasks.Count == 0) {
-                return product.WorkflowComment;
-            }
-
-            var taskComment = oldTasks[0].Comment;
-
-            if (String.IsNullOrWhiteSpace(product.WorkflowComment))
-            {
-                return taskComment;
-            }
-
-            return product.WorkflowComment;
+            var mostRecent = ProductTransitionRepository.Get()
+                .Where(pt => pt.ProductId == product.Id)
+                .OrderByDescending(a => a.DateTransition)
+                .FirstOrDefault();
+            return mostRecent == null ? "" : mostRecent.Comment;
         }
 
         protected async Task ClearPreExecuteEntries(Guid processId)
