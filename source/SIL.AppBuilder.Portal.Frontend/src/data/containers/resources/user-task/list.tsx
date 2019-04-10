@@ -57,8 +57,6 @@ export function withNetwork<TWRappedProps>(options: IOptions = {}) {
           q.findRecords('userTask').filter({ relation: 'user', record: currentUser }),
       });
 
-      console.log('loaded from cache', userTasks);
-
       return <WrappedComponent {...{ ...props, error, userTasks }} />;
     }
 
