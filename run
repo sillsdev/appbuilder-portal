@@ -168,6 +168,35 @@ function runstuff {
     ci)
       ${CI_COMPOSE} $arguments
     ;;
+
+    prod:nginx:run)
+      runstuff dc start adminer
+      runstuff dc start db
+      runstuff dc start api
+      # 1. Remove existing docker container with tag
+      # 2. Rebuild
+      # 3. Run
+
+      CURRENT_VERSION=$(git rev-parse HEAD)
+
+      # 1. Remove existing
+      docker image rm nginx-$CURRENT_VERSION -f
+
+      # 2. Rebuild
+      docker build . -f Dockerfile.nginx \
+        --tag "nginx-$CURRENT_VERSION" --target release
+
+      # 3. Run
+      docker run -it \
+        -p 9091:80 \
+        -e "API_URL=http://api.docker:7081" \
+        -e "AUTH0_DOMAIN=sil-appbuilder.auth0.com" \
+        -e "AUTH0_CLIENT_ID=n8IAE2O17FBrlQ667x5mydhpqelCBUWG" \
+        -e "DWKIT_UI_HOST=172.18.0.1" \
+        --network appbuilder-portal_default \
+        --link appbuilder-portal_api_1:api.docker nginx-$CURRENT_VERSION
+    ;;
+
     ################
     # Host-Machine Utils
 

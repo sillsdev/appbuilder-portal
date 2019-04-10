@@ -6,6 +6,8 @@ import { useQuery, useCache } from 'react-orbitjs';
 
 import { useLiveData } from '~/data/live';
 
+import { useCurrentUser } from '../../with-current-user';
+
 interface IOptions {
   include?: string[];
 }
@@ -43,14 +45,16 @@ export function withNetwork<TWRappedProps>(options: IOptions = {}) {
 
   return (WrappedComponent) => {
     function Querier(props) {
-      const { error, isLoading } = useUserTasksList(include);
-
       useLiveData('user-tasks');
+
+      const { error, isLoading } = useUserTasksList(include);
+      const { currentUser } = useCurrentUser();
 
       const {
         subscriptions: { userTasks },
       } = useCache({
-        userTasks: (q) => q.findRecords('userTask'),
+        userTasks: (q) =>
+          q.findRecords('userTask').filter({ relation: 'user', record: currentUser }),
       });
 
       return <WrappedComponent {...{ ...props, error, userTasks }} />;
