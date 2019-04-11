@@ -10,4 +10,4 @@ export class SidebarInteractor {
   taskLinkText = text('[data-test-tasks-link]');
 }
 
-export default new SidebarInteractor();
+export default new SidebarInteractor('[data-test-sidebar]');
