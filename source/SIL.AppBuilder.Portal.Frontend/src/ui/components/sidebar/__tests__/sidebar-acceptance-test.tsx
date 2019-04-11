@@ -6,11 +6,13 @@ import {
   setupApplicationTest,
   useFakeAuthentication,
   setupRequestInterceptor,
+  setupBrowser,
 } from 'tests/helpers/index';
 
 import page from './page';
 
 describe('Acceptance | Sidebar', () => {
+  setupBrowser();
   useFakeAuthentication();
   setupApplicationTest();
 
