@@ -43,6 +43,7 @@ export default function Navigation({ closeSidebar }: IProps) {
   return (
     <Menu className='m-t-none no-borders' pointing secondary vertical>
       <MenuItem
+        data-test-tasks-link
         content={t('sidebar.myTasks', { count: userTasks.length })}
         to='/tasks'
         onClick={closeSidebar}

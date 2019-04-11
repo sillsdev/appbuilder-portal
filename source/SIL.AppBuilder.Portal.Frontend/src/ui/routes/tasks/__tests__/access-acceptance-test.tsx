@@ -240,22 +240,6 @@ describe('Acceptance | Accessing Tasks', () => {
         ],
         meta: { 'total-records': 1 },
       };
-      // const payload = {
-      //   data: [
-      //     build(1, 'user-tasks', {
-      //       attributes: {
-      //         comment: 'a comment!',
-      //         status: 'Definition',
-      //       },
-      //       relationships: {
-      //         user: this.currentUser,
-      //         product: {
-      //           id: 1, type: 'products'
-      //         }
-      //       }
-      //     }),
-      //   ]
-      // };
 
       this.mockGet(200, '/user-tasks', payload);
 
