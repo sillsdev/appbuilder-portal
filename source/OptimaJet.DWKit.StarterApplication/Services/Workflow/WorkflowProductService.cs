@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Model;
@@ -45,6 +46,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
         public IBackgroundJobClient BackgroundJobClient { get; }
         public SendNotificationService SendNotificationService { get; }
+        public IServiceProvider ServiceProvider { get; }
         public WorkflowRuntime Runtime { get; }
 
         public WorkflowProductService(
@@ -56,6 +58,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             IJobRepository<ProductTransition> productTransitionRepository,
             IBackgroundJobClient backgroundJobClient,
             SendNotificationService sendNotificationService,
+            IServiceProvider serviceProvider,
             WorkflowRuntime runtime
         ) {
             ProductRepository = productRepository;
@@ -66,6 +69,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             ProductTransitionRepository = productTransitionRepository;
             BackgroundJobClient = backgroundJobClient;
             SendNotificationService = sendNotificationService;
+            ServiceProvider = serviceProvider;
             Runtime = runtime;
         }
 
@@ -145,21 +149,28 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public async Task ProductActivityChangedAsync(ProductActivityChangedArgs args)
         {
-            // Find the Product assoicated with the ProcessId
-            var product = await ProductRepository.Get()
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                // Find the Product assoicated with the ProcessId
+                var product = await ProductRepository.Get()
                 .Where(p => p.Id == args.ProcessId)
                 .Include(p => p.ProductDefinition)
                 .Include(p => p.Project)
                     .ThenInclude(pr => pr.Owner)
                 .FirstOrDefaultAsync();
 
-            if (product == null)
-            {
-                Log.Error($"Could find Product for ProcessId={args.ProcessId}");
-                return;
-            }
+                if (product == null)
+                {
+                    Log.Error($"Could find Product for ProcessId={args.ProcessId}");
+                    return;
+                }
 
-            await ReassignUserTasksForProduct(product);
+                await ReassignUserTasksForProduct(product);
+                if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
+                {
+                    BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ClearComment(product.Id));
+                }
+            }
 
         }
 
@@ -285,21 +296,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         private string GetCurrentTaskComment(Product product)
         {
 
-            var oldTasks = TaskRepository.Get().Where(t => t.ProductId == product.Id).ToList();
-            
-            // tasks all have the same comment - Chris
-            if (oldTasks.Count == 0) {
-                return product.WorkflowComment;
-            }
-
-            var taskComment = oldTasks[0].Comment;
-
-            if (String.IsNullOrWhiteSpace(taskComment))
-            {
-                return product.WorkflowComment;
-            }
-
-            return taskComment;
+            var mostRecent = ProductTransitionRepository.Get()
+                .Where(pt => pt.ProductId == product.Id)
+                .OrderByDescending(a => a.DateTransition)
+                .FirstOrDefault();
+            return mostRecent == null ? "" : mostRecent.Comment;
         }
 
         protected async Task ClearPreExecuteEntries(Guid processId)
