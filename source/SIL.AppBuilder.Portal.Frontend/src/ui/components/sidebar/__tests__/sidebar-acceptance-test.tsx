@@ -35,4 +35,34 @@ describe('Acceptance | Sidebar', () => {
       });
     });
   });
+
+  describe('data shown in the sidebar', () => {
+    describe('there are no tasks', () => {
+      beforeEach(async function() {
+        this.mockGet(200, '/user-tasks', {
+          data: [],
+        });
+  
+        await visit('/tasks');
+      });
+
+      it('does not show a counter next to the tasks navigation', () => {
+
+      });
+    });
+
+    describe('there are tasks for the current user', () => {
+      beforeEach(async function() {
+        this.mockGet(200, '/user-tasks', {
+          data: [],
+        });
+  
+        await visit('/tasks');
+      });
+
+      it('shows a counter next to the tasks navigation', () => {
+
+      });
+    });
+  });
 });
