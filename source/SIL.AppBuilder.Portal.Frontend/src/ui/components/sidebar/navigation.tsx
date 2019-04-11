@@ -76,7 +76,7 @@ export default function Navigation({ closeSidebar }: IProps) {
 
       <hr />
 
-      <MenuItem name={t('sidebar.projectDirectory')} to='/directory' onClick={closeSidebar} />
+      <MenuItem content={t('sidebar.projectDirectory')} to='/directory' onClick={closeSidebar} />
 
       <hr />
 
