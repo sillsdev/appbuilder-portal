@@ -18,7 +18,7 @@ export interface IProvidedProps {
   error?: any;
 }
 
-interface IProps { }
+interface IProps {}
 
 const defaultInclude = ['product.project', 'product.product-definition.workflow'];
 
@@ -40,7 +40,9 @@ export function useUserTasksList(include?: string[]) {
   return { ...queryTask, userTasks: queryTask.result.userTasks };
 }
 
-export function useUserTasksForCurrentUser(include?: string[]): {
+export function useUserTasksForCurrentUser(
+  include?: string[]
+): {
   error: Error;
   isLoading: boolean;
   userTasks: UserTaskResource[];
@@ -53,8 +55,7 @@ export function useUserTasksForCurrentUser(include?: string[]): {
   const {
     subscriptions: { userTasks },
   } = useCache({
-    userTasks: (q) =>
-      q.findRecords('userTask').filter({ relation: 'user', record: currentUser }),
+    userTasks: (q) => q.findRecords('userTask').filter({ relation: 'user', record: currentUser }),
   });
 
   return { error, isLoading, userTasks: userTasks || [] };

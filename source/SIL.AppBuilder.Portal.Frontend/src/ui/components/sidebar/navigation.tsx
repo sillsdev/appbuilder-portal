@@ -6,6 +6,7 @@ import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
 import { useTranslations } from '@lib/i18n';
 import { getCurrentOrganizationId } from '@lib/current-organization';
+
 import { useUserTasksForCurrentUser } from '~/data/containers/resources/user-task/list';
 
 export interface IProps {
@@ -41,7 +42,11 @@ export default function Navigation({ closeSidebar }: IProps) {
 
   return (
     <Menu className='m-t-none no-borders' pointing secondary vertical>
-      <MenuItem content={t('sidebar.myTasks', { count: userTasks.length })} to='/tasks' onClick={closeSidebar} />
+      <MenuItem
+        content={t('sidebar.myTasks', { count: userTasks.length })}
+        to='/tasks'
+        onClick={closeSidebar}
+      />
 
       <MenuItem content={t('sidebar.myProjects')} to='/projects/own' exact onClick={closeSidebar} />
 
