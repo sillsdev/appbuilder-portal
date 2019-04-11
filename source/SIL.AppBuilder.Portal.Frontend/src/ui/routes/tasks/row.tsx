@@ -3,9 +3,9 @@ import { compose } from 'recompose';
 import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { Button, Card, Label } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
-import * as prettyMs from 'pretty-ms';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductIcon from '@ui/components/product-icon';
+import moment from 'moment';
 
 import {
   attributesFor,
@@ -55,9 +55,18 @@ class TaskRow extends React.Component<IProps> {
 
     const { history, project } = this.props;
 
-    history.push(`/projects/${idFromRecordIdentity(project)}`);
+    history.push(`/projects/${idFromRecordIdentity(project, timezone)}`);
   };
+  getWaitTime = (dateTime, timezone) => {
+    const timeZone = timezone || moment.tz.guess();
+    if (!dateTime.includes('Z')) {
+      dateTime += 'Z';
+    }
+    const inTzDateTime = moment(dateTime).tz(timeZone);
+    const value = moment(inTzDateTime).fromNow(true);
 
+    return value;
+  };
   render() {
     const {
       t,
@@ -69,10 +78,11 @@ class TaskRow extends React.Component<IProps> {
       cellSecondaryClasses,
     } = this.props;
 
-    const { comment, status, waitTime } = attributesFor(userTask);
+    const { comment, status, dateUpdated } = attributesFor(userTask);
     const { name: projectName } = attributesFor(project);
     const { name: productName } = attributesFor(productDefinition);
-
+    const { timezone } = attributesFor(assignedTo);
+    const waitTime = this.getWaitTime(dateUpdated, timezone);
     return (
       <>
         <tr
@@ -96,7 +106,7 @@ class TaskRow extends React.Component<IProps> {
               {projectName}
             </a>
           </td>
-          {/* <td>{waitTime && prettyMs(waitTime)}</td> */}
+          <td>{waitTime}</td>
         </tr>
         {comment && (
           <tr data-test-comment className='no-top-border'>
@@ -116,7 +126,7 @@ export default compose<INeededProps, IProps>(
   withOrbit(({ userTask }) => {
     return {
       product: (q) => q.findRelatedRecord(userTask, 'product'),
-      assignedTo: (q) => q.findRelatedRecord(userTask, 'assigned'),
+      assignedTo: (q) => q.findRelatedRecord(userTask, 'user'),
     };
   }),
   withOrbit(({ product }) => ({

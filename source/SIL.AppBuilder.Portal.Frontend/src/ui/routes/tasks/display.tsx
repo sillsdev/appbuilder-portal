@@ -23,7 +23,7 @@ export default function Display({ userTasks }: IUserTaskListProps) {
           <tr>
             <th className={cellSecondaryClasses}>{t('tasks.product')}</th>
             <th>{t('tasks.project')}</th>
-            {/* <th className={cellClasses}>{t('tasks.waitTime')}</th> */}
+            <th className={cellClasses}>{t('tasks.waitTime')}</th>
             <th />
           </tr>
         </thead>
