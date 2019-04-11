@@ -205,7 +205,7 @@ export function withRole<TWrappedProps extends {}>(
   };
 }
 
-function canDoEverything(dataStore: Store, currentUser: UserResource) {
+export function canDoEverything(dataStore: Store, currentUser: UserResource) {
   const userRoles = dataStore.cache.query((q) => q.findRelatedRecords(currentUser, 'userRoles'));
 
   const result = isSuperAdmin(dataStore, userRoles);

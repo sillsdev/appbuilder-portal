@@ -29,12 +29,13 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
             var value = filterQuery.Value;
             var isScopeToUser = attribute.Equals("scope-to-current-user", StringComparison.OrdinalIgnoreCase);
 
-            if (isScopeToUser) {
+            var isSuperAdmin = CurrentUser.HasRole(RoleName.SuperAdmin);
+
+            if (isScopeToUser && !isSuperAdmin) {
                 var orgIds = CurrentUser.OrganizationIds.OrEmpty();
 
                 var scopedToUser = entities.Where(organization => orgIds.Contains(organization.Id));
 
-                // return base.Filter(scopedToUser, filterQuery);
                 return scopedToUser;
             }
 

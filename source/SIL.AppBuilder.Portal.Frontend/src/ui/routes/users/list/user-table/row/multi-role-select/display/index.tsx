@@ -36,7 +36,7 @@ export function MultiRoleSelect(props: IProps) {
   const { roles, organizations, user, t, editable } = props;
 
   if (isEmpty(organizations)) {
-    return <>t('errors.orgMembershipRequired')</>;
+    return t('errors.orgMembershipRequired');
   }
 
   const roleList = (

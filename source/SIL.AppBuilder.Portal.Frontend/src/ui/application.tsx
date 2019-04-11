@@ -19,6 +19,7 @@ import { L10nLoader } from '~/translations/fetch-l10n';
 
 import { RouteListener } from './components/routing/route-listener';
 import DebugInfo from './components/debug-info';
+import { CacheHydrater } from './components/cache-hydrater';
 import RootRoute from './routes/root';
 
 import { schema, keyMap } from '~/data/schema';
@@ -63,6 +64,7 @@ export default class Application extends React.Component<IProps> {
                   <ReduxProvider initialState={initialState || {}}>
                     <Router {...routerProps}>
                       <>
+                        <CacheHydrater />
                         <RouteListener />
                         <ScrollToTop>
                           <Component />

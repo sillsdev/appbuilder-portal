@@ -45,7 +45,7 @@ export function withRelationships<TWrappedProps, TResultProps>(
     });
 }
 
-export function findRelationships<TRelationships, TResult>(
+function findRelationships<TRelationships, TResult>(
   dataStore: Store,
   relationshipsToFind: TRelationships
 ) {
