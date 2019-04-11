@@ -18,7 +18,7 @@ export interface IProvidedProps {
   error?: any;
 }
 
-interface IProps {}
+interface IProps { }
 
 const defaultInclude = ['product.project', 'product.product-definition.workflow'];
 
@@ -40,22 +40,32 @@ export function useUserTasksList(include?: string[]) {
   return { ...queryTask, userTasks: queryTask.result.userTasks };
 }
 
+export function useUserTasksForCurrentUser(include?: string[]): {
+  error: Error;
+  isLoading: boolean;
+  userTasks: UserTaskResource[];
+} {
+  useLiveData('user-tasks');
+
+  const { error, isLoading } = useUserTasksList(include);
+  const { currentUser } = useCurrentUser();
+
+  const {
+    subscriptions: { userTasks },
+  } = useCache({
+    userTasks: (q) =>
+      q.findRecords('userTask').filter({ relation: 'user', record: currentUser }),
+  });
+
+  return { error, isLoading, userTasks: userTasks || [] };
+}
+
 export function withNetwork<TWRappedProps>(options: IOptions = {}) {
   const { include } = options;
 
   return (WrappedComponent) => {
     function Querier(props) {
-      useLiveData('user-tasks');
-
-      const { error, isLoading } = useUserTasksList(include);
-      const { currentUser } = useCurrentUser();
-
-      const {
-        subscriptions: { userTasks },
-      } = useCache({
-        userTasks: (q) =>
-          q.findRecords('userTask').filter({ relation: 'user', record: currentUser }),
-      });
+      const { error, userTasks } = useUserTasksForCurrentUser(include);
 
       return <WrappedComponent {...{ ...props, error, userTasks }} />;
     }
