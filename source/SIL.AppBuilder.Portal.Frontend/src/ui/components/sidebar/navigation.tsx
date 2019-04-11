@@ -4,23 +4,16 @@ import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
-import { withTranslations, i18nProps } from '@lib/i18n';
+import { useTranslations } from '@lib/i18n';
 import { getCurrentOrganizationId } from '@lib/current-organization';
+
+import { useUserTasksForCurrentUser } from '~/data/containers/resources/user-task/list';
 
 export interface IProps {
   closeSidebar: () => void;
 }
 
-interface MenuItem {
-  name: string;
-  to: string;
-  onClick: (e) => void;
-  exact?: boolean;
-  className?: string;
-  target?: string;
-}
-
-const MenuItem = ({ onClick, className, ...otherProps }: MenuItem) => {
+const MenuItem = ({ onClick, className, ...otherProps }: any) => {
   return (
     <>
       <Menu.Item
@@ -40,65 +33,66 @@ const MenuItem = ({ onClick, className, ...otherProps }: MenuItem) => {
   );
 };
 
-class Navigation extends React.Component<IProps & i18nProps> {
-  render() {
-    const currentOrganizationId = getCurrentOrganizationId();
-    const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
-    const allOrgsSelected = '' === currentOrganizationId;
+export default function Navigation({ closeSidebar }: IProps) {
+  const { t } = useTranslations();
+  const { userTasks } = useUserTasksForCurrentUser();
+  const currentOrganizationId = getCurrentOrganizationId();
+  const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
+  const allOrgsSelected = '' === currentOrganizationId;
 
-    const { t, closeSidebar } = this.props;
+  return (
+    <Menu className='m-t-none no-borders' pointing secondary vertical>
+      <MenuItem
+        data-test-tasks-link
+        content={t('sidebar.myTasks', { count: userTasks.length })}
+        to='/tasks'
+        onClick={closeSidebar}
+      />
 
-    return (
-      <Menu className='m-t-none no-borders' pointing secondary vertical>
-        <MenuItem name={t('sidebar.myTasks')} to='/tasks' onClick={closeSidebar} />
+      <MenuItem content={t('sidebar.myProjects')} to='/projects/own' exact onClick={closeSidebar} />
 
-        <MenuItem name={t('sidebar.myProjects')} to='/projects/own' exact onClick={closeSidebar} />
+      <MenuItem
+        content={t('sidebar.organizationProjects')}
+        to='/projects/organization'
+        exact
+        onClick={closeSidebar}
+      />
 
-        <MenuItem
-          name={t('sidebar.organizationProjects')}
-          to='/projects/organization'
-          exact
-          onClick={closeSidebar}
-        />
+      <RequireRole roleName={ROLE.OrganizationAdmin}>
+        <MenuItem content={t('sidebar.users')} to='/users' onClick={closeSidebar} />
+      </RequireRole>
 
+      {hasSelectedOrg && (
         <RequireRole roleName={ROLE.OrganizationAdmin}>
-          <MenuItem name={t('sidebar.users')} to='/users' onClick={closeSidebar} />
-        </RequireRole>
-
-        {hasSelectedOrg && (
-          <RequireRole roleName={ROLE.OrganizationAdmin}>
-            <MenuItem
-              name={t('sidebar.organizationSettings')}
-              to={`/organizations/${currentOrganizationId}/settings`}
-              onClick={closeSidebar}
-            />
-          </RequireRole>
-        )}
-
-        <RequireRole roleName={ROLE.SuperAdmin}>
           <MenuItem
-            name={t('sidebar.adminSettings')}
-            to={`/admin/settings/organizations`}
+            content={t('sidebar.organizationSettings')}
+            to={`/organizations/${currentOrganizationId}/settings`}
             onClick={closeSidebar}
           />
         </RequireRole>
+      )}
 
-        <hr />
-
-        <MenuItem name={t('sidebar.projectDirectory')} to='/directory' onClick={closeSidebar} />
-
-        <hr />
-
+      <RequireRole roleName={ROLE.SuperAdmin}>
         <MenuItem
-          name={t('opensource')}
-          to='/open-source'
-          className='m-t-lg'
-          target='_blank'
+          content={t('sidebar.adminSettings')}
+          to={`/admin/settings/organizations`}
           onClick={closeSidebar}
         />
-      </Menu>
-    );
-  }
-}
+      </RequireRole>
 
-export default compose(withTranslations)(Navigation);
+      <hr />
+
+      <MenuItem content={t('sidebar.projectDirectory')} to='/directory' onClick={closeSidebar} />
+
+      <hr />
+
+      <MenuItem
+        content={t('opensource')}
+        to='/open-source'
+        className='m-t-lg'
+        target='_blank'
+        onClick={closeSidebar}
+      />
+    </Menu>
+  );
+}

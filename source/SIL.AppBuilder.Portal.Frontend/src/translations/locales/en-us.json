@@ -73,7 +73,7 @@
     "emptyNotifications": "You have no notifications."
   },
   "sidebar": {
-    "myTasks": "My Tasks",
+    "myTasks": "My Tasks {count, plural, =0 {} other {({ count })}}",
     "myProjects": "My Projects",
     "organizationProjects": "Organization Projects",
     "users": "Users",
