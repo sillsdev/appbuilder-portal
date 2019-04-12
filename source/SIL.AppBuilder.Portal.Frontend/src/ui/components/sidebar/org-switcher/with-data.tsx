@@ -11,84 +11,73 @@ import _ from 'lodash';
 import { useCurrentOrganization } from '~/data/containers/with-current-organization';
 
 export interface IProvidedDataProps {
-  organizations: OrganizationResource[];
   searchResults: OrganizationResource[];
-  searchByName: (name: string) => void;
+  searchTerm: string;
   selectOrganization: (id: string) => void;
   didTypeInSearch: (e: Event) => void;
+}
+
+interface INeededProps {
   toggle: () => void;
 }
 
-export function withData(WrappedComponent) {
-  return function OrgSwitcherDataWrapper({ toggle, ...otherProps }) {
-    const [searchTerm, setSearchTerm] = useState('');
-    const { dataStore } = useOrbit();
-    const { isSuperAdmin } = useCurrentUser();
+export function useOrgSwitcherData({ toggle }: INeededProps): IProvidedDataProps {
+  const [searchTerm, setSearchTerm] = useState('');
+  const { dataStore } = useOrbit();
+  const { isSuperAdmin } = useCurrentUser();
 
-    const {
-      setCurrentOrganizationId,
-      organizationsAvailableToUser: organizations,
-    } = useCurrentOrganization();
+  const {
+    setCurrentOrganizationId,
+    organizationsAvailableToUser: organizations,
+  } = useCurrentOrganization();
 
-    const [searchResults, setResults] = useState(organizations);
+  const [searchResults, setResults] = useState(organizations);
 
-    const selectOrganization = (id) => () => {
-      setCurrentOrganizationId(id);
-      toggle();
-    };
+  const selectOrganization = (id) => () => {
+    setCurrentOrganizationId(id);
+    toggle();
+  };
 
-    // TODO: clean this up once
-    //       https://github.com/orbitjs/orbit/pull/525
-    //       is merged, where we'll be able to retrieve the query result
-    //       without local filtering. (so we can skip the cache query step)
-    const performSearch = useDebouncedCallback(
-      async () => {
-        const filters = [{ attribute: 'name', value: `like:${searchTerm}` }];
+  // TODO: clean this up once
+  //       https://github.com/orbitjs/orbit/pull/525
+  //       is merged, where we'll be able to retrieve the query result
+  //       without local filtering. (so we can skip the cache query step)
+  const performSearch = useDebouncedCallback(
+    async () => {
+      const filters = [{ attribute: 'name', value: `like:${searchTerm}` }];
 
-        if (!isSuperAdmin) {
-          filters.push({ attribute: 'scope-to-current-user', value: 'isnull:' });
+      if (!isSuperAdmin) {
+        filters.push({ attribute: 'scope-to-current-user', value: 'isnull:' });
+      }
+
+      await dataStore.query((q) => q.findRecords(ORGANIZATION).filter(filters), defaultOptions());
+
+      const records = await dataStore.cache.query((q) => q.findRecords(ORGANIZATION));
+      // TODO: MAY need to do a local filter on organizations that the current user owns
+      const filtered = records.filter((record) => {
+        const { name } = attributesFor(record);
+        if (!name) {
+          return false;
         }
 
-        await dataStore.query((q) => q.findRecords(ORGANIZATION).filter(filters), defaultOptions());
+        return (name as string).toLowerCase().includes(searchTerm.toLowerCase());
+      });
 
-        const records = await dataStore.cache.query((q) => q.findRecords(ORGANIZATION));
-        // TODO: MAY need to do a local filter on organizations that the current user owns
-        const filtered = records.filter((record) => {
-          const { name } = attributesFor(record);
-          if (!name) {
-            return false;
-          }
+      setResults(filtered);
+    },
+    250,
+    [searchTerm]
+  );
 
-          return (name as string).toLowerCase().includes(searchTerm.toLowerCase());
-        });
+  const didTypeInSearch = useCallback(
+    (e) => {
+      const searchTerm = e.target.value;
 
-        setResults(filtered);
-      },
-      250,
-      [searchTerm]
-    );
+      setSearchTerm(searchTerm);
+      performSearch();
+    },
+    [performSearch, searchTerm]
+  );
 
-    const didTypeInSearch = useCallback(
-      (e) => {
-        const searchTerm = e.target.value;
-
-        setSearchTerm(searchTerm);
-        performSearch();
-      },
-      [performSearch, searchTerm]
-    );
-
-    return (
-      <WrappedComponent
-        {...otherProps}
-        {...{
-          searchTerm,
-          searchResults,
-          didTypeInSearch,
-          selectOrganization,
-          organizations,
-        }}
-      />
-    );
-  };
+  return { searchTerm, searchResults, didTypeInSearch, selectOrganization };
 }

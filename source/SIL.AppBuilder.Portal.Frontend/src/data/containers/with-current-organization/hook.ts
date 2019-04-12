@@ -49,11 +49,14 @@ export function useCurrentOrganization() {
     console.debug(`org not found for ${currentOrganizationId}`, e);
   }
 
+  const allOrgsSelected = '' === currentOrganizationId;
+
   return {
     currentUserOrganizations,
     organizationsAvailableToUser,
     currentOrganizationId,
     currentOrganization,
+    allOrgsSelected,
     setCurrentOrganizationId(id, options: { skipNav?: boolean } = {}) {
       dispatch(setCurrentOrganization(id));
 
