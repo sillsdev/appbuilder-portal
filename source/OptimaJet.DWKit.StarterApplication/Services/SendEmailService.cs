@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using I18Next.Net.Plugins;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -38,6 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var fullSubjectId = "notifications.subject." + notification.MessageId;
             var subsDict = notification.MessageSubstitutions as Dictionary<string, object>;
             var subject = await Translator.TranslateAsync(locale, "notifications", fullSubjectId, subsDict);
+            subject = HttpUtility.HtmlDecode(subject);
             var body = await Translator.TranslateAsync(locale, "notifications", fullBodyId, subsDict);
             if (!string.IsNullOrEmpty(notification.LinkUrl))
             {

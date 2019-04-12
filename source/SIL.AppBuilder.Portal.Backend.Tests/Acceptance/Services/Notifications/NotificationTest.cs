@@ -195,10 +195,34 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(3, modifiedNotifications.Count);
             // Verify admin message
-            Assert.Equal("Build for product scriptureAppBuilder project Test Project failed. Status: failure  Review status at build engine http:&#x2F;&#x2F;gtis.guru.com:8443 for details", modifiedNotifications[1].Message);
+            Assert.Equal("Build for product scriptureAppBuilder project Test Project failed. Status: failure  Review status at build engine http://gtis.guru.com:8443 for details", modifiedNotifications[1].Message);
             Assert.Equal("http://gtis.guru.com:8443", modifiedNotifications[1].LinkUrl);
             // Verify user message
             Assert.Equal("Build for product scriptureAppBuilder project Test Project failed. Status: failure The organization administrator has been notified of this issue.", modifiedNotifications[2].Message);
+            Assert.Equal("http://gtis.guru.com:8443", modifiedNotifications[2].LinkUrl);
+        }
+        [Fact]
+        public async Task TestSlashInProjectName()
+        {
+            BuildTestData();
+            var link = "http://gtis.guru.com:8443";
+            var notificationParm = new Dictionary<string, object>()
+            {
+                { "productName", "scriptureAppBuilder"},
+                { "projectName", "Test Project 4/12"},
+                { "buildStatus", "failure"},
+                { "buildEngineUrl", link }
+            };
+
+            var sendNotificationService = _fixture.GetService<SendNotificationService>();
+            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(org1, CurrentUser, "buildFailedOwner", "buildFailedAdmin", notificationParm, link);
+            var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(3, modifiedNotifications.Count);
+            // Verify admin message
+            Assert.Equal("Build for product scriptureAppBuilder project Test Project 4/12 failed. Status: failure  Review status at build engine http://gtis.guru.com:8443 for details", modifiedNotifications[1].Message);
+            Assert.Equal("http://gtis.guru.com:8443", modifiedNotifications[1].LinkUrl);
+            // Verify user message
+            Assert.Equal("Build for product scriptureAppBuilder project Test Project 4/12 failed. Status: failure The organization administrator has been notified of this issue.", modifiedNotifications[2].Message);
             Assert.Equal("http://gtis.guru.com:8443", modifiedNotifications[2].LinkUrl);
         }
 
