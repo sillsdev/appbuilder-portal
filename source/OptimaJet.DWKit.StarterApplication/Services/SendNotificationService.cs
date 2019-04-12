@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using I18Next.Net.Plugins;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +87,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var locale = user.LocaleOrDefault();
             var fullMessageId = "notifications.notification." + messageId;
             var translated = await Translator.TranslateAsync(locale, "notifications", fullMessageId, subs);
+            translated = HttpUtility.HtmlDecode(translated);
             var sendEmail = !user.EmailNotification.HasValue || user.EmailNotification.Value;
             if (forceEmail.HasValue)
             {
