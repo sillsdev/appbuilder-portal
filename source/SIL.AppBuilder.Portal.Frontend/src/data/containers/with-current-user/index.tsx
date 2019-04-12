@@ -12,6 +12,8 @@ import { ICurrentUserProps } from './types';
 import { withFetcher, CurrentUserFetcher } from './fetcher';
 
 import { CurrentUserFetchError } from '~/data/errors/current-user-fetch-error';
+import { canDoEverything } from '../with-role';
+import { useOrbit } from 'react-orbitjs';
 
 export { ICurrentUserProps } from './types';
 
@@ -21,7 +23,13 @@ export const CurrentUserContext = React.createContext<ICurrentUserProps>({
 });
 
 export function useCurrentUser() {
-  return useContext(CurrentUserContext);
+  const { dataStore } = useOrbit();
+  const contextValues = useContext(CurrentUserContext);
+  const { currentUser } = contextValues;
+
+  const isSuperAdmin = currentUser && canDoEverything(dataStore, currentUser);
+
+  return { ...contextValues, isSuperAdmin };
 }
 
 export function Provider({ children }) {

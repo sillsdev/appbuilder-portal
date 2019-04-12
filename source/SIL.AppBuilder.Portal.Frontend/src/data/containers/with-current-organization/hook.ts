@@ -9,11 +9,10 @@ import _ from 'lodash';
 
 import { retrieveRelation } from '../with-relationship';
 import { useCurrentUser } from '../with-current-user';
-import { canDoEverything } from '../with-role';
 
 export function useCurrentOrganization() {
   const { history } = useRouter();
-  const { currentUser } = useCurrentUser();
+  const { currentUser, isSuperAdmin } = useCurrentUser();
   const {
     dataStore,
     subscriptions: { all },
@@ -22,8 +21,6 @@ export function useCurrentOrganization() {
   });
   const [store, dispatch] = useRedux();
   const { currentOrganizationId } = store.data;
-
-  const isSuperAdmin = currentUser && canDoEverything(dataStore, currentUser);
 
   const currentUserOrganizations = retrieveRelation(dataStore, [
     currentUser,

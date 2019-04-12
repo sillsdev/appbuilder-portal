@@ -1,7 +1,5 @@
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
-import { canDoEverything } from '~/data/containers/with-role';
-
 import { useOrbit, pushPayload } from 'react-orbitjs';
 import { useEffect, useState } from 'react';
 
@@ -9,10 +7,8 @@ import { defaultHeaders } from '~/lib/fetch';
 
 export function CacheHydrater() {
   const { dataStore } = useOrbit();
-  const { currentUser } = useCurrentUser();
+  const { isSuperAdmin } = useCurrentUser();
   const [needsSuperAdminData, setNeedsSuperAdminData] = useState();
-
-  const isSuperAdmin = currentUser && canDoEverything(dataStore, currentUser);
 
   useEffect(() => {
     if (isSuperAdmin) {

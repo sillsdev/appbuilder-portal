@@ -6,13 +6,8 @@ import { defaultOptions, attributesFor, buildOptions } from '@data';
 
 import { TYPE_NAME as ORGANIZATION, OrganizationResource } from '@data/models/organization';
 import { useCurrentUser } from '@data/containers/with-current-user';
-import { retrieveRelation } from '@data/containers/with-relationship';
-
-import { canDoEverything } from '~/data/containers/with-role';
 
 import _ from 'lodash';
-
-import { PageLoader } from '../../loaders';
 
 import { useCurrentOrganization } from '~/data/containers/with-current-organization';
 
@@ -29,9 +24,7 @@ export function withData(WrappedComponent) {
   return function OrgSwitcherDataWrapper({ toggle, ...otherProps }) {
     const [searchTerm, setSearchTerm] = useState('');
     const { dataStore } = useOrbit();
-    const { currentUser } = useCurrentUser();
-
-    const isSuperAdmin = canDoEverything(dataStore, currentUser);
+    const { isSuperAdmin } = useCurrentUser();
 
     const {
       setCurrentOrganizationId,
