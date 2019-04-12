@@ -16,7 +16,7 @@ import {
   withLoader,
 } from '@data';
 
-import { withRole } from '@data/containers/with-role';
+import { withRole, canDoEverything } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 import {
   withDataActions,
@@ -115,12 +115,13 @@ export default compose<IProps, INeededProps>(
   // the organizations a user is a member of is not private knowledge,
   // but it doesn't make sense to display roles for organizations the current
   // user doesn't care about / isn't a member of
-  withProps(({ currentUserOrganizations, userOrganizations }) => {
+  withProps(({ currentUserOrganizations, userOrganizations, currentUser, dataStore }) => {
     let organizations = [];
+    const isSuperAdmin = currentUser && canDoEverything(dataStore, currentUser);
 
     if (userOrganizations && userOrganizations.length > 0) {
-      organizations = userOrganizations.filter((org) =>
-        currentUserOrganizations.some((o) => o.id === org.id)
+      organizations = userOrganizations.filter(
+        (org) => isSuperAdmin || currentUserOrganizations.some((o) => o.id === org.id)
       );
     }
 

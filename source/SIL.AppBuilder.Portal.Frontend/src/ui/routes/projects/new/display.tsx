@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Form, Checkbox } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-
 import { useTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
 import { isEmpty } from '@lib/collection';
@@ -12,6 +11,7 @@ import LocaleInput from '@ui/components/inputs/locale-input';
 import { useRouter, useToggle } from '~/lib/hooks';
 
 import { withValue } from '~/lib/dom';
+
 import { idFromRecordIdentity, useOrbit } from 'react-orbitjs/dist';
 
 export default function Display({ currentOrganizationId, currentOrganization, create }) {
