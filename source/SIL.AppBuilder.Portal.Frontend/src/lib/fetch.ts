@@ -59,6 +59,11 @@ export function destroy(url: string, options: any = {}) {
   return authenticatedFetch(url, { method: 'DELETE', ...options });
 }
 
+export async function optimistic(fn: any) {
+  const response = await fn();
+  return await response.json();
+}
+
 export function authenticatedFetch(url: string, options: any) {
   return fetch(url, {
     ...options,

@@ -1,4 +1,5 @@
 import pickBy from 'lodash/pickBy';
+import { withValue as withInputValue } from 'react-state-helpers';
 
 // https://www.w3schools.com/tags/ref_attributes.asp
 export interface IAttributeProps {
@@ -50,7 +51,7 @@ export function filterForValidAttributes(input: object) {
 
 export function preventDefault<T extends Function>(fn: T) {
   return (e: any) => {
-    e.preventDefault();
+    e.preventDefault && e.preventDefault();
 
     fn(e);
   };
@@ -59,3 +60,6 @@ export function preventDefault<T extends Function>(fn: T) {
 export function matchesOrIsChildOf(target: Element, container: Element) {
   return target === container || Array.from(container.children).includes(target);
 }
+
+export const withValue = <TValue>(handler: (value: TValue) => void) =>
+  preventDefault(withInputValue(handler));

@@ -63,14 +63,13 @@ export default class Application extends React.Component<IProps> {
                 <Sockets>
                   <ReduxProvider initialState={initialState || {}}>
                     <Router {...routerProps}>
-                      <>
-                        <CacheHydrater />
+                      <CacheHydrater>
                         <RouteListener />
                         <ScrollToTop>
                           <Component />
                         </ScrollToTop>
                         <DebugInfo />
-                      </>
+                      </CacheHydrater>
                     </Router>
                   </ReduxProvider>
                 </Sockets>

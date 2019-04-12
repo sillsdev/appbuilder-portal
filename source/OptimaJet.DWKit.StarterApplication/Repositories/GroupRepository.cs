@@ -9,6 +9,7 @@ using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 using static OptimaJet.DWKit.StarterApplication.Utility.IEnumerableExtensions;
 using static OptimaJet.DWKit.StarterApplication.Utility.RepositoryExtensions;
+using static OptimaJet.DWKit.StarterApplication.Utility.Extensions.JSONAPI.FilterQueryExtensions;
 
 namespace OptimaJet.DWKit.StarterApplication.Repositories
 {
@@ -37,7 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         public override IQueryable<Group> Filter(IQueryable<Group> entities, FilterQuery filterQuery)
         {
             return entities.OptionallyFilterOnQueryParam(filterQuery,
-                                                      "organization-header",
+                                                      ORGANIZATION_HEADER,
                                                       UserRepository,
                                                       CurrentUserContext,
                                                       GetWithFilter,
@@ -58,11 +59,13 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         private IQueryable<Group> GetWithOrganizationContext(IQueryable<Group> query,
                                                              IEnumerable<int>orgIds )
         {
+            var isSuperAdmin = CurrentUser.HasRole(RoleName.SuperAdmin);
+
             // Get groups owned by the current organization specified if the current user is a 
             // member of that organization
             return query
                 .Where(g => (g.OwnerId == OrganizationContext.OrganizationId)
-                       && (orgIds.Contains(g.OwnerId)));
+                       && (isSuperAdmin || (orgIds.Contains(g.OwnerId))));
         }
 
     }

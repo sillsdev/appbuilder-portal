@@ -4,9 +4,14 @@ import * as toast from '@lib/toast';
 
 import { hasRelationship } from '@data';
 
+import { useTranslations } from '~/lib/i18n';
+
+import { useCurrentUser } from '~/data/containers/with-current-user';
+
 export function withAccessRestriction(WrappedComponent) {
-  return (props) => {
-    const { t, currentUser } = props;
+  return function NewProjectAccessCheck(props) {
+    const { t } = useTranslations();
+    const { currentUser } = useCurrentUser();
 
     const hasGroups = hasRelationship(currentUser, 'groupMemberships');
 

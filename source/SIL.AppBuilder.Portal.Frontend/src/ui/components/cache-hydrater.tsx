@@ -5,10 +5,14 @@ import { useEffect, useState } from 'react';
 
 import { defaultHeaders } from '~/lib/fetch';
 
-export function CacheHydrater() {
+import { PageLoader } from './loaders';
+
+import React from 'react';
+
+export function CacheHydrater({ children }) {
   const { dataStore } = useOrbit();
   const { isSuperAdmin } = useCurrentUser();
-  const [needsSuperAdminData, setNeedsSuperAdminData] = useState();
+  const [needsSuperAdminData, setNeedsSuperAdminData] = useState(false);
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -24,10 +28,19 @@ export function CacheHydrater() {
         });
         const json = await response.json();
 
-        pushPayload(dataStore, json);
+        await pushPayload(dataStore, json);
+        setNeedsSuperAdminData(false);
       })();
     }
   }, [needsSuperAdminData]);
 
-  return null;
+  if (!isSuperAdmin) {
+    return children;
+  }
+
+  if (needsSuperAdminData) {
+    return <PageLoader />;
+  }
+
+  return children;
 }

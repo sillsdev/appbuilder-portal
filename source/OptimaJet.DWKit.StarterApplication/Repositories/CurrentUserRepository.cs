@@ -49,6 +49,7 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                 .Where(user => user.ExternalId.Equals(auth0Id))
                 .Include(user => user.OrganizationMemberships)
                 .Include(user => user.UserRoles)
+                    .ThenInclude(userRole => userRole.Role)
                 .FirstOrDefaultAsync();
 
             try {
