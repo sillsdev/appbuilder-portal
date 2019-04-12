@@ -60,7 +60,7 @@ export function useScopeGroupData({
   const isSelelectionDisabled =
     !isSuperAdmin &&
     (availableGroups.length === 1 || (availableGroups.length === 2 && groupIds.length === 1));
-
+  console.log(isSuperAdmin, availableGroups, groupIds);
   return {
     groups: availableGroups,
     disableSelection: isSelelectionDisabled,

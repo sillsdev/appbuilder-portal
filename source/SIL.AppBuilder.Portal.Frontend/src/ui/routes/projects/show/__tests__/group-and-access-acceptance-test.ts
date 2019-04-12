@@ -153,8 +153,8 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
             owner: { data: { id: 1, type: 'organizations' } },
           },
         },
-        userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 1 }),
-        roles.superAdmin,
+        userRoleFrom(roles.orgAdmin, { id: 1, userId: 1, orgId: 1 }),
+        roles.orgAdmin,
       ],
     });
     setupApplicationTest();

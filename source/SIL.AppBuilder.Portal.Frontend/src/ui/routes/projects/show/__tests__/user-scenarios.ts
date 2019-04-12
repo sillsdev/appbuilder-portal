@@ -62,8 +62,8 @@ export function userInDifferentOrganization(orgId: number) {
         },
       },
       ...groups,
-      userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId }),
-      roles.superAdmin,
+      userRoleFrom(roles.orgAdmin, { id: 1, userId: 1, orgId }),
+      roles.orgAdmin,
     ],
   });
 }
@@ -104,8 +104,8 @@ export function userInSameOrgDifferentGroup(orgId, groupId) {
         },
       },
       ...groups,
-      userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId }),
-      roles.superAdmin,
+      userRoleFrom(roles.orgAdmin, { id: 1, userId: 1, orgId }),
+      roles.orgAdmin,
     ],
   });
 }
@@ -170,8 +170,8 @@ export function userInSameOrgAndGroup(orgId, groupId) {
         },
       },
       ...groups,
-      userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId }),
-      roles.superAdmin,
+      userRoleFrom(roles.orgAdmin, { id: 1, userId: 1, orgId }),
+      roles.orgAdmin,
     ],
   });
 }
