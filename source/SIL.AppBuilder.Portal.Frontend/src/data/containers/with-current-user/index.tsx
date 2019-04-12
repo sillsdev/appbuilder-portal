@@ -7,13 +7,12 @@ import { hasRelationship } from '@data';
 import * as toast from '@lib/toast';
 import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
+import { useOrbit } from 'react-orbitjs';
+
+import { canDoEverything } from '../with-role';
 
 import { ICurrentUserProps } from './types';
-import { withFetcher, CurrentUserFetcher } from './fetcher';
-
-import { CurrentUserFetchError } from '~/data/errors/current-user-fetch-error';
-import { canDoEverything } from '../with-role';
-import { useOrbit } from 'react-orbitjs';
+import { CurrentUserFetcher } from './fetcher';
 
 export { ICurrentUserProps } from './types';
 

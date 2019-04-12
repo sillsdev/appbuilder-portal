@@ -1,8 +1,11 @@
 import React from 'react';
+
 import { useScopeGroupData } from './with-data';
 import Display from './display';
+
 import { useEffect, useCallback } from 'react';
 import { attributesFor } from 'react-orbitjs/dist';
+
 import { OrganizationResource } from '~/data';
 
 interface INeededProps {
@@ -16,7 +19,8 @@ export default function GroupSelect({
   selected,
   scopeToCurrentUser,
   scopeToOrganization,
-  onChange}: INeededProps) {
+  onChange,
+}: INeededProps) {
   const { groups, disableSelection } = useScopeGroupData({
     selected,
     scopeToCurrentUser,

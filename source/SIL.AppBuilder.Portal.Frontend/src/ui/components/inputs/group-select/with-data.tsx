@@ -5,6 +5,7 @@ import { recordsWithIdIn, isRelatedTo } from '@data';
 import { OrganizationResource } from '@data/models/organization';
 import { GroupResource } from '@data/models/group';
 import { retrieveRelation } from '@data/containers/with-relationship';
+
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
 export interface IProvidedProps {

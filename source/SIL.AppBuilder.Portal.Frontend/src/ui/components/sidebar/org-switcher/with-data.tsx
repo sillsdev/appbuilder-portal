@@ -6,7 +6,6 @@ import { defaultOptions, attributesFor, buildOptions } from '@data';
 
 import { TYPE_NAME as ORGANIZATION, OrganizationResource } from '@data/models/organization';
 import { useCurrentUser } from '@data/containers/with-current-user';
-
 import _ from 'lodash';
 
 import { useCurrentOrganization } from '~/data/containers/with-current-organization';
