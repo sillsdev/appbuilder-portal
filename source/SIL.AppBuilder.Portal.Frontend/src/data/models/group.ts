@@ -1,4 +1,5 @@
 import { AttributesObject, ResourceObject } from 'jsonapi-typescript';
+import { Record } from '@orbit/data';
 
 export type GROUPS_TYPE = 'groups';
 export const TYPE_NAME = 'group';
@@ -9,4 +10,4 @@ export interface GroupAttributes extends AttributesObject {
   abbreviation: string;
 }
 
-export type GroupResource = ResourceObject<GROUPS_TYPE, GroupAttributes>;
+export type GroupResource = ResourceObject<GROUPS_TYPE, GroupAttributes> & Record;

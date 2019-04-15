@@ -197,7 +197,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public async Task Get_Project_With_Wrong_Organization()
         {
             BuildTestData();
-            var url = "/api/groups/" + project3.Id.ToString();
+            var url = "/api/projects/" + project3.Id.ToString();
             var response = await Get(url, org1.Id.ToString());
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

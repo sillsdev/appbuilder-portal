@@ -1,24 +1,14 @@
 import * as React from 'react';
 import { memo } from 'react';
 import { Dropdown } from 'semantic-ui-react';
-import { isEmpty, areResourceListsEqual } from '@lib/collection';
+import { isEmpty } from '@lib/collection';
 
-import {
-  attributesFor,
-  OrganizationResource,
-  UserResource,
-  RoleResource,
-  UserRoleResource,
-} from '@data';
+import { OrganizationResource, UserResource, RoleResource } from '@data';
 
-import { ROLE } from '@data/models/role';
 import { i18nProps } from '@lib/i18n';
 import { useToggle } from '@lib/hooks';
-import { RequireRole } from '@ui/components/authorization';
 
-import ActiveRolesDisplay from './active-roles-display';
 import RoleListByOrganization from './role-list-by-organization';
-import RoleSelect from './role-select';
 import DropdownMenu from './dropdown-menu';
 
 export interface IOwnProps {
@@ -36,7 +26,7 @@ export function MultiRoleSelect(props: IProps) {
   const { roles, organizations, user, t, editable } = props;
 
   if (isEmpty(organizations)) {
-    return <>t('errors.orgMembershipRequired')</>;
+    return t('errors.orgMembershipRequired');
   }
 
   const roleList = (

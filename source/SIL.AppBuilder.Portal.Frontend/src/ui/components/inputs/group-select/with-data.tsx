@@ -1,86 +1,68 @@
-import { compose, withProps } from 'recompose';
-import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
+import { useOrbit } from 'react-orbitjs';
 
-import { withLoader, recordsWithIdIn, isRelatedTo } from '@data';
+import { recordsWithIdIn, isRelatedTo } from '@data';
 
 import { OrganizationResource } from '@data/models/organization';
-import { TYPE_NAME as GROUP, GroupResource } from '@data/models/group';
-import { UserResource } from '@data/models/user';
-import { withRelationships } from '@data/containers/with-relationship';
+import { GroupResource } from '@data/models/group';
+import { retrieveRelation } from '@data/containers/with-relationship';
+
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 export interface IProvidedProps {
   groups: GroupResource[];
-  disableSelection: true;
-}
-
-interface IComposedProps {
-  groups: GroupResource[];
-  currentUsersGroups: GroupResource[];
+  disableSelection: boolean;
 }
 
 interface INeededProps {
   scopeToCurrentUser?: boolean;
   scopeToOrganization?: OrganizationResource;
-  currentUser: UserResource;
   selected: Id;
 }
 
-type IProps = INeededProps & IComposedProps & WithDataProps;
+export function useScopeGroupData({
+  selected,
+  scopeToCurrentUser,
+  scopeToOrganization,
+}: INeededProps): IProvidedProps {
+  const { dataStore } = useOrbit();
+  const { currentUser, isSuperAdmin } = useCurrentUser();
 
-export function withData(WrappedComponent) {
-  return compose<IProps, INeededProps>(
-    withOrbit({
-      // all groups available to the current user should
-      // have been fetched with the current-user payload
-      groups: (q) => q.findRecords(GROUP),
-    }),
-    withRelationships((props: INeededProps) => {
-      const { currentUser } = props;
+  const groups = dataStore.cache.query((q) => q.findRecords('group'));
+  const currentUsersGroups = retrieveRelation(dataStore, [
+    currentUser,
+    'groupMemberships',
+    'group',
+  ]);
 
-      return {
-        currentUsersGroups: [currentUser, 'groupMemberships', 'group'],
-      };
-    }),
-    withLoader(({ currentUsersGroups, groups }) => !currentUsersGroups || !groups),
-    withProps((props: INeededProps & IComposedProps) => {
-      const {
-        currentUsersGroups,
-        selected,
-        scopeToCurrentUser,
-        scopeToOrganization,
-        groups,
-      } = props;
+  // TODO: we shouldn't need to filter out fasley things
+  //       so, we should make sure withRelationships is returning good data
+  const groupIds = currentUsersGroups.filter((g) => !!g).map((g) => g.id);
+  const availableGroupIds = [...(selected ? [selected] : []), ...groupIds];
 
-      // TODO: we shouldn't need to filter out fasley things
-      //       so, we should make sure withRelationships is returning good data
-      const groupIds = currentUsersGroups.filter((g) => !!g).map((g) => g.id);
-      const availableGroupIds = [...(selected ? [selected] : []), ...groupIds];
+  let availableGroups: GroupResource[];
 
-      let availableGroups: GroupResource[];
+  if (scopeToCurrentUser && !isSuperAdmin) {
+    availableGroups = recordsWithIdIn(groups, availableGroupIds);
+  } else {
+    availableGroups = groups;
+  }
 
-      if (scopeToCurrentUser) {
-        availableGroups = recordsWithIdIn(groups, availableGroupIds);
-      } else {
-        availableGroups = groups;
+  if (scopeToOrganization) {
+    availableGroups = availableGroups.filter((group) => {
+      if (group.id === selected) {
+        return true;
       }
 
-      if (scopeToOrganization) {
-        availableGroups = availableGroups.filter((group) => {
-          if (group.id === selected) {
-            return true;
-          }
+      return isRelatedTo(group, 'owner', scopeToOrganization.id);
+    });
+  }
 
-          return isRelatedTo(group, 'owner', scopeToOrganization.id);
-        });
-      }
-
-      const isSelelectionDisabled =
-        availableGroups.length === 1 || (availableGroups.length === 2 && groupIds.length === 1);
-
-      return {
-        groups: availableGroups,
-        disableSelection: isSelelectionDisabled,
-      };
-    })
-  )(WrappedComponent);
+  const isSelelectionDisabled =
+    !isSuperAdmin &&
+    (availableGroups.length === 1 || (availableGroups.length === 2 && groupIds.length === 1));
+  console.log(isSuperAdmin, availableGroups, groupIds);
+  return {
+    groups: availableGroups,
+    disableSelection: isSelelectionDisabled,
+  };
 }

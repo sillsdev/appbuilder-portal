@@ -7,11 +7,12 @@ import { hasRelationship } from '@data';
 import * as toast from '@lib/toast';
 import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
+import { useOrbit } from 'react-orbitjs';
+
+import { isUserASuperAdmin } from '../with-role';
 
 import { ICurrentUserProps } from './types';
-import { withFetcher, CurrentUserFetcher } from './fetcher';
-
-import { CurrentUserFetchError } from '~/data/errors/current-user-fetch-error';
+import { CurrentUserFetcher } from './fetcher';
 
 export { ICurrentUserProps } from './types';
 
@@ -21,7 +22,13 @@ export const CurrentUserContext = React.createContext<ICurrentUserProps>({
 });
 
 export function useCurrentUser() {
-  return useContext(CurrentUserContext);
+  const { dataStore } = useOrbit();
+  const contextValues = useContext(CurrentUserContext);
+  const { currentUser } = contextValues;
+
+  const isSuperAdmin = currentUser && isUserASuperAdmin(dataStore, currentUser);
+
+  return { ...contextValues, isSuperAdmin };
 }
 
 export function Provider({ children }) {

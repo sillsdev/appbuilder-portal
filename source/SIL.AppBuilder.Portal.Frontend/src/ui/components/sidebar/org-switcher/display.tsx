@@ -14,8 +14,9 @@ import { IProvidedDataProps } from './with-data';
 import { IProvidedProps as IReduxProps } from './with-redux';
 import Row from './row';
 
+import { useTranslations } from '~/lib/i18n';
+
 export interface IOwnProps {
-  searchByName: (name: string) => void;
   toggle: () => void;
   searchTerm: string;
   allOrgsSelected: boolean;
@@ -33,8 +34,6 @@ export type IProps = IGivenProps &
 
 export default function OrgSwitcherDisplay(props: IProps) {
   const {
-    t,
-    organizations,
     currentOrganizationId,
     allOrgsSelected,
     searchTerm,
@@ -43,8 +42,10 @@ export default function OrgSwitcherDisplay(props: IProps) {
     searchResults,
   } = props;
 
-  const showSearch = organizations.length > 4;
-  const results = uniqBy(searchResults || organizations, (org) => org.id);
+  const { t } = useTranslations();
+
+  const showSearch = searchResults.length > 4;
+  const results = uniqBy(searchResults, (org) => org.id);
   const noResults = !results || results.length === 0;
 
   return (

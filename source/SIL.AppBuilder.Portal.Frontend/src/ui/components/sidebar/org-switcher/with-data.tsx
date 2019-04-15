@@ -1,81 +1,55 @@
-import * as React from 'react';
-import { compose, mapProps } from 'recompose';
-import { WithDataProps } from 'react-orbitjs';
+import { useState, useCallback } from 'react';
+import { useOrbit } from 'react-orbitjs';
+import useDebouncedCallback from 'use-debounce/lib/callback';
 
-import { defaultOptions, withLoader, attributesFor } from '@data';
+import { defaultOptions, attributesFor } from '@data';
 
-import { IProvidedProps as IFilterProps, withFiltering } from '@data/containers/api/with-filtering';
 import { TYPE_NAME as ORGANIZATION, OrganizationResource } from '@data/models/organization';
-import { ICurrentUserProps, withCurrentUserContext } from '@data/containers/with-current-user';
-import { debounce } from '@lib/debounce';
-import { withRelationships } from '@data/containers/with-relationship';
+import { useCurrentUser } from '@data/containers/with-current-user';
 
-import { IGivenProps } from './types';
-
-interface IOwnProps {
-  organizations: OrganizationResource[];
-}
+import { useCurrentOrganization } from '~/data/containers/with-current-organization';
 
 export interface IProvidedDataProps {
-  organizations: OrganizationResource[];
   searchResults: OrganizationResource[];
-  searchByName: (name: string) => void;
+  searchTerm: string;
   selectOrganization: (id: string) => void;
   didTypeInSearch: (e: Event) => void;
+}
+
+interface INeededProps {
   toggle: () => void;
 }
 
-interface IState {
-  searchResults?: OrganizationResource[];
-  searchTerm: string;
-}
+export function useOrgSwitcherData({ toggle }: INeededProps): IProvidedDataProps {
+  const [searchTerm, setSearchTerm] = useState('');
+  const { dataStore } = useOrbit();
+  const { isSuperAdmin } = useCurrentUser();
 
-type IProps = IOwnProps &
-  IFilterProps &
-  ICurrentUserProps &
-  IReduxProps &
-  IGivenProps &
-  WithDataProps;
+  const {
+    setCurrentOrganizationId,
+    organizationsAvailableToUser: organizations,
+  } = useCurrentOrganization();
 
-export function withData(WrappedComponent) {
-  class DataWrapper extends React.Component<IProps, IState> {
-    state = { searchTerm: '' };
+  const [searchResults, setResults] = useState(organizations);
 
-    selectOrganization = (id) => () => {
-      const { setCurrentOrganizationId, toggle } = this.props;
-      setCurrentOrganizationId(id);
-      toggle();
-    };
+  const selectOrganization = (id) => () => {
+    setCurrentOrganizationId(id);
+    toggle();
+  };
 
-    search = debounce(() => {
-      const { searchTerm } = this.state;
+  // TODO: clean this up once
+  //       https://github.com/orbitjs/orbit/pull/525
+  //       is merged, where we'll be able to retrieve the query result
+  //       without local filtering. (so we can skip the cache query step)
+  const performSearch = useDebouncedCallback(
+    async () => {
+      const filters = [{ attribute: 'name', value: `like:${searchTerm}` }];
 
-      this.performSearch(searchTerm);
-    }, 250);
+      if (!isSuperAdmin) {
+        filters.push({ attribute: 'scope-to-current-user', value: 'isnull:' });
+      }
 
-    didTypeInSearch = (e) => {
-      const searchTerm = e.target.value;
-
-      this.setState({ searchTerm }, this.search);
-    };
-
-    // TODO: clean this up once
-    //       https://github.com/orbitjs/orbit/pull/525
-    //       is merged, where we'll be able to retrieve the query result
-    //       without local filtering. (so we can skip the cache query step)
-    performSearch = async (searchTerm: string) => {
-      const { dataStore } = this.props;
-
-      await dataStore.query(
-        (q) =>
-          q
-            .findRecords(ORGANIZATION)
-            .filter(
-              { attribute: 'name', value: `like:${searchTerm}` },
-              { attribute: 'scope-to-current-user', value: 'isnull:' }
-            ),
-        defaultOptions()
-      );
+      await dataStore.query((q) => q.findRecords(ORGANIZATION).filter(filters), defaultOptions());
 
       const records = await dataStore.cache.query((q) => q.findRecords(ORGANIZATION));
       // TODO: MAY need to do a local filter on organizations that the current user owns
@@ -88,46 +62,21 @@ export function withData(WrappedComponent) {
         return (name as string).toLowerCase().includes(searchTerm.toLowerCase());
       });
 
-      this.setState({ searchResults: filtered });
-    };
+      setResults(filtered);
+    },
+    250,
+    [searchTerm]
+  );
 
-    render() {
-      const { searchTerm, searchResults } = this.state;
+  const didTypeInSearch = useCallback(
+    (e) => {
+      const searchTerm = e.target.value;
 
-      const extraDataProps = {
-        searchTerm,
-        searchResults,
-        didTypeInSearch: this.didTypeInSearch,
-        selectOrganization: this.selectOrganization,
-      };
+      setSearchTerm(searchTerm);
+      performSearch();
+    },
+    [performSearch, searchTerm]
+  );
 
-      return <WrappedComponent {...this.props} {...extraDataProps} />;
-    }
-  }
-
-  return compose(
-    withFiltering({
-      requiredFilters: [{ attribute: 'scope-to-current-user', value: 'isnull:' }],
-    }),
-    withCurrentUserContext,
-    withRelationships((props: ICurrentUserProps) => {
-      const { currentUser } = props;
-
-      return {
-        organizations: [currentUser, 'organizationMemberships', 'organization'],
-      };
-    }),
-    // if something doesn't have attributes, it hasn't been fetched from the remote
-    mapProps((props: IProps) => {
-      const organizations = props.organizations
-        ? props.organizations.filter((o) => o.attributes)
-        : [];
-
-      return {
-        ...props,
-        organizations,
-      };
-    }),
-    withLoader(({ organizations }) => !organizations)
-  )(DataWrapper);
+  return { searchTerm, searchResults, didTypeInSearch, selectOrganization };
 }

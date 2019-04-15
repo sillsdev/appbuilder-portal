@@ -107,8 +107,8 @@ export function userInTwoOrganizationsButOnlyOneGroup() {
         },
       },
       ...groups,
-      userRoleFrom(roles.superAdmin, { id: 1, userId: 1, orgId: 2 }),
-      roles.superAdmin,
+      userRoleFrom(roles.orgAdmin, { id: 1, userId: 1, orgId: 2 }),
+      roles.orgAdmin,
       ...organizations,
     ],
   });
