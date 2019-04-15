@@ -117,9 +117,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
 
             if (response.StatusCode == HttpStatusCode.InternalServerError) {
                 var body = await response.Content.ReadAsStringAsync();
-                Console.Write(body);
 
-                throw new Exception("500 errors must not exist");
+                throw new Exception("500 errors must not exist\n\n" + body);
             }
 
             return response;

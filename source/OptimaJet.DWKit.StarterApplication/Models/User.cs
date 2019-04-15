@@ -74,8 +74,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public bool HasRole(RoleName role) {
             var userRole = this
                 .UserRoles
-                .Where(r => r.RoleName == role)
-                .FirstOrDefault();
+                ?.Where(r => r.RoleName == role)
+                ?.FirstOrDefault();
 
             return userRole != null;
         }
