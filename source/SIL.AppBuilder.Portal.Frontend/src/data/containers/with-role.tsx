@@ -105,7 +105,7 @@ export function withRole<TWrappedProps extends {}>(
         const organization = evalWithProps(forOrganization, this.props) || currentOrganization;
         const anyOrganization = forAnyOrganization ? forAnyOrganization(this.props as any) : null;
 
-        const resultOfSuperAdmin = canDoEverything(dataStore, currentUser);
+        const resultOfSuperAdmin = isUserASuperAdmin(dataStore, currentUser);
 
         if (resultOfSuperAdmin) {
           return true;
@@ -205,8 +205,8 @@ export function withRole<TWrappedProps extends {}>(
   };
 }
 
-export function canDoEverything(dataStore: Store, currentUser: UserResource) {
-  const userRoles = dataStore.cache.query((q) => q.findRelatedRecords(currentUser, 'userRoles'));
+export function isUserASuperAdmin(dataStore: Store, user: UserResource) {
+  const userRoles = dataStore.cache.query((q) => q.findRelatedRecords(user, 'userRoles'));
 
   const result = isSuperAdmin(dataStore, userRoles);
 
