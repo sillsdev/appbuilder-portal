@@ -9,7 +9,7 @@ import PageLoader from '@ui/components/loaders/page';
 import PageError from '@ui/components/errors/page';
 import { useOrbit } from 'react-orbitjs';
 
-import { canDoEverything } from '../with-role';
+import { isUserASuperAdmin } from '../with-role';
 
 import { ICurrentUserProps } from './types';
 import { CurrentUserFetcher } from './fetcher';
@@ -26,7 +26,7 @@ export function useCurrentUser() {
   const contextValues = useContext(CurrentUserContext);
   const { currentUser } = contextValues;
 
-  const isSuperAdmin = currentUser && canDoEverything(dataStore, currentUser);
+  const isSuperAdmin = currentUser && isUserASuperAdmin(dataStore, currentUser);
 
   return { ...contextValues, isSuperAdmin };
 }

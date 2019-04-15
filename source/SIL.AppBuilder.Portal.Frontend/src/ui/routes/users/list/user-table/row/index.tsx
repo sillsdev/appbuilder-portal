@@ -16,7 +16,7 @@ import {
   withLoader,
 } from '@data';
 
-import { withRole, canDoEverything } from '@data/containers/with-role';
+import { withRole, isUserASuperAdmin } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 import {
   withDataActions,
@@ -117,7 +117,7 @@ export default compose<IProps, INeededProps>(
   // user doesn't care about / isn't a member of
   withProps(({ currentUserOrganizations, userOrganizations, currentUser, dataStore }) => {
     let organizations = [];
-    const isSuperAdmin = currentUser && canDoEverything(dataStore, currentUser);
+    const isSuperAdmin = currentUser && isUserASuperAdmin(dataStore, currentUser);
 
     if (userOrganizations && userOrganizations.length > 0) {
       organizations = userOrganizations.filter(
