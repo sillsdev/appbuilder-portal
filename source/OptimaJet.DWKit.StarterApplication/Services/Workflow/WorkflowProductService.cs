@@ -20,6 +20,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowProductService
     {
+        public enum TransitionType
+        {
+            Continuation = 0,
+            Rejection = 1,
+            Other = 2
+        }
         public class ProductActivityChangedArgs
         {
             public Guid ProcessId { get; set; }
@@ -28,6 +34,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             public string CurrentState { get; set; }
             public string PreviousState { get; set; }
             public string ExecutingCommand { get; set; }
+            public TransitionType TransitionType { get; set; }
         };
 
         public class ProductProcessChangedArgs
@@ -165,7 +172,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     return;
                 }
 
-                await ReassignUserTasksForProduct(product);
+                var comment = await ReassignUserTasksForProduct(product);
+                if (args.TransitionType == TransitionType.Rejection)
+                {
+                    BackgroundJobClient.Enqueue<SendEmailService>(service => service.SendRejectEmail(product.Id, args, comment));
+                }
                 if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
                 {
                     BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ClearComment(product.Id));
@@ -174,7 +185,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         }
 
-        public async Task ReassignUserTasksForProduct(Product product)
+        public async Task<string> ReassignUserTasksForProduct(Product product)
         {
             await ClearPreExecuteEntries(product.Id);
 
@@ -210,6 +221,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
 
             await CreatePreExecuteEntries(product.Id);
+            return comment;
         }
 
         public void StartProductWorkflow(Guid productId, int workflowDefinitionId)

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
 using SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios;
 using Xunit;
@@ -64,7 +65,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             user2 = AddEntity<AppDbContext, User>(new User
             {
                 ExternalId = "test-auth0-id2",
-                Email = "test-email1@test.test",
+                Email = "test-email2@test.test",
                 Name = "Test Testenson2",
                 GivenName = "Test1",
                 FamilyName = "Testenson2",
@@ -102,7 +103,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             {
                 UserId = user1.Id,
                 OrganizationId = org1.Id,
-                RoleId = roleOA.Id
+                RoleId = roleAB.Id
             });
             ur3 = AddEntity<AppDbContext, UserRole>(new UserRole
             {
@@ -113,7 +114,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             ur4 = AddEntity<AppDbContext, UserRole>(new UserRole
             {
                 UserId = user2.Id,
-                OrganizationId = org2.Id,
+                OrganizationId = org1.Id,
                 RoleId = roleOA.Id
             });
 
@@ -233,7 +234,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             var email = emails[0];
             Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
             Assert.Equal("Notification.txt", email.ContentTemplate);
-            Assert.Equal("{\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\",\"BuildEngineUrlText\":\"\",\"LinkUrl\":null}", email.ContentModelJson);
+            Assert.Equal("{\"BuildEngineUrlText\":\"\",\"LinkUrl\":null,\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\"}", email.ContentModelJson);
         }
         [Fact]
         public async Task Send_EmailAsyncWithLink()
@@ -265,7 +266,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             var email = emails[0];
             Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
             Assert.Equal("NotificationWithLink.txt", email.ContentTemplate);
-            Assert.Equal("{\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\",\"BuildEngineUrlText\":\"notifications.body.buildEngineUrl\",\"LinkUrl\":\"https://buildengine.gtis.guru:8443\"}", email.ContentModelJson);
+            Assert.Equal("{\"BuildEngineUrlText\":\"notifications.body.buildEngineUrl\",\"LinkUrl\":\"https://buildengine.gtis.guru:8443\",\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\"}", email.ContentModelJson);
         }
         [Fact]
         public void SendProductReviewEmail()
@@ -277,10 +278,30 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             sendEmailService.SendProductReviewEmail(product1.Id, parmsDict);
             var emails = ReadTestData<AppDbContext, Email>();
             Assert.Equal(2, emails.Count);
-            var expectedContent = "{\"Message\":\"<p>Please review TestProd1 for project Test Project1.</p><p>The links below will connect you with the product files to be reviewed:</p>\",\"Links\":\"<p><a href = http://www.test.com/testfile.apk>apk</a></p><p><a href = http://www.test.com/listing.txt>play-listing</a></p>\"}";
+            var expectedContent = "{\"Links\":\"<p><a href = http://www.test.com/testfile.apk>apk</a></p><p><a href = http://www.test.com/listing.txt>play-listing</a></p>\",\"Message\":\"<p>Please review TestProd1 for project Test Project1.</p><p>The links below will connect you with the product files to be reviewed:</p>\"}";
             Assert.Equal(expectedContent, emails[0].ContentModelJson);
             Assert.Equal("ReviewProduct.txt", emails[0].ContentTemplate);
             Assert.Equal("Scriptoria: TestProd1 Test Project1 Ready for Review", emails[0].Subject);
+        }
+        [Fact]
+        public void SendRejectEmail()
+        {
+            BuildTestData();
+            var sendEmailService = _fixture.GetService<SendEmailService>();
+            var args = new WorkflowProductService.ProductActivityChangedArgs
+            {
+                PreviousState = "Verify And Publish",
+                CurrentState = "Synchronize Data"
+            };
+            var comment = "This was rejected because this is a test";
+            sendEmailService.SendRejectEmail(product1.Id, args, comment);
+            var emails = ReadTestData<AppDbContext, Email>();
+            Assert.Equal(2, emails.Count);
+            Assert.Equal("{\"Message\":\"<p>The organization administrator has returned Test Project1 to state Synchronize Data from state Verify And Publish with the following comment:<br><br>This was rejected because this is a test</p>\"}", emails[0].ContentModelJson);
+            Assert.Equal("Scriptoria: Test Project1 TestProd1 Returned", emails[0].Subject);
+            Assert.Equal("test-email2@test.test", emails[0].To);
+            Assert.Equal("test-email1@test.test", emails[1].To);
+
         }
     }
 }

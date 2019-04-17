@@ -8,7 +8,6 @@ using OptimaJet.DWKit.StarterApplication.Repositories;
 using System.Threading.Tasks;
 using Hangfire.Server;
 using System.Collections.Generic;
-using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -122,7 +121,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             return !String.IsNullOrEmpty(project.WorkflowProjectUrl);
         }
-
         protected async Task CreateBuildEngineProductAsync(Product product, PerformContext context)
         {
             var buildEngineJob = new BuildEngineJob

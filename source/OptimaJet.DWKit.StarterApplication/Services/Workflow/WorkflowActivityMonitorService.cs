@@ -12,6 +12,7 @@ using Hangfire;
 using System.Collections.Generic;
 using OptimaJet.DWKit.Core.Metadata.DbObjects;
 using OptimaJet.DWKit.Core;
+using OptimaJet.Workflow.Core.Model;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
@@ -54,6 +55,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
 
             Log.Information($":::::::::: ActivityChanged: pid={args.ProcessId.ToString()}, scheme={args.SchemeCode}, activity={args.CurrentActivityName}, state={args.CurrentState}, last={args.PreviousState}");
+            WorkflowProductService.TransitionType transitionType;
+            switch (args.ExecutedTransition.Classifier)
+            {
+                case TransitionClassifier.Direct:
+                    transitionType = WorkflowProductService.TransitionType.Continuation;
+                    break;
+                case TransitionClassifier.Reverse:
+                    transitionType = WorkflowProductService.TransitionType.Rejection;
+                    break;
+                default:
+                    transitionType = WorkflowProductService.TransitionType.Other;
+                    break;
+            }
             var serviceArgs = new WorkflowProductService.ProductActivityChangedArgs
             {
                 ProcessId = args.ProcessId,
@@ -61,7 +75,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 PreviousActivityName = args.PreviousActivityName,
                 CurrentState = args.CurrentState,
                 PreviousState = args.PreviousState,
-                ExecutingCommand = args.ProcessInstance.CurrentCommand
+                ExecutingCommand = args.ProcessInstance.CurrentCommand,
+                TransitionType = transitionType
             };
 
             BackgroundJob.Enqueue<WorkflowProductService>(service => service.ProductActivityChanged(serviceArgs));
