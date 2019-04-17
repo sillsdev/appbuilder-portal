@@ -32,7 +32,8 @@
       "releaseFailedOwner": "<p>Release for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{releaseStatus}} </p><p> The organization administrator has been notified of this issue</p>",
       "releaseFailedAdmin": "<p>Release for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{releaseStatus}} </p>",
       "releaseProductRecordNotFound": "<p>Release Failed: Unable to find product record with id: {{productId}}</p>",
-      "reviewProduct": "<p>Please review {{productName}} for project {{projectName}}.</p><p>The links below will connect you with the product files to be reviewed:</p>"
+      "reviewProduct": "<p>Please review {{productName}} for project {{projectName}}.</p><p>The links below will connect you with the product files to be reviewed:</p>",
+      "rejectionEmail":  "<p>The organization administrator has returned {{projectName}} to state {{newState}} from state {{previousState}} with the following comment:<br><br>{{comment}}</p>"
     },
     "subject": {
       "userTaskAdded": "Scriptoria: {{activity}} Assigned For {{productName}} - {{project}}",
@@ -65,7 +66,8 @@
       "releaseFailedOwner": "Scriptoria: Release {{projectName}} {{productName}} Failed",
       "releaseFailedAdmin": "Scriptoria: Release {{projectName}} {{productName}} Failed",
       "releaseProductRecordNotFound": "Scriptoria: Release Failed: Product {{productId}}",
-      "reviewProduct": "Scriptoria: {{productName}} {{projectName}} Ready for Review"
+      "reviewProduct": "Scriptoria: {{productName}} {{projectName}} Ready for Review",
+      "rejectionEmail":  "Scriptoria: {{projectName}} {{productName}} Returned"
     },
     "notification":  {
       "userTaskAdded": "Task {{activityName}} assigned for {{productName}} - {{project}}.",
