@@ -112,13 +112,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             int sendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MIN_MINUTES", 60);
             int dontSendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MAX_MINUTES", 180);
             var now = DateTime.UtcNow;
-            Log.Information($"NotificationsEmailMonitor: Min={sendNotificationEmailMinutes}, Max={dontSendNotificationEmailMinutes}, Now={now.ToString()}");
+            var oldestCreationDateToSend = now.AddMinutes(-dontSendNotificationEmailMinutes);
+            var latestCreationDateToSend = now.AddMinutes(-sendNotificationEmailMinutes);
+            Log.Information($"NotificationsEmailMonitor: Latest={latestCreationDateToSend.ToString()}, Earliest={oldestCreationDateToSend.ToString()}, Now={now.ToString()}");
             var notifications = NotificationRepository.Get()
                                                     .Where(n => n.DateEmailSent == null
                                                            && n.DateRead == null
                                                            && n.SendEmail == true
-                                                           && now.Subtract((DateTime)n.DateCreated).TotalMinutes > sendNotificationEmailMinutes
-                                                           && now.Subtract((DateTime)n.DateCreated).TotalMinutes < dontSendNotificationEmailMinutes
+                                                           && n.DateCreated < latestCreationDateToSend
+                                                           && n.DateCreated > oldestCreationDateToSend
                                                           )
                                                     .Include(n => n.User)
                                                     .ToList();
