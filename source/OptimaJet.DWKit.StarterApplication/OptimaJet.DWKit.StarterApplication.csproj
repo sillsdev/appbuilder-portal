@@ -21,6 +21,10 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Project</StartAction>
+    <EnvironmentVariables>
+      <Variable name="ASPNETCORE_ENVIRONMENT" value="Development" />
+      <Variable name="ASPNETCORE_ENVIRONMENT" value="Development" />
+    </EnvironmentVariables>
     <LaunchBrowser>false</LaunchBrowser>
     <ApplicationURL>http://localhost:5000</ApplicationURL>
   </PropertyGroup>
@@ -75,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="wwwroot\js\login.js" />
+    <None Remove="out\af\Humanizer.resources.dll" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
@@ -97,5 +102,19 @@
     <Folder Include="Utility\Extensions\EntityFramework\" />
     <Folder Include="EventDispatcher\" />
     <Folder Include="EventDispatcher\EnitityEventHandler\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Metadata\Forms\SIL_AppBuilders_App_Store_Review-code.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Metadata\Forms\SIL_AppBuilders_Create_App_Entry-code.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Metadata\Forms\SIL_AppBuilders_Verify_And_Publish-code.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Metadata\Forms\top-code.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
