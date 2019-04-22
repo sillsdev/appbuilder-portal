@@ -1,13 +1,16 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { OrganizationResource, ProductDefinitionResource, ProjectResource } from '@data';
 
 import { i18nProps } from '@lib/i18n';
-import { attributesFor } from 'react-orbitjs/dist';
+import { attributesFor, pushPayload, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
+import { get as authenticatedGet } from '@lib/fetch';
 
 import ProductDefinitionMultiSelect from './multi-select';
+
+import { useConditionalPoll } from '~/lib/hooks';
 
 interface IProps {
   toggleModal: () => void;
@@ -18,8 +21,37 @@ interface IProps {
   onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
 }
 
-export default (props: IProps & i18nProps) => {
+export default function ProductSelector(props: IProps & i18nProps) {
+  const { dataStore } = useOrbit();
   const { t, toggleModal, isModalOpen, organization, selected, project, onChangeSelection } = props;
+  const { workflowProjectUrl } = attributesFor(project);
+
+  // there is a race condition where the page loads after
+  // the backend has already sent the updated payload.
+  // this happens because the repository location URL
+  // is added async, and not part of the request.
+  const pollCallback = useCallback(async () => {
+    console.log('passed in', project);
+    if (workflowProjectUrl) {
+      return true;
+    }
+
+    try {
+      const url = `projects/${idFromRecordIdentity(dataStore, project)}`;
+      const response = await authenticatedGet(`/api/${url}`);
+      const json = await response.json();
+
+      await pushPayload(dataStore, json);
+
+      const fromCache = dataStore.cache.query((q) => q.findRecord(project));
+
+      return fromCache;
+    } catch (e) {
+      return false;
+    }
+  }, [dataStore, project, workflowProjectUrl]);
+
+  const { isFinished: hasUrl } = useConditionalPoll(pollCallback, 3000);
 
   const trigger = (
     <button
@@ -27,7 +59,7 @@ export default (props: IProps & i18nProps) => {
       className='ui button fs-13 bold uppercase
       round-border-4 dark-blue-text
       thin-inverted-border bg-transparent'
-      disabled={!attributesFor(project).workflowProjectUrl}
+      disabled={!workflowProjectUrl && !hasUrl}
       onClick={toggleModal}
     >
       {t('project.products.addRemove')}
@@ -65,4 +97,4 @@ export default (props: IProps & i18nProps) => {
       </Modal.Actions>
     </Modal>
   );
-};
+}

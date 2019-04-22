@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React from 'react';
 import { match as Match } from 'react-router';
 import { Tab, Menu } from 'semantic-ui-react';
-import { idFromRecordIdentity, useOrbit } from 'react-orbitjs';
+import { idFromRecordIdentity, useOrbit, pushPayload, attributesFor } from 'react-orbitjs';
 
 import { ProjectResource } from '@data';
 
@@ -9,6 +9,7 @@ import { useCurrentUser } from '@data/containers/with-current-user';
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import { useTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
+import { get as authenticatedGet } from '@lib/fetch';
 
 import Overview from './overview';
 import Header from './header';
@@ -38,7 +39,8 @@ export default function ProjectShowDisplay({ project }: IProps) {
   const { dataStore } = useOrbit();
   const { currentUser } = useCurrentUser();
   const { updateOwner, toggleArchiveProject } = useDataActions(project);
-  useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
+  const url = `projects/${idFromRecordIdentity(dataStore, project)}`;
+  useLiveData(url);
 
   const claimOwnership = async () => {
     try {

@@ -12,6 +12,8 @@ import ProductItem from './item';
 import './styles.scss';
 import { useLiveData } from '~/data/live';
 
+import { useConditionalPoll } from '~/lib/hooks';
+
 interface IProps {
   project: ProjectResource;
   isEmptyWorkflowProjectUrl: boolean;
@@ -38,6 +40,12 @@ export default function Products({ project }: IProps) {
   useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
   useLiveData(`products`);
   useLiveData(`user-tasks`);
+
+  // useConditionalPoll(async () => {
+  //   const result = await dataStore.cache.query((q) => q.findRelatedRecords(project, 'products'));
+
+  //   return ( result || [] ).length > 0;
+  // }, 3000);
 
   let productList;
 
