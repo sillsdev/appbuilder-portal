@@ -187,9 +187,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         public async Task<string> ReassignUserTasksForProduct(Product product)
         {
-            await ClearPreExecuteEntries(product.Id);
-
             var instance = await ProductWorkflowRepository.GetAsync(product.Id);
+            if (instance == null)
+            {
+                // No current running workflow for product.
+                return null;
+            }
+
+            await ClearPreExecuteEntries(product.Id);
 
             var comment = GetCurrentTaskComment(product);
 
