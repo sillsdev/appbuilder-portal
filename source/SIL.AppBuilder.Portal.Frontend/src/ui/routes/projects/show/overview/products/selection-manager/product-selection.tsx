@@ -31,7 +31,6 @@ export default function ProductSelector(props: IProps & i18nProps) {
   // this happens because the repository location URL
   // is added async, and not part of the request.
   const pollCallback = useCallback(async () => {
-    console.log('passed in', project);
     if (workflowProjectUrl) {
       return true;
     }

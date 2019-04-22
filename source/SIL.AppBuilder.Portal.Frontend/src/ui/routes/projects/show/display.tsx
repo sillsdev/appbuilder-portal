@@ -9,7 +9,6 @@ import { useCurrentUser } from '@data/containers/with-current-user';
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import { useTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
-import { get as authenticatedGet } from '@lib/fetch';
 
 import Overview from './overview';
 import Header from './header';
