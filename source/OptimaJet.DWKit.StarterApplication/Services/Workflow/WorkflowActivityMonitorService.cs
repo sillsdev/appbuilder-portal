@@ -55,18 +55,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
 
             Log.Information($":::::::::: ActivityChanged: pid={args.ProcessId.ToString()}, scheme={args.SchemeCode}, activity={args.CurrentActivityName}, state={args.CurrentState}, last={args.PreviousState}");
-            WorkflowProductService.TransitionType transitionType;
-            switch (args.ExecutedTransition.Classifier)
+            WorkflowProductService.TransitionType transitionType = WorkflowProductService.TransitionType.Other;
+            if (args.ExecutedTransition != null)
             {
-                case TransitionClassifier.Direct:
-                    transitionType = WorkflowProductService.TransitionType.Continuation;
-                    break;
-                case TransitionClassifier.Reverse:
-                    transitionType = WorkflowProductService.TransitionType.Rejection;
-                    break;
-                default:
-                    transitionType = WorkflowProductService.TransitionType.Other;
-                    break;
+                switch (args.ExecutedTransition.Classifier)
+                {
+                    case TransitionClassifier.Direct:
+                        transitionType = WorkflowProductService.TransitionType.Continuation;
+                        break;
+                    case TransitionClassifier.Reverse:
+                        transitionType = WorkflowProductService.TransitionType.Rejection;
+                        break;
+                    default:
+                        transitionType = WorkflowProductService.TransitionType.Other;
+                        break;
+                }
             }
             var serviceArgs = new WorkflowProductService.ProductActivityChangedArgs
             {
