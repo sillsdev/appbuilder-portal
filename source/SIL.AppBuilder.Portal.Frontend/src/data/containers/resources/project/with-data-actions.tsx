@@ -59,7 +59,7 @@ export function useDataActions(project) {
 
   const updateGroup = (group: GroupResource | string) => {
     if (typeof group === 'string') {
-      group = dataStore.cache.query((q) => buildFindRecord(q, 'group', group));
+      group = dataStore.cache.query((q) => q.findRecord({ type: 'group', id: group }));
     }
 
     return dataStore.update(
