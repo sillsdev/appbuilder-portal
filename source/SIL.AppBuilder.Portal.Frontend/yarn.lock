@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@aspnet/signalr@^1.0.4", "@aspnet/signalr@~1.1.0":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@aspnet/signalr/-/signalr-1.1.2.tgz#eb9cbc758ff5bfe9a2aba6669e05dfc25a6d783d"
-  integrity sha512-Xu2ndFTWYhyE+TOCK3LkPWGmc5xGLezBKgGEchyOA++alJ6fdWJ8P/Wsb4Mmd1buzcxGLlIyjpLfUP20rrCHIg==
+"@aspnet/signalr@^1.1.4", "@aspnet/signalr@~1.1.2":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@aspnet/signalr/-/signalr-1.1.4.tgz#417cf808f4074a8aec45d27f03c4b8df9d96bb0b"
+  integrity sha512-Jp9nPc8hmmhbG9OKiHe2fOKskBHfg+3Y9foSKHxjgGtyI743hXjGFv3uFlUg503K9f8Ilu63gQt3fDkLICBRyg==
   dependencies:
     eventsource "^1.0.7"
     request "^2.88.0"
@@ -1232,12 +1232,13 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@ssv/signalr-client@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@ssv/signalr-client/-/signalr-client-1.0.1.tgz#f8e61618ca40b595ca54e14b6ae4b012ec022410"
-  integrity sha512-729coYRmcjn7YGFhjgGkHxuWr5G7MhyM7yl5Dr7Zud7mK1dXV+Ml1SnrHmBaFxA7WuFgnIU0XOf+ZS1ljsEasQ==
+"@ssv/signalr-client@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@ssv/signalr-client/-/signalr-client-1.1.0.tgz#95c174e1382edfc446f475f8c7a40d5760ce6675"
+  integrity sha512-d7x8nlplVGCdVAcwsQtYOMYPHWG1Pz3DZJsRGgxTqG87DJwscHx5/OGjsF7ICLG/DXrluW3In/6eJb8rlof5kw==
   dependencies:
-    "@aspnet/signalr" "~1.1.0"
+    "@aspnet/signalr" "~1.1.2"
+    tslib "^1.9.0"
 
 "@types/anymatch@*":
   version "1.3.1"

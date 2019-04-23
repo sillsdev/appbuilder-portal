@@ -34,11 +34,11 @@ const DataContext = React.createContext<ILiveDataContext>({
 export function useLiveData(subscribeTo?: string) {
   const dataCtx = useContext<ILiveDataContext>(DataContext);
   const {
-    socket: { connection },
+    socket: { hub },
     isConnected,
   } = dataCtx;
 
-  const { isSubscribed } = useSubscribeToResource(connection, subscribeTo, isConnected);
+  const { isSubscribed } = useSubscribeToResource(hub, subscribeTo, isConnected);
 
   const pushData = useCallback(
     (transforms: TransformOrOperations) => {
@@ -46,9 +46,9 @@ export function useLiveData(subscribeTo?: string) {
         console.debug('testing early return: figure out how to test websocket communication');
         return;
       }
-      if (!isConnected) {
-        throw new Error('Not connected to socket');
-      }
+      // if (!isConnected) {
+      //   throw new Error('Not connected to socket');
+      // }
 
       return dataCtx.pushData(transforms);
     },
@@ -81,7 +81,11 @@ export function LiveDataProvider({ children }) {
   );
 }
 
-function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo, isConnected) {
+function useSubscribeToResource(
+  hub: HubConnection<DataHub>,
+  subscribeTo: string,
+  isConnected: boolean
+) {
   const subscription = useRef<Subscription>();
   const [isSubscribed, setIsSubscribed] = useState();
 
@@ -91,7 +95,7 @@ function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo,
     }
 
     if (!isSubscribed && !subscription.current) {
-      subscription.current = connection.send('SubscribeTo', subscribeTo).subscribe(
+      subscription.current = hub.send('SubscribeTo', subscribeTo).subscribe(
         () => {
           setIsSubscribed(true);
         },
@@ -107,9 +111,10 @@ function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo,
       }
 
       if (!isConnected) return;
-      if (connection.hubConnection.state !== ConnectionStatus.connected) return;
+      // if (hub.hubConnection.state !== ConnectionStatus.connected) return;
 
-      connection.send('UnsubscribeFrom', subscribeTo);
+      console.log('unsubscribing from ', subscribeTo);
+      hub.send('UnsubscribeFrom', subscribeTo);
     };
   }, [subscribeTo, isConnected]);
 

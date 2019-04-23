@@ -24,7 +24,7 @@
     "typecheck": "yarn tsc --noEmit"
   },
   "dependencies": {
-    "@aspnet/signalr": "^1.0.4",
+    "@aspnet/signalr": "^1.1.4",
     "@material-ui/core": "^3.1.0",
     "@material-ui/icons": "^3.0.1",
     "@orbit/coordinator": "^0.15.14",
@@ -35,7 +35,7 @@
     "@orbit/jsonapi": "^0.15.15",
     "@orbit/local-storage-bucket": "^0.15.14",
     "@orbit/store": "^0.15.14",
-    "@ssv/signalr-client": "^1.0.0",
+    "@ssv/signalr-client": "^1.1.0",
     "auth0-js": "^9.6.1",
     "auth0-lock": "^11.7.2",
     "i18next": "^15.0.0",

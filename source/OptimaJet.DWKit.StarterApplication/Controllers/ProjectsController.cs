@@ -49,7 +49,6 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 AccessKeyId = token.AccessKeyId,
                 Expiration = token.Expiration,
                 Url = project.WorkflowProjectUrl,
-                Region = token.Region
             };
             return Ok(projectToken);
         }

@@ -3,6 +3,7 @@ import { HubConnectionFactory, HubConnection } from '@ssv/signalr-client';
 import { LogLevel, HttpTransportType } from '@aspnet/signalr';
 import Store from '@orbit/store';
 import { getToken } from '@lib/auth0';
+import { Observable } from 'rxjs';
 
 export interface SocketClient {
   start(): void;
@@ -18,9 +19,9 @@ export interface ISocketOptions {
 export class Socket<THub> {
   hubFactory: HubConnectionFactory;
   hubName: string;
-  connection: HubConnection<THub>;
+  hub: HubConnection<THub>;
+  connection$$: Observable<void>;
   dataStore: Store;
-  subscription$$: ISubscription;
 
   constructor(hubFactory, _options?: ISocketOptions) {
     this.hubFactory = hubFactory;
@@ -46,22 +47,21 @@ export class Socket<THub> {
     hubFactory.create(factoryOptions);
 
     this.dataStore = options.dataStore;
-    this.connection = hubFactory.get(this.hubName);
+    this.hub = hubFactory.get(this.hubName);
   }
 
   start() {
-    this.subscription$$ = this.connection
-      .connect()
-      .subscribe(
-        () => console.debug(`${this.hubName} connected`),
-        (error) => console.error(`${this.hubName} error: ${error}`),
-        () => console.debug(`${this.hubName} completed`)
-      );
+    this.connection$$ = this.hub.connect();
+
+    this.connection$$.subscribe(
+      () => console.debug(`${this.hubName} connected`),
+      (error) => console.error(`${this.hubName} error: ${error}`),
+      () => console.debug(`${this.hubName} completed`)
+    );
   }
 
   stop() {
-    this.subscription$$.unsubscribe();
-    this.connection.disconnect();
+    this.hub.disconnect();
   }
 
   onReceive(data: string) {
