@@ -1,6 +1,7 @@
-import { useState, useContext, useMemo } from 'react';
+import { useState, useContext, useMemo, useCallback } from 'react';
 import { __RouterContext } from 'react-router';
 import { attributesFor } from 'react-orbitjs';
+import useInterval from 'react-useinterval';
 import moment from 'moment-timezone';
 
 import { useTranslations } from '~/lib/i18n';
@@ -16,7 +17,7 @@ export function useMemoIf<TReturn>(fn: () => TReturn, condition, memoOn) {
     if (condition) {
       return fn();
     }
-  }, memoOn);
+  }, [condition, fn]);
 }
 
 export function useToggle(defaultValue: boolean = false): [boolean, () => void] {
@@ -61,4 +62,23 @@ export function useTimezoneFormatters() {
       return moment(inTz(dateTime)).format(format);
     },
   };
+}
+
+export function useConditionalPoll(untilFn: () => Promise<boolean>, interval = 1000) {
+  const [isFinished, setFinished] = useState(false);
+
+  const callback = useCallback(async () => {
+    if (isFinished) {
+      return;
+    }
+
+    const result = await untilFn();
+
+    if (result) {
+      setFinished(true);
+    }
+  }, [isFinished, untilFn]);
+
+  useInterval(callback, interval);
+  return { isFinished };
 }
