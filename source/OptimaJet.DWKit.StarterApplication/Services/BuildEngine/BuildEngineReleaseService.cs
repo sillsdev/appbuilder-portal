@@ -19,18 +19,24 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         public IRecurringJobManager RecurringJobManager { get; }
         public IJobRepository<Product, Guid> ProductRepository { get; }
- 
+        public IJobRepository<ProductPublish> PublishRepository { get; }
+        public IJobRepository<ProductBuild> BuildRepository { get; }
+
         public BuildEngineReleaseService(
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
             SendNotificationService sendNotificationService,
             IJobRepository<Product, Guid> productRepository,
-            IJobRepository<SystemStatus> systemStatusRepository
+            IJobRepository<SystemStatus> systemStatusRepository,
+            IJobRepository<ProductPublish> publishRepository,
+            IJobRepository<ProductBuild> buildRepository
         ) : base(buildEngineApi, sendNotificationService, systemStatusRepository)
         {
             RecurringJobManager = recurringJobManager;
             this.sendNotificationService = sendNotificationService;
             ProductRepository = productRepository;
+            PublishRepository = publishRepository;
+            BuildRepository = buildRepository;
         }
         public void CreateRelease(Guid productId, Dictionary<string, object> paramsDictionary, PerformContext context)
         {
@@ -172,6 +178,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             {
                 product.WorkflowPublishId = releaseResponse.Id;
                 await ProductRepository.UpdateAsync(product);
+
+                var build = await BuildRepository.Get().Where(b => b.BuildId == product.WorkflowBuildId).FirstOrDefaultAsync();
+                if (build == null)
+                {
+                    throw new Exception($"Failed to find ProductBuild: {product.WorkflowBuildId}");
+                }
+                var publish = new ProductPublish
+                {
+                    ProductBuildId = build.Id,
+                    ReleaseId = releaseResponse.Id,
+                    Channel = channel
+                };
+                await PublishRepository.CreateAsync(publish);
+
                 var monitorJob = Job.FromExpression<BuildEngineReleaseService>(service => service.CheckRelease(product.Id));
                 RecurringJobManager.AddOrUpdate(GetHangfireToken(product.Id), monitorJob, "* * * * *");
             }
@@ -212,6 +232,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             product.DatePublished = DateTime.UtcNow;
             await ProductRepository.UpdateAsync(product);
+            await UpdateProductPublish(buildEngineRelease, true);
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
@@ -219,9 +240,23 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             };
             await sendNotificationService.SendNotificationToUserAsync(product.Project.Owner, "releaseCompletedSuccessfully", messageParms);
         }
+
+        private async Task UpdateProductPublish(ReleaseResponse buildEngineRelease, bool success)
+        {
+            var publish = await PublishRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id).FirstOrDefaultAsync();
+            if (publish == null)
+            {
+                throw new Exception($"Failed to find ProductPublish: ReleaseId={buildEngineRelease.Id}");
+            }
+            publish.Success = success;
+            // TODO publish.LogUrl = buildEngineRelease ...
+            await PublishRepository.UpdateAsync(publish);
+        }
+
         protected async Task ReleaseCreationFailedAsync(Product product, ReleaseResponse buildEngineRelease)
         {
             ClearRecurringJob(product.Id);
+            await UpdateProductPublish(buildEngineRelease, false);
             var buildEngineUrl = product.Project.Organization.BuildEngineUrl;
             var messageParms = new Dictionary<string, object>()
             {

@@ -16,6 +16,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("version")]
         public string Version { get; set; }
 
+        [Attr("success")]
+        public bool? Success { get; set; }
+
         [Attr("date-created")]
         public DateTime? DateCreated { get; set; }
 
@@ -24,5 +27,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasMany("product-artifacts", Link.None)]
         public virtual List<ProductArtifact> ProductArtifacts { get; set; }
+
+        [HasMany("product-publishes", Link.None)]
+        public virtual List<ProductPublish> ProductPublishes { get; set; }
     }
 }

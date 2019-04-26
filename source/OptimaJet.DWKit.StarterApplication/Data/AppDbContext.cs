@@ -142,6 +142,11 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .WithOne(pa => pa.ProductBuild)
                 .HasForeignKey(pa => pa.ProductBuildId);
 
+            productBuildEntity
+                .HasMany(pb => pb.ProductPublishes)
+                .WithOne(pp => pp.ProductBuild)
+                .HasForeignKey(pp => pp.ProductBuildId);
+
             userEntity
                 .HasIndex(u => u.WorkflowUserId);
 
@@ -230,5 +235,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ProductTransition> ProductTransitions { get; set; }
         public DbSet<ProductBuild> ProductBuilds { get; set; }
+        public DbSet<ProductPublish> ProductPublishes { get; set; }
     }
 }
