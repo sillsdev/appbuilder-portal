@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SIL.AppBuilder.BuildEngineApiClient
 {
@@ -13,6 +14,8 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         public string Error { get; set; }
         public String Channel { get; set; }
         public string Targets { get; set; }
+        public string ConsoleText { get; set; }
+        public Dictionary<String, String> Artifacts { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
     }
