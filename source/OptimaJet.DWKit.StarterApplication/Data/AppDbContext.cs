@@ -133,6 +133,11 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasForeignKey(pb => pb.ProductId);
 
             productEntity
+                .HasMany(p => p.ProductPublishes)
+                .WithOne(pb => pb.Product)
+                .HasForeignKey(pb => pb.ProductId);
+
+            productEntity
                 .HasMany(p => p.UserTasks)
                 .WithOne(ut => ut.Product)
                 .HasForeignKey(ut => ut.ProductId);

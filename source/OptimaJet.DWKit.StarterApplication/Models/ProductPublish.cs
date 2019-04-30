@@ -5,6 +5,10 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 {
     public class ProductPublish : Identifiable, ITrackDate
     {
+        [HasOne("product")]
+        public virtual Product Product { get; set; }
+        public Guid ProductId { get; set; }
+
         [HasOne("product-build")]
         public virtual ProductBuild ProductBuild { get; set; }
         public int ProductBuildId { get; set; }

@@ -432,6 +432,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
 
                     b.Property<int>("ProductBuildId");
 
+                    b.Property<Guid>("ProductId");
+
                     b.Property<int>("ReleaseId");
 
                     b.Property<bool?>("Success");
@@ -439,6 +441,8 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductBuildId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductPublishes");
                 });
@@ -939,6 +943,11 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                     b.HasOne("OptimaJet.DWKit.StarterApplication.Models.ProductBuild", "ProductBuild")
                         .WithMany("ProductPublishes")
                         .HasForeignKey("ProductBuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OptimaJet.DWKit.StarterApplication.Models.Product", "Product")
+                        .WithMany("ProductPublishes")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

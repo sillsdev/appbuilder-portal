@@ -231,36 +231,47 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected async Task BuildCompletedAsync(Product product, BuildResponse buildEngineBuild)
         {
             Log.Information($"BuildCompletedAsync: product={product.Id}, response:Id={buildEngineBuild.Id},Status={buildEngineBuild.Status},Result={buildEngineBuild.Result},Date={buildEngineBuild.Updated}");
-            DateTime? mostRecentArtifactDate = new DateTime(2018, 10, 1);
             ClearRecurringJob(product.Id);
-            if (buildEngineBuild.Artifacts != null)
-            {
-                var productBuild = await ProductBuildRepository.Get()
-                    .Where(pb => pb.ProductId == product.Id && pb.BuildId == product.WorkflowBuildId)
-                    .FirstOrDefaultAsync();
-                foreach(KeyValuePair<string, string> entry in buildEngineBuild.Artifacts)
-                {
-                    Log.Information($"Artifact: key={entry.Key}, value={entry.Value}");
-                    var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product, productBuild);
-                    if ((artifactModifiedDate != null) && (artifactModifiedDate > mostRecentArtifactDate))
-                    {
-                        mostRecentArtifactDate = artifactModifiedDate;
-                    }
-                }
-
-                product.DateBuilt = mostRecentArtifactDate;
-                await ProductRepository.UpdateAsync(product);
-            }
+            await SaveArtifacts(product, buildEngineBuild);
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
                 { "productName", product.ProductDefinition.Name}
             };
             await SendNotificationSvc.SendNotificationToUserAsync(product.Project.Owner, "buildCompletedSuccessfully", messageParms);
+            await UpdateProductBuild(buildEngineBuild, product, true);
         }
+
+        private async Task SaveArtifacts(Product product, BuildResponse buildEngineBuild)
+        {
+            DateTime? mostRecentArtifactDate = new DateTime(2018, 10, 1);
+            var productBuild = await ProductBuildRepository.Get()
+                .Where(pb => pb.ProductId == product.Id && pb.BuildId == product.WorkflowBuildId)
+                .FirstOrDefaultAsync();
+            if (buildEngineBuild.Artifacts != null && productBuild != null)
+            {
+                foreach (KeyValuePair<string, string> entry in buildEngineBuild.Artifacts)
+                {
+                    Log.Information($"Artifact: key={entry.Key}, value={entry.Value}");
+                    if (!String.IsNullOrEmpty(entry.Value))
+                    {
+                        var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product, productBuild);
+                        if ((artifactModifiedDate != null) && (artifactModifiedDate > mostRecentArtifactDate))
+                        {
+                            mostRecentArtifactDate = artifactModifiedDate;
+                        }
+                    }
+                }
+
+                product.DateBuilt = mostRecentArtifactDate;
+                await ProductRepository.UpdateAsync(product);
+            }
+        }
+
         protected async Task BuildCreationFailedAsync(Product product, BuildResponse buildEngineBuild)
         {
             ClearRecurringJob(product.Id);
+            await SaveArtifacts(product, buildEngineBuild);
             var buildEngineUrl = product.Project.Organization.BuildEngineUrl + "/build-admin/view?id=" + product.WorkflowBuildId.ToString();
             var messageParms = new Dictionary<string, object>()
             {
@@ -271,7 +282,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 { "buildEngineUrl", buildEngineUrl }
             };
             await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "buildFailedOwner", "buildFailedAdmin", messageParms, buildEngineUrl);
+            await UpdateProductBuild(buildEngineBuild, product, false);
         }
+        private async Task UpdateProductBuild(BuildResponse buildEngineBuild, Product product, bool success)
+        {
+            var build = await ProductBuildRepository.Get().Where(pb => pb.ProductId == product.Id && pb.BuildId == product.WorkflowBuildId).FirstOrDefaultAsync();
+            if (build == null)
+            {
+                throw new Exception($"Failed to find ProductBuild: BuildId={buildEngineBuild.Id}");
+            }
+            build.Success = success;
+            await ProductBuildRepository.UpdateAsync(build);
+        }
+
         protected void ClearRecurringJob(Guid productId)
         {
             var jobToken = GetHangfireToken(productId);

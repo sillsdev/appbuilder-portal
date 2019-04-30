@@ -353,8 +353,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                  BuildId = 42,
              });
 
-
-             var buildResponse = new BuildResponse
+            var buildResponse = new BuildResponse
              {
                  Id = 2,
                  JobId = 1,
@@ -398,6 +397,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
              Assert.Single(modifiedProductBuilds);
              var build = modifiedProductBuilds.First();
              Assert.Equal("4.7.6", build.Version);
+            Assert.True(build.Success);
              var modifiedProduct = ReadTestData<AppDbContext, Product>().Where(p => p.Id == product2.Id);
              Assert.Single(modifiedProduct);
              var product = modifiedProduct.First();
@@ -411,35 +411,42 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
          [Fact(Skip = skipAcceptanceTest)]
          public async Task Get_Build_Check_Failure()
          {
-             BuildTestData();
-             var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
-             var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
-             var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
-             var mockWebClient = Mock.Get(buildBuildService.WebClient);
-             mockBuildEngine.Reset();
-             mockWebRequestWrapper.Reset();
-             mockWebClient.Reset();
+            BuildTestData();
+            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
+            var mockWebClient = Mock.Get(buildBuildService.WebClient);
+            mockBuildEngine.Reset();
+            mockWebRequestWrapper.Reset();
+            mockWebClient.Reset();
 
-             var buildResponse = new BuildResponse
-             {
-                 Id = 2,
-                 JobId = 1,
-                 Status = "completed",
-                 Result = "FAILURE",
-                 Error = "Error"
-             };
+            var productBuild = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product2.Id,
+                BuildId = product2.WorkflowBuildId
+            });
+            var buildResponse = new BuildResponse
+            {
+                Id = 2,
+                JobId = 1,
+                Status = "completed",
+                Result = "FAILURE",
+                Error = "Error"
+            };
 
-             mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
-             await buildBuildService.CheckBuildAsync(product2.Id);
+            mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
+            await buildBuildService.CheckBuildAsync(product2.Id);
             var builds = ReadTestData<AppDbContext, ProductBuild>();
             Assert.Single(builds);
+            var modifiedProductBuild = builds.FirstOrDefault();
+            Assert.False(modifiedProductBuild.Success);
 
-             // Verify that notifications are sent to the user and the org admin
-             var notifications = ReadTestData<AppDbContext, Notification>();
-             Assert.Equal(2, notifications.Count);
-             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/build-admin/view?id=2\"}", notifications[0].MessageSubstitutionsJson);
-             Assert.Equal("buildFailedAdmin", notifications[0].MessageId);
-             Assert.Equal("https://buildengine.testorg1/build-admin/view?id=2", notifications[0].LinkUrl);
+            // Verify that notifications are sent to the user and the org admin
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(2, notifications.Count);
+            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/build-admin/view?id=2\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildFailedAdmin", notifications[0].MessageId);
+            Assert.Equal("https://buildengine.testorg1/build-admin/view?id=2", notifications[0].LinkUrl);
          }
 
          [Fact(Skip = skipAcceptanceTest)]

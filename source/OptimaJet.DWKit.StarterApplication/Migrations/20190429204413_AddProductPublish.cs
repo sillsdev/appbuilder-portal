@@ -19,6 +19,7 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    ProductId = table.Column<Guid>(nullable: false),
                     ProductBuildId = table.Column<int>(nullable: false),
                     ReleaseId = table.Column<int>(nullable: false),
                     Channel = table.Column<string>(nullable: true),
@@ -36,12 +37,23 @@ namespace OptimaJet.DWKit.StarterApplication.Migrations
                         principalTable: "ProductBuilds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductPublishes_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductPublishes_ProductBuildId",
                 table: "ProductPublishes",
                 column: "ProductBuildId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductPublishes_ProductId",
+                table: "ProductPublishes",
+                column: "ProductId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

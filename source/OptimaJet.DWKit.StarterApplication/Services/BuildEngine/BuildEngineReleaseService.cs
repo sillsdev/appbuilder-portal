@@ -186,6 +186,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 }
                 var publish = new ProductPublish
                 {
+                    ProductId = product.Id,
                     ProductBuildId = build.Id,
                     ReleaseId = releaseResponse.Id,
                     Channel = channel
@@ -232,7 +233,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             product.DatePublished = DateTime.UtcNow;
             await ProductRepository.UpdateAsync(product);
-            await UpdateProductPublish(buildEngineRelease, true);
+            await UpdateProductPublish(buildEngineRelease, product, true);
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
@@ -241,22 +242,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             await sendNotificationService.SendNotificationToUserAsync(product.Project.Owner, "releaseCompletedSuccessfully", messageParms);
         }
 
-        private async Task UpdateProductPublish(ReleaseResponse buildEngineRelease, bool success)
+        private async Task UpdateProductPublish(ReleaseResponse buildEngineRelease, Product product, bool success)
         {
-            var publish = await PublishRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id).FirstOrDefaultAsync();
+            var publish = await PublishRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id && p.ProductId == product.Id).FirstOrDefaultAsync();
             if (publish == null)
             {
                 throw new Exception($"Failed to find ProductPublish: ReleaseId={buildEngineRelease.Id}");
             }
             publish.Success = success;
-            // TODO publish.LogUrl = buildEngineRelease ...
+            publish.LogUrl = buildEngineRelease.ConsoleText;
             await PublishRepository.UpdateAsync(publish);
         }
 
         protected async Task ReleaseCreationFailedAsync(Product product, ReleaseResponse buildEngineRelease)
         {
             ClearRecurringJob(product.Id);
-            await UpdateProductPublish(buildEngineRelease, false);
+            await UpdateProductPublish(buildEngineRelease, product, false);
             var buildEngineUrl = product.Project.Organization.BuildEngineUrl;
             var messageParms = new Dictionary<string, object>()
             {
