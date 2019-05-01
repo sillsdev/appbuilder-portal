@@ -181,6 +181,8 @@ const schemaDefinition: SchemaSettings = {
       keys: { remoteId: {} },
       attributes: {
         version: { type: 'string' },
+        buildId: { type: 'number' },
+        success: { type: 'boolean' },
         dateCreated: { type: 'string' },
         dateUpdated: { type: 'string' },
       },
