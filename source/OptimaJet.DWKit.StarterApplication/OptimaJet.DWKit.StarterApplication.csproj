@@ -31,7 +31,7 @@
     <PackageReference Include="Bugsnag.AspNet.Core" Version="2.2.0" />
     <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
     <PackageReference Include="dotenv.net" Version="1.0.3" />
-    <PackageReference Include="DWKit-Core" Version="2.4.1" />
+    <PackageReference Include="DWKit-Core" Version="2.5.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.1" />
@@ -51,9 +51,9 @@
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00777" />
     <PackageReference Include="WorkflowEngine.NETCore-Core" Version="3.3.1" />
-    <PackageReference Include="DWKit-ProviderForMSSQL" Version="2.4.1" />
-    <PackageReference Include="DWKit-ProviderForPostgreSQL" Version="2.4.1" />
-    <PackageReference Include="DWKit-Security" Version="2.4.1" />
+    <PackageReference Include="DWKit-ProviderForMSSQL" Version="2.5.4" />
+    <PackageReference Include="DWKit-ProviderForPostgreSQL" Version="2.5.4" />
+    <PackageReference Include="DWKit-Security" Version="2.5.4" />
     <PackageReference Include="Auth0.ManagementApi" Version="5.10.0" />
     <PackageReference Include="RestSharp" Version="106.3.1" />
     <PackageReference Include="FluentEmail.Core" Version="2.5.1" />
