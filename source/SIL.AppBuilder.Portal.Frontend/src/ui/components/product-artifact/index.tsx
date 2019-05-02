@@ -18,7 +18,7 @@ export default function Builds({ product }) {
   });
 
   const sortedBuilds = productBuilds.sort(
-    compareVia((build) => attributesFor(build).version, true)
+    compareVia((build) => attributesFor(build).buildId, true)
   );
   const [activeVersion, setActiveVersion] = useState((sortedBuilds || [])[0]);
 
@@ -37,13 +37,20 @@ export default function Builds({ product }) {
           // without the spaces it does:
           // `Current Build (build Pending)`
           // TODO: see: https://developertown.visualstudio.com/SIL%20International%20Scriptoria/_workitems/edit/34532
-          const version = attributesFor(build).version || ` ${t('projects.buildPending')} `;
+          let version = attributesFor(build).version;
+          if (version === null) {
+            const success = attributesFor(build).success;
+            if (success === false) {
+              version = ` ${t('projects.buildFailed')} `;
+            } else {
+              version = ` ${t('projects.buildPending')} `;
+            }
+          }
 
           if (build === sortedBuilds[0]) {
             return t('projects.latestBuild', { version });
           }
-
-          return version || t('projects.buildPending');
+          return version;
         }}
         value={activeVersion}
         onChange={setActiveVersion}

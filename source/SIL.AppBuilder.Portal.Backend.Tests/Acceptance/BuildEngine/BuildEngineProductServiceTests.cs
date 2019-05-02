@@ -189,7 +189,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var productId = Guid.NewGuid();
             await buildProductService.ManageProductAsync(productId, null);
@@ -208,7 +208,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
 
@@ -240,7 +240,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildProductService = _fixture.GetService<BuildEngineProductService>();
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var mockBuildEngine = Mock.Get(buildProductService.BuildEngineApi);
             systemStatus1.SystemAvailable = false;

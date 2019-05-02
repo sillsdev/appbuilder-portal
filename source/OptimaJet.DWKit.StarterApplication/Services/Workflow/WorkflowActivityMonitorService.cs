@@ -56,7 +56,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             Log.Information($":::::::::: ActivityChanged: pid={args.ProcessId.ToString()}, scheme={args.SchemeCode}, activity={args.CurrentActivityName}, state={args.CurrentState}, last={args.PreviousState}");
             WorkflowProductService.TransitionType transitionType = WorkflowProductService.TransitionType.Other;
-            if (args.ExecutedTransition != null)
+            if (args.ExecutedTransition != null && (args.CurrentActivityName != args.PreviousActivityName))
             {
                 switch (args.ExecutedTransition.Classifier)
                 {

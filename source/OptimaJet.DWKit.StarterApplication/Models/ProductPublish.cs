@@ -1,20 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
-
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class ProductBuild : Identifiable, ITrackDate
+    public class ProductPublish : Identifiable, ITrackDate
     {
         [HasOne("product")]
         public virtual Product Product { get; set; }
         public Guid ProductId { get; set; }
 
-        [Attr("build-id")]
-        public int BuildId { get; set; }
+        [HasOne("product-build")]
+        public virtual ProductBuild ProductBuild { get; set; }
+        public int ProductBuildId { get; set; }
 
-        [Attr("version")]
-        public string Version { get; set; }
+        // BuildEngine Release Id
+        [Attr("release-id")]
+        public int ReleaseId { get; set; }
+
+        [Attr("channel")]
+        public string Channel { get; set; }
+
+        [Attr("log-url")]
+        public string LogUrl { get; set; }
 
         [Attr("success")]
         public bool? Success { get; set; }
@@ -24,11 +31,5 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("date-updated")]
         public DateTime? DateUpdated { get; set; }
-
-        [HasMany("product-artifacts", Link.None)]
-        public virtual List<ProductArtifact> ProductArtifacts { get; set; }
-
-        [HasMany("product-publishes", Link.None)]
-        public virtual List<ProductPublish> ProductPublishes { get; set; }
     }
 }

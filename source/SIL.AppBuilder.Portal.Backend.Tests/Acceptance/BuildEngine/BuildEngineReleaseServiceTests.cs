@@ -228,7 +228,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
             var hookHandler = _fixture.GetService<IEntityHookHandler<Notification, int>>();
 
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var paramsDictionary = new Dictionary<string, object>
             {
@@ -259,6 +259,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var mockRecurringTaskManager = Mock.Get(buildReleaseService.RecurringJobManager);
             mockRecurringTaskManager.Reset();
             mockBuildEngine.Reset();
+
+            var build = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product2.Id,
+                BuildId = 2,
+            });
             var releaseResponse = new ReleaseResponse
             {
                 Id = 3,
@@ -295,6 +301,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var modifiedProduct = products.First(p => p.Id == product1.Id);
             Assert.Equal(3, modifiedProduct.WorkflowPublishId);
             Assert.Null(modifiedProduct.DatePublished);
+            var productPublishes = ReadTestData<AppDbContext, ProductPublish>();
+            Assert.Single(productPublishes);
+            var publish = productPublishes.First();
+            Assert.Equal(3, publish.ReleaseId);
+            Assert.Equal(build.Id, publish.ProductBuildId);
+            Assert.Equal("production", publish.Channel);
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Empty(notifications);
         }
@@ -307,15 +319,27 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
 
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
+            var productBuild = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product2.Id,
+                BuildId = 2,
+            });
+            var productRelease = AddEntity<AppDbContext, ProductPublish>(new ProductPublish
+            {
+                ProductId = product2.Id,
+                ProductBuildId = productBuild.Id,
+                ReleaseId = 3
+            });
             var releaseResponse = new ReleaseResponse
             {
                 Id = 3,
                 BuildId = 2,
                 Status = "completed",
                 Result = "SUCCESS",
-                Error = ""
+                Error = "",
+                ConsoleText = "https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log"
             };
             mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(),
                                                     It.IsAny<int>(),
@@ -332,6 +356,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var products = ReadTestData<AppDbContext, Product>();
             var modifiedProduct = products.First(p => p.Id == product2.Id);
             Assert.NotNull(modifiedProduct.DatePublished);
+            var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublish>();
+            Assert.Single(modifiedProductPublishes);
+            var publish = modifiedProductPublishes.First();
+            Assert.True(publish.Success.HasValue && publish.Success.Value);
+            Assert.Equal("https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log", publish.LogUrl);
             // One notification should be sent to owner on successful build
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Single(notifications);
@@ -347,10 +376,22 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData();
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
             mockBuildEngine.Reset();
+
+            var productBuild = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product2.Id,
+                BuildId = 2,
+            });
+            var productRelease = AddEntity<AppDbContext, ProductPublish>(new ProductPublish
+            {
+                ProductId = product2.Id,
+                ProductBuildId = productBuild.Id,
+                ReleaseId = 3
+            });
 
             var releaseResponse = new ReleaseResponse
             {
@@ -358,7 +399,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 BuildId = 2,
                 Status = "completed",
                 Result = "FAILURE",
-                Error = "Error"
+                Error = "Error",
+                ConsoleText = "https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log"
             };
 
             mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(),
@@ -377,6 +419,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("releaseFailedAdmin", notifications[0].MessageId);
             Assert.Equal("https://buildengine.testorg1", notifications[0].LinkUrl);
+            var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublish>();
+            Assert.Single(modifiedProductPublishes);
+            var publish = modifiedProductPublishes.First();
+            Assert.True(publish.Success.HasValue);
+            Assert.False(publish.Success.Value);
+            Assert.Equal("https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log", publish.LogUrl);
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Get_Release_Status_Unavailable()
