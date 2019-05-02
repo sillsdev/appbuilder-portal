@@ -47,7 +47,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.0" />
-    <PackageReference Include="React.AspNet" Version="3.2.0" />
+    <PackageReference Include="React.AspNet" Version="3.4.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00777" />
     <PackageReference Include="WorkflowEngine.NETCore-Core" Version="3.3.1" />
