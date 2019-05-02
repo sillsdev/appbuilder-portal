@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Create_App_Entry",
-  "lastUpdate": "2019-04-03T10:34:07.216037-04:00",
+  "lastUpdate": "2019-05-02T17:34:44.5890862+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -101,6 +101,12 @@
       "control": "textarea_comment",
       "isEditable": true,
       "isLoadable": true
+    },
+    {
+      "id": "d47e2cc8-032c-f57f-d13d-f25ca5f443fe",
+      "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
+      "isEditable": true,
+      "isLoadable": true
     }
   ],
   "dataColl": [
@@ -113,7 +119,7 @@
         {
           "id": "be9da384-a608-7dd7-5452-1c0ad07d122c",
           "attributeId": "34f1138f-019a-48fa-af8f-9dd5258e5abc",
-          "control": "type",
+          "control": "ArtifactType",
           "isEditable": true,
           "isLoadable": true
         },
@@ -138,13 +144,14 @@
         {
           "id": "4639dc38-b7a9-e1ea-27e8-b4845d0b0538",
           "attributeId": "ce62ce6e-c4c9-4788-a4ff-797f96ddfc57",
-          "control": "size",
+          "control": "FileSize",
           "isEditable": true,
           "isLoadable": true
         },
         {
           "id": "598471fc-0f32-d2e5-7398-6b0813e854a8",
           "attributeId": "e1937119-1b61-499d-8888-28a3c71e0530",
+          "control": "Id",
           "isEditable": true,
           "isLoadable": true
         },
@@ -157,7 +164,7 @@
         {
           "id": "cc1ae4e5-845a-2dcf-424f-b35b23c6ed96",
           "attributeId": "9fe8c791-cafa-448c-9505-22f4d047827a",
-          "control": "link",
+          "control": "Url",
           "isEditable": true,
           "isLoadable": true
         },
@@ -171,7 +178,7 @@
         {
           "id": "4de8dd53-d859-70db-d969-4a58a6efdac3",
           "attributeId": "e4ea61c8-ab9d-426c-9c93-6b80ec2b191c",
-          "control": "buildid",
+          "control": "ProductBuildId",
           "parentId": "0c302a5d-7b8b-6e4c-89c9-fb07c1893c78",
           "isEditable": false,
           "isLoadable": true

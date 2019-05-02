@@ -150,7 +150,7 @@
         "data-buildertype": "gridview",
         "columns": [
           {
-            "key": "buildId",
+            "key": "ProductBuildId",
             "name": "BuildId",
             "type": "number",
             "width": 100,
@@ -159,7 +159,7 @@
             "resizable": false
           },
           {
-            "key": "type",
+            "key": "ArtifactType",
             "name": "Type",
             "sortable": true,
             "filterable": false,
@@ -167,7 +167,7 @@
             "width": 150
           },
           {
-            "key": "size",
+            "key": "FileSize",
             "name": "Size",
             "sortable": true,
             "filterable": false,
@@ -176,7 +176,7 @@
             "width": 100
           },
           {
-            "key": "link",
+            "key": "Url",
             "name": "Link",
             "sortable": true,
             "filterable": false,
@@ -184,7 +184,7 @@
             "type": "link"
           },
           {
-            "key": "fileid",
+            "key": "Id",
             "name": "FileId",
             "type": "number",
             "width": 100,
@@ -209,7 +209,7 @@
             "parameters": []
           }
         },
-        "defaultSort": "fileid ASC"
+        "defaultSort": "Id ASC"
       }
     ]
   }
