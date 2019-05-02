@@ -205,6 +205,7 @@
     "noBuilds": "No Builds Yet",
     "latestBuild": "Latest Build ({version})",
     "buildPending": "Build Pending",
+    "buildFailed": "Build Failed",
     "switcher": {
       "myProjects": "Mis proyectos ({numProjects})",
       "archived": "Archivados ({numProjects})",
