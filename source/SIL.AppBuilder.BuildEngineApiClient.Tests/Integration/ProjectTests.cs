@@ -93,7 +93,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.Equal(System.Net.HttpStatusCode.OK, response);
         }
         [Theory(Skip = skipIntegrationTest)]
-        [InlineData(8)]
+        [InlineData(2)]
         public void GetTokenTest(int projectId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
@@ -110,6 +110,8 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.NotEmpty(response.SecretAccessKey);
             Assert.NotNull(response.Expiration);
             Assert.NotEmpty(response.Expiration);
+            Assert.NotEmpty(response.Region);
+            Assert.Equal("us-east-1", response.Region);
         }
     }
 }

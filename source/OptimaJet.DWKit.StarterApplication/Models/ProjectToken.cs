@@ -14,5 +14,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public String Expiration { get; set; }
         [Attr("url")]
         public String Url { get; set; }
+        [Attr("region")]
+        public String Region { get; set; }
     }
 }
