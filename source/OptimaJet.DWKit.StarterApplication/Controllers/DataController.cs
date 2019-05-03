@@ -128,29 +128,6 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 {
                     throw new Exception("Access denied!");
                 }
-                switch (name)
-                {
-                    /*
-                     * This section was added because DevKit attempts to update the read only grid
-                     * containing the product artifacts when validate/save are added to the actions
-                     * for these forms.
-                    */
-                    // TODO: Remove this section when DevKit does not attempt to update read only grid
-                    case "SIL_AppBuilders_Verify_And_Publish":
-                    case "SIL_AppBuilders_Create_App_Entry":
-                    case "SIL_AppBuilders_App_Store_Review":
-                        var dataDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
-                        if (dataDictionary.ContainsKey("textarea_comment"))
-                        {
-                            string comment = (string)dataDictionary["textarea_comment"];
-                            string idString = (string)dataDictionary["Id"];
-                            Guid id = Guid.Parse(idString);
-                            BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.SetComment(id, comment));
-                        }
-                        return Json(new SuccessResponse("Data change successfully"));
-                    default:
-                        break;
-                }
                 var postRequest = new ChangeDataRequest(name, data)
                 {
                     BaseUrl = string.Format("{0}://{1}", Request.Scheme, Request.Host.Value),

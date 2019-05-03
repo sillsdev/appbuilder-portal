@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_App_Store_Review",
-  "lastUpdate": "2019-04-03T15:44:20.47522-04:00",
+  "lastUpdate": "2019-05-02T17:35:57.1435261+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -160,6 +160,12 @@
       "control": "textarea_comment",
       "isEditable": true,
       "isLoadable": true
+    },
+    {
+      "id": "4c6b5c59-e5ee-32ff-5d27-9b436db23092",
+      "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
+      "isEditable": true,
+      "isLoadable": false
     }
   ],
   "dataColl": [
@@ -172,7 +178,7 @@
         {
           "id": "6fb856bd-7583-8f1f-255b-7850a19b7cee",
           "attributeId": "34f1138f-019a-48fa-af8f-9dd5258e5abc",
-          "control": "type",
+          "control": "ArtifactType",
           "isEditable": true,
           "isLoadable": true
         },
@@ -180,31 +186,31 @@
           "id": "ed8015ad-a8c8-ae69-8600-91807e446c8a",
           "attributeId": "edabc700-a7b1-42d7-837d-95910c4b254c",
           "isEditable": true,
-          "isLoadable": false
+          "isLoadable": true
         },
         {
           "id": "ea824479-19ff-599b-816e-072b7238d439",
           "attributeId": "824bf7e4-6c64-4740-94b8-d68bc88e8f7c",
           "isEditable": true,
-          "isLoadable": false
+          "isLoadable": true
         },
         {
           "id": "41c3ebab-ced8-2e7b-fdd1-3b1165aaf5ed",
           "attributeId": "c8ff77d9-2e65-4975-b9f1-cca2b22c9145",
           "isEditable": true,
-          "isLoadable": false
+          "isLoadable": true
         },
         {
           "id": "b84df7ea-c8a2-efd6-81c9-49857f41deb9",
           "attributeId": "ce62ce6e-c4c9-4788-a4ff-797f96ddfc57",
-          "control": "size",
+          "control": "FileSize",
           "isEditable": true,
           "isLoadable": true
         },
         {
           "id": "ec9b31f4-7010-1dc1-8660-59c4178f1105",
           "attributeId": "e1937119-1b61-499d-8888-28a3c71e0530",
-          "control": "fileid",
+          "control": "Id",
           "isEditable": true,
           "isLoadable": true
         },
@@ -212,12 +218,12 @@
           "id": "b1934ee4-13b7-3385-319f-74bfc76d0897",
           "attributeId": "ed9ab792-26ec-4dae-ad54-aa7c9edf36b0",
           "isEditable": true,
-          "isLoadable": false
+          "isLoadable": true
         },
         {
           "id": "eec2e148-e3a3-e083-f79c-bcdc462aa424",
           "attributeId": "9fe8c791-cafa-448c-9505-22f4d047827a",
-          "control": "link",
+          "control": "Url",
           "isEditable": true,
           "isLoadable": true
         },
@@ -226,12 +232,12 @@
           "attributeId": "debc9415-a4f2-41a7-a009-4551511ea416",
           "control": "",
           "isEditable": true,
-          "isLoadable": false
+          "isLoadable": true
         },
         {
           "id": "8b3ccbdb-6c55-9b37-19ac-003e5858800c",
           "attributeId": "e4ea61c8-ab9d-426c-9c93-6b80ec2b191c",
-          "control": "buildId",
+          "control": "ProductBuildId",
           "parentId": "dc457c5a-ba20-f468-6f19-efb064866775",
           "isEditable": false,
           "isLoadable": true
