@@ -7,5 +7,6 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         public String SecretAccessKey { get; set; }
         public String AccessKeyId { get; set; }
         public String Expiration { get; set; }
+        public String Region { get; set; }
     }
 }
