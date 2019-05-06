@@ -76,7 +76,7 @@
     "rxjs": "^6.3.3",
     "sass-loader": "^7.0.3",
     "semantic-ui-css": "^2.3.3",
-    "semantic-ui-react": "^0.85.0",
+    "semantic-ui-react": "^0.87.0",
     "use-debounce": "^1.0.0",
     "use-redux": "^2.1.1",
     "uuid": "^3.3.2"
