@@ -74,7 +74,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="700" Y="20" />
     </Activity>
-    <Activity Name="Check Product Creation" State="Product Creation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Check Product Creation" State="Check Product Creation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -122,7 +122,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="360" Y="420" />
     </Activity>
-    <Activity Name="Check Product Build" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Check Product Build" State="Check Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -168,7 +168,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="360" Y="760" />
     </Activity>
-    <Activity Name="Check Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Check Product Publish" State="Check Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -567,7 +567,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer X="583" Y="164" />
     </Transition>
   </Transitions>
-</Process>')
+</Process>
+')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 	
@@ -603,7 +604,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="280" Y="450" />
     </Activity>
-    <Activity Name="Product Rebuild" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+    <Activity Name="Product Rebuild" State="Product Rebuild" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
         <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
@@ -615,7 +616,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="390" Y="260" />
     </Activity>
-    <Activity Name="Check Product Build" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Check Product Build" State="Check Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -643,7 +644,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="700" Y="570" />
     </Activity>
-    <Activity Name="Check Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Check Product Publish" State="Check Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -813,7 +814,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer />
     </Transition>
   </Transitions>
-</Process>')
+</Process>
+')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 
@@ -849,7 +851,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="280" Y="450" />
     </Activity>
-    <Activity Name="Product Republish" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+    <Activity Name="Product Republish" State="Product Republish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
         <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
@@ -861,7 +863,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="390" Y="260" />
     </Activity>
-    <Activity Name="Check Product Build" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Check Product Build" State="Check Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -882,14 +884,16 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
-        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct">
+          <ActionParameter><![CDATA[{"targets" : "google-play", "environment" : { "PUBLISH_NO_APK" : "1" } }]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="700" Y="570" />
     </Activity>
-    <Activity Name="Check Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Check Product Publish" State="Check Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
@@ -1059,6 +1063,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer />
     </Transition>
   </Transitions>
-</Process>')
+</Process>
+')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
