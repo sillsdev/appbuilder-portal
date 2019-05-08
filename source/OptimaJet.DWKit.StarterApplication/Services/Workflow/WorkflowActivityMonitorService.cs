@@ -55,7 +55,28 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
 
             Log.Information($":::::::::: ActivityChanged: pid={args.ProcessId.ToString()}, scheme={args.SchemeCode}, activity={args.CurrentActivityName}, state={args.CurrentState}, last={args.PreviousState}");
+            WorkflowProductService.TransitionType transitionType = GetTransitionType(args);
+            var serviceArgs = new WorkflowProductService.ProductActivityChangedArgs
+            {
+                ProcessId = args.ProcessId,
+                CurrentActivityName = args.CurrentActivityName,
+                PreviousActivityName = args.PreviousActivityName,
+                CurrentState = args.CurrentState,
+                PreviousState = args.PreviousState,
+                ExecutingCommand = args.ProcessInstance.CurrentCommand,
+                TransitionType = transitionType
+            };
+
+            BackgroundJob.Enqueue<WorkflowProductService>(service => service.ProductActivityChanged(serviceArgs));
+        }
+
+        private WorkflowProductService.TransitionType GetTransitionType(ProcessActivityChangedEventArgs args)
+        {
             WorkflowProductService.TransitionType transitionType = WorkflowProductService.TransitionType.Other;
+            // In DWKit 2.4.1, when executing a timeout transition back to the same state,
+            // args.ExecutedTransition isn't the transition that is actually being executed 
+            // (seems to be the first transition of all defined).  In this case, ignore the
+            // transition type.
             if (args.ExecutedTransition != null && (args.CurrentState == args.ExecutedTransition.To.State) && (args.PreviousState == args.ExecutedTransition.From.State))
             {
                 switch (args.ExecutedTransition.Classifier)
@@ -71,18 +92,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                         break;
                 }
             }
-            var serviceArgs = new WorkflowProductService.ProductActivityChangedArgs
-            {
-                ProcessId = args.ProcessId,
-                CurrentActivityName = args.CurrentActivityName,
-                PreviousActivityName = args.PreviousActivityName,
-                CurrentState = args.CurrentState,
-                PreviousState = args.PreviousState,
-                ExecutingCommand = args.ProcessInstance.CurrentCommand,
-                TransitionType = transitionType
-            };
 
-            BackgroundJob.Enqueue<WorkflowProductService>(service => service.ProductActivityChanged(serviceArgs));
+            return transitionType;
         }
 
         private void ProcessChanged(ProcessStatusChangedEventArgs args, WorkflowRuntime runtime)
