@@ -99,7 +99,6 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<OrganizationService>();
             services.AddScoped<GroupService>();
             services.AddScoped<ProductService>();
-            services.AddScoped<Auth0ManagementApiTokenService>();
             services.AddScoped<SendNotificationService>();
             services.AddScoped<SendEmailService>();
             services.AddScoped<OrganizationMembershipService>();
