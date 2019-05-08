@@ -289,9 +289,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             if (processInstance.IdentityIds == null)
                 return;
 
-            var currentstate = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.CurrentState);
+            var currentstate = processInstance.CurrentState;
 
-            var nextState = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.ExecutedActivityState);
+            var nextState = processInstance.ExecutedActivityState;
 
             var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
 
@@ -323,10 +323,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
             if (string.IsNullOrEmpty(processInstance.CurrentCommand))
                 return;
+            var currentstate = processInstance.CurrentState;
 
-            var currentstate = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.CurrentState);
-
-            var nextState = WorkflowInit.Runtime.GetLocalizedStateName(processInstance.ProcessId, processInstance.ExecutedActivityState);
+            var nextState = processInstance.ExecutedActivityState;
 
             var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
 
