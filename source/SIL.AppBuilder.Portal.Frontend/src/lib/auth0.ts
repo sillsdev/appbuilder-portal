@@ -92,6 +92,7 @@ export function getAuth0LockInstance(options = {}): Auth0LockStatic {
     lockInstance = new Auth0Lock(auth0Env.clientId, auth0Env.domain, {
       // TODO: pull language form i18next
       language: 'en',
+      configurationBaseUrl: auth0Env.baseUrl,
       additionalSignUpFields: [
         {
           name: 'given_name',

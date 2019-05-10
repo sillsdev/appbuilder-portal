@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # A script to make working with docker/compose to have
 # less typing.
@@ -233,6 +233,7 @@ function runstuff {
 
     clean:frontend)
       shopt -s globstar
+      runstuff yarn cache clean && \
       rm -rf **/dist && \
       rm -rf **/node_modules && \
       rm -rf **/tmp
