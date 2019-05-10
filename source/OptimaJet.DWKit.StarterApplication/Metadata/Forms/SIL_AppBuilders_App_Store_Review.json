@@ -116,6 +116,32 @@
         "widthsCustom": "16"
       },
       {
+        "key": "formgroup_1",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_store",
+            "data-buildertype": "input",
+            "label": "Store",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_store_listing_language",
+            "data-buildertype": "input",
+            "label": "Store Listing Language",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
         "key": "input_product",
         "data-buildertype": "input",
         "label": "Product",

@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Create_App_Entry",
-  "lastUpdate": "2019-05-02T17:34:44.5890862+00:00",
+  "lastUpdate": "2019-05-10T20:20:14.3003085+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -106,6 +106,22 @@
       "id": "d47e2cc8-032c-f57f-d13d-f25ca5f443fe",
       "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "00aede91-01e7-c5f9-0e94-b00a27ce43ce",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "dc1949d0-6c35-e5cf-ef0a-07658b884e0d",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "52590a64-d734-f3ee-7d6f-23824f2416a3",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "1907593e-4fae-146b-af86-aaffdfd8ebf0",
+      "isEditable": false,
       "isLoadable": true
     }
   ],

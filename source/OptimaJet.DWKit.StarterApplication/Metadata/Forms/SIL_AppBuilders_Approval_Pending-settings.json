@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Approval_Pending",
-  "lastUpdate": "2019-04-03T21:05:01.8966001+00:00",
+  "lastUpdate": "2019-05-10T20:24:46.2889913+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -42,6 +42,22 @@
       "isLoadable": true
     },
     {
+      "id": "0851d8b7-f63d-04b1-5aef-8124e15cba6c",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "364b36d2-83cb-c1e2-48b7-f2903f065012",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "c2a4774b-81c1-a64c-e4eb-17bbdad2803d",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "364b36d2-83cb-c1e2-48b7-f2903f065012",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "086923e6-c43b-1a2b-262f-8816aceb3254",
       "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
       "isEditable": true,
@@ -72,6 +88,28 @@
       "isLoadable": true
     },
     {
+      "id": "8bde80f6-68fa-a026-4175-f7d8f6235c83",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "5931388b-d160-6f1f-fc69-a5c9ee6d6504",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "500a61bc-648e-10ce-c64f-2eef3f1c1268",
+      "attributeId": "a2fb67f0-c140-49e3-adfd-107fd0fc67c8",
+      "parentId": "5931388b-d160-6f1f-fc69-a5c9ee6d6504",
+      "isEditable": false,
+      "isLoadable": false
+    },
+    {
+      "id": "b2f6429a-a9b0-4801-152f-73d440be9bf0",
+      "attributeId": "710d4f34-c977-4077-b513-b7e323349fe7",
+      "parentId": "500a61bc-648e-10ce-c64f-2eef3f1c1268",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "852d6925-5422-63b0-90de-4f9d2489c6c6",
       "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
       "isEditable": true,
@@ -88,6 +126,14 @@
       "id": "e340f162-1824-1c67-4c22-d6e265cf5d36",
       "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "64ba04c7-ace8-8b52-d2f1-4218ae7d96d3",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "852d6925-5422-63b0-90de-4f9d2489c6c6",
+      "isEditable": false,
       "isLoadable": true
     }
   ],

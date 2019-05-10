@@ -14,36 +14,39 @@
             "size": "medium"
           },
           {
-            "key": "staticcontent_1",
-            "data-buildertype": "staticcontent",
-            "content": "<h3>Scriptoria is Busy</h3>\n<p>Scriptoria is busy working on your product.  You will receive a notification and an entry will be in your <strong>My Tasks</strong> when you have something to do.</p>\n<p></p>",
-            "isHtml": true
-          },
-          {
             "key": "formgroup_2",
             "data-buildertype": "formgroup",
             "widths": "custom",
             "children": [
               {
-                "key": "input_product_name",
+                "key": "input_project_name",
                 "data-buildertype": "input",
-                "label": "Name",
+                "label": "Project Name",
                 "fluid": true,
                 "onChangeTimeout": 200,
                 "readOnly": true,
+                "style-width": "",
                 "style-customcss": "six wide field"
               },
               {
-                "key": "input_description",
+                "key": "input_project_description",
                 "data-buildertype": "input",
-                "label": "Description",
+                "label": "Project Description",
                 "fluid": true,
                 "onChangeTimeout": 200,
                 "readOnly": true,
+                "style-source": "",
+                "style-width": "",
                 "style-customcss": "ten wide field"
               }
             ],
             "widthsCustom": "16"
+          },
+          {
+            "key": "staticcontent_1",
+            "data-buildertype": "staticcontent",
+            "content": "<h3>Scriptoria is Busy</h3>\n<p>Scriptoria is busy working on your product.  You will receive a notification and an entry will be in your <strong>My Tasks</strong> when you have something to do.</p>\n<p></p>",
+            "isHtml": true
           }
         ]
       }

@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_App_Configuration",
-  "lastUpdate": "2019-04-03T15:53:03.713084-04:00",
+  "lastUpdate": "2019-05-10T20:39:11.5328003+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -39,6 +39,30 @@
       "id": "c00ff19d-f24a-78e9-c5f9-84a4f090d363",
       "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "754ef110-88c6-4fee-a25e-53f1fd032323",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "c00ff19d-f24a-78e9-c5f9-84a4f090d363",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "840bad89-18cb-e686-85d0-3b2ae23b7966",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "c00ff19d-f24a-78e9-c5f9-84a4f090d363",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "14c271d2-ff02-ae00-bad8-0150085617f5",
+      "attributeId": "9ad0eb42-710a-4e92-8304-d055d8deee30",
+      "control": "input_app_project_url",
+      "parentId": "c00ff19d-f24a-78e9-c5f9-84a4f090d363",
+      "isEditable": false,
       "isLoadable": true
     },
     {
@@ -91,10 +115,18 @@
       "isLoadable": true
     },
     {
-      "id": "14c271d2-ff02-ae00-bad8-0150085617f5",
-      "attributeId": "9ad0eb42-710a-4e92-8304-d055d8deee30",
-      "control": "input_app_project_url",
-      "parentId": "c00ff19d-f24a-78e9-c5f9-84a4f090d363",
+      "id": "d0edefad-1cd6-5736-a4dd-488d2b41e6b5",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "65aa95f4-50b3-9be5-a1df-fc188a56bca5",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "bb81ab8b-dd7c-02e0-fb65-bc54b041a109",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "f1336cc3-e898-32b8-b278-027a381ad14b",
       "isEditable": false,
       "isLoadable": true
     }

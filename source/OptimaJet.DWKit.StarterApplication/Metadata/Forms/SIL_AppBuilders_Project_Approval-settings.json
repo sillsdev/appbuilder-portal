@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Project_Approval",
-  "lastUpdate": "2019-04-03T19:25:14.9727644+00:00",
+  "lastUpdate": "2019-05-10T20:27:35.45167+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -162,6 +162,28 @@
       "attributeId": "da31659f-07de-4af3-b377-7ac8109c00fd",
       "control": "textarea_comment",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "fb1e703a-3bac-6936-2abd-ac7410503320",
+      "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
+      "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "1a17e96b-34a4-adc3-1409-4b325e079b4d",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "6020a864-3ad3-75c7-e4b4-fec32822f8e7",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "4e942c4c-466f-4a50-fb9e-b5c14b63eced",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "08b08182-26d8-bef9-2f04-482f6f2512a5",
+      "isEditable": false,
       "isLoadable": true
     }
   ],

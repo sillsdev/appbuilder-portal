@@ -63,6 +63,61 @@
         "size": "medium"
       },
       {
+        "key": "formgroup_2",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_project_name",
+            "data-buildertype": "input",
+            "label": "Project Name",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-width": "",
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_project_description",
+            "data-buildertype": "input",
+            "label": "Project Description",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-source": "",
+            "style-width": "",
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
+        "key": "formgroup_1",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_store",
+            "data-buildertype": "input",
+            "label": "Store",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_store_listing_language",
+            "data-buildertype": "input",
+            "label": "Store Listing Language",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
         "key": "staticcontent_instructions",
         "data-buildertype": "staticcontent",
         "content": "<h3>Instructions</h3>\n<ul>\n<p>Press <strong>Continue</strong> when all the following are true.</p>\n<ul>\n<li>I have reviewed the <a href=\"http://software.sil.org/scriptureappbuilder/service/checklist/\">Intellectual Property (IP) Attributions Guidelines</a>.</li>\n\n<li>I have used the appropriate App Builder on my computer to define and compile my app.  I have tested it and believe it is ready to publish widely.</li>\n\n<li>I have been given permission by my organization to publish the contents of the app.</il>\n\n<li>I know who should be listed as copyright owners for the text and audio.</li>\n</ul>\n\n",
