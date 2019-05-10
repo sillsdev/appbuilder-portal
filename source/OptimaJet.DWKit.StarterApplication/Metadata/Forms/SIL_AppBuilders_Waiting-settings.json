@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Waiting",
-  "lastUpdate": "2019-01-07T22:04:21.3080637+00:00",
+  "lastUpdate": "2019-05-10T16:25:54.1206599+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -39,6 +39,22 @@
       "id": "8ba5c640-ab74-a147-4f70-7b2c0c730750",
       "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "5845829f-040d-dab3-2bba-2223166c2f8d",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "8ba5c640-ab74-a147-4f70-7b2c0c730750",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "b45a4c56-f8ea-09da-7a75-4f8d65aebd90",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "8ba5c640-ab74-a147-4f70-7b2c0c730750",
+      "isEditable": false,
       "isLoadable": true
     },
     {
@@ -84,19 +100,9 @@
       "isLoadable": true
     },
     {
-      "id": "5845829f-040d-dab3-2bba-2223166c2f8d",
-      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
-      "control": "input_description",
-      "parentId": "8ba5c640-ab74-a147-4f70-7b2c0c730750",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "b45a4c56-f8ea-09da-7a75-4f8d65aebd90",
-      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
-      "control": "input_product_name",
-      "parentId": "8ba5c640-ab74-a147-4f70-7b2c0c730750",
-      "isEditable": false,
+      "id": "2078aed4-917a-8a1e-0bdb-63bc8c7ad45f",
+      "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
+      "isEditable": true,
       "isLoadable": true
     }
   ],

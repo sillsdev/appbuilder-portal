@@ -117,6 +117,10 @@ function runstuff {
         && echo "DB setup for json:api"
     ;;
 
+    bootstrap:workflow)
+	${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_workflow.sql"
+    ;;
+
     bootstrap:sample)
       echo "Adding sample data..."
 

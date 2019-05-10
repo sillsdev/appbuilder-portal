@@ -60,6 +60,61 @@
         "size": "medium"
       },
       {
+        "key": "formgroup_2",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_project_name",
+            "data-buildertype": "input",
+            "label": "Project Name",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-width": "",
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_project_description",
+            "data-buildertype": "input",
+            "label": "Project Description",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-source": "",
+            "style-width": "",
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
+        "key": "formgroup_1",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_store",
+            "data-buildertype": "input",
+            "label": "Store",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_store_listing_language",
+            "data-buildertype": "input",
+            "label": "Store Listing Language",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
         "key": "staticcontent_1",
         "data-buildertype": "staticcontent",
         "content": "<h3>Instructions</h3>\n<ul>\n<li>Make any changes needed in the app. </li>\n<li>Click \"Send\" in the \"Publishing\" app configuration page and successfully upload the data to the app publishing repository.\n</li>\n\n",

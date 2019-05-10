@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Readiness_Check",
-  "lastUpdate": "2019-04-03T21:47:04.111028+00:00",
+  "lastUpdate": "2019-05-10T20:36:42.8350163+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -42,6 +42,22 @@
       "id": "39e1c76c-2bc2-aa7e-3170-ee17756035ea",
       "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "8b5a985f-615e-8e18-9d03-8a0c9df2dadd",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "39e1c76c-2bc2-aa7e-3170-ee17756035ea",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "dcbb64ee-b18a-9a63-c229-f1b6838159db",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "39e1c76c-2bc2-aa7e-3170-ee17756035ea",
+      "isEditable": false,
       "isLoadable": true
     },
     {
@@ -91,6 +107,22 @@
       "id": "6d8c3eee-73e3-6ec5-ad6d-077c76f42250",
       "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "2926159f-e6f5-a92b-6684-2ee7903e77c7",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "6c0ea023-dad7-b053-5ded-229a1a3a2cc1",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "4f1ed246-717f-eb0c-3564-8bfee8c23ebd",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "504c326a-9b57-5de8-a157-33b88947b8af",
+      "isEditable": false,
       "isLoadable": true
     }
   ],

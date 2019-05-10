@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Make_It_Live",
-  "lastUpdate": "2019-03-27T13:55:11.410194-04:00",
+  "lastUpdate": "2019-05-10T20:15:55.7482603+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -42,6 +42,22 @@
       "isLoadable": true
     },
     {
+      "id": "27a81156-5928-2314-cb01-3838915078e6",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "2c6766cd-62b9-c571-a7d7-503eb13f97cb",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "20cc0e6e-df26-6de9-e707-bcd7fb2c23ae",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "2c6766cd-62b9-c571-a7d7-503eb13f97cb",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "0f4e4e59-c493-663b-3d42-eb6b40bc2224",
       "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
       "isEditable": true,
@@ -73,6 +89,14 @@
       "isLoadable": true
     },
     {
+      "id": "d71767d5-0e85-fcaa-7d21-bc6d1f0dba87",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "9bda6301-5d16-bffd-4201-c058145db11e",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "1a18c404-a772-6645-b2b2-e9d477b9058d",
       "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
       "control": "dropdown_language",
@@ -87,18 +111,16 @@
       "isLoadable": true
     },
     {
-      "id": "27a81156-5928-2314-cb01-3838915078e6",
-      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
-      "control": "input_project_description",
-      "parentId": "2c6766cd-62b9-c571-a7d7-503eb13f97cb",
-      "isEditable": false,
+      "id": "55ce5467-4b61-dd39-17ac-cfca01019ff3",
+      "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
+      "isEditable": true,
       "isLoadable": true
     },
     {
-      "id": "20cc0e6e-df26-6de9-e707-bcd7fb2c23ae",
-      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
-      "control": "input_project_name",
-      "parentId": "2c6766cd-62b9-c571-a7d7-503eb13f97cb",
+      "id": "7ac3d7d7-fc6a-c999-2ad5-a949838e2ec8",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "1a18c404-a772-6645-b2b2-e9d477b9058d",
       "isEditable": false,
       "isLoadable": true
     }
