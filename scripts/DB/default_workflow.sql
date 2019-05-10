@@ -114,7 +114,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
         <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
-          <ActionParameter><![CDATA[{"targets":"apk play-listing"}]]></ActionParameter>
+          <ActionParameter><![CDATA[{"targets":"apk play-listing", "environment" : { "BUILD_MANAGE_VERSION_CODE": "1", "BUILD_MANAGE_VERSION_NAME" : "1", "BUILD_SHARE_APP_LINK" : "1" }}]]></ActionParameter>
         </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
@@ -608,7 +608,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
         <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
-          <ActionParameter><![CDATA[{"targets":"apk play-listing"}]]></ActionParameter>
+          <ActionParameter><![CDATA[{"targets":"apk play-listing", "environment" : { "BUILD_MANAGE_VERSION_CODE": "1", "BUILD_MANAGE_VERSION_NAME" : "1", "BUILD_SHARE_APP_LINK" : "1" }}]]></ActionParameter>
         </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
@@ -855,7 +855,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
         <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
-          <ActionParameter><![CDATA[{"targets":"play-listing"}]]></ActionParameter>
+          <ActionParameter><![CDATA[{"targets":"play-listing", "environment" : { "BUILD_MANAGE_VERSION_CODE": "1", "BUILD_MANAGE_VERSION_NAME" : "1" }}]]></ActionParameter>
         </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
