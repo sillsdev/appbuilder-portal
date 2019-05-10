@@ -12,6 +12,7 @@ export const auth0 = {
   domain: process.env.AUTH0_DOMAIN,
   clientId: process.env.AUTH0_CLIENT_ID,
   scope: process.env.AUTH0_SCOPE,
+  baseUrl: process.env.AUTH0_BASE_URL || 'https://cdn.auth0.com',
 };
 
 export const NODE_ENV = process.env.NODE_ENV || 'development';
