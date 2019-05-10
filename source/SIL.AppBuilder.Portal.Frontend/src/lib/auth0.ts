@@ -116,7 +116,7 @@ export function getAuth0LockInstance(options = {}): Auth0LockStatic {
         title: 'Welcome to Scriptoria',
       },
       theme: {
-        logo: 'https://software.sil.org/wp/wp-content/uploads/2017/01/2014_sil_logo_80w_96h.png',
+        logo: 'https://www.sil.org/sites/default/files/sil-logo-blue-2017_1.png',
       },
       ...options,
     });
