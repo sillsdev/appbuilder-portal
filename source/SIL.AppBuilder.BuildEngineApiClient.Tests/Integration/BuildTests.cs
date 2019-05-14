@@ -68,14 +68,15 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
         // This test assumes that a job with the ID being passed in already exists before the
         // test is run
         [Theory(Skip = skipIntegrationTest)]
-        [InlineData(2)]
+        [InlineData(9)]
         public void CreateTestBuild(int jobId)
         {
             var client = new BuildEngineApi(BaseUrl, ApiAccessKey);
             var env = new Dictionary<string, string>
             {
-                {"VAR1", "VALUE1"},
-                {"VAR2", "VALUE2"}
+                {"BUILD_SHARE_APP_LINK", "1"},
+                {"BUILD_MANAGE_VERSION_NAME", "1"},
+                {"BUILD_MANAGE_VERSION_CODE", "1"}
             };
             var build = new Build
             {
@@ -86,7 +87,7 @@ namespace SIL.AppBuilder.BuildEngineApiClient.Tests.Integration
             Assert.NotNull(response);
             Assert.Equal("initialized", response.Status);
             Assert.NotEqual(0, response.Id);
-            Assert.Equal(2, response.JobId);
+            Assert.Equal(jobId, response.JobId);
         }
 
         // This test assumes that the job and build exist
