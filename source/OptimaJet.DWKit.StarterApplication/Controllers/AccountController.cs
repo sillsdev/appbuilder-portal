@@ -20,25 +20,6 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
     public class AccountController : Controller
     {
         [AllowAnonymous]
-        [Route("swagger/{mode?}/{name?}")]
-        [HttpGet]
-        public async Task<ActionResult> GetSwaggerFile()
-        {
-            try
-            {
-                var swagger = await IntegrationApiHttp.GetSwaggerSpecsAsync(HttpContext.Request);
-                var filename = "dwkit.yaml";
-                var contentType = "application/yaml";
-
-                return File(Encoding.UTF8.GetBytes(swagger), contentType, filename);
-            }
-            catch (Exception ex)
-            {
-                return Json(new FailResponse(ex));
-            }
-        }
-
-        [AllowAnonymous]
         [HttpGet]
         public ActionResult Login()
         {
