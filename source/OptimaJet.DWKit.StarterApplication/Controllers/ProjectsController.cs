@@ -59,15 +59,14 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             return Ok(projectToken);
         }
 
-        [HttpPost("product-actions")]
-        public async Task<IEnumerable<ProductActions>> GetProductActions([FromBody] List<Project> projects)
+        [HttpGet("product-actions")]
+        public async Task<IEnumerable<ProductActions>> GetProductActions([FromQuery] List<int> ids)
         {
-            if (projects == null)
+            if (ids == null)
             {
                 throw new JsonApiDotNetCore.Internal.JsonApiException(404, "No projects provided");
             }
-            var ids = projects.Select(p => p.Id);
-            return await ProductService.GetProductActionsForProjects(ids);
+            return await ProductService.GetProductActionsForProjectsAsync(ids);
         }
 
     }

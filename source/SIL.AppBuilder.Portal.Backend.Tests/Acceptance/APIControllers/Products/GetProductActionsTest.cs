@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support;
@@ -286,22 +287,26 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             Assert.Equal("Cancel", productActions.Types.First());
         }
 
-        //[Fact]
-        //public async Task Get_ProductActions_For_Projects()
-        //{
-        //    //BuildTestDataForProductActions();
+        [Fact]
+        public async Task Get_ProductActions_For_Projects()
+        {
+            BuildTestDataForProductActions();
 
-        //    var projectsUrl = "/api/projects";
-        //    var projectsResponse = await Get(projectsUrl, org1.ToString());
-        //    var projects = await DeserializeList<Project>(projectsResponse);
+            //var projectsUrl = "/api/projects";
+            //var projectsResponse = await Get(projectsUrl, org1.ToString());
+            //var projects = await DeserializeList<Project>(projectsResponse);
 
-        //    var url = $"/api/projects/product-actions";
-        //    var response = await Post(url, projects, org1.ToString());
+            var url = $"/api/product-actions?ids={project1.Id}&ids={project2.Id}";
+            var response = await Get(url, org1.ToString());
 
-        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        //    var productActions = await Deserialize<ProductActions>(response);
-        //}
+            var body = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<Dictionary<string,List<string>>>(body);
+            Assert.Equal(2, result.Count);
+            Assert.Single(result.First().Value);
+            Assert.Single(result.Last().Value);
+        }
 
     }
 }

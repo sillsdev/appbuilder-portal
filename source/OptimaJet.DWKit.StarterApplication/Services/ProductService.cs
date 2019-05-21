@@ -335,20 +335,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         /// <returns>The ProductActions.</returns>
         /// <param name="ids">Project Ids</param>
 
-        public async Task<IEnumerable<ProductActions>> GetProductActionsForProjects(IEnumerable<int> ids)
+        public async Task<IEnumerable<ProductActions>> GetProductActionsForProjectsAsync(IEnumerable<int> ids)
         {
-            var projects = ProjectRepository.Get()
-                .Where(p => ids.Contains(p.Id))
-                .Include(p => p.Products)
-                    .ThenInclude(p => p.ProductWorkflow)
-                .Include(p2 => p2.Products)
-                    .ThenInclude(p => p.ProductDefinition);
+            var products = await ProductRepository.Get()
+                .Where(p => ids.Contains(p.ProjectId))
+                .Include(p => p.ProductDefinition)
+                .Include(p => p.ProductWorkflow).ToListAsync();
 
-            return await (from project in projects
-                    from product in project.Products
+            var productActions = (
+                    from product in products
                     let actions = GetActionsForProduct(product)
                     where actions.Any()
-                    select new ProductActions { Id = product.Id, Types = actions }).ToListAsync();
+                    select new ProductActions { Id = product.Id, Types = actions }).ToList();
+
+            return productActions;
         }
     }
 }
