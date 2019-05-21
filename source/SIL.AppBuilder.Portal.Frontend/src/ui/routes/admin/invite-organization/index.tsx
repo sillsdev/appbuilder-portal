@@ -45,7 +45,6 @@ export class InviteOrganization extends React.Component<IProps> {
 
     return (
       <div className='flex flex-column flex-grow'>
-        <Header />
         <div className='ui container p-t-lg'>
           <h1 className='title page-heading-border p-b-md m-b-lg'>{t('newOrganization.title')}</h1>
           <div>
