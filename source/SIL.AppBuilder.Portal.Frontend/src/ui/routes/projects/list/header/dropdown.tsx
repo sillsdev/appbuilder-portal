@@ -4,6 +4,7 @@ import { Dropdown } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 
 import { useTranslations } from '~/lib/i18n';
+
 import { PROJECT_ROUTES } from './routes';
 
 export function ProjectFilterDropdown({ filter }) {

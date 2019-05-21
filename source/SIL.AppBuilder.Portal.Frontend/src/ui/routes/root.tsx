@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Switch, Redirect } from 'react-router-dom';
+
+import { Route } from '~/lib/routing';
+
 import { ToastContainer } from 'react-toastify';
 
 import { AuthConsumer } from '~/data/containers/with-auth';

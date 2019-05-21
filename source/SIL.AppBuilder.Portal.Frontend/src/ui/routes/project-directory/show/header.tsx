@@ -5,7 +5,9 @@ import { ProjectResource, attributesFor } from '@data';
 import { useTranslations } from '@lib/i18n';
 import TimezoneLabel from '@ui/components/labels/timezone';
 
-type IProps = { project: ProjectResource };
+interface IProps {
+  project: ProjectResource;
+}
 
 export default function Header({ project }: IProps) {
   const { t } = useTranslations();

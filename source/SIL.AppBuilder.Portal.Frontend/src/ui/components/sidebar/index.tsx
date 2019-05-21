@@ -13,7 +13,7 @@ export interface IProps {
 
 export default function Sidebar({ closeSidebar, className }: IProps) {
   const [isActive, setIsActive] = useState(false);
-  const orgSwitchToggler = () => setIsActive(prev => !prev);
+  const orgSwitchToggler = () => setIsActive((prev) => !prev);
 
   return (
     <div

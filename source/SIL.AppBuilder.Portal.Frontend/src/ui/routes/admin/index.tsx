@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
+
+import { Route } from '~/lib/routing';
+
 import { requireAuth } from '@lib/auth';
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';

@@ -42,7 +42,7 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
     try {
       const project = await create({ name, language, isPublic, description }, groupId, typeId);
       const id = idFromRecordIdentity(dataStore, project);
-      
+
       history.push(`/projects/${id}`);
     } catch (e) {
       toast.error(e);

@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
+
+import { Route } from '~/lib/routing';
+
 import NotFoundRoute from '@ui/routes/errors/not-found';
 
 import CreateOrganizationRoute, { pathName as createPath } from './create-organization';
