@@ -72,7 +72,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
         public async Task<HttpResponseMessage> Post(string url, object content, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
         {
             var httpMethod = new HttpMethod("POST");
-            var serializedContent = JsonConvert.SerializeObject(content);
+            var serializedContent = content is string ? content as string : JsonConvert.SerializeObject(content);
             var request = new HttpRequestMessage(httpMethod, url)
             {
                 Content = new StringContent(

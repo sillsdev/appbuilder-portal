@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 
@@ -26,7 +27,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             var result = new Dictionary<string, List<string>>();
             foreach (var item in productActions)
             {
-                foreach (var type in item.Types)
+                foreach (var type in item.Actions)
                 {
                     if (result.TryGetValue(type, out List<string> value))
                     {
@@ -48,11 +49,21 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             return await DoGetProductActionsAsync(ids);
         }
 
-        //[Route("api/product-actions")]
-        //[HttpPost]
-        //public async Task<Dictionary<string, List<string>>> GetProductActionsFromBodyAsync([FromBody] List<int> ids)
-        //{
-        //    return await DoGetProductActionsAsync(ids);
-        //}
+        [Route("api/product-actions")]
+        [HttpPost]
+        public async Task<Dictionary<string, List<string>>> GetProductActionsAsync([FromBody] ProductActionProjects body)
+        {
+            return await DoGetProductActionsAsync(body.Projects);
+        }
+
+        [Route("api/run-product-actions")]
+        [HttpPost]
+        public async Task<IActionResult> RunProductActionsAsync([FromBody] ProductActionRuns body)
+        {
+            var pids = body.Products.ConvertAll(x => new Guid(x));
+            await ProductService.RunActionForProductsAsync(pids, body.Action);
+
+            return Ok();
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,7 +38,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             var productActions = new ProductActions
             {
                 Id = id,
-                Types = actions
+                Actions = actions
             };
             return Ok(productActions);
         }
