@@ -13,6 +13,10 @@ import { PROJECT_ROUTES } from './routes';
 import { rowSelectionsFor } from '~/redux-store/data/selectors';
 
 import { withBulkActions } from '~/data/containers/resources/project/with-bulk-actions';
+import { BulkProductSelection } from './bulk-product-selection';
+import { canUserArchive } from '~/data/containers/resources/project/permissions';
+import { useOrbit } from 'react-orbitjs';
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 interface IExpectedProps {
   afterBulkAction: () => void;
@@ -26,16 +30,17 @@ export const BulkButtons = withBulkActions<IExpectedProps>(function BulkButtons(
   bulkReactivate,
 }) {
   const { t } = useTranslations();
-  const [showBulkBuildModal, setShowBulkBuildModal] = useState(false);
   const { location } = useRouter();
   const [reduxState] = useRedux();
+  const { dataStore } = useOrbit();
+  const { currentUser } = useCurrentUser();
   const selectedRows = rowSelectionsFor(reduxState, tableName);
 
   const isInOrganizationProject = location.pathname.endsWith(PROJECT_ROUTES.ORGANIZATION);
   const isInOwnProject = location.pathname.endsWith(PROJECT_ROUTES.OWN);
   const isInArchivedProject = location.pathname.endsWith(PROJECT_ROUTES.ARCHIVED);
   const isInActiveProject = isInOrganizationProject || isInOwnProject;
-  const canArchiveOrReactivate = every(selectedRows, (row) => row.currentUserCanArchive);
+  const canArchiveOrReactivate = every(selectedRows, (row) => canUserArchive(dataStore, currentUser, row));
 
   const onBulkArchive = useCallback(async () => {
     try {
@@ -56,7 +61,6 @@ export const BulkButtons = withBulkActions<IExpectedProps>(function BulkButtons(
     }
     afterBulkAction();
   }, [bulkReactivate, selectedRows]);
-  const onBulkBuild = () => setShowBulkBuildModal((prev) => !prev);
 
   return (
     <>
@@ -80,14 +84,7 @@ export const BulkButtons = withBulkActions<IExpectedProps>(function BulkButtons(
           {t('common.reactivate')}
         </button>
       ) : null}
-      <button
-        disabled={selectedRows.length === 0}
-        className='ui button basic blue m-r-md'
-        onClick={onBulkBuild}
-      >
-        {t('common.build')}
-      </button>
-      {showBulkBuildModal && <BulkProductSelection />}
+      <BulkProductSelection disabled={selectedRows.length === 0} tableName={tableName} />
     </>
   );
 });

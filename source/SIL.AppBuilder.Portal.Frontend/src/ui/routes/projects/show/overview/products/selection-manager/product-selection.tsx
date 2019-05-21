@@ -52,7 +52,7 @@ export default function ProductSelector(props: IProps & i18nProps) {
     }
   }, [dataStore, project, workflowProjectUrl]);
 
-  const { isFinished: hasUrl } = useConditionalPoll(pollCallback, 3000);
+  useConditionalPoll(pollCallback, 3000);
 
   return (
     <Modal
@@ -64,7 +64,7 @@ export default function ProductSelector(props: IProps & i18nProps) {
           className='ui button fs-13 bold uppercase
             round-border-4 dark-blue-text
             thin-inverted-border bg-transparent'
-          disabled={!workflowProjectUrl || !hasUrl}
+          disabled={!workflowProjectUrl}
           onClick={toggleModal}
         >
           {t('project.products.addRemove')}

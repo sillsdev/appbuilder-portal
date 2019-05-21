@@ -215,6 +215,11 @@
         "archived": "Archived Projects",
         "all": "All Projects"
       }
+    },
+    "bulk": {
+      "buildModal": {
+        "title": "Perform Bulk Build/Rebuild"
+      }
     }
   },
   "productDefinitions": {
