@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import CaretDown from '@material-ui/icons/KeyboardArrowDown';
 import { Dropdown, Popup } from 'semantic-ui-react';
 import { NavLink, withRouter, Link } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
@@ -21,6 +20,7 @@ import './styles.scss';
 import { connect } from 'react-redux';
 
 import { rowSelectionsFor, allCheckboxStateFor } from '~/redux-store/data/selectors';
+import { ProjectFilterDropdown } from './dropdown';
 
 interface IOwnProps {
   filter: string;
@@ -91,70 +91,18 @@ class Header extends React.Component<IProps> {
 
   render() {
     const { t, filter, onSearch, selectedRows } = this.props;
-    const dropdownText = {
-      'all-projects': t('projects.switcher.dropdown.all'),
-      'my-projects': t('projects.switcher.dropdown.myProjects'),
-      organization: t('projects.switcher.dropdown.orgProjects'),
-      archived: t('projects.switcher.dropdown.archived'),
-    };
 
-    const trigger = (
-      <>
-        <div className='text'>{dropdownText[filter]}</div>
-        <CaretDown />
-      </>
-    );
+
 
     return (
       <div className='flex-col p-t-md-xs' data-test-project-action-header>
         <div className='flex justify-content-space-between p-b-md-xs'>
           <div>
-            <Dropdown className='project-switcher' trigger={trigger} icon={null} inline>
-              <Dropdown.Menu>
-                <Dropdown.Item
-                  text={t('projects.switcher.dropdown.all')}
-                  as={NavLink}
-                  to={PROJECT_ROUTES.ALL}
-                />
-                <Dropdown.Item
-                  text={t('projects.switcher.dropdown.myProjects')}
-                  className='m-l-md'
-                  as={NavLink}
-                  to={PROJECT_ROUTES.OWN}
-                />
-                <Dropdown.Item
-                  text={t('projects.switcher.dropdown.orgProjects')}
-                  className='m-l-md'
-                  as={NavLink}
-                  to={PROJECT_ROUTES.ORGANIZATION}
-                />
-                <Dropdown.Item
-                  text={t('projects.switcher.dropdown.archived')}
-                  className='m-l-lg'
-                  as={NavLink}
-                  to={PROJECT_ROUTES.ARCHIVED}
-                />
-              </Dropdown.Menu>
-            </Dropdown>
+            <ProjectFilterDropdown filter={filter} />
           </div>
           <div className='flex align-items-center'>
             <div className='flex align-items-center'>
-              <Popup
-                basic
-                hoverable
-                trigger={
-                  <div>
-                    <DebouncedSearch
-                      className='search-component'
-                      placeholder={t('common.search')}
-                      onSubmit={onSearch}
-                    />
-                  </div>
-                }
-                position='bottom center'
-              >
-                <div dangerouslySetInnerHTML={{ __html: t('directory.search-help') }} />
-              </Popup>
+              <HeaderSearch onSearch={onSearch} />
             </div>
           </div>
         </div>
