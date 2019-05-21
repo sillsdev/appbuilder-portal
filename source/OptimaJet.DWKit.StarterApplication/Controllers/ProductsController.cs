@@ -45,7 +45,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         [HttpPut("{id}/actions/{type}")]
         public async Task<IActionResult> RunProductAction(Guid id, String type)
         {
-            var workflowDefinition = await ProductService.RunProductActionAsync(id, type);
+            var workflowDefinition = await ProductService.RunActionForProductAsync(id, type);
             if (workflowDefinition == null)
             {
                 return NotFound();

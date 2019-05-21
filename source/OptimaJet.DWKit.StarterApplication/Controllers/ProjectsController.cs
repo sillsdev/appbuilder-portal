@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,13 +21,16 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             ICurrentUserContext currentUserContext,
             OrganizationService organizationService,
             IBuildEngineProjectService buildEngineProjectService,
+            ProductService productService,
             UserService userService)
             : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         {
             BuildEngineProjectService = buildEngineProjectService;
+            ProductService = productService;
         }
 
         public IBuildEngineProjectService BuildEngineProjectService { get; }
+        public ProductService ProductService { get; }
 
         [HttpPost("{id}/token")]
         public async Task<IActionResult> GetProjectToken(int id)
@@ -53,5 +58,17 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             };
             return Ok(projectToken);
         }
+
+        [HttpPost("product-actions")]
+        public async Task<IEnumerable<ProductActions>> GetProductActions([FromBody] List<Project> projects)
+        {
+            if (projects == null)
+            {
+                throw new JsonApiDotNetCore.Internal.JsonApiException(404, "No projects provided");
+            }
+            var ids = projects.Select(p => p.Id);
+            return await ProductService.GetProductActionsForProjects(ids);
+        }
+
     }
 }

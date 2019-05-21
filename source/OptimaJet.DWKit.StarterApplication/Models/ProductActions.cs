@@ -7,6 +7,6 @@ namespace OptimaJet.DWKit.StarterApplication.Models
     public class ProductActions : Identifiable<Guid>
     {
         [Attr("types")]
-        public List<string> Types { get; set; }
+        public IEnumerable<string> Types { get; set; }
     }
 }

@@ -132,25 +132,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             return await base.DeleteAsync(id);
         }
 
-        public async Task<List<string>> GetProductActionsAsync(Guid id)
+        public IEnumerable<string> GetActionsForProduct(Product product)
         {
-            Product product = await GetProductForActions(id);
-
-            if (product == null)
+            // Workflow is not running and has been published
+            if ( (product?.ProductWorkflow == null) &&
+                 (product.DatePublished.HasValue)     )
             {
-                return null;
-            }
-
-            if (product.ProductWorkflow == null)
-            {
-                // No running workflow.  
-                
-                if (!product.DatePublished.HasValue)
-                {
-                    // Product has not been published
-                    return null;
-                }
-
                 //Provide actions that are defined
                 var result = new List<string>();
                 if (product.ProductDefinition.RebuildWorkflowId.HasValue)
@@ -161,8 +148,54 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 {
                     result.Add(WorkflowType.Republish.ToString());
                 }
+
                 return result;
             }
+
+            return Enumerable.Empty<string>();
+        }
+
+        public async Task<IEnumerable<string>> GetProductActionsAsync(Guid id)
+        {
+            Product product = await GetProductForActions(id);
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            if (product.ProductWorkflow == null)
+            {
+                if (!product.DatePublished.HasValue)
+                {
+                    // Product has not been published
+                    return null;
+                }
+
+                return GetActionsForProduct(product);
+            }
+            //if (product.ProductWorkflow == null)
+            //{
+            //    // No running workflow.  
+
+            //    if (!product.DatePublished.HasValue)
+            //    {
+            //        // Product has not been published
+            //        return null;
+            //    }
+
+            //    //Provide actions that are defined
+            //    var result = new List<string>();
+            //    if (product.ProductDefinition.RebuildWorkflowId.HasValue)
+            //    {
+            //        result.Add(WorkflowType.Rebuild.ToString());
+            //    }
+            //    if (product.ProductDefinition.RepublishWorkflowId.HasValue)
+            //    {
+            //        result.Add(WorkflowType.Republish.ToString());
+            //    }
+            //    return result;
+            //}
 
             var wd = await GetExecutingWorkflowDefintion(product);
 
@@ -178,7 +211,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             }
 
             // Running the startup workflow.  Return empty list
-            return new List<string> { };
+            return Enumerable.Empty<string>();
         }
 
         private async Task<WorkflowDefinition> GetExecutingWorkflowDefintion(Product product)
@@ -198,7 +231,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<WorkflowDefinition> RunProductActionAsync(Guid id, string type)
+        public async Task<WorkflowDefinition> RunActionForProductAsync(Guid id, string type)
         {
             var product = await GetProductForActions(id);
             if (product == null)
@@ -209,19 +242,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             if (product.ProductWorkflow == null)
             {
                 // No running workflow.  Start one.
-                int? workflowDefinitionId = null;
-                if (type == WorkflowType.Rebuild.ToString())
-                {
-                    workflowDefinitionId = product.ProductDefinition.RebuildWorkflowId;
-                }
-                else if (type == WorkflowType.Republish.ToString())
-                {
-                    workflowDefinitionId = product.ProductDefinition.RepublishWorkflowId;
-                }
-                else
-                {
-                    throw new Exception($"Invalid type '{type}'");
-                }
+                int? workflowDefinitionId = GetWorkflowDefinitionIdForType(product, type);
 
                 if (workflowDefinitionId.HasValue)
                 {
@@ -252,6 +273,82 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             // Trying to start an action workflow while one is already running
             throw new Exception("Cannot start a workflow while one is running");
+        }
+
+        private int? GetWorkflowDefinitionIdForType(Product product,string type)
+        {
+            int? workflowDefinitionId = null;
+
+            if (product.ProductWorkflow == null)
+            {
+                if (type == WorkflowType.Rebuild.ToString())
+                {
+                    workflowDefinitionId = product.ProductDefinition.RebuildWorkflowId;
+                }
+                else if (type == WorkflowType.Republish.ToString())
+                {
+                    workflowDefinitionId = product.ProductDefinition.RepublishWorkflowId;
+                }
+                else
+                {
+                    throw new Exception($"Invalid type '{type}'");
+                }
+            }
+
+            return workflowDefinitionId;
+        }
+
+        public class ProductWorkflowDefinition
+        {
+            public Guid Id { get; set; }
+            public int WorkflowDefinitionId { get; set; }
+        }
+
+        public bool ProductHasValueForTypeOrThrow(int? id, Product product, string type)
+        {
+            if (id.HasValue) return true;
+            throw new JsonApiException(403, $"Product {product.ProductDefinition.Name} cannot run action {type}");
+        }
+
+        public void RunActionForProducts(IEnumerable<Guid> ids, string type)
+        {
+            var products = ProductRepository.Get()
+                .Where(p => ids.Contains(p.Id))
+                .Include(p => p.ProductWorkflow)
+                    .ThenInclude(pw => pw.Scheme)
+                .Include(p => p.ProductDefinition);
+
+            var productWorflowDefinitions = (from product in products
+                    let workflowDefinitionId = GetWorkflowDefinitionIdForType(product, type)
+                    where ProductHasValueForTypeOrThrow(workflowDefinitionId, product, type)
+                    select new ProductWorkflowDefinition { Id = product.Id, WorkflowDefinitionId = workflowDefinitionId.Value }).ToList();
+
+            foreach (var pwd in productWorflowDefinitions)
+            {
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.StartProductWorkflow(pwd.Id, pwd.WorkflowDefinitionId));
+            }
+        }
+
+        /// <summary>
+        /// Get the ProductActions of projects that are eligible to be executed
+        /// </summary>
+        /// <returns>The ProductActions.</returns>
+        /// <param name="ids">Project Ids</param>
+
+        public async Task<IEnumerable<ProductActions>> GetProductActionsForProjects(IEnumerable<int> ids)
+        {
+            var projects = ProjectRepository.Get()
+                .Where(p => ids.Contains(p.Id))
+                .Include(p => p.Products)
+                    .ThenInclude(p => p.ProductWorkflow)
+                .Include(p2 => p2.Products)
+                    .ThenInclude(p => p.ProductDefinition);
+
+            return await (from project in projects
+                    from product in project.Products
+                    let actions = GetActionsForProduct(product)
+                    where actions.Any()
+                    select new ProductActions { Id = product.Id, Types = actions }).ToListAsync();
         }
     }
 }
