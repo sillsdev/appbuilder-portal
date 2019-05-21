@@ -468,23 +468,5 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
 
             Assert.Equal(expected, names);
         }
-
-        [Fact]
-        public async Task Get_ProductActions_For_Projects()
-        {
-            BuildTestData();
-
-            var projectsUrl = "/api/projects";
-            var projectsResponse = await Get(projectsUrl, org1.ToString());
-            var projects = await DeserializeList<Project>(projectsResponse);
-
-            var url = $"/api/projects/product-actions";
-            var response = await Post(url, projects, org1.ToString());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            var productActions = await Deserialize<ProductActions>(response);
-        }
-
     }
 }

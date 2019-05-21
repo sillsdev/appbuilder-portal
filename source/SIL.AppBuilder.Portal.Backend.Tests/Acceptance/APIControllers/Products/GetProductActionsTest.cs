@@ -292,10 +292,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         {
             BuildTestDataForProductActions();
 
-            //var projectsUrl = "/api/projects";
-            //var projectsResponse = await Get(projectsUrl, org1.ToString());
-            //var projects = await DeserializeList<Project>(projectsResponse);
-
             var url = $"/api/product-actions?ids={project1.Id}&ids={project2.Id}";
             var response = await Get(url, org1.ToString());
 
