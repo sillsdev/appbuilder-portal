@@ -77,19 +77,26 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             // args.ExecutedTransition isn't the transition that is actually being executed 
             // (seems to be the first transition of all defined).  In this case, ignore the
             // transition type.
-            if (args.ExecutedTransition != null && (args.CurrentState == args.ExecutedTransition.To.State) && (args.PreviousState == args.ExecutedTransition.From.State))
+            if (args.ExecutedTransition != null)
             {
-                switch (args.ExecutedTransition.Classifier)
+                if ((args.CurrentState == args.ExecutedTransition.To.State) && (args.PreviousState == args.ExecutedTransition.From.State))
                 {
-                    case TransitionClassifier.Direct:
-                        transitionType = WorkflowProductService.TransitionType.Continuation;
-                        break;
-                    case TransitionClassifier.Reverse:
-                        transitionType = WorkflowProductService.TransitionType.Rejection;
-                        break;
-                    default:
-                        transitionType = WorkflowProductService.TransitionType.Other;
-                        break;
+                    switch (args.ExecutedTransition.Classifier)
+                    {
+                        case TransitionClassifier.Direct:
+                            transitionType = WorkflowProductService.TransitionType.Continuation;
+                            break;
+                        case TransitionClassifier.Reverse:
+                            transitionType = WorkflowProductService.TransitionType.Rejection;
+                            break;
+                        default:
+                            transitionType = WorkflowProductService.TransitionType.Other;
+                            break;
+                    }
+                }
+                else
+                {
+                    Log.Warning($":::: Executing Transition Mismatch: PreviousState={args.PreviousState}=>CurrentState={args.CurrentState}; TransitionName={args.ExecutedTransition.Name}, From={args.ExecutedTransition.From.State} => To={args.ExecutedTransition.To.State}");
                 }
             }
 
