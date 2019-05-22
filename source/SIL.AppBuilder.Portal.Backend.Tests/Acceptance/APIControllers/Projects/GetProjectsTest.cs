@@ -467,6 +467,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             };
 
             Assert.Equal(expected, names);
-        }
+        }        
     }
 }

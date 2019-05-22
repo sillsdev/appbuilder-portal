@@ -132,7 +132,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             return await base.DeleteAsync(id);
         }
 
-        public IEnumerable<string> GetActionsForProduct(Product product)
+        public List<string> GetActionsForProduct(Product product)
         {
             // Workflow is not running and has been published
             if ( (product?.ProductWorkflow == null) &&
@@ -152,10 +152,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 return result;
             }
 
-            return Enumerable.Empty<string>();
+            return new List<string>();
         }
 
-        public async Task<IEnumerable<string>> GetProductActionsAsync(Guid id)
+        public async Task<List<string>> GetProductActionsAsync(Guid id)
         {
             Product product = await GetProductForActions(id);
 
@@ -166,12 +166,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             if (product.ProductWorkflow == null)
             {
+                // No running workflow.  
+                
                 if (!product.DatePublished.HasValue)
                 {
                     // Product has not been published
                     return null;
                 }
 
+                //Provide actions that are defined
                 return GetActionsForProduct(product);
             }
 
@@ -189,7 +192,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             }
 
             // Running the startup workflow.  Return empty list
-            return Enumerable.Empty<string>();
+            return new List<string>();
         }
 
         private async Task<WorkflowDefinition> GetExecutingWorkflowDefintion(Product product)
