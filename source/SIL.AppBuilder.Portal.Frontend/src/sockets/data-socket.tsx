@@ -136,7 +136,7 @@ class LiveDataManagerSocketManager extends Component<LiveDataProps, State> {
       transforms
     );
 
-    if (isTesting) return;
+    if (!this.state.isConnected) return;
 
     let observer = this.dataClient.hub.invoke<string>('PerformOperations', JSON.stringify(data));
 
