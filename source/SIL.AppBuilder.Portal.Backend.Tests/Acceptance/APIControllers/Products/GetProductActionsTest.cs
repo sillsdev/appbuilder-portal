@@ -319,31 +319,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             Assert.Equal("Cancel", productActions.Actions.First());
         }
 
-        [Fact]
-        public async Task Get_ProductActions_For_Projects_FromQuery()
-        {
-            BuildTestDataForProductActions();
-
-            var url = $"/api/product-actions?ids={project1.Id}&ids={project2.Id}";
-            var response = await Get(url, org1.ToString());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            var body = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<Dictionary<string,List<string>>>(body);
-            Assert.Equal(2, result.Count);
-            Assert.Single(result.First().Value);
-            Assert.Single(result.Last().Value);
-        }
-
-        [Fact(Skip = "Not Working: BadRequest (Accept Header)")]
+        [Fact(Skip = null /* "Not Working: BadRequest (Accept Header)"*/)]
         public async Task Get_ProductActions_For_Projects_FromPost()
         {
             BuildTestDataForProductActions();
 
             var url = $"/api/product-actions";
-            var content = $"{{\"data\":{{\"attributes\":{{\"projects\":[ {project1.Id}, {project2.Id} ]}},\"type\":\"product-action-projects\",\"id\":\"1A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
-            var response = await Post(url, content, org1.ToString());
+            //var content = $"{{\"data\":{{\"attributes\":{{\"projects\":[ {project1.Id}, {project2.Id} ]}},\"type\":\"product-action-projects\",\"id\":\"1A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
+            var content = $"{{\"projects\":[ {project1.Id}, {project2.Id} ] ,\"id\":\"1A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}";
+            var response = await Post(url, content, org1.ToString(), contentType:"application/json");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -362,9 +346,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
 
-            var url = "/api/run-product-actions";
-            var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Rebuild\",\"products\":[\"{product2.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"2A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
-            var response = await Post(url, content);
+            var url = "/api/product-actions/run";
+            //var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Rebuild\",\"products\":[\"{product2.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"2A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
+            var content = $"{{ \"action\" : \"Rebuild\", \"products\" :[\"{product2.Id}\"] ,\"id\":\"2A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}";
+            var response = await Post(url, content, contentType:"application/json");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             backgroundJobClientMock.Verify(x => x.Create(
@@ -382,9 +367,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
 
-            var url = "/api/run-product-actions";
-            var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Rebuild\",\"products\":[\"{product1.Id}\",\"{product2.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"3A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
-            var response = await Post(url, content);
+            var url = "/api/product-actions/run";
+            //var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Rebuild\",\"products\":[\"{product1.Id}\",\"{product2.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"3A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
+            var content = $"{{\"action\":\"Rebuild\",\"products\":[\"{product1.Id}\",\"{product2.Id}\"] ,\"id\":\"3A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}";
+            var response = await Post(url, content, contentType:"application/json");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Contains("not published", responseBody);
@@ -398,9 +384,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
 
-            var url = "/api/run-product-actions";
-            var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Republish\",\"products\":[\"{product5.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"4A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
-            var response = await Post(url, content);
+            var url = "/api/product-actions/run";
+            //var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Republish\",\"products\":[\"{product5.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"4A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
+            var content = $"{{\"action\":\"Republish\",\"products\":[\"{product5.Id}\"],\"id\":\"4A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}";
+            var response = await Post(url, content, contentType:"application/json");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Contains("no workflow defined", responseBody);
