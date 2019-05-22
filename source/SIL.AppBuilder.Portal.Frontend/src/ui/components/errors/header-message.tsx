@@ -22,7 +22,6 @@ export default function ErrorHeaderMessage({ error, showClose }: IProps) {
   // title is required, but body is not.
   const { title, body } = parseError(error);
 
-  console.log('parsed', title, body);
   return (
     <div className='ui negative message'>
       {showClose ? <CloseIcon className='close icon' /> : null}

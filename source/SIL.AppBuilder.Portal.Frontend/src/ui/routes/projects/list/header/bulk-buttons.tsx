@@ -13,9 +13,13 @@ import { PROJECT_ROUTES } from './routes';
 import { rowSelectionsFor } from '~/redux-store/data/selectors';
 
 import { withBulkActions } from '~/data/containers/resources/project/with-bulk-actions';
+
 import { BulkProductSelection } from './bulk-product-selection';
+
 import { canUserArchive } from '~/data/containers/resources/project/permissions';
+
 import { useOrbit } from 'react-orbitjs';
+
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
 interface IExpectedProps {
@@ -40,7 +44,9 @@ export const BulkButtons = withBulkActions<IExpectedProps>(function BulkButtons(
   const isInOwnProject = location.pathname.endsWith(PROJECT_ROUTES.OWN);
   const isInArchivedProject = location.pathname.endsWith(PROJECT_ROUTES.ARCHIVED);
   const isInActiveProject = isInOrganizationProject || isInOwnProject;
-  const canArchiveOrReactivate = every(selectedRows, (row) => canUserArchive(dataStore, currentUser, row));
+  const canArchiveOrReactivate = every(selectedRows, (row) =>
+    canUserArchive(dataStore, currentUser, row)
+  );
 
   const onBulkArchive = useCallback(async () => {
     try {

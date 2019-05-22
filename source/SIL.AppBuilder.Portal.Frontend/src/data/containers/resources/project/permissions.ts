@@ -1,7 +1,10 @@
 import { UserResource, ProjectResource, idFromRecordIdentity } from '~/data';
+
 import Store from '@orbit/store';
 import { attributesFor } from 'react-orbitjs';
+
 import { ROLE } from '~/data/models/role';
+
 import { roleInOrganizationOfResource } from '../../with-role';
 
 export function canUserArchive(dataStore: Store, user: UserResource, project: ProjectResource) {

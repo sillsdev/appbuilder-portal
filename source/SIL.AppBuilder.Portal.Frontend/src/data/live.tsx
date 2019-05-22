@@ -111,10 +111,24 @@ function useSubscribeToResource(
       }
 
       if (!isConnected) return;
-      // if (hub.hubConnection.state !== ConnectionStatus.connected) return;
+      if (hub['hubConnection'].state !== ConnectionStatus.connected) {
+        /* private field. YOLO */
+        return;
+      }
 
-      console.log('unsubscribing from ', subscribeTo);
-      hub.send('UnsubscribeFrom', subscribeTo);
+      try {
+        hub.send('UnsubscribeFrom', subscribeTo);
+      } catch (e) {
+        console.log(
+          'tried to unsubscribe: ',
+          subscribeTo,
+          isConnected,
+          hub['hubConnection'].state,
+          ConnectionStatus.connected
+        );
+
+        throw e;
+      }
     };
   }, [subscribeTo, isConnected]);
 

@@ -11,4 +11,5 @@ export interface ProductDefinitionAttributes extends AttributesObject {
 export type ProductDefinitionResource = ResourceObject<
   PRODUCT_DEFINITIONS_TYPE,
   ProductDefinitionAttributes
-> & Record;
+> &
+  Record;

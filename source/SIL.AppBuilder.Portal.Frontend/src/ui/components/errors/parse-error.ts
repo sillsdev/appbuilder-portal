@@ -1,5 +1,6 @@
 import { RecordNotFoundException, ClientError } from '@orbit/data';
 import { isEmpty } from '@lib/collection';
+
 import { GenericJsonApiError } from '~/data/errors/generic-jsonapi-error';
 
 export interface ParsedError {
@@ -8,7 +9,7 @@ export interface ParsedError {
 }
 
 function getJSONAPIErrors(error) {
-  const onData = (error.data && error.data.errors);
+  const onData = error.data && error.data.errors;
 
   const specCompliant = error.errors;
 

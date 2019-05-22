@@ -9,7 +9,6 @@ import {
 
 import { compose } from 'recompose';
 
-
 interface IRequireRoleProps {
   roleName: ROLE;
   render?: any;

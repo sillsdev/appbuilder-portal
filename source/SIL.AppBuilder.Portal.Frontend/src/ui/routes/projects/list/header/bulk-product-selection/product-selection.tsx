@@ -1,24 +1,39 @@
 import React, { useCallback, useEffect } from 'react';
 import { useRedux } from 'use-redux';
+
 import { rowSelectionsFor } from '~/redux-store/data/selectors';
+
 import { ProjectResource, ProductDefinitionResource } from '~/data';
-import { useOrbit, attributesFor } from 'react-orbitjs';
+
+import { useOrbit, attributesFor, idFromRecordIdentity } from 'react-orbitjs';
 import Store from '@orbit/store';
 import { Checkbox } from 'semantic-ui-react';
 import ProductIcon from '@ui/components/product-icon';
+
 import { AsyncWaiter } from '~/data/async-waiter';
+
 import { post as authenticatedPost, tryParseJson } from '~/lib/fetch';
 
 import { useSelectionManager } from './selection-reducer';
-import { ErrorBoundary } from '~/ui/components/errors';
+
+import { ErrorBoundary, ErrorMessage } from '~/ui/components/errors';
+
 import { GenericJsonApiError } from '~/data/errors/generic-jsonapi-error';
+
+import { useTranslations } from '~/lib/i18n';
+
+interface Permissions {
+  [permissionName: string]: string[];
+}
 
 interface IProps {
   tableName: string;
   onChange: (ids: string[]) => void;
+  onPermissionRetrieval: (newPermissions: Permissions) => void;
 }
 
-export function ProductSelection({ tableName, onChange }: IProps) {
+export function ProductSelection({ tableName, onChange, onPermissionRetrieval }: IProps) {
+  const { t } = useTranslations();
   const [reduxState] = useRedux();
   const { dataStore } = useOrbit();
   const { isSelected, toggle, selected } = useSelectionManager();
@@ -26,10 +41,10 @@ export function ProductSelection({ tableName, onChange }: IProps) {
   const stats = buildStatsForProductTypes(dataStore, selectedRows);
 
   const getPermissions = useCallback(async () => {
-    const ids = selectedRows.map((project) => project.id);
+    const ids = selectedRows.map((project) => idFromRecordIdentity(dataStore, project));
 
     const response = await authenticatedPost(`/api/product-actions`, {
-      data: { ids },
+      data: { projects: ids },
       headers: {
         ['Content-Type']: 'application/json',
       },
@@ -40,7 +55,11 @@ export function ProductSelection({ tableName, onChange }: IProps) {
       throw new GenericJsonApiError(response.status, response.statusText, json);
     }
 
-    return await response.json();
+    const json = await response.json();
+
+    onPermissionRetrieval(json);
+
+    return json;
   }, [selectedRows]);
 
   useEffect(() => onChange(selected), [selected]);
@@ -49,6 +68,11 @@ export function ProductSelection({ tableName, onChange }: IProps) {
     <ErrorBoundary size='small'>
       <AsyncWaiter fn={getPermissions}>
         {({ value }) => {
+          console.log(value);
+          if (!value || Object.keys(value).length === 0) {
+            return <ErrorMessage error={t('errors.friendlyForbidden')} />;
+          }
+
           return (
             <>
               {stats.map(({ productDefinition, isAllowed }) => {
