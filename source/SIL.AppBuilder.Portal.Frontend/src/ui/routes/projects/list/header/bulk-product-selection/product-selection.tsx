@@ -62,13 +62,35 @@ export function ProductSelection({ tableName, onChange, onPermissionRetrieval }:
     return json;
   }, [selectedRows]);
 
-  useEffect(() => onChange(selected), [selected]);
+  useEffect(() => {
+    // given the selected projects, find the products that also have any of the
+    // selected product definitions
+    let products = [];
+    selectedRows.forEach((project) => {
+      const projectProducts = dataStore.cache
+        .query((q) => q.findRelatedRecords(project, 'products'))
+        .filter((product) => {
+          const productDefinition = dataStore.cache.query((q) =>
+            q.findRelatedRecord(product, 'productDefinition')
+          );
+
+          // this comparison is using local ids-
+          return selected.includes(productDefinition.id);
+        });
+
+      products = products.concat(projectProducts);
+    });
+
+    // remote ids
+    const productIds = products.map((product) => idFromRecordIdentity(dataStore, product));
+
+    onChange(productIds);
+  }, [selected]);
 
   return (
     <ErrorBoundary size='small'>
       <AsyncWaiter fn={getPermissions}>
         {({ value }) => {
-          console.log(value);
           if (!value || Object.keys(value).length === 0) {
             return <ErrorMessage error={t('errors.friendlyForbidden')} />;
           }
@@ -102,7 +124,7 @@ export function ProductSelection({ tableName, onChange, onPermissionRetrieval }:
                       <Checkbox
                         data-test-item-checkbox
                         className='m-r-sm'
-                        value={productDefinition.id}
+                        value={id}
                         readOnly={readOnly}
                         checked={isProductSelected}
                       />

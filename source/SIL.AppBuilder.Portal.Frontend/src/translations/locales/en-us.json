@@ -139,7 +139,9 @@
       "rebuild": "Rebuild",
       "republish": "Republish",
       "cancel": "Cancel",
-      "noneAvailable": "No actions are currently available for this product."
+      "noneAvailable": "No actions are currently available for this product.",
+      "bulkNotAllAllowed": "Note: Not all of the selected projects' products can have the {action} action(s) applied.",
+      "dispatched": "The {action} action has been dispatched."
     }
   },
   "profile": {
