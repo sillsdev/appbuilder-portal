@@ -69,7 +69,7 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
 
   redeemInvitation = async (token) => {
     const {
-      updateStore,
+      dataStore,
       currentUserProps: { fetchCurrentUser },
     } = this.props;
     try {
@@ -85,7 +85,7 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
       }
 
       const json = await tryParseJson(result);
-      await pushPayload(updateStore, json);
+      await pushPayload(dataStore, json);
       this.setState({ isLoading: false, error: null, organizationMembershipId: json.data.id });
     } catch (error) {
       this.setState({ isLoading: false, error });
