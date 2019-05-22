@@ -57,6 +57,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
 
                 // });
                 // services.AddMvc();
+                services.AddMvcCore().AddJsonFormatters();
                 services.AddApiServices();
 
                 services.AddScoped<IOrganizationContext, HttpOrganizationContext>();

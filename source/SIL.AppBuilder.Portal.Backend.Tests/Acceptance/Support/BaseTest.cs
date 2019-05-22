@@ -69,20 +69,20 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             return await MakeRequest(request, "", false);
         }
 
-        public async Task<HttpResponseMessage> Post(string url, object content, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
+        public async Task<HttpResponseMessage> Post(string url, object content, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false, string contentType="application/vnd.api+json")
         {
             var httpMethod = new HttpMethod("POST");
-            var serializedContent = JsonConvert.SerializeObject(content);
+            var serializedContent = content is string ? content as string : JsonConvert.SerializeObject(content);
             var request = new HttpRequestMessage(httpMethod, url)
             {
                 Content = new StringContent(
                     serializedContent,
                     Encoding.UTF8,
-                    "application/vnd.api+json"
+                    contentType
                 )
             };
 
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.api+json");
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
             return await MakeRequest(request, organizationId, false, allOrgs);
         }
