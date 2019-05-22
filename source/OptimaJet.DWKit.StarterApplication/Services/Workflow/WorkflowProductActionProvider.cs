@@ -306,6 +306,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             using (var scope = ServiceProvider.CreateScope())
             {
+<<<<<<< HEAD
                 // Only capture the command and allowedUsers if Command Trigger Type.  DWKit will reuse the previous Command and IdentityIds on Auto Trigger Type.
                 // We don't want to report the previous Command or Identity with Auto Trigger Types.
                 string command = null;
@@ -324,6 +325,18 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     allowedUserNames = String.Join(',', userNames);
                 }
 
+=======
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                var workflowUserIds = runtime
+                    .GetAllActorsForDirectCommandTransitions(product.Id, activityName: currentstate)
+                    .ToList();
+                var userRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<User>>();
+                var userNames = userRepository.Get()
+                    .Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
+                    .Select(u => u.Name).ToList();
+                var userNamesString = String.Join(',', userNames);
+>>>>>>> Get user name based on command transitions actor
                 var productTransitionsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<ProductTransition>>();
                 var history = new ProductTransition
                 {
