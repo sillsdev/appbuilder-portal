@@ -60,6 +60,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public StoreLanguage storeLang1 { get; set; }
         public StoreLanguage storeLang2 { get; set; }
         public OrganizationStore orgStore1 { get; set; }
+        public ProductTransition transition1 { get; set; }
+        public ProductTransition transition2 { get; set; }
+        public ProductTransition transition3 { get; set; }
+        public ProductTransition transition4 { get; set; }
         protected void BuildTestData()
         {
             CurrentUser = NeedsCurrentUser();
@@ -383,6 +387,40 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 ProductDefinitionId = productDefinition4.Id,
                 StoreId = store1.Id,
                 StoreLanguageId = storeLang1.Id
+            });
+            transition1 = AddEntity<AppDbContext, ProductTransition>(new ProductTransition
+            {
+                ProductId = product1.Id,
+                WorkflowUserId = Guid.NewGuid(),
+                AllowedUserNames = "Chris Hubbard",
+                InitialState = "Readiness Check",
+                DestinationState = "Approval",
+                Command="Continue"
+            });
+            transition2 = AddEntity<AppDbContext, ProductTransition>(new ProductTransition
+            {
+                ProductId = product1.Id,
+                WorkflowUserId = Guid.NewGuid(),
+                AllowedUserNames = "David Moore",
+                InitialState = "Approval",
+                DestinationState = "Product Creation",
+                Command = "Approve"
+            });
+            transition3 = AddEntity<AppDbContext, ProductTransition>(new ProductTransition
+            {
+                ProductId = product1.Id,
+                WorkflowUserId = null,
+                InitialState = "Product Creation",
+                DestinationState = "Check Product Creation",
+                Command = "Approve"
+            });
+            transition4 = AddEntity<AppDbContext, ProductTransition>(new ProductTransition
+            {
+                ProductId = product1.Id,
+                WorkflowUserId = null,
+                InitialState = "Check Product Creation",
+                DestinationState = "App Builder Configuration",
+                Command = "Approve"
             });
 
         }

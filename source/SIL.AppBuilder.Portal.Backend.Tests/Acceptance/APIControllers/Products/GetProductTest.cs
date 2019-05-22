@@ -64,6 +64,32 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
+        [Fact]
+        public async Task Get_Product_Transitions()
+        {
+            BuildTestData();
 
+            var url = "/api/products/" + product1.Id.ToString() + "/transitions";
+            var response = await Get(url, allOrgs: true);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var transitions = await DeserializeList<ProductTransition>(response);
+            Assert.Equal(4, transitions.Count);
+
+        }
+        [Fact]
+        public async Task Get_Active_Transition()
+        {
+            BuildTestData();
+            var url = "/api/products/" + product1.Id.ToString() + "/transitions/active";
+            var response = await Get(url, allOrgs: true);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var transition = await Deserialize<ProductTransition>(response);
+            Assert.NotNull(transition);
+            Assert.Equal(transition3.Id, transition.Id);
+        }
     }
 }
