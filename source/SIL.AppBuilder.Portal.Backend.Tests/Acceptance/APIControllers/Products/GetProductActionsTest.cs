@@ -325,8 +325,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             BuildTestDataForProductActions();
 
             var url = $"/api/product-actions";
-            //var content = $"{{\"data\":{{\"attributes\":{{\"projects\":[ {project1.Id}, {project2.Id} ]}},\"type\":\"product-action-projects\",\"id\":\"1A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
-            var content = $"{{\"projects\":[ {project1.Id}, {project2.Id} ] ,\"id\":\"1A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}";
+            var content = $"{{\"projects\":[ {project1.Id}, {project2.Id} ]}}";
             var response = await Post(url, content, org1.ToString(), contentType:"application/json");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -347,8 +346,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
 
             var url = "/api/product-actions/run";
-            //var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Rebuild\",\"products\":[\"{product2.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"2A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
-            var content = $"{{ \"action\" : \"Rebuild\", \"products\" :[\"{product2.Id}\"] ,\"id\":\"2A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}";
+            var content = $"{{ \"action\" : \"Rebuild\", \"products\" :[\"{product2.Id}\"]}}";
             var response = await Post(url, content, contentType:"application/json");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -368,8 +366,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
 
             var url = "/api/product-actions/run";
-            //var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Rebuild\",\"products\":[\"{product1.Id}\",\"{product2.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"3A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
-            var content = $"{{\"action\":\"Rebuild\",\"products\":[\"{product1.Id}\",\"{product2.Id}\"] ,\"id\":\"3A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}";
+            var content = $"{{\"action\":\"Rebuild\",\"products\":[\"{product1.Id}\",\"{product2.Id}\"]}}";
             var response = await Post(url, content, contentType:"application/json");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();
@@ -385,8 +382,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             var backgroundJobClientMock = Mock.Get(backgroundJobClient);
 
             var url = "/api/product-actions/run";
-            //var content = $"{{\"data\":{{\"attributes\":{{\"action\":\"Republish\",\"products\":[\"{product5.Id}\"]}},\"type\":\"product-action-runs\",\"id\":\"4A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}}}";
-            var content = $"{{\"action\":\"Republish\",\"products\":[\"{product5.Id}\"],\"id\":\"4A2A639E-2F95-48D4-84FF-F6A2A90D5594\"}}";
+            var content = $"{{\"action\":\"Republish\",\"products\":[\"{product5.Id}\"]}}";
             var response = await Post(url, content, contentType:"application/json");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();

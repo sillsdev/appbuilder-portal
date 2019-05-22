@@ -45,7 +45,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
         [Route("api/product-actions")]
         [HttpPost]
-        public async Task<ActionResult> GetProductActionsAsync([FromBody] ProductActionProjects body)
+        public async Task<ActionResult> GetProductActionsAsync([FromBody] ProductActionProjectIds body)
         {
             var result = await DoGetProductActionsAsync(body.Projects);
             return Json(result);
@@ -53,7 +53,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
         [Route("api/product-actions/run")]
         [HttpPost]
-        public async Task<ActionResult> RunProductActionsAsync([FromBody] ProductActionRuns body)
+        public async Task<ActionResult> RunProductActionsAsync([FromBody] ProductActionRunRequest body)
         {
             var pids = body.Products.ConvertAll(x => new Guid(x));
             await ProductService.RunActionForProductsAsync(pids, body.Action);

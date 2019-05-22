@@ -10,7 +10,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public List<string> Actions { get; set; }
     }
 
-    public class ProductActionRuns : Identifiable<Guid>
+    public class ProductActionRunRequest
     {
         [Attr("action")]
         public string Action { get; set; }
@@ -19,7 +19,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public List<string> Products { get; set; }
     }
 
-    public class ProductActionProjects : Identifiable<Guid>
+    public class ProductActionProjectIds
     {
         [Attr("projects")]
         public List<int> Projects { get; set; }
