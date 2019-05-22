@@ -290,6 +290,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
 
             var currentstate = processInstance.CurrentState;
+            var currentActivityName = processInstance.CurrentActivityName;
+
+            if (currentstate != currentActivityName)
+            {
+                Log.Warning($":::: ActivityName Mismatch: State=${currentstate}, ActivityName=${currentActivityName}");
+            }
 
             var nextState = processInstance.ExecutedActivityState;
 
