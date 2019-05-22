@@ -1,11 +1,6 @@
-import { useEffect, useMemo, useRef, useState, useCallback, memo } from 'react';
+import React, { Component } from 'react';
 import { useOrbit } from 'react-orbitjs';
-import {
-  HubConnectionFactory,
-  HubConnection,
-  ConnectionState,
-  ConnectionStatus,
-} from '@ssv/signalr-client';
+import { HubConnectionFactory, ConnectionState, ConnectionStatus } from '@ssv/signalr-client';
 
 import {
   transformsToJSONAPIOperations,
@@ -14,9 +9,8 @@ import {
 
 import { isTesting } from '~/env';
 
-import { TransformOrOperations } from '@orbit/data';
-import { Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { TransformOrOperations, Source } from '@orbit/data';
+import { Subscription } from 'rxjs';
 import JSONAPISource from '@orbit/jsonapi';
 import Store from '@orbit/store';
 
@@ -24,88 +18,175 @@ import { DataClient } from './clients';
 
 import { dataToLocalCache } from '~/data/orbitjs-operations-support/serialize-from-api';
 
-import { useMemoIf } from '~/lib/hooks';
-
-import DataSocketClient, { DataHub } from './clients/data';
-
 import { useAuth } from '~/data/containers/with-auth';
 
-const mockClient: DataClient = {
-  hub: {
-    connectionState$: {
-      subscribe() {},
-    },
-    send() {},
-    invoke() {},
-    hubConnection: { state: undefined },
-  },
-  start() {},
-  stop() {},
-  dataStore: undefined,
-  hubFactory: undefined,
-  hubName: undefined,
-  onData$$: undefined,
-  onDataReceived: undefined,
-  onReceive: undefined,
-  subscription$$: {},
-};
-
-function LiveDataManager({ children }) {
+export default function LiveDataManger({ children }) {
   const { dataStore, sources } = useOrbit();
   const { isLoggedIn, auth0Id } = useAuth();
 
-  const factoryCreator = useCallback(() => new HubConnectionFactory(), [isLoggedIn]);
-  const hubFactory = useMemoIf(factoryCreator, !isTesting, [factoryCreator]);
-  const clientCreator = useCallback(() => new DataClient(hubFactory, dataStore), [
-    hubFactory,
-    dataStore,
-  ]);
-  const dataClient = useMemoIf(clientCreator, !isTesting, [clientCreator]);
-
-  const subscriptions = useMemo(() => [], [isLoggedIn]);
-
-  useEffect(() => {
-    if (isTesting || !isLoggedIn) {
-      return;
-    }
-
-    dataClient.start();
-
-    return function disconnect() {
-      if (isTesting) return;
-
-      console.log('disconnecting from client...');
-      dataClient.stop();
-      hubFactory.disconnectAll();
-    };
-  }, [isLoggedIn, auth0Id, dataClient]);
-
-  const { isConnected, connectionState } = useConnectionStateWatcher(dataClient);
-
-  const pushData = useCallback(
-    (transforms: TransformOrOperations): Observable<JSONAPIOperationsPayload> => {
-      const data = transformsToJSONAPIOperations(
-        sources.remote as JSONAPISource,
-        dataStore.transformBuilder,
-        transforms
-      );
-
-      if (isTesting) return;
-
-      let observer = dataClient.hub.invoke<string>('PerformOperations', JSON.stringify(data));
-
-      observer.toPromise().then((json) => {
-        return handleSocketPayload(dataStore, json);
-      });
-    },
-    [isConnected, isTesting]
+  return (
+    <LiveDataManagerSocketManager
+      {...{
+        dataStore,
+        sources,
+        isLoggedIn,
+        auth0Id,
+      }}
+    >
+      {children}
+    </LiveDataManagerSocketManager>
   );
-
-  console.log('socket:', isConnected);
-  return children({ socket: dataClient, pushData, subscriptions, isConnected, connectionState });
 }
 
-export default memo(LiveDataManager);
+interface LiveDataProps {
+  dataStore: Store;
+  isLoggedIn: boolean;
+  auth0Id?: string;
+  sources: {
+    [sourceName: string]: Source;
+  };
+  children: (providedArgs: {
+    socket: DataClient;
+    pushData: (transforms: TransformOrOperations) => Promise<JSONAPIOperationsPayload>;
+    subscriptions: string[];
+    isConnected: boolean;
+    connectionState: ConnectionState;
+  }) => React.ReactNode;
+}
+
+interface State {
+  isConnected: boolean;
+  connectionState: ConnectionState;
+}
+
+// using a class instead of a series of functional components and hooks
+// because we want to be *very* specific about what happens when.
+// hooks muddy this a bit by the nature of them re-rendering all the time.
+class LiveDataManagerSocketManager extends Component<LiveDataProps, State> {
+  hubFactory: HubConnectionFactory;
+  dataClient: DataClient;
+  connectionSubscription$: Subscription;
+  connectionStateSubscription$: Subscription;
+
+  subscriptions = [];
+
+  shouldConnect = false;
+
+  isBooting = false;
+  isBooted = false;
+  isDestroying = false;
+
+  state = {
+    isConnected: false,
+    connectionState: undefined,
+  };
+
+  constructor(props: LiveDataProps) {
+    super(props);
+
+    this.hubFactory = new HubConnectionFactory();
+
+    this.startSocket();
+  }
+
+  componentDidMount() {
+    this.startSocket();
+  }
+
+  componentWillUnmount() {
+    this.isDestroying = true;
+
+    this.stopSocket();
+  }
+
+  componentDidUpdate(prevProps: Readonly<LiveDataProps>, prevState: Readonly<State>) {
+    const didLogOut = !this.props.isLoggedIn && prevProps.isLoggedIn;
+    const didLogIn = this.props.isLoggedIn && !prevProps.isLoggedIn;
+
+    if (didLogOut) {
+      this.stopSocket();
+    }
+
+    if (didLogIn) {
+      this.startSocket();
+    }
+  }
+
+  render() {
+    const { children } = this.props;
+    const { isConnected, connectionState } = this.state;
+
+    return children({
+      socket: this.dataClient,
+      pushData: this.pushData,
+      subscriptions: this.subscriptions,
+      isConnected,
+      connectionState,
+    });
+  }
+
+  private pushData = async (
+    transforms: TransformOrOperations
+  ): Promise<JSONAPIOperationsPayload> => {
+    const { sources, dataStore } = this.props;
+
+    const data = transformsToJSONAPIOperations(
+      sources.remote as JSONAPISource,
+      dataStore.transformBuilder,
+      transforms
+    );
+
+    if (isTesting) return;
+
+    let observer = this.dataClient.hub.invoke<string>('PerformOperations', JSON.stringify(data));
+
+    const json = await observer.toPromise();
+
+    return handleSocketPayload(dataStore, json);
+  };
+
+  private startSocket = () => {
+    this.shouldConnect = !isTesting && this.props.isLoggedIn;
+
+    if (!this.shouldConnect) return;
+    if (this.isDestroying || this.isBooting || this.isBooted) return;
+
+    this.isBooting = true;
+
+    this.dataClient = new DataClient(this.hubFactory, this.props.dataStore);
+    this.dataClient.start();
+
+    this.isBooted = true;
+    this.isBooting = false;
+
+    this.connectionSubscription$ = this.dataClient.connection$$.subscribe(() => {
+      this.connectionStateSubscription$ = this.dataClient.hub.connectionState$.subscribe(
+        (state) => {
+          if (this.isDestroying) return;
+
+          this.setState({
+            isConnected: state.status === ConnectionStatus.connected,
+            connectionState: state,
+          });
+        }
+      );
+    });
+  };
+
+  private stopSocket = () => {
+    if (!this.state.isConnected) return;
+
+    this.dataClient.stop();
+    this.hubFactory.disconnectAll();
+
+    if (this.connectionSubscription$) {
+      this.connectionSubscription$.unsubscribe();
+    }
+    if (this.connectionStateSubscription$) {
+      this.connectionStateSubscription$.unsubscribe();
+    }
+  };
+}
 
 function handleSocketPayload(dataStore: Store, json: string) {
   const response: JSONAPIOperationsPayload = JSON.parse(json);
@@ -113,36 +194,4 @@ function handleSocketPayload(dataStore: Store, json: string) {
   dataToLocalCache(dataStore, response);
 
   return response;
-}
-
-function useConnectionStateWatcher(dataClient: DataSocketClient) {
-  const connectionSubscription = useRef<Subscription>();
-  const stateSubscription = useRef<Subscription>();
-  const [isConnected, setIsConnected] = useState(false);
-  const [connectionState, setConnectionState] = useState<ConnectionState>();
-
-  useEffect(() => {
-    if (isTesting) return;
-
-    if (!connectionSubscription.current) {
-      connectionSubscription.current = dataClient.connection$$.subscribe(() => {
-        stateSubscription.current = dataClient.hub.connectionState$.subscribe((state) => {
-          console.log('state change', state);
-          setIsConnected(state.status === ConnectionStatus.connected);
-          setConnectionState(state);
-        });
-      });
-    }
-
-    return () => {
-      if (stateSubscription.current) {
-        stateSubscription.current.unsubscribe();
-      }
-      if (connectionSubscription.current) {
-        connectionSubscription.current.unsubscribe();
-      }
-    };
-  }, [dataClient]);
-
-  return { isConnected, connectionState };
 }
