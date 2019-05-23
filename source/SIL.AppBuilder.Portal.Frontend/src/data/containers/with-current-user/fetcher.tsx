@@ -67,7 +67,7 @@ export function CurrentUserFetcher({ children }) {
         ['X-Refetch-Count']: refetchCount,
       },
     };
-  }, [jwt, isLoggedIn, refetchCount]);
+  }, [jwt, refetchCount]);
 
   const { error, data } = useFetch(
     [
@@ -81,7 +81,7 @@ export function CurrentUserFetcher({ children }) {
     if (!data) return;
 
     pushPayload(dataStore, data);
-  }, [data]);
+  }, [data, dataStore]);
 
   if (error) {
     // errors are not handled here.

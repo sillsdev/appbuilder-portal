@@ -33,10 +33,9 @@ const DataContext = React.createContext<ILiveDataContext>({
 
 export function useLiveData(subscribeTo?: string) {
   const dataCtx = useContext<ILiveDataContext>(DataContext);
-  const {
-    socket: { hub },
-    isConnected,
-  } = dataCtx;
+  const { socket, isConnected } = dataCtx;
+
+  const hub: HubConnection<DataHub> = isTesting ? undefined : socket.hub;
 
   const { isSubscribed } = useSubscribeToResource(hub, subscribeTo, isConnected);
 
@@ -52,7 +51,7 @@ export function useLiveData(subscribeTo?: string) {
 
       return dataCtx.pushData(transforms);
     },
-    [isConnected, isTesting]
+    [dataCtx]
   );
 
   return {
@@ -111,6 +110,12 @@ function useSubscribeToResource(
       }
 
       if (!isConnected) return;
+      // NOTE: isConnected from the context provider doesn't
+      // propagate its update quick enough for this particular value
+      // of this particular copy of the reference to be correct /
+      // the most up to date. So we need to access the state
+      // directly on the hub, which is managed with normal classes
+      // instead of waiting for react-render lifecycles
       if (hub['hubConnection'].state !== ConnectionStatus.connected) {
         /* private field. YOLO */
         return;
@@ -130,7 +135,7 @@ function useSubscribeToResource(
         throw e;
       }
     };
-  }, [subscribeTo, isConnected]);
+  }, [subscribeTo, isConnected, isSubscribed, hub]);
 
   return { isSubscribed };
 }

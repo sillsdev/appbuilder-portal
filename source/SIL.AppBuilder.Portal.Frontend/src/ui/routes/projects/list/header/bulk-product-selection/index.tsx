@@ -137,7 +137,7 @@ function useActionRunner({ selectedAction, selection, setAction, close, permissi
       })
     );
     close();
-  }, [selectedAction, selection, close, setAction]);
+  }, [selectedAction, selection, permissions, t, close, setAction]);
 
   const [runState, runAction] = useAsyncFn(fetcher, [fetcher]);
 
@@ -146,13 +146,13 @@ function useActionRunner({ selectedAction, selection, setAction, close, permissi
       runAction();
       setAction(undefined);
     }
-  }, [selectedAction, selection, runAction]);
+  }, [selectedAction, selection, runAction, setAction]);
 
   useEffect(() => {
     if (runState.error) {
       toast.error(t('errors.generic', { errorMessage: runState.error }));
     }
-  }, [runState.error]);
+  }, [runState.error, t]);
 
   return { runState, runAction };
 }

@@ -53,7 +53,7 @@ export function useCurrentOrganization() {
       // been added to the cache
       console.warn(`org not found for ${currentOrganizationId}`, e);
     }
-  }, [currentOrganizationId]);
+  }, [currentOrganizationId, dataStore.cache, localId]);
 
   const allOrgsSelected = '' === currentOrganizationId;
   const isInSelectedOrg = currentUserOrganizations.map((o) => o.id).includes(localId);
@@ -62,7 +62,7 @@ export function useCurrentOrganization() {
     if (isSuperAdmin && !isInSelectedOrg) {
       fetchDataForOrg(dataStore, currentOrganizationId);
     }
-  }, [currentOrganization, isSuperAdmin, currentOrganizationId]);
+  }, [currentOrganization, isSuperAdmin, currentOrganizationId, isInSelectedOrg, dataStore]);
 
   return {
     currentUserOrganizations,

@@ -62,13 +62,13 @@ export default function SidebarHeader(props: IProps) {
 
       setCurrentOrganizationId(id, { skipNav: true });
     }
-  }, [currentOrganizationId]);
+  }, [currentOrganizationId, organizationsAvailableToUser, setCurrentOrganizationId]);
 
   const toggleOrgSwitcher = useCallback(() => {
     if (hasMoreThanOneOrg) {
       toggle();
     }
-  }, [hasMoreThanOneOrg]);
+  }, [hasMoreThanOneOrg, toggle]);
 
   const icon = isOrgSwitcherActive ? <ArrowDropUp /> : <ArrowDropDown />;
   const orgAttributes = attributesFor(currentOrganization);

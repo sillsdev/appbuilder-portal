@@ -68,7 +68,7 @@ export default function Notifications() {
 
       toggleVisible();
     },
-    [visible]
+    [markAllAsViewed, toggleVisible, visible]
   );
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function Notifications() {
 
       return () => document.removeEventListener('click', toggle);
     }
-  }, [visible]);
+  }, [toggle, visible]);
 
   const isMenuVisible = visible ? 'visible' : '';
 

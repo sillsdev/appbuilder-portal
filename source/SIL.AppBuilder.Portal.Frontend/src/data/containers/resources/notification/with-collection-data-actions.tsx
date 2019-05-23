@@ -33,7 +33,7 @@ export function useCollectionDataActions(notifications: NotificationResource[]) 
         });
       })
     );
-  }, [notifications]);
+  }, [dataStore, notifications, pushData]);
 
   const clearAll = useCallback(async () => {
     let records = recordsThatStillExist(dataStore, notifications);
@@ -50,7 +50,7 @@ export function useCollectionDataActions(notifications: NotificationResource[]) 
 
     // the backend doesn't return records in the operations payload when they are removed
     dataStore.update((t) => records.map((n) => t.removeRecord(n)), { skipRemote: true });
-  }, [notifications]);
+  }, [dataStore, notifications, pushData]);
 
   return { markAllAsViewed, clearAll };
 }

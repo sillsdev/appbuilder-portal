@@ -32,7 +32,7 @@ export function CacheHydrater({ children }) {
         setNeedsSuperAdminData(false);
       })();
     }
-  }, [needsSuperAdminData]);
+  }, [dataStore, needsSuperAdminData]);
 
   if (!isSuperAdmin) {
     return children;

@@ -51,7 +51,7 @@ export default function StoreSelection({
       // loading state again
       // setLoading(false);
     },
-    [selected]
+    [onStoreSelect, selected.length]
   );
 
   const { name } = attributesFor(productDefinition);

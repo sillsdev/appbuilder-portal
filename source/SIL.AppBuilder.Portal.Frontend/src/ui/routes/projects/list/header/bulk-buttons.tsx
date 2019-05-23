@@ -56,7 +56,7 @@ export const BulkButtons = withBulkActions<IExpectedProps>(function BulkButtons(
       toast.error(e);
     }
     afterBulkAction();
-  }, [bulkArchive, selectedRows]);
+  }, [afterBulkAction, bulkArchive, selectedRows]);
 
   const onBulkReactivate = useCallback(async () => {
     try {
@@ -66,7 +66,7 @@ export const BulkButtons = withBulkActions<IExpectedProps>(function BulkButtons(
       toast.error(e);
     }
     afterBulkAction();
-  }, [bulkReactivate, selectedRows]);
+  }, [afterBulkAction, bulkReactivate, selectedRows]);
 
   return (
     <>

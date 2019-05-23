@@ -8,7 +8,7 @@ export function RouteBoundary({ paths, children }) {
 
   const isMatch = useMemo(
     () => paths.filter((root) => new RegExp(`^${root}`).test(pathname)).length > 0,
-    [pathname]
+    [pathname, paths]
   );
 
   if (isMatch) {

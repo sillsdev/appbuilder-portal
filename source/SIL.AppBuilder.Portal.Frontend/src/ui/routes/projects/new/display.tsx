@@ -48,7 +48,7 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
       toast.error(e);
       setDisableSubmit(false);
     }
-  }, [name, language, isPublic, description, groupId, typeId]);
+  }, [create, name, language, isPublic, description, groupId, typeId, dataStore, history]);
 
   const submitClasses = `
       ui button primary huge

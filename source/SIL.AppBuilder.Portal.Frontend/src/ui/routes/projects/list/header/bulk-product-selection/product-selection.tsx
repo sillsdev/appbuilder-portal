@@ -146,7 +146,7 @@ function useProductSelection(
     const productIds = products.map((product) => idFromRecordIdentity(dataStore, product));
 
     onChange(productIds);
-  }, [selected]);
+  }, [dataStore, onChange, selected, selectedRows]);
 }
 
 function uesPermissions(
@@ -173,5 +173,5 @@ function uesPermissions(
     onPermissionRetrieval(json);
 
     return json;
-  }, [selectedRows]);
+  }, [dataStore, onPermissionRetrieval, selectedRows]);
 }
