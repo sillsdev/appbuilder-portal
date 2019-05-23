@@ -45,9 +45,6 @@ export function useLiveData(subscribeTo?: string) {
         console.debug('testing early return: figure out how to test websocket communication');
         return;
       }
-      // if (!isConnected) {
-      //   throw new Error('Not connected to socket');
-      // }
 
       return dataCtx.pushData(transforms);
     },
