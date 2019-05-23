@@ -139,7 +139,9 @@
       "rebuild": "Rebuild",
       "republish": "Republish",
       "cancel": "Cancelar",
-      "noneAvailable": "No actions are currently available for this product."
+      "noneAvailable": "No actions are currently available for this product.",
+      "bulkNotAllAllowed": "Note: Not all of the selected projects' products can have the {action} action(s) applied.",
+      "dispatched": "The {action} action has been dispatched."
     }
   },
   "profile": {
@@ -214,6 +216,11 @@
         "myProjects": "Mis Proyectos",
         "archived": "Proyectos archivados",
         "all": "All Projects"
+      }
+    },
+    "bulk": {
+      "buildModal": {
+        "title": "Perform Bulk Build/Rebuild"
       }
     }
   },
