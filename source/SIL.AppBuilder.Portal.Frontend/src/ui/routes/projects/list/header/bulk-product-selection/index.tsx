@@ -36,56 +36,7 @@ export function BulkProductSelection({ disabled, tableName }) {
   const actions = Object.keys(permissions);
   const hasSelections = selection.length > 0;
 
-  const fetcher = useCallback(async () => {
-    const response = await authenticatedPost('/api/product-actions-run', {
-      data: {
-        action: selectedAction,
-        products: selection,
-      },
-      headers: {
-        ['Content-Type']: 'application/json',
-      },
-    });
-
-    if (response.status >= 400) {
-      const json = await tryParseJson(response);
-      throw new GenericJsonApiError(response.status, response.statusText, json);
-    }
-  }, [selectedAction, selection]);
-
-  const [runState, runAction] = useAsyncFn(fetcher);
-
-  useEffect(() => {
-    if (selectedAction) {
-      if (selection.length === 0) {
-        close();
-        return;
-      }
-
-      async function runner() {
-        await runAction();
-
-        setAction(undefined);
-      }
-
-      runner();
-    }
-  }, [selectedAction, selection]);
-
-  useEffect(() => {
-    if (runState.value) {
-      toast.success(
-        t(`products.actions.dispatched`, {
-          action: t(`products.actions.${selectedAction.toLowerCase()}`),
-        })
-      );
-      close();
-    }
-
-    if (runState.error) {
-      toast.error(t('errors.generic', { errorMessage: runState.error }));
-    }
-  }, [runState.value, runState.error]);
+  const { runState } = useActionRunner({ selectedAction, selection, setAction, close });
 
   return (
     <Modal
@@ -103,17 +54,17 @@ export function BulkProductSelection({ disabled, tableName }) {
       <Modal.Header>{t('projects.bulk.buildModal.title')}</Modal.Header>
 
       <Modal.Content>
-        {hasSelections && (
-          <MaybeRenderError
-            {...{
-              actions,
-              permissions,
-              selection,
-            }}
-          />
-        )}
-
         <LoadingWrapper isLoading={runState.loading}>
+          {hasSelections && (
+            <MaybeRenderError
+              {...{
+                actions,
+                permissions,
+                selection,
+              }}
+            />
+          )}
+
           <ProductSelection
             tableName={tableName}
             onChange={updateSelection}
@@ -122,29 +73,80 @@ export function BulkProductSelection({ disabled, tableName }) {
         </LoadingWrapper>
       </Modal.Content>
       <Modal.Actions>
-        <LoadingWrapper isLoading={runState.loading}>
-          <button className='ui button' onClick={close}>
-            Cancel
-          </button>
+        <button className='ui button' disabled={runState.loading} onClick={close}>
+          Cancel
+        </button>
 
-          {actions.map((action) => {
-            const isActionDisabled = !hasAtLeastOneProductForAction(action, selection, permissions);
+        {actions.map((action) => {
+          const isActionDisabled = !hasAtLeastOneProductForAction(action, selection, permissions);
 
-            return (
-              <button
-                key={action}
-                disabled={isActionDisabled}
-                className='ui button primary'
-                onClick={() => setAction(action)}
-              >
-                {t(`products.actions.${action.toLowerCase()}`)}
-              </button>
-            );
-          })}
-        </LoadingWrapper>
+          return (
+            <button
+              key={action}
+              disabled={isActionDisabled || runState.loading}
+              className='ui button primary'
+              onClick={() => setAction(action)}
+            >
+              {t(`products.actions.${action.toLowerCase()}`)}
+            </button>
+          );
+        })}
       </Modal.Actions>
     </Modal>
   );
+}
+
+function useActionRunner({ selectedAction, selection, setAction, close }) {
+  const { t } = useTranslations();
+
+  const fetcher = useCallback(async () => {
+    if (!selectedAction || selection.length === 0) {
+      close();
+      return;
+    }
+
+    const response = await authenticatedPost('/api/product-actions/run', {
+      data: {
+        action: selectedAction,
+        products: selection,
+      },
+      headers: {
+        ['Content-Type']: 'application/json',
+      },
+    });
+
+    if (response.status >= 400) {
+      setAction(undefined);
+
+      const json = await tryParseJson(response);
+
+      throw new GenericJsonApiError(response.status, response.statusText, json);
+    }
+
+    toast.success(
+      t(`products.actions.dispatched`, {
+        action: t(`products.actions.${selectedAction.toLowerCase()}`),
+      })
+    );
+    close();
+  }, [selectedAction, selection, close, setAction]);
+
+  const [runState, runAction] = useAsyncFn(fetcher, [fetcher]);
+
+  useEffect(() => {
+    if (selectedAction) {
+      runAction();
+      setAction(undefined);
+    }
+  }, [selectedAction, selection, runAction]);
+
+  useEffect(() => {
+    if (runState.error) {
+      toast.error(t('errors.generic', { errorMessage: runState.error }));
+    }
+  }, [runState.error]);
+
+  return { runState, runAction };
 }
 
 function MaybeRenderError({ actions, permissions, selection }) {

@@ -22,6 +22,8 @@ import { GenericJsonApiError } from '~/data/errors/generic-jsonapi-error';
 
 import { useTranslations } from '~/lib/i18n';
 
+import { compareVia } from '~/lib/collection';
+
 interface Permissions {
   [permissionName: string]: string[];
 }
@@ -38,54 +40,12 @@ export function ProductSelection({ tableName, onChange, onPermissionRetrieval }:
   const { dataStore } = useOrbit();
   const { isSelected, toggle, selected } = useSelectionManager();
   const selectedRows: ProjectResource[] = rowSelectionsFor(reduxState, tableName);
-  const stats = buildStatsForProductTypes(dataStore, selectedRows);
+  const knownProductDefinitions = dataStore.cache.query((q) => q.findRecords('productDefinition'));
+  const productDefinitions = knownProductDefinitions.sort(compareVia((a) => attributesFor(a).name));
 
-  const getPermissions = useCallback(async () => {
-    const ids = selectedRows.map((project) => idFromRecordIdentity(dataStore, project));
+  const getPermissions = uesPermissions(selectedRows, dataStore, onPermissionRetrieval);
 
-    const response = await authenticatedPost(`/api/product-actions`, {
-      data: { projects: ids },
-      headers: {
-        ['Content-Type']: 'application/json',
-      },
-    });
-
-    if (response.status >= 400) {
-      const json = await tryParseJson(response);
-      throw new GenericJsonApiError(response.status, response.statusText, json);
-    }
-
-    const json = await response.json();
-
-    onPermissionRetrieval(json);
-
-    return json;
-  }, [selectedRows]);
-
-  useEffect(() => {
-    // given the selected projects, find the products that also have any of the
-    // selected product definitions
-    let products = [];
-    selectedRows.forEach((project) => {
-      const projectProducts = dataStore.cache
-        .query((q) => q.findRelatedRecords(project, 'products'))
-        .filter((product) => {
-          const productDefinition = dataStore.cache.query((q) =>
-            q.findRelatedRecord(product, 'productDefinition')
-          );
-
-          // this comparison is using local ids-
-          return selected.includes(productDefinition.id);
-        });
-
-      products = products.concat(projectProducts);
-    });
-
-    // remote ids
-    const productIds = products.map((product) => idFromRecordIdentity(dataStore, product));
-
-    onChange(productIds);
-  }, [selected]);
+  useProductSelection(selectedRows, dataStore, selected, onChange);
 
   return (
     <ErrorBoundary size='small'>
@@ -97,11 +57,10 @@ export function ProductSelection({ tableName, onChange, onPermissionRetrieval }:
 
           return (
             <>
-              {stats.map(({ productDefinition, isAllowed }) => {
+              {productDefinitions.map((productDefinition) => {
                 const id = productDefinition.id;
                 const { name, description } = attributesFor(productDefinition);
                 const isProductSelected = isSelected(id);
-                const readOnly = !isAllowed;
 
                 return (
                   <div
@@ -125,7 +84,6 @@ export function ProductSelection({ tableName, onChange, onPermissionRetrieval }:
                         data-test-item-checkbox
                         className='m-r-sm'
                         value={id}
-                        readOnly={readOnly}
                         checked={isProductSelected}
                       />
                       <ProductIcon
@@ -159,19 +117,61 @@ interface IAllowedBulkList {
   isAllowed: boolean;
 }
 
-function buildStatsForProductTypes(
+function useProductSelection(
+  selectedRows: ProjectResource[],
   dataStore: Store,
-  projects: ProjectResource[]
-): IAllowedBulkList[] {
-  const result = [];
-  const knownProductDefinitions = dataStore.cache.query((q) => q.findRecords('productDefinition'));
+  selected: any,
+  onChange: (ids: string[]) => void
+) {
+  useEffect(() => {
+    // given the selected projects, find the products that also have any of the
+    // selected product definitions
+    let products = [];
 
-  knownProductDefinitions.forEach((productDefinition) => {
-    result.push({
-      productDefinition,
-      isAllowed: false,
+    selectedRows.forEach((project) => {
+      const projectProducts = dataStore.cache
+        .query((q) => q.findRelatedRecords(project, 'products'))
+        .filter((product) => {
+          const productDefinition = dataStore.cache.query((q) =>
+            q.findRelatedRecord(product, 'productDefinition')
+          );
+          // this comparison is using local ids-
+          return selected.includes(productDefinition.id);
+        });
+
+      products = products.concat(projectProducts);
     });
-  });
 
-  return result;
+    // remote ids
+    const productIds = products.map((product) => idFromRecordIdentity(dataStore, product));
+
+    onChange(productIds);
+  }, [selected]);
+}
+
+function uesPermissions(
+  selectedRows: ProjectResource[],
+  dataStore: Store,
+  onPermissionRetrieval: (newPermissions: Permissions) => void
+) {
+  return useCallback(async () => {
+    const ids = selectedRows.map((project) => idFromRecordIdentity(dataStore, project));
+    const response = await authenticatedPost(`/api/product-actions`, {
+      data: { projects: ids },
+      headers: {
+        ['Content-Type']: 'application/json',
+      },
+    });
+
+    if (response.status >= 400) {
+      const json = await tryParseJson(response);
+      throw new GenericJsonApiError(response.status, response.statusText, json);
+    }
+
+    const json = await response.json();
+
+    onPermissionRetrieval(json);
+
+    return json;
+  }, [selectedRows]);
 }
