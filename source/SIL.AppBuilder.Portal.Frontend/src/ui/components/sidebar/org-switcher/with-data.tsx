@@ -75,7 +75,7 @@ export function useOrgSwitcherData({ toggle }: INeededProps): IProvidedDataProps
       setSearchTerm(searchTerm);
       performSearch();
     },
-    [performSearch, searchTerm]
+    [performSearch]
   );
 
   return { searchTerm, searchResults, didTypeInSearch, selectOrganization };

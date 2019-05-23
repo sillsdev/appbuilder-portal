@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useCallback } from 'react';
 
 import Header from './header';
 import Navigation from './navigation';
@@ -11,36 +11,24 @@ export interface IProps {
   className?: string;
 }
 
-interface IState {
-  isOrgSwitcherActive: boolean;
+export default function Sidebar({ closeSidebar, className }: IProps) {
+  const [isActive, setIsActive] = useState(false);
+  const orgSwitchToggler = () => setIsActive((prev) => !prev);
+
+  return (
+    <div
+      data-test-sidebar
+      className={`sidebar bg-white border-right-dark border-top-dark ${className}`}
+    >
+      <Header
+        closeSidebar={closeSidebar}
+        isOrgSwitcherActive={isActive}
+        toggleOrgSwitcher={orgSwitchToggler}
+      />
+
+      {!isActive && <Navigation closeSidebar={closeSidebar} />}
+
+      {isActive && <OrgSwitcher toggle={orgSwitchToggler} />}
+    </div>
+  );
 }
-
-class Sidebar extends React.Component<IProps, IState> {
-  state = { isOrgSwitcherActive: false };
-
-  orgSwitchToggler = () => this.setState({ isOrgSwitcherActive: !this.state.isOrgSwitcherActive });
-
-  render() {
-    const { isOrgSwitcherActive } = this.state;
-    const { closeSidebar, className } = this.props;
-
-    return (
-      <div
-        data-test-sidebar
-        className={`sidebar bg-white border-right-dark border-top-dark ${className}`}
-      >
-        <Header
-          closeSidebar={closeSidebar}
-          isOrgSwitcherActive={isOrgSwitcherActive}
-          toggleOrgSwitcher={this.orgSwitchToggler}
-        />
-
-        {!isOrgSwitcherActive && <Navigation closeSidebar={closeSidebar} />}
-
-        {isOrgSwitcherActive && <OrgSwitcher toggle={this.orgSwitchToggler} />}
-      </div>
-    );
-  }
-}
-
-export default Sidebar;

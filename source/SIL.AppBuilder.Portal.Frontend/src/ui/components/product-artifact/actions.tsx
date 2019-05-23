@@ -61,7 +61,7 @@ export default function ItemActions({ product }) {
         toast.error(e);
       }
     },
-    [productRemoteId]
+    [productRemoteId, t]
   );
 
   return (

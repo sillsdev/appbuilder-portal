@@ -76,7 +76,7 @@ function RouteListener({ onLocationChange }) {
     history.listen((location, action) => {
       onLocationChange(history, location);
     });
-  }, []);
+  }, [history, onLocationChange]);
 
   return null;
 }

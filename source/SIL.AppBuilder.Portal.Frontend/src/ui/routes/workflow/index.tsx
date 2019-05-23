@@ -21,7 +21,9 @@ async function appendScriptToHead(path: string) {
 }
 
 async function depFetcher() {
-  const $ = await import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.js');
+  const $ = await import(
+    /* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.js'
+  );
   const jQuery = $.default;
   jQuery.prototype = $.prototype;
   global.jQuery = window.jQuery = global.$ = window.$ = jQuery;
@@ -30,8 +32,12 @@ async function depFetcher() {
     import(/* webpackChunkName: "workflow/konva" */ '@assets/vendor/dwkit/konva.min.js'),
     import(/* webpackChunkName: "workflow/ace" */ '@assets/vendor/dwkit/ace.js'),
     import(/* webpackChunkName: "workflow/Chart" */ '@assets/vendor/dwkit/Chart.min.js'),
-    import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.auto-complete.min.js'),
-    import(/* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.loadingModal.min.js'),
+    import(
+      /* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.auto-complete.min.js'
+    ),
+    import(
+      /* webpackChunkName: "workflow/jQuery" */ '@assets/vendor/dwkit/jquery.loadingModal.min.js'
+    ),
   ]);
 
   // runtime dependencies...

@@ -8,6 +8,15 @@ export function isEmpty(data) {
   );
 }
 
+// https://stackoverflow.com/a/28248573
+export function toSentence(arr, last = 'and') {
+  return (
+    arr.slice(0, -2).join(', ') +
+    (arr.slice(0, -2).length ? ', ' : '') +
+    arr.slice(-2).join(`${last === 'and' ? ',' : ''} ${last} `)
+  );
+}
+
 export function hasValues<T>(array: T[]) {
   return array.some((i) => i);
 }

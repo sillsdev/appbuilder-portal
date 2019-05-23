@@ -29,7 +29,7 @@ export default function StoreForm({ save, cancel, store }) {
   const attributes = attributesFor(store || {});
   const isEditing = !!store;
 
-  const existingStoreType = useMemo(() => getStoreType(dataStore, store), [(store || {}).id]);
+  const existingStoreType = useMemo(() => getStoreType(dataStore, store), [dataStore, store]);
 
   // Form States
   const [name, setName] = useState(attributes.name || '');

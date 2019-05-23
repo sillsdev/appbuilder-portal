@@ -33,12 +33,11 @@ const DataContext = React.createContext<ILiveDataContext>({
 
 export function useLiveData(subscribeTo?: string) {
   const dataCtx = useContext<ILiveDataContext>(DataContext);
-  const {
-    socket: { connection },
-    isConnected,
-  } = dataCtx;
+  const { socket, isConnected } = dataCtx;
 
-  const { isSubscribed } = useSubscribeToResource(connection, subscribeTo, isConnected);
+  const hub: HubConnection<DataHub> = isTesting ? undefined : socket.hub;
+
+  const { isSubscribed } = useSubscribeToResource(hub, subscribeTo, isConnected);
 
   const pushData = useCallback(
     (transforms: TransformOrOperations) => {
@@ -46,13 +45,10 @@ export function useLiveData(subscribeTo?: string) {
         console.debug('testing early return: figure out how to test websocket communication');
         return;
       }
-      if (!isConnected) {
-        throw new Error('Not connected to socket');
-      }
 
       return dataCtx.pushData(transforms);
     },
-    [isConnected, isTesting]
+    [dataCtx]
   );
 
   return {
@@ -81,7 +77,11 @@ export function LiveDataProvider({ children }) {
   );
 }
 
-function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo, isConnected) {
+function useSubscribeToResource(
+  hub: HubConnection<DataHub>,
+  subscribeTo: string,
+  isConnected: boolean
+) {
   const subscription = useRef<Subscription>();
   const [isSubscribed, setIsSubscribed] = useState();
 
@@ -91,7 +91,7 @@ function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo,
     }
 
     if (!isSubscribed && !subscription.current) {
-      subscription.current = connection.send('SubscribeTo', subscribeTo).subscribe(
+      subscription.current = hub.send('SubscribeTo', subscribeTo).subscribe(
         () => {
           setIsSubscribed(true);
         },
@@ -107,11 +107,32 @@ function useSubscribeToResource(connection: HubConnection<DataHub>, subscribeTo,
       }
 
       if (!isConnected) return;
-      if (connection.hubConnection.state !== ConnectionStatus.connected) return;
+      // NOTE: isConnected from the context provider doesn't
+      // propagate its update quick enough for this particular value
+      // of this particular copy of the reference to be correct /
+      // the most up to date. So we need to access the state
+      // directly on the hub, which is managed with normal classes
+      // instead of waiting for react-render lifecycles
+      if (hub['hubConnection'].state !== ConnectionStatus.connected) {
+        /* private field. YOLO */
+        return;
+      }
 
-      connection.send('UnsubscribeFrom', subscribeTo);
+      try {
+        hub.send('UnsubscribeFrom', subscribeTo);
+      } catch (e) {
+        console.log(
+          'tried to unsubscribe: ',
+          subscribeTo,
+          isConnected,
+          hub['hubConnection'].state,
+          ConnectionStatus.connected
+        );
+
+        throw e;
+      }
     };
-  }, [subscribeTo, isConnected]);
+  }, [subscribeTo, isConnected, isSubscribed, hub]);
 
   return { isSubscribed };
 }

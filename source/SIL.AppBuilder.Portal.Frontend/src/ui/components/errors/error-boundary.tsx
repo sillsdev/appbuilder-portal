@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import PageError from './page';
+import Message from './header-message';
 
 interface IState {
   error?: any;
@@ -8,7 +9,7 @@ interface IState {
 }
 
 // https://reactjs.org/docs/error-boundaries.html
-export default class ErrorBoundary extends React.Component<{}, IState> {
+export default class ErrorBoundary extends React.Component<{ size: undefined | 'small' }, IState> {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
@@ -25,9 +26,13 @@ export default class ErrorBoundary extends React.Component<{}, IState> {
   }
 
   render() {
+    const { size } = this.props;
     const { hasError, error } = this.state;
 
     if (hasError) {
+      if (size === 'small') {
+        return <Message error={error} />;
+      }
       return <PageError error={error} />;
     }
 

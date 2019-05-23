@@ -131,7 +131,7 @@ const FieldDisplay = withTranslations(Field);
 const LocaleInputField = memo(
   (props: IProps) => {
     const { t, i18n } = useLdml();
-    const data = useMemo(() => localizeTagData(props.data, t), [i18n.language]);
+    const data = useMemo(() => localizeTagData(props.data, t), [props.data, t]);
 
     return <FieldDisplay {...{ ...props, data }} />;
   },

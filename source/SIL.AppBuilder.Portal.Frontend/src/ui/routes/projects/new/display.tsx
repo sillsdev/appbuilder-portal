@@ -42,13 +42,13 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
     try {
       const project = await create({ name, language, isPublic, description }, groupId, typeId);
       const id = idFromRecordIdentity(dataStore, project);
+
       history.push(`/projects/${id}`);
     } catch (e) {
       toast.error(e);
+      setDisableSubmit(false);
     }
-
-    setDisableSubmit(false);
-  }, [name, language, isPublic, description, groupId, typeId]);
+  }, [create, name, language, isPublic, description, groupId, typeId, dataStore, history]);
 
   const submitClasses = `
       ui button primary huge

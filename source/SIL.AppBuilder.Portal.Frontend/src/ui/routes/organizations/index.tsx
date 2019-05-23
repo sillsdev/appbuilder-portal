@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
+
+import { Route } from '~/lib/routing';
 
 import SettingsRoute, { pathName as settingsPath } from './settings';
 

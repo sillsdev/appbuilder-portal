@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
+
+import { Route } from '~/lib/routing';
+
 import { NotFound } from '@ui/routes/errors';
 
 import AllProjectsRoute, { pathName as allProjectPath } from './list/all';

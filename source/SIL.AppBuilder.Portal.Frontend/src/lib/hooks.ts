@@ -1,5 +1,5 @@
 import { useState, useContext, useMemo, useCallback } from 'react';
-import { __RouterContext } from 'react-router';
+import { __RouterContext, RouteChildrenProps } from 'react-router';
 import { attributesFor } from 'react-orbitjs';
 import useInterval from 'react-useinterval';
 import moment from 'moment-timezone';
@@ -8,8 +8,8 @@ import { useTranslations } from '~/lib/i18n';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
-export function useRouter() {
-  return useContext(__RouterContext);
+export function useRouter<Params extends { [K in keyof Params]?: string } = {}>() {
+  return useContext<RouteChildrenProps<Params>>(__RouterContext);
 }
 
 export function useMemoIf<TReturn>(fn: () => TReturn, condition, memoOn) {

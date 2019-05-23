@@ -17,8 +17,8 @@ export interface IProvidedProps {
 
 type IProps = WithDataProps & i18nProps & TimezoneProps;
 
-export function withBulkActions(WrappedComponent) {
-  class DataWrapper extends React.Component<IProps> {
+export function withBulkActions<WrappedProps>(WrappedComponent) {
+  class DataWrapper extends React.Component<WrappedProps & IProps> {
     doOperation = async (operationData) => {
       const { updateStore, t } = this.props;
 

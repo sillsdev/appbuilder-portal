@@ -44,32 +44,32 @@ export default function ProductSelector(props: IProps & i18nProps) {
 
       const fromCache = dataStore.cache.query((q) => q.findRecord(project));
 
-      return fromCache;
+      const { workflowProjectUrl } = attributesFor(fromCache);
+
+      return workflowProjectUrl;
     } catch (e) {
       return false;
     }
   }, [dataStore, project, workflowProjectUrl]);
 
-  const { isFinished: hasUrl } = useConditionalPoll(pollCallback, 3000);
-
-  const trigger = (
-    <button
-      data-test-project-products-manage-button
-      className='ui button fs-13 bold uppercase
-      round-border-4 dark-blue-text
-      thin-inverted-border bg-transparent'
-      disabled={!workflowProjectUrl && !hasUrl}
-      onClick={toggleModal}
-    >
-      {t('project.products.addRemove')}
-    </button>
-  );
+  useConditionalPoll(pollCallback, 3000);
 
   return (
     <Modal
       data-test-project-product-popup
       open={isModalOpen}
-      trigger={trigger}
+      trigger={
+        <button
+          data-test-project-products-manage-button
+          className='ui button fs-13 bold uppercase
+            round-border-4 dark-blue-text
+            thin-inverted-border bg-transparent'
+          disabled={!workflowProjectUrl}
+          onClick={toggleModal}
+        >
+          {t('project.products.addRemove')}
+        </button>
+      }
       className='medium products-modal'
       closeIcon={<CloseIcon className='close-modal' />}
       onClose={toggleModal}

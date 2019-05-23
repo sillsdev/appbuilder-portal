@@ -42,7 +42,7 @@ export function useNewProjectHelpers(): IProvidedProps {
 
       return project;
     },
-    [currentOrganizationId, currentUser]
+    [currentOrganizationId, currentUser, dataStore]
   );
 
   return { create };
