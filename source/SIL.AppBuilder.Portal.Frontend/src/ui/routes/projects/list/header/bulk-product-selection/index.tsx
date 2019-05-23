@@ -25,18 +25,21 @@ import { ProductSelection } from './product-selection';
 
 export function BulkProductSelection({ disabled, tableName }) {
   const { t } = useTranslations();
-  const [isOpen, setOpen] = useState(false);
+  const { isOpen, close, open } = useModalState();
   const [selection, updateSelection] = useState([]);
   const [permissions, setPermissions] = useState({});
   const [selectedAction, setAction] = useState(undefined);
 
-  const close = () => setOpen(false);
-  const open = () => setOpen(true);
-
   const actions = Object.keys(permissions);
   const hasSelections = selection.length > 0;
 
-  const { runState } = useActionRunner({ selectedAction, selection, setAction, close });
+  const { runState } = useActionRunner({
+    permissions,
+    selectedAction,
+    selection,
+    setAction,
+    close,
+  });
 
   return (
     <Modal
@@ -96,7 +99,7 @@ export function BulkProductSelection({ disabled, tableName }) {
   );
 }
 
-function useActionRunner({ selectedAction, selection, setAction, close }) {
+function useActionRunner({ selectedAction, selection, setAction, close, permissions }) {
   const { t } = useTranslations();
 
   const fetcher = useCallback(async () => {
@@ -105,10 +108,15 @@ function useActionRunner({ selectedAction, selection, setAction, close }) {
       return;
     }
 
+    const allowedIds = permissions[selectedAction];
+    const validProductIds = selection.filter((productId) => {
+      return allowedIds.includes(productId);
+    });
+
     const response = await authenticatedPost('/api/product-actions/run', {
       data: {
         action: selectedAction,
-        products: selection,
+        products: validProductIds,
       },
       headers: {
         ['Content-Type']: 'application/json',
@@ -167,6 +175,15 @@ function MaybeRenderError({ actions, permissions, selection }) {
   });
 
   return <ErrorMessage error={message} />;
+}
+
+function useModalState(initial = false) {
+  const [isOpen, setOpen] = useState(false);
+
+  const close = () => setOpen(false);
+  const open = () => setOpen(true);
+
+  return { isOpen, open, close };
 }
 
 function hasAtLeastOneProductForAction(action, selection, permissions) {
