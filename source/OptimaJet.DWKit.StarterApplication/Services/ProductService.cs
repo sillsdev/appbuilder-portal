@@ -220,6 +220,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     .Where(t => t.WorkflowUserId == null)
                     .OrderBy(t => t.Id)
                     .FirstOrDefault();
+                var previous = transitions
+                    .Where(t => t.WorkflowUserId != null)
+                    .OrderByDescending(t => t.Id)
+                    .FirstOrDefault();
+                if (active != null && previous != null)
+                {
+                    active.DateTransition = previous.DateTransition;
+                }
                 return active;
             }
         }
