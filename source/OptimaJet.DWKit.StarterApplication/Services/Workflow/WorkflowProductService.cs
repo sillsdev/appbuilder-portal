@@ -323,7 +323,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         protected async Task ClearPreExecuteEntries(Guid processId)
         {
             var emptyItems = ProductTransitionRepository.Get()
-                .Where(pt => pt.WorkflowUserId == null && pt.ProductId == processId)
+                .Where(pt => pt.WorkflowUserId == null && pt.ProductId == processId && pt.DateTransition == null)
                 .Select(pt => pt.Id).ToList();
 
             foreach (var item in emptyItems)
