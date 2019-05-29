@@ -424,7 +424,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" />
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
       </Conditions>
       <Designer />
     </Transition>
@@ -567,8 +567,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer X="583" Y="164" />
     </Transition>
   </Transitions>
-</Process>
-')
+</Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 	
@@ -779,7 +778,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" />
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
       </Conditions>
       <Designer />
     </Transition>
@@ -809,13 +808,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" />
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
       </Conditions>
       <Designer />
     </Transition>
   </Transitions>
-</Process>
-')
+</Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 
@@ -1028,7 +1026,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" />
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
       </Conditions>
       <Designer />
     </Transition>
@@ -1058,12 +1056,11 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" />
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
       </Conditions>
       <Designer />
     </Transition>
   </Transitions>
-</Process>
-')
+</Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";

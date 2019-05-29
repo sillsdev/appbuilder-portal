@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Hangfire;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,21 +12,12 @@ using Newtonsoft.Json;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.Core.View;
-using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     public class DataController : Controller
     {
-        public IBackgroundJobClient BackgroundJobClient { get; }
-
-        public DataController(
-            IBackgroundJobClient backgroundJobClient
-        )
-        {
-            BackgroundJobClient = backgroundJobClient;
-        }
         [Route("data/get")]
         public async Task<ActionResult> GetData(string name, string control, string urlFilter, string options,
             string filter, string paging, string sort)
@@ -53,9 +43,9 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                     {
                         var filterActions = DWKitRuntime.ServerActions.GetFilterNames().Where(n => n.Equals(urlFilter, StringComparison.OrdinalIgnoreCase)).ToList();
                         string filterAction = null;
-                        filterAction = filterActions.Count == 1 ? filterActions.First()
+                        filterAction = filterActions.Count == 1 ? filterActions.First() 
                             : filterActions.FirstOrDefault(n => n.Equals(urlFilter, StringComparison.Ordinal));
-
+                        
                         if (!string.IsNullOrEmpty(filterAction))
                             filterActionName = filterAction;
                         else
@@ -77,7 +67,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                     FilterActionName = filterActionName,
                     IdValue = idValue,
                     Filter = filterItems,
-                    BaseUrl = string.Format("{0}://{1}", Request.Scheme, Request.Host.Value),
+                    BaseUrl = $"{Request.Scheme}://{Request.Host.Value}",
                     GetHeadersForLocalRequest = () =>
                     {
                         var dataUrlParameters = new Dictionary<string, string>();
@@ -104,12 +94,12 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 }
 
                 var data = await DataSource.GetDataForFormAsync(getRequest).ConfigureAwait(false);
-
+                
                 if (data.IsFromUrl && FailResponse.IsFailResponse(data.Entity, out FailResponse fail))
                 {
                     return Json(fail);
                 }
-
+                
                 return Json(new ItemSuccessResponse<object>(data.Entity.ToDictionary(true)));
             }
             catch (Exception e)
@@ -128,9 +118,10 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 {
                     throw new Exception("Access denied!");
                 }
+
                 var postRequest = new ChangeDataRequest(name, data)
                 {
-                    BaseUrl = string.Format("{0}://{1}", Request.Scheme, Request.Host.Value),
+                    BaseUrl = $"{Request.Scheme}://{Request.Host.Value}",
                     GetHeadersForLocalRequest = () =>
                     {
                         var dataUrlParameters = new Dictionary<string, string>();
@@ -165,7 +156,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
                 var deleteRequest = new ChangeDataRequest(name, data, requestingControl)
                 {
-                    BaseUrl = string.Format("{0}://{1}", Request.Scheme, Request.Host.Value),
+                    BaseUrl = $"{Request.Scheme}://{Request.Host.Value}",
                     GetHeadersForLocalRequest = () =>
                     {
                         var dataUrlParameters = new Dictionary<string, string>();
@@ -177,9 +168,9 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 };
 
                 var res = await DataSource.DeleteData(deleteRequest);
-                if (res.Succeess)
-                    return Json(new SuccessResponse("Data was deleted successfully"));
-                return Json(new FailResponse(res.Message));
+                if (res.success != null)
+                    return Json(res.success);
+                return Json(res.fail);
             }
             catch (Exception e)
             {
@@ -188,7 +179,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         }
 
         [Route("data/dictionary")]
-        public async Task<ActionResult> GetDictionary(string name, string sort, string columns, string paging, string filter)
+        public async Task<ActionResult> GetDictionary(string name, string sort, string columns, string paging, string filter, string parent)
         {
             try
             {
@@ -197,37 +188,21 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                     throw new Exception("Access denied!");
                 }
 
-                var filterItems = new List<ClientFilterItem>();
+                var data = await DataSource.GetDictionaryAsync(name, sort, columns, paging, filter, parent).ConfigureAwait(false);
 
-                if (NotNullOrEmpty(filter))
+                ItemSuccessResponse<IEnumerable<object>> result = null;
+
+                if(NotNullOrEmpty(parent))
                 {
-                    filterItems.AddRange(JsonConvert.DeserializeObject<List<ClientFilterItem>>(filter));
+                    result = new ItemSuccessResponse<IEnumerable<object>>(data.Item1.Select(x => new { Id = x.Item1, Name = x.Item2, Parent = x.Item3, HasChild = x.Item4 }));
+                }else
+                {
+                    result = new ItemSuccessResponse<IEnumerable<object>>(data.Item1.Select(x => new { Key = x.Item1, Value = x.Item2 }));
                 }
 
-                var getRequest = new GetDictionaryRequest(name)
-                {
-                    Filter = filterItems
-                };
-
-                if (NotNullOrEmpty(sort))
-                {
-                    getRequest.Sort = JsonConvert.DeserializeObject<List<ClienSortItem>>(sort);
-                }
-
-                if (NotNullOrEmpty(columns))
-                {
-                    getRequest.Columns = JsonConvert.DeserializeObject<List<string>>(columns);
-                }
-
-                if (NotNullOrEmpty(paging))
-                {
-                    getRequest.Paging = JsonConvert.DeserializeObject<ClientPaging>(paging);
-                }
-
-                var data = await DataSource.GetDictionaryAsync(getRequest).ConfigureAwait(false);
-                var res = new ItemSuccessResponse<List<KeyValuePair<object, string>>>(data.Item1.ToList());
-                res.Count = data.Item2;
-                return Json(res);
+                result.Count = data.Item2;
+                
+                return Json(result);
             }
             catch (Exception e)
             {

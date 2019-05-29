@@ -281,35 +281,54 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
-        //  
-        // Actions from DWKit Samples (with name changes for Tables and Fields)
-        //
+        #region DWKit Execution Callbacks
+        /*
+            DWKit Activities have two callbacks: Implementation and PreExecution Implementation.
+
+            For each Activity on the direct path through the workflow, these should be assigned:
+            Implementation:              UpdateProductTransition
+            PreExecution Implementation: WriteProductTransition
+
+            The PreExecution Implementation callback is called for each Activity in the workflow when Runtime.PreExecuteFromCurrentActivityAsync is called.
+            That Runtime function follows the Direct Transitions in the workflow to provide an estimation of the steps that will be performed in the workflow.
+            Note: If there are Direct Auto-Action Transitions with a conditional that is considered the next step in the "happy path", then 
+            the "Result on PreExecution" should be set to true so that the direct path will be followed.
+
+            The Implementation callback is called while the workflow is running and the activity changes. It should update an existing ProductTransition.
+        */
         private async Task WriteProductTransitionAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
             if (processInstance.IdentityIds == null)
                 return;
 
             var currentstate = processInstance.CurrentState;
-
             var nextState = processInstance.ExecutedActivityState;
-
-            var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
-
 
             using (var scope = ServiceProvider.CreateScope())
             {
-                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
-                Product product = await GetProductForProcess(processInstance, productRepository);
-                var userRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<User>>();
-                var userNames = userRepository.Get()
-                    .Where(u => processInstance.IdentityIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
-                    .Select(u => u.Name).ToList();
-                var userNamesString = String.Join(',', userNames);
+                // Only capture the command and allowedUsers if Command Trigger Type.  DWKit will reuse the previous Command and IdentityIds on Auto Trigger Type.
+                // We don't want to report the previous Command or Identity with Auto Trigger Types.
+                string command = null;
+                string allowedUserNames = null;
+                if (processInstance.ExecutedTransition.Trigger.Type == TriggerType.Command)
+                {
+                    command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
+
+                    var identityIds = processInstance.IdentityIds.ConvertAll(s => Guid.Parse(s)).ToList();
+                    var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                    Product product = await GetProductForProcess(processInstance, productRepository);
+                    var userRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<User>>();
+                    var userNames = userRepository.Get()
+                        .Where(u => u.WorkflowUserId != null && identityIds.Contains(u.WorkflowUserId.Value))
+                        .Select(u => u.Name).ToList();
+                    allowedUserNames = String.Join(',', userNames);
+                }
+
                 var productTransitionsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<ProductTransition>>();
                 var history = new ProductTransition
                 {
                     ProductId = processInstance.ProcessId,
-                    AllowedUserNames = userNamesString,
+                    AllowedUserNames = allowedUserNames,
                     InitialState = currentstate,
                     DestinationState = nextState,
                     Command = command
@@ -323,13 +342,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
             if (string.IsNullOrEmpty(processInstance.CurrentCommand))
                 return;
+
+            // Skip Timers -- we are choosing not to report them in the ProductTransitions
+            if (processInstance.ExecutedTransition.Trigger.Type == TriggerType.Timer)
+            {
+                return;
+            }
+
+
             var currentstate = processInstance.CurrentState;
-
             var nextState = processInstance.ExecutedActivityState;
-
             var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
-
-            var isTimer = !string.IsNullOrEmpty(processInstance.ExecutedTimer);
 
             using (var scope = ServiceProvider.CreateScope())
             {
@@ -353,19 +376,25 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     history = await productTransitionsRepository.CreateAsync(history);
                 }
 
-                history.Command = !isTimer ? command : string.Format("Timer: {0}", processInstance.ExecutedTimer);
+                // Only capture the command, user, and comment if Command Trigger Type.  DWKit will reuse the previous Command and IdentityIds on Auto Trigger Type.
+                // We don't want to report the previous Command or Identity with Auto Trigger Types.
+                if (processInstance.ExecutedTransition.Trigger.Type == TriggerType.Command)
+                {
+                    history.Command = command;
+                    if (Guid.TryParse(processInstance.IdentityId, out Guid identityId))
+                    {
+                        history.WorkflowUserId = identityId;
+                    }
+                    if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
+                    {
+                        history.Comment = product.WorkflowComment;
+                    }
+                }
                 history.DateTransition = DateTime.UtcNow;
-                if (Guid.TryParse(processInstance.IdentityId, out Guid identityId))
-                {
-                    history.WorkflowUserId = identityId;
-                }
-                if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
-                {
-                    history.Comment = product.WorkflowComment;
-                }
                 await productTransitionsRepository.UpdateAsync(history);
             }
         }
+        #endregion
 
         private async Task GooglePlay_UpdatPublishLinkAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
