@@ -313,11 +313,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         private string GetCurrentTaskComment(Product product)
         {
 
-            var mostRecent = ProductTransitionRepository.Get()
-                .Where(pt => pt.ProductId == product.Id)
+            var mostRecentCommand = ProductTransitionRepository.Get()
+                .Where(pt => pt.ProductId == product.Id && pt.Command != null)
                 .OrderByDescending(a => a.DateTransition)
                 .FirstOrDefault();
-            return mostRecent == null ? "" : mostRecent.Comment;
+            return mostRecentCommand == null ? "" : mostRecentCommand.Comment;
         }
 
         protected async Task ClearPreExecuteEntries(Guid processId)
