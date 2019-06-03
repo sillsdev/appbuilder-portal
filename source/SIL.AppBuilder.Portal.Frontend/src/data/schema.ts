@@ -233,20 +233,6 @@ const schemaDefinition: SchemaSettings = {
         },
       },
     },
-    productTransition: {
-      keys: { remoteId: {} },
-      attributes: {
-        allowedUserNames: { type: 'string' },
-        initialState: { type: 'string' },
-        destinationState: { type: 'string' },
-        command: { type: 'string'},
-        comment: { type: 'string'},
-        dateTransition: { type: 'string'},
-      },
-      relationships: {
-        product: { type: 'hasOne', model: 'product' },
-      },
-    },
     store: {
       keys: { remoteId: {} },
       attributes: {
