@@ -229,7 +229,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     .FirstOrDefault();
                 if (active != null && previous != null)
                 {
-                    active.DateTransition = previous.DateTransition;
+                    active.DateStarted = previous.DateTransition;
                 }
                 return active;
             }

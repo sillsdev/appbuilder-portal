@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using JsonApiDotNetCore.Models;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
@@ -29,5 +30,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("date-transition")]
         public DateTime? DateTransition { get; set; }
+
+        [NotMapped]
+        [Attr("date-started")]
+        public DateTime? DateStarted { get; set; }
     }
 }
