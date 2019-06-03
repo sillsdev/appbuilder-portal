@@ -45,7 +45,6 @@ class TaskRow extends React.Component<IProps> {
     const { workflow, product, history } = this.props;
     const { workflowBusinessFlow } = attributesFor(workflow);
     const id = idFromRecordIdentity(product);
-
     history.push(`/flow/${workflowBusinessFlow}/${id}`);
   };
 
@@ -55,7 +54,7 @@ class TaskRow extends React.Component<IProps> {
 
     const { history, project } = this.props;
 
-    history.push(`/projects/${idFromRecordIdentity(project, timezone)}`);
+    history.push(`/projects/${idFromRecordIdentity(project as any)}`);
   };
   getWaitTime = (dateTime, timezone) => {
     const timeZone = timezone || moment.tz.guess();
@@ -100,7 +99,7 @@ class TaskRow extends React.Component<IProps> {
           <td>
             <a
               className='clickable'
-              href={`/projects/${idFromRecordIdentity(project)}`}
+              href={`/projects/${idFromRecordIdentity(project as any)}`}
               onClick={this.didClickProjectName}
             >
               {projectName}
