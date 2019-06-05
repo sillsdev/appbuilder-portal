@@ -28,9 +28,9 @@ export default function ItemActions({ product }) {
       try {
         let json = await response.json();
 
-        let { types } = attributesFor(json.data);
+        let { actions } = attributesFor(json.data);
 
-        setActions(types || []);
+        setActions(actions || []);
       } catch (e) {
         console.debug('actions not ready, or do not exist');
       }
