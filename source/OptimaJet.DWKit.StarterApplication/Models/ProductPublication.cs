@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
-    public class ProductPublish : Identifiable, ITrackDate
+    public class ProductPublication : Identifiable, ITrackDate
     {
         [HasOne("product")]
         public virtual Product Product { get; set; }
