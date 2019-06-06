@@ -301,7 +301,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var modifiedProduct = products.First(p => p.Id == product1.Id);
             Assert.Equal(3, modifiedProduct.WorkflowPublishId);
             Assert.Null(modifiedProduct.DatePublished);
-            var productPublishes = ReadTestData<AppDbContext, ProductPublish>();
+            var productPublishes = ReadTestData<AppDbContext, ProductPublication>();
             Assert.Single(productPublishes);
             var publish = productPublishes.First();
             Assert.Equal(3, publish.ReleaseId);
@@ -326,7 +326,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 ProductId = product2.Id,
                 BuildId = 2,
             });
-            var productRelease = AddEntity<AppDbContext, ProductPublish>(new ProductPublish
+            var productRelease = AddEntity<AppDbContext, ProductPublication>(new ProductPublication
             {
                 ProductId = product2.Id,
                 ProductBuildId = productBuild.Id,
@@ -356,7 +356,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var products = ReadTestData<AppDbContext, Product>();
             var modifiedProduct = products.First(p => p.Id == product2.Id);
             Assert.NotNull(modifiedProduct.DatePublished);
-            var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublish>();
+            var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublication>();
             Assert.Single(modifiedProductPublishes);
             var publish = modifiedProductPublishes.First();
             Assert.True(publish.Success.HasValue && publish.Success.Value);
@@ -386,7 +386,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 ProductId = product2.Id,
                 BuildId = 2,
             });
-            var productRelease = AddEntity<AppDbContext, ProductPublish>(new ProductPublish
+            var productRelease = AddEntity<AppDbContext, ProductPublication>(new ProductPublication
             {
                 ProductId = product2.Id,
                 ProductBuildId = productBuild.Id,
@@ -419,7 +419,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\"}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("releaseFailedAdmin", notifications[0].MessageId);
             Assert.Equal("https://buildengine.testorg1", notifications[0].LinkUrl);
-            var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublish>();
+            var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublication>();
             Assert.Single(modifiedProductPublishes);
             var publish = modifiedProductPublishes.First();
             Assert.True(publish.Success.HasValue);

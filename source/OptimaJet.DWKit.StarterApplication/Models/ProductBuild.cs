@@ -28,7 +28,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("product-artifacts", Link.None)]
         public virtual List<ProductArtifact> ProductArtifacts { get; set; }
 
-        [HasMany("product-publishes", Link.None)]
-        public virtual List<ProductPublish> ProductPublishes { get; set; }
+        [HasMany("product-publications", Link.None)]
+        public virtual List<ProductPublication> ProductPublications { get; set; }
     }
 }

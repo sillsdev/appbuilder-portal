@@ -9,10 +9,10 @@ using OptimaJet.DWKit.StarterApplication.Models;
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ProductPublishesController : JsonApiController<ProductPublish>
+    public class ProductPublicationsController : JsonApiController<ProductPublication>
     {
-        public ProductPublishesController(IJsonApiContext jsonApiContext,
-            IResourceService<ProductPublish> resourceService,
+        public ProductPublicationsController(IJsonApiContext jsonApiContext,
+            IResourceService<ProductPublication> resourceService,
             ILoggerFactory loggerFactory)
             : base(jsonApiContext, resourceService, loggerFactory)
 

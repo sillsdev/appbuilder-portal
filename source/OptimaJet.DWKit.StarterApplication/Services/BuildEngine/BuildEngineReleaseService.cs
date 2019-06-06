@@ -19,7 +19,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         public IRecurringJobManager RecurringJobManager { get; }
         public IJobRepository<Product, Guid> ProductRepository { get; }
-        public IJobRepository<ProductPublish> PublishRepository { get; }
+        public IJobRepository<ProductPublication> PublicationRepository { get; }
         public IJobRepository<ProductBuild> BuildRepository { get; }
 
         public BuildEngineReleaseService(
@@ -28,14 +28,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             SendNotificationService sendNotificationService,
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<SystemStatus> systemStatusRepository,
-            IJobRepository<ProductPublish> publishRepository,
+            IJobRepository<ProductPublication> publicationRepository,
             IJobRepository<ProductBuild> buildRepository
         ) : base(buildEngineApi, sendNotificationService, systemStatusRepository)
         {
             RecurringJobManager = recurringJobManager;
             this.sendNotificationService = sendNotificationService;
             ProductRepository = productRepository;
-            PublishRepository = publishRepository;
+            PublicationRepository = publicationRepository;
             BuildRepository = buildRepository;
         }
         public void CreateRelease(Guid productId, Dictionary<string, object> paramsDictionary, PerformContext context)
@@ -184,14 +184,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 {
                     throw new Exception($"Failed to find ProductBuild: {product.WorkflowBuildId}");
                 }
-                var publish = new ProductPublish
+                var publish = new ProductPublication
                 {
                     ProductId = product.Id,
                     ProductBuildId = build.Id,
                     ReleaseId = releaseResponse.Id,
                     Channel = channel
                 };
-                await PublishRepository.CreateAsync(publish);
+                await PublicationRepository.CreateAsync(publish);
 
                 var monitorJob = Job.FromExpression<BuildEngineReleaseService>(service => service.CheckRelease(product.Id));
                 RecurringJobManager.AddOrUpdate(GetHangfireToken(product.Id), monitorJob, "* * * * *");
@@ -244,14 +244,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         private async Task UpdateProductPublish(ReleaseResponse buildEngineRelease, Product product, bool success)
         {
-            var publish = await PublishRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id && p.ProductId == product.Id).FirstOrDefaultAsync();
+            var publish = await PublicationRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id && p.ProductId == product.Id).FirstOrDefaultAsync();
             if (publish == null)
             {
                 throw new Exception($"Failed to find ProductPublish: ReleaseId={buildEngineRelease.Id}");
             }
             publish.Success = success;
             publish.LogUrl = buildEngineRelease.ConsoleText;
-            await PublishRepository.UpdateAsync(publish);
+            await PublicationRepository.UpdateAsync(publish);
         }
 
         protected async Task ReleaseCreationFailedAsync(Product product, ReleaseResponse buildEngineRelease)
