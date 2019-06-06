@@ -65,7 +65,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 {
                     sentNotificationToOwner = true;
                 }
-                await SendNotificationToUserAsync(orgAdmin.User, messageId, subs, linkUrl, true);
+                await SendNotificationToUserAsync(orgAdmin.User, messageId, subs, linkUrl, true, true);
             }
             return sentNotificationToOwner;
         }
@@ -82,16 +82,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 await SendNotificationToUserAsync(superAdmin, messageId, subs, linkUrl, forceEmail);
             }
         }
-        public async Task SendNotificationToUserAsync(User user, String messageId, Dictionary<string, object> subs, String linkUrl = "", bool? forceEmail = null)
+        public async Task SendNotificationToUserAsync(User user, String messageId, Dictionary<string, object> subs, String linkUrl = "", bool? forceEmail = null, bool? sendEmailImmediately = null)
         {
             var locale = user.LocaleOrDefault();
             var fullMessageId = "notifications.notification." + messageId;
             var translated = await Translator.TranslateAsync(locale, "notifications", fullMessageId, subs);
             translated = HttpUtility.HtmlDecode(translated);
-            var sendEmail = !user.EmailNotification.HasValue || user.EmailNotification.Value;
+            NotificationEmailType sendEmail = !user.EmailNotification.HasValue || user.EmailNotification.Value ? NotificationEmailType.WaitForTimeout : NotificationEmailType.None;
             if (forceEmail.HasValue)
             {
-                sendEmail = forceEmail.Value;
+                sendEmail = forceEmail.Value ? NotificationEmailType.WaitForTimeout : NotificationEmailType.None;
+            }
+            if (sendEmailImmediately.HasValue && sendEmailImmediately.Value)
+            {
+                sendEmail = NotificationEmailType.Immediate;
             }
 
             var notification = new Notification
@@ -118,9 +122,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var notifications = NotificationRepository.Get()
                                                     .Where(n => n.DateEmailSent == null
                                                            && n.DateRead == null
-                                                           && n.SendEmail == true
-                                                           && n.DateCreated < latestCreationDateToSend
-                                                           && n.DateCreated > oldestCreationDateToSend
+                                                           && ( (n.SendEmail == NotificationEmailType.WaitForTimeout
+                                                                 && n.DateCreated < latestCreationDateToSend
+                                                                 && n.DateCreated > oldestCreationDateToSend
+                                                                 ) || n.SendEmail == NotificationEmailType.Immediate)
                                                           )
                                                     .Include(n => n.User)
                                                     .ToList();

@@ -416,15 +416,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Contains(user1.Id, userIds);
             Assert.Contains(user2.Id, userIds);
             
-            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal($"{{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\",\"consoleTextUrl\":\"https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log\",\"jobId\":{product2.WorkflowJobId},\"buildId\":{product2.WorkflowBuildId},\"publishId\":{product2.WorkflowPublishId}}}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("releaseFailedAdmin", notifications[0].MessageId);
-            Assert.Equal("https://buildengine.testorg1", notifications[0].LinkUrl);
+            Assert.Equal(releaseResponse.ConsoleText, notifications[0].LinkUrl);
             var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublication>();
             Assert.Single(modifiedProductPublishes);
             var publish = modifiedProductPublishes.First();
             Assert.True(publish.Success.HasValue);
             Assert.False(publish.Success.Value);
-            Assert.Equal("https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log", publish.LogUrl);
+            Assert.Equal(releaseResponse.ConsoleText, publish.LogUrl);
         }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Get_Release_Status_Unavailable()

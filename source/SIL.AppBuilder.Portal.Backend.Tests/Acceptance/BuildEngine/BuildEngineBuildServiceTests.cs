@@ -431,10 +431,26 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 JobId = 1,
                 Status = "completed",
                 Result = "FAILURE",
-                Error = "Error"
+                Error = "Error",
+                Artifacts = new Dictionary<string, string>() { { "consoleText", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log" } }
+            };
+            var modifiedArtifact1 = new ProductArtifact
+            {
+                ProductId = product2.Id,
+                ArtifactType = "consoleText",
+                Url = "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log",
+                ContentType = "text/plain",
+                FileSize = 1831,
+                LastModified = DateTime.UtcNow
             };
 
+
             mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
+
+            mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
+                                                                      a.ArtifactType == "consoleText")))
+                     .Returns(modifiedArtifact1);
+
             await buildBuildService.CheckBuildAsync(product2.Id);
             var builds = ReadTestData<AppDbContext, ProductBuild>();
             Assert.Single(builds);
@@ -444,9 +460,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             // Verify that notifications are sent to the user and the org admin
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
-            Assert.Equal("{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/build-admin/view?id=2\"}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal($"{{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/build-admin/view?id=2\",\"consoleText\":\"https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log\",\"projectId\":{product2.ProjectId},\"jobId\":2,\"buildId\":2}}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("buildFailedAdmin", notifications[0].MessageId);
-            Assert.Equal("https://buildengine.testorg1/build-admin/view?id=2", notifications[0].LinkUrl);
+            Assert.Equal("https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log", notifications[0].LinkUrl);
          }
 
          [Fact(Skip = skipAcceptanceTest)]

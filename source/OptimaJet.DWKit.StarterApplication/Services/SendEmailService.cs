@@ -43,8 +43,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             if (!string.IsNullOrEmpty(notification.LinkUrl))
             {
                 template = "NotificationWithLink.txt";
-                var buildEngineUrlIndex = "notifications.body.buildEngineUrl";
-                buildEngineUrlText = await Translator.TranslateAsync(locale, "notifications", buildEngineUrlIndex, subsDict);
+                var linkUrlIndex = "notifications.body.log";
+                buildEngineUrlText = await Translator.TranslateAsync(locale, "notifications", linkUrlIndex, subsDict);
             }
             dynamic contentModel = new System.Dynamic.ExpandoObject();
             contentModel.BuildEngineUrlText = buildEngineUrlText;

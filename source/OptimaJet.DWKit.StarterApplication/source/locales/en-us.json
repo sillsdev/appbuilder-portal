@@ -1,7 +1,7 @@
 {
   "notifications": {
     "body": {
-      "buildEngineUrl":  "Build engine url",
+      "log":  "Log",
       "userTaskAdded": "<p>Dear {{to}}: </p><p> A new task has been assigned to you by Scriptoria. </p><p>  {{activityName}} for {{productName}} - {{project}} by {{originator}}. </p><p> Comment: {{comment}}</p>",
       "buildengineConnected": "<p>Build Engine for organization {{orgName}} status change: connected</p>",
       "buildengineDisconnected": "<p>Build Engine for organization {{orgName}} status change: disconnected</p>",
@@ -17,8 +17,8 @@
       "buildFailedUnableToConnect": "<p>Failed to create build for product: {{productName}} project: {{projectName}}.</p><p>Unable to connect to build engine.</p>",
       "buildFailedUnableToCreate": "<p>Failed to create build for product: {{productName}} project: {{projectName}}.</p><p>Retries exceeded for attempt to create build on build machine.</p>",
       "buildCompletedSuccessfully": "<p>Build for product: {{productName}} project: {{projectName}} completed successfully</p>",
-      "buildFailedOwner": "<p>Build for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{buildStatus}} </p><p> The organization administrator has been notified of this issue</p>",
-      "buildFailedAdmin": "<p>Build for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{buildStatus}} </p>",
+      "buildFailedOwner": "<p>Build for product: {{productName}} project {{projectName}} failed.</p><p> The organization administrator has been notified of this issue</p>",
+      "buildFailedAdmin": "<p>Build for product: {{productName}} project {{projectName}} failed.</p><p>Diagnostic information for Super Admins:</p><ul><li>BuildEngineUrl: {{buildEngineUrl}}</li><li>ProjectId: {{projectId}} </li><li>JobId: {{jobId}} </li><li> BuildId: {{buildId}}</li></ul>",
       "buildProductRecordNotFound": "<p>Build Failed: Unable to find product record with id: {{productId}}</p>",
       "productFailedUnableToConnect": "<p>Failed to create product: {{productName}} project: {{projectName}}.</p><p>Unable to connect to build engine.</p>",
       "productProjectUrlNotSet":  "<p>Failed to create product: {{productName}} project: {{projectName}}.</p><p>Workflow Project URL not set so product creation was not attempted.</p>",
@@ -29,8 +29,8 @@
       "releaseFailedUnableToConnect": "<p>Failed to create release for product: {{productName}} project: {{projectName}}.</p><p>Unable to connect to build engine.</p>",
       "releaseFailedUnableToCreate": "<p>Failed to create release for product: {{productName}} project: {{projectName}}.</p><p>Retries exceeded for attempt to create release on build machine.</p>",
       "releaseCompletedSuccessfully": "<p>Release for product: {{productName}} project: {{projectName}} completed successfully</p>",
-      "releaseFailedOwner": "<p>Release for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{releaseStatus}} </p><p> The organization administrator has been notified of this issue</p>",
-      "releaseFailedAdmin": "<p>Release for product:: {{productName}} project {{projectName}} failed.</p><p> Status: {{releaseStatus}} </p>",
+      "releaseFailedOwner": "<p>Release for product: {{productName}} project {{projectName}} failed.</p><p> The organization administrator has been notified of this issue.</p>",
+      "releaseFailedAdmin": "<p>Release for product: {{productName}} project {{projectName}} failed.</p><p>Diagnostic information for Super Admins:</p><ul><li>BuildEngineUrl: {{buildEngineUrl}}</li><li>ProjectId: {{projectId}} </li><li>JobId: {{jobId}} </li><li> BuildId: {{buildId}}</li><li>PublishId: {{publishId}} </li></ul>",
       "releaseProductRecordNotFound": "<p>Release Failed: Unable to find product record with id: {{productId}}</p>",
       "reviewProduct": "<p>Please review {{productName}} for project {{projectName}}.</p><p>The links below will connect you with the product files to be reviewed:</p>",
       "rejectionEmail":  "<p>The organization administrator has returned {{projectName}} to state {{newState}} from state {{previousState}} with the following comment:<br><br>{{comment}}</p>"
@@ -46,7 +46,7 @@
       "projectCreationFailedAdmin": "Scriptoria: Create Project {{projectName}} Failed",
       "projectRecordNotFound": "Scriptoria: Create Project {{projectId}} Failed",
       "projectUpdateComplete": "Scriptoria: {{projectName}} Update Success",
-      "projectUpdateFailed": "Scriptoria:: Update Project {{projectName}} Failed",
+      "projectUpdateFailed": "Scriptoria: Update Project {{projectName}} Failed",
       "projectUpdateFailedBuildEngine": "Scriptoria: Update Project {{projectName}} Failed",
       "buildFailedUnableToConnect": "Scriptoria: Build {{projectName}} {{productName}} Failed",
       "buildFailedUnableToCreate": "Scriptoria: Build {{projectName}} {{productName}} Failed",
@@ -85,8 +85,8 @@
       "buildFailedUnableToConnect": "Failed to create build for product: {{productName}} project: {{projectName}}.  Unable to connect to build engine.",
       "buildFailedUnableToCreate": "Failed to create build for product: {{productName}} project: {{projectName}}.  Retries exceeded for attempt to create build on build machine.",
       "buildCompletedSuccessfully":  "Build for product: {{productName}} project: {{projectName}} completed successfully",
-      "buildFailedOwner": "Build for product {{productName}} project {{projectName}} failed. Status: {{buildStatus}} The organization administrator has been notified of this issue.",
-      "buildFailedAdmin": "Build for product {{productName}} project {{projectName}} failed. Status: {{buildStatus}}  Review status at build engine {{buildEngineUrl}} for details",
+      "buildFailedOwner": "Build for product {{productName}} project {{projectName}} failed. The organization administrator has been notified of this issue.",
+      "buildFailedAdmin": "Build for product {{productName}} project {{projectName}} failed. Review logs for details.",
       "buildProductRecordNotFound": "Build Failed: Unable to find product record with id: {{productId}}",
       "productFailedUnableToConnect": "Failed to create product: {{productName}} project: {{projectName}}.  Unable to connect to build engine.",
       "productProjectUrlNotSet": "Failed to create product: {{productName}} project: {{projectName}}. Workflow Project URL not set so product creation was not attempted.",
@@ -97,8 +97,8 @@
       "releaseFailedUnableToConnect": "Failed to create release for product: {{productName}} project: {{projectName}}.  Unable to connect to build engine.",
       "releaseFailedUnableToCreate": "Failed to create release for product: {{productName}} project: {{projectName}}.  Retries exceeded for attempt to create release on build machine.",
       "releaseCompletedSuccessfully": "Release for product: {{productName}} project: {{projectName}} completed successfully",
-      "releaseFailedOwner": "Build for product {{productName}} project {{projectName}} failed. Status: {{releaseStatus}}  The organization administrator has been notified of this issue",
-      "releaseFailedAdmin": "Build for product {{productName}} project {{projectName}} failed. Status: {{releaseStatus}}  Review status at build engine {{buildEngineUrl}} for details",
+      "releaseFailedOwner": "Build for product {{productName}} project {{projectName}} failed. The organization administrator has been notified of this issue.",
+      "releaseFailedAdmin": "Build for product {{productName}} project {{projectName}} failed. Review logs for details.",
       "releaseProductRecordNotFound": "Release Failed: Unable to find product record with id: {{productId}}"
    }
   },

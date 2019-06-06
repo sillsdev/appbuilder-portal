@@ -87,7 +87,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                             transitionType = WorkflowProductService.TransitionType.Continuation;
                             break;
                         case TransitionClassifier.Reverse:
-                            transitionType = WorkflowProductService.TransitionType.Rejection;
+                            transitionType = (args.ExecutedTransition.Trigger.Type == TriggerType.Command)
+                                ? WorkflowProductService.TransitionType.Rejection
+                                : WorkflowProductService.TransitionType.Reverse;
                             break;
                         default:
                             transitionType = WorkflowProductService.TransitionType.Other;

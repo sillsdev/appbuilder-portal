@@ -273,15 +273,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             await SaveArtifacts(product, buildEngineBuild);
             var buildEngineUrl = product.Project.Organization.BuildEngineUrl + "/build-admin/view?id=" + product.WorkflowBuildId.ToString();
+            var consoleTextUrl = buildEngineBuild.Artifacts["consoleText"];
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
                 { "productName", product.ProductDefinition.Name},
                 { "buildStatus", buildEngineBuild.Status },
                 { "buildError", buildEngineBuild.Error },
-                { "buildEngineUrl", buildEngineUrl }
+                { "buildEngineUrl", buildEngineUrl },
+                { "consoleText", consoleTextUrl },
+                { "projectId", product.ProjectId },
+                { "jobId", product.WorkflowJobId},
+                { "buildId", product.WorkflowBuildId}
             };
-            await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "buildFailedOwner", "buildFailedAdmin", messageParms, buildEngineUrl);
+            await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "buildFailedOwner", "buildFailedAdmin", messageParms, consoleTextUrl);
             await UpdateProductBuild(buildEngineBuild, product, false);
         }
         private async Task UpdateProductBuild(BuildResponse buildEngineBuild, Product product, bool success)

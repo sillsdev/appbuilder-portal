@@ -116,7 +116,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
                 MessageSubstitutionsJson = serializedParm,
                 Message = "Build Engine for organization SIL International status change: connected",
                 UserId = user1.Id,
-                SendEmail = true
+                SendEmail = NotificationEmailType.WaitForTimeout
             });
         }
         public NotificationTest(TestFixture<BuildEngineStartup> fixture) : base(fixture)
@@ -255,7 +255,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
             var notification = modifiedNotifications[1];
-            Assert.True(notification.SendEmail);
+            Assert.Equal(NotificationEmailType.Immediate, notification.SendEmail);
             Assert.Equal(user1.Id, notification.UserId);
         }
         [Fact]
@@ -272,7 +272,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
             var notification = modifiedNotifications[1];
-            Assert.True(notification.SendEmail);
+            Assert.Equal(NotificationEmailType.Immediate, notification.SendEmail);
             Assert.Equal(user2.Id, notification.UserId);
         }
 
@@ -300,7 +300,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
             var notification = modifiedNotifications[1];
-            Assert.False(notification.SendEmail);
+            Assert.Equal(NotificationEmailType.None, notification.SendEmail);
             Assert.Equal(CurrentUser.Id, notification.UserId);
         }
     }
