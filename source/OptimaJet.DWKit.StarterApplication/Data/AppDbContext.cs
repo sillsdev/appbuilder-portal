@@ -133,7 +133,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasForeignKey(pb => pb.ProductId);
 
             productEntity
-                .HasMany(p => p.ProductPublishes)
+                .HasMany(p => p.ProductPublications)
                 .WithOne(pb => pb.Product)
                 .HasForeignKey(pb => pb.ProductId);
 
@@ -148,7 +148,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasForeignKey(pa => pa.ProductBuildId);
 
             productBuildEntity
-                .HasMany(pb => pb.ProductPublishes)
+                .HasMany(pb => pb.ProductPublications)
                 .WithOne(pp => pp.ProductBuild)
                 .HasForeignKey(pp => pp.ProductBuildId);
 
@@ -240,6 +240,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ProductTransition> ProductTransitions { get; set; }
         public DbSet<ProductBuild> ProductBuilds { get; set; }
-        public DbSet<ProductPublish> ProductPublishes { get; set; }
+        public DbSet<ProductPublication> ProductPublications { get; set; }
     }
 }
