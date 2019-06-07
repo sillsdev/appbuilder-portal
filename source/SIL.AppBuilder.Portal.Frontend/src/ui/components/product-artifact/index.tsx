@@ -7,6 +7,8 @@ import { compareVia } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
 import ResourceSelect from '@ui/components/inputs/resource-select';
 
+import Publication from '../product-publication';
+
 import Artifacts from './artifacts';
 
 export default function Builds({ product }) {
@@ -58,6 +60,7 @@ export default function Builds({ product }) {
         noResourcesLabel={t('projects.noBuilds')}
       />
       <Artifacts product={product} productBuild={activeVersion} />
+      <Publication product={product} productBuild={activeVersion} />
     </div>
   );
 }

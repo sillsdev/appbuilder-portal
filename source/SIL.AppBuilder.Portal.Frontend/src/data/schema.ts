@@ -166,6 +166,7 @@ const schemaDefinition: SchemaSettings = {
         tasks: { type: 'hasMany', model: 'userTask', inverse: 'product' },
         productActions: { type: 'hasOne', model: 'productAction', inverse: 'products' },
         productWorkflow: { type: 'hasOne', model: 'productWorkflow', inverse: 'products' },
+        productPublications: { type: 'hasMany', model: 'productPublication', inverse: 'product' },
       },
     },
     productAction: {
@@ -189,6 +190,26 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         product: { type: 'hasOne', model: 'product', inverse: 'productBuilds' },
         productArtifacts: { type: 'hasMany', model: 'productArtifact', inverse: 'productBuild' },
+        productPublications: {
+          type: 'hasMany',
+          model: 'productPublication',
+          inverse: 'productBuild',
+        },
+      },
+    },
+    productPublication: {
+      keys: { remoteId: {} },
+      attributes: {
+        releaseId: { type: 'number' },
+        channel: { type: 'string' },
+        logUrl: { type: 'string' },
+        success: { type: 'boolean' },
+        dateCreated: { type: 'string' },
+        dateUpdated: { type: 'string' },
+      },
+      relationships: {
+        productBuild: { type: 'hasOne', model: 'productBuild', inverse: 'productPublications' },
+        product: { type: 'hasOne', model: 'product', inverse: 'productPublications' },
       },
     },
     productArtifact: {

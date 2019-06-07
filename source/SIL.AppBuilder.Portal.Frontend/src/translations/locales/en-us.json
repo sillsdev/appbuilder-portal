@@ -267,6 +267,15 @@
         "done": "Done",
         "empty": "No products available"
       },
+      "publications": {
+        "channel": "Channel",
+        "status": "Status",
+        "date": "Publish Date",
+        "url": "Publish Url",
+        "succeeded": "Success",
+        "failed": "Failure",
+        "console": "Console Text"
+      },
       "options": {
         "update": "update",
         "publish": "publish"
