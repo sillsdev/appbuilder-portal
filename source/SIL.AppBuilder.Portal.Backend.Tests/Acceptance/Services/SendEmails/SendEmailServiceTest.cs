@@ -253,7 +253,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
                 MessageSubstitutionsJson = serializedParm,
                 Message = "Build Engine for organization SIL International status change: connected",
                 UserId = user1.Id,
-                LinkUrl = "https://buildengine.gtis.guru:8443"
+                LinkUrl = "http://org-prd-aps-files.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/1/project-version-output.log"
             });
             var sendEmailService = _fixture.GetService<SendEmailService>();
             var notifications = ReadTestData<AppDbContext, Notification>();
@@ -266,7 +266,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             var email = emails[0];
             Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
             Assert.Equal("NotificationWithLink.txt", email.ContentTemplate);
-            Assert.Equal("{\"BuildEngineUrlText\":\"notifications.body.buildEngineUrl\",\"LinkUrl\":\"https://buildengine.gtis.guru:8443\",\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\"}", email.ContentModelJson);
+            Assert.Equal("{\"BuildEngineUrlText\":\"notifications.body.log\",\"LinkUrl\":\"http://org-prd-aps-files.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/1/project-version-output.log\",\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\"}", email.ContentModelJson);
         }
         [Fact]
         public void SendProductReviewEmail()

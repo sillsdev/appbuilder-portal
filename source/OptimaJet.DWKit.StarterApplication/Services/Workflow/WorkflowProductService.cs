@@ -23,8 +23,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public enum TransitionType
         {
             Continuation = 0,
-            Rejection = 1,
-            Other = 2
+            Reverse = 1,
+            Rejection = 2,
+            Other = 3
         }
         public class ProductActivityChangedArgs
         {

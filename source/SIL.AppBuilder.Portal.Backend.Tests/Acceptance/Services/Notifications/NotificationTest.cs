@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
@@ -145,6 +147,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
         public async Task TestSendNotificationToOwnerAndAdmin()
         {
             BuildTestData();
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+
             var notificationParm = new Dictionary<string, object>()
             {
                 { "orgName", "SIL International" },
@@ -157,7 +162,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(3, modifiedNotifications.Count);
             Assert.Equal("Build Engine for organization SIL International status change: connected", modifiedNotifications[1].Message);
-
+            backgroundJobClientMock.Verify(x => x.Create(
+                It.Is<Job>(job =>
+                           job.Method.Name == "SendEmailNotificationImmediate" &&
+                           job.Type == typeof(SendNotificationService)),
+                It.IsAny<EnqueuedState>()));
         }
         [Fact]
         public async Task TestSendNotificationToOwnerAndAdminSameUser()

@@ -340,15 +340,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private async Task UpdateProductTransitionAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
-            if (string.IsNullOrEmpty(processInstance.CurrentCommand))
-                return;
+            // Note: If admin uses "Set State" from DWKit Admin UI, the ExecutedTransition will be null
+
+            if (string.IsNullOrEmpty(processInstance.CurrentCommand)) { return; }
 
             // Skip Timers -- we are choosing not to report them in the ProductTransitions
-            if (processInstance.ExecutedTransition.Trigger.Type == TriggerType.Timer)
-            {
-                return;
-            }
-
+            if (processInstance.ExecutedTransition?.Trigger.Type == TriggerType.Timer) { return; }
 
             var currentstate = processInstance.CurrentState;
             var nextState = processInstance.ExecutedActivityState;
@@ -378,7 +375,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
                 // Only capture the command, user, and comment if Command Trigger Type.  DWKit will reuse the previous Command and IdentityIds on Auto Trigger Type.
                 // We don't want to report the previous Command or Identity with Auto Trigger Types.
-                if (processInstance.ExecutedTransition.Trigger.Type == TriggerType.Command)
+                if (processInstance.ExecutedTransition?.Trigger.Type == TriggerType.Command)
                 {
                     history.Command = command;
                     if (Guid.TryParse(processInstance.IdentityId, out Guid identityId))

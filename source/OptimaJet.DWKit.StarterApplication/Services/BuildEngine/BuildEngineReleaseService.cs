@@ -259,15 +259,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             await UpdateProductPublish(buildEngineRelease, product, false);
             var buildEngineUrl = product.Project.Organization.BuildEngineUrl;
+            var consoleTextUrl = buildEngineRelease.ConsoleText;
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
                 { "productName", product.ProductDefinition.Name},
                 { "releaseStatus", buildEngineRelease.Status },
                 { "releaseError", buildEngineRelease.Error },
-                { "buildEngineUrl", buildEngineUrl }
+                { "buildEngineUrl", buildEngineUrl },
+                { "consoleTextUrl", consoleTextUrl },
+                { "jobId", product.WorkflowJobId },
+                { "buildId", product.WorkflowBuildId },
+                { "publishId", product.WorkflowPublishId }
             };
-            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "releaseFailedOwner", "releaseFailedAdmin", messageParms, buildEngineUrl);
+            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "releaseFailedOwner", "releaseFailedAdmin", messageParms, consoleTextUrl);
         }
         protected ReleaseResponse GetBuildEngineRelease(Product product)
         {
