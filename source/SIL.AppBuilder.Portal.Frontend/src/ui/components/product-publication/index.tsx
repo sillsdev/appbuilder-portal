@@ -29,19 +29,21 @@ export default function Publication({ product, productBuild }) {
       q.findRelatedRecords(productBuild, 'productPublications')
     );
   }
+  let attributes = null;
+  let date = '';
+  let status = '';
   let isPublicationVisible = false;
-  if (publications.length == 0) {
-    return '';
-  }
-  const attributes = attributesFor(publications[0]);
-  const dateTime = attributes.dateUpdated;
-  const status =
-    attributes.success === true
-      ? t('project.products.publications.succeeded')
-      : t('project.products.publications.failed');
-  const date = getWaitTime(dateTime, timezone);
-  if (attributes.logUrl) {
-    isPublicationVisible = true;
+  if (publications.length != 0) {
+    attributes = attributesFor(publications[0]);
+    const dateTime = attributes.dateUpdated;
+    status =
+      attributes.success === true
+        ? t('project.products.publications.succeeded')
+        : t('project.products.publications.failed');
+    date = getWaitTime(dateTime, timezone);
+    if (attributes.logUrl) {
+      isPublicationVisible = true;
+    }
   }
   return (
     <div data-test-product-publication className='publication-build w-100 m-b-lg'>
