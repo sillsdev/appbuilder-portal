@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Hangfire;
 using I18Next.Net.Plugins;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public IJobRepository<Email> EmailRepository { get; }
         public IJobRepository<UserRole> UserRolesRepository { get; }
         public SendEmailService SendEmailService { get; }
+        public IBackgroundJobClient BackgroundJobClient { get; }
         public IJobRepository<Notification> NotificationRepository { get; }
 
         public SendNotificationService(
@@ -27,6 +29,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             IJobRepository<Email> emailRepository,
             IJobRepository<UserRole> userRolesRepository,
             SendEmailService sendEmailService,
+            IBackgroundJobClient backgroundJobClient,
             IJobRepository<Notification> notificationRepository
         )
         {
@@ -34,6 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             EmailRepository = emailRepository;
             UserRolesRepository = userRolesRepository;
             SendEmailService = sendEmailService;
+            BackgroundJobClient = backgroundJobClient;
             NotificationRepository = notificationRepository;
 
         }
@@ -82,20 +86,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 await SendNotificationToUserAsync(superAdmin, messageId, subs, linkUrl, forceEmail);
             }
         }
-        public async Task SendNotificationToUserAsync(User user, String messageId, Dictionary<string, object> subs, String linkUrl = "", bool? forceEmail = null, bool? sendEmailImmediately = null)
+        public async Task SendNotificationToUserAsync(User user, String messageId, Dictionary<string, object> subs, String linkUrl = "", bool? forceEmail = null, bool sendEmailImmediately = false)
         {
             var locale = user.LocaleOrDefault();
             var fullMessageId = "notifications.notification." + messageId;
             var translated = await Translator.TranslateAsync(locale, "notifications", fullMessageId, subs);
             translated = HttpUtility.HtmlDecode(translated);
-            NotificationEmailType sendEmail = !user.EmailNotification.HasValue || user.EmailNotification.Value ? NotificationEmailType.WaitForTimeout : NotificationEmailType.None;
+            var sendEmail = !user.EmailNotification.HasValue || user.EmailNotification.Value;
             if (forceEmail.HasValue)
             {
-                sendEmail = forceEmail.Value ? NotificationEmailType.WaitForTimeout : NotificationEmailType.None;
-            }
-            if (sendEmailImmediately.HasValue && sendEmailImmediately.Value)
-            {
-                sendEmail = NotificationEmailType.Immediate;
+                sendEmail = forceEmail.Value;
             }
 
             var notification = new Notification
@@ -108,7 +108,39 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 LinkUrl = linkUrl
             };
             var updatedNotification = await NotificationRepository.CreateAsync(notification);
+            if (sendEmailImmediately)
+            {
+                BackgroundJobClient.Enqueue<SendNotificationService>(service => service.SendEmailNotificationImmediate(updatedNotification.Id));
+            }
         }
+
+        public void SendEmailNotificationImmediate(int id)
+        {
+            SendEmailNotificationImmediateAsync(id).Wait();
+        }
+
+        public async Task SendEmailNotificationImmediateAsync(int id)
+        {
+            var notification = await NotificationRepository.Get()
+                .Where(not => not.Id == id)
+                .Include(not => not.User).FirstOrDefaultAsync();
+
+            if (notification == null)
+            {
+                var messageParms = new Dictionary<string, object>
+                {
+                    { "taskName", "SendEmailNotificationImmediate" },
+                    { "recordName", "Notification"},
+                    { "recordId", id }
+                };
+                await SendNotificationToSuperAdminsAsync("recordNotFound", messageParms);
+
+                return;
+            }
+
+            await SendEmailNotificationAsync(notification);
+        }
+
 
         public void NotificationEmailMonitor()
         {
@@ -122,20 +154,24 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var notifications = NotificationRepository.Get()
                                                     .Where(n => n.DateEmailSent == null
                                                            && n.DateRead == null
-                                                           && ( (n.SendEmail == NotificationEmailType.WaitForTimeout
-                                                                 && n.DateCreated < latestCreationDateToSend
-                                                                 && n.DateCreated > oldestCreationDateToSend
-                                                                 ) || n.SendEmail == NotificationEmailType.Immediate)
+                                                           && n.SendEmail == true
+                                                           && n.DateCreated < latestCreationDateToSend
+                                                           && n.DateCreated > oldestCreationDateToSend
                                                           )
                                                     .Include(n => n.User)
                                                     .ToList();
             foreach (var notification in notifications)
             {
-                Log.Information($"Send Notification {notification.Id} to {notification.User.Email}: {notification.Message}");
-                SendEmailService.SendNotificationEmailAsync(notification).Wait();
-                notification.DateEmailSent = DateTime.UtcNow;
-                NotificationRepository.UpdateAsync(notification).Wait();
+                SendEmailNotificationAsync(notification).Wait();
             }
+        }
+
+        private async Task SendEmailNotificationAsync(Notification notification)
+        {
+            Log.Information($"Send Email Notification {notification.Id} to {notification.User.Email}: {notification.Message}");
+            await SendEmailService.SendNotificationEmailAsync(notification);
+            notification.DateEmailSent = DateTime.UtcNow;
+            await NotificationRepository.UpdateAsync(notification);
         }
     }
 }

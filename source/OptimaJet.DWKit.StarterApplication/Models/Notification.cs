@@ -47,7 +47,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         }
 
         [Attr("send-email")]
-        public NotificationEmailType SendEmail { get; set; }
+        public bool SendEmail { get; set; }
 
         [Attr("link-url")]
         public string LinkUrl { get; set; }

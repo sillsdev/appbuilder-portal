@@ -131,7 +131,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
                 MessageSubstitutionsJson = serializedParm,
                 Message = "Build Engine for organization SIL International status change: connected",
                 UserId = user1.Id,
-                SendEmail = NotificationEmailType.WaitForTimeout
+                SendEmail = true
             });
             type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
             {
