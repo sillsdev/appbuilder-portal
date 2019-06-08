@@ -164,6 +164,102 @@ const scenarios = {
       },
     ],
   },
+  oneBuildPublished: {
+    data: projectResource(),
+    included: [
+      ...defaultIncluded(),
+      {
+        type: 'products',
+        id: 1,
+        attributes: {
+          'date-created': '2018-10-20T16:19:09.878193',
+          'date-updated': '2018-10-20T16:19:09.878193',
+          'date-built': '2018-10-20T16:19:09.878193',
+          'date-published': '2018-10-20T16:19:09.878193',
+        },
+        relationships: {
+          'product-definition': { data: { type: 'product-definitions', id: 1 } },
+          project: { data: { type: 'projects', id: 1 } },
+          productBuilds: { data: [{ type: 'product-build', id: 1 }] },
+          productPublications: { data: [{ type: 'product-publication', id: 1 }] },
+        },
+      },
+      {
+        type: 'product-build',
+        id: 1,
+        attributes: {
+          version: 'v1.0.0',
+        },
+        relationships: {
+          product: { data: { type: 'product', id: 1 } },
+          productPublications: { data: [{ type: 'product-publication', id: 1 }] },
+        },
+      },
+      {
+        type: 'product-publication',
+        id: 1,
+        attributes: {
+          'release-id': '1',
+          channel: 'production',
+          'log-url':
+            'https://prd-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_17/50/console.log',
+          success: true,
+          'date-created': '2018-10-20T16:19:09.878193',
+          'date-updated': '2018-10-20T16:19:09.878193',
+        },
+        relationships: {
+          product: { data: { type: 'product', id: 1 } },
+          productBuild: { data: { type: 'product-build', id: 1 } },
+        },
+      },
+    ],
+  },
+  oneBuildPublishInProgress: {
+    data: projectResource(),
+    included: [
+      ...defaultIncluded(),
+      {
+        type: 'products',
+        id: 1,
+        attributes: {
+          'date-created': '2018-10-20T16:19:09.878193',
+          'date-updated': '2018-10-20T16:19:09.878193',
+          'date-built': '2018-10-20T16:19:09.878193',
+        },
+        relationships: {
+          'product-definition': { data: { type: 'product-definitions', id: 1 } },
+          project: { data: { type: 'projects', id: 1 } },
+          productBuilds: { data: [{ type: 'product-build', id: 1 }] },
+          productPublications: { data: [{ type: 'product-publication', id: 1 }] },
+        },
+      },
+      {
+        type: 'product-build',
+        id: 1,
+        attributes: {
+          version: 'v1.0.0',
+        },
+        relationships: {
+          product: { data: { type: 'product', id: 1 } },
+          productPublications: { data: [{ type: 'product-publication', id: 1 }] },
+        },
+      },
+      {
+        type: 'product-publication',
+        id: 1,
+        attributes: {
+          'release-id': '1',
+          channel: 'production',
+          'date-created': '2018-10-20T16:19:09.878193',
+          'date-updated': '2018-10-20T16:19:09.878193',
+        },
+        relationships: {
+          product: { data: { type: 'product', id: 1 } },
+          productBuild: { data: { type: 'product-build', id: 1 } },
+        },
+      },
+    ],
+  },
 };
 
 describe('Acceptance | Project View | Product Files', () => {
@@ -222,6 +318,10 @@ describe('Acceptance | Project View | Product Files', () => {
       it('shows the version number', () => {
         expect(page.projectFiles.products(0).selectedBuild).contains('v1.0.0');
       });
+
+      it('does not show the publish detail', () => {
+        expect(page.projectFiles.products(0).publicationInfoVisible).to.be.false;
+      });
     });
 
     describe('the build has not yet finished', () => {
@@ -233,6 +333,46 @@ describe('Acceptance | Project View | Product Files', () => {
 
       it('does not show a version, and instead indicates that it is pending', () => {
         expect(page.projectFiles.products(0).selectedBuild).contains('Build Pending');
+      });
+    });
+
+    describe('the build was published', () => {
+      beforeEach(async function() {
+        this.mockGet(200, 'projects/1', scenarios.oneBuildPublished);
+
+        await visitTheFilesTab();
+      });
+
+      it('shows the version number', () => {
+        expect(page.projectFiles.products(0).selectedBuild).contains('v1.0.0');
+      });
+
+      it('shows the publish detail', () => {
+        expect(page.projectFiles.products(0).publicationInfoVisible).to.be.true;
+      });
+
+      it('has production publishing channel', () => {
+        expect(page.projectFiles.products(0).publicationChannel).contains('production');
+      });
+
+      it('has a successful status', () => {
+        expect(page.projectFiles.products(0).publicationStatus).contains('Success');
+      });
+    });
+
+    describe('the publish is in progress', () => {
+      beforeEach(async function() {
+        this.mockGet(200, 'projects/1', scenarios.oneBuildPublishInProgress);
+
+        await visitTheFilesTab();
+      });
+
+      it('shows the version number', () => {
+        expect(page.projectFiles.products(0).selectedBuild).contains('v1.0.0');
+      });
+
+      it('does not display the publish information', () => {
+        expect(page.projectFiles.products(0).publicationInfoVisible).to.be.false;
       });
     });
   });
