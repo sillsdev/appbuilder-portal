@@ -20,3 +20,15 @@
     }
   }
 }
+
+.publication-build {
+  border: 1px solid $lighter-gray;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  color: $gray;
+
+  .header {
+    background-color: $white;
+    border-bottom: none;
+  }
+}

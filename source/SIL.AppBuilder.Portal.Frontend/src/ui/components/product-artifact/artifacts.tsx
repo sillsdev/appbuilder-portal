@@ -26,7 +26,7 @@ export default function ProductArtifact({ product, productBuild }) {
   }
 
   return (
-    <div data-test-product-artifacts className='product-artifact w-100 m-b-lg'>
+    <div data-test-product-artifacts className='product-artifact w-100'>
       <Header
         {...{
           productDefinition,
