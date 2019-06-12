@@ -220,11 +220,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             } else
             {
                 var active = transitions
-                    .Where(t => t.WorkflowUserId == null)
+                    .Where(t => t.DateTransition == null)
                     .OrderBy(t => t.Id)
                     .FirstOrDefault();
                 var previous = transitions
-                    .Where(t => t.WorkflowUserId != null)
+                    .Where(t => t.DateTransition != null)
                     .OrderByDescending(t => t.Id)
                     .FirstOrDefault();
                 if (active != null && previous != null)

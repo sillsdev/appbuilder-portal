@@ -43,7 +43,7 @@ export function ProductSelection({ tableName, onChange, onPermissionRetrieval }:
   const knownProductDefinitions = dataStore.cache.query((q) => q.findRecords('productDefinition'));
   const productDefinitions = knownProductDefinitions.sort(compareVia((a) => attributesFor(a).name));
 
-  const getPermissions = uesPermissions(selectedRows, dataStore, onPermissionRetrieval);
+  const getPermissions = usePermissions(selectedRows, dataStore, onPermissionRetrieval);
 
   useProductSelection(selectedRows, dataStore, selected, onChange);
 
@@ -149,7 +149,7 @@ function useProductSelection(
   }, [dataStore, onChange, selected, selectedRows]);
 }
 
-function uesPermissions(
+function usePermissions(
   selectedRows: ProjectResource[],
   dataStore: Store,
   onPermissionRetrieval: (newPermissions: Permissions) => void

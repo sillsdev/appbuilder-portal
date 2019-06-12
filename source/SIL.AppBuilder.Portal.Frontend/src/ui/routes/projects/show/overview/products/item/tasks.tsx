@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { useOrbit, remoteIdentityFrom, attributesFor } from 'react-orbitjs';
+import React, { useState, useCallback } from 'react';
+import { useOrbit, attributesFor } from 'react-orbitjs';
+import Store from '@orbit/store';
 import { Link } from 'react-router-dom';
 import { uniqBy } from 'lodash';
 
@@ -7,7 +8,7 @@ import { useTranslations } from '~/lib/i18n';
 
 import { useTimezoneFormatters } from '~/lib/hooks';
 
-import { ProductResource } from '~/data';
+import { ProductResource, idFromRecordIdentity } from '~/data';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
@@ -17,39 +18,55 @@ import { get as authenticatedGet } from '@lib/fetch';
 
 import { handleResponse } from '~/data/containers/with-current-user/fetcher';
 
-import { RectLoader } from '~/ui/components/loaders';
+import { AsyncWaiter } from '~/data/async-waiter';
+
+import i18next from 'i18next';
 
 interface IProps {
   product: ProductResource;
 }
+function useTransitions(
+  productRemoteId: string,
+  t: i18next.TFunction,
+  dataStore: Store,
+  test: any
+) {
+  console.log('Running useTransitions');
+  return useCallback(async () => {
+    let transition = null;
+    let response = await authenticatedGet(`/api/products/${productRemoteId}/transitions/active`, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+        Expires: 0,
+      },
+    });
+    console.log('useTransitions Response:', response);
+    try {
+      let json = await handleResponse(response, t);
+      transition = json.data;
+    } catch (e) {
+      console.debug('error occurred on handling transition response');
+    }
+    return transition;
+  }, [dataStore, productRemoteId, test]);
+}
+
 export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { t } = useTranslations();
   const { currentUser } = useCurrentUser();
   const { dataStore } = useOrbit();
-  const productRemoteId = remoteIdentityFrom(dataStore, product).keys.remoteId;
-  const [fetchComplete, setFetchComplete] = useState(false);
-  const [transition, setTransition] = useState();
-
-  useEffect(() => {
-    async function fetcher() {
-      let response = await authenticatedGet(`/api/products/${productRemoteId}/transitions/active`);
-      try {
-        let json = await handleResponse(response, t);
-        let data = json.data;
-        setTransition(data);
-        setFetchComplete(true);
-      } catch (e) {
-        setFetchComplete(true);
-      }
-    }
-    fetcher();
-  }, [productRemoteId]);
-
+  const productRemoteId = idFromRecordIdentity(product as any);
+  const [test, setTest] = useState();
   const { relativeTimeAgo } = useTimezoneFormatters();
   const { pathToWorkflow } = useUserTaskHelpers();
+  let getTransition = useTransitions(productRemoteId, t, dataStore, test);
+
+  // Get current user task is a hook function called by UseMemo
   const getCurrentUserTask = () => {
     let tasks = [];
     try {
+      console.log('Running current user task');
       tasks = dataStore.cache.query((q) =>
         q.findRecords('userTask').filter({ relation: 'product', record: product })
       );
@@ -57,14 +74,15 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
       // enough where the key-checking mechanisms hasn't yet added the first task,
       // so a subsequent task will become a duplicate because both received tasks
       // have yet to be added to the local cache.
+      console.log('tasks', tasks);
       tasks = uniqBy(tasks, (task) => (task.keys || {}).remoteId);
       let foundCurrentUser = false;
       let workTask = null;
       {
         tasks.map((task) => {
           const user = dataStore.cache.query((q) => q.findRelatedRecord(task, 'user'));
-          const taskUserId = remoteIdentityFrom(dataStore, user).keys.remoteId;
-          const currentUserId = remoteIdentityFrom(dataStore, currentUser).keys.remoteId;
+          const taskUserId = idFromRecordIdentity(user as any);
+          const currentUserId = idFromRecordIdentity(currentUser as any);
 
           if (taskUserId === currentUserId) {
             foundCurrentUser = true;
@@ -87,63 +105,73 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
       );
     }
   };
-  const formatTaskLine = (transition) => {
-    // TODO: activityName will probably need to be translated
-    //       need to sync on names of those, or a strategy of how to translate.
-    const attributes = transition.attributes;
+
+  const getAllowedNames = (attributes) => {
+    console.log('Running get allowed names');
     let allowedNames = attributes['allowed-user-names'];
     if (!allowedNames) {
       allowedNames = t('tasks.scriptoria');
     }
-    const activityName = attributes['initial-state'];
-    let waitTime = '';
-    // Tasks assigned to the system don't have a user task
-    // They will get their wait time from the current transition record
-    if (task) {
-      const { dateCreated } = attributesFor(task);
-      waitTime = relativeTimeAgo(dateCreated);
-      // NOTE: without this check, we can enter a race condition where a product is removed
-      //       from the store, but the task still exists.
-      const taskProduct = dataStore.cache.query((q) => q.findRelatedRecord(task, 'product'));
-      if (!taskProduct) return 'Task has no product!';
-    } else {
-      const dateTransition = attributes['date-started'];
-      if (dateTransition) {
-        waitTime = relativeTimeAgo(dateTransition);
-      }
-    }
-    if (currentUserTask) {
-      return (
-        <div key={transition.id}>
-          <span className='red-text'>{t('tasks.waiting', { waitTime })}</span>&nbsp;
-          {t('tasks.forNames', { allowedNames, activityName })}
-          <Link className='m-l-md bold uppercase' to={pathToWorkflow(task)}>
-            {t('common.continue')}
-          </Link>
-        </div>
-      );
-    } else {
-      return (
-        <div key={transition.id}>
-          <span className='red-text'>{t('tasks.waiting', { waitTime })}</span>&nbsp;
-          {t('tasks.forNames', { allowedNames, activityName })}
-        </div>
-      );
-    }
+    return allowedNames;
   };
-  const [currentUserTask, task] = useMemo(getCurrentUserTask, [product, currentUser]);
-  if (fetchComplete == false) {
-    return (
-      <div className='w-100 p-sm p-b-md m-l-md fs-13'>
-        <RectLoader />
-      </div>
-    );
+
+  return (
+    <div className='w-100 p-sm p-b-md m-l-md fs-13'>
+      <AsyncWaiter fn={getTransition}>
+        {({ value }) => {
+          let transition = value;
+          console.log('Transition:', transition);
+          let waitTime = '';
+          let allowedNames = '';
+          let activityName = '';
+          let [currentUserTask, task] = getCurrentUserTask();
+          console.log('returned from getCurrentUserTask:', task);
+          setTest(task);
+          if (transition) {
+            const attributes = attributesFor(transition);
+            activityName = attributes['initial-state'];
+            allowedNames = getAllowedNames(attributes);
+            waitTime = getWaitTime(attributes, task, relativeTimeAgo, dataStore);
+          }
+          return (
+            <div>
+              {transition && (
+                <div key={transition.id}>
+                  <span className='red-text'>{t('tasks.waiting', { waitTime })}</span>&nbsp;
+                  {t('tasks.forNames', { allowedNames, activityName })}
+                  {currentUserTask && (
+                    <Link className='m-l-md bold uppercase' to={pathToWorkflow(task)}>
+                      {t('common.continue')}
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        }}
+      </AsyncWaiter>
+    </div>
+  );
+}
+function getWaitTime(attributes, task, relativeTimeAgo, dataStore: Store) {
+  console.log('running get wait time');
+  let waitTime = '';
+  // Get wait time from user task if it exists, otherwise compute from transition
+  if (task) {
+    const { dateCreated } = attributesFor(task);
+    waitTime = relativeTimeAgo(dateCreated);
+    // NOTE: without this check, we can enter a race condition where a product is removed
+    //       from the store, but the task still exists.
+    const taskProduct = dataStore.cache.query((q) => q.findRelatedRecord(task, 'product'));
+    if (!taskProduct) {
+      console.log('Task has no product!');
+      return '';
+    }
+  } else {
+    const dateTransition = attributes['date-started'];
+    if (dateTransition) {
+      waitTime = relativeTimeAgo(dateTransition);
+    }
   }
-  // No transitions means no builds or publishes in progress
-  // Don't display anything in this case.
-  if (!transition) {
-    return '';
-  }
-  const format = formatTaskLine(transition);
-  return <div className='w-100 p-sm p-b-md m-l-md fs-13'>{format}</div>;
+  return waitTime;
 }
