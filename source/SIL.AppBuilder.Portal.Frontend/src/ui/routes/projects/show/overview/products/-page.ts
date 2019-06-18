@@ -6,6 +6,7 @@ import {
   isPresent,
   interactor,
   Interactor,
+  attribute,
 } from '@bigtest/interactor';
 import { MultiSelectInteractor } from '@ui/components/inputs/multi-select/-page';
 
@@ -20,8 +21,8 @@ class Products {
   products = collection('[data-test-project-product-item]', {
     name: text('[data-test-project-product-name]'),
     hasProductLink: isPresent('[data-test-project-product-publishlink]'),
+    apkLink: attribute('[data-test-product-apklink]', 'href'),
   });
-
   productNamed(named: string) {
     const item = this.products().find((p) => p.name.includes(named));
 

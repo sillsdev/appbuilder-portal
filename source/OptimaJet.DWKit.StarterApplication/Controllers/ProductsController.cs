@@ -53,5 +53,16 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
             return Ok(workflowDefinition);
         }
+        [AllowAnonymous]
+        [HttpGet("{id}/files/published/{type}")]
+        public async Task<IActionResult> GetPublishedFile(Guid id, String type)
+        {
+            var productArtifact = await ProductService.GetPublishedFile(id, type);
+            if (productArtifact == null)
+            {
+                return NotFound();
+            }
+            return Redirect(productArtifact.Url);
+        }
     }
 }

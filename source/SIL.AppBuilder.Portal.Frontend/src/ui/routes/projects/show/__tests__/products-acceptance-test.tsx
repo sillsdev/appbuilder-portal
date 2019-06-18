@@ -554,6 +554,12 @@ describe('Acceptance | Project View | Products', () => {
       expect(page.productsList.productNamed('android_s3').hasProductLink).to.equal(true);
     });
 
+    it('has a valid apk download link for a product that has been published', () => {
+      expect(page.productsList.productNamed('android_s3').apkLink).to.equal(
+        '/api/products/1/files/published/apk'
+      );
+    });
+
     it('does not shows the icon link for a product without a link', () => {
       expect(page.productsList.productNamed('android_amazon_app').hasProductLink).to.equal(false);
     });
