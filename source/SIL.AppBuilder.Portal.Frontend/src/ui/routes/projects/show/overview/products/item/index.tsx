@@ -11,9 +11,9 @@ import {
   idFromRecordIdentity,
 } from '@data';
 
-import StoreIcon from '@material-ui/icons/Store';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import StoreIcon from '@material-ui/icons/StoreTwoTone';
 import ProductIcon from '@ui/components/product-icon';
+import ProductLink from '@ui/components/product-link';
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { isEmpty } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
@@ -41,25 +41,6 @@ export default function ProductItem({ product, includeHeader }) {
 
   const { description, name } = attributesFor(productDefinition);
   const { dateUpdated, datePublished, publishLink } = attributesFor(product);
-  const downloadLinkMap = {
-    android: (productId) => (
-      <a
-        data-test-product-apklink
-        className='m-l-sm'
-        href={`/api/products/${productId}/files/published/apk`}
-        target='_blank'
-      >
-        <CloudDownloadIcon />
-      </a>
-    ),
-    html: () => <div />,
-    [undefined]: () => <div />,
-  };
-  const lowerName = name && name.toLowerCase();
-  const closestKey = Object.keys(downloadLinkMap).find(
-    (key) => lowerName && lowerName.includes(key)
-  );
-  const productId = idFromRecordIdentity(product as any);
   return (
     <div data-test-project-product-item className='round-border-4 thin-border'>
       <div
@@ -81,7 +62,7 @@ export default function ProductItem({ product, includeHeader }) {
               <a className='m-l-sm' href={publishLink} target='_blank'>
                 <StoreIcon />
               </a>
-              {downloadLinkMap[closestKey](productId)}
+              <ProductLink product={product} name={name} />
             </div>
           )}
         </div>
