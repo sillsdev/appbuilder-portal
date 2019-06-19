@@ -108,9 +108,7 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
         return (
           <Redirect
             push={true}
-            to={`/invitations/organization-membership/${
-              this.token
-            }/finished/${organizationMembershipId}`}
+            to={`/invitations/organization-membership/${this.token}/finished/${organizationMembershipId}`}
           />
         );
       }
