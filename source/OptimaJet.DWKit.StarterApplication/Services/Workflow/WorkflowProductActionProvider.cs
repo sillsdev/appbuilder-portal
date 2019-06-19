@@ -186,7 +186,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowBuildId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = GetActionParameters(actionParameter);
+                    var parmsDict = GetActionParameters(product.ProductDefinition, actionParameter);
                     BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id, parmsDict, null));
                     Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
                 }
@@ -207,7 +207,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowPublishId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = GetActionParameters(actionParameter);
+                    var parmsDict = GetActionParameters(product.ProductDefinition, actionParameter);
 
                     BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, parmsDict, null));
                     Log.Information($"BuildEnginePublishProduct: productId={product.Id}, projectName={product.Project.Name}");
@@ -219,7 +219,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
-        private static Dictionary<string, object> GetActionParameters(string actionParameter)
+        private static Dictionary<string, object> GetActionParameters(ProductDefinition productDefinition, string actionParameter)
         {
             var paramsDict = new Dictionary<string, object>();
             if (String.IsNullOrEmpty(actionParameter))
@@ -237,6 +237,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 throw ex;
             }
 
+            var productParams = productDefinition.Parameters as Dictionary<string, object>;
+            if (productParams != null)
+            {
+                foreach (var item in productParams)
+                {
+                    paramsDict[item.Key] = item.Value;
+                }
+            }
+
             return paramsDict;
         }
 
@@ -244,6 +253,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
             return await productRepository.Get()
                 .Where(p => p.Id == processInstance.ProcessId)
+                .Include(p => p.ProductDefinition)
                 .Include(p => p.Project)
                     .ThenInclude(p => p.Owner)
                 .FirstOrDefaultAsync();
@@ -269,7 +279,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
-                var parmsDict = GetActionParameters(actionParameter);
+                var parmsDict = GetActionParameters(product.ProductDefinition, actionParameter);
                 if (parmsDict.ContainsKey("types"))
                 {
                     BackgroundJobClient.Enqueue<SendEmailService>(s => s.SendProductReviewEmail(product.Id, parmsDict));
