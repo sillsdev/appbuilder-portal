@@ -70,6 +70,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public ProductArtifact productArtifact2_2 { get; set; }
         public ProductArtifact productArtifact3_1 { get; set; }
         public ProductArtifact productArtifact3_2 { get; set; }
+        public ProductArtifact productArtifact3_3 { get; set; }
         public ProductArtifact productArtifact4_1 { get; set; }
         public ProductArtifact productArtifact4_2 { get; set; }
         public ProductPublication productPublication1 { get; set; }
@@ -475,6 +476,13 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 ArtifactType = "about",
                 Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2881/about.txt",
                 ContentType = "text/plain"
+            });
+            productArtifact3_3 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild3.Id,
+                ArtifactType = "version",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2881/version.json",
             });
             productArtifact4_1 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
             {
