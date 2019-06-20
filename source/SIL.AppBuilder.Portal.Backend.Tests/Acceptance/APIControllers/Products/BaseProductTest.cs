@@ -543,7 +543,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 AllowedUserNames = "Chris Hubbard",
                 InitialState = "Readiness Check",
                 DestinationState = "Approval",
-                Command="Continue"
+                Command = "Continue",
+                DateTransition = new DateTime(2019,06,17)
             });
             transition2 = AddEntity<AppDbContext, ProductTransition>(new ProductTransition
             {
@@ -552,7 +553,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 AllowedUserNames = "David Moore",
                 InitialState = "Approval",
                 DestinationState = "Product Creation",
-                Command = "Approve"
+                Command = "Approve",
+                DateTransition = new DateTime(2019,06,17)
             });
             transition3 = AddEntity<AppDbContext, ProductTransition>(new ProductTransition
             {

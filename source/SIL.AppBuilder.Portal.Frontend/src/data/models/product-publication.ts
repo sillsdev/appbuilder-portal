@@ -11,7 +11,7 @@ export interface ProductPublicationAttributes extends AttributesObject {
   dateUpdated: string;
 }
 
-export type ProductPublisheResource = ResourceObject<
+export type ProductPublicationResource = ResourceObject<
   PRODUCT_PUBLICATION_TYPE,
   ProductPublicationAttributes
 >;
