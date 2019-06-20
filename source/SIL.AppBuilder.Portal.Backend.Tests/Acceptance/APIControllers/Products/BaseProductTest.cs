@@ -60,6 +60,23 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public StoreLanguage storeLang1 { get; set; }
         public StoreLanguage storeLang2 { get; set; }
         public OrganizationStore orgStore1 { get; set; }
+        public ProductBuild productBuild1 { get; set; }
+        public ProductBuild productBuild2 { get; set; }
+        public ProductBuild productBuild3 { get; set; }
+        public ProductBuild productBuild4 { get; set; }
+        public ProductArtifact productArtifact1_1 { get; set; }
+        public ProductArtifact productArtifact1_2 { get; set; }
+        public ProductArtifact productArtifact2_1 { get; set; }
+        public ProductArtifact productArtifact2_2 { get; set; }
+        public ProductArtifact productArtifact3_1 { get; set; }
+        public ProductArtifact productArtifact3_2 { get; set; }
+        public ProductArtifact productArtifact3_3 { get; set; }
+        public ProductArtifact productArtifact4_1 { get; set; }
+        public ProductArtifact productArtifact4_2 { get; set; }
+        public ProductPublication productPublication1 { get; set; }
+        public ProductPublication productPublication2 { get; set; }
+        public ProductPublication productPublication3 { get; set; }
+        public ProductPublication productPublication4 { get; set; }
         protected void BuildTestData()
         {
             CurrentUser = NeedsCurrentUser();
@@ -384,7 +401,137 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 StoreId = store1.Id,
                 StoreLanguageId = storeLang1.Id
             });
-
+            productBuild1 = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product1.Id,
+                Version = "4.7.1",
+                BuildId = 2879,
+                Success = true
+            });
+            productBuild2 = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product1.Id,
+                Version = "4.7.1",
+                BuildId = 2880,
+                Success = true
+            });
+            productBuild3 = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product1.Id,
+                Version = "4.7.1",
+                BuildId = 2881,
+                Success = true
+            });
+            productBuild4 = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product3.Id,
+                Version = "4.7.1",
+                BuildId = 2882,
+                Success = true
+            });
+            productArtifact1_1 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild1.Id,
+                ArtifactType = "apk",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2879/test-4.7.apk",
+                ContentType = "application/octet-stream"
+            });
+            productArtifact1_2 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild1.Id,
+                ArtifactType = "about",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2879/about.txt",
+                ContentType = "text/plain"
+            });
+            productArtifact2_1 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild2.Id,
+                ArtifactType = "apk",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2880/test-4.7.apk",
+                ContentType = "application/octet-stream"
+            });
+            productArtifact2_2 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild2.Id,
+                ArtifactType = "about",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2880/about.txt",
+                ContentType = "text/plain"
+            });
+            productArtifact3_1 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild3.Id,
+                ArtifactType = "apk",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2881/test-4.7.apk",
+                ContentType = "application/octet-stream"
+            });
+            productArtifact3_2 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild3.Id,
+                ArtifactType = "about",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2881/about.txt",
+                ContentType = "text/plain"
+            });
+            productArtifact3_3 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild3.Id,
+                ArtifactType = "version",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2881/version.json",
+            });
+            productArtifact4_1 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product3.Id,
+                ProductBuildId = productBuild4.Id,
+                ArtifactType = "apk",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2882/test-4.7.apk",
+                ContentType = "application/octet-stream"
+            });
+            productArtifact4_2 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product4.Id,
+                ProductBuildId = productBuild4.Id,
+                ArtifactType = "about",
+                Url = "https://sil-prd-aps-artifacts.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/2882/about.txt",
+                ContentType = "text/plain"
+            });
+            productPublication1 = AddEntity<AppDbContext, ProductPublication>(new ProductPublication
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild1.Id,
+                ReleaseId = 2180,
+                Channel = "production",
+                Success = true
+            });
+            productPublication2 = AddEntity<AppDbContext, ProductPublication>(new ProductPublication
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild2.Id,
+                ReleaseId = 2181,
+                Channel = "production",
+                Success = true
+            });
+            productPublication3 = AddEntity<AppDbContext, ProductPublication>(new ProductPublication
+            {
+                ProductId = product1.Id,
+                ProductBuildId = productBuild3.Id,
+                ReleaseId = 2182,
+                Channel = "production",
+                Success = false
+            });
+            productPublication4 = AddEntity<AppDbContext, ProductPublication>(new ProductPublication
+            {
+                ProductId = product3.Id,
+                ProductBuildId = productBuild4.Id,
+                ReleaseId = 2183,
+                Channel = "production",
+                Success = false
+            });
         }
 
     }

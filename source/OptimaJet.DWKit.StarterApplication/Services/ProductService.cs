@@ -24,6 +24,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public IEntityRepository<WorkflowDefinition> WorkflowDefinitionRepository { get; }
         IEntityRepository<Store> StoreRepository { get; }
         public IEntityRepository<UserRole> UserRolesRepository { get; }
+        public IEntityRepository<ProductPublication> ProductPublicationsRepository { get; }
         IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
@@ -43,6 +44,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             IEntityRepository<WorkflowDefinition> workflowDefinitionRepository,
             IEntityRepository<Store> storeRepository,
             IEntityRepository<UserRole> userRolesRepository,
+            IEntityRepository<ProductPublication> productPublicationsRepository,
             IBackgroundJobClient hangfireClient,
             ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
         {
@@ -51,6 +53,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             WorkflowDefinitionRepository = workflowDefinitionRepository;
             StoreRepository = storeRepository;
             UserRolesRepository = userRolesRepository;
+            ProductPublicationsRepository = productPublicationsRepository;
             HangfireClient = hangfireClient;
             UserRepository = userRepository;
             ProjectRepository = projectRepository;
@@ -338,6 +341,32 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     select new ProductActions { Id = product.Id, Actions = actions }).ToList();
 
             return productActions;
+        }
+
+        /// <summary>
+        /// Get the most recent published file of specified type associated with this product
+        /// </summary>
+        /// <param name="id">Product ID</param>
+        /// <param name="type">ProductArtifact type to be returned</param>
+        /// <returns></returns>
+        public async Task<ProductArtifact> GetPublishedFile(Guid id, String type)
+        {
+            var publication = await ProductPublicationsRepository.Get()
+                .Where(pp => pp.ProductId == id && pp.Success == true)
+                .Include(pp => pp.ProductBuild)
+                    .ThenInclude(pb => pb.ProductArtifacts)
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
+            if (publication == null || publication.ProductBuild.ProductArtifacts == null)
+            {
+                // Return null if product has not been successfully published
+                return null;
+            }
+            var artifact = publication.ProductBuild.ProductArtifacts
+                .Where(pa => pa.ArtifactType == type)
+                .FirstOrDefault();
+
+            return artifact;
         }
     }
 }

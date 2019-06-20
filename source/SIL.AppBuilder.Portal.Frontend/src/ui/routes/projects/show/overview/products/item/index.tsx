@@ -8,10 +8,12 @@ import {
   withLoader,
   attributesFor,
   UserTaskResource,
+  idFromRecordIdentity,
 } from '@data';
 
-import LaunchIcon from '@material-ui/icons/Launch';
+import StoreIcon from '@material-ui/icons/StoreTwoTone';
 import ProductIcon from '@ui/components/product-icon';
+import ProductLink from '@ui/components/product-link';
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { isEmpty } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
@@ -39,7 +41,6 @@ export default function ProductItem({ product, includeHeader }) {
 
   const { description, name } = attributesFor(productDefinition);
   const { dateUpdated, datePublished, publishLink } = attributesFor(product);
-
   return (
     <div data-test-project-product-item className='round-border-4 thin-border'>
       <div
@@ -59,8 +60,9 @@ export default function ProductItem({ product, includeHeader }) {
           {!isEmpty(publishLink) && (
             <div data-test-project-product-publishlink>
               <a className='m-l-sm' href={publishLink} target='_blank'>
-                <LaunchIcon />
+                <StoreIcon />
               </a>
+              <ProductLink product={product} name={name} />
             </div>
           )}
         </div>
