@@ -1,12 +1,7 @@
 import * as React from 'react';
 import { useOrbit } from 'react-orbitjs';
 
-import {
-  ProductResource,
-  ProductDefinitionResource,
-  attributesFor,
-  TaskResource,
-} from '@data';
+import { ProductResource, ProductDefinitionResource, attributesFor, TaskResource } from '@data';
 
 import StoreIcon from '@material-ui/icons/StoreTwoTone';
 import ProductIcon from '@ui/components/product-icon';
