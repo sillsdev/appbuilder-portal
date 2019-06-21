@@ -201,7 +201,8 @@
     "noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
     "reassign": "Reasignar",
     "waiting": "Waiting {waitTime}",
-    "forYou": "for you to {activityName}"
+    "forNames": "for {allowedNames} to {activityName}",
+    "scriptoria": "Scriptoria"
   },
   "projects": {
     "noBuilds": "No Builds Yet",
