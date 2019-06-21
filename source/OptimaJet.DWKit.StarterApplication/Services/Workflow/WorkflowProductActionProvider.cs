@@ -317,12 +317,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     var identityIds = processInstance.IdentityIds.ConvertAll(s => Guid.Parse(s)).ToList();
                     var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                     Product product = await GetProductForProcess(processInstance, productRepository);
-                    var workflowUserIds = runtime
-                        .GetAllActorsForDirectCommandTransitions(product.Id, activityName: currentstate)
-                        .ToList();
                     var userRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<User>>();
                     var userNames = userRepository.Get()
-                        .Where(u => u.WorkflowUserId != null && workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
+                        .Where(u => u.WorkflowUserId != null && identityIds.Contains(u.WorkflowUserId.Value))
                         .Select(u => u.Name).ToList();
                     allowedUserNames = String.Join(',', userNames);
                 }
