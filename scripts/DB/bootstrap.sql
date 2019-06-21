@@ -9,7 +9,8 @@ INSERT INTO "ApplicationTypes" ("Id", "Name", "Description") VALUES
 (3, 'dictionaryappbuilder',	'Dictionary App Builder');
 
 INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
-(1, 'google_play_store',	'Google Play Store');
+(1, 'google_play_store',	'Google Play Store'),
+(2, 's3_bucket',	'Amazon S3 Bucket');
 
 INSERT INTO "StoreLanguages" ("Id", "Name", "Description", "StoreTypeId") VALUES
 (1, 'af',	'Afrikaans – af', 1),
