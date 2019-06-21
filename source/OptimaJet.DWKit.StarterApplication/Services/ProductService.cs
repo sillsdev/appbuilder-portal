@@ -197,7 +197,43 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // Running the startup workflow.  Return empty list
             return new List<string>();
         }
-
+        public async Task<List<ProductTransition>> GetProductTransitionsAsync(Guid id)
+        {
+            var product = await ProductRepository.Get()
+                .Where(p => p.Id == id)
+                .Include(p => p.Transitions)
+                .FirstOrDefaultAsync();
+            if (product == null)
+            {
+                return null;
+            } else
+            {
+                return product.Transitions;
+            }
+        }
+        public async Task<ProductTransition> GetActiveTransitionAsync(Guid id)
+        {
+            var transitions = await GetProductTransitionsAsync(id);
+            if (transitions == null)
+            {
+                return null;
+            } else
+            {
+                var active = transitions
+                    .Where(t => t.DateTransition == null)
+                    .OrderBy(t => t.Id)
+                    .FirstOrDefault();
+                var previous = transitions
+                    .Where(t => t.DateTransition != null)
+                    .OrderByDescending(t => t.Id)
+                    .FirstOrDefault();
+                if (active != null && previous != null)
+                {
+                    active.DateStarted = previous.DateTransition;
+                }
+                return active;
+            }
+        }
         private async Task<WorkflowDefinition> GetExecutingWorkflowDefintion(Product product)
         {
             return await WorkflowDefinitionRepository.Get()

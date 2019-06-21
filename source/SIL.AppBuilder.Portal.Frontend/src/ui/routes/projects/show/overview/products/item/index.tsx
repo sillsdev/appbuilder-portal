@@ -1,15 +1,7 @@
 import * as React from 'react';
-import { compose, withProps } from 'recompose';
-import { withData as withOrbit, useOrbit } from 'react-orbitjs';
+import { useOrbit } from 'react-orbitjs';
 
-import {
-  ProductResource,
-  ProductDefinitionResource,
-  withLoader,
-  attributesFor,
-  UserTaskResource,
-  idFromRecordIdentity,
-} from '@data';
+import { ProductResource, ProductDefinitionResource, attributesFor, TaskResource } from '@data';
 
 import StoreIcon from '@material-ui/icons/StoreTwoTone';
 import ProductIcon from '@ui/components/product-icon';
@@ -26,7 +18,7 @@ interface IOwnProps {
   includeHeader?: boolean;
   product: ProductResource;
   productDefinition: ProductDefinitionResource;
-  tasks: UserTaskResource[];
+  tasks: TaskResource[];
 }
 
 type IProps = IOwnProps;
@@ -39,7 +31,7 @@ export default function ProductItem({ product, includeHeader }) {
     q.findRelatedRecord(product, 'productDefinition')
   );
 
-  const { description, name } = attributesFor(productDefinition);
+  const { name } = attributesFor(productDefinition);
   const { dateUpdated, datePublished, publishLink } = attributesFor(product);
   return (
     <div data-test-project-product-item className='round-border-4 thin-border'>

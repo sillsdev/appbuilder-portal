@@ -64,5 +64,26 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             }
             return Redirect(productArtifact.Url);
         }
+
+        [HttpGet("{id}/transitions")]
+        public async Task<IActionResult> GetProductTransitions(Guid id)
+        {
+            var transitions = await ProductService.GetProductTransitionsAsync(id);
+            if (transitions == null)
+            {
+                return NotFound();
+            }
+            return Ok(transitions);
+        }
+        [HttpGet("{id}/transitions/active")]
+        public async Task<IActionResult> GetActiveTransition(Guid id)
+        {
+            var transition = await ProductService.GetActiveTransitionAsync(id);
+            if (transition == null)
+            {
+                return NotFound();
+            }
+            return Ok(transition);
+        }
     }
 }
