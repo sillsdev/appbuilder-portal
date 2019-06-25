@@ -20,6 +20,7 @@ export interface UserAttributes extends AttributesObject {
   groups?: { id: string; name: string }[]; // need an api
   auth0Id?: string;
   profileVisibility?: number;
+  workflowUserId?: string;
 }
 
 export function name(attrs: UserAttributes) {

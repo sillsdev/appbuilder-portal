@@ -266,7 +266,8 @@
       "popup": {
         "title": "Select Products",
         "done": "Done",
-        "empty": "No products available"
+        "empty": "No products available",
+        "details": "Details"
       },
       "publications": {
         "channel": "Channel",
@@ -280,6 +281,14 @@
       "options": {
         "update": "update",
         "publish": "publish"
+      },
+      "transitions": {
+        "productDetails": "Product Details",
+        "state": "State",
+        "user": "User",
+        "command": "Command",
+        "comment": "Comment",
+        "date": "Date"
       },
       "updated": "Updated",
       "size": "Size",

@@ -364,6 +364,7 @@ const schemaDefinition: SchemaSettings = {
         timezone: { type: 'string' },
         localization: { type: 'string' },
         decimalSeparator: { type: 'string' },
+        workflowUserId: { type: 'string' },
       },
       relationships: {
         ownedOrganizations: { type: 'hasMany', model: 'organization', inverse: 'owner' },

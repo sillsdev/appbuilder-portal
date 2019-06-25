@@ -208,7 +208,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 return null;
             } else
             {
-                return product.Transitions;
+                var orderedTransitions = product.Transitions.OrderBy(t => t.Id).ToList();
+                return orderedTransitions;
             }
         }
         public async Task<ProductTransition> GetActiveTransitionAsync(Guid id)
