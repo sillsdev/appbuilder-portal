@@ -236,7 +236,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             product.DatePublished = DateTime.UtcNow;
             await ProductRepository.UpdateAsync(product);
-            await UpdateProductuPublication(buildEngineRelease, product, true);
+            await UpdateProductPublication(buildEngineRelease, product, true);
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
@@ -245,7 +245,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             await sendNotificationService.SendNotificationToUserAsync(product.Project.Owner, "releaseCompletedSuccessfully", messageParms);
         }
 
-        private async Task UpdateProductuPublication(ReleaseResponse buildEngineRelease, Product product, bool success)
+        private async Task UpdateProductPublication(ReleaseResponse buildEngineRelease, Product product, bool success)
         {
             var publication = await PublicationRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id && p.ProductId == product.Id).FirstOrDefaultAsync();
             if (publication == null)
@@ -275,7 +275,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected async Task ReleaseCreationFailedAsync(Product product, ReleaseResponse buildEngineRelease)
         {
             ClearRecurringJob(product.Id);
-            await UpdateProductuPublication(buildEngineRelease, product, false);
+            await UpdateProductPublication(buildEngineRelease, product, false);
             var buildEngineUrl = product.Project.Organization.BuildEngineUrl;
             var consoleTextUrl = buildEngineRelease.ConsoleText;
             var messageParms = new Dictionary<string, object>()
