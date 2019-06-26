@@ -317,7 +317,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
 
             var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
+            var mockWebClient = Mock.Get(buildReleaseService.WebClient);
             mockBuildEngine.Reset();
+            mockWebClient.Reset();
+
 
             Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
@@ -332,6 +335,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 ProductBuildId = productBuild.Id,
                 ReleaseId = 3
             });
+            var consoleText = "https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log";
+            var publishUrl = "https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/publish_url.txt";
+            var publishUrlContents = "https://google.play/path/to/app";
             var releaseResponse = new ReleaseResponse
             {
                 Id = 3,
@@ -339,28 +345,33 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 Status = "completed",
                 Result = "SUCCESS",
                 Error = "",
-                ConsoleText = "https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log"
+                Artifacts = new Dictionary<string, string> { { "publishUrl", publishUrl }, { "consoleText", consoleText} },
+                ConsoleText = consoleText
             };
             mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(),
                                                     It.IsAny<int>(),
                                                     It.IsAny<int>()))
                            .Returns(releaseResponse);
+            mockWebClient.Setup(x => x.DownloadString(It.Is<string>(addr => addr == publishUrl)))
+                .Returns(publishUrlContents);
+
             await buildReleaseService.CheckReleaseAsync(product2.Id);
             mockBuildEngine.Verify(x => x.SetEndpoint(
                 It.Is<String>(u => u == org1.BuildEngineUrl),
                 It.Is<String>(t => t == org1.BuildEngineApiAccessToken)
             ));
             mockBuildEngine.Verify(x => x.GetRelease(It.Is<int>(i => i == product2.WorkflowJobId),
-                                                     It.Is<int>(b => b == product2.WorkflowBuildId),
-                                                     It.Is<int>(r => r == product2.WorkflowPublishId)));
+                                         It.Is<int>(b => b == product2.WorkflowBuildId),
+                                         It.Is<int>(r => r == product2.WorkflowPublishId)));
             var products = ReadTestData<AppDbContext, Product>();
             var modifiedProduct = products.First(p => p.Id == product2.Id);
             Assert.NotNull(modifiedProduct.DatePublished);
-            var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublication>();
-            Assert.Single(modifiedProductPublishes);
-            var publish = modifiedProductPublishes.First();
-            Assert.True(publish.Success.HasValue && publish.Success.Value);
-            Assert.Equal("https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log", publish.LogUrl);
+            var modifiedProductPublications = ReadTestData<AppDbContext, ProductPublication>();
+            Assert.Single(modifiedProductPublications);
+            var publication = modifiedProductPublications.First();
+            Assert.True(publication.Success.HasValue && publication.Success.Value);
+            Assert.Equal(consoleText, publication.LogUrl);
+            Assert.Equal(publishUrlContents, modifiedProduct.PublishLink);
             // One notification should be sent to owner on successful build
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Single(notifications);

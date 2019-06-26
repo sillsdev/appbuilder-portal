@@ -258,13 +258,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
             if (success)
             {
-                var publishUrlFile = buildEngineRelease.Artifacts.Where(pa => pa.Key == "publish_url").FirstOrDefault();
+                var publishUrlFile = buildEngineRelease.Artifacts.Where(pa => pa.Key == "publishUrl").FirstOrDefault();
                 if (publishUrlFile.Value != null)
                 {
-                    var publishUrl = WebClient.DownloadString(publishUrlFile.Value).TrimEnd();
-                    product.PublishLink = publishUrl;
-                    await ProductRepository.UpdateAsync(product);
-
+                    var value = WebClient.DownloadString(publishUrlFile.Value);
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        var publishUrl = value.Trim();
+                        product.PublishLink = publishUrl;
+                        await ProductRepository.UpdateAsync(product);
+                    }
                 }
             }
         }
