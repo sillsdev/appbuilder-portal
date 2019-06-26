@@ -3,14 +3,23 @@ INSERT INTO "Roles" ("Id", "RoleName") VALUES
 (2, 2), /* org admin */
 (3, 3); /* app builder */
 
+SELECT SETVAL('"Roles_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "Roles";
+
 INSERT INTO "ApplicationTypes" ("Id", "Name", "Description") VALUES
 (1, 'scriptureappbuilder',	'Scripture App Builder'),
 (2, 'readingappbuilder',	'Reading App Builder'),
 (3, 'dictionaryappbuilder',	'Dictionary App Builder');
 
+SELECT SETVAL('"ApplicationTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "ApplicationTypes";
+
 INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
 (1, 'google_play_store',	'Google Play Store'),
 (2, 's3_bucket',	'Amazon S3 Bucket');
+
+SELECT SETVAL('"StoreTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "StoreTypes";
 
 INSERT INTO "StoreLanguages" ("Id", "Name", "Description", "StoreTypeId") VALUES
 (1, 'af',	'Afrikaans – af', 1),
@@ -86,3 +95,6 @@ INSERT INTO "StoreLanguages" ("Id", "Name", "Description", "StoreTypeId") VALUES
 (71, 'uk',	'Ukrainian – uk', 1),
 (72, 'vi',	'Vietnamese – vi', 1),
 (73, 'zu',	'Zulu – zu', 1);
+
+SELECT SETVAL('"StoreLanguages_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "StoreLanguages";
