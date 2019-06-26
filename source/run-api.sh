@@ -20,6 +20,8 @@ if [ "$DB_BOOTSTRAP" -eq "1" ]; then
     -f /app/scripts/DWKitScript.sql
   PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
     -f /app/scripts/Workflow_CreatePersistenceObjects.sql
+  PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
+    -f /app/scripts/DWKitUpdate_2.6.sql
 fi
 
 # run api migrations
