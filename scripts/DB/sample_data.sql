@@ -12,54 +12,43 @@ INSERT INTO "Organizations" ("Id", "Name", "WebsiteUrl", "BuildEngineUrl", "Buil
 (2,	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru:8443',	'replace',	3,	false),
 (3,	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false);
 
--- INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
--- (4,     'sil_android_amazon_store',      '1',    'SIL Default Workflow for Publishing to Amazon App Store',   'SIL_Default_AppBuilders_Android_AmazonAppStore',	'SIL_Default_AppBuilders_Android_AmazonAppStore',   1),
--- (5,     'sil_android_scripture_earth',      '1',    'SIL Default Workflow for Publishing to Scripture Earth',   'SIL_Default_AppBuilders_Android_ScriptureEarth',	'SIL_Default_AppBuilders_Android_ScriptureEarth',   NULL),
--- (6,	'sil_android_s3',	'1',	'SIL Default Workflow for Publishing to S3', 'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_S3', NULL),
--- (7,	'kalaam_android_website',	'1',	'Kalaam Default Workflow for Publishing to a Kalaam Website', 'Kalaam_Default_AppBuilders_Android_Site',	'Kalaam_Default_AppBuilders_Android_Site', NULL);
-
--- INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId") VALUES
--- (2,     'Android App in Amazon App Store',  1,      'Build an Android App from Scripture App Builder project and publish to Amazon App Store',   4),
--- (3,     'Android App in Scripture Earth',  1,      'Build an Android App from Scripture App Builder project and publish to Scripture Earth',   5),
--- (4,	'Android App uploaded to S3', 1,	'Build an Android App from Scripture App Build project and uploaded to S3', 6),
--- (5,	'Android App uploaded to Kalaam Site', 1, 'Build an Android App from Scripture App Builder project and uploaded to a Kalaam Site', 7),
--- (6,	'Android Reading App uploaded to S3', 2,	'Build an Android App from a Reading App Builder project and uploaded to S3', 6),
--- (7,	'Android Dictionary App uploaded to S3', 3,	'Build an Android App from a Dictionary App Builder project uploaded to S3', 6);
-
+SELECT SETVAL('"Organizations_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "Organizations";
 
 INSERT INTO "OrganizationProductDefinitions" ("OrganizationId", "ProductDefinitionId") VALUES
 (1,      1),
 (2,      1),
-(3,      1);
--- (1,      4),
--- (2,      4),
--- (3,      4),
--- (1,      5),
--- (2,      5),
--- (3,      5),
--- (1,      6),
--- (2,      6),
--- (3,      6),
--- (3,	 7);
+(3,      1),
+(1,      2),
+(2,      2),
+(3,      2);
 
 INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
-(2, 'amazon_app_store',	'Amazon App Store');
+(3, 'amazon_app_store',	'Amazon App Store');
+
+SELECT SETVAL('"StoreTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "StoreTypes";
 
 INSERT INTO "Stores" ("Id", "Name", "Description", "StoreTypeId") VALUES
-(1, 'wycliffeusa',			'Wycliffe USA - Google Play', 1),
-(2, 'internetpublishingservice', 	'Internet Publishing Service (Kalaam) - Google Play', 1),
-(3, 'indhack', 				'Indigitous Hack - Google Play', 1),
-(4, 'wycliffeusa_ama',			'Wycliffe USA - Amazon App Store', 2),
-(5, 'internetpublishingservice_ama', 	'Internet Publishing Service (Kalaam) - Amazon App Store', 2),
-(6, 'indhack_ama', 	'Indigitous Hack - Amazon App Store', 2);
+(1, 'wycliffeusa', 'Wycliffe USA - Google Play', 1),
+(2, 'wycliffeusa', 'Wycliffe USA - S3', 2),
+(3, 'internetpublishingservice', 	'Internet Publishing Service (Kalaam) - Google Play', 1),
+(4, 'indhack', 				'Indigitous Hack - Google Play', 1),
+(5, 'wycliffeusa',			'Wycliffe USA - Amazon App Store', 3),
+(6, 'internetpublishingservice', 	'Internet Publishing Service (Kalaam) - Amazon App Store', 3),
+(7, 'indhack', 	'Indigitous Hack - Amazon App Store', 3);
+
+SELECT SETVAL('"Stores_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "Stores";
 
 INSERT INTO "OrganizationStores" ("OrganizationId", "StoreId") VALUES
 (1,     1),
-(2,     3),
-(3,     2),
-(1,	4),
-(2,	6),
-(3,	5);
+(1,     2),
+(2,     4),
+(3,     3),
+(1,	5),
+(2,	7),
+(3,	6);
 
 INSERT INTO "Groups" ("Name", "Abbreviation", "OwnerId") VALUES
 (	'Language Software Development',	'LSDEV',	1),
@@ -112,22 +101,5 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 ( 2, 2, 3), -- david_moore1@sil.org - OrgAdmin - Kalaam
 ( 4, 3, 3); -- chris.kalaam@gmail.com - AppBuilder - Kalaam
 
-/* Fix sequences ids */
-SELECT SETVAL('"ApplicationTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "ApplicationTypes";
-SELECT SETVAL('"Roles_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "Roles";
-SELECT SETVAL('"StoreTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "StoreTypes";
-SELECT SETVAL('"Stores_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "Stores";
-SELECT SETVAL('"StoreLanguages_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "StoreLanguages";
-SELECT SETVAL('"ProductDefinitions_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "ProductDefinitions";
-SELECT SETVAL('"WorkflowDefinitions_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "WorkflowDefinitions";
-SELECT SETVAL('"Stores_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "Stores";
-SELECT SETVAL('"Organizations_Id_seq"', COALESCE(MAX("Id"), 1) )
-FROM "Organizations";
+SELECT SETVAL('"UserRoles_Id_seq"', COALESCE(MAX("Id"), 1) )
+FROM "UserRoles";

@@ -18,6 +18,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         public SendNotificationService sendNotificationService;
 
         public IRecurringJobManager RecurringJobManager { get; }
+        public IWebClient WebClient { get; }
         public IJobRepository<Product, Guid> ProductRepository { get; }
         public IJobRepository<ProductPublication> PublicationRepository { get; }
         public IJobRepository<ProductBuild> BuildRepository { get; }
@@ -26,6 +27,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             IRecurringJobManager recurringJobManager,
             IBuildEngineApi buildEngineApi,
             SendNotificationService sendNotificationService,
+            IWebClient webClient,
             IJobRepository<Product, Guid> productRepository,
             IJobRepository<SystemStatus> systemStatusRepository,
             IJobRepository<ProductPublication> publicationRepository,
@@ -34,6 +36,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             RecurringJobManager = recurringJobManager;
             this.sendNotificationService = sendNotificationService;
+            WebClient = webClient;
             ProductRepository = productRepository;
             PublicationRepository = publicationRepository;
             BuildRepository = buildRepository;
@@ -233,7 +236,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             ClearRecurringJob(product.Id);
             product.DatePublished = DateTime.UtcNow;
             await ProductRepository.UpdateAsync(product);
-            await UpdateProductPublish(buildEngineRelease, product, true);
+            await UpdateProductPublication(buildEngineRelease, product, true);
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
@@ -242,22 +245,37 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             await sendNotificationService.SendNotificationToUserAsync(product.Project.Owner, "releaseCompletedSuccessfully", messageParms);
         }
 
-        private async Task UpdateProductPublish(ReleaseResponse buildEngineRelease, Product product, bool success)
+        private async Task UpdateProductPublication(ReleaseResponse buildEngineRelease, Product product, bool success)
         {
-            var publish = await PublicationRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id && p.ProductId == product.Id).FirstOrDefaultAsync();
-            if (publish == null)
+            var publication = await PublicationRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id && p.ProductId == product.Id).FirstOrDefaultAsync();
+            if (publication == null)
             {
                 throw new Exception($"Failed to find ProductPublish: ReleaseId={buildEngineRelease.Id}");
             }
-            publish.Success = success;
-            publish.LogUrl = buildEngineRelease.ConsoleText;
-            await PublicationRepository.UpdateAsync(publish);
+            publication.Success = success;
+            publication.LogUrl = buildEngineRelease.ConsoleText;
+            await PublicationRepository.UpdateAsync(publication);
+
+            if (success)
+            {
+                var publishUrlFile = buildEngineRelease.Artifacts.Where(pa => pa.Key == "publishUrl").FirstOrDefault();
+                if (publishUrlFile.Value != null)
+                {
+                    var value = WebClient.DownloadString(publishUrlFile.Value);
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        var publishUrl = value.Trim();
+                        product.PublishLink = publishUrl;
+                        await ProductRepository.UpdateAsync(product);
+                    }
+                }
+            }
         }
 
         protected async Task ReleaseCreationFailedAsync(Product product, ReleaseResponse buildEngineRelease)
         {
             ClearRecurringJob(product.Id);
-            await UpdateProductPublish(buildEngineRelease, product, false);
+            await UpdateProductPublication(buildEngineRelease, product, false);
             var buildEngineUrl = product.Project.Organization.BuildEngineUrl;
             var consoleTextUrl = buildEngineRelease.ConsoleText;
             var messageParms = new Dictionary<string, object>()
