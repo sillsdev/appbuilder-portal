@@ -2,7 +2,7 @@
 
 ###############################
 # Dependencies
-FROM microsoft/dotnet:2.1.500-sdk-alpine as dependencies
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2.300-alpine as dependencies
 WORKDIR /app
 
 COPY source/OptimaJet.DWKit.Application/*.csproj /app/OptimaJet.DWKit.Application/
@@ -34,7 +34,7 @@ RUN dotnet publish -c Release -o out && \
     POSTGRES_PASSWORD=build \
     dotnet ef migrations --msbuildprojectextensionspath /app/out/OptimaJet.DWKit.StarterApplication/obj/ script --idempotent --output "out/scripts/api_migrations.sql"
 
-FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS runtime-release
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-alpine AS runtime-release
 # Setup Timezone before installing s3cmd
 ARG timezone="America/New_York"
 ENV TZ=${timezone}
