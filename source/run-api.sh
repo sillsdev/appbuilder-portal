@@ -22,6 +22,10 @@ if [ "$DB_BOOTSTRAP" -eq "1" ]; then
     -f /app/scripts/Workflow_CreatePersistenceObjects.sql
 fi
 
+# run dwkit migrations
+PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
+  -f /app/scripts/DWKitScript_2.6.sql
+
 # run api migrations
 PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
   -f /app/scripts/api_migrations.sql
