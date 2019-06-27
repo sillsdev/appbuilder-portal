@@ -102,6 +102,7 @@ function runstuff {
       echo "Setting up DWKit..."
       ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitScript.sql" \
         && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql" \
+        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitUpdate_2.6.sql" \
         && echo "DB setup with DWKit Scripts"
     ;;
 
