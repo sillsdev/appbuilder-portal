@@ -24,7 +24,7 @@ fi
 
 # run dwkit migrations
 PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
-  -f /app/scripts/DWKitScript_2.6.sql
+  -f /app/scripts/DWKitUpdate_2.6.sql
 
 # run api migrations
 PGPASSWORD=$POSTGRES_PASSWORD runny psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB \
