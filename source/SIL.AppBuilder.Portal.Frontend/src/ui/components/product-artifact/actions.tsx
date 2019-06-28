@@ -6,6 +6,8 @@ import { useTranslations } from '@lib/i18n';
 
 import { handleResponse } from '~/data/containers/with-current-user/fetcher';
 
+import TransitionDetails from '@ui/components/product-transitions/details';
+
 import { put, get } from '~/lib/fetch';
 
 import * as toast from '~/lib/toast';
@@ -72,10 +74,6 @@ export default function ItemActions({ product }) {
       className='line-height-0'
     >
       <Dropdown.Menu>
-        {!hasActions && (
-          <Dropdown.Item className='capitalize' text={t(`products.actions.noneAvailable`)} />
-        )}
-
         {actions.map((actionName) => {
           return (
             <Dropdown.Item
@@ -86,6 +84,7 @@ export default function ItemActions({ product }) {
             />
           );
         })}
+        <TransitionDetails product={product} />
       </Dropdown.Menu>
     </Dropdown>
   );
