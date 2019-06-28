@@ -73,7 +73,7 @@
     "emptyNotifications": "You have no notifications."
   },
   "sidebar": {
-    "myTasks": "My Tasks",
+    "myTasks": "My Tasks {count, plural, =0 {} other {({ count })}}",
     "myProjects": "My Projects",
     "organizationProjects": "Organization Projects",
     "users": "Users",
@@ -139,7 +139,9 @@
       "rebuild": "Rebuild",
       "republish": "Republish",
       "cancel": "Cancel",
-      "noneAvailable": "No actions are currently available for this product."
+      "noneAvailable": "No actions are currently available for this product.",
+      "bulkNotAllAllowed": "Note: Not all of the selected projects' products can have the {action} action(s) applied.",
+      "dispatched": "The {action} action has been dispatched."
     }
   },
   "profile": {
@@ -199,11 +201,14 @@
     "noTasksDescription": "Tasks that require your attention will appear here.",
     "reassign": "Reassign",
     "waiting": "Waiting {waitTime}",
-    "forYou": "for you to {activityName}"
+    "forNames": "for {allowedNames} to {activityName}",
+    "scriptoria": "Scriptoria"
   },
   "projects": {
     "noBuilds": "No Builds Yet",
     "latestBuild": "Latest Build ({version})",
+    "buildPending": "Build Pending",
+    "buildFailed": "Build Failed",
     "switcher": {
       "myProjects": "My Projects ({numProjects})",
       "archived": "Archived ({numProjects})",
@@ -212,6 +217,11 @@
         "myProjects": "My Projects",
         "archived": "Archived Projects",
         "all": "All Projects"
+      }
+    },
+    "bulk": {
+      "buildModal": {
+        "title": "Perform Bulk Build/Rebuild"
       }
     }
   },
@@ -256,11 +266,29 @@
       "popup": {
         "title": "Select Products",
         "done": "Done",
-        "empty": "No products available"
+        "empty": "No products available",
+        "details": "Details"
+      },
+      "publications": {
+        "channel": "Channel",
+        "status": "Status",
+        "date": "Publish Date",
+        "url": "Publish Url",
+        "succeeded": "Success",
+        "failed": "Failure",
+        "console": "Console Text"
       },
       "options": {
         "update": "update",
         "publish": "publish"
+      },
+      "transitions": {
+        "productDetails": "Product Details",
+        "state": "State",
+        "user": "User",
+        "command": "Command",
+        "comment": "Comment",
+        "date": "Date"
       },
       "updated": "Updated",
       "size": "Size",
@@ -280,7 +308,7 @@
       },
       "organizationDownloads": {
         "title": "Allow Other Organizations to download",
-        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files"
+        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files be able to download the outputs of the products"
       },
       "visibility": {
         "title": "Public Visibility",
