@@ -73,7 +73,7 @@
     "emptyNotifications": "No tienes notificaciones."
   },
   "sidebar": {
-    "myTasks": "Mis tareas",
+    "myTasks": "My Tasks {count, plural, =0 {} other {({ count })}}",
     "myProjects": "Mis Proyectos",
     "organizationProjects": "Proyectos de organización",
     "users": "Usuarios",
@@ -139,7 +139,9 @@
       "rebuild": "Rebuild",
       "republish": "Republish",
       "cancel": "Cancelar",
-      "noneAvailable": "No actions are currently available for this product."
+      "noneAvailable": "No actions are currently available for this product.",
+      "bulkNotAllAllowed": "Note: Not all of the selected projects' products can have the {action} action(s) applied.",
+      "dispatched": "The {action} action has been dispatched."
     }
   },
   "profile": {
@@ -174,7 +176,7 @@
     "generic": "¡Ha ocurrido un error! {errorMessage}",
     "requiredField": "The {field} is required, but has no value",
     "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
-    "notFoundTitle": "¡No encontrado!",
+    "notFoundTitle": "\n¡No encontrado!",
     "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
     "groupRequired": "Debe ser un miembro de al menos un grupo.",
     "userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",
@@ -199,11 +201,14 @@
     "noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
     "reassign": "Reasignar",
     "waiting": "Waiting {waitTime}",
-    "forYou": "for you to {activityName}"
+    "forNames": "for {allowedNames} to {activityName}",
+    "scriptoria": "Scriptoria"
   },
   "projects": {
     "noBuilds": "No Builds Yet",
     "latestBuild": "Latest Build ({version})",
+    "buildPending": "Build Pending",
+    "buildFailed": "Build Failed",
     "switcher": {
       "myProjects": "Mis proyectos ({numProjects})",
       "archived": "Archivados ({numProjects})",
@@ -212,6 +217,11 @@
         "myProjects": "Mis Proyectos",
         "archived": "Proyectos archivados",
         "all": "All Projects"
+      }
+    },
+    "bulk": {
+      "buildModal": {
+        "title": "Perform Bulk Build/Rebuild"
       }
     }
   },
@@ -256,11 +266,29 @@
       "popup": {
         "title": "Select Products",
         "done": "Done",
-        "empty": "No products available"
+        "empty": "No products available",
+        "details": "Detalles"
+      },
+      "publications": {
+        "channel": "Channel",
+        "status": "Estado",
+        "date": "Publish Date",
+        "url": "Publish Url",
+        "succeeded": "Success",
+        "failed": "Failure",
+        "console": "Console Text"
       },
       "options": {
         "update": "update",
         "publish": "publish"
+      },
+      "transitions": {
+        "productDetails": "Product Details",
+        "state": "State",
+        "user": "User",
+        "command": "Command",
+        "comment": "Comment",
+        "date": "Date"
       },
       "updated": "Updated",
       "size": "Size",
@@ -280,7 +308,7 @@
       },
       "organizationDownloads": {
         "title": "Permitir descargar a otras organizaciones",
-        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files"
+        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files be able to download the outputs of the products"
       },
       "visibility": {
         "title": "Public Visibility",
