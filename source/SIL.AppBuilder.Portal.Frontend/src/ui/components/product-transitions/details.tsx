@@ -83,7 +83,7 @@ export default function TransitionDetails({ product }) {
     >
       <Modal.Header>{t('project.products.transitions.productDetails')}</Modal.Header>
       <Modal.Content>
-        <div className='flex p-l-md p-t-sm p-b-sm p-r-md gray-text bold'>
+        <div className='flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md gray-text bold'>
           <div className='flex-25'>
             <span>{t('project.products.transitions.state')}</span>
           </div>
@@ -115,7 +115,7 @@ export default function TransitionDetails({ product }) {
               <div
                 data-test-transition-details-record
                 key={remoteId}
-                className='artifact-item flex p-l-md p-t-sm p-b-sm p-r-md'
+                className='artifact-item flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md'
               >
                 <div data-test-transition-state className='flex-25'>
                   <span>{initialState}</span>
