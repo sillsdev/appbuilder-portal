@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useOrbit, remoteIdentityFrom, attributesFor } from 'react-orbitjs';
 import { Dropdown, Modal } from 'semantic-ui-react';
 import { useTranslations } from '@lib/i18n';
+import { isEmpty } from '@lib/collection';
 import { useCurrentUser } from '@data/containers/with-current-user';
 import CloseIcon from '@material-ui/icons/Close';
 import moment from 'moment';
@@ -36,6 +37,7 @@ export default function TransitionDetails({ product }) {
   }, [productRemoteId, transitions.length === 0]);
 
   const getUserName = (workflowId: string, allowedName: string, dateTransition: string) => {
+    console.log('getUserName:', workflowId);
     let userName = t('appName');
     if (dateTransition === null) {
       if (allowedName != null) {
@@ -52,23 +54,31 @@ export default function TransitionDetails({ product }) {
         }
       }
     }
+    console.log('returnUserName', userName);
     return userName;
   };
   const getFormattedDate = (dateTransition: string) => {
+    console.log('timezone: ', timezone);
     let formattedDate = '';
-    if (dateTransition != null) {
+    if (dateTransition) {
       let momentTransition = moment.utc(dateTransition);
-      formattedDate =
-        timezone === null
-          ? momentTransition.local().format('L LT')
-          : momentTransition.tz(timezone).format('L LT');
+      formattedDate = !timezone
+        ? momentTransition.local().format('L LT')
+        : momentTransition.tz(timezone).format('L LT');
     }
     return formattedDate;
   };
   return (
     <Modal
-      trigger={<Dropdown.Item key='Details' text={t('project.products.popup.details')} />}
-      closeIcon={<CloseIcon className='close-modal' />}
+      data-test-transitions-modal
+      trigger={
+        <Dropdown.Item
+          data-test-transition-details-button
+          key='Details'
+          text={t('project.products.popup.details')}
+        />
+      }
+      closeIcon={<CloseIcon data-test-transition-details-close className='close-modal' />}
       className='large'
     >
       <Modal.Header>{t('project.products.transitions.productDetails')}</Modal.Header>
@@ -90,35 +100,42 @@ export default function TransitionDetails({ product }) {
             <span>{t('project.products.transitions.date')}</span>
           </div>
         </div>
-        {transitions.map((transition) => {
-          const attributes = attributesFor(transition);
-          const initialState = attributes['initial-state'];
-          const comment = attributes['comment'];
-          const command = attributes['command'];
-          const workflowId = attributes['workflow-user-id'];
-          const dateTransition = attributes['date-transition'];
-          const allowedNames = attributes['allowed-user-names'];
-          const remoteId = idFromRecordIdentity(transition);
-          return (
-            <div key={remoteId} className='artifact-item flex p-l-md p-t-sm p-b-sm p-r-md'>
-              <div className='flex-25'>
-                <span>{initialState}</span>
+        <div data-test-transition-details>
+          {transitions.map((transition) => {
+            const attributes = attributesFor(transition);
+            const initialState = attributes['initial-state'];
+            const comment = attributes['comment'];
+            const command = attributes['command'];
+            const workflowId = attributes['workflow-user-id'];
+            const dateTransition = attributes['date-transition'];
+            const allowedNames = attributes['allowed-user-names'];
+            const remoteId = idFromRecordIdentity(transition);
+
+            return (
+              <div
+                data-test-transition-details-record
+                key={remoteId}
+                className='artifact-item flex p-l-md p-t-sm p-b-sm p-r-md'
+              >
+                <div data-test-transition-state className='flex-25'>
+                  <span>{initialState}</span>
+                </div>
+                <div data-test-transition-user className='flex-20'>
+                  <span>{getUserName(workflowId, allowedNames, dateTransition)}</span>
+                </div>
+                <div data-test-transition-command className='flex-15'>
+                  <span>{command}</span>
+                </div>
+                <div data-test-transition-comment className='flex-20'>
+                  <span>{comment}</span>
+                </div>
+                <div className='flex-20'>
+                  <span>{getFormattedDate(dateTransition)}</span>
+                </div>
               </div>
-              <div className='flex-20'>
-                <span>{getUserName(workflowId, allowedNames, dateTransition)}</span>
-              </div>
-              <div className='flex-15'>
-                <span>{command}</span>
-              </div>
-              <div className='flex-20'>
-                <span>{comment}</span>
-              </div>
-              <div className='flex-20'>
-                <span>{getFormattedDate(dateTransition)}</span>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </Modal.Content>
     </Modal>
   );

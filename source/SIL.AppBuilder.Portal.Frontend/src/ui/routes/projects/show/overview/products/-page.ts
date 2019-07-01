@@ -9,6 +9,7 @@ import {
   attribute,
 } from '@bigtest/interactor';
 import { MultiSelectInteractor } from '@ui/components/inputs/multi-select/-page';
+import TransitionDetailsModalInteractor from '@ui/components/product-transitions/-modal';
 
 import ProductModalInteractor from './-modal';
 
@@ -22,6 +23,8 @@ class Products {
     name: text('[data-test-project-product-name]'),
     hasProductLink: isPresent('[data-test-project-product-publishlink]'),
     apkLink: attribute('[data-test-product-apklink]', 'href'),
+    clickDetailsLink: clickable('[data-test-transition-details-button]'),
+    detailsText: text('[data-test-transition-details-button] span'),
   });
   productNamed(named: string) {
     const item = this.products().find((p) => p.name.includes(named));
@@ -41,6 +44,8 @@ class Products {
   storeModal = scoped('[data-test-project-product-store-select-modal]', {
     multiSelect: new MultiSelectInteractor(),
   });
+
+  detailsModal = new TransitionDetailsModalInteractor('[data-test-transitions-modal]');
 }
 
 export type TInteractor = Products & Interactor;
