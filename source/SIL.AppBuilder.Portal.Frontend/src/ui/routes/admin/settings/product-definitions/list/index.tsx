@@ -53,7 +53,7 @@ export default compose(
     productDefinitions: [
       (q) => q.findRecords('productDefinition'),
       buildOptions({
-        include: ['type', 'workflow'],
+        include: ['type', 'workflow', 'rebuild-workflow', 'republish-workflow'],
       }),
     ],
   })),

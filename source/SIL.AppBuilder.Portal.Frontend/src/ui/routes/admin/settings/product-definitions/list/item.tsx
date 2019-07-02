@@ -18,13 +18,14 @@ interface IOwnProps {
   productDefinition: ProductDefinitionResource;
   type?: ApplicationTypeResource;
   workflow?: WorkflowDefinitionResource;
+  rebuildWorkflow?: WorkflowDefinitionResource;
 }
 
 type IProps = IOwnProps & i18nProps;
 
 class ProductDefinitionItem extends React.Component<IProps> {
   render() {
-    const { t, productDefinition, type, workflow } = this.props;
+    const { t, productDefinition, type, workflow, rebuildWorkflow, republishWorkflow } = this.props;
 
     const { name, description } = attributesFor(productDefinition);
 
@@ -39,6 +40,14 @@ class ProductDefinitionItem extends React.Component<IProps> {
           <div>
             <span className='bold m-r-sm'>{t('admin.settings.productDefinitions.workflow')}:</span>
             <span>{attributesFor(workflow).name}</span>
+          </div>
+          <div>
+            <span className='bold m-r-sm'>{t('admin.settings.productDefinitions.rebuildWorkflow')}:</span>
+            <span>{attributesFor(rebuildWorkflow).name}</span>
+          </div>
+          <div>
+            <span className='bold m-r-sm'>{t('admin.settings.productDefinitions.republishWorkflow')}:</span>
+            <span>{attributesFor(republishWorkflow).name}</span>
           </div>
           <div>
             <span className='bold m-r-sm'>
@@ -67,5 +76,7 @@ export default compose<IProps, IOwnProps>(
   withOrbit(({ productDefinition }) => ({
     type: (q) => q.findRelatedRecord(productDefinition, 'type'),
     workflow: (q) => q.findRelatedRecord(productDefinition, 'workflow'),
+    rebuildWorkflow: (q) => q.findRelatedRecord(productDefinition, 'rebuildWorkflow'),
+    republishWorkflow: (q) => q.findRelatedRecord(productDefinition, 'republishWorkflow'),
   }))
 )(ProductDefinitionItem);

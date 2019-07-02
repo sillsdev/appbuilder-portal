@@ -467,11 +467,14 @@
         "description": "Description",
         "type": "Application Type",
         "workflow": "Workflow",
+        "republishWorkflow": "Republish Workflow",
+        "rebuildWorkflow": "Rebuild Workflow",
         "addSuccess": "Product Definition added",
         "editSuccess": "Product Definition updated",
         "emptyName": "Name cannot be empty",
         "emptyType": "Need to select an Application Type",
-        "emptyWorkflow": "Nedd to select a Workflow definition"
+        "emptyWorkflow": "Need to select a Workflow definition",
+        "noWorkflow": "No Workflow Required"
       },
       "storeTypes": {
         "title": "Store Types",

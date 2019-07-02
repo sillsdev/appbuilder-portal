@@ -42,12 +42,14 @@ class EditProductDefinition extends React.Component<IProps> {
   };
 
   render() {
-    const { productDefinition, type, workflow } = this.props;
+    const { productDefinition, type, workflow, republishWorkflow, rebuildWorkflow } = this.props;
 
     const productDefinitionProps = {
       productDefinition,
       type,
       workflow,
+      rebuildWorkflow,
+      republishWorkflow,
       onSubmit: this.update,
       onCancel: this.redirectToList,
     };
@@ -63,7 +65,7 @@ export default compose(
     productDefinition: [
       (q) => buildFindRecord(q, 'productDefinition', pdId),
       buildOptions({
-        include: ['type', 'workflow'],
+        include: ['type', 'workflow', 'rebuild-workflow', 'republish-workflow'],
       }),
     ],
   })),
@@ -71,6 +73,8 @@ export default compose(
   withOrbit(({ productDefinition }) => ({
     type: (q) => q.findRelatedRecord(productDefinition, 'type'),
     workflow: (q) => q.findRelatedRecord(productDefinition, 'workflow'),
+    rebuildWorkflow: (q) => q.findRelatedRecord(productDefinition, 'rebuildWorkflow'),
+    republishWorkflow: (q) => q.findRelatedRecord(productDefinition, 'republishWorkflow'),
   })),
   withDataActions
 )(EditProductDefinition);
