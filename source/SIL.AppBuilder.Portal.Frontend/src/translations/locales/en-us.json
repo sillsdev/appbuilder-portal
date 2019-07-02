@@ -457,7 +457,13 @@
         "enabledDescription": "Workflow definitions may not be used until enabled.",
         "workflowAdded": "Workflow Definition added",
         "workflowUpdated": "Workflow Definition updated",
-        "emptyStoreType": "Need to select a store type for this workflow definition"
+        "emptyStoreType": "Need to select a store type for this workflow definition",
+        "workflowType": "Workflow Type",
+        "workflowTypes": {
+          "1": "Startup",
+          "2": "Rebuild",
+          "3": "Republish"
+        }
       },
       "productDefinitions": {
         "title": "Product Definitions",
