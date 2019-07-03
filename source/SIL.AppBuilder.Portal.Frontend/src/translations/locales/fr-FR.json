@@ -457,7 +457,14 @@
         "enabledDescription": "Workflow definitions may not be used until enabled.",
         "workflowAdded": "Workflow Definition added",
         "workflowUpdated": "Workflow Definition updated",
-        "emptyStoreType": "Need to select a store type for this workflow definition"
+        "emptyStoreType": "Need to select a store type for this workflow definition",
+        "emptyWorkflowType": "Need to select a workflow type for this workflow definition",
+        "workflowType": "Workflow Type",
+        "workflowTypes": {
+          "1": "Startup",
+          "2": "Rebuild",
+          "3": "Republish"
+        }
       },
       "productDefinitions": {
         "title": "Product Definitions",
@@ -467,11 +474,14 @@
         "description": "Description",
         "type": "Application Type",
         "workflow": "Workflow",
+        "republishWorkflow": "Republish Workflow",
+        "rebuildWorkflow": "Rebuild Workflow",
         "addSuccess": "Product Definition added",
         "editSuccess": "Product Definition updated",
         "emptyName": "Name cannot be empty",
         "emptyType": "Need to select an Application Type",
-        "emptyWorkflow": "Nedd to select a Workflow definition"
+        "emptyWorkflow": "Need to select a Workflow definition",
+        "noWorkflow": "No Workflow Required"
       },
       "storeTypes": {
         "title": "Store Types",
