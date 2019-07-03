@@ -24,7 +24,7 @@ class WorkflowDefinitionItem extends React.Component<IProps> {
   render() {
     const { t, workflowDefinition, storeType } = this.props;
 
-    const { name, description, workflowScheme, workflowBusinessFlow } = attributesFor(
+    const { name, description, workflowScheme, workflowBusinessFlow, type } = attributesFor(
       workflowDefinition
     );
 
@@ -43,6 +43,12 @@ class WorkflowDefinitionItem extends React.Component<IProps> {
               {t('admin.settings.workflowDefinitions.storeType')}:
             </span>
             <span>{attributesFor(storeType).name}</span>
+          </div>
+          <div>
+            <span className='bold m-r-sm'>
+              {t('admin.settings.workflowDefinitions.workflowType')}:
+            </span>
+            <span>{t(`admin.settings.workflowDefinitions.workflowTypes.${type.toString()}`)}</span>
           </div>
           <div>
             <span className='bold m-r-sm'>

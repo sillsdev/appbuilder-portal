@@ -10,6 +10,7 @@ export interface WorkflowDefinitionAttributes extends AttributesObject {
   description?: string;
   workflowScheme?: string;
   workflowBusinessFlow?: string;
+  type?: number;
 }
 
 export type WorkflowDefinitionResource = ResourceObject<

@@ -18,6 +18,8 @@ export interface IProvidedProps {
   updateAttributes: (attrs: ProductDefinitionAttributes, relationships?: any) => any;
   updateType: (type: ApplicationTypeResource) => any;
   updateWorkflow: (workflow: WorkflowDefinitionResource) => any;
+  updateRebuildWorkflow: (workflow: WorkflowDefinitionResource) => any;
+  updateRepublishWorkflow: (workflow: WorkflowDefinitionResource) => any;
 }
 
 interface IOwnProps {
@@ -71,6 +73,24 @@ export function withDataActions<T>(WrappedComponent) {
       );
     };
 
+    updateRebuildWorkflow = (workflow) => {
+      const { productDefinition, dataStore } = this.props;
+
+      return dataStore.update(
+        (q) => q.replaceRelatedRecord(productDefinition, 'rebuildWorkflow', workflow),
+        defaultOptions()
+      );
+    };
+
+    updateRepublishWorkflow = (workflow) => {
+      const { productDefinition, dataStore } = this.props;
+
+      return dataStore.update(
+        (q) => q.replaceRelatedRecord(productDefinition, 'republishWorkflow', workflow),
+        defaultOptions()
+      );
+    };
+
     render() {
       const actionProps = {
         createRecord: this.createRecord,
@@ -78,6 +98,8 @@ export function withDataActions<T>(WrappedComponent) {
         updateAttribute: this.updateAttribute,
         updateType: this.updateType,
         updateWorkflow: this.updateWorkflow,
+        updateRebuildWorkflow: this.updateRebuildWorkflow,
+        updateRepublishWorkflow: this.updateRepublishWorkflow,
       };
 
       return <WrappedComponent {...this.props} {...actionProps} />;

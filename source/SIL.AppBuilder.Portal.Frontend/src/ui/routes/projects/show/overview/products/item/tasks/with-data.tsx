@@ -59,7 +59,7 @@ export function useCurrentUserTask({ product }: INeededProps): IProvidedDataProp
         ['product: ', product, 'currentUser: ', currentUser]
       );
     }
-  }, [currentUser, product, dataStore]);
+  }, [dataStore.cache, product, currentUser, workTask]);
   getCurrentUserTask();
   return { foundCurrentUser, workTask };
 }

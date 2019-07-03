@@ -49,7 +49,7 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
       console.debug('error occurred on handling transition response');
     }
     return transition;
-  }, [dataStore, productRemoteId]);
+  }, [productRemoteId, t]);
   const getWaitTime = (attributes, task, relativeTimeAgo, dataStore: Store) => {
     let waitTime = '';
     // Get wait time from user task if it exists, otherwise compute from transition

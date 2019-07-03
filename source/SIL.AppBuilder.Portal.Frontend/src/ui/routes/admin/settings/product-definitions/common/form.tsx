@@ -32,6 +32,8 @@ interface IState {
   typeError?: string;
   workflow?: WorkflowDefinitionResource;
   workflowError?: string;
+  rebuildWorkflow?: WorkflowDefinitionResource;
+  republishWorkflow?: WorkflowDefinitionResource;
 }
 
 type IProps = i18nProps & IOwnProps;
@@ -43,7 +45,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    const { productDefinition, type, workflow } = props;
+    const { productDefinition, type, workflow, rebuildWorkflow, republishWorkflow } = props;
 
     const { name, description } = attributesFor(productDefinition);
 
@@ -57,6 +59,8 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
       typeError: '',
       workflow: workflow || null,
       workflowError: '',
+      rebuildWorkflow: rebuildWorkflow || null,
+      republishWorkflow: republishWorkflow || null,
     };
   }
 
@@ -83,8 +87,14 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
     e.preventDefault();
 
     const { onSubmit } = this.props;
-    const { name, description, type, workflow } = this.state;
-
+    const { name, description, type, workflow, rebuildWorkflow, republishWorkflow } = this.state;
+    const relationships = { type, workflow };
+    if (rebuildWorkflow) {
+      Object.assign(relationships, { rebuildWorkflow });
+    }
+    if (republishWorkflow) {
+      Object.assign(relationships, { republishWorkflow });
+    }
     if (this.isValidForm()) {
       try {
         await onSubmit(
@@ -92,10 +102,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
             name,
             description,
           },
-          {
-            type,
-            workflow,
-          }
+          relationships
         );
       } catch (e) {
         toast.error(e);
@@ -121,16 +128,46 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
     });
   };
 
+  rebuildWorkflowSelection = (rebuildWorkflow) => (e) => {
+    this.setState({
+      rebuildWorkflow,
+    });
+  };
+
+  republishWorkflowSelection = (republishWorkflow) => (e) => {
+    this.setState({
+      republishWorkflow,
+    });
+  };
+
   render() {
     const { mut, toggle } = this;
 
-    const { name, nameError, description, type, typeError, workflow, workflowError } = this.state;
+    const {
+      name,
+      nameError,
+      description,
+      type,
+      typeError,
+      workflow,
+      workflowError,
+      rebuildWorkflow,
+      republishWorkflow,
+    } = this.state;
 
-    const { t, productDefinition, types, workflows } = this.props;
+    const {
+      t,
+      productDefinition,
+      types,
+      workflows,
+      rebuildWorkflows,
+      republishWorkflows,
+    } = this.props;
 
     const { name: typeName } = attributesFor(type);
     const { name: workflowName } = attributesFor(workflow);
-
+    const { name: rebuildWorkflowName } = attributesFor(rebuildWorkflow);
+    const { name: republishWorkflowName } = attributesFor(republishWorkflow);
     return (
       <>
         <h2>
@@ -201,6 +238,66 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
             </div>
 
             <div className='field m-b-xl'>
+              <label>{t('admin.settings.productDefinitions.rebuildWorkflow')}</label>
+              <div className='w-100 thin-bottom-border'>
+                <Dropdown
+                  className='custom w-100 no-borders p-sm'
+                  data-test-pd-workflow
+                  text={rebuildWorkflowName}
+                >
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      key={0}
+                      text={t('admin.settings.productDefinitions.noWorkflow')}
+                      onClick={this.rebuildWorkflowSelection(null)}
+                    />
+                    {rebuildWorkflows.map((w, i) => {
+                      const { name: fullName } = attributesFor(w);
+
+                      return (
+                        <Dropdown.Item
+                          key={w.id}
+                          text={fullName}
+                          onClick={this.rebuildWorkflowSelection(w)}
+                        />
+                      );
+                    })}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+            </div>
+
+            <div className='field m-b-xl'>
+              <label>{t('admin.settings.productDefinitions.republishWorkflow')}</label>
+              <div className='w-100 thin-bottom-border'>
+                <Dropdown
+                  className='custom w-100 no-borders p-sm'
+                  data-test-pd-workflow
+                  text={republishWorkflowName}
+                >
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      key={0}
+                      text={t('admin.settings.productDefinitions.noWorkflow')}
+                      onClick={this.republishWorkflowSelection(null)}
+                    />
+                    {republishWorkflows.map((w, i) => {
+                      const { name: fullName } = attributesFor(w);
+
+                      return (
+                        <Dropdown.Item
+                          key={w.id}
+                          text={fullName}
+                          onClick={this.republishWorkflowSelection(w)}
+                        />
+                      );
+                    })}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+            </div>
+
+            <div className='field m-b-xl'>
               <label>{t('admin.settings.productDefinitions.description')}</label>
               <textarea
                 data-test-pd-description
@@ -239,7 +336,18 @@ export default compose(
   withTranslations,
   query(() => ({
     types: [(q) => q.findRecords('applicationType'), buildOptions()],
-    workflows: [(q) => q.findRecords('workflowDefinition'), buildOptions()],
+    workflows: [
+      (q) => q.findRecords('workflowDefinition').filter({ attribute: 'type', value: 1 }),
+      buildOptions(),
+    ],
+    rebuildWorkflows: [
+      (q) => q.findRecords('workflowDefinition').filter({ attribute: 'type', value: 2 }),
+      buildOptions(),
+    ],
+    republishWorkflows: [
+      (q) => q.findRecords('workflowDefinition').filter({ attribute: 'type', value: 3 }),
+      buildOptions(),
+    ],
   })),
   withLoader(({ types, workflows }) => !types && !workflows)
 )(ProductDefinitionForm);
