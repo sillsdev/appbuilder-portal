@@ -37,7 +37,6 @@ export default function TransitionDetails({ product }) {
   }, [productRemoteId, transitions.length === 0]);
 
   const getUserName = (workflowId: string, allowedName: string, dateTransition: string) => {
-    console.log('getUserName:', workflowId);
     let userName = t('appName');
     if (dateTransition === null) {
       if (allowedName != null) {
@@ -54,11 +53,9 @@ export default function TransitionDetails({ product }) {
         }
       }
     }
-    console.log('returnUserName', userName);
     return userName;
   };
   const getFormattedDate = (dateTransition: string) => {
-    console.log('timezone: ', timezone);
     let formattedDate = '';
     if (dateTransition) {
       let momentTransition = moment.utc(dateTransition);
