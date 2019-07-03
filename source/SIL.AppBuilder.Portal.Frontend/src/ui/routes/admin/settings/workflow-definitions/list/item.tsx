@@ -46,7 +46,7 @@ class WorkflowDefinitionItem extends React.Component<IProps> {
           </div>
           <div>
             <span className='bold m-r-sm'>
-              {t('admin.settings.workflowDefinitions.workflowType')};
+              {t('admin.settings.workflowDefinitions.workflowType')}:
             </span>
             <span>{t(`admin.settings.workflowDefinitions.workflowTypes.${type.toString()}`)}</span>
           </div>

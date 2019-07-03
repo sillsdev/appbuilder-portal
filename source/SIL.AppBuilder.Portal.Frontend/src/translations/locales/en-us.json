@@ -458,6 +458,7 @@
         "workflowAdded": "Workflow Definition added",
         "workflowUpdated": "Workflow Definition updated",
         "emptyStoreType": "Need to select a store type for this workflow definition",
+        "emptyWorkflowType": "Need to select a workflow type for this workflow definition",
         "workflowType": "Workflow Type",
         "workflowTypes": {
           "1": "Startup",

@@ -33,6 +33,8 @@ interface IState {
   workflowScheme?: string;
   workflowBusinessFlow?: string;
   enabled?: boolean;
+  type?: number;
+  workflowTypeError?: string;
 }
 
 type IProps = i18nProps & IOwnProps;
@@ -40,13 +42,12 @@ type IProps = i18nProps & IOwnProps;
 class WorkflowDefinitionForm extends React.Component<IProps, IState> {
   mut: Mut;
   toggle: Toggle;
-
   constructor(props: IProps) {
     super(props);
 
     const { workflowDefinition, storeType } = props;
 
-    const { name, description, workflowScheme, workflowBusinessFlow, enabled } = attributesFor(
+    const { name, description, workflowScheme, workflowBusinessFlow, enabled, type } = attributesFor(
       workflowDefinition
     );
 
@@ -61,17 +62,23 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       enabled: enabled !== undefined ? enabled : true,
       storeType: storeType || null,
       storeTypeError: '',
+      type: type || null,
+      workflowTypeError: '',
     };
   }
 
   isValidForm = () => {
-    const { storeType } = this.state;
+    const { storeType, type } = this.state;
     const { t } = this.props;
     const storeTypeError = isEmpty(storeType)
       ? t('admin.settings.workflowDefinitions.emptyStoreType')
       : '';
     this.setState({ storeTypeError });
-    return !isEmpty(storeType);
+    const workflowTypeError = !type
+      ? t('admin.settings.workflowDefinitions.emptyWorkflowType')
+      : '';
+    this.setState({ workflowTypeError });
+    return !isEmpty(storeType) && type;
   };
 
   submit = async (e) => {
@@ -85,6 +92,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       workflowBusinessFlow,
       enabled,
       storeType,
+      type
     } = this.state;
 
     if (this.isValidForm()) {
@@ -96,6 +104,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
             workflowScheme,
             workflowBusinessFlow,
             enabled,
+            type
           },
           {
             storeType,
@@ -117,8 +126,12 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
     this.setState({ storeType });
   };
 
+  workflowTypeSelection = (type) => (e) =>{
+    this.setState({ type });
+  }
   render() {
     const { mut, toggle } = this;
+    const validTypes = [1, 2, 3];
 
     const {
       name,
@@ -128,6 +141,8 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       enabled,
       storeType,
       storeTypeError,
+      type,
+      workflowTypeError,
     } = this.state;
 
     const { t, storeTypes, workflowDefinition } = this.props;
@@ -174,6 +189,31 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
                 </Dropdown>
               </div>
               <div className='error'>{storeTypeError}</div>
+            </div>
+
+            <div className='field m-b-xl'>
+              <label>{t('admin.settings.workflowDefinitions.workflowType')}</label>
+              <div className='w-100 thin-bottom-border'>
+                <Dropdown
+                  className='custom w-100 no-borders p-sm'
+                  data-test-wf-workflowtype
+                  text={type? t(`admin.settings.workflowDefinitions.workflowTypes.${type.toString()}`) : ''}
+                >
+                  <Dropdown.Menu>
+                    {validTypes.map((s) => {
+
+                      return (
+                        <Dropdown.Item
+                          key={s}
+                          text={t(`admin.settings.workflowDefinitions.workflowTypes.${s.toString()}`)}
+                          onClick={this.workflowTypeSelection(s)}
+                        />
+                      );
+                    })}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+              <div className='error'>{workflowTypeError}</div>
             </div>
 
             <div className='field m-b-xl'>
