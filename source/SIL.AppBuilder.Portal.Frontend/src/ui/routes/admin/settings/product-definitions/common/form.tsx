@@ -90,12 +90,12 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
 
     const { onSubmit } = this.props;
     const { name, description, type, workflow, rebuildWorkflow, republishWorkflow } = this.state;
-    const relationships = {type, workflow};
+    const relationships = { type, workflow };
     if (rebuildWorkflow) {
-      Object.assign(relationships, {rebuildWorkflow});
+      Object.assign(relationships, { rebuildWorkflow });
     }
     if (republishWorkflow) {
-      Object.assign(relationships, {republishWorkflow});
+      Object.assign(relationships, { republishWorkflow });
     }
     if (this.isValidForm()) {
       try {
@@ -145,9 +145,26 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
   render() {
     const { mut, toggle } = this;
 
-    const { name, nameError, description, type, typeError, workflow, workflowError, rebuildWorkflow, republishWorkflow } = this.state;
+    const {
+      name,
+      nameError,
+      description,
+      type,
+      typeError,
+      workflow,
+      workflowError,
+      rebuildWorkflow,
+      republishWorkflow,
+    } = this.state;
 
-    const { t, productDefinition, types, workflows, rebuildWorkflows, republishWorkflows } = this.props;
+    const {
+      t,
+      productDefinition,
+      types,
+      workflows,
+      rebuildWorkflows,
+      republishWorkflows,
+    } = this.props;
 
     const { name: typeName } = attributesFor(type);
     const { name: workflowName } = attributesFor(workflow);
@@ -321,9 +338,18 @@ export default compose(
   withTranslations,
   query(() => ({
     types: [(q) => q.findRecords('applicationType'), buildOptions()],
-    workflows: [(q) => q.findRecords('workflowDefinition').filter({attribute:'type', value: 1}), buildOptions()],
-    rebuildWorkflows: [(q) => q.findRecords('workflowDefinition').filter({attribute:'type', value: 2}), buildOptions()],
-    republishWorkflows: [(q) => q.findRecords('workflowDefinition').filter({attribute:'type', value: 3}), buildOptions()],
+    workflows: [
+      (q) => q.findRecords('workflowDefinition').filter({ attribute: 'type', value: 1 }),
+      buildOptions(),
+    ],
+    rebuildWorkflows: [
+      (q) => q.findRecords('workflowDefinition').filter({ attribute: 'type', value: 2 }),
+      buildOptions(),
+    ],
+    republishWorkflows: [
+      (q) => q.findRecords('workflowDefinition').filter({ attribute: 'type', value: 3 }),
+      buildOptions(),
+    ],
   })),
   withLoader(({ types, workflows }) => !types && !workflows)
 )(ProductDefinitionForm);

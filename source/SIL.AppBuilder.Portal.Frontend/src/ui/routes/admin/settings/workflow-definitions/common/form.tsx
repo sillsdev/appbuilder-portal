@@ -47,9 +47,14 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
 
     const { workflowDefinition, storeType } = props;
 
-    const { name, description, workflowScheme, workflowBusinessFlow, enabled, type } = attributesFor(
-      workflowDefinition
-    );
+    const {
+      name,
+      description,
+      workflowScheme,
+      workflowBusinessFlow,
+      enabled,
+      type,
+    } = attributesFor(workflowDefinition);
 
     this.mut = mutCreator(this);
     this.toggle = toggleCreator(this);
@@ -92,7 +97,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       workflowBusinessFlow,
       enabled,
       storeType,
-      type
+      type,
     } = this.state;
 
     if (this.isValidForm()) {
@@ -104,7 +109,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
             workflowScheme,
             workflowBusinessFlow,
             enabled,
-            type
+            type,
           },
           {
             storeType,
@@ -126,9 +131,9 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
     this.setState({ storeType });
   };
 
-  workflowTypeSelection = (type) => (e) =>{
+  workflowTypeSelection = (type) => (e) => {
     this.setState({ type });
-  }
+  };
   render() {
     const { mut, toggle } = this;
     const validTypes = [1, 2, 3];
@@ -197,15 +202,20 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
                 <Dropdown
                   className='custom w-100 no-borders p-sm'
                   data-test-wf-workflowtype
-                  text={type? t(`admin.settings.workflowDefinitions.workflowTypes.${type.toString()}`) : ''}
+                  text={
+                    type
+                      ? t(`admin.settings.workflowDefinitions.workflowTypes.${type.toString()}`)
+                      : ''
+                  }
                 >
                   <Dropdown.Menu>
                     {validTypes.map((s) => {
-
                       return (
                         <Dropdown.Item
                           key={s}
-                          text={t(`admin.settings.workflowDefinitions.workflowTypes.${s.toString()}`)}
+                          text={t(
+                            `admin.settings.workflowDefinitions.workflowTypes.${s.toString()}`
+                          )}
                           onClick={this.workflowTypeSelection(s)}
                         />
                       );

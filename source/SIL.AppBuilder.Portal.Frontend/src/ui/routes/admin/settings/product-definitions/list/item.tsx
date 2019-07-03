@@ -42,11 +42,15 @@ class ProductDefinitionItem extends React.Component<IProps> {
             <span>{attributesFor(workflow).name}</span>
           </div>
           <div>
-            <span className='bold m-r-sm'>{t('admin.settings.productDefinitions.rebuildWorkflow')}:</span>
+            <span className='bold m-r-sm'>
+              {t('admin.settings.productDefinitions.rebuildWorkflow')}:
+            </span>
             <span>{attributesFor(rebuildWorkflow).name}</span>
           </div>
           <div>
-            <span className='bold m-r-sm'>{t('admin.settings.productDefinitions.republishWorkflow')}:</span>
+            <span className='bold m-r-sm'>
+              {t('admin.settings.productDefinitions.republishWorkflow')}:
+            </span>
             <span>{attributesFor(republishWorkflow).name}</span>
           </div>
           <div>
