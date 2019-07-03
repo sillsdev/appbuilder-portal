@@ -33,9 +33,7 @@ interface IState {
   workflow?: WorkflowDefinitionResource;
   workflowError?: string;
   rebuildWorkflow?: WorkflowDefinitionResource;
-  rebuildWorkflowError?: string;
   republishWorkflow?: WorkflowDefinitionResource;
-  republishWorkflowError?: string;
 }
 
 type IProps = i18nProps & IOwnProps;
