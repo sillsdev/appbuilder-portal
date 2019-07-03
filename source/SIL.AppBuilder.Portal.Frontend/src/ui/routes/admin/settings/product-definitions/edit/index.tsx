@@ -30,7 +30,13 @@ type IProps = IProductDefinitionProps & IOwnProps & i18nProps & RouteComponentPr
 
 class EditProductDefinition extends React.Component<IProps> {
   update = async (attributes, relationships) => {
-    const { updateAttributes, t } = this.props;
+    const { updateAttributes, updateRebuildWorkflow, updateRepublishWorkflow, t } = this.props;
+    if (!relationships.republishWorkflow) {
+      await updateRepublishWorkflow(null);
+    }
+    if (!relationships.rebuildWorkflow) {
+      await updateRebuildWorkflow(null);
+    }
     await updateAttributes(attributes, relationships);
     this.redirectToList();
     toast.success(t('admin.settings.productDefinitions.editSuccess'));

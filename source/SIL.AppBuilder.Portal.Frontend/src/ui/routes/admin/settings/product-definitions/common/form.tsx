@@ -231,6 +231,11 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                   text={rebuildWorkflowName}
                 >
                   <Dropdown.Menu>
+                    <Dropdown.Item
+                      key={0}
+                      text={t('admin.settings.productDefinitions.noWorkflow')}
+                      onClick={this.rebuildWorkflowSelection(null)}
+                    />
                     {rebuildWorkflows.map((w, i) => {
                       const { name: fullName } = attributesFor(w);
 
@@ -256,6 +261,11 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                   text={republishWorkflowName}
                 >
                   <Dropdown.Menu>
+                    <Dropdown.Item
+                      key={0}
+                      text={t('admin.settings.productDefinitions.noWorkflow')}
+                      onClick={this.republishWorkflowSelection(null)}
+                    />
                     {republishWorkflows.map((w, i) => {
                       const { name: fullName } = attributesFor(w);
 
