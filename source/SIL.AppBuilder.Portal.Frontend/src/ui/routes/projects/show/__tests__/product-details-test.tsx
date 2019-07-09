@@ -271,7 +271,7 @@ describe('Acceptance | Project View | Products Details', () => {
     await visit('/projects/1');
     await when(() => page.products().length === 1);
   });
-  describe('the user selects the project button', () => {
+  describe('the user selects the project', () => {
     let details;
 
     beforeEach(async function() {

@@ -10,7 +10,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        { }
+        {}
 
         // NOTE: only one side of a relationship needs to be specified.
         //       (because each declaration on a side actually defines
