@@ -36,7 +36,15 @@ export default function TransitionDetails({ product }) {
     fetcher();
   }, [productRemoteId, transitions.length === 0]);
 
-  const getUserName = (workflowId: string, allowedName: string, dateTransition: string) => {
+  const getUserName = (
+    workflowId: string,
+    allowedName: string,
+    dateTransition: string,
+    transitionType: number
+  ) => {
+    if (transitionType != 1) {
+      return '';
+    }
     let userName = t('appName');
     if (dateTransition === null) {
       if (allowedName != null) {
@@ -64,6 +72,28 @@ export default function TransitionDetails({ product }) {
         : momentTransition.tz(timezone).format('L LT');
     }
     return formattedDate;
+  };
+  const getTransitionClass = (transitionType: number) => {
+    let transitionClass = 'artifact-item flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md bold';
+    if (transitionType === 1) {
+      transitionClass = 'artifact-item flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md';
+    }
+    return transitionClass;
+  };
+  const getStateString = (transitionType: number, attributes) => {
+    if (transitionType === 1) {
+      const initialState = attributes['initial-state'];
+      return initialState;
+    }
+    const workflowType: number = attributes['workflow-type'];
+    const workflowTypeString = t(
+      `admin.settings.workflowDefinitions.workflowTypes.${workflowType.toString()}`
+    );
+    const stateString = t(
+      `project.products.transitions.transitionTypes.${transitionType.toString()}`,
+      { workflowType: workflowTypeString }
+    );
+    return stateString;
   };
   return (
     <Modal
@@ -100,25 +130,27 @@ export default function TransitionDetails({ product }) {
         <div data-test-transition-details>
           {transitions.map((transition) => {
             const attributes = attributesFor(transition);
-            const initialState = attributes['initial-state'];
             const comment = attributes['comment'];
             const command = attributes['command'];
             const workflowId = attributes['workflow-user-id'];
             const dateTransition = attributes['date-transition'];
             const allowedNames = attributes['allowed-user-names'];
+            const transitionType: number = attributes['transition-type'];
             const remoteId = idFromRecordIdentity(transition);
 
             return (
               <div
                 data-test-transition-details-record
                 key={remoteId}
-                className='artifact-item flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md'
+                className={getTransitionClass(transitionType)}
               >
                 <div data-test-transition-state className='flex-25'>
-                  <span>{initialState}</span>
+                  <span>{getStateString(transitionType, attributes)}</span>
                 </div>
                 <div data-test-transition-user className='flex-20'>
-                  <span>{getUserName(workflowId, allowedNames, dateTransition)}</span>
+                  <span>
+                    {getUserName(workflowId, allowedNames, dateTransition, transitionType)}
+                  </span>
                 </div>
                 <div data-test-transition-command className='flex-15'>
                   <span>{command}</span>

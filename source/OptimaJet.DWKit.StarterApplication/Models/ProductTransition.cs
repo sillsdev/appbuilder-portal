@@ -28,6 +28,12 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("comment")]
         public string Comment { get; set; }
 
+        [Attr("transition-type")]
+        public ProductTransitionType TransitionType { get; set; } = ProductTransitionType.Activity;
+
+        [Attr("workflow-type")]
+        public WorkflowType? WorkflowType { get; set; }
+
         [Attr("date-transition")]
         public DateTime? DateTransition { get; set; }
 

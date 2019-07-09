@@ -10,7 +10,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {}
+        { }
 
         // NOTE: only one side of a relationship needs to be specified.
         //       (because each declaration on a side actually defines
@@ -36,6 +36,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var productWorkflowEntity = modelBuilder.Entity<ProductWorkflow>();
             var workflowDefinitionEntity = modelBuilder.Entity<WorkflowDefinition>();
             var productWorkflowSchemeEntity = modelBuilder.Entity<ProductWorkflowScheme>();
+            var productTransitionEntity = modelBuilder.Entity<ProductTransition>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
@@ -169,7 +170,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .WithOne(i => i.Product)
                 .HasForeignKey<ProductWorkflow>(i => i.Id);
 
-            productWorkflowEntity.ToTable("WorkflowProcessInstance"); 
+            productWorkflowEntity.ToTable("WorkflowProcessInstance");
 
             projectEntity
                 .Property(p => p.WorkflowProjectId)
@@ -178,6 +179,11 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             workflowDefinitionEntity
                 .Property(w => w.Type)
                 .HasDefaultValue(WorkflowType.Startup);
+
+            productTransitionEntity
+                .Property(t => t.TransitionType)
+                .HasDefaultValue(ProductTransitionType.Activity);
+
 
             productWorkflowSchemeEntity.ToTable("WorkflowProcessScheme");
 

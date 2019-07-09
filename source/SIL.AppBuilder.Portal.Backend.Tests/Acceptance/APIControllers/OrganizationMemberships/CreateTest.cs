@@ -72,7 +72,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
         {
             BuildTestData();
 
-            Assert.Equal(user1.UserRoles, null);
+            Assert.Null(user1.UserRoles);
 
             var content = new
             {
@@ -106,7 +106,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
 
             var userRoles = await this.GetDbSet<UserRole>().ToListAsync();
 
-            Assert.Equal(1, user.UserRoles.Count);
+            Assert.Single(user.UserRoles);
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
                 .Where(u => u.Id == user2.Id)
                 .FirstOrDefaultAsync();
 
-            Assert.Equal(1, userBefore.UserRoles.Count);
+            Assert.Single(userBefore.UserRoles);
 
             var content = new
             {
@@ -151,7 +151,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
                 .Where(u => u.Id == user2.Id)
                 .FirstOrDefaultAsync();
 
-            Assert.Equal(1, user.UserRoles.Count);
+            Assert.Single(user.UserRoles);
         }
 
         [Fact]

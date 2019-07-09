@@ -288,7 +288,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     throw new Exception("Cannot cancel a startup workflow");
                 }
 
-                HangfireClient.Enqueue<WorkflowProductService>(service => service.StopProductWorkflow(id));
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.StopProductWorkflow(id, ProductTransitionType.CancelWorkflow));
                 return wd;
             }
 
