@@ -48,6 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncActions.Add("BuildEngine_CreateProduct", BuildEngineCreateProductAsync);
             _asyncActions.Add("BuildEngine_BuildProduct", BuildEngineBuildProductAsync);
             _asyncActions.Add("BuildEngine_PublishProduct", BuildEnginePublishProductAsync);
+            _asyncActions.Add("GooglePlay_UpdatePublishLink", NoOperationAsync);
             _asyncActions.Add("SendReviewerLinkToProductFiles", SendReviewerLinkToProductFilesAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
@@ -57,6 +58,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncConditions.Add("BuildEngine_BuildFailed", BuildEngineBuildFailed);
             _asyncConditions.Add("BuildEngine_PublishCompleted", BuildEnginePublishCompleted);
             _asyncConditions.Add("BuildEngine_PublishFailed", BuildEnginePublishFailed);
+        }
+
+        private async Task NoOperationAsync(ProcessInstance arg1, WorkflowRuntime arg2, string arg3, CancellationToken arg4)
+        {
+            await Task.CompletedTask;
         }
 
         //
