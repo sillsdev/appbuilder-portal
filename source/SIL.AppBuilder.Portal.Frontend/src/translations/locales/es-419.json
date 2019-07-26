@@ -288,7 +288,13 @@
         "user": "User",
         "command": "Command",
         "comment": "Comment",
-        "date": "Date"
+        "date": "Date",
+        "transitionTypes": {
+          "1": "Activity",
+          "2": "{workflowType} Workflow Started",
+          "3": "{workflowType} Workflow Completed",
+          "4": "{workflowType} Workflow Cancelled"
+        }
       },
       "updated": "Updated",
       "size": "Size",
