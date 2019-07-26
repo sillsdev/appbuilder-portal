@@ -24,6 +24,8 @@ export function useCurrentUserTask({ product }: INeededProps): IProvidedDataProp
   const getCurrentUserTask = useCallback(() => {
     let tasks = [];
     try {
+      let localWorkTask = null;
+      let localFoundCurrentUser = false;
       tasks = dataStore.cache.query((q) =>
         q.findRecords('userTask').filter({ relation: 'product', record: product })
       );
@@ -32,23 +34,26 @@ export function useCurrentUserTask({ product }: INeededProps): IProvidedDataProp
       // so a subsequent task will become a duplicate because both received tasks
       // have yet to be added to the local cache.
       tasks = uniqBy(tasks, (task) => (task.keys || {}).remoteId);
-      setFoundCurrentUser(false);
-      setWorkTask(null);
       {
         tasks.map((task) => {
           const user = dataStore.cache.query((q) => q.findRelatedRecord(task, 'user'));
           const taskUserId = idFromRecordIdentity(user as any);
           const currentUserId = idFromRecordIdentity(currentUser as any);
-
           if (taskUserId === currentUserId) {
-            setFoundCurrentUser(true);
-            setWorkTask(task);
-          } else if (!workTask) {
+            localFoundCurrentUser = true;
+            localWorkTask = task;
+          } else if (!localWorkTask) {
             // If there isn't a return task set, set it to this entry so that an elapsed time
             // can be calculated, even if there isn't one for the current user.
-            setWorkTask(task);
+            localWorkTask = task;
           }
         });
+      }
+      if (localFoundCurrentUser != foundCurrentUser) {
+        setFoundCurrentUser(localFoundCurrentUser);
+      }
+      if (localWorkTask != workTask) {
+        setWorkTask(localWorkTask);
       }
     } catch (e) {
       console.debug(

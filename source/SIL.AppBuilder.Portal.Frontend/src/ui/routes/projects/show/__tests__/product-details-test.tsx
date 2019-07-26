@@ -125,10 +125,27 @@ describe('Acceptance | Project View | Products Details', () => {
       data: [
         {
           attributes: {
+            'workflow-user-id': null,
+            'allowed-user-names': null,
+            'initial-state': null,
+            'destination-state': null,
+            'transition-type': 2,
+            'workflow-type': 1,
+            'date-transition': '2018-10-20T16:19:09.878193',
+            command: null,
+            comment: null,
+          },
+          relationships: {},
+          type: 'product-transitions',
+          id: '2647',
+        },
+        {
+          attributes: {
             'workflow-user-id': '0d824435-ae92-44b5-a876-44ca7a9085a9',
             'allowed-user-names': 'Tester 1',
             'initial-state': 'Readiness Check',
             'destination-state': 'Approval',
+            'transition-type': 1,
             'date-transition': '2018-10-20T16:19:09.878193',
             command: 'Continue',
             comment: 'Looks Good',
@@ -142,6 +159,7 @@ describe('Acceptance | Project View | Products Details', () => {
             'workflow-user-id': null,
             'allowed-user-names': null,
             'initial-state': 'Product Creation',
+            'transition-type': 1,
             'destination-state': 'Check Product Creation',
             'date-transition': '2018-10-20T16:19:09.878193',
             command: null,
@@ -155,6 +173,7 @@ describe('Acceptance | Project View | Products Details', () => {
             'workflow-user-id': null,
             'allowed-user-names': 'Tester 1',
             'initial-state': 'App Builder Configuration',
+            'transition-type': 1,
             'destination-state': 'Product Build',
             'date-transition': null,
             command: null,
@@ -169,6 +188,7 @@ describe('Acceptance | Project View | Products Details', () => {
             'workflow-user-id': null,
             'allowed-user-names': null,
             'initial-state': 'Product Build',
+            'transition-type': 1,
             'destination-state': 'Check Product Build',
             'date-transition': null,
             command: null,
@@ -178,8 +198,72 @@ describe('Acceptance | Project View | Products Details', () => {
           type: 'product-transitions',
           id: '2650',
         },
+        {
+          attributes: {
+            'workflow-user-id': null,
+            'allowed-user-names': null,
+            'initial-state': null,
+            'destination-state': null,
+            'transition-type': 3,
+            'workflow-type': 1,
+            'date-transition': '2018-10-20T16:19:09.878193',
+            command: null,
+            comment: null,
+          },
+          relationships: {},
+          type: 'product-transitions',
+          id: '2651',
+        },
+        {
+          attributes: {
+            'workflow-user-id': null,
+            'allowed-user-names': null,
+            'initial-state': null,
+            'destination-state': null,
+            'transition-type': 2,
+            'workflow-type': 2,
+            'date-transition': '2018-10-20T16:19:09.878193',
+            command: null,
+            comment: null,
+          },
+          relationships: {},
+          type: 'product-transitions',
+          id: '2652',
+        },
+        {
+          attributes: {
+            'workflow-user-id': null,
+            'allowed-user-names': null,
+            'initial-state': null,
+            'destination-state': null,
+            'transition-type': 4,
+            'workflow-type': 2,
+            'date-transition': '2018-10-20T16:19:09.878193',
+            command: null,
+            comment: null,
+          },
+          relationships: {},
+          type: 'product-transitions',
+          id: '2653',
+        },
+        {
+          attributes: {
+            'workflow-user-id': null,
+            'allowed-user-names': null,
+            'initial-state': null,
+            'destination-state': null,
+            'transition-type': 2,
+            'workflow-type': 3,
+            'date-transition': '2018-10-20T16:19:09.878193',
+            command: null,
+            comment: null,
+          },
+          relationships: {},
+          type: 'product-transitions',
+          id: '2654',
+        },
       ],
-      meta: { 'total-records': 4 },
+      meta: { 'total-records': 9 },
     });
   });
 
@@ -187,12 +271,12 @@ describe('Acceptance | Project View | Products Details', () => {
     await visit('/projects/1');
     await when(() => page.products().length === 1);
   });
-  describe('the user clicks the add/remove products button', () => {
+  describe('the user selects the project', () => {
     let details;
 
     beforeEach(async function() {
       await page.productNamed('android_s3').clickDetailsLink();
-      await when(() => page.detailsModal.details().length === 4);
+      await when(() => page.detailsModal.details().length === 9);
     });
     it('opens modal', () => {
       expect(page.detailsModal.isVisible).to.be.true;
@@ -217,6 +301,21 @@ describe('Acceptance | Project View | Products Details', () => {
     });
     it('sets user to scriptoria for transition with no date and no allowed user', () => {
       expect(page.detailsModal.detailNamed('Product Build').user).to.equal('Scriptoria');
+    });
+    it('has a startup workflow started entry with empty user', () => {
+      expect(page.detailsModal.detailNamed('Startup Workflow Started').user).to.be.empty;
+    });
+    it('has a startup workflow completed entry with empty user', () => {
+      expect(page.detailsModal.detailNamed('Startup Workflow Completed').user).to.be.empty;
+    });
+    it('has a rebuild workflow started entry', () => {
+      expect(page.detailsModal.detailNamed('Rebuild Workflow Started').user).to.be.empty;
+    });
+    it('has a rebuild workflow cancelled entry', () => {
+      expect(page.detailsModal.detailNamed('Rebuild Workflow Cancelled').user).to.be.empty;
+    });
+    it('has a republish workflow started entry', () => {
+      expect(page.detailsModal.detailNamed('Republish Workflow Started').user).to.be.empty;
     });
   });
 });

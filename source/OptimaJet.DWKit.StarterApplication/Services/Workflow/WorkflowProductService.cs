@@ -151,7 +151,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             if (args.NewStatus == ProcessStatus.Finalized.StatusString())
             {
                 Log.Information($"Process Finalized.  Deleting ProcessId={args.ProcessId}, Schema={args.SchemaCode}");
-                await StopProductWorkflowAsync(args.ProcessId);
+                await StopProductWorkflowAsync(args.ProcessId, ProductTransitionType.EndWorkflow);
             }
         }
 
@@ -238,12 +238,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         private async Task StartProductWorkflowAsync(Guid productId, int workflowDefinitionId)
         {
             var product = await ProductRepository.Get()
-                  .Where(p => p.Id == productId)
-                  .Include(p => p.ProductDefinition)
-                        .ThenInclude(pd => pd.Workflow)
-                  .Include(p => p.Project)
-                        .ThenInclude(pr => pr.Owner)
-                  .FirstOrDefaultAsync();
+                .Where(p => p.Id == productId)
+                .Include(p => p.ProductDefinition)
+                    .ThenInclude(pd => pd.Workflow)
+                .Include(p => p.Project)
+                    .ThenInclude(pr => pr.Owner)
+                .FirstOrDefaultAsync();
 
             if (product == null)
             {
@@ -271,6 +271,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 return;
             }
 
+            await createTransitionRecord(product.Id, ProductTransitionType.StartWorkflow, workflowDefinition.Type);
+
             await CreateWorkflowProcessInstance(product, workflowDefinition);
         }
 
@@ -294,12 +296,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             Log.Information($"Notification: task={task.Id}, user={user.Name}, product={product.Id}, messageParms={messageParms}");
         }
 
-        public void StopProductWorkflow(Guid id)
+        public void StopProductWorkflow(Guid id, ProductTransitionType transitionType)
         {
-            StopProductWorkflowAsync(id).Wait();
+            StopProductWorkflowAsync(id, transitionType).Wait();
         }
 
-        private async Task StopProductWorkflowAsync(Guid processId)
+        private async Task StopProductWorkflowAsync(Guid processId, ProductTransitionType transitionType)
         {
             // Remove any future transition entries
             await ClearPreExecuteEntries(processId);
@@ -307,10 +309,31 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             // Remove any tasks
             await RemoveTasksByProductId(processId);
 
+            var workflowDefinition = await GetExecutingWorkflowDefintion(processId);
+
+            await createTransitionRecord(processId, transitionType, workflowDefinition.Type);
+
             // Delete the ProcessInstance
             DeleteWorkflowProcessInstance(processId);
         }
 
+        private async Task createTransitionRecord(Guid processId, ProductTransitionType transitionType, WorkflowType workflowType)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productTransitionsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<ProductTransition>>();
+                var transition = new ProductTransition
+                {
+                    ProductId = processId,
+                    AllowedUserNames = String.Empty,
+                    TransitionType = transitionType,
+                    WorkflowType = workflowType,
+                    DateTransition = DateTime.UtcNow
+                };
+                transition = await productTransitionsRepository.CreateAsync(transition);
+
+            }
+        }
         private string GetCurrentTaskComment(Product product)
         {
 
@@ -347,5 +370,25 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 await TaskRepository.DeleteAsync(task.Id);
             }
         }
+        private async Task<WorkflowDefinition> GetExecutingWorkflowDefintion(Guid productId)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var product = await ProductRepository.Get()
+                    .Where(p => p.Id == productId)
+                    .Include(p => p.ProductWorkflow)
+                        .ThenInclude(pw => pw.Scheme)
+                    .FirstOrDefaultAsync();
+
+                if (product == null)
+                {
+                    return null;
+                }
+                return await WorkflowDefinitionRepository.Get()
+                    .Where(w => w.WorkflowScheme == product.ProductWorkflow.Scheme.SchemeCode)
+                    .FirstOrDefaultAsync();
+            }
+        }
+
     }
 }

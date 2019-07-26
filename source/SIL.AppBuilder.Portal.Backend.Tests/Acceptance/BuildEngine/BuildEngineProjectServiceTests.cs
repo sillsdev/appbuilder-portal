@@ -255,7 +255,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             await buildProjectService.ManageProjectAsync(999, null);
             // Verify notification sent to Super Admin
@@ -274,7 +274,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
@@ -294,7 +294,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(true, "4323864");
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project1.Id, null));
             Assert.Equal("Connection not available", ex.Message);
@@ -314,7 +314,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         {
             BuildTestData(false);
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var ex = await Assert.ThrowsAsync<Exception>(async () => await buildProjectService.ManageProjectAsync(project4.Id, null));
             Assert.Equal("Connection not available", ex.Message);
@@ -413,7 +413,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             BuildTestData();
             var buildProjectService = _fixture.GetService<BuildEngineProjectService>();
             
-            Assert.Equal(0, ReadTestData<AppDbContext, Notification>().Count);
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
 
             var mockBuildEngine = Mock.Get(buildProjectService.BuildEngineApi);
             mockBuildEngine.Reset();
