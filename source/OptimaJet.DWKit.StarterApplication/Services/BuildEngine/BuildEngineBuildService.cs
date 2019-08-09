@@ -232,7 +232,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             Log.Information($"BuildCompletedAsync: product={product.Id}, response:Id={buildEngineBuild.Id},Status={buildEngineBuild.Status},Result={buildEngineBuild.Result},Date={buildEngineBuild.Updated}");
             ClearRecurringJob(product.Id);
-            await SaveArtifacts(product, buildEngineBuild);
+            await SaveArtifacts(product, buildEngineBuild, true);
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
@@ -242,7 +242,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             await UpdateProductBuild(buildEngineBuild, product, true);
         }
 
-        private async Task SaveArtifacts(Product product, BuildResponse buildEngineBuild)
+        private async Task SaveArtifacts(Product product, BuildResponse buildEngineBuild, bool successful)
         {
             DateTime? mostRecentArtifactDate = new DateTime(2018, 10, 1);
             var productBuild = await ProductBuildRepository.Get()
@@ -255,7 +255,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     Log.Information($"Artifact: key={entry.Key}, value={entry.Value}");
                     if (!String.IsNullOrEmpty(entry.Value))
                     {
-                        var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product, productBuild);
+                        var artifactModifiedDate = await AddProductArtifactAsync(entry.Key, entry.Value, product, productBuild, successful);
                         if ((artifactModifiedDate != null) && (artifactModifiedDate > mostRecentArtifactDate))
                         {
                             mostRecentArtifactDate = artifactModifiedDate;
@@ -271,7 +271,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         protected async Task BuildCreationFailedAsync(Product product, BuildResponse buildEngineBuild)
         {
             ClearRecurringJob(product.Id);
-            await SaveArtifacts(product, buildEngineBuild);
+            await SaveArtifacts(product, buildEngineBuild, false);
             var buildEngineUrl = product.Project.Organization.BuildEngineUrl + "/build-admin/view?id=" + product.WorkflowBuildId.ToString();
             var consoleTextUrl = buildEngineBuild.Artifacts["consoleText"];
             var messageParms = new Dictionary<string, object>()
@@ -310,7 +310,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             return "CreateBuildMonitor" + productId.ToString();
         }
-        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, Product product, ProductBuild productBuild)
+        protected async Task<DateTime?> AddProductArtifactAsync(string key, string value, Product product, ProductBuild productBuild, bool successful)
         {
             var productArtifact = new ProductArtifact
             {
@@ -348,8 +348,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     {
                         productBuild.Version = version["version"] as String;
                         await ProductBuildRepository.UpdateAsync(productBuild);
-                        product.VersionBuilt = version["version"] as String;
-                        await ProductRepository.UpdateAsync(product);
+                        if (successful)
+                        {
+                            product.VersionBuilt = version["version"] as String;
+                            await ProductRepository.UpdateAsync(product);
+                        }
                     }
                 }
                 catch (Exception ex)
