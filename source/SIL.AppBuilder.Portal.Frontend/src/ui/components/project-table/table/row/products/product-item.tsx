@@ -5,11 +5,11 @@ import { titleize } from 'inflected';
 import { attributesFor } from '@data/helpers';
 import ProductIcon from '@ui/components/product-icon';
 
-import { ProductResource, ProductDefinitionResource, ProductBuildResource } from '@data';
+import { ProductResource, ProductDefinitionResource } from '@data';
 
 import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { applyNumberOfTimes, compareVia } from '@lib/collection';
+import { applyNumberOfTimes } from '@lib/collection';
 
 import { IProvidedProps as IColumnProps } from '../../with-table-columns';
 import { COLUMN_KEY } from '../../column-data';
@@ -17,7 +17,6 @@ import { COLUMN_KEY } from '../../column-data';
 interface IOwnProps {
   product: ProductResource;
   productDefinition: ProductDefinitionResource;
-  productBuilds: ProductBuildResource[];
 }
 
 type IProps = IOwnProps & IColumnProps & i18nProps & TimeProps;
@@ -103,7 +102,6 @@ export default compose(
   withTranslations,
   withMomentTimezone,
   withOrbit(({ product }) => ({
-    productBuilds: (q) => q.findRelatedRecords(product, 'productBuilds'),
     productDefinition: (q) => q.findRelatedRecord(product, 'productDefinition'),
   }))
 )(ProductItem);
