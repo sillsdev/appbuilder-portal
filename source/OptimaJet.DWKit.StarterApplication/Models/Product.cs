@@ -44,6 +44,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("date-built")]
         public DateTime? DateBuilt { get; set; }
 
+        [Attr("version-built")]
+        public string VersionBuilt { get; set; }
+
         [Attr("workflow-publish-id")]
         public int WorkflowPublishId { get; set; }
 

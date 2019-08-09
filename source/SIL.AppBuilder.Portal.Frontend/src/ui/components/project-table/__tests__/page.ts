@@ -24,7 +24,12 @@ class ProjectTable {
     '[data-test-project-table-columns-selector-item]:nth-child(2)'
   );
   selectorItems = collection('[data-test-project-table-columns-selector-item]');
-  columns = collection('[data-test-project-table-column]');
+  columns = collection('[data-test-project-table-column]', {
+    text: text(),
+  });
+  productNames = collection('[data-test-project-table-product-name]', {
+    text: text(),
+  });
   isEmptyTextPresent = isPresent('[data-test-project-list-empty]');
   emptyText = text('[data-test-project-list-empty]');
 

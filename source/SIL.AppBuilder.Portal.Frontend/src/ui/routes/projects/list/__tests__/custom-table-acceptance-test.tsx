@@ -51,6 +51,19 @@ describe('Acceptance | My Projects | Column selector', () => {
         expect(itemsText).to.not.contain('Build Date');
         expect(itemsText).to.not.contain('Created On');
       });
+
+      it('product fields are set', () => {
+        const columns = pageInteractor.projectTable.columns();
+        const columnsText = columns.map((i) => i.text);
+
+        expect(columnsText).to.contain('v1.0.0');
+      });
+
+      it('product name is set', () => {
+        const productNames = pageInteractor.projectTable.productNames();
+        const productNamesText = productNames.map((i) => i.text);
+        expect(productNamesText).to.contain('Android To S3');
+      });
     });
   });
 });

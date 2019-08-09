@@ -348,6 +348,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     {
                         productBuild.Version = version["version"] as String;
                         await ProductBuildRepository.UpdateAsync(productBuild);
+                        product.VersionBuilt = version["version"] as String;
+                        await ProductRepository.UpdateAsync(product);
                     }
                 }
                 catch (Exception ex)

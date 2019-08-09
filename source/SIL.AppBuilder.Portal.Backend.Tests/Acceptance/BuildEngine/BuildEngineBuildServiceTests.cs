@@ -397,11 +397,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
              Assert.Single(modifiedProductBuilds);
              var build = modifiedProductBuilds.First();
              Assert.Equal("4.7.6", build.Version);
-            Assert.True(build.Success);
+             Assert.True(build.Success);
              var modifiedProduct = ReadTestData<AppDbContext, Product>().Where(p => p.Id == product2.Id);
              Assert.Single(modifiedProduct);
              var product = modifiedProduct.First();
              Assert.Equal("en-US", product.StoreLanguage.Name);
+             Assert.Equal("4.7.6", product.VersionBuilt);
              // One notification should be sent to owner on successful build
              var notifications = ReadTestData<AppDbContext, Notification>();
              Assert.Single(notifications);
