@@ -18,6 +18,7 @@ export interface ProjectAttributes extends AttributesObject {
   lastUpdatedAt?: string;
   isPublic: boolean;
   workflowProjectUrl?: string;
+  active?: boolean;
 }
 
 export type ProjectResource = ResourceObject<PROJECTS_TYPE, ProjectAttributes> & Record;

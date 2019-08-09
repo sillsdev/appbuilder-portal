@@ -13,6 +13,7 @@ export function ProjectFilterDropdown({ filter }) {
   const dropdownText = {
     'all-projects': t('projects.switcher.dropdown.all'),
     'my-projects': t('projects.switcher.dropdown.myProjects'),
+    'active-projects' : t('projects.switcher.dropdown.activeProjects'),
     organization: t('projects.switcher.dropdown.orgProjects'),
     archived: t('projects.switcher.dropdown.archived'),
   };
@@ -38,6 +39,13 @@ export function ProjectFilterDropdown({ filter }) {
           as={NavLink}
           to={PROJECT_ROUTES.OWN}
         />
+        <Dropdown.Item
+          text={t('projects.switcher.dropdown.activeProjects')}
+          className='m-l-md'
+          as={NavLink}
+          to={PROJECT_ROUTES.ACTIVE}
+        />
+
         <Dropdown.Item
           text={t('projects.switcher.dropdown.orgProjects')}
           className='m-l-md'

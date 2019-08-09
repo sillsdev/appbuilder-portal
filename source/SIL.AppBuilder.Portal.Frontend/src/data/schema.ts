@@ -125,6 +125,7 @@ const schemaDefinition: SchemaSettings = {
         location: { type: 'string' },
         isPublic: { type: 'boolean' },
         workflowProjectUrl: { type: 'string' },
+        active: {type: 'boolean'},
         // filter keys
         ownerId: { type: 'string' },
       },

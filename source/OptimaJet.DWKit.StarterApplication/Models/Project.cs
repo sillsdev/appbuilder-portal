@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
@@ -67,5 +69,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("workflow-app-project-url")]
         public String WorkflowAppProjectUrl { get; set; }
+
+        [NotMapped]
+        public bool? Active => Products?.Any(p => p.ProductWorkflow != null);
     }
 }

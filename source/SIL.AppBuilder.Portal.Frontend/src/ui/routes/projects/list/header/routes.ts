@@ -3,4 +3,5 @@ export enum PROJECT_ROUTES {
   ORGANIZATION = '/projects/organization',
   ARCHIVED = '/projects/archived',
   ALL = '/projects/all',
+  ACTIVE = '/projects/active',
 }
