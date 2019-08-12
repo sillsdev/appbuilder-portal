@@ -9,6 +9,7 @@ export interface ProductAttributes extends AttributesObject {
   dateUpdated: string;
   datePublished: string;
   dateBuilt: string;
+  versionBuilt: string;
   publishLink: string;
 }
 

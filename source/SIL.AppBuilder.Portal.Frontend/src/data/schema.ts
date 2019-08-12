@@ -154,6 +154,8 @@ const schemaDefinition: SchemaSettings = {
         dateCreated: { type: 'string' },
         dateUpdated: { type: 'string' },
         datePublished: { type: 'string' },
+        dateBuilt: { type: 'string' },
+        versionBuilt: { type: 'string' },
         publishLink: { type: 'string' },
       },
       relationships: {
