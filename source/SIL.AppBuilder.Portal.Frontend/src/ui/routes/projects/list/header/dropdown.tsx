@@ -13,7 +13,7 @@ export function ProjectFilterDropdown({ filter }) {
   const dropdownText = {
     'all-projects': t('projects.switcher.dropdown.all'),
     'my-projects': t('projects.switcher.dropdown.myProjects'),
-    'active-projects' : t('projects.switcher.dropdown.activeProjects'),
+    'active-projects': t('projects.switcher.dropdown.activeProjects'),
     organization: t('projects.switcher.dropdown.orgProjects'),
     archived: t('projects.switcher.dropdown.archived'),
   };

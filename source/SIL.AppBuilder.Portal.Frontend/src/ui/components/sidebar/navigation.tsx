@@ -59,7 +59,7 @@ export default function Navigation({ closeSidebar }: IProps) {
       />
 
       <MenuItem
-        content={"Active Projects"}
+        content={t('sidebar.activeProjects')}
         to='/projects/active'
         exact
         onClick={closeSidebar}
