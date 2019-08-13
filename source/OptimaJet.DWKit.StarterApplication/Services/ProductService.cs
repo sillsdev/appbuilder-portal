@@ -405,5 +405,41 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             return artifact;
         }
+
+        public async Task UpdateProjectActive(int projectId)
+        {
+            var products = await ProductRepository.Get()
+                .Where(p => p.ProjectId == projectId)
+                .Include(p => p.ProductWorkflow)
+                .ToListAsync();
+
+            var project = await ProjectRepository.GetAsync(projectId);
+            var projectDateActive = project.DateActive;
+
+            var dateActive = DateTime.MinValue;
+            foreach (var product in products)
+            {
+                if (product.ProductWorkflow != null)
+                {
+                    if (product.DateUpdated.Value > dateActive)
+                    {
+                        dateActive = product.DateUpdated.Value;
+                    }
+                }
+            }
+
+            if (dateActive > DateTime.MinValue)
+            {
+                project.DateActive = dateActive;
+            } else
+            {
+                project.DateActive = null;
+            }
+
+            if (project.DateActive != projectDateActive)
+            {
+                await ProjectRepository.UpdateAsync(projectId, project);
+            }
+        }
     }
 }
