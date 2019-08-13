@@ -18,19 +18,19 @@ export const pathName = '/projects/active';
 export default compose(
   withCurrentUserContext,
   withCurrentOrganization,
-  withSorting({ defaultSort: 'name' }),
+  withSorting({ defaultSort: 'date-active' }),
   withPagination(),
   withFiltering({
-    requiredFilters: [{ attribute: 'active', value: 'isnotnull:' }],
+    requiredFilters: [{ attribute: 'date-active', value: 'isnotnull:' }],
   }),
   withNetwork(),
   withLoader(({ error, projects }) => !error && !projects),
   withProps(({ projects }) => ({
-    tableName: 'organization',
+    tableName: 'active-projects',
     rowCount: projects ? projects.length : 0,
   })),
   withTableColumns({
-    tableName: 'organization',
+    tableName: 'active-projects',
     defaultColumns: [
       COLUMN_KEY.PROJECT_OWNER,
       COLUMN_KEY.PROJECT_GROUP,
@@ -39,6 +39,6 @@ export default compose(
     ],
   }),
   withTableRows({
-    tableName: 'organization',
+    tableName: 'active-projects',
   })
 )(Display);
