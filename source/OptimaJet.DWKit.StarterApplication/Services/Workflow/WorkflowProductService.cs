@@ -86,9 +86,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             ManageNewProductAsync(productId).Wait();
         }
 
-        public void ManageDeletedProduct(Guid workflowProcessId)
+        public void ManageDeletedProduct(Guid workflowProcessId, int projectId)
         {
-            DeleteWorkflowProcessInstance(workflowProcessId);
+            DeleteWorkflowProcessInstance(workflowProcessId, projectId);
         }
 
         public void ProductActivityChanged(ProductActivityChangedArgs args)
@@ -120,9 +120,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             await StartProductWorkflowAsync(productId, product.ProductDefinition.WorkflowId);
          }
 
-        protected void DeleteWorkflowProcessInstance(Guid processId)
+        protected void DeleteWorkflowProcessInstance(Guid processId, int projectId)
         {
             WorkflowInit.Runtime.DeleteInstance(processId);
+            BackgroundJobClient.Enqueue<WorkflowProjectService>(service => service.UpdateProjectActive(projectId));
         }
 
         protected async Task CreateWorkflowProcessInstance(Product product, WorkflowDefinition workflowDefinition)
@@ -133,6 +134,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             };
 
             await WorkflowInit.Runtime.CreateInstanceAsync(parms);
+            BackgroundJobClient.Enqueue<WorkflowProjectService>(service => service.UpdateProjectActive(product.ProjectId));
         }
 
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)
@@ -151,7 +153,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             if (args.NewStatus == ProcessStatus.Finalized.StatusString())
             {
                 Log.Information($"Process Finalized.  Deleting ProcessId={args.ProcessId}, Schema={args.SchemaCode}");
-                await StopProductWorkflowAsync(args.ProcessId, ProductTransitionType.EndWorkflow);
+                await StopProductWorkflowAsync(args.ProcessId, product.ProjectId, ProductTransitionType.EndWorkflow);
             }
         }
 
@@ -296,25 +298,25 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             Log.Information($"Notification: task={task.Id}, user={user.Name}, product={product.Id}, messageParms={messageParms}");
         }
 
-        public void StopProductWorkflow(Guid id, ProductTransitionType transitionType)
+        public void StopProductWorkflow(Guid productId, int projectId, ProductTransitionType transitionType)
         {
-            StopProductWorkflowAsync(id, transitionType).Wait();
+            StopProductWorkflowAsync(productId, projectId, transitionType).Wait();
         }
 
-        private async Task StopProductWorkflowAsync(Guid processId, ProductTransitionType transitionType)
+        private async Task StopProductWorkflowAsync(Guid productId, int projectId, ProductTransitionType transitionType)
         {
             // Remove any future transition entries
-            await ClearPreExecuteEntries(processId);
+            await ClearPreExecuteEntries(productId);
 
             // Remove any tasks
-            await RemoveTasksByProductId(processId);
+            await RemoveTasksByProductId(productId);
 
-            var workflowDefinition = await GetExecutingWorkflowDefintion(processId);
+            var workflowDefinition = await GetExecutingWorkflowDefintion(productId);
 
-            await createTransitionRecord(processId, transitionType, workflowDefinition.Type);
+            await createTransitionRecord(productId, transitionType, workflowDefinition.Type);
 
             // Delete the ProcessInstance
-            DeleteWorkflowProcessInstance(processId);
+            DeleteWorkflowProcessInstance(productId, projectId);
         }
 
         private async Task createTransitionRecord(Guid processId, ProductTransitionType transitionType, WorkflowType workflowType)

@@ -129,7 +129,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var product = products.SingleOrDefault(p => p.Id == id);
             if (product != null)
             {
-                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageDeletedProduct(product.Id));
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageDeletedProduct(product.Id, product.ProjectId));
             }
 
             return await base.DeleteAsync(id);
@@ -288,7 +288,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     throw new Exception("Cannot cancel a startup workflow");
                 }
 
-                HangfireClient.Enqueue<WorkflowProductService>(service => service.StopProductWorkflow(id, ProductTransitionType.CancelWorkflow));
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.StopProductWorkflow(id, product.ProjectId, ProductTransitionType.CancelWorkflow));
                 return wd;
             }
 
@@ -404,42 +404,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .FirstOrDefault();
 
             return artifact;
-        }
-
-        public async Task UpdateProjectActive(int projectId)
-        {
-            var products = await ProductRepository.Get()
-                .Where(p => p.ProjectId == projectId)
-                .Include(p => p.ProductWorkflow)
-                .ToListAsync();
-
-            var project = await ProjectRepository.GetAsync(projectId);
-            var projectDateActive = project.DateActive;
-
-            var dateActive = DateTime.MinValue;
-            foreach (var product in products)
-            {
-                if (product.ProductWorkflow != null)
-                {
-                    if (product.DateUpdated.Value > dateActive)
-                    {
-                        dateActive = product.DateUpdated.Value;
-                    }
-                }
-            }
-
-            if (dateActive > DateTime.MinValue)
-            {
-                project.DateActive = dateActive;
-            } else
-            {
-                project.DateActive = null;
-            }
-
-            if (project.DateActive != projectDateActive)
-            {
-                await ProjectRepository.UpdateAsync(projectId, project);
-            }
         }
     }
 }
