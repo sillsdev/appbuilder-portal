@@ -378,7 +378,8 @@
       "buildVersion": "Build Version",
       "buildDate": "Build Date",
       "createdOn": "Created On",
-      "updatedOn": "Updated On"
+      "updatedOn": "Updated On",
+      "activeSince": "Active Since"
     },
     "empty": "No projects found",
     "products": "Products",

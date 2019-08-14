@@ -49,7 +49,7 @@ class Row extends React.Component<IProps> {
       timezone,
     } = this.props;
 
-    const { language, dateUpdated } = attributesFor(project);
+    const { language, dateUpdated, dateActive } = attributesFor(project);
     const { name: orgName } = attributesFor(organization);
     const { givenName, familyName } = attributesFor(owner);
     const { name: groupName } = attributesFor(group);
@@ -72,6 +72,11 @@ class Row extends React.Component<IProps> {
           break;
         case COLUMN_KEY.PROJECT_DATE_UPDATED:
           column.value = moment(dateUpdated)
+            .tz(timezone)
+            .format('LLL');
+          break;
+        case COLUMN_KEY.PROJECT_DATE_ACTIVE:
+          column.value = moment(dateActive)
             .tz(timezone)
             .format('LLL');
           break;
