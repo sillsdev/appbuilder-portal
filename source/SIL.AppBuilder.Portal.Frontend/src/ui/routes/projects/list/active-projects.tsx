@@ -18,7 +18,7 @@ export const pathName = '/projects/active';
 export default compose(
   withCurrentUserContext,
   withCurrentOrganization,
-  withSorting({ defaultSort: '-date-active' }),
+  withSorting({ defaultSort: '-dateActive' }), // need dateActive (not date-active) for direction arrow
   withPagination(),
   withFiltering({
     requiredFilters: [{ attribute: 'date-active', value: 'isnotnull:' }],
@@ -36,6 +36,7 @@ export default compose(
       COLUMN_KEY.PROJECT_GROUP,
       COLUMN_KEY.PRODUCT_BUILD_VERSION,
       COLUMN_KEY.PRODUCT_BUILD_DATE,
+      COLUMN_KEY.PROJECT_DATE_ACTIVE,
     ],
   }),
   withTableRows({

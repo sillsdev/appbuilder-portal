@@ -42,6 +42,7 @@ class ProjectTable {
     text: text(),
   });
 
+  sortColumn = text('[data-test-project-table-sort-column');
   isSortingUp = isPresent('[data-test-up-arrow]');
   isSortingDown = isPresent('[data-test-down-arrow]');
 

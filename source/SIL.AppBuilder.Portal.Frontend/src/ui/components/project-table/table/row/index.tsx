@@ -76,9 +76,13 @@ class Row extends React.Component<IProps> {
             .format('LLL');
           break;
         case COLUMN_KEY.PROJECT_DATE_ACTIVE:
-          column.value = moment(dateActive)
-            .tz(timezone)
-            .format('LLL');
+          if (dateActive) {
+            column.value = moment(dateActive)
+              .tz(timezone)
+              .format('LLL');
+          } else {
+            column.value = '-';
+          }
           break;
         default:
           column.value = 'active column not recognized';
