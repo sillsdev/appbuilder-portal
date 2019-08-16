@@ -59,6 +59,15 @@ export default function Navigation({ closeSidebar }: IProps) {
       />
 
       <RequireRole roleName={ROLE.OrganizationAdmin}>
+        <MenuItem
+          content={t('sidebar.activeProjects')}
+          to='/projects/active'
+          exact
+          onClick={closeSidebar}
+        />
+      </RequireRole>
+
+      <RequireRole roleName={ROLE.OrganizationAdmin}>
         <MenuItem content={t('sidebar.users')} to='/users' onClick={closeSidebar} />
       </RequireRole>
 

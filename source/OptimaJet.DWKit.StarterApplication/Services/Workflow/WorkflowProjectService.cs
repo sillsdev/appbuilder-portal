@@ -44,5 +44,46 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 await this.WorkflowProductService.ReassignUserTasksForProduct(product);
             }
         }
+
+        public void UpdateProjectActive(int projectId)
+        {
+            UpdateProjectActiveAsync(projectId).Wait();
+        }
+
+        public async Task UpdateProjectActiveAsync(int projectId)
+        {
+            var project = await this.ProjectRepository.Get()
+                .Where(p => p.Id == projectId)
+                .Include(p => p.Products)
+                    .ThenInclude(prod => prod.ProductWorkflow)
+                .FirstOrDefaultAsync();
+
+            var projectDateActive = project.DateActive;
+
+            var dateActive = DateTime.MinValue;
+            foreach (var product in project.Products)
+            {
+                if (product.ProductWorkflow != null)
+                {
+                    if (product.DateUpdated.Value > dateActive)
+                    {
+                        dateActive = product.DateUpdated.Value;
+                    }
+                }
+            }
+
+            if (dateActive > DateTime.MinValue)
+            {
+                project.DateActive = dateActive;
+            } else
+            {
+                project.DateActive = null;
+            }
+
+            if (project.DateActive != projectDateActive)
+            {
+                await ProjectRepository.UpdateAsync(project);
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ export enum COLUMN_KEY {
   PROJECT_LANGUAGE = 'language',
   PROJECT_GROUP = 'group',
   PROJECT_DATE_UPDATED = 'dateUpdated',
+  PROJECT_DATE_ACTIVE = 'dateActive',
 
   PRODUCT_BUILD_VERSION = 'buildVersion',
   PRODUCT_BUILD_DATE = 'buildDate',
@@ -40,6 +41,12 @@ export const possibleColumnsByType = {
       id: COLUMN_KEY.PROJECT_DATE_UPDATED,
       i18nKey: 'projectTable.columns.updatedOn',
       propertyPath: 'dateUpdated',
+      sortable: true,
+    },
+    [COLUMN_KEY.PROJECT_DATE_ACTIVE]: {
+      id: COLUMN_KEY.PROJECT_DATE_ACTIVE,
+      i18nKey: 'projectTable.columns.activeSince',
+      propertyPath: 'dateActive',
       sortable: true,
     },
   },

@@ -7,6 +7,7 @@ import { NotFound } from '@ui/routes/errors';
 
 import AllProjectsRoute, { pathName as allProjectPath } from './list/all';
 import MyProjectsRoute, { pathName as myProjectPath } from './list/my-projects';
+import ActiveProjectsRoute, { pathName as activeProjectPath } from './list/active-projects';
 import OrganizationProjectsRoute, {
   pathName as organizationProjectPath,
 } from './list/organization-projects';
@@ -23,6 +24,7 @@ export default function ProjectsRoot() {
         <Route exact path={archivedProjectPath} component={ArchivedProjectsRoute} />
         <Route exact path={newProjectPath} component={NewProjectRoute} />
         <Route exact path={allProjectPath} component={AllProjectsRoute} />
+        <Route exact path={activeProjectPath} component={ActiveProjectsRoute} />
 
         <Route path={projectDetailPath} component={ProjectDetailRoute} />
 

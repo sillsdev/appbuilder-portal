@@ -4,6 +4,7 @@ export const project = {
   attributes: {
     name: 'Dummy project',
     'date-archived': null,
+    'date-active': '2018-10-30T16:19:09.878193',
     language: 'English',
     'owner-id': 1,
   },

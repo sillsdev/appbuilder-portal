@@ -129,7 +129,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var product = products.SingleOrDefault(p => p.Id == id);
             if (product != null)
             {
-                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageDeletedProduct(product.Id));
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageDeletedProduct(product.Id, product.ProjectId));
             }
 
             return await base.DeleteAsync(id);
@@ -288,7 +288,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     throw new Exception("Cannot cancel a startup workflow");
                 }
 
-                HangfireClient.Enqueue<WorkflowProductService>(service => service.StopProductWorkflow(id, ProductTransitionType.CancelWorkflow));
+                HangfireClient.Enqueue<WorkflowProductService>(service => service.StopProductWorkflow(id, product.ProjectId, ProductTransitionType.CancelWorkflow));
                 return wd;
             }
 

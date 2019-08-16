@@ -75,6 +75,7 @@
   "sidebar": {
     "myTasks": "My Tasks {count, plural, =0 {} other {({ count })}}",
     "myProjects": "My Projects",
+    "activeProjects": "Active Projects",
     "organizationProjects": "Organization Projects",
     "users": "Users",
     "organizationSettings": "Organization Settings",
@@ -215,6 +216,7 @@
       "dropdown": {
         "orgProjects": "Organization Projects",
         "myProjects": "My Projects",
+	"activeProjects": "Active Projects",
         "archived": "Archived Projects",
         "all": "All Projects"
       }
@@ -376,7 +378,8 @@
       "buildVersion": "Build Version",
       "buildDate": "Build Date",
       "createdOn": "Created On",
-      "updatedOn": "Updated On"
+      "updatedOn": "Updated On",
+      "activeSince": "Active Since"
     },
     "empty": "No projects found",
     "products": "Products",

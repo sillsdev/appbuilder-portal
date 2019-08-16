@@ -54,7 +54,11 @@ class Header extends React.Component<IProps> {
     return (
       <Tag data-test-project-table-column {...columnProps}>
         {isSorting && (isAscending ? <UpArrow /> : <DownArrow />)}
-        {t(column.i18nKey)}
+        {isSorting ? (
+          <span data-test-project-table-sort-column>{t(column.i18nKey)}</span>
+        ) : (
+          t(column.i18nKey)
+        )}
       </Tag>
     );
   };

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using JsonApiDotNetCore.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OptimaJet.DWKit.StarterApplication.Models
 {
@@ -61,11 +63,14 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasMany("products", Link.None)]
         public virtual List<Product> Products { get; set; }
-    
+
         [Attr("workflow-project-url")]
         public String WorkflowProjectUrl { get; set; }
 
         [Attr("workflow-app-project-url")]
         public String WorkflowAppProjectUrl { get; set; }
+
+        [Attr("date-active")]
+        public DateTime? DateActive { get; set; }
     }
 }
