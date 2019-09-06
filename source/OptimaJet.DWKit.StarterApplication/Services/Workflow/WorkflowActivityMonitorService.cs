@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mime;
+using System.Text;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using OptimaJet.DWKit.StarterApplication.Utility;
@@ -7,6 +9,7 @@ using OptimaJet.Workflow.Core.Model;
 using OptimaJet.Workflow.Core.Persistence;
 using OptimaJet.Workflow.Core.Runtime;
 using Serilog;
+using SIL.AppBuilder.BuildEngineApiClient;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
@@ -53,6 +56,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                         { "schema-code", args.ProcessInstance.SchemeCode },
                         { "schema-id", args.ProcessInstance.SchemeId }
                     });
+
+                    if (args.Exception is ResponseException responseException)
+                    {
+                        var contentType = new ContentType(responseException.ContentType);
+                        var charset = contentType.CharSet ?? "UTF-8";
+                        var encoding = Encoding.GetEncoding(charset);
+                        var content = encoding.GetString(responseException.RawBytes, 0, responseException.RawBytes.Length);
+
+                        report.Event.Metadata.Add("response", new Dictionary<string, object>
+                        {
+                            { "content", content},
+                            { "content-length", responseException.ContentLength },
+                            { "content-type", responseException.ContentType }
+                        });
+                    }
 
                 });
             }

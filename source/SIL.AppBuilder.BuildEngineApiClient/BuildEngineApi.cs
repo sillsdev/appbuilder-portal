@@ -39,11 +39,10 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         protected T Execute<T>(IRestRequest request) where T : new()
         {
             var response = restClient.Execute<T>(request);
+
             if (response.ErrorException != null)
             {
-                const string message = "Error retrieving response.  Check inner details for more info.";
-                var buildEngineException = new Exception(message, response.ErrorException);
-                throw buildEngineException;
+                throw new ResponseException(response);
             }
 
             return response.Data;
