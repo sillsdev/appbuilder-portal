@@ -1,24 +1,24 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using Hangfire;
+using Microsoft.Extensions.DependencyInjection;
+using OptimaJet.DWKit.StarterApplication.Utility;
+using OptimaJet.Workflow.Core.Model;
 using OptimaJet.Workflow.Core.Persistence;
 using OptimaJet.Workflow.Core.Runtime;
-using OptimaJet.DWKit.StarterApplication.Utility;
 using Serilog;
-using OptimaJet.DWKit.StarterApplication.Repositories;
-using OptimaJet.DWKit.StarterApplication.Models;
-using Microsoft.EntityFrameworkCore;
-using Hangfire;
-using System.Collections.Generic;
-using OptimaJet.DWKit.Core.Metadata.DbObjects;
-using OptimaJet.DWKit.Core;
-using OptimaJet.Workflow.Core.Model;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowActivityMonitorService
     {
         public WorkflowRuntime Runtime { get; set; }
+        public IServiceProvider ServiceProvider { get; }
+
+        public WorkflowActivityMonitorService(IServiceProvider serviceProvider)
+        {
+            ServiceProvider = serviceProvider;
+        }
 
         public void RegisterEventHandlers(WorkflowRuntime runtime)
         {
@@ -30,10 +30,37 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private void ProcessException(WorkflowErrorEventArgs args, WorkflowRuntime runtime)
         {
-            if (!String.IsNullOrEmpty(args.ProcessInstance.ExecutedTimer))
+            // Follow recommendation 
+            // https://workflowengine.io/documentation/scheme/timers/
+
+            var isTimerTriggeredTransitionChain =
+                !string.IsNullOrEmpty(args.ProcessInstance.ExecutedTimer) //for timers executed from main branch
+                || (args.ProcessInstance.MergedSubprocessParameters != null //for timers executed from subprocess
+                && !string.IsNullOrEmpty(args.ProcessInstance.MergedSubprocessParameters.GetParameter(DefaultDefinitions.ParameterExecutedTimer.Name)?.Value?.ToString()));
+
+            // We have to delay creation of the Bugsnag Client until runtime instead
+            // of constructor dependency injection due to crashing on startup
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var client = scope.ServiceProvider.GetRequiredService<Bugsnag.IClient>();
+                client.Notify(args.Exception, (report) =>
+                {
+                    report.Event.Metadata.Add("details", new Dictionary<string, object>
+                    {
+                        { "handler", "OnWorkflowError" },
+                        { "timer",  isTimerTriggeredTransitionChain},
+                        { "process-id", args.ProcessInstance.ProcessId },
+                        { "schema-code", args.ProcessInstance.SchemeCode },
+                        { "schema-id", args.ProcessInstance.SchemeId }
+                    });
+
+                });
+            }
+
+            if (isTimerTriggeredTransitionChain)
             {
                 Log.Error($"Exception::: Timer: {args.Exception.Message}");
-                args.ProcessStatus = ProcessStatus.Idled;
+                args.SuppressThrow = true;
             }
             else
             {
