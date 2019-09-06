@@ -247,11 +247,18 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private static async Task<Product> GetProductForProcess(ProcessInstance processInstance, IJobRepository<Product, Guid> productRepository)
         {
-            return await productRepository.Get()
+            var product = await productRepository.Get()
                 .Where(p => p.Id == processInstance.ProcessId)
                 .Include(p => p.Project)
                     .ThenInclude(p => p.Owner)
                 .FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                throw new Exception($"No product found for {processInstance.ProcessId}");
+            }
+
+            return product;
         }
 
         private async Task SendOwnerNotificationAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
