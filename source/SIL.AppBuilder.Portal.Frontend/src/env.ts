@@ -21,6 +21,7 @@ export const isDevelopment = NODE_ENV === 'development';
 export const showDebug = process.env.DEBUG_INFO || NODE_ENV === 'development';
 export const buildDate = process.env.BUILD_DATE;
 export const revision = process.env.REVISION;
+export const DWKIT_ADMIN_URL = process.env.DWKIT_ADMIN_URL || 'http://localhost:7081';
 
 export const api = {
   host: isTesting ? undefined : process.env.API_HOST,

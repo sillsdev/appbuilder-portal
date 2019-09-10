@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useOrbit, attributesFor } from 'react-orbitjs';
 import Store from '@orbit/store';
 import { Link } from 'react-router-dom';
+import * as env from '@env';
 
 import { useTranslations } from '~/lib/i18n';
 
@@ -30,9 +31,10 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { dataStore } = useOrbit();
   const productRemoteId = idFromRecordIdentity(product as any);
   const { relativeTimeAgo } = useTimezoneFormatters();
-  const { pathToWorkflow } = useUserTaskHelpers();
+  const { pathToWorkflow, pathToWorkflowAdmin } = useUserTaskHelpers();
   const [transition, setTransition] = useState(null);
   const { foundCurrentUser, workTask } = useCurrentUserTask({ product });
+  const { isSuperAdmin } = useCurrentUser();
   const getTransition = useCallback(async () => {
     let transition = null;
     let response = await authenticatedGet(`/api/products/${productRemoteId}/transitions/active`, {
@@ -103,6 +105,11 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
                     <Link className='m-l-md bold uppercase' to={pathToWorkflow(workTask)}>
                       {t('common.continue')}
                     </Link>
+                  )}
+                  {isSuperAdmin && (
+                    <a className='m-l-md bold uppercase' target='_blank' href={pathToWorkflowAdmin(workTask)}>
+                      {t('common.workflow')}
+                    </a>
                   )}
                 </div>
               )}
