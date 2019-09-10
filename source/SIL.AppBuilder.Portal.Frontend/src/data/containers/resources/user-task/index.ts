@@ -31,9 +31,7 @@ export function useUserTaskHelpers() {
   const pathToWorkflowAdmin = (task: TaskResource) => {
     if (!task) return null;
 
-    const [product] = relationsFromPath(dataStore, task, [
-      'product'
-    ]);
+    const [product] = relationsFromPath(dataStore, task, ['product']);
     const id = idFromRecordIdentity(dataStore, product);
 
     return `${env.DWKIT_ADMIN_URL}/Account/Login/?ReturnUrl=/admin%3Fapanel%3Dworkflowinstances%26aid%3D${id}`;

@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useOrbit, attributesFor } from 'react-orbitjs';
 import Store from '@orbit/store';
 import { Link } from 'react-router-dom';
+
 import * as env from '@env';
 
 import { useTranslations } from '~/lib/i18n';
@@ -107,7 +108,11 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
                     </Link>
                   )}
                   {isSuperAdmin && (
-                    <a className='m-l-md bold uppercase' target='_blank' href={pathToWorkflowAdmin(workTask)}>
+                    <a
+                      className='m-l-md bold uppercase'
+                      target='_blank'
+                      href={pathToWorkflowAdmin(workTask)}
+                    >
                       {t('common.workflow')}
                     </a>
                   )}
