@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net.Mail;
 using Bugsnag;
+using FluentEmail.Core.Models;
 using Hangfire;
 using Microsoft.Extensions.Options;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -46,9 +49,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             var templateFile = $"{Directory.GetCurrentDirectory()}/Templates/{email.ContentTemplate}";
             var fluentEmail = emailFactory.Create()
-                .To(email.To)
-                .CC(email.Cc)
-                .BCC(email.Bcc)
+                .To(GetList(email.To))
+                .CC(GetList(email.Cc))
+                .BCC(GetList(email.Bcc))
                 .Subject(email.Subject)
                 .UsingTemplateFromFile(templateFile, email.ContentModel);
             Log.Information($"Sending Email: Sender={this.sender.ToString()} Subject={email.Subject}, To={email.To}, CC={email.Cc}, BCC={email.Bcc}, Template={templateFile}, Content={email.ContentModel}");
@@ -58,6 +61,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 Log.Error($"Sending Email: Error Messages={String.Join(';', response.ErrorMessages)}");
             }
+        }
+
+        public List<Address> GetList(string addresses)
+        {
+            var result = new List<Address>();
+            MailAddressCollection mailAddresses = new MailAddressCollection();
+            if (!string.IsNullOrEmpty(addresses))
+            {
+                mailAddresses.Add(addresses);
+            }
+            foreach (var item in mailAddresses)
+            {
+                result.Add(new Address(item.Address, item.DisplayName));
+            }
+            return result;
         }
     }
 }
