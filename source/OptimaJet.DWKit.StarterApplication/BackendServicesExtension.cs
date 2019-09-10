@@ -137,7 +137,17 @@ namespace OptimaJet.DWKit.StarterApplication
                     services.Configure<SparkPostOptions>(options => options.ApiKey = GetVarOrThrow("MAIL_SPARKPOST_APIKEY"));
                     services.AddSparkPost();
                     break;
-                default: services.AddScoped(typeof(ISender), typeof(LogEmailSender)); break;
+                case "AmazonSES":
+                    services.AddScoped(typeof(ISender), typeof(AmazonSender));
+                    services.Configure<AmazonSenderOptions>(options =>
+                    {
+                        options.RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(GetVarOrThrow("AWS_REGION"));
+                        options.Credentials = new Amazon.Runtime.BasicAWSCredentials(GetVarOrThrow("AWS_EMAIL_ACCESS_KEY_ID"), GetVarOrThrow("AWS_EMAIL_SECRET_ACCESS_KEY"));
+                    });
+                    break;
+                default:
+                    services.AddScoped(typeof(ISender), typeof(LogEmailSender));
+                    break;
             }
             services.AddFluentEmail(GetVarOrDefault("ADMIN_EMAIL", "noreply@scriptoria.io"), GetVarOrDefault("ADMIN_NAME", "Scriptoria Mailer"))
                     .AddRazorRenderer();
