@@ -44,7 +44,8 @@
     "build": "Build / Rebuild",
     "updated": "Updated",
     "continue": "Continue",
-    "error": "Error"
+    "error": "Error",
+    "workflow": "Workflow"
   },
   "models": {
     "add": "Add {name}",
