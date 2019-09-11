@@ -78,6 +78,7 @@ const plugins = [
     'AUTH0_CLIENT_ID',
     'AUTH0_SCOPE',
     'API_HOST',
+    'DWKIT_ADMIN_URL',
     'HAS_API',
     'NODE_ENV',
     'DEBUG_INFO',
