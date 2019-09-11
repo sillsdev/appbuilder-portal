@@ -15,13 +15,16 @@ export const auth0 = {
   baseUrl: process.env.AUTH0_BASE_URL || 'https://cdn.auth0.com',
 };
 
+export const dwkit = {
+  adminUrl: process.env.DWKIT_ADMIN_URL,
+};
+
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const isTesting = process.env.IS_TESTING;
 export const isDevelopment = NODE_ENV === 'development';
 export const showDebug = process.env.DEBUG_INFO || NODE_ENV === 'development';
 export const buildDate = process.env.BUILD_DATE;
 export const revision = process.env.REVISION;
-export const DWKIT_ADMIN_URL = process.env.DWKIT_ADMIN_URL || 'http://localhost:7081';
 
 export const api = {
   host: isTesting ? undefined : process.env.API_HOST,
