@@ -29,6 +29,7 @@ FROM base as build
 ENV AUTH0_CLIENT_ID n8IAE2O17FBrlQ667x5mydhpqelCBUWG
 ENV AUTH0_DOMAIN sil-appbuilder.auth0.com
 ENV AUTH0_CONNECTION Username-Password-Authentication
+ENV DWKIT_ADMIN_URL http://localhost:7081
 ENV NODE_ENV production
 
 ARG SHOW_DEBUG
