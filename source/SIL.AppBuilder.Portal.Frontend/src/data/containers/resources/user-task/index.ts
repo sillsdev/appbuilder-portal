@@ -28,18 +28,8 @@ export function useUserTaskHelpers() {
     return `/flow/${workflowBusinessFlow}/${id}`;
   };
 
-  const pathToWorkflowAdmin = (task: TaskResource) => {
-    if (!task) return null;
-
-    const [product] = relationsFromPath(dataStore, task, ['product']);
-    const id = idFromRecordIdentity(dataStore, product);
-
-    return `${env.dwkit.adminUrl}/Account/Login/?ReturnUrl=/admin%3Fapanel%3Dworkflowinstances%26aid%3D${id}`;
-  };
-
   return {
     pathToWorkflow,
-    pathToWorkflowAdmin,
     navigateToTaskWorkflow(task: TaskResource) {
       const path = pathToWorkflow(task);
 
