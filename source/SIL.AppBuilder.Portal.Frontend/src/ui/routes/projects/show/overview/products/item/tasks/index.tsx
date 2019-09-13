@@ -32,10 +32,11 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { dataStore } = useOrbit();
   const productRemoteId = idFromRecordIdentity(product as any);
   const { relativeTimeAgo } = useTimezoneFormatters();
-  const { pathToWorkflow, pathToWorkflowAdmin } = useUserTaskHelpers();
+  const { pathToWorkflow } = useUserTaskHelpers();
   const [transition, setTransition] = useState(null);
   const { foundCurrentUser, workTask } = useCurrentUserTask({ product });
   const { isSuperAdmin } = useCurrentUser();
+  const workflowAdminUrl = `${env.dwkit.adminUrl}/Account/Login/?ReturnUrl=/admin%3Fapanel%3Dworkflowinstances%26aid%3D${productRemoteId}`;
   const getTransition = useCallback(async () => {
     let transition = null;
     let response = await authenticatedGet(`/api/products/${productRemoteId}/transitions/active`, {
@@ -108,11 +109,7 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
                     </Link>
                   )}
                   {isSuperAdmin && (
-                    <a
-                      className='m-l-md bold uppercase'
-                      target='_blank'
-                      href={pathToWorkflowAdmin(workTask)}
-                    >
+                    <a className='m-l-md bold uppercase' target='_blank' href={workflowAdminUrl}>
                       {t('common.workflow')}
                     </a>
                   )}
