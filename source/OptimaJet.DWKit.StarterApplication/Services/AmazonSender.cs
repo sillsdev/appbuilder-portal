@@ -9,7 +9,7 @@ using FluentEmail.Core;
 using FluentEmail.Core.Interfaces;
 using FluentEmail.Core.Models;
 using Microsoft.Extensions.Options;
-using Serilog;
+using static OptimaJet.DWKit.StarterApplication.Utility.FluentEmailHelpers;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
@@ -55,21 +55,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                         Text = new Content { Charset = "UTF-8", Data = FormatText(email.Data.PlaintextAlternativeBody) }
                     },
                 },
-                Source = FormatAddress(email.Data.FromAddress),
+                Source = AddressToString(email.Data.FromAddress),
                 Destination = new Destination
                 {
-                    ToAddresses = FormatList(email.Data.ToAddresses),
-                    CcAddresses = FormatList(email.Data.CcAddresses),
-                    BccAddresses = FormatList(email.Data.BccAddresses)
+                    ToAddresses = AddressesToStrings(email.Data.ToAddresses),
+                    CcAddresses = AddressesToStrings(email.Data.CcAddresses),
+                    BccAddresses = AddressesToStrings(email.Data.BccAddresses)
                 }
             };
         }
-
-        public List<string> FormatList(List<Address> addresses) =>
-            addresses.ConvertAll(address => FormatAddress(address));
-
-        public string FormatAddress(Address address) =>
-            new MailAddress(address.EmailAddress, address.Name).ToString();
 
         public string FormatText(string text) =>
             string.IsNullOrWhiteSpace(text) ? string.Empty : text;

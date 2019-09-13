@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentEmail.Core;
@@ -25,7 +22,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             StringBuilder builder = new StringBuilder();
             builder
                 .AppendLine("====================== EMAIL ======================")
-                .AppendLine($"From: {email.Data.FromAddress.ToString()}")
+                .AppendLine($"From: {AddressToString(email.Data.FromAddress)}")
                 .AppendLine($"To: {AddressesToString(email.Data.ToAddresses)}");
             var CC = AddressesToString(email.Data.CcAddresses);
             if (!string.IsNullOrWhiteSpace(CC)) builder.AppendLine($"CC: {CC}");
@@ -42,11 +39,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             Log.Information(builder.ToString());
             await Task.CompletedTask;
             return response;
-        }
-
-        private string AddressesToString(List<Address> addresses)
-        {
-            return string.Join(",", addresses.Select((Address arg) => AddressToString(arg)));
         }
     }
 }
