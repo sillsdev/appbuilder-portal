@@ -37,6 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var workflowDefinitionEntity = modelBuilder.Entity<WorkflowDefinition>();
             var productWorkflowSchemeEntity = modelBuilder.Entity<ProductWorkflowScheme>();
             var productTransitionEntity = modelBuilder.Entity<ProductTransition>();
+            var workflowSchemeEntity = modelBuilder.Entity<WorkflowScheme>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
@@ -186,6 +187,8 @@ namespace OptimaJet.DWKit.StarterApplication.Data
 
 
             productWorkflowSchemeEntity.ToTable("WorkflowProcessScheme");
+
+            workflowSchemeEntity.ToTable("WorkflowScheme");
 
         }
 
