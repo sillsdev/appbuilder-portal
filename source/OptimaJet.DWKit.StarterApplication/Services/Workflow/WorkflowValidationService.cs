@@ -36,6 +36,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         }
         public async Task checkForObsoleteSchemas()
         {
+            // Have to use DbSet directly because the WorkflowScheme table has no Id field
             var workflowSchemes = await dbSet.ToListAsync();
             var workflowSchemeInstances = await ProductWorkflowSchemeRepository.GetListAsync();
             foreach (ProductWorkflowScheme workflowSchemeInstance in workflowSchemeInstances)
