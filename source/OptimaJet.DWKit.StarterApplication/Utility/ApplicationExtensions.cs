@@ -45,6 +45,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
             RecurringJob.AddOrUpdate<WorkflowActivityMonitorService>("WorkflowActivityMonitor", service => service.CheckActivityStatus(), Cron.MinuteInterval(5));
             RecurringJob.AddOrUpdate<WorkflowSecuritySyncService>("WorkflowSecuritySync", service => service.SyncWorkflowSecurity(), Cron.MinuteInterval(5));
+            BackgroundJob.Schedule<WorkflowValidationService>(service => service.validateWorkflows(), TimeSpan.FromSeconds(30));
             return app;
         }
 
