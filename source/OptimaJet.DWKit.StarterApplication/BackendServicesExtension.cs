@@ -179,6 +179,7 @@ namespace OptimaJet.DWKit.StarterApplication
 
             services.AddScoped<WorkflowProjectService>();
             services.AddScoped<WorkflowProductService>();
+            services.AddScoped<WorkflowValidationService>();
             services.AddSingleton<WorkflowActivityMonitorService>();
             services.AddTransient<IWorkflowRuleProvider, WorkflowProductRuleProvider>();
             services.AddTransient<IWorkflowActionProvider, WorkflowProductActionProvider>();
