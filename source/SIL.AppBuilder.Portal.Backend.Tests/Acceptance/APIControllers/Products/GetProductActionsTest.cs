@@ -28,6 +28,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public User user1 { get; private set; }
         public Group group1 { get; private set; }
         public GroupMembership groupMembership1 { get; private set; }
+        public GroupMembership groupMembership2 { get; private set; }
         public Organization org1 { get; private set; }
         public ApplicationType type1 { get; private set; }
         public Project project1 { get; private set; }
@@ -35,6 +36,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public Project project3 { get; private set; }
         public Project project4 { get; private set; }
         public Project project5 { get; private set; }
+        public Project project6 { get; private set; }
         public WorkflowDefinition workflowStartup { get; private set; }
         public WorkflowDefinition workflowRebuild { get; private set; }
         public WorkflowDefinition workflowRepublish { get; private set; }
@@ -46,6 +48,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
         public Product product3 { get; private set; }
         public Product product4 { get; private set; }
         public Product product5 { get; private set; }
+        public Product product6 { get; private set; }
         public ProductWorkflowScheme productWorkflowScheme3 { get; private set; }
         public ProductWorkflow productWorkflow3 { get; private set; }
         public ProductWorkflowScheme productWorkflowScheme4 { get; private set; }
@@ -86,6 +89,11 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 GroupId = group1.Id
             });
 
+            groupMembership2 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user1.Id,
+                GroupId = group1.Id
+            });
 
             type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
             {
@@ -153,7 +161,18 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 IsPublic = true,
                 WorkflowProjectUrl = "www.workflow.url"
             });
-
+            project6 = AddEntity<AppDbContext, Project>(new Project
+            {
+                Name = "Test Project5",
+                TypeId = type1.Id,
+                Description = "Test Description",
+                OwnerId = user1.Id,
+                GroupId = group1.Id,
+                OrganizationId = org1.Id,
+                Language = "eng-US",
+                IsPublic = true,
+                WorkflowProjectUrl = "www.workflow.url"
+            });
             workflowStartup = AddEntity<AppDbContext, WorkflowDefinition>(new WorkflowDefinition
             {
                 Name = "MainWorkflow",
@@ -228,6 +247,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                 ProductDefinitionId = productDefinition2.Id,
                 DatePublished = DateTime.Now
             });
+            product6 = AddEntity<AppDbContext, Product>(new Product
+            {
+                ProjectId = project6.Id,
+                ProductDefinitionId = productDefinition1.Id,
+                DatePublished = DateTime.Now
+            });
 
             productWorkflowScheme3 = AddEntity<AppDbContext, ProductWorkflowScheme>(new ProductWorkflowScheme
             {
@@ -285,6 +310,20 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             Assert.Equal(2, productActions.Actions.Count());
         }
 
+        [Fact]
+        public async Task Get_ProductActions_NoWorkflow_Published_Not_Owner()
+        {
+            BuildTestDataForProductActions();
+
+            var url = $"/api/products/{product6.Id}/actions";
+            var response = await Get(url, org1.ToString());
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var productActions = await Deserialize<ProductActions>(response);
+            Assert.Equal(product6.Id, productActions.Id);
+            Assert.Empty(productActions.Actions);
+        }
 
         [Fact]
         public async Task Get_ProductActions_Workflow_NotPublished()
@@ -337,6 +376,21 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
             Assert.Single(result.Last().Value);
         }
 
+        [Fact(Skip = null /* "Not Working: BadRequest (Accept Header)"*/)]
+        public async Task Get_ProductActions_For_Projects_FromPost_Not_Owner()
+        {
+            BuildTestDataForProductActions();
+
+            var url = $"/api/product-actions";
+            var content = $"{{\"projects\":[ {project6.Id} ]}}";
+            var response = await Post(url, content, org1.ToString(), contentType: "application/json");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var body = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(body);
+            Assert.Empty(result);
+        }
         [Fact]
         public async Task Run_ProductActions_For_Projects_Start_Workflow()
         {
@@ -355,6 +409,21 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Products
                            job.Method.Name == "StartProductWorkflow" &&
                            job.Type == typeof(WorkflowProductService)),
                 It.IsAny<EnqueuedState>()));
+        }
+        [Fact]
+        public async Task Run_ProductActions_For_Projects_Start_Workflow_Not_Owner()
+        {
+            BuildTestDataForProductActions();
+
+            var backgroundJobClient = _fixture.GetService<IBackgroundJobClient>();
+            var backgroundJobClientMock = Mock.Get(backgroundJobClient);
+
+            var url = "/api/product-actions/run";
+            var content = $"{{ \"action\" : \"Rebuild\", \"products\" :[\"{product6.Id}\"]}}";
+            var response = await Post(url, content, contentType: "application/json");
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            var responseBody = await response.Content.ReadAsStringAsync();
+            Assert.Contains("current user is not project owner", responseBody);
         }
 
         [Fact]
