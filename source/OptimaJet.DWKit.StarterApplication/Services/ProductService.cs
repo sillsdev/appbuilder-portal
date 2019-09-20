@@ -254,7 +254,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     .ThenInclude(pw => pw.Scheme)
                 .Include(p => p.ProductDefinition)
                 .Include(p => p.Project)
-                    .ThenInclude(pr => pr.Owner)
                 .FirstOrDefaultAsync();
         }
 
@@ -388,7 +387,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .Where(p => ids.Contains(p.ProjectId))
                 .Include(p => p.ProductDefinition)
                 .Include(p => p.Project)
-                    .ThenInclude(pr => pr.Owner)
                 .Include(p => p.ProductWorkflow).ToListAsync();
 
             var productActions = (
