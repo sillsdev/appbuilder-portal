@@ -1,4 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { useRedux } from 'use-redux';
+
+import { rowSelectionsFor } from '~/redux-store/data/selectors';
+
+import { ProjectResource, ProductDefinitionResource } from '~/data';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -25,14 +30,16 @@ import { ProductSelection } from './product-selection';
 
 export function BulkProductSelection({ disabled, tableName }) {
   const { t } = useTranslations();
+  const [reduxState] = useRedux();
   const { isOpen, close, open } = useModalState();
   const [selection, updateSelection] = useState([]);
   const [permissions, setPermissions] = useState({});
   const [selectedAction, setAction] = useState(undefined);
+  const selectedRows: ProjectResource[] = rowSelectionsFor(reduxState, tableName);
+  const selectedCount = selectedRows.length;
 
   const actions = Object.keys(permissions);
   const hasSelections = selection.length > 0;
-
   const { runState } = useActionRunner({
     permissions,
     selectedAction,
@@ -49,7 +56,7 @@ export function BulkProductSelection({ disabled, tableName }) {
       onClose={close}
       trigger={
         <button disabled={disabled} className='ui button basic blue m-r-md' onClick={open}>
-          {t('common.build')}
+          {t('common.rebuild')}
         </button>
       }
       closeIcon={<CloseIcon className='close-modal' />}
@@ -64,6 +71,7 @@ export function BulkProductSelection({ disabled, tableName }) {
                 actions,
                 permissions,
                 selection,
+                selectedCount,
               }}
             />
           )}
@@ -112,7 +120,6 @@ function useActionRunner({ selectedAction, selection, setAction, close, permissi
     const validProductIds = selection.filter((productId) => {
       return allowedIds.includes(productId);
     });
-
     const response = await authenticatedPost('/api/product-actions/run', {
       data: {
         action: selectedAction,
@@ -157,24 +164,24 @@ function useActionRunner({ selectedAction, selection, setAction, close, permissi
   return { runState, runAction };
 }
 
-function MaybeRenderError({ actions, permissions, selection }) {
+function MaybeRenderError({ actions, permissions, selection, selectedCount }) {
   const { t } = useTranslations();
-
   const actionsWithErrors = actions.filter((action) => {
     const isActionDisabled = !isSelectionAllowed(action, selection, permissions);
 
     return isActionDisabled;
   });
-
+  const activeSelection = selection.length < selectedCount;
+  if (!activeSelection && actionsWithErrors.length == 0) {
+    return <div/>;
+  }
   const translated = actionsWithErrors.map((action) =>
     t(`products.actions.${action.toLowerCase()}`)
   );
-
   const message = t('products.actions.bulkNotAllAllowed', {
     action: toSentence(translated, 'or'),
   });
-
-  return <ErrorMessage error={message} />;
+  return <ErrorMessage error={message} showClose={false} displayClass={"ui yellow message"}/>;
 }
 
 function useModalState(initial = false) {

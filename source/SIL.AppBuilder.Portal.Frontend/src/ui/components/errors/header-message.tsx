@@ -10,20 +10,21 @@ export interface IProps {
   // TODO: it may be handy to support an array of errors as well
   error?: any;
   showClose?: boolean;
+  displayClass? : string;
 }
 
-export default function ErrorHeaderMessage({ error, showClose }: IProps) {
+export default function ErrorHeaderMessage({ error, showClose, displayClass }: IProps) {
   if (!error || error.length === 0) {
     return null;
   }
 
   showClose = showClose === undefined ? true : showClose;
-
+  displayClass = displayClass === undefined ? "ui negative message" : displayClass;
   // title is required, but body is not.
   const { title, body } = parseError(error);
 
   return (
-    <div className='ui negative message'>
+    <div className={displayClass}>
       {showClose ? <CloseIcon className='close icon' /> : null}
       <div className='header'>{title}</div>
 
