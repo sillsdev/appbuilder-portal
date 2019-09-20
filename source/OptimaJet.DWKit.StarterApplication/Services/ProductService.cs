@@ -137,17 +137,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public List<string> GetActionsForProduct(Product product)
         {
+            User currentUser = UserRepository.CurrentUser;
+            bool userIsOwner = currentUser.Id == product.Project.OwnerId;
+
             // Workflow is not running and has been published
             if ( (product?.ProductWorkflow == null) &&
                  (product.DatePublished.HasValue)     )
             {
                 //Provide actions that are defined
                 var result = new List<string>();
-                if (product.ProductDefinition.RebuildWorkflowId.HasValue)
+                if (product.ProductDefinition.RebuildWorkflowId.HasValue && userIsOwner)
                 {
                     result.Add(WorkflowType.Rebuild.ToString());
                 }
-                if (product.ProductDefinition.RepublishWorkflowId.HasValue)
+                if (product.ProductDefinition.RepublishWorkflowId.HasValue && userIsOwner)
                 {
                     result.Add(WorkflowType.Republish.ToString());
                 }
@@ -166,7 +169,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 return null;
             }
-
             if (product.ProductWorkflow == null)
             {
                 // No running workflow.  
@@ -188,7 +190,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 return null;
             }
 
-            if (wd.Type != WorkflowType.Startup)
+            User currentUser = UserRepository.CurrentUser;
+            bool userIsOwner = currentUser.Id == product.Project.OwnerId;
+            if (userIsOwner && (wd.Type != WorkflowType.Startup))
             {
                 // Running a action workflow.  Provide cancel action
                 return new List<string> { "Cancel" };
@@ -249,15 +253,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .Include(p => p.ProductWorkflow)
                     .ThenInclude(pw => pw.Scheme)
                 .Include(p => p.ProductDefinition)
+                .Include(p => p.Project)
                 .FirstOrDefaultAsync();
         }
 
         public async Task<WorkflowDefinition> RunActionForProductAsync(Guid id, string type)
         {
+            User currentUser = UserRepository.CurrentUser;
             var product = await GetProductForActions(id);
             if (product == null)
             {
                 return null;
+            }
+
+            if (currentUser.Id != product.Project.OwnerId)
+            {
+                throw new Exception("Unable to run action.  Current user is not the project owner");
             }
 
             if (product.ProductWorkflow == null)
@@ -325,7 +336,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             public int WorkflowDefinitionId { get; set; }
         }
 
-        public bool ProductCanRunAction(int? id, Product product, string type)
+        public bool ProductCanRunAction(int? id, Product product, string type, int currentUserId)
         {
             if (!id.HasValue)
             {
@@ -335,21 +346,27 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 throw new JsonApiException(403, $"Product {product.ProductDefinition.Name} cannot run action {type}: not published");
             }
-
+            if (product.Project.OwnerId != currentUserId)
+            {
+                throw new JsonApiException(403, $"Product {product.ProductDefinition.Name} cannot run action {type}: current user is not project owner");
+            }
             return true;
         }
 
         public async Task RunActionForProductsAsync(IEnumerable<Guid> ids, string type)
         {
+            User currentUser = UserRepository.CurrentUser;
             var products = await ProductRepository.Get()
                 .Where(p => ids.Contains(p.Id))
                 .Include(p => p.ProductWorkflow)
                     .ThenInclude(pw => pw.Scheme)
+                .Include(p => p.Project)
+                    .ThenInclude(pr => pr.Owner)
                 .Include(p => p.ProductDefinition).ToListAsync();
 
             var productWorflowDefinitions = (from product in products
                     let workflowDefinitionId = GetWorkflowDefinitionIdForType(product, type)
-                    where ProductCanRunAction(workflowDefinitionId, product, type)
+                    where ProductCanRunAction(workflowDefinitionId, product, type, currentUser.Id)
                     select new ProductWorkflowDefinition { Id = product.Id, WorkflowDefinitionId = workflowDefinitionId.Value }).ToList();
 
             foreach (var pwd in productWorflowDefinitions)
@@ -369,6 +386,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             var products = await ProductRepository.Get()
                 .Where(p => ids.Contains(p.ProjectId))
                 .Include(p => p.ProductDefinition)
+                .Include(p => p.Project)
                 .Include(p => p.ProductWorkflow).ToListAsync();
 
             var productActions = (
