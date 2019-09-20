@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Model;
@@ -55,6 +56,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         public IBackgroundJobClient BackgroundJobClient { get; }
         public SendNotificationService SendNotificationService { get; }
         public IServiceProvider ServiceProvider { get; }
+        public Bugsnag.IClient BugsnagClient { get; }
         public WorkflowRuntime Runtime { get; }
 
         public WorkflowProductService(
@@ -67,6 +69,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             IBackgroundJobClient backgroundJobClient,
             SendNotificationService sendNotificationService,
             IServiceProvider serviceProvider,
+            Bugsnag.IClient bugsnagClient,
             WorkflowRuntime runtime
         ) {
             ProductRepository = productRepository;
@@ -78,6 +81,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             BackgroundJobClient = backgroundJobClient;
             SendNotificationService = sendNotificationService;
             ServiceProvider = serviceProvider;
+            BugsnagClient = bugsnagClient;
             Runtime = runtime;
         }
 
@@ -133,8 +137,31 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 IdentityId = product.Project.Owner.WorkflowUserId.Value.ToString()
             };
 
+            SetProcessProperties(parms, workflowDefinition);
+
             await WorkflowInit.Runtime.CreateInstanceAsync(parms);
             BackgroundJobClient.Enqueue<WorkflowProjectService>(service => service.UpdateProjectActive(product.ProjectId));
+        }
+
+        private void SetProcessProperties(CreateInstanceParams parms, WorkflowDefinition workflowDefinition)
+        {
+            if (!string.IsNullOrWhiteSpace(workflowDefinition.Properties))
+            {
+                try
+                {
+                    // ProcessParameters are Dictionary<string,object>
+                    // The values are expected to be strings (our decision, not a DWKit limitation)
+                    // The result of the deserialize is a Newtonsoft.Json.Linq.JObject and I didn't want to specify that as the datatype in DWKit
+                    var properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(workflowDefinition.Properties);
+                    // This converts the value back into JSON
+                    var parameters = properties.ToDictionary(kv => kv.Key, kv => (object)kv.Value.ToString());
+                    parms.InitialProcessParameters = parameters;
+                }
+                catch (Exception ex)
+                {
+                    BugsnagClient.Notify(ex);
+                }
+            }
         }
 
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)

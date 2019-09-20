@@ -32,5 +32,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasOne("store-type")]
         public virtual StoreType StoreType { get; set; }
         public int? StoreTypeId { get; set; }
+
+        [Attr("properties")]
+        public string Properties { get; set; }
     }
 }

@@ -32,6 +32,7 @@ interface IState {
   storeTypeError?: string;
   workflowScheme?: string;
   workflowBusinessFlow?: string;
+  properties?: string;
   enabled?: boolean;
   type?: number;
   workflowTypeError?: string;
@@ -52,6 +53,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       description,
       workflowScheme,
       workflowBusinessFlow,
+      properties,
       enabled,
       type,
     } = attributesFor(workflowDefinition);
@@ -64,6 +66,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       description: description || '',
       workflowScheme: workflowScheme || '',
       workflowBusinessFlow: workflowBusinessFlow || '',
+      properties: properties || '',
       enabled: enabled !== undefined ? enabled : true,
       storeType: storeType || null,
       storeTypeError: '',
@@ -95,6 +98,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       description,
       workflowScheme,
       workflowBusinessFlow,
+      properties,
       enabled,
       storeType,
       type,
@@ -108,6 +112,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
             description,
             workflowScheme,
             workflowBusinessFlow,
+            properties,
             enabled,
             type,
           },
@@ -143,6 +148,7 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
       description,
       workflowScheme,
       workflowBusinessFlow,
+      properties,
       enabled,
       storeType,
       storeTypeError,
@@ -253,6 +259,16 @@ class WorkflowDefinitionForm extends React.Component<IProps, IState> {
                 type='text'
                 value={workflowBusinessFlow || ''}
                 onChange={mut('workflowBusinessFlow')}
+              />
+            </div>
+
+            <div className='field m-b-xl'>
+              <label>{t('admin.settings.workflowDefinitions.properties')}</label>
+              <textarea
+                data-test-wf-properties
+                type='text'
+                value={properties}
+                onChange={mut('properties')}
               />
             </div>
 

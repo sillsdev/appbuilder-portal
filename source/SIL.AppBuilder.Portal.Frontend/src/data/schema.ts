@@ -394,6 +394,7 @@ const schemaDefinition: SchemaSettings = {
         enabled: { type: 'boolean' },
         workflowBusinessFlow: { type: 'string' },
         workflowScheme: { type: 'string' },
+        properties: { type: 'string' },
       },
       relationships: {
         productDefinitions: { type: 'hasMany', model: 'productDefinition', inverse: 'workflow' },
