@@ -52,7 +52,7 @@ export function ProductSelection({ tableName, onChange, onPermissionRetrieval }:
       <AsyncWaiter fn={getPermissions}>
         {({ value }) => {
           if (!value || Object.keys(value).length === 0) {
-            return <ErrorMessage error={t('errors.friendlyForbidden')} />;
+            return <ErrorMessage error={t('errors.invalidProjectSelection')} showClose={false} />;
           }
 
           return (
