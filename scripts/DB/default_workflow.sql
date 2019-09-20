@@ -77,7 +77,7 @@ SELECT SETVAL('"ProductDefinitions_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "ProductDefinitions";
 
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
-('SIL_Default_AppBuilders_Android_GooglePlay',	'<Process>
+('SIL_Default_AppBuilders_Android_GooglePlay',	'<Process Name="SIL_Default_AppBuilders_Android_GooglePlay" CanBeInlined="false">
   <Designer />
   <Actors>
     <Actor Name="Owner" Rule="IsOwner" Value="" />
@@ -86,6 +86,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
+    <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -108,7 +109,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="20" />
+      <Designer X="1080" Y="160" />
     </Activity>
     <Activity Name="Check Product Creation" State="Check Product Creation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -117,7 +118,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="260" />
+      <Designer X="1080" Y="400" />
     </Activity>
     <Activity Name="Approval" State="Approval" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -126,7 +127,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="360" Y="20" />
+      <Designer X="740" Y="160" />
     </Activity>
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -135,7 +136,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="40" Y="420" />
+      <Designer X="420" Y="560" />
     </Activity>
     <Activity Name="App Builder Configuration" State="App Builder Configuration" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -144,7 +145,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="40" Y="260" />
+      <Designer X="420" Y="400" />
     </Activity>
     <Activity Name="Product Build" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -156,7 +157,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="360" Y="420" />
+      <Designer X="740" Y="560" />
     </Activity>
     <Activity Name="Check Product Build" State="Check Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -165,7 +166,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="420" />
+      <Designer X="1080" Y="560" />
     </Activity>
     <Activity Name="App Store Preview" State="App Store Preview" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -174,7 +175,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="580" />
+      <Designer X="880" Y="730" />
     </Activity>
     <Activity Name="Create App Store Entry" State="Create App Store Entry" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -183,7 +184,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="40" Y="600" />
+      <Designer X="420" Y="750" />
     </Activity>
     <Activity Name="Verify and Publish" State="Verify and Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -192,7 +193,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="40" Y="760" />
+      <Designer X="420" Y="900" />
     </Activity>
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -202,7 +203,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="360" Y="760" />
+      <Designer X="740" Y="900" />
     </Activity>
     <Activity Name="Check Product Publish" State="Check Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -211,7 +212,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="720" />
+      <Designer X="1080" Y="860" />
     </Activity>
     <Activity Name="Make It Live" State="Make It Live" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -220,7 +221,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="920" />
+      <Designer X="1080" Y="1060" />
     </Activity>
     <Activity Name="Published" State="Published" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -229,7 +230,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="990" Y="890" />
+      <Designer X="1370" Y="1030" />
     </Activity>
     <Activity Name="Email Reviewers" State="Email Reviewers" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -237,16 +238,16 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
           <ActionParameter><![CDATA[{"types":["apk","play-listing"]}]]></ActionParameter>
         </ActionRef>
       </Implementation>
-      <Designer X="20" Y="910" />
+      <Designer X="400" Y="1050" />
     </Activity>
-    <Activity Name="Readiness Check" State="Readiness Check" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Readiness Check" State="Readiness Check" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="40" Y="20" />
+      <Designer X="390" Y="310" />
     </Activity>
     <Activity Name="Approval Pending" State="Approval Pending" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -255,10 +256,35 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="360" Y="200" />
+      <Designer X="740" Y="340" />
     </Activity>
     <Activity Name="Terminated" State="Terminated" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
-      <Designer X="940" Y="130" />
+      <Designer X="1320" Y="270" />
+    </Activity>
+    <Activity Name="Initial" State="Initial" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="WriteProductTransition" />
+      </Implementation>
+      <Designer X="40" Y="160" />
+    </Activity>
+    <Activity Name="Should Approval" State="Should Approval" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="400" Y="160" />
+    </Activity>
+    <Activity Name="Should App Store Preview" State="Should App Store Preview" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="1220" Y="730" />
     </Activity>
   </Activities>
   <Transitions>
@@ -311,7 +337,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="300" Y="332" />
+      <Designer X="942" Y="502" />
     </Transition>
     <Transition Name="SynchronizeData_Activity_1_1" To="Product Build" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -341,16 +367,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildFailed" ConditionInversion="false" />
       </Conditions>
-      <Designer X="487" Y="380" />
-    </Transition>
-    <Transition Name="Check Product Build_Activity_1_1" To="App Store Preview" From="Check Product Build" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
-      <Triggers>
-        <Trigger Type="Auto" />
-      </Triggers>
-      <Conditions>
-        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
-      </Conditions>
-      <Designer />
+      <Designer X="1070" Y="476" />
     </Transition>
     <Transition Name="Check Product Build_Check Product Build_1" To="Check Product Build" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -371,7 +388,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="150" Y="540" />
+      <Designer X="568" Y="675" />
     </Transition>
     <Transition Name="App Store Preview_Activity_1_1" To="Create App Store Entry" From="App Store Preview" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -383,7 +400,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="468" Y="609" />
+      <Designer />
     </Transition>
     <Transition Name="Create App Store Entry_SynchronizeData_1" To="Synchronize Data" From="Create App Store Entry" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -395,7 +412,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="89" Y="538" />
+      <Designer X="478" Y="673" />
     </Transition>
     <Transition Name="Create App Store Entry_App Store Preview_1" To="App Store Preview" From="Create App Store Entry" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -407,7 +424,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="480" Y="635" />
+      <Designer X="748" Y="794" />
     </Transition>
     <Transition Name="Create App Store Entry_Activity_1_1" To="Verify and Publish" From="Create App Store Entry" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -431,7 +448,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="305" Y="793" />
+      <Designer X="677" Y="932" />
     </Transition>
     <Transition Name="Verify and Publish_SynchronizeData_1" To="Synchronize Data" From="Verify and Publish" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -443,7 +460,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="199" Y="539" />
+      <Designer X="689" Y="674" />
     </Transition>
     <Transition Name="Product Publish_Activity_1_1" To="Check Product Publish" From="Product Publish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -470,7 +487,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Otherwise" />
       </Conditions>
-      <Designer X="925" Y="687" />
+      <Designer X="1327" Y="834" />
     </Transition>
     <Transition Name="Check Product Publish_SynchronizeData_1" To="Synchronize Data" From="Check Product Publish" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -479,7 +496,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_PublishFailed" ConditionInversion="false" />
       </Conditions>
-      <Designer X="298" Y="559" />
+      <Designer X="666" Y="838" />
     </Transition>
     <Transition Name="Make It Live_Activity_1_1" To="Published" From="Make It Live" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -503,7 +520,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="275" Y="885" />
+      <Designer X="651" Y="687" />
     </Transition>
     <Transition Name="App Store Preview_Activity_1_2" To="Email Reviewers" From="Verify and Publish" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -529,7 +546,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
-    <Transition Name="Readiness Check_Approval_1" To="Approval" From="Readiness Check" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Readiness Check_Approval_1" To="Should Approval" From="Readiness Check" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
@@ -563,7 +580,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="641" Y="155" />
+      <Designer X="1009" Y="271" />
     </Transition>
     <Transition Name="Approval_Activity_1_2" To="Terminated" From="Approval" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -575,7 +592,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="519" Y="137" />
+      <Designer X="907" Y="289" />
     </Transition>
     <Transition Name="Approval Pending_Terminated_1" To="Terminated" From="Approval Pending" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -587,7 +604,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="738" Y="236" />
+      <Designer X="1103" Y="372" />
     </Transition>
     <Transition Name="Approval Pending_Approval Pending_1" To="Approval Pending" From="Approval Pending" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -599,7 +616,76 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="583" Y="164" />
+      <Designer X="968" Y="317" />
+    </Transition>
+    <Transition Name="Initial_Readiness Check_1" To="Readiness Check" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false">
+          <ActionParameter><![CDATA[Readiness Check]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer X="303" Y="283" />
+    </Transition>
+    <Transition Name="Initial_Approval_1" To="Should Approval" From="Initial" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Approval_Approval_1" To="Approval" From="Should Approval" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[Approval]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer X="665" Y="192" />
+    </Transition>
+    <Transition Name="Check Approval_Product Creation_1" To="Product Creation" From="Should Approval" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer X="831" Y="123" />
+    </Transition>
+    <Transition Name="Check Product Build_Activity_1_2" To="Should App Store Preview" From="Check Product Build" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check App Store Preview_App Store Preview_1" To="App Store Preview" From="Should App Store Preview" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[App Store Preview]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check App Store Preview_Create App Store Entry_1" To="Create App Store Entry" From="Should App Store Preview" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer X="1011" Y="697" />
     </Transition>
   </Transitions>
 </Process>')
@@ -607,7 +693,7 @@ ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
-('SIL_Default_AppBuilders_Android_GooglePlay_Rebuild', '<Process>
+('SIL_Default_AppBuilders_Android_GooglePlay_Rebuild', '<Process Name="SIL_Default_AppBuilders_Android_GooglePlay_Rebuild" CanBeInlined="false">
   <Designer />
   <Actors>
     <Actor Name="Owner" Rule="IsOwner" Value="" />
@@ -616,6 +702,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
+    <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{&quot;Synchronize Data&quot;:false}" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -705,6 +792,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer X="1060" Y="420" />
     </Activity>
     <Activity Name="Initial" State="Initial" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
       <Designer X="40" Y="250" />
     </Activity>
   </Activities>
@@ -799,12 +892,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="536" Y="616" />
     </Transition>
-    <Transition Name="Initial_Product Build_1" To="Product Rebuild" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Initial_Product Build_1" To="Product Rebuild" From="Initial" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Always" />
+        <Condition Type="Otherwise" />
       </Conditions>
       <Designer />
     </Transition>
@@ -847,13 +940,24 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Initial_Synchronize Data_1" To="Synchronize Data" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false" ResultOnPreExecution="false">
+          <ActionParameter><![CDATA[Synchronize Data]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
-('SIL_Default_AppBuilders_Android_GooglePlay_Republish', '<Process>
+('SIL_Default_AppBuilders_Android_GooglePlay_Republish', '<Process Name="SIL_Default_AppBuilders_Android_GooglePlay_Republish" CanBeInlined="false">
   <Designer />
   <Actors>
     <Actor Name="Owner" Rule="IsOwner" Value="" />
@@ -862,6 +966,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
+    <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -953,6 +1058,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer X="1060" Y="420" />
     </Activity>
     <Activity Name="Initial" State="Initial" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
       <Designer X="40" Y="250" />
     </Activity>
   </Activities>
@@ -1047,12 +1158,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="536" Y="616" />
     </Transition>
-    <Transition Name="Initial_Product Build_1" To="Product Republish" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Initial_Product Build_1" To="Product Republish" From="Initial" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Always" />
+        <Condition Type="Otherwise" />
       </Conditions>
       <Designer />
     </Transition>
@@ -1095,13 +1206,24 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Initial_Synchronize Data_1" To="Synchronize Data" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false" ResultOnPreExecution="false">
+          <ActionParameter><![CDATA[Synchronize Data]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 	
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
-('SIL_Default_AppBuilders_Android_S3', '<Process>
+('SIL_Default_AppBuilders_Android_S3', '<Process Name="SIL_Default_AppBuilders_Android_S3" CanBeInlined="false">
   <Designer />
   <Actors>
     <Actor Name="Owner" Rule="IsOwner" Value="" />
@@ -1110,6 +1232,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
+    <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -1132,7 +1255,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="20" />
+      <Designer X="980" Y="180" />
     </Activity>
     <Activity Name="Check Product Creation" State="Check Product Creation" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1141,7 +1264,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="260" />
+      <Designer X="980" Y="420" />
     </Activity>
     <Activity Name="Approval" State="Approval" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1150,7 +1273,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="360" Y="20" />
+      <Designer X="640" Y="180" />
     </Activity>
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1159,7 +1282,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="40" Y="420" />
+      <Designer X="320" Y="580" />
     </Activity>
     <Activity Name="App Builder Configuration" State="App Builder Configuration" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1168,7 +1291,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="40" Y="260" />
+      <Designer X="320" Y="420" />
     </Activity>
     <Activity Name="Product Build" State="Product Build" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1180,7 +1303,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="360" Y="420" />
+      <Designer X="640" Y="580" />
     </Activity>
     <Activity Name="Check Product Build" State="Check Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1189,7 +1312,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="440" />
+      <Designer X="980" Y="600" />
     </Activity>
     <Activity Name="Verify and Publish" State="Verify and Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1198,7 +1321,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="70" Y="630" />
+      <Designer X="350" Y="790" />
     </Activity>
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1210,7 +1333,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="370" Y="760" />
+      <Designer X="650" Y="920" />
     </Activity>
     <Activity Name="Check Product Publish" State="Check Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1219,7 +1342,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="700" Y="720" />
+      <Designer X="980" Y="880" />
     </Activity>
     <Activity Name="Published" State="Published" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1228,7 +1351,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="990" Y="890" />
+      <Designer X="1270" Y="1050" />
     </Activity>
     <Activity Name="Email Reviewers" State="Email Reviewers" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1236,16 +1359,16 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
           <ActionParameter><![CDATA[{"types":["apk","play-listing"]}]]></ActionParameter>
         </ActionRef>
       </Implementation>
-      <Designer X="20" Y="910" />
+      <Designer X="300" Y="1070" />
     </Activity>
-    <Activity Name="Readiness Check" State="Readiness Check" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+    <Activity Name="Readiness Check" State="Readiness Check" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="40" Y="20" />
+      <Designer X="340" Y="320" />
     </Activity>
     <Activity Name="Approval Pending" State="Approval Pending" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -1254,10 +1377,28 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="360" Y="200" />
+      <Designer X="640" Y="360" />
     </Activity>
     <Activity Name="Terminated" State="Terminated" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
-      <Designer X="940" Y="130" />
+      <Designer X="1220" Y="290" />
+    </Activity>
+    <Activity Name="Initial" State="Initial" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="20" Y="180" />
+    </Activity>
+    <Activity Name="Should Approval" State="Should Approval" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="340" Y="180" />
     </Activity>
   </Activities>
   <Transitions>
@@ -1310,7 +1451,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="300" Y="332" />
+      <Designer />
     </Transition>
     <Transition Name="SynchronizeData_Activity_1_1" To="Product Build" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1340,7 +1481,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildFailed" ConditionInversion="false" />
       </Conditions>
-      <Designer X="487" Y="380" />
+      <Designer X="778" Y="503" />
     </Transition>
     <Transition Name="Check Product Build_Check Product Build_1" To="Check Product Build" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -1361,7 +1502,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="390" Y="683" />
+      <Designer X="523" Y="894" />
     </Transition>
     <Transition Name="Verify and Publish_SynchronizeData_1" To="Synchronize Data" From="Verify and Publish" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1400,7 +1541,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Otherwise" />
       </Conditions>
-      <Designer X="925" Y="687" />
+      <Designer X="1237" Y="852" />
     </Transition>
     <Transition Name="Check Product Publish_SynchronizeData_1" To="Synchronize Data" From="Check Product Publish" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -1409,7 +1550,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_PublishFailed" ConditionInversion="false" />
       </Conditions>
-      <Designer X="298" Y="559" />
+      <Designer X="600" Y="725" />
     </Transition>
     <Transition Name="App Store Preview_Activity_1_2" To="Email Reviewers" From="Verify and Publish" Classifier="NotSpecified" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1435,7 +1576,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
-    <Transition Name="Readiness Check_Approval_1" To="Approval" From="Readiness Check" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Readiness Check_Approval_1" To="Should Approval" From="Readiness Check" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
@@ -1457,7 +1598,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer />
+      <Designer X="756" Y="295" />
     </Transition>
     <Transition Name="Approval Pending_Product Creation_1" To="Product Creation" From="Approval Pending" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1469,7 +1610,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="641" Y="155" />
+      <Designer X="908" Y="284" />
     </Transition>
     <Transition Name="Approval_Activity_1_2" To="Terminated" From="Approval" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1481,7 +1622,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="519" Y="137" />
+      <Designer X="849" Y="309" />
     </Transition>
     <Transition Name="Approval Pending_Terminated_1" To="Terminated" From="Approval Pending" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1493,7 +1634,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="738" Y="236" />
+      <Designer X="959" Y="395" />
     </Transition>
     <Transition Name="Approval Pending_Approval Pending_1" To="Approval Pending" From="Approval Pending" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1505,7 +1646,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="583" Y="164" />
+      <Designer X="865" Y="336" />
     </Transition>
     <Transition Name="Check Product Build_Verify and Publish_1" To="Verify and Publish" From="Check Product Build" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -1516,13 +1657,53 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Initial_Readiness Check_1" To="Readiness Check" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[Readiness Check]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Initial_Should Approval_1" To="Should Approval" From="Initial" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Should Approval_Approval_1" To="Approval" From="Should Approval" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[Approval]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Should Approval_Product Creation_1" To="Product Creation" From="Should Approval" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer X="767" Y="138" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
-('SIL_Default_AppBuilders_Android_S3_Rebuild', '<Process>
+('SIL_Default_AppBuilders_Android_S3_Rebuild', '<Process Name="SIL_Default_AppBuilders_Android_S3_Rebuild" CanBeInlined="false">
   <Designer />
   <Actors>
     <Actor Name="Owner" Rule="IsOwner" Value="" />
@@ -1531,6 +1712,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
+    <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -1622,6 +1804,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Designer X="1060" Y="420" />
     </Activity>
     <Activity Name="Initial" State="Initial" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
       <Designer X="40" Y="250" />
     </Activity>
   </Activities>
@@ -1716,12 +1904,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="536" Y="616" />
     </Transition>
-    <Transition Name="Initial_Product Build_1" To="Product Rebuild" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Initial_Product Build_1" To="Product Rebuild" From="Initial" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Always" />
+        <Condition Type="Otherwise" />
       </Conditions>
       <Designer />
     </Transition>
@@ -1761,6 +1949,17 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Triggers>
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Initial_Synchronize Data_1" To="Synchronize Data" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false" ResultOnPreExecution="false">
+          <ActionParameter><![CDATA[Synchronize Data]]></ActionParameter>
+        </Condition>
       </Conditions>
       <Designer />
     </Transition>
