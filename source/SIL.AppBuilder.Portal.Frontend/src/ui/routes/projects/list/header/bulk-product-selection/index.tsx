@@ -4,6 +4,7 @@ import { useRedux } from 'use-redux';
 import { rowSelectionsFor } from '~/redux-store/data/selectors';
 
 import { ProjectResource, ProductDefinitionResource } from '~/data';
+
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -173,7 +174,7 @@ function MaybeRenderError({ actions, permissions, selection, selectedCount }) {
   });
   const activeSelection = selection.length < selectedCount;
   if (!activeSelection && actionsWithErrors.length == 0) {
-    return <div/>;
+    return <div />;
   }
   const translated = actionsWithErrors.map((action) =>
     t(`products.actions.${action.toLowerCase()}`)
@@ -181,7 +182,7 @@ function MaybeRenderError({ actions, permissions, selection, selectedCount }) {
   const message = t('products.actions.bulkNotAllAllowed', {
     action: toSentence(translated, 'or'),
   });
-  return <ErrorMessage error={message} showClose={false} displayClass={"ui yellow message"}/>;
+  return <ErrorMessage error={message} showClose={false} displayClass={'ui yellow message'} />;
 }
 
 function useModalState(initial = false) {
