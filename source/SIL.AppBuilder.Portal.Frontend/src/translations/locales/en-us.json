@@ -460,6 +460,7 @@
         "description": "Description",
         "workflowScheme": "Workflow Scheme",
         "workflowBusinessFlow": "Workflow Business Flow",
+	"properties": "Properties",
         "add": "Add Workflow Definition",
         "edit": "Edit Workflow Definition",
         "storeType": "Store Type",
