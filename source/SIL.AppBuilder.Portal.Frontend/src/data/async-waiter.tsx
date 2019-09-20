@@ -7,10 +7,12 @@ export function AsyncWaiter<Fn extends Function>({
   children,
   fn,
   loadingProps = {},
+  sizeClass,
 }: {
   children?: any;
   fn: Fn;
   loadingProps?: any;
+  sizeClass?: string;
 }) {
   if (!fn) {
     throw new Error(`Function passed to AsyncWaiter must not be falsey`);
@@ -26,7 +28,7 @@ export function AsyncWaiter<Fn extends Function>({
   if (loading) {
     return (
       <div {...loadingProps}>
-        <PageLoader />
+        <PageLoader sizeClass={sizeClass} />
       </div>
     );
   }
