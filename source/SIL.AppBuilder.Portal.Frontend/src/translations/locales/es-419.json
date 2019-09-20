@@ -42,6 +42,7 @@
     "archive": "Archive",
     "reactivate": "Reactivate",
     "build": "Build / Rebuild",
+    "rebuild": "Rebuild / Republish",
     "updated": "Updated",
     "continue": "Continue",
     "error": "Error",
@@ -142,7 +143,7 @@
       "republish": "Republish",
       "cancel": "Cancelar",
       "noneAvailable": "No actions are currently available for this product.",
-      "bulkNotAllAllowed": "Note: Not all of the selected projects' products can have the {action} action(s) applied.",
+      "bulkNotAllAllowed": "Not all of the selected projects' products can have the {action} action(s) applied.",
       "dispatched": "The {action} action has been dispatched."
     }
   },
@@ -189,7 +190,8 @@
     "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
     "orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página",
     "verifyEmailTitle": "Please verify your email address",
-    "verifyEmailDescription": "\n      In order to use Scriptoria, we need you to verify your email address.\n      <br /><br />\n      Please log into your email and clik the verification link. "
+    "verifyEmailDescription": "\n      In order to use Scriptoria, we need you to verify your email address.\n      <br /><br />\n      Please log into your email and clik the verification link. ",
+    "invalidProjectSelection": "No valid products available for selected project(s)"
   },
   "tasks": {
     "title": "Mis tareas",
@@ -224,7 +226,7 @@
     },
     "bulk": {
       "buildModal": {
-        "title": "Perform Bulk Build/Rebuild"
+        "title": "Perform Bulk Rebuild/Republish"
       }
     }
   },
