@@ -32,7 +32,7 @@ interface IState {
   storeTypeError?: string;
   workflowScheme?: string;
   workflowBusinessFlow?: string;
-  properties?:string;
+  properties?: string;
   enabled?: boolean;
   type?: number;
   workflowTypeError?: string;
