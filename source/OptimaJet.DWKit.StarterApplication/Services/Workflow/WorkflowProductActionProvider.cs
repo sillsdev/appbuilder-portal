@@ -52,13 +52,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncActions.Add("SendReviewerLinkToProductFiles", SendReviewerLinkToProductFilesAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
-            //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync); 
+            //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync);
             _asyncConditions.Add("BuildEngine_ProductCreated", BuildEngineProductCreated);
             _asyncConditions.Add("BuildEngine_BuildCompleted", BuildEngineBuildCompleted);
             _asyncConditions.Add("BuildEngine_BuildFailed", BuildEngineBuildFailed);
             _asyncConditions.Add("BuildEngine_PublishCompleted", BuildEnginePublishCompleted);
             _asyncConditions.Add("BuildEngine_PublishFailed", BuildEnginePublishFailed);
+
+            _conditions.Add("Should_Execute_Activity", ShouldExecuteActivity);
         }
+
 
         private async Task NoOperationAsync(ProcessInstance arg1, WorkflowRuntime arg2, string arg3, CancellationToken arg4)
         {
@@ -68,6 +71,25 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         //
         // Conditions
         //
+        private bool ShouldExecuteActivity(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter)
+        {
+            if (string.IsNullOrWhiteSpace(actionParameter)) { return true; }
+            if (!processInstance.IsParameterExisting("ShouldExecute")) { return true; }
+
+            var parameter = processInstance.GetParameter<string>("ShouldExecute");
+            if (string.IsNullOrWhiteSpace(parameter)) { return true; }
+
+            var shouldExecuteMap = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameter);
+            if (   shouldExecuteMap != null
+                && shouldExecuteMap.ContainsKey(actionParameter)
+                && shouldExecuteMap[actionParameter] is bool shouldExecute)
+            {
+                return shouldExecute;
+            }
+
+            return true;
+        }
+
         private async Task<bool> BuildEngineProductCreated(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
             using (var scope = ServiceProvider.CreateScope())
