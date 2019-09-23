@@ -213,7 +213,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowBuildId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = GetActionParameters(actionParameter);
+                    var parmsDict = GetParameters(processInstance, actionParameter);
                     BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id, parmsDict, null));
                     Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
                 }
@@ -234,8 +234,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowPublishId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = GetActionParameters(actionParameter);
-
+                    var parmsDict = GetParameters(processInstance, actionParameter);
                     BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, parmsDict, null));
                     Log.Information($"BuildEnginePublishProduct: productId={product.Id}, projectName={product.Project.Name}");
                 }
@@ -265,6 +264,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
 
             return paramsDict;
+        }
+
+        private static Dictionary<string, object> GetWorkflowParameters(ProcessInstance processInstance)
+        {
+            return processInstance.ProcessParameters.ToDictionary(pd => pd.Name, pd => pd.Value);
+         }
+
+
+        private static Dictionary<string, object> GetParameters(ProcessInstance processInstance, string actionParameters)
+        {
+            var actionParams = GetActionParameters(actionParameters);
+            var resultParams = GetWorkflowParameters(processInstance);
+            actionParams.ToList().ForEach(e => resultParams.Add(e.Key, e.Value));
+            return resultParams;
         }
 
         private static async Task<Product> GetProductForProcess(ProcessInstance processInstance, IJobRepository<Product, Guid> productRepository)
@@ -303,7 +316,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
-                var parmsDict = GetActionParameters(actionParameter);
+                var parmsDict = GetParameters(processInstance, actionParameter);
                 if (parmsDict.ContainsKey("types"))
                 {
                     BackgroundJobClient.Enqueue<SendEmailService>(s => s.SendProductReviewEmail(product.Id, parmsDict));
