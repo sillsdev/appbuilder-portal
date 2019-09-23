@@ -34,6 +34,7 @@ interface IState {
   workflowError?: string;
   rebuildWorkflow?: WorkflowDefinitionResource;
   republishWorkflow?: WorkflowDefinitionResource;
+  properties?: string;
 }
 
 type IProps = i18nProps & IOwnProps;
@@ -47,7 +48,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
 
     const { productDefinition, type, workflow, rebuildWorkflow, republishWorkflow } = props;
 
-    const { name, description } = attributesFor(productDefinition);
+    const { name, description, properties } = attributesFor(productDefinition);
 
     this.mut = mutCreator(this);
     this.toggle = toggleCreator(this);
@@ -61,6 +62,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
       workflowError: '',
       rebuildWorkflow: rebuildWorkflow || null,
       republishWorkflow: republishWorkflow || null,
+      properties: properties || '',
     };
   }
 
@@ -87,7 +89,15 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
     e.preventDefault();
 
     const { onSubmit } = this.props;
-    const { name, description, type, workflow, rebuildWorkflow, republishWorkflow } = this.state;
+    const {
+      name,
+      description,
+      type,
+      workflow,
+      rebuildWorkflow,
+      republishWorkflow,
+      properties,
+    } = this.state;
     const relationships = { type, workflow };
     if (rebuildWorkflow) {
       Object.assign(relationships, { rebuildWorkflow });
@@ -101,6 +111,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
           {
             name,
             description,
+            properties,
           },
           relationships
         );
@@ -153,6 +164,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
       workflowError,
       rebuildWorkflow,
       republishWorkflow,
+      properties,
     } = this.state;
 
     const {
@@ -303,6 +315,16 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                 data-test-pd-description
                 value={description}
                 onChange={mut('description')}
+              />
+            </div>
+
+            <div className='field m-b-xl'>
+              <label>{t('admin.settings.productDefinitions.properties')}</label>
+              <textarea
+                data-test-pd-properties
+                type='text'
+                value={properties}
+                onChange={mut('properties')}
               />
             </div>
 
