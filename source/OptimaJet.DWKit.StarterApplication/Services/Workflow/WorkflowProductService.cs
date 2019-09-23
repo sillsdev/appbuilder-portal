@@ -6,6 +6,7 @@ using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OptimaJet.DWKit.Application;
 using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.Core.Model;
@@ -137,31 +138,38 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 IdentityId = product.Project.Owner.WorkflowUserId.Value.ToString()
             };
 
-            SetProcessProperties(parms, workflowDefinition);
+            SetProcessProperties(parms, product.ProductDefinition, workflowDefinition);
 
             await WorkflowInit.Runtime.CreateInstanceAsync(parms);
             BackgroundJobClient.Enqueue<WorkflowProjectService>(service => service.UpdateProjectActive(product.ProjectId));
         }
 
-        private void SetProcessProperties(CreateInstanceParams parms, WorkflowDefinition workflowDefinition)
+        private Dictionary<string, object> DeserializePropertiers(string properties)
         {
-            if (!string.IsNullOrWhiteSpace(workflowDefinition.Properties))
+            try
             {
-                try
-                {
-                    // ProcessParameters are Dictionary<string,object>
-                    // The values are expected to be strings (our decision, not a DWKit limitation)
-                    // The result of the deserialize is a Newtonsoft.Json.Linq.JObject and I didn't want to specify that as the datatype in DWKit
-                    var properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(workflowDefinition.Properties);
-                    // This converts the value back into JSON
-                    var parameters = properties.ToDictionary(kv => kv.Key, kv => (object)kv.Value.ToString());
-                    parms.InitialProcessParameters = parameters;
-                }
-                catch (Exception ex)
-                {
-                    BugsnagClient.Notify(ex);
-                }
+            return JsonUtils.DeserializeProperties(properties);
             }
+            catch (Exception ex)
+            {
+                BugsnagClient.Notify(ex);
+            }
+            return new Dictionary<string, object>();
+        }
+
+        private void SetProcessProperties(CreateInstanceParams parms, ProductDefinition productDefinition, WorkflowDefinition workflowDefinition)
+        {
+            var workflowProperties = DeserializePropertiers(workflowDefinition.Properties);
+            var productProperties = DeserializePropertiers(productDefinition.Properties);
+            var properties = JsonUtils.MergeProperties(productProperties, workflowProperties);
+
+            // ProcessParameters are Dictionary<string,object>
+            // The values are expected to be strings (our decision, not a DWKit limitation)
+            // The result of the deserialize is a Newtonsoft.Json.Linq.JObject and I didn't want to specify that as the datatype in DWKit
+            // This converts the value back into JSON
+
+            var parameters = properties.ToDictionary(kv => kv.Key, kv => (object)kv.Value.ToString());
+            parms.InitialProcessParameters = parameters;     
         }
 
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)

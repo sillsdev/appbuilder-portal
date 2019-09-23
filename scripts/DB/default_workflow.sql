@@ -87,6 +87,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
+    <Parameter Name="environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -703,6 +704,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{&quot;Synchronize Data&quot;:false}" />
+    <Parameter Name="environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -967,6 +969,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
+    <Parameter Name="environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -1233,6 +1236,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
+    <Parameter Name="environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -1713,6 +1717,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
+    <Parameter Name="environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />

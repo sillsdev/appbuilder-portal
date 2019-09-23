@@ -247,36 +247,35 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private static Dictionary<string, object> GetActionParameters(string actionParameter)
         {
-            var paramsDict = new Dictionary<string, object>();
-            if (String.IsNullOrEmpty(actionParameter))
-            {
-                return paramsDict;
-            }
-
             try
             {
-                paramsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParameter);
+                return JsonUtils.DeserializeProperties(actionParameter);
             }
             catch (Exception ex)
             {
                 Log.Error($"Failed to parse actionParameters: {actionParameter}");
                 throw ex;
             }
-
-            return paramsDict;
         }
 
         private static Dictionary<string, object> GetWorkflowParameters(ProcessInstance processInstance)
         {
-            return processInstance.ProcessParameters.ToDictionary(pd => pd.Name, pd => pd.Value);
+            var result = new Dictionary<string, object>();
+            foreach (var entry in processInstance.ProcessParameters.Where(p => p.Purpose != ParameterPurpose.System))
+            {
+                var value = JsonConvert.DeserializeObject(entry.Value.ToString());
+                result.Add(entry.Name, value);
+            }
+
+            return result;
          }
 
 
         private static Dictionary<string, object> GetParameters(ProcessInstance processInstance, string actionParameters)
         {
             var actionParams = GetActionParameters(actionParameters);
-            var resultParams = GetWorkflowParameters(processInstance);
-            actionParams.ToList().ForEach(e => resultParams.Add(e.Key, e.Value));
+            var workflowParams = GetWorkflowParameters(processInstance);
+            var resultParams = JsonUtils.MergeProperties(actionParams, workflowParams);
             return resultParams;
         }
 
