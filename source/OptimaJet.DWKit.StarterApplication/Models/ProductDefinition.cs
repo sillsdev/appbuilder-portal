@@ -25,5 +25,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasOne("republish-workflow")]
         public virtual WorkflowDefinition RepublishWorkflow { get; set; }
         public int? RepublishWorkflowId { get; set; }
+
+        [Attr("properties")]
+        public string Properties { get; set; }
     }
 }

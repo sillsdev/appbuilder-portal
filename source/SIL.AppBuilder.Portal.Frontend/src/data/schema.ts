@@ -235,6 +235,7 @@ const schemaDefinition: SchemaSettings = {
       attributes: {
         name: { type: 'string' },
         description: { type: 'string' },
+        properties: { type: 'string' },
       },
       relationships: {
         products: { type: 'hasMany', model: 'product', inverse: 'productDefinition' },
