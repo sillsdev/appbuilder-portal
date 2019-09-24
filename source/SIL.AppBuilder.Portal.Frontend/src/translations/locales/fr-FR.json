@@ -485,6 +485,7 @@
         "add": "Add Product Definition",
         "edit": "Edit Product Definition",
         "description": "Description",
+        "properties": "Properties",
         "type": "Application Type",
         "workflow": "Workflow",
         "republishWorkflow": "Republish Workflow",
