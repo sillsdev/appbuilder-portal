@@ -3,6 +3,7 @@ INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
+	"Type" = excluded."Type",
 	"Enabled" = excluded."Enabled",
 	"Description" = excluded."Description",
 	"WorkflowScheme" = excluded."WorkflowScheme",
@@ -14,6 +15,7 @@ INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
+	"Type" = excluded."Type",
 	"Enabled" = excluded."Enabled",
 	"Description" = excluded."Description",
 	"WorkflowScheme" = excluded."WorkflowScheme",
@@ -36,6 +38,7 @@ INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
+	"Type" = excluded."Type",	
 	"Enabled" = excluded."Enabled",
 	"Description" = excluded."Description",
 	"WorkflowScheme" = excluded."WorkflowScheme",
@@ -47,11 +50,48 @@ INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
+	"Type" = excluded."Type",
 	"Enabled" = excluded."Enabled",
 	"Description" = excluded."Description",
 	"WorkflowScheme" = excluded."WorkflowScheme",
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId";
+	
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties") VALUES 
+(6, 'la_android_google_play', '1', 'Low Admin Workflow for Publishing to Google Play', 'SIL_Default_AppBuilders_Android_GooglePlay', 'SIL_Default_AppBuilders_Android_GooglePlay_Flow', 1, 1, '{ "ShouldExecute" : {
+  "Readiness Check" : false,
+  "Approval" : false,
+  "App Store Preview" : false
+  }
+}')
+ON CONFLICT ("Id")
+DO UPDATE SET 
+	"Name" = excluded."Name", 
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+	"Properties" = excluded."Properties";
+
+
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties") VALUES 
+(7, 'na_android_s3', true, 'No Admin Workflow for Publish to Amazon S3 Bucket', 'SIL_Default_AppBuilders_Android_S3', 'SIL_Default_AppBuilders_Android_GooglePlay_Flow', 2, 1, '{ "ShouldExecute" : {
+  "Readiness Check" : false,
+  "Approval" : false
+  }
+}')
+ON CONFLICT ("Id")
+DO UPDATE SET 
+	"Name" = excluded."Name", 
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+	"Properties" = excluded."Properties";
 	
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId", "RebuildWorkflowId", "RepublishWorkflowId") VALUES
 (1,	'Android App to Google Play',	1,	'Build an Android App from a Scripture App Builder project and publish to a Google Play Store',	1, 2, 3)
@@ -60,7 +100,10 @@ DO UPDATE SET
 	"Name" = excluded."Name",
 	"TypeId" = excluded."TypeId",
 	"Description" = excluded."Description",
-	"WorkflowId" = excluded."WorkflowId";
+	"WorkflowId" = excluded."WorkflowId",
+	"RebuildWorkflowId" = excluded."RebuildWorkflowId",
+	"RepublishWorkflowId" = excluded."RepublishWorkflowId";
+
 
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId", "RebuildWorkflowId") VALUES
 (2,	'Android App to Amazon S3 Bucket',	1,	'Build an Android App from a Scripture App Builder project and publish to an Amazon S3 Bucket',	4, 5)
@@ -69,7 +112,29 @@ DO UPDATE SET
 	"Name" = excluded."Name",
 	"TypeId" = excluded."TypeId",
 	"Description" = excluded."Description",
-	"WorkflowId" = excluded."WorkflowId";
+	"WorkflowId" = excluded."WorkflowId",
+	"RebuildWorkflowId" = excluded."RebuildWorkflowId";
+	
+INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId", "RebuildWorkflowId", "RepublishWorkflowId") VALUES 
+(3, 'Android App to Google Play (Low Admin)', 1, 'Build an Android App from a Scripture App Builder project and publish to a Google Play Store, but with less approval and oversight required.', 6, 2, 3)
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"TypeId" = excluded."TypeId",
+	"Description" = excluded."Description",
+	"WorkflowId" = excluded."WorkflowId",
+	"RebuildWorkflowId" = excluded."RebuildWorkflowId",
+	"RepublishWorkflowId" = excluded."RepublishWorkflowId";
+
+INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId", "RebuildWorkflowId") VALUES 
+(4, 'Android App to Amazon S3 Bucket (No Admin)', 1, 'Build an Android App from a Scripture App Builder project and publish to an Amazon S3 Bucket, but with no admin required', 7, 5)
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"TypeId" = excluded."TypeId",
+	"Description" = excluded."Description",
+	"WorkflowId" = excluded."WorkflowId",
+	"RebuildWorkflowId" = excluded."RebuildWorkflowId";
 
 SELECT SETVAL('"WorkflowDefinitions_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "WorkflowDefinitions";
