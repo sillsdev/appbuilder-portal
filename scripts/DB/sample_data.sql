@@ -8,9 +8,9 @@ INSERT INTO "Users" (
 (	'Loren Hawthorne',        'loren_hawthrone@sil.org',	 'google-oauth2|116603781884964961816', 'Loren',	      'Hawthorne', '0',	NULL, NULL, NULL, '0');
 
 INSERT INTO "Organizations" ("Id", "Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId", "UseDefaultBuildEngine") VALUES
-(1,	'SIL International',	'https://sil.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false),
-(2,	'DeveloperTown',	'https://developertown.com',	'https://buildengine.gtis.guru:8443',	'replace',	3,	false),
-(3,	'Kalaam Media',	'https://kalaam.org',	'https://buildengine.gtis.guru:8443',	'replace',	1,	false);
+(1,	'SIL International',	'https://sil.org',	'https://dev-buildengine.scriptoria.io:8443',	'replace',	1,	false),
+(2,	'DeveloperTown',	'https://developertown.com',	'https://dev-buildengine.scriptoria.io:8443',	'replace',	3,	false),
+(3,	'Kalaam Media',	'https://kalaam.org',	'https://dev-buildengine.scriptoria.io:8443',	'replace',	1,	false);
 
 SELECT SETVAL('"Organizations_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "Organizations";
