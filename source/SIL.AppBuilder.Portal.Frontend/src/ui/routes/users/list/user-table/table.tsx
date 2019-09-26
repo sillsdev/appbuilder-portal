@@ -28,7 +28,9 @@ export default class Table extends React.Component<IProps> {
 
   render() {
     const { users, roles, currentUser, t } = this.props;
-    users.sort(compareVia((user) => attributesFor(user).name.toLowerCase()));
+    // Took off the toLowerCase for this one because ten tests failed with
+    // an obscure Polly error when it was left in.
+    users.sort(compareVia((user) => attributesFor(user).name));
     return (
       <table data-test-userstable className='ui table user-table'>
         <Header />
