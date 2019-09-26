@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
+import { compareVia } from '@lib/collection';
 
 import {
   GroupResource,
@@ -33,7 +34,7 @@ class GroupSelect extends React.Component<IProps> {
 
   render() {
     const { groups, userHasGroup } = this.props;
-
+    groups.sort(compareVia((group) => (attributesFor(group).name || '').toLowerCase()));
     if (isEmpty(groups)) {
       return [];
     }
