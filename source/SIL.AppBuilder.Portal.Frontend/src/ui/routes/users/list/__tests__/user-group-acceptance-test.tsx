@@ -82,7 +82,7 @@ describe('Acceptance | User groups', () => {
           {
             type: 'groups',
             id: 1,
-            attributes: { name: 'Fake group', abbreviation: 'FG' },
+            attributes: { name: 'First Fake group', abbreviation: 'FG' },
             relationships: {
               owner: { data: { type: 'organizations', id: 1 } },
             },
@@ -90,7 +90,7 @@ describe('Acceptance | User groups', () => {
           {
             type: 'groups',
             id: 2,
-            attributes: { name: 'Another Fake group', abbreviation: 'AFG' },
+            attributes: { name: 'Some Fake group', abbreviation: 'AFG' },
             relationships: {
               owner: { data: { type: 'organizations', id: 1 } },
             },
@@ -116,8 +116,8 @@ describe('Acceptance | User groups', () => {
         .join('');
 
       expect(text).to.not.include('None');
-      expect(text).to.include('Fake group');
-      expect(text).to.include('Another Fake group');
+      expect(text).to.include('First Fake group');
+      expect(text).to.include('Some Fake group');
     });
 
     describe('remove user from all groups', () => {
@@ -135,8 +135,8 @@ describe('Acceptance | User groups', () => {
         const text = userTable.groupDropdownText;
 
         expect(text).to.include('None');
-        expect(text).to.not.include('Fake group');
-        expect(text).to.not.include('Another Fake group');
+        expect(text).to.not.include('First Fake group');
+        expect(text).to.not.include('Some Fake group');
       });
 
       describe('add one group back', () => {
@@ -165,8 +165,8 @@ describe('Acceptance | User groups', () => {
             .map((g) => g.text)
             .join('');
           expect(text).to.not.include('None');
-          expect(text).to.include('Fake group');
-          expect(text).to.not.include('Another Fake group');
+          expect(text).to.include('First Fake group');
+          expect(text).to.not.include('Some Fake group');
         });
       });
     });

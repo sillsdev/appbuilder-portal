@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
+import { compareVia } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import {
   withDataActions,
@@ -11,7 +12,7 @@ import { Toggle, toggleCreator } from 'react-state-helpers';
 import Form from './form';
 import List from './list';
 
-import { withLoader, GroupResource } from '@data';
+import { withLoader, GroupResource, attributesFor } from '@data';
 
 export const pathName = '/organizations/:orgId/settings/groups';
 
@@ -98,5 +99,8 @@ export default compose(
     groups: (q) => q.findRelatedRecords(organization, 'groups'),
   })),
   withDataActions,
-  withLoader(({ groups }) => !groups)
+  withLoader(({ groups }) => !groups),
+  withProps(({ groups }) => ({
+    groups: groups.sort(compareVia((group) => attributesFor(group).name.toLowerCase())),
+  }))
 )(GroupsRoute);

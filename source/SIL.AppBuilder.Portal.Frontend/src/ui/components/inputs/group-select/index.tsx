@@ -1,12 +1,13 @@
 import React from 'react';
-
-import { useScopeGroupData } from './with-data';
-import Display from './display';
-
 import { useEffect, useCallback } from 'react';
 import { attributesFor } from 'react-orbitjs/dist';
 
 import { OrganizationResource } from '~/data';
+
+import { compareVia } from '@lib/collection';
+
+import Display from './display';
+import { useScopeGroupData } from './with-data';
 
 interface INeededProps {
   scopeToCurrentUser?: boolean;
@@ -28,6 +29,9 @@ export default function GroupSelect({
   });
 
   useEffect(() => {
+    // Have to put in the odd or case because the organization name comes up as a group and initially doesn't
+    // have a name attribute
+    groups.sort(compareVia((group) => (attributesFor(group).name || '').toLowerCase()));
     if (!selected && groups && groups.length > 0) {
       const firstId = groups[0].id;
 
@@ -48,6 +52,7 @@ export default function GroupSelect({
     [selected, onChange]
   );
 
+  groups.sort(compareVia((group) => (attributesFor(group).name || '').toLowerCase()));
   const groupOptions = (groups || [])
     .filter((group) => attributesFor(group).name)
     .map((group) => ({

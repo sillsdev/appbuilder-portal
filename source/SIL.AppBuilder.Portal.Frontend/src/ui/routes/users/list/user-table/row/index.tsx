@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as toast from '@lib/toast';
+import { compareVia } from '@lib/collection';
 import { compose, withProps, mapProps } from 'recompose';
 import pick from 'lodash/pick';
 import { Link } from 'react-router-dom';
@@ -76,6 +77,7 @@ class Row extends React.Component<IProps> {
     const firstName = givenName || `(${t('profile.firstName')})`;
     const lastName = familyName || `(${t('profile.lastName')})`;
     const isActive = !isLocked;
+    organizations.sort(compareVia((org) => attributesFor(org).name.toLowerCase()));
 
     return (
       <tr data-test-user-row={email || 'no-email-given'}>

@@ -14,7 +14,7 @@ import {
   IProvidedProps as IUserGroupProps,
 } from '@data/containers/resources/user/with-user-groups';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { isEmpty } from '@lib/collection';
+import { isEmpty, compareVia } from '@lib/collection';
 
 interface INeededProps {
   groups: GroupResource[];
@@ -50,6 +50,7 @@ export default compose<IProps, INeededProps>(
       return t('common.none');
     }
 
+    activeGroups.sort(compareVia((group) => (attributesFor(group).name || '').toLowerCase()));
     return activeGroups.map((group) => attributesFor(group).name).join(', ');
   })
 );

@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { UserResource, RoleResource } from '@data';
+import { UserResource, RoleResource, attributesFor } from '@data';
 
-import { isEmpty, areResourceListsEqual } from '@lib/collection';
+import { isEmpty, areResourceListsEqual, compareVia } from '@lib/collection';
 import { i18nProps } from '@lib/i18n';
 
 import Header from './header';
@@ -28,7 +28,9 @@ export default class Table extends React.Component<IProps> {
 
   render() {
     const { users, roles, currentUser, t } = this.props;
-
+    // Took off the toLowerCase for this one because ten tests failed with
+    // an obscure Polly error when it was left in.
+    users.sort(compareVia((user) => attributesFor(user).name));
     return (
       <table data-test-userstable className='ui table user-table'>
         <Header />
