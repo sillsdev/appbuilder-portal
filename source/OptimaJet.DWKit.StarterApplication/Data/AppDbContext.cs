@@ -177,6 +177,30 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .Property(p => p.WorkflowProjectId)
                 .HasDefaultValue(0);
 
+            projectEntity
+                .HasOne(p => p.Group)
+                .WithMany()
+                .HasForeignKey("GroupId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            projectEntity
+                .HasOne(p => p.Type)
+                .WithMany()
+                .HasForeignKey("TypeId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            projectEntity
+                .HasOne(p => p.Owner)
+                .WithMany()
+                .HasForeignKey("OwnerId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            projectEntity
+                .HasOne(p => p.Organization)
+                .WithMany()
+                .HasForeignKey("OrganizationId")
+                .OnDelete(DeleteBehavior.Restrict);
+
             workflowDefinitionEntity
                 .Property(w => w.Type)
                 .HasDefaultValue(WorkflowType.Startup);
