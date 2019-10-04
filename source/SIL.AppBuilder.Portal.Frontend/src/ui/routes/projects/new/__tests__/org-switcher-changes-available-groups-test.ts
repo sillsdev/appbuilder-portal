@@ -32,6 +32,26 @@ function setupMockData() {
   beforeEach(function() {
     this.mockGet(200, 'users', { data: [] });
     this.mockGet(200, 'application-types', { data: applicationTypesData });
+    this.mockGet(200, 'groups?include=owner', {
+      data: [
+        {
+          id: 1,
+          type: 'groups',
+          attributes: { name: 'Group 1' },
+          relationships: {
+            owner: { data: { id: 2, type: 'organizations' } },
+          },
+        },
+      ],
+      included: [
+        {
+          id: 2,
+          type: 'organizations',
+          attributes: { name: 'SIL' },
+          relationships: {},
+        },
+      ],
+    });
   });
 }
 

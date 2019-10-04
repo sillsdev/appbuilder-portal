@@ -40,7 +40,7 @@ function setupMockData() {
           type: 'groups',
           attributes: { name: 'Group 1' },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } },
+            owner: { data: { id: 1, type: 'organizations' } },
           },
         },
         {
@@ -48,7 +48,7 @@ function setupMockData() {
           type: 'groups',
           attributes: { name: 'Group 2' },
           relationships: {
-            organization: { data: { id: 1, type: 'organizations' } },
+            owner: { data: { id: 1, type: 'organizations' } },
           },
         },
       ],

@@ -1,6 +1,6 @@
-import { useOrbit } from 'react-orbitjs';
+import { useOrbit, useQuery } from 'react-orbitjs';
 
-import { recordsWithIdIn, isRelatedTo } from '@data';
+import { recordsWithIdIn, isRelatedTo, buildOptions } from '@data';
 
 import { OrganizationResource } from '@data/models/organization';
 import { GroupResource } from '@data/models/group';
@@ -26,14 +26,22 @@ export function useScopeGroupData({
 }: INeededProps): IProvidedProps {
   const { dataStore } = useOrbit();
   const { currentUser, isSuperAdmin } = useCurrentUser();
+  const {
+    result: { groups },
+  } = useQuery({ groups: [(q) => q.findRecords('group'), buildOptions({ include: ['owner'] })] });
 
-  const groups = dataStore.cache.query((q) => q.findRecords('group'));
   const currentUsersGroups = retrieveRelation(dataStore, [
     currentUser,
     'groupMemberships',
     'group',
   ]);
 
+  if (typeof groups === 'undefined') {
+    return {
+      groups: groups,
+      disableSelection: true,
+    };
+  }
   // TODO: we shouldn't need to filter out fasley things
   //       so, we should make sure withRelationships is returning good data
   const groupIds = currentUsersGroups.filter((g) => !!g).map((g) => g.id);
@@ -42,7 +50,7 @@ export function useScopeGroupData({
   let availableGroups: GroupResource[];
 
   if (scopeToCurrentUser && !isSuperAdmin) {
-    availableGroups = recordsWithIdIn(groups, availableGroupIds);
+    availableGroups = recordsWithIdIn(groups || [], availableGroupIds);
   } else {
     availableGroups = groups;
   }
@@ -53,7 +61,8 @@ export function useScopeGroupData({
         return true;
       }
 
-      return isRelatedTo(group, 'owner', scopeToOrganization.id);
+      const retVal = isRelatedTo(group, 'owner', scopeToOrganization.id);
+      return retVal;
     });
   }
 
