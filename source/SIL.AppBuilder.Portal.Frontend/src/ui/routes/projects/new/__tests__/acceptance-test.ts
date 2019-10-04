@@ -143,6 +143,34 @@ describe('Acceptance | New Project', () => {
 
       beforeEach(function() {
         this.mockGet(200, '/application-types', scenarios.applicationTypes());
+        this.mockGet(200, 'groups?include=owner', {
+          data: [
+            {
+              id: 1,
+              type: 'groups',
+              attributes: { name: 'Group 1' },
+              relationships: {
+                owner: { data: { id: 1, type: 'organizations' } },
+              },
+            },
+            {
+              id: 2,
+              type: 'groups',
+              attributes: { name: 'Group 2' },
+              relationships: {
+                owner: { data: { id: 1, type: 'organizations' } },
+              },
+            },
+          ],
+          included: [
+            {
+              id: 1,
+              type: 'organizations',
+              attributes: { name: 'Organization 1' },
+              relationships: {},
+            },
+          ],
+        });
         this.server.get('/assets/language/langtags.json').intercept((req, res) => {
           res.status(200);
           res.json([

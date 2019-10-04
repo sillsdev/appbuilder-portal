@@ -40,6 +40,43 @@ function setupData() {
         { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
       ],
     });
+
+    this.mockGet(200, 'groups?include=owner', {
+      data: [
+        {
+          id: 1,
+          type: 'groups',
+          attributes: { name: 'Group 1' },
+          relationships: {
+            owner: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+        {
+          id: 2,
+          type: 'groups',
+          attributes: { name: 'Group 2' },
+          relationships: {
+            owner: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+        {
+          id: 3,
+          type: 'groups',
+          attributes: { name: 'Group 3' },
+          relationships: {
+            owner: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+      ],
+      included: [
+        {
+          id: 1,
+          type: 'organizations',
+          attributes: { name: 'Organization 1' },
+          relationships: {},
+        },
+      ],
+    });
   });
 }
 
