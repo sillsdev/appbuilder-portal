@@ -5,7 +5,8 @@ INSERT INTO "Users" (
 (	'Preston Sego (gmail)',	  'lt.sego@gmail.com',	       'google-oauth2|106685378104908547147',	'Sego (gmail)',	'Preston',	 '0',	NULL,	NULL,	NULL, '0'),
 (	'Chris Hubbard (Kalaam)',	'chris.kalaam@gmail.com',	   'auth0|5b578f6197af652b19f9bb41',	    'Hubbard',	    'Chris',	   '0',	NULL,	NULL,	NULL, '0'),
 (	'Bill Dyck',              'bill_dyck@sil.org',	       'google-oauth2|102643649500459434996', 'Dyck',	        'Bill',	     '0',	NULL, NULL, NULL, '0'),
-(	'Loren Hawthorne',        'loren_hawthrone@sil.org',	 'google-oauth2|116603781884964961816', 'Loren',	      'Hawthorne', '0',	NULL, NULL, NULL, '0');
+(	'Loren Hawthorne',        'loren_hawthrone@sil.org',	 'google-oauth2|116603781884964961816', 'Hawthorne',	      'Loren', '0',	NULL, NULL, NULL, '0'),
+(	'Chris Hubbard (BlueVire)',        'chris@bluevire.com',	 'google-oauth2|108288848155985772105', 'Hubbard (BlueVire)',	      'Chris', '0',	NULL, NULL, NULL, '0');
 
 INSERT INTO "Organizations" ("Id", "Name", "WebsiteUrl", "BuildEngineUrl", "BuildEngineApiAccessToken", "OwnerId", "UseDefaultBuildEngine") VALUES
 (1,	'SIL International',	'https://sil.org',	'https://dev-buildengine.scriptoria.io:8443',	'replace',	1,	false),
@@ -19,9 +20,10 @@ INSERT INTO "OrganizationProductDefinitions" ("OrganizationId", "ProductDefiniti
 (1,      1),
 (2,      1),
 (3,      1),
-(1,      2),
 (2,      2),
-(3,      2);
+(3,      2),
+(1,      3),
+(1,      5);
 
 INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
 (3, 'amazon_app_store',	'Amazon App Store');
@@ -80,14 +82,16 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 ( 3, 2), -- psego@developertown.com - DT
 ( 5, 1), -- bill_dyck@sil.org - SIL
 ( 5, 3), -- bill_dyck@sil.org - Kalaam
-( 6, 1); -- loren_hawthorne@sil.org - SIL
+( 6, 1), -- loren_hawthorne@sil.org - SIL
+( 7, 1); -- chris@bluevire.com - SIL
 
 INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 ( 1, 1), -- chris_hubbard@sil.org - LSDEV
 ( 2, 1), -- david_moore1@sil.org - LSDEV
 ( 2, 2), -- david_moore1@sil.org - CHB
 ( 2, 15), -- david_moore1@sil.org - KAL_AF
-( 3, 14); -- lt.sego@gmail.com - Development (DT)
+( 3, 14), -- lt.sego@gmail.com - Development (DT)
+( 7, 1); -- chris@bluevire.com - LSDEV
 
 INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 ( 1, 1, 1), -- chris_hubbard@sil.org - SuperAdmin - SIL
@@ -99,7 +103,8 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 ( 3, 3, 2), -- lt.sego@gmail.com - AppBuilder - DT
 ( 5, 3, 3), -- bill_dyck@sil.org - AppBuilder - Kalaam
 ( 2, 2, 3), -- david_moore1@sil.org - OrgAdmin - Kalaam
-( 4, 3, 3); -- chris.kalaam@gmail.com - AppBuilder - Kalaam
+( 4, 3, 3), -- chris.kalaam@gmail.com - AppBuilder - Kalaam
+( 7, 3, 1); -- chris@bluevire.com - AppBuilder - Kalaam
 
 SELECT SETVAL('"UserRoles_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "UserRoles";
