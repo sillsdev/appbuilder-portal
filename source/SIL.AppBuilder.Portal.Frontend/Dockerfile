@@ -1,4 +1,4 @@
-FROM node:8.15.0
+FROM node:8.16.2
 
 ARG CHROME_VERSION="google-chrome-stable"
 
