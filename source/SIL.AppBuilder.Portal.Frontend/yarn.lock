@@ -1177,10 +1177,10 @@
     "@types/connect" "*"
     "@types/node" "*"
 
-"@types/chai-dom@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@types/chai-dom/-/chai-dom-0.0.7.tgz#c27722501b36fff7c0642a342dbeddf48b8bfca0"
-  integrity sha512-2zF94t06jMQaEG+1EyaTVFiC2hSD6pQSGzqKge+z9XWozqot8nLaSSSxK8VdAA4tnQhCREuizvAoT6dAgxxxHA==
+"@types/chai-dom@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@types/chai-dom/-/chai-dom-0.0.8.tgz#832b68d78390c80030e64d8fd4990e514484e91d"
+  integrity sha512-F5vAuz2hp7VY+0UmkFLgTwyeHDddIw1c/JbAQZp2lgpZOd3ujlHFijWO4sHdo7sun9HrzwnSJlZfINdKrUwI+w==
   dependencies:
     "@types/chai" "*"
 
@@ -1461,10 +1461,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/recompose@0.30.6":
-  version "0.30.6"
-  resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.30.6.tgz#f6ffae2008b84df916ed6633751f9287f344ea3e"
-  integrity sha512-A9c880h07JMrvVe+PwyjVihrQRyKWp4/GFjfA9YE4NgxdEuQD74gSdDhInhUNctO/dkCcR66rexEXevzBy85cQ==
+"@types/recompose@0.30.7":
+  version "0.30.7"
+  resolved "https://registry.yarnpkg.com/@types/recompose/-/recompose-0.30.7.tgz#0d47f3da3bdf889a4f36d4ca7531fac1eee1c6bd"
+  integrity sha512-kEvD7XMguXgG7jJJS//cE1QTbkFj2qDtIPAg1FvXxE8D6jD1C0WabJjT7cVitC7TK0N5I3yp2955hqNFFZV0wg==
   dependencies:
     "@types/react" "*"
 
