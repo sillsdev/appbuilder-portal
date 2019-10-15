@@ -86,11 +86,11 @@ export function CurrentUserFetcher({ children }) {
   if (error) {
     // errors are not handled here.
     // also, this is the only way we can have 'unauthenticated routes'
-    return children({ currentUser: undefined, refetch });
+    return children({ currentUser: undefined, refetch, error });
   }
 
   const currentUser = users && users[0];
   if (!data || !currentUser) return null;
 
-  return children({ currentUser, refetch });
+  return children({ currentUser, refetch, error: undefined });
 }

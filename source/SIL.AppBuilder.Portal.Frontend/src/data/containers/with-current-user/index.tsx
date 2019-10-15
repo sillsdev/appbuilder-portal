@@ -35,7 +35,7 @@ export function Provider({ children }) {
   return (
     <Suspense fallback={<PageLoader />}>
       <CurrentUserFetcher>
-        {({ currentUser, refetch }) => {
+        {({ currentUser, refetch, error }) => {
           return (
             <CurrentUserContext.Provider
               value={{
@@ -43,6 +43,7 @@ export function Provider({ children }) {
                 currentUserProps: {
                   currentUser,
                   fetchCurrentUser: refetch,
+                  error,
                 },
               }}
             >
@@ -123,18 +124,11 @@ function withDisplay(opts = {}) {
     } = useCurrentUser();
 
     if (error) {
-      if (error.status && error.status >= 500) {
-        return <PageError error={error} />;
+      // Error handling code removed here was not actually executed before because
+      // error wasn't being saved
+      if (error.message && error.message.startsWith('403') && !currentUser) {
+        return <Redirect push={true} to={'/not-active-user'} />;
       }
-
-      if (options.redirectOnFailure) {
-        toast.error(error);
-
-        console.log('there was an error getting the current user...', error, isLoading);
-        return <Redirect push={true} to={'/login'} />;
-      }
-
-      return <PageError error={error} />;
     }
 
     if (isLoading) {

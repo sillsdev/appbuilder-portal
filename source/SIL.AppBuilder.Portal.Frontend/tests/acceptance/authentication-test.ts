@@ -61,6 +61,24 @@ describe('Acceptance | Authentication', () => {
       expect(location().pathname).to.equal('/verify-email');
     });
   });
+  describe('authenticated with user that is not active', () => {
+    setupRequestInterceptor();
+    setupApplicationTest();
+
+    beforeEach(async function() {
+      const { server } = this.polly;
+
+      setToken(fakeAuth0JWT({ ['email_verified']: true }));
+
+      server.get('/api/users/current-user').intercept(respondWithJsonApi(403, user));
+
+      await visit('/tasks');
+    });
+
+    it('redirects to not active user', () => {
+      expect(location().pathname).to.equal('/not-active-user');
+    });
+  });
 
   describe('is authenticated', () => {
     useFakeAuthentication();
