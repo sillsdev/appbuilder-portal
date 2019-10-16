@@ -124,8 +124,9 @@ function withDisplay(opts = {}) {
     } = useCurrentUser();
 
     if (error) {
-      // Error handling code removed here was not actually executed before because
-      // error wasn't being saved
+      // This checks for the case where the initial login fails because the current
+      // current user is inactive.  For other cases following login, responses
+      // are checked in fetcher handleResponse method.
       if (error.message && error.message.startsWith('403') && !currentUser) {
         return <Redirect push={true} to={'/not-active-user'} />;
       }
