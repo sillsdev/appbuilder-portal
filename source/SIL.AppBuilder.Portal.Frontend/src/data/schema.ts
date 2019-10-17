@@ -56,6 +56,7 @@ const schemaDefinition: SchemaSettings = {
         owner: { type: 'hasOne', model: 'user', inverse: 'ownedOrganizations' },
         users: { type: 'hasMany', model: 'user', inverse: 'organizations' },
         projects: { type: 'hasMany', model: 'user', inverse: 'organization' },
+        projectImports: { type: 'hasMany', model: 'projectImport', inverse: 'organization' },
         userMemberships: {
           type: 'hasMany',
           model: 'organization-membership',
@@ -152,6 +153,20 @@ const schemaDefinition: SchemaSettings = {
         type: { type: 'hasOne', model: 'applicationType', inverse: 'projects' },
       },
     },
+    projectImport: {
+      keys: { remoteId: {} },
+      attributes: {
+        importData: { type: 'string' },
+        dateCreated: { type: 'date' },
+        dateUpdated: { type: 'date' },
+      },
+      relationships: {
+        organization: { type: 'hasOne', model: 'organization', inverse: 'projectImports' },
+        owner: { type: 'hasOne', model: 'user', inverse: 'projectImports' },
+        group: { type: 'hasOne', model: 'group', inverse: 'projectImports' },
+        type: { type: 'hasOne', model: 'applicationType', inverse: 'projectImports' },
+      },
+    },
     applicationType: {
       keys: { remoteId: {} },
       attributes: {
@@ -160,6 +175,7 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         projects: { type: 'hasMany', model: 'project', inverse: 'type' },
+        projectImports: { type: 'hasMany', model: 'projectImport', inverse: 'type' },
         productDefinitions: { type: 'hasMany', model: 'productDefinition', inverse: 'type' },
       },
     },
@@ -354,6 +370,7 @@ const schemaDefinition: SchemaSettings = {
       relationships: {
         groupMemberships: { type: 'hasMany', model: 'groupMembership', inverse: 'group' },
         projects: { type: 'hasMany', model: 'project', inverse: 'group' },
+        projectImports: { type: 'hasMany', model: 'projectImport', inverse: 'group' },
         owner: { type: 'hasOne', model: 'organization', inverse: 'groups' },
       },
     },
@@ -395,6 +412,7 @@ const schemaDefinition: SchemaSettings = {
         organizations: { type: 'hasMany', model: 'organization', inverse: 'users' },
         assignedTasks: { type: 'hasMany', model: 'userTask', inverse: 'assigned' },
         projects: { type: 'hasMany', model: 'project', inverse: 'owner' },
+        projectImports: { type: 'hasMany', model: 'projectImport', inverse: 'owner' },
         userRoles: { type: 'hasMany', model: 'userRole', inverse: 'user' },
         groups: { type: 'hasMany', model: 'group', inverse: 'users' },
         notifications: { type: 'hasMany', model: 'notification', inverse: 'user' },
