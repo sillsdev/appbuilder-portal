@@ -241,6 +241,7 @@
     "claimOwnership": "Claim Ownership",
     "claimSuccess": "Succesfully Claimed",
     "newProject": "New Project",
+    "importProjects" : "Import Projects",
     "projectName": "Project Name",
     "noAvailableGroups": "There are no available groups for the selected organization",
     "projectDescription": "Description",
