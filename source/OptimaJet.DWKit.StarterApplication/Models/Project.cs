@@ -72,5 +72,11 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [Attr("date-active")]
         public DateTime? DateActive { get; set; }
+
+        [Attr("import")]
+        public virtual ProjectImport Import { get; set; }
+
+        [Attr("import-id")]
+        public int? ImportId { get; set; }
     }
 }
