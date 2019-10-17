@@ -83,7 +83,8 @@
     "organizationSettings": "Organization Settings",
     "adminSettings": "Admin",
     "projectDirectory": "Project Directory",
-    "addProject": "Add Project"
+    "addProject": "Add Project",
+    "importProjects": "Import Projects"
   },
   "invitations": {
     "orgPrompt": "Like to sign up your organization?",
