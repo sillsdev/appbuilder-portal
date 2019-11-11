@@ -40,6 +40,7 @@ export interface IOwnProps {
   groups: GroupResource[];
   roles: RoleResource[];
   organizations: OrganizationResource[];
+  userOrganizations: OrganizationResource[];
 }
 
 export type IProps = INeededProps & i18nProps & IActionProps & IOwnProps;
@@ -82,7 +83,7 @@ class Row extends React.Component<IProps> {
     return (
       <tr data-test-user-row={email || 'no-email-given'}>
         <td>
-          <Link data-test-user-table-username to={`/users/${userId}/edit`}>
+          <Link data-test-user-table-username to={`/users/${userId}/newedit/settings`}>
             {firstName} {lastName}
           </Link>
         </td>

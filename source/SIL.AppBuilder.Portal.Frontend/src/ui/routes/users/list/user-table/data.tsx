@@ -4,10 +4,12 @@ import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
 import { i18nProps } from '@lib/i18n';
 import { withNetwork as withUserList } from '@data/containers/resources/user/list';
 import { TYPE_NAME as GROUP } from '@data/models/group';
+import { PLURAL_NAME as GROUPS } from '@data/models/group';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as ROLE } from '@data/models/role';
 import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
 import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS } from '@data/models/organization-membership';
+import { PLURAL_NAME as USER_ROLES } from '@data/models/user-role';
 
 import {
   withLoader,
@@ -78,7 +80,7 @@ export function withData(WrappedComponent) {
   return compose(
     withCurrentOrganization,
     withUserList({
-      include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}.groups,${GROUP_MEMBERSHIPS}.${GROUP},user-roles`,
+      include: `${ORGANIZATION_MEMBERSHIPS}.${ORGANIZATION}.${GROUPS},${GROUP_MEMBERSHIPS}.${GROUP},${USER_ROLES}`,
     }),
     withLoader(({ users }) => !users),
     // this data must be retrieved after receiving the list of users
