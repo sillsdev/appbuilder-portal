@@ -57,8 +57,8 @@ export function CurrentUserFetcher({ children }) {
     users: cacheQuery(),
   });
   const { jwt, isLoggedIn } = useAuth();
-  const [refetchCount, setCount] = useState();
-  const refetch = useCallback(() => setCount(refetchCount + 1), [refetchCount]);
+  const [refetchCount, setRefetchCount] = useState(0);
+  const refetch = useCallback(() => setRefetchCount(refetchCount + 1), [refetchCount]);
   const options = useMemo(() => {
     return {
       method: 'GET',
