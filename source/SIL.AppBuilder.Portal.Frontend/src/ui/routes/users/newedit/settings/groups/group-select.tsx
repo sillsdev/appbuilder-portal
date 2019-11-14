@@ -3,13 +3,7 @@ import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 import { compareVia } from '@lib/collection';
 
-import {
-  GroupResource,
-  withLoader,
-  attributesFor,
-  OrganizationResource,
-  UserResource,
-} from '@data';
+import { GroupResource, attributesFor, OrganizationResource, UserResource } from '@data';
 
 import { Checkbox } from 'semantic-ui-react';
 import {
@@ -41,16 +35,16 @@ class GroupSelect extends React.Component<IProps> {
 
     return groups.map((group) => {
       const { name } = attributesFor(group);
-      const isSelected  = userHasGroup(group);
+      const isSelected = userHasGroup(group);
       return (
         <div
           className={`flex flex-row align-items-center
-          w-100 p-sm bg-lightest-gray fs-14 round-border-4
-          thin-bottom-border`}
+          w-100 p-sm fs-14`}
         >
           <div key={group.id} className='item' onClick={this.toggleGroup(group)}>
             <Checkbox
               data-test-multi-group-checkbox
+              toggle
               value={group.id}
               label={name}
               checked={isSelected}

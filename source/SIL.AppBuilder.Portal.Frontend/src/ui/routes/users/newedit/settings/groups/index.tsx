@@ -1,36 +1,43 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
 import { compareVia } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import {
-  withDataActions,
-  IProvidedProps,
-} from '@data/containers/resources/group/with-data-actions';
 import { withRelationships } from '@data/containers/with-relationship';
-import { Toggle, toggleCreator } from 'react-state-helpers';
 
-import Form from './form';
-import List from './list';
+import { RequireRole } from '~/ui/components/authorization';
+
+import { ROLE } from '~/data/models/role';
+
+import { UserResource } from '@data/models/user';
+
+import ActiveGroupsDisplay from './active-groups-display';
 import GroupSelect from './group-select';
 
-import { withLoader, GroupResource, OrganizationResource, attributesFor, idFor, relationshipFor, recordsWithIdIn } from '@data';
-import { UserResource } from '@data/models/user';
+import {
+  GroupResource,
+  OrganizationResource,
+  attributesFor,
+  idFor,
+  relationshipFor,
+  recordsWithIdIn,
+} from '@data';
 
 export const pathName = '/users/:userId/newedit/settings/groups';
 
-export interface IProps {
+export interface INeededProps {
   user: UserResource;
   organizations: OrganizationResource[];
 }
-interface IState {
-  showForm: boolean;
-  groupToEdit: GroupResource;
+interface IOwnProps {
+  groups: GroupResource[];
+  currentUser: UserResource;
 }
 
-class GroupsRoute extends React.Component<IProps, IState> {
+type IProps = INeededProps & i18nProps & IOwnProps;
+
+class GroupsRoute extends React.Component<IProps> {
   render() {
-    const { organizations, user } = this.props;
+    const { organizations, user, groups } = this.props;
     organizations.sort(compareVia((org) => attributesFor(org).name.toLowerCase()));
     return organizations.map((organization) => {
       const organizationName = attributesFor(organization).name.toUpperCase();
@@ -38,13 +45,30 @@ class GroupsRoute extends React.Component<IProps, IState> {
         organization,
         user,
       };
+      const groupProps = {
+        organization,
+        user,
+        groups,
+      };
 
       return (
         <div data-test-groups-active key={organization.id}>
           <div className='p-t-md p-b-sm'>
             <span className='bold fs-14'>{organizationName}</span>
           </div>
-          <GroupSelect {...groupCheckboxesProps} />
+          <RequireRole
+            roleName={ROLE.OrganizationAdmin}
+            forOrganization={organization}
+            componentOnForbidden={() => {
+              return (
+                <span className='item'>
+                  <ActiveGroupsDisplay {...groupProps} />
+                </span>
+              );
+            }}
+          >
+            <GroupSelect {...groupCheckboxesProps} />
+          </RequireRole>
         </div>
       );
     });

@@ -3,7 +3,7 @@ import * as toast from '@lib/toast';
 import { compose, withProps, mapProps } from 'recompose';
 import { match as Match } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
-import { withData as withOrbit, ILegacyProvidedProps, WithDataProps } from 'react-orbitjs';
+import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
 import NotFound from '@ui/routes/errors/not-found';
 import pick from 'lodash/pick';
 
@@ -12,18 +12,15 @@ import {
   GroupResource,
   RoleResource,
   OrganizationResource,
-  attributesFor,
-  idFromRecordIdentity,
   withLoader,
   buildFindRecord,
   buildOptions,
   update,
-  defaultOptions,
 } from '@data';
-import { withRole, isUserASuperAdmin } from '@data/containers/with-role';
 
+import { withRole, isUserASuperAdmin } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
-import { ICurrentUserProps, withCurrentUserContext } from '@data/containers/with-current-user';
+import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { withRelationships } from '@data/containers/with-relationship';
 import { UserAttributes, TYPE_NAME, UserResource } from '@data/models/user';
 import { withTranslations, i18nProps } from '@lib/i18n';
@@ -33,9 +30,9 @@ import {
 } from '@data/containers/resources/organization/with-data-actions';
 
 import ProfileRoute, { pathName as profilePath } from './profile';
-import GroupsRoute, {pathName as groupsPath } from './groups';
+import GroupsRoute, { pathName as groupsPath } from './groups';
+import RolesRoute, { pathName as rolesPath } from './roles';
 import Navigation from './navigation';
-import { organizations } from '../../../projects/new/__tests__/scenarios';
 
 export const pathName = '/users/:userId/newedit';
 
@@ -46,6 +43,7 @@ export interface IOwnProps {
   groups: GroupResource[];
   organizations: OrganizationResource[];
   userOrganizations: OrganizationResource[];
+  roles: RoleResource[];
 }
 interface PassedProps {
   match: Match<Params>;
@@ -55,7 +53,12 @@ interface QueriedProps {
   user: UserResource;
 }
 
-export type IProps = PassedProps & QueriedProps & i18nProps & ILegacyProvidedProps & IDataActionsProps & IOwnProps;
+export type IProps = PassedProps &
+  QueriedProps &
+  i18nProps &
+  ILegacyProvidedProps &
+  IDataActionsProps &
+  IOwnProps;
 
 class SettingsRoute extends React.Component<IProps> {
   updateProfile = async (attributes: UserAttributes): Promise<void> => {
@@ -70,7 +73,7 @@ class SettingsRoute extends React.Component<IProps> {
   };
 
   render() {
-    const { user, t, organizations } = this.props;
+    const { user, t, organizations, roles } = this.props;
     if (!user) {
       return (
         <div className='m-t-xl'>
@@ -86,11 +89,18 @@ class SettingsRoute extends React.Component<IProps> {
     const groupSettingsProps = {
       user,
       organizations,
-    }
+    };
+    const roleSettingsProps = {
+      user,
+      organizations,
+      roles,
+    };
 
     return (
       <div className='ui container'>
-        <h2 className='page-heading page-heading-border-sm'>{t('users.settingsTitle')}</h2>
+        <h2 className='page-heading page-heading-border-sm'>
+          {t('users.settingsTitle')}: {user && user.attributes.givenName}
+        </h2>
         <div className='flex-column-xs flex-row-sm align-items-start-sm'>
           <Navigation />
 
@@ -105,6 +115,10 @@ class SettingsRoute extends React.Component<IProps> {
                 path={groupsPath}
                 render={(routeProps) => <GroupsRoute {...routeProps} {...groupSettingsProps} />}
               />
+              <Route
+                path={rolesPath}
+                render={(routeProps) => <RolesRoute {...routeProps} {...roleSettingsProps} />}
+              />
             </Switch>
           </div>
         </div>
@@ -114,11 +128,12 @@ class SettingsRoute extends React.Component<IProps> {
 }
 
 export default compose(
-  withDataActions, 
+  withDataActions,
   withTranslations,
   query(({ match: { params: { userId } } }) => ({
     cacheKey: [`user-${userId}`],
-    user: [(q) => buildFindRecord(q, TYPE_NAME, userId),      
+    user: [
+      (q) => buildFindRecord(q, TYPE_NAME, userId),
       buildOptions({
         include: [
           'organization-memberships.organization',
@@ -130,10 +145,14 @@ export default compose(
     allOrganizations: [
       (q) => q.findRecords('organization'),
       buildOptions({
-        include: [
-          'groups',
-        ]
-      })
+        include: ['groups'],
+      }),
+    ],
+    allRoles: [
+      (q) => q.findRecords('role'),
+      buildOptions({
+        include: ['user-roles'],
+      }),
     ],
   })),
   withCurrentUserContext,

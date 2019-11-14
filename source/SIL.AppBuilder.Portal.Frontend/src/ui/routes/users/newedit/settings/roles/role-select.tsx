@@ -49,7 +49,7 @@ class RoleSelect extends React.Component<IProps> {
           }
 
           return (
-            <Form.Field key={role.id} className='item flex-row align-items-center m-b-sm'>
+            <Form.Field key={role.id} className='item flex-row align-items-center p-sm'>
               <Checkbox
                 data-test-role-select
                 toggle
