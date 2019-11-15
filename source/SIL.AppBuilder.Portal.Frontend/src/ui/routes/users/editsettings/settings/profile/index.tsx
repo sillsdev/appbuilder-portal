@@ -21,7 +21,7 @@ export interface IState {
   emailNotification: boolean;
   profileVisibility: number;
 }
-export const pathName = '/users/:userId/newedit/settings';
+export const pathName = '/users/:userId/editsettings/settings';
 
 const PUBLIC_PROFILE = 1;
 const PRIVATE_PROFILE = 0;

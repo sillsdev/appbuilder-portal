@@ -40,7 +40,7 @@ export default compose<IProps, INeededProps>(
   withGroupMemberships
 )(
   React.memo((props: IProps) => {
-    const { user, organization, groups, userHasGroup, t } = props;
+    const { organization, groups, userHasGroup, t } = props;
 
     const activeGroups = groups.filter((group) => {
       return userHasGroup(group) && isRelatedTo(group, 'owner', organization.id);

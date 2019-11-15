@@ -34,7 +34,7 @@ import GroupsRoute, { pathName as groupsPath } from './groups';
 import RolesRoute, { pathName as rolesPath } from './roles';
 import Navigation from './navigation';
 
-export const pathName = '/users/:userId/newedit';
+export const pathName = '/users/:userId/editsettings';
 
 export interface Params {
   userId: string;
