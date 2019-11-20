@@ -48,7 +48,7 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
 
       const importData = await toEscapedString(jsonfile);
       await create({ importData }, groupId, typeId);
-
+      toast.success(t('projectImport.createSuccess'));
       history.push(`/`);
     } catch (e) {
       toast.error(e);

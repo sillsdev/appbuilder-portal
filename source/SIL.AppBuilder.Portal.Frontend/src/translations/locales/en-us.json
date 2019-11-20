@@ -222,7 +222,7 @@
       "dropdown": {
         "orgProjects": "Organization Projects",
         "myProjects": "My Projects",
-	"activeProjects": "Active Projects",
+        "activeProjects": "Active Projects",
         "archived": "Archived Projects",
         "all": "All Projects"
       }
@@ -237,7 +237,8 @@
     "filterAllProjects": "All projects that contain..."
   },
   "projectImport": {
-    "importFile": "Import JSON File"
+    "importFile": "Import JSON File",
+    "createSuccess": "Project Import successfully created. You will receive an email when the import is completed."
   },
   "project": {
     "title": "Project",
@@ -474,7 +475,7 @@
         "description": "Description",
         "workflowScheme": "Workflow Scheme",
         "workflowBusinessFlow": "Workflow Business Flow",
-	      "properties": "Properties",
+        "properties": "Properties",
         "add": "Add Workflow Definition",
         "edit": "Edit Workflow Definition",
         "storeType": "Store Type",
