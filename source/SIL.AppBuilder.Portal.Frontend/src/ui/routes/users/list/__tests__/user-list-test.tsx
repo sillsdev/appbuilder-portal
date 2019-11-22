@@ -2,11 +2,7 @@ import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
-import {
-  setupApplicationTest,
-  useFakeAuthentication,
-  fakeAuth0Id,
-} from 'tests/helpers';
+import { setupApplicationTest, useFakeAuthentication, fakeAuth0Id } from 'tests/helpers';
 import { roles, userRoleFrom } from 'tests/helpers/fixtures';
 import i18n from '@translations/index';
 

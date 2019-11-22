@@ -2,10 +2,7 @@ import { describe, beforeEach, it } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
-import {
-  setupApplicationTest,
-  useFakeAuthentication,
-} from 'tests/helpers';
+import { setupApplicationTest, useFakeAuthentication } from 'tests/helpers';
 
 import UserTableInteractor from './-user-table';
 
