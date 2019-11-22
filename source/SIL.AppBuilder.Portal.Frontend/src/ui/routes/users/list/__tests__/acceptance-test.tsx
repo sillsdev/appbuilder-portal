@@ -4,7 +4,6 @@ import { when } from '@bigtest/convergence';
 import { expect } from 'chai';
 import {
   setupApplicationTest,
-  setupRequestInterceptor,
   useFakeAuthentication,
 } from 'tests/helpers';
 

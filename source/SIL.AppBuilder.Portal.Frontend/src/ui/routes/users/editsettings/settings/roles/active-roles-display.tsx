@@ -43,8 +43,12 @@ export default compose<IProps, INeededProps>(
     .sort(compareVia((r) => attributesFor(r).roleName));
 
   if (activeRoles.length === 0) {
-    return <span>{t('users.noRoles')}</span>;
+    return <span data-test-roles-list>{t('users.noRoles')}</span>;
   }
 
-  return <span>{activeRoles.map((role) => attributesFor(role).roleName).join(', ')}</span>;
+  return (
+    <span data-test-roles-list>
+      {activeRoles.map((role) => attributesFor(role).roleName).join(', ')}
+    </span>
+  );
 });

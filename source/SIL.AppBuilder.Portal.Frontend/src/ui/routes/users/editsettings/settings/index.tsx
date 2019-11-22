@@ -97,7 +97,7 @@ class SettingsRoute extends React.Component<IProps> {
     };
 
     return (
-      <div className='ui container'>
+      <div className='ui container' data-test-editsettings-manager>
         <h2 className='page-heading page-heading-border-sm'>
           {t('users.settingsTitle')}: {user && user.attributes.givenName}
         </h2>

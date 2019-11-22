@@ -22,7 +22,7 @@ interface IOwnProps {
 
 type IProps = INeededProps & i18nProps & IOwnProps;
 
-function MultiGroupSelect({ organizations, user, groups }: IProps) {
+function MultiGroupList({ organizations, user, groups }: IProps) {
   const groupList = (
     <GroupListByOrganization groups={groups} user={user} organizations={organizations} />
   );
@@ -54,4 +54,4 @@ export default compose<IProps, INeededProps>(
 
     return { groups };
   })
-)(MultiGroupSelect);
+)(MultiGroupList);

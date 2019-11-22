@@ -52,42 +52,49 @@ class RolesRoute extends React.Component<IProps> {
     }
 
     organizations.sort(compareVia((org) => attributesFor(org).name.toLowerCase()));
-    return organizations.map((organization) => {
-      const organizationName = attributesFor(organization).name;
-      const roleProps = {
-        organization,
-        user,
-        roles,
-        userRoles,
-      };
-      return (
-        <div data-test-roles-active key={organization.id}>
-          <div className='p-t-md p-b-sm'>
-            <span className='bold fs-14'>{organizationName}</span>
-          </div>
-          {editable && (
-            <RequireRole
-              roleName={ROLE.OrganizationAdmin}
-              forOrganization={organization}
-              componentOnForbidden={() => {
-                return (
-                  <span className='item'>
-                    <ActiveRolesDisplay {...roleProps} />
-                  </span>
-                );
-              }}
-            >
-              <RoleSelect {...roleProps} />
-            </RequireRole>
-          )}
-          {!editable && (
-            <span className='item'>
-              <ActiveRolesDisplay {...roleProps} />
-            </span>
-          )}
-        </div>
-      );
-    });
+    return (
+      <div data-test-role-tab>
+        {' '}
+        {organizations.map((organization) => {
+          const organizationName = attributesFor(organization).name.toUpperCase();
+          const roleProps = {
+            organization,
+            user,
+            roles,
+            userRoles,
+          };
+          return (
+            <div data-test-roles-active key={organization.id}>
+              <div className='p-t-md p-b-sm'>
+                <span data-test-organization-name className='bold fs-14'>
+                  {organizationName}
+                </span>
+              </div>
+              {editable && (
+                <RequireRole
+                  roleName={ROLE.OrganizationAdmin}
+                  forOrganization={organization}
+                  componentOnForbidden={() => {
+                    return (
+                      <span className='item'>
+                        <ActiveRolesDisplay {...roleProps} />
+                      </span>
+                    );
+                  }}
+                >
+                  <RoleSelect {...roleProps} />
+                </RequireRole>
+              )}
+              {!editable && (
+                <span className='item'>
+                  <ActiveRolesDisplay {...roleProps} />
+                </span>
+              )}
+            </div>
+          );
+        })}{' '}
+      </div>
+    );
   }
 }
 

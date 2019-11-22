@@ -14,8 +14,10 @@ export default ({ organizations, user, groups }) => {
     };
 
     return (
-      <div data-test-groups-active key={organization.id}>
-        <span className='bold fs-11'>{organizationName}</span>
+      <div key={organization.id} data-test-groups-active>
+        <span className='bold fs-11' data-test-organization-name>
+          {organizationName}
+        </span>
         <br />
         <ActiveGroupsDisplay {...groupProps} />
       </div>

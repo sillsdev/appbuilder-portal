@@ -39,39 +39,44 @@ class GroupsRoute extends React.Component<IProps> {
   render() {
     const { organizations, user, groups } = this.props;
     organizations.sort(compareVia((org) => attributesFor(org).name.toLowerCase()));
-    return organizations.map((organization) => {
-      const organizationName = attributesFor(organization).name.toUpperCase();
-      const groupCheckboxesProps = {
-        organization,
-        user,
-      };
-      const groupProps = {
-        organization,
-        user,
-        groups,
-      };
-
-      return (
-        <div data-test-groups-active key={organization.id}>
-          <div className='p-t-md p-b-sm'>
-            <span className='bold fs-14'>{organizationName}</span>
-          </div>
-          <RequireRole
-            roleName={ROLE.OrganizationAdmin}
-            forOrganization={organization}
-            componentOnForbidden={() => {
-              return (
-                <span className='item'>
-                  <ActiveGroupsDisplay {...groupProps} />
+    return (
+      <div data-test-group-tab>
+        {organizations.map((organization) => {
+          const organizationName = attributesFor(organization).name.toUpperCase();
+          const groupCheckboxesProps = {
+            organization,
+            user,
+          };
+          const groupProps = {
+            organization,
+            user,
+            groups,
+          };
+          return (
+            <div data-test-groups-active key={organization.id}>
+              <div className='p-t-md p-b-sm'>
+                <span className='bold fs-14' data-test-groups-organization-name>
+                  {organizationName}
                 </span>
-              );
-            }}
-          >
-            <GroupSelect {...groupCheckboxesProps} />
-          </RequireRole>
-        </div>
-      );
-    });
+              </div>
+              <RequireRole
+                roleName={ROLE.OrganizationAdmin}
+                forOrganization={organization}
+                componentOnForbidden={() => {
+                  return (
+                    <span className='item'>
+                      <ActiveGroupsDisplay {...groupProps} />
+                    </span>
+                  );
+                }}
+              >
+                <GroupSelect {...groupCheckboxesProps} />
+              </RequireRole>
+            </div>
+          );
+        })}{' '}
+      </div>
+    );
   }
 }
 

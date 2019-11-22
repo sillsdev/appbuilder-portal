@@ -17,7 +17,7 @@ export interface IOwnProps {
 
 export type IProps = IOwnProps & i18nProps;
 
-export function MultiRoleSelect(props: IProps) {
+export function MultiRoleList(props: IProps) {
   const { roles, organizations, user, t } = props;
 
   if (isEmpty(organizations)) {
@@ -35,4 +35,4 @@ export function MultiRoleSelect(props: IProps) {
   );
 }
 
-export default memo<IProps>(MultiRoleSelect, (prev, next) => prev.editable !== next.editable);
+export default memo<IProps>(MultiRoleList, (prev, next) => prev.editable !== next.editable);

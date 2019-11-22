@@ -38,10 +38,12 @@ class GroupSelect extends React.Component<IProps> {
       const isSelected = userHasGroup(group);
       return (
         <div
+          data-test-group-entry
+          key={group.id}
           className={`flex flex-row align-items-center
           w-100 p-sm fs-14`}
         >
-          <div key={group.id} className='item' onClick={this.toggleGroup(group)}>
+          <div data-test-group-check className='item' onClick={this.toggleGroup(group)}>
             <Checkbox
               data-test-multi-group-checkbox
               toggle

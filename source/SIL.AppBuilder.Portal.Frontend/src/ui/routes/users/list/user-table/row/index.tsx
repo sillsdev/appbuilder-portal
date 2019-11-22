@@ -14,7 +14,6 @@ import {
   OrganizationResource,
   attributesFor,
   idFromRecordIdentity,
-  withLoader,
 } from '@data';
 
 import { withRole, isUserASuperAdmin } from '@data/containers/with-role';
@@ -25,10 +24,9 @@ import {
 } from '@data/containers/resources/user/with-data-actions';
 import { withRelationships } from '@data/containers/with-relationship';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { areResourcesEqual } from '@lib/collection';
 
-import MultiGroupSelect from './multi-group-select';
-import MultiRoleSelect from './multi-role-select';
+import MultiGroupList from './multi-group-list';
+import MultiRoleList from './multi-role-list';
 
 export interface INeededProps {
   currentUser: UserResource;
@@ -88,10 +86,10 @@ class Row extends React.Component<IProps> {
           </Link>
         </td>
         <td data-test-role-selector>
-          <MultiRoleSelect user={user} roles={roles} organizations={organizations} />
+          <MultiRoleList user={user} roles={roles} organizations={organizations} />
         </td>
         <td>
-          <MultiGroupSelect user={user} organizations={organizations} />
+          <MultiGroupList user={user} organizations={organizations} />
         </td>
         <td>
           <Checkbox data-test-toggle-lock toggle onClick={this.toggleLock} checked={isActive} />

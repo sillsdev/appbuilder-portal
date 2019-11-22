@@ -5,7 +5,6 @@ import { OrganizationResource, UserResource, RoleResource, UserRoleResource } fr
 
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
-import { is } from '@bigtest/interactor';
 
 import Display from './display';
 

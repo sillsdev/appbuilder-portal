@@ -81,7 +81,7 @@ describe('Acceptance | Notifications', () => {
         expect(page.menu.isVisible).to.be.true;
       });
 
-      describe('Click close on an inividual notification', () => {
+      describe('Click close on an individual notification', () => {
         let notificationsCount;
         beforeEach(async () => {
           notificationsCount = page.notificationCount;

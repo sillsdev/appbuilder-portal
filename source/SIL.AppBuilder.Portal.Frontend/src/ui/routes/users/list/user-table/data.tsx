@@ -6,7 +6,6 @@ import { withNetwork as withUserList } from '@data/containers/resources/user/lis
 import { TYPE_NAME as GROUP } from '@data/models/group';
 import { PLURAL_NAME as GROUPS } from '@data/models/group';
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
-import { TYPE_NAME as ROLE } from '@data/models/role';
 import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
 import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS } from '@data/models/organization-membership';
 import { PLURAL_NAME as USER_ROLES } from '@data/models/user-role';
