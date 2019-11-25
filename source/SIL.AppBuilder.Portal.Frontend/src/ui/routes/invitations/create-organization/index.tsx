@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { match as Match, Redirect } from 'react-router';
-import { translate, TransProps as i18nProps } from 'react-i18next';
+import { match as Match } from 'react-router';
+import { TransProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 import { requireAuth } from '@lib/auth';
 import { withLayout } from '@ui/components/layout';

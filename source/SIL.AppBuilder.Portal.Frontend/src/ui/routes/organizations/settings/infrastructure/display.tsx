@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { match as Match } from 'react-router';
 import { Checkbox, Form, Button } from 'semantic-ui-react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 
 import { attributesFor, ORGANIZATIONS_TYPE } from '@data';
@@ -47,7 +46,7 @@ class InfrastructureDisplay extends React.Component<IProps & i18nProps> {
 
   render() {
     const { mut, toggle } = this;
-    const { organization, t } = this.props;
+    const { t } = this.props;
     const { useDefaultBuildEngine, buildEngineUrl, buildEngineApiAccessToken } = this.state;
 
     return (

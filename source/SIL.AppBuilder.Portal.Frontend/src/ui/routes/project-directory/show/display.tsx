@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { ProjectResource, attributesFor } from '@data';
+import { ProjectResource } from '@data';
 
 import { i18nProps } from '@lib/i18n';
 

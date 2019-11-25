@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import { useOrbit, attributesFor } from 'react-orbitjs';
 import Store from '@orbit/store';
 

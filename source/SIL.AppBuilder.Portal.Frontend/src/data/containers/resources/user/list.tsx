@@ -1,5 +1,3 @@
-import { compose } from 'recompose';
-
 import { query, buildOptions, UserResource } from '@data';
 
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';

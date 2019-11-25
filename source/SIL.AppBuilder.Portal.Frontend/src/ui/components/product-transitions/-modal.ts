@@ -5,7 +5,6 @@ import {
   text,
   clickable,
   hasClass,
-  scoped,
 } from '@bigtest/interactor';
 
 class TransitionDetailsModalInteractor {

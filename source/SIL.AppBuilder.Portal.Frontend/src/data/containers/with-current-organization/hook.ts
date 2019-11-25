@@ -7,7 +7,7 @@ import { useRouter } from '~/lib/hooks';
 import { useOrbit, localIdFromRecordIdentity, pushPayload } from 'react-orbitjs/dist';
 import _ from 'lodash';
 import Store from '@orbit/store';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { retrieveRelation } from '../with-relationship';
 import { useCurrentUser } from '../with-current-user';

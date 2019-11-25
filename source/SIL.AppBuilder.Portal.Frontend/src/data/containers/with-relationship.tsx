@@ -1,8 +1,7 @@
 import * as React from 'react';
 import Store from '@orbit/store';
-import { compose, withProps, getDisplayName } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
-import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
+import { withData as withOrbit } from 'react-orbitjs';
 import { Record } from '@orbit/data';
 import { assert } from '@orbit/utils';
 
@@ -70,7 +69,7 @@ export function retrieveRelation(dataStore: Store, relationshipArgs: Relationshi
     return retrieveManyToMany(dataStore, sourceModel, relationshipPath);
   }
 
-  return retriveDirectRelationship(dataStore, sourceModel, relationshipPath[0]);
+  return retriveDirectRelationship();
 }
 
 function retrieveManyToMany(
@@ -95,10 +94,7 @@ function retrieveManyToMany(
 }
 
 async function retriveDirectRelationship(
-  dataStore: Store,
-  sourceModel: ResourceObject,
-  relationshipName: string
-) {
+  ) {
   // TODO: add detection for hasOne vs hasMany, via lookup of the schema from dataStore
   throw new Error('not implemented');
 }

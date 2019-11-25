@@ -9,7 +9,7 @@ import {
 
 function Layout({ children }) {
   const [isSidebarVisible] = useSelectors((state) => state.ui.isSidebarVisible);
-  const [showSidebar, hideSidebar] = useActionCreators(showSidebarInStore, hideSidebarInStore);
+  const [hideSidebar] = useActionCreators(showSidebarInStore, hideSidebarInStore);
 
   const sidebarStatus = isSidebarVisible ? 'is-sidebar-visible' : 'is-sidebar-hidden';
 

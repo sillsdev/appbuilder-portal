@@ -2,10 +2,10 @@ import * as React from 'react';
 import CreateIcon from '@material-ui/icons/Create';
 import StoreIcon from '@material-ui/icons/Shop';
 import SyncIcon from '@material-ui/icons/Sync';
-import { useOrbit, localIdFromRecordIdentity } from 'react-orbitjs';
+import { useOrbit } from 'react-orbitjs';
 import { useRedux } from 'use-redux';
 
-import { attributesFor, idFromRecordIdentity, OrganizationResource, UserResource } from '@data';
+import { attributesFor, idFromRecordIdentity, OrganizationResource } from '@data';
 
 import { useTranslations } from '@lib/i18n';
 import { Link } from 'react-router-dom';

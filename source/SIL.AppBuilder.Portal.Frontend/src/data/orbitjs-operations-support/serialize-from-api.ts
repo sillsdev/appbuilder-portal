@@ -1,7 +1,7 @@
 import Store from '@orbit/store';
 import { JSONAPIDocument } from '@orbit/jsonapi';
 import { TransformBuilder } from '@orbit/data';
-import { pushPayload, localIdFromRecordIdentity, recordIdentityFrom } from 'react-orbitjs';
+import { pushPayload, recordIdentityFrom } from 'react-orbitjs';
 import { camelize } from '@orbit/utils';
 
 import { JSONAPIOperationsPayload } from './types';

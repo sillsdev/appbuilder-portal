@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import {
   ProductResource,
-  ProductDefinitionResource,
-  UserTaskResource,
   idFromRecordIdentity,
 } from '@data';
 
@@ -13,8 +11,6 @@ interface IOwnProps {
   product: ProductResource;
   name: string;
 }
-
-type IProps = IOwnProps;
 
 export default function ProductLink({ product, name }) {
   const downloadLinkMap = {

@@ -3,8 +3,6 @@ import { PageLoader as Loader } from '@ui/components/loaders';
 import { ErrorBoundary } from '@ui/components/errors';
 import { RouteBoundary } from '@ui/components/routing/boundaries';
 
-import { useRouter } from '~/lib/hooks';
-
 export const pathName = '/workflow';
 
 async function appendScriptToHead(path: string) {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
-import { Button, Card, Label } from 'semantic-ui-react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { Label } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductIcon from '@ui/components/product-icon';
@@ -16,10 +16,7 @@ import {
   ProjectResource,
   ProductDefinitionResource,
   UserResource,
-  withLoader,
 } from '@data';
-
-import productDefinitionSelect from '~/ui/components/inputs/product-definition-select';
 
 export interface IOwnProps {
   product: ProductResource;
@@ -68,13 +65,10 @@ class TaskRow extends React.Component<IProps> {
   };
   render() {
     const {
-      t,
       userTask,
       project,
       assignedTo,
       productDefinition,
-      cellClasses,
-      cellSecondaryClasses,
     } = this.props;
 
     const { comment, status, dateUpdated } = attributesFor(userTask);

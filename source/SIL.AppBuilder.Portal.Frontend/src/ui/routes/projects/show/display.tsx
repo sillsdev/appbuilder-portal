@@ -1,7 +1,7 @@
 import React from 'react';
 import { match as Match } from 'react-router';
 import { Tab, Menu } from 'semantic-ui-react';
-import { idFromRecordIdentity, useOrbit, pushPayload, attributesFor } from 'react-orbitjs';
+import { idFromRecordIdentity, useOrbit } from 'react-orbitjs';
 
 import { ProjectResource } from '@data';
 

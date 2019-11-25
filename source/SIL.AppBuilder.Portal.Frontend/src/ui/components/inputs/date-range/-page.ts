@@ -1,8 +1,6 @@
 import {
   interactor,
   clickable,
-  text,
-  selectable,
   value,
   fillable,
   isPresent,

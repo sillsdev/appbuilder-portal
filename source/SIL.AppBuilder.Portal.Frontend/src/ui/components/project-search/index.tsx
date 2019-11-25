@@ -1,6 +1,5 @@
 import * as React from 'react';
 import QueryAssist from 'react-query-assist';
-import { IFilter } from '@data/containers/api/with-filtering';
 
 // For use after MVP and resolution of this issue:
 // https://github.com/timberio/react-query-assist/issues/25

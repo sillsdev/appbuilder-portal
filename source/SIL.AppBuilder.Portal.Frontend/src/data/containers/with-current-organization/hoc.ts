@@ -1,10 +1,9 @@
-import { withData, WithDataProps } from 'react-orbitjs';
 import { RouteChildrenProps } from 'react-router';
 import { connect } from 'react-redux';
-import { compose, withProps, branch, renderComponent } from 'recompose';
+import { compose, withProps, branch } from 'recompose';
 import { State } from '@store/reducers';
 
-import { withLoader, buildFindRecord, OrganizationResource, idFromRecordIdentity } from '@data';
+import { withLoader, idFromRecordIdentity } from '@data';
 
 import { setCurrentOrganization } from '@store/data';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
@@ -69,7 +68,7 @@ export const withCurrentOrganization = compose<IProps, IProvidedProps>(
     )
   ),
   withProps((props: IProps) => {
-    const { currentOrganizationId, currentOrganization, setCurrentOrganizationId } = props;
+    const { currentOrganizationId, currentOrganization } = props;
 
     return {
       currentOrganization: currentOrganization || null,

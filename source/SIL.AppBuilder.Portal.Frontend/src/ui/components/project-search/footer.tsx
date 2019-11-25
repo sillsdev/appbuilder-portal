@@ -33,7 +33,7 @@ const descriptions = {
 export default class SearchFooter extends React.Component<IProps> {
   render() {
     const { keyword } = this.props;
-    const { example, description } = descriptions[keyword];
+    const { example } = descriptions[keyword];
 
     return (
       <footer className='tokenized-search-footer'>

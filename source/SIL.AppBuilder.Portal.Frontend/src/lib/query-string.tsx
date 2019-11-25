@@ -1,7 +1,6 @@
 import * as qs from 'querystring';
 
 import * as React from 'react';
-import { assert } from '@lib/debug';
 
 import { useRouter } from '~/lib/hooks';
 

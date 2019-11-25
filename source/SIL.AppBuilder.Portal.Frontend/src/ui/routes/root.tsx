@@ -5,8 +5,6 @@ import { Route } from '~/lib/routing';
 
 import { ToastContainer } from 'react-toastify';
 
-import { AuthConsumer } from '~/data/containers/with-auth';
-
 import { LoadCurrentUser } from '~/data/containers/with-current-user';
 
 import LoginRoute from '@ui/routes/login';

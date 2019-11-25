@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { withOrbit, useOrbit, idFromRecordIdentity, attributesFor } from 'react-orbitjs';
+import { withOrbit, useOrbit, attributesFor } from 'react-orbitjs';
 
 import {
   defaultOptions,
@@ -19,7 +19,6 @@ import { requireProps } from '@lib/debug';
 import * as toast from '@lib/toast';
 import { useTranslations } from '@lib/i18n';
 import { ProductDefinitionResource } from '@data/models/product-definition';
-import { buildFindRecord } from '@data/store-helpers';
 
 export interface IProvidedProps {
   updateAttribute: (attribute: string, value: any) => Promise<any>;
@@ -162,7 +161,7 @@ export function withDataActions<T>(WrappedComponent) {
     };
 
     updateProduct = (productDefinition, store?: StoreResource) => {
-      const { project, products, dataStore } = this.props;
+      const { project, dataStore } = this.props;
 
       const productSelected = this.productForProductDefinition(productDefinition);
 

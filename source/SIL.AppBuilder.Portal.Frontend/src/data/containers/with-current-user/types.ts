@@ -1,6 +1,6 @@
-import { SingleResourceDoc, ResourceObject } from 'jsonapi-typescript';
+import { SingleResourceDoc } from 'jsonapi-typescript';
 
-import { UserResource, OrganizationResource } from '@data';
+import { UserResource } from '@data';
 
 import { USERS_TYPE } from '@data';
 

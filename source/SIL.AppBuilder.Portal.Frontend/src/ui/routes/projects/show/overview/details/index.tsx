@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { useOrbit } from 'react-orbitjs';
-import { Form } from 'semantic-ui-react';
 
-import { ProjectResource, ApplicationTypeResource, attributesFor, recordIdentityFrom } from '@data';
+import { ProjectResource, attributesFor } from '@data';
 
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import { useTranslations } from '@lib/i18n';

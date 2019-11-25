@@ -7,12 +7,10 @@ import { ErrorBoundary, PageError } from '~/ui/components/errors';
 
 import { useTranslations } from '~/lib/i18n';
 
-import { isTesting } from '~/env';
-
 const namespace = 'ldml';
 
 function LocaleLoader() {
-  const { t, i18n } = useTranslations();
+  const { i18n } = useTranslations();
   const { language } = i18n;
   const { error, data } = useFetch(`/assets/language/${language}/${namespace}.json`);
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Popup } from 'semantic-ui-react';
 
-import { OrganizationResource, GroupResource, TEMP_DEFAULT_PAGE_SIZE } from '@data';
+import { OrganizationResource, GroupResource } from '@data';
 
 import { ISortProps } from '@data/containers/api/sorting';
 import { IPaginateProps } from '@data/containers/api/pagination';
@@ -10,7 +10,6 @@ import { i18nProps, useTranslations } from '@lib/i18n';
 import { IDataProps, IColumnProps } from '@ui/components/project-table';
 import { PaginationFooter } from '@data/containers/api/pagination-footer';
 import DebouncedSearch from '@ui/components/inputs/debounced-search-field';
-import { ErrorMessage } from '@ui/components/errors';
 import Table from '@ui/components/project-table/table';
 
 import Filters from './filters';
@@ -58,7 +57,6 @@ export default function DirectoryDisplay(props: IProps) {
     updateFilter({ attribute: 'search-term', value });
   };
 
-  const numProjects = projects && projects.length;
   /* TODO: figure out how to disable certain pagination buttons */
 
   return (

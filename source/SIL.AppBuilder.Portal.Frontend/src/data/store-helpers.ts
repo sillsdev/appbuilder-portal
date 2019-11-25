@@ -1,12 +1,7 @@
-import * as qs from 'querystring';
 
 import Store from '@orbit/store';
 import {
   QueryBuilder,
-  QueryOrExpression,
-  FindRecordTerm,
-  FindRecord,
-  QueryExpression,
 } from '@orbit/data';
 import { camelize } from '@orbit/utils';
 import { ResourceObject, AttributesObject } from 'jsonapi-typescript';

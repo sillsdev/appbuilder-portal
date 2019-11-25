@@ -7,7 +7,7 @@ import { useDataActions } from '@data/containers/resources/project/with-data-act
 import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
 
-import { attributesFor, ProjectResource, UserResource } from '@data';
+import { attributesFor, ProjectResource } from '@data';
 
 import { useTranslations } from '@lib/i18n';
 

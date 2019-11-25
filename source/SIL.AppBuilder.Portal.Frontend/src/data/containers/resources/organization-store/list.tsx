@@ -1,6 +1,5 @@
-import { compose } from 'recompose';
 
-import { query, buildOptions, OrganizationStoreResource, OrganizationResource } from '@data';
+import { query, buildOptions, OrganizationStoreResource } from '@data';
 
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';
 import { IPaginateProps } from '@data/containers/api/pagination';
@@ -16,7 +15,7 @@ export interface IProvidedProps {
 
 type IProps = IFilterProps & IPaginateProps & IOrgProps & ISortProps;
 
-export function withNetwork<TWrappedProps>(options = {}) {
+export function withNetwork<TWrappedProps>() {
   return (WrappedComponent) => {
     function mapNetworkToProps(passedProps: TWrappedProps & IProps & INeededProps) {
       const {

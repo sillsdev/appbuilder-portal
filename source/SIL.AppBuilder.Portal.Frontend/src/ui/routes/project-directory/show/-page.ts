@@ -2,9 +2,7 @@ import {
   interactor,
   clickable,
   text,
-  fillable,
   isPresent,
-  collection,
   scoped,
   Interactor,
 } from '@bigtest/interactor';

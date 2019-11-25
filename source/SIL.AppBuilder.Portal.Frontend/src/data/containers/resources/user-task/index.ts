@@ -6,8 +6,6 @@ import { TaskResource } from '~/data';
 
 import { relationsFromPath } from '~/data/containers/with-relationship';
 
-import * as env from '@env';
-
 export { withNetwork as withUserTaskList, IProvidedProps as IUserTaskListProps } from './list';
 
 export function useUserTaskHelpers() {
@@ -17,7 +15,7 @@ export function useUserTaskHelpers() {
   const pathToWorkflow = (task: TaskResource) => {
     if (!task) return null;
 
-    const [product, _, workflow] = relationsFromPath(dataStore, task, [
+    const [product,, workflow] = relationsFromPath(dataStore, task, [
       'product',
       'productDefinition',
       'workflow',

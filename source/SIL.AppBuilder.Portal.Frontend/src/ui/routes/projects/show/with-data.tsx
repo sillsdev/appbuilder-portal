@@ -9,8 +9,6 @@ import { PageError } from '~/ui/components/errors';
 
 import { useRouter } from '~/lib/hooks';
 
-import { useLiveData } from '~/data/live';
-
 export function withData(WrappedComponent) {
   return function ProjectDataFetcher(props) {
     const { match } = useRouter();

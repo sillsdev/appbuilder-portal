@@ -18,8 +18,6 @@ import {
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 import { attributesFor } from '@data/helpers';
 
-import { idFromRecordIdentity } from '@data';
-
 import UserInput from './user-input';
 interface IOwnProps {}
 

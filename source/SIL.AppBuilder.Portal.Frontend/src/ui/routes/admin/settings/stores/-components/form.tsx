@@ -1,9 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { withValue } from 'react-state-helpers';
 
-import { query } from '@data';
 
-import { attributesFor, useOrbit, useQuery, idFromRecordIdentity } from 'react-orbitjs';
+import { attributesFor, useOrbit, useQuery } from 'react-orbitjs';
 import { Dropdown } from 'semantic-ui-react';
 
 import { buildOptions } from '~/data';

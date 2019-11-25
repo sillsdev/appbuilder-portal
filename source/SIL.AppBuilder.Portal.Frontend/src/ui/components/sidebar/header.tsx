@@ -1,10 +1,8 @@
-import React, { useLayoutEffect, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import CloseIcon from '@material-ui/icons/Close';
-import { compose } from 'recompose';
 import { ResourceObject } from 'jsonapi-typescript';
-import { withRouter } from 'react-router-dom';
 
 import { idFromRecordIdentity } from '@data';
 
@@ -13,13 +11,9 @@ import { OrganizationAttributes } from '@data/models/organization';
 import { ORGANIZATIONS_TYPE, attributesFor } from '@data';
 
 import {
-  withCurrentOrganization,
   useCurrentOrganization,
 } from '@data/containers/with-current-organization';
-import { withTranslations, i18nProps, useTranslations } from '@lib/i18n';
-import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
-import { withRelationships } from '@data/containers/with-relationship';
-import { useOrbit } from 'react-orbitjs/dist';
+import { useTranslations } from '@lib/i18n';
 
 export interface IProps {
   closeSidebar: () => void;
@@ -49,7 +43,6 @@ export default function SidebarHeader(props: IProps) {
   const {
     currentOrganization,
     organizationsAvailableToUser,
-    currentUserOrganizations,
     currentOrganizationId,
     setCurrentOrganizationId,
   } = useCurrentOrganization();

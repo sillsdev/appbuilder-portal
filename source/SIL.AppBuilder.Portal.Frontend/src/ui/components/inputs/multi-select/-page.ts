@@ -1,7 +1,5 @@
 import {
-  scoped,
   isPresent,
-  hasClass,
   text,
   collection,
   clickable,
