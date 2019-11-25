@@ -1,8 +1,5 @@
-
 import Store from '@orbit/store';
-import {
-  QueryBuilder,
-} from '@orbit/data';
+import { QueryBuilder } from '@orbit/data';
 import { camelize } from '@orbit/utils';
 import { ResourceObject, AttributesObject } from 'jsonapi-typescript';
 

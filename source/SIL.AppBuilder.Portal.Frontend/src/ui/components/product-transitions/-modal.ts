@@ -1,11 +1,4 @@
-import {
-  interactor,
-  Interactor,
-  collection,
-  text,
-  clickable,
-  hasClass,
-} from '@bigtest/interactor';
+import { interactor, Interactor, collection, text, clickable, hasClass } from '@bigtest/interactor';
 
 class TransitionDetailsModalInteractor {
   static defaultScope = '[data-test-transitions-modal]';

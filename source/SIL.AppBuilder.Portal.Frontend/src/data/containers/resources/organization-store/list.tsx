@@ -1,4 +1,3 @@
-
 import { query, buildOptions, OrganizationStoreResource } from '@data';
 
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';

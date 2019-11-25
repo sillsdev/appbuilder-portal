@@ -1,4 +1,4 @@
-import React, {  } from 'react';
+import React from 'react';
 import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import { APIProvider, strategies } from 'react-orbitjs';

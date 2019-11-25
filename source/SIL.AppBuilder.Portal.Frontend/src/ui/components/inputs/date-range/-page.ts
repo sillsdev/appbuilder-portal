@@ -1,11 +1,4 @@
-import {
-  interactor,
-  clickable,
-  value,
-  fillable,
-  isPresent,
-  Interactor,
-} from '@bigtest/interactor';
+import { interactor, clickable, value, fillable, isPresent, Interactor } from '@bigtest/interactor';
 
 class Range {
   toSet = fillable('[data-test-range-to] input');

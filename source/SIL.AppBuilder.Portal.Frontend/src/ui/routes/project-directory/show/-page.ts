@@ -1,11 +1,4 @@
-import {
-  interactor,
-  clickable,
-  text,
-  isPresent,
-  scoped,
-  Interactor,
-} from '@bigtest/interactor';
+import { interactor, clickable, text, isPresent, scoped, Interactor } from '@bigtest/interactor';
 
 class Page {
   organizationName = text('[data-test-org-name]');

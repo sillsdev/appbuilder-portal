@@ -4,13 +4,7 @@ import { compose } from 'recompose';
 import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import ResponsiveNav from '@ui/components/semantic-extensions/responsive-sub-navigation';
 
-import {
-  infoPath,
-  productsPath,
-  storesPath,
-  groupsPath,
-  infrastructurePath,
-} from '../routes';
+import { infoPath, productsPath, storesPath, groupsPath, infrastructurePath } from '../routes';
 
 import { withTranslations } from '~/lib/i18n';
 

@@ -64,12 +64,7 @@ class TaskRow extends React.Component<IProps> {
     return value;
   };
   render() {
-    const {
-      userTask,
-      project,
-      assignedTo,
-      productDefinition,
-    } = this.props;
+    const { userTask, project, assignedTo, productDefinition } = this.props;
 
     const { comment, status, dateUpdated } = attributesFor(userTask);
     const { name: projectName } = attributesFor(project);

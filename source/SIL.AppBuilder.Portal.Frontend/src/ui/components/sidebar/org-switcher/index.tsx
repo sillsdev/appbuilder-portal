@@ -1,6 +1,4 @@
-import {
-  useCurrentOrganization,
-} from '@data/containers/with-current-organization';
+import { useCurrentOrganization } from '@data/containers/with-current-organization';
 import React from 'react';
 
 import { useOrgSwitcherData } from './with-data';

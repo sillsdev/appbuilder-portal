@@ -93,8 +93,7 @@ function retrieveManyToMany(
   });
 }
 
-async function retriveDirectRelationship(
-  ) {
+async function retriveDirectRelationship() {
   // TODO: add detection for hasOne vs hasMany, via lookup of the schema from dataStore
   throw new Error('not implemented');
 }

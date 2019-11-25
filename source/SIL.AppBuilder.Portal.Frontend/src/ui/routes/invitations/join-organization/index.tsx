@@ -68,9 +68,7 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
   };
 
   redeemInvitation = async () => {
-    const {
-      dataStore,
-    } = this.props;
+    const { dataStore } = this.props;
     try {
       const result = await patch(`/api/organization-membership-invites/redeem/${this.token}`, {
         headers: {

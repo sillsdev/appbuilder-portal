@@ -10,9 +10,7 @@ import { OrganizationAttributes } from '@data/models/organization';
 
 import { ORGANIZATIONS_TYPE, attributesFor } from '@data';
 
-import {
-  useCurrentOrganization,
-} from '@data/containers/with-current-organization';
+import { useCurrentOrganization } from '@data/containers/with-current-organization';
 import { useTranslations } from '@lib/i18n';
 
 export interface IProps {

@@ -15,7 +15,7 @@ export function useUserTaskHelpers() {
   const pathToWorkflow = (task: TaskResource) => {
     if (!task) return null;
 
-    const [product,, workflow] = relationsFromPath(dataStore, task, [
+    const [product, , workflow] = relationsFromPath(dataStore, task, [
       'product',
       'productDefinition',
       'workflow',
