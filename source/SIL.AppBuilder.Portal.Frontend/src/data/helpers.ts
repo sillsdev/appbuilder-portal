@@ -8,7 +8,7 @@ import {
   ResourceLinkage,
 } from 'jsonapi-typescript';
 import Store from '@orbit/store';
-import { QueryBuilder, QueryOrExpression } from '@orbit/data';
+import { QueryOrExpression } from '@orbit/data';
 
 import {
   idFromRecordIdentity,
@@ -148,8 +148,6 @@ export async function cachedWithRelationThrough(
   }
 
   const throughModelName = modelNameFromRelationship(cacheResults[0], throughRelationshipName);
-  const modelname = cacheResults[0].type;
-  const targetModelName = to.type;
   // const joiningRelationName = inverseRelationshipOf(throughModelName, joiningRelationName);
 
   const results: any = [];
