@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { compose } from 'recompose';
-import { withTranslations, i18nProps, useTranslations } from '@lib/i18n';
+import { useTranslations } from '@lib/i18n';
 
 export const pathName = '/not-found';
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { DWKitForm } from '@assets/vendor/dwkit/optimajet-form.js';
 import {
   ApplicationRouter,
@@ -10,9 +10,6 @@ import {
   Thunks,
   Store,
   Actions,
-  // TODO: swap this out with the local one.
-  //       this way we can customize authentication
-  StateBindedForm,
   API,
 } from '@assets/vendor/dwkit/optimajet-app.js';
 import * as toast from '@lib/toast';
@@ -51,7 +48,6 @@ window.Pace = {
   start() {},
   stop() {},
 };
-const noop = () => {};
 
 function resetFormState() {
   // Without this, the form state becomes stale between

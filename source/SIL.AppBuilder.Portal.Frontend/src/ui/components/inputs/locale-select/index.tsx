@@ -7,7 +7,7 @@ import { attributesFor } from '@data/helpers';
 import { UserAttributes } from '@data/models/user';
 import { ResourceObject } from 'jsonapi-typescript';
 
-import { USERS_TYPE, update } from '@data';
+import { USERS_TYPE } from '@data';
 
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 

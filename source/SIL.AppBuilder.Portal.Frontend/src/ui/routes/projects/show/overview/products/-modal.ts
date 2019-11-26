@@ -1,4 +1,4 @@
-import { interactor, Interactor, clickable, hasClass, scoped } from '@bigtest/interactor';
+import { interactor, Interactor, clickable, hasClass } from '@bigtest/interactor';
 import MultiSelectInteractor from '@ui/components/inputs/multi-select/-page';
 
 class ProductModal {

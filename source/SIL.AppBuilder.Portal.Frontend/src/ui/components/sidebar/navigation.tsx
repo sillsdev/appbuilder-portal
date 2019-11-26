@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 import { ROLE } from '@data/models/role';
@@ -38,7 +37,6 @@ export default function Navigation({ closeSidebar }: IProps) {
   const { userTasks } = useUserTasksForCurrentUser();
   const currentOrganizationId = getCurrentOrganizationId();
   const hasSelectedOrg = currentOrganizationId && currentOrganizationId.length > 0;
-  const allOrgsSelected = '' === currentOrganizationId;
 
   return (
     <Menu className='m-t-none no-borders' pointing secondary vertical>

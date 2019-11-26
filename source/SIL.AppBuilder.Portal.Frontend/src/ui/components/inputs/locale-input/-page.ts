@@ -5,7 +5,6 @@ import {
   scoped,
   collection,
   clickable,
-  isPresent,
   triggerable,
   fillable,
   text,
@@ -15,7 +14,6 @@ import {
 import { when } from '@bigtest/convergence';
 import { Simulate } from 'react-dom/test-utils';
 import { assert } from 'chai';
-import { wait } from 'tests/helpers';
 
 class LocaleInput extends Interactor {
   static defaultScope = '[data-test-locale-input-container]';

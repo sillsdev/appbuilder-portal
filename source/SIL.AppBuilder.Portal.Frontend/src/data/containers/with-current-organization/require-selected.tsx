@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { compose, branch } from 'recompose';
+import { branch } from 'recompose';
 import { Redirect } from 'react-router';
 import * as toast from '@lib/toast';
-import { withTranslations, useTranslations } from '@lib/i18n';
+import { useTranslations } from '@lib/i18n';
 
 import { IProvidedProps } from './types';
 

@@ -10,7 +10,7 @@ import { requireProps } from '@lib/debug';
 
 import { OrganizationResource } from '@data';
 
-import { QueryBuilder, TransformBuilder } from '@orbit/data';
+import { TransformBuilder } from '@orbit/data';
 
 export interface IProvidedProps {
   createRecord: (attrs: GroupAttributes) => any;

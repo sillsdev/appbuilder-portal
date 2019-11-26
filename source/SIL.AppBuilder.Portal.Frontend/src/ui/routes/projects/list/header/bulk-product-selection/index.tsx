@@ -3,7 +3,7 @@ import { useRedux } from 'use-redux';
 
 import { rowSelectionsFor } from '~/redux-store/data/selectors';
 
-import { ProjectResource, ProductDefinitionResource } from '~/data';
+import { ProjectResource } from '~/data';
 
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
@@ -24,8 +24,6 @@ import { ErrorMessage } from '~/ui/components/errors';
 import { GenericJsonApiError } from '~/data/errors/generic-jsonapi-error';
 
 import { toSentence } from '~/lib/collection';
-
-import { async } from 'rxjs/internal/scheduler/async';
 
 import { ProductSelection } from './product-selection';
 
@@ -185,7 +183,7 @@ function MaybeRenderError({ actions, permissions, selection, selectedCount }) {
   return <ErrorMessage error={message} showClose={false} displayClass={'ui yellow message'} />;
 }
 
-function useModalState(initial = false) {
+function useModalState() {
   const [isOpen, setOpen] = useState(false);
 
   const close = () => setOpen(false);

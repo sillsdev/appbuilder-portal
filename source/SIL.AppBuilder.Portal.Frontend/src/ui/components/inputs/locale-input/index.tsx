@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Suspense, unstable_ConcurrentMode as ConcurrentMode } from 'react';
+import { Suspense } from 'react';
 import { RectLoader } from '@ui/components/loaders';
 import { useFetch } from 'react-hooks-fetch';
 import { ErrorMessage, ErrorBoundary } from '@ui/components/errors';

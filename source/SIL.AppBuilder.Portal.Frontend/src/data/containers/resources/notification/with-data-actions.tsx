@@ -2,8 +2,6 @@ import { useOrbit } from 'react-orbitjs';
 
 import { defaultOptions, NotificationResource } from '@data';
 
-import { recordIdentityFromKeys } from '@data/store-helpers';
-
 import * as toast from '~/lib/toast';
 
 export interface IProvidedProps {

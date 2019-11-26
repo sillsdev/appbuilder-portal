@@ -23,10 +23,9 @@ type IProps = IOwnProps & IColumnProps & i18nProps & TimeProps;
 
 class ProductItem extends React.Component<IProps> {
   getActiveProductColumns = () => {
-    const { t, product, moment, timezone, activeProductColumns, productDefinition } = this.props;
+    const { product, moment, timezone, activeProductColumns } = this.props;
 
     const { dateBuilt, versionBuilt } = attributesFor(product);
-    const { name } = attributesFor(productDefinition);
 
     return activeProductColumns.map((column) => {
       switch (column.id) {

@@ -43,7 +43,7 @@ class DateRange extends React.Component<IOwnProps & i18nProps> {
   // TODO: figure out how to have the internal validation
   //       trigger a visual error state / color
   render() {
-    const { t, to, from, onToChange, onFromChange, label } = this.props;
+    const { to, from, onToChange, onFromChange, label } = this.props;
 
     return (
       <div data-test-range-input className='flex-column date-range-input-with-label'>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { compose } from 'recompose';
 import { ProjectAttributes } from '@data/models/project';
 import { ResourceObject } from 'jsonapi-typescript';

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { Switch } from 'react-router-dom';
 
 import { Route } from '~/lib/routing';

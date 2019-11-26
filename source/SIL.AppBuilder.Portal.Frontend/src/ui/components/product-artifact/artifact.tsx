@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 

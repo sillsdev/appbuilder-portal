@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { translate, InjectedTranslateProps as i18nProps } from 'react-i18next';
+import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import { isEmpty } from '@lib/collection';
 import { isValidEmail } from '@lib/validations';
 import { ResourceObject } from 'jsonapi-typescript';

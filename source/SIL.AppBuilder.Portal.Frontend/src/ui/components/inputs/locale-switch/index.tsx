@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { compose } from 'recompose';
 import { Dropdown } from 'semantic-ui-react';
 import { UserAttributes } from '@data/models/user';
 import { ResourceObject } from 'jsonapi-typescript';

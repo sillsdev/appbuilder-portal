@@ -12,7 +12,7 @@ import Display from './display';
 
 export default function InviteOrganization() {
   const { t } = useTranslations();
-  const { queryParams, updateQueryParams } = useQueryParams();
+  const { queryParams } = useQueryParams();
   const { dataStore } = useOrbit();
   const submit = async (payload: OrganizationInviteAttributes) => {
     try {

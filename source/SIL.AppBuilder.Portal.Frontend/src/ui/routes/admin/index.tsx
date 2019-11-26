@@ -4,10 +4,8 @@ import { Switch } from 'react-router-dom';
 
 import { Route } from '~/lib/routing';
 
-import { requireAuth } from '@lib/auth';
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
-import { adminPath } from '@ui/routes/paths';
 
 import InviteOrganization from './invite-organization';
 import AdminSettingsRoute from './settings';

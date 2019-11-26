@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useOrbit, remoteIdentityFrom, attributesFor } from 'react-orbitjs';
 import { Dropdown, Modal } from 'semantic-ui-react';
 import { useTranslations } from '@lib/i18n';
-import { isEmpty } from '@lib/collection';
 import { useCurrentUser } from '@data/containers/with-current-user';
 import CloseIcon from '@material-ui/icons/Close';
 import moment from 'moment';

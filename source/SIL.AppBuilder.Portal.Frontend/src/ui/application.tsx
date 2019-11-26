@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { BrowserRouter, Router as GenericRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
-import { APIProvider, strategies, useOrbit } from 'react-orbitjs';
+import { APIProvider, strategies } from 'react-orbitjs';
 import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
 import { baseUrl } from '@data/store';
 

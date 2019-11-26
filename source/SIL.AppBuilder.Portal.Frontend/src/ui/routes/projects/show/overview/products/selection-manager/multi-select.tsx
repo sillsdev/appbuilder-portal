@@ -5,7 +5,6 @@ import {
   OrganizationResource,
   ProductDefinitionResource,
   ProjectResource,
-  withLoader,
   attributesFor,
 } from '@data';
 

@@ -1,4 +1,3 @@
-import { ISubscription } from 'rxjs/Subscription';
 import { HubConnectionFactory, HubConnection } from '@ssv/signalr-client';
 import { LogLevel, HttpTransportType } from '@aspnet/signalr';
 import Store from '@orbit/store';

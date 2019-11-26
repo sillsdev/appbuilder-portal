@@ -9,7 +9,6 @@ import { withCurrentUserContext } from '~/data/containers/with-current-user';
 
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { withTableColumns, withTableRows, COLUMN_KEY } from '@ui/components/project-table';
-import { TYPE_NAME as PROJECT } from '@data/models/project';
 
 import Display from './display';
 

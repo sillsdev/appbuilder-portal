@@ -56,7 +56,7 @@ export function CurrentUserFetcher({ children }) {
   } = useOrbit({
     users: cacheQuery(),
   });
-  const { jwt, isLoggedIn } = useAuth();
+  const { jwt } = useAuth();
   const [refetchCount, setRefetchCount] = useState(0);
   const refetch = useCallback(() => setRefetchCount(refetchCount + 1), [refetchCount]);
   const options = useMemo(() => {

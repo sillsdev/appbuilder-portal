@@ -22,7 +22,7 @@ class UserInput extends React.Component<IProps, IState> {
   onSubmit = (e: React.MouseEvent<HTMLButtonElement> | React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { onSubmit, t } = this.props;
+    const { onSubmit } = this.props;
     const { email } = this.state;
     onSubmit(email);
   };

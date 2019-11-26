@@ -51,7 +51,7 @@ export default function ProductItem({ product, includeHeader }) {
           </div>
           {!isEmpty(publishLink) && (
             <div data-test-project-product-publishlink>
-              <a className='m-l-sm' href={publishLink} target='_blank'>
+              <a className='m-l-sm' href={publishLink} target='_blank' rel='noopener noreferrer'>
                 <StoreIcon />
               </a>
               <ProductLink product={product} name={name} />

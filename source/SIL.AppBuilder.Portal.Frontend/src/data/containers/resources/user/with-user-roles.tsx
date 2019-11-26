@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { compose, withProps } from 'recompose';
+import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import * as toast from '@lib/toast';
 
 import {
   attributesFor,
   create,
-  recordIdentityFromKeys,
   buildOptions,
   isRelatedRecord,
   UserResource,
@@ -15,7 +14,6 @@ import {
   UserRoleResource,
 } from '@data';
 
-import { TYPE_NAME as USER_ROLE } from '@data/models/user-role';
 import { IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 
 export interface IProvidedProps {

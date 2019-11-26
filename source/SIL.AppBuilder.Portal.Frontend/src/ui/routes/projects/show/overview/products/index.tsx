@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withOrbit as withSubscribedUpdates, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
+import { useOrbit, idFromRecordIdentity } from 'react-orbitjs';
 import { isEmpty } from '@lib/collection';
 
 import { ProjectResource, ProductResource, OrganizationResource } from '@data';
@@ -26,7 +26,7 @@ export default function Products({ project }: IProps) {
   const { t } = useTranslations();
   const {
     dataStore,
-    subscriptions: { products, organization, userTasks },
+    subscriptions: { products, organization },
   } = useOrbit<ISubscriptions>({
     products: (q) => q.findRelatedRecords(project, 'products'),
     organization: (q) => q.findRelatedRecord(project, 'organization'),

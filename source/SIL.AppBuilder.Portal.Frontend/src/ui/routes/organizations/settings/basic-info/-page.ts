@@ -1,4 +1,4 @@
-import { interactor, clickable, text, fillable, Interactor } from '@bigtest/interactor';
+import { interactor, clickable, fillable, Interactor } from '@bigtest/interactor';
 
 class Page {
   fillName = fillable('input[data-test-name]');

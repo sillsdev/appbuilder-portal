@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-import { Checkbox, Dropdown } from 'semantic-ui-react';
+import { Dropdown } from 'semantic-ui-react';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
@@ -127,32 +127,32 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
     onCancel();
   };
 
-  typeSelection = (type) => (e) => {
+  typeSelection = (type) => () => {
     this.setState({
       type,
     });
   };
 
-  workflowSelection = (workflow) => (e) => {
+  workflowSelection = (workflow) => () => {
     this.setState({
       workflow,
     });
   };
 
-  rebuildWorkflowSelection = (rebuildWorkflow) => (e) => {
+  rebuildWorkflowSelection = (rebuildWorkflow) => () => {
     this.setState({
       rebuildWorkflow,
     });
   };
 
-  republishWorkflowSelection = (republishWorkflow) => (e) => {
+  republishWorkflowSelection = (republishWorkflow) => () => {
     this.setState({
       republishWorkflow,
     });
   };
 
   render() {
-    const { mut, toggle } = this;
+    const { mut } = this;
 
     const {
       name,
@@ -206,7 +206,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                   text={typeName}
                 >
                   <Dropdown.Menu>
-                    {types.map((tp, i) => {
+                    {types.map((tp) => {
                       const { name: fullName } = attributesFor(tp);
 
                       return (
@@ -232,7 +232,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                   text={workflowName}
                 >
                   <Dropdown.Menu>
-                    {workflows.map((w, i) => {
+                    {workflows.map((w) => {
                       const { name: fullName } = attributesFor(w);
 
                       return (
@@ -263,7 +263,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                       text={t('admin.settings.productDefinitions.noWorkflow')}
                       onClick={this.rebuildWorkflowSelection(null)}
                     />
-                    {rebuildWorkflows.map((w, i) => {
+                    {rebuildWorkflows.map((w) => {
                       const { name: fullName } = attributesFor(w);
 
                       return (
@@ -293,7 +293,7 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                       text={t('admin.settings.productDefinitions.noWorkflow')}
                       onClick={this.republishWorkflowSelection(null)}
                     />
-                    {republishWorkflows.map((w, i) => {
+                    {republishWorkflows.map((w) => {
                       const { name: fullName } = attributesFor(w);
 
                       return (

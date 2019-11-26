@@ -5,12 +5,9 @@ import {
   clickable,
   isPresent,
   Interactor,
-  text,
   hasClass,
   collection,
 } from '@bigtest/interactor';
-
-import notifications from '..';
 
 @interactor
 class NotificationRow {

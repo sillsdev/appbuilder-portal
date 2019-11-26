@@ -14,7 +14,7 @@ export interface IOwnProps {
 
 type IProps = IFilterProps & IPaginateProps & IOrgProps & ISortProps;
 
-export function withNetwork<TWrappedProps>(options = {}) {
+export function withNetwork<TWrappedProps>() {
   return (WrappedComponent) => {
     function mapNetworkToProps(passedProps: TWrappedProps & IProps) {
       const {
@@ -24,7 +24,6 @@ export function withNetwork<TWrappedProps>(options = {}) {
         applyFilter,
         filters,
         sortProperty,
-        currentOrganizationId,
         applySort,
       } = passedProps;
 

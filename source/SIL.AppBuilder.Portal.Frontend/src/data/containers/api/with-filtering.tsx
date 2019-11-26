@@ -104,7 +104,6 @@ export function withFiltering<TPassedProps>(opts: FnOrObject<TPassedProps, IFilt
 
       removeFilter = (filter: IFilter | string) => {
         const { filters } = this.state;
-        const attrToRemove = (filter as IFilter).attribute || filter;
 
         const newFilters = withoutFilter(filters, filter);
 

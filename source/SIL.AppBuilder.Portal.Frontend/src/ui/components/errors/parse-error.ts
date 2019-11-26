@@ -1,5 +1,4 @@
 import { RecordNotFoundException, ClientError } from '@orbit/data';
-import { isEmpty } from '@lib/collection';
 
 import { GenericJsonApiError } from '~/data/errors/generic-jsonapi-error';
 

@@ -20,7 +20,6 @@ export default function ItemActions({ product }) {
 
   const [actions, setActions] = useState([]);
 
-  const hasActions = actions.length > 0;
   const productRemoteId = remoteIdentityFrom(dataStore, product).keys.remoteId;
 
   useEffect(() => {

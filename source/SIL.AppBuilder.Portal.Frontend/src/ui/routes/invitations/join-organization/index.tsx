@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { match as Match, Redirect } from 'react-router';
 import { compose } from 'recompose';
-import { withData, WithDataProps, WithData } from 'react-orbitjs';
+import { withData, WithDataProps } from 'react-orbitjs';
 import { requireAuth } from '@lib/auth';
 import { patch, tryParseJson } from '@lib/fetch';
 import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
@@ -67,11 +67,8 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
     }
   };
 
-  redeemInvitation = async (token) => {
-    const {
-      dataStore,
-      currentUserProps: { fetchCurrentUser },
-    } = this.props;
+  redeemInvitation = async () => {
+    const { dataStore } = this.props;
     try {
       const result = await patch(`/api/organization-membership-invites/redeem/${this.token}`, {
         headers: {
