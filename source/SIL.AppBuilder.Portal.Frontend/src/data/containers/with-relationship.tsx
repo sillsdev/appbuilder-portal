@@ -69,7 +69,7 @@ export function retrieveRelation(dataStore: Store, relationshipArgs: Relationshi
     return retrieveManyToMany(dataStore, sourceModel, relationshipPath);
   }
 
-  return retriveDirectRelationship();
+  return retrieveDirectRelationship(/*dataStore, sourceModel, relationshipPath[0]*/);
 }
 
 function retrieveManyToMany(
@@ -93,7 +93,15 @@ function retrieveManyToMany(
   });
 }
 
-async function retriveDirectRelationship() {
+async function retrieveDirectRelationship() {
+  /*
+  This would be the expected declaration and parameter list if implemented:
+  async function retrieveDirectRelationship(
+    dataStore: Store,
+    sourceModel: ResourceObject,
+    relationshipName: string
+  ) {
+  */
   // TODO: add detection for hasOne vs hasMany, via lookup of the schema from dataStore
   throw new Error('not implemented');
 }
