@@ -20,14 +20,14 @@ jobs:
     - stage: "Quality"
       name: "Frontend Linting"
       language: node_js
-      node_js: "8"
+      node_js: "10"
 
       script: ./run yarn && ./run yarn lint --quiet
 
     - stage: "Quality"
       name: "Frontend Typechecking"
       language: node_js
-      node_js: "8"
+      node_js: "10"
       script: ./run yarn && ./run yarn tsc --noEmit
 
     - stage: "Tests"
@@ -36,7 +36,7 @@ jobs:
         chrome: stable
 
       language: node_js
-      node_js: "8"
+      node_js: "10"
 
       # TODO: upload coverage to somewhere
       script:
