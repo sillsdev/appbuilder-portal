@@ -63,6 +63,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IEntityRepository<Notification>, NotificationRepository>();
             services.AddScoped<IEntityRepository<Product,Guid>, ProductRepository>();
             services.AddScoped<IEntityRepository<OrganizationStore>, OrganizationStoreRepository>();
+            services.AddScoped<IEntityRepository<ProjectImport>, ProjectImportRepository>();
             
             // for operations
             services.AddScoped<IUpdateService<Project>, ProjectService>();
@@ -167,6 +168,7 @@ namespace OptimaJet.DWKit.StarterApplication
                                  config.UsePostgreSqlStorage(configuration["ConnectionStrings:default"]));
 
             services.AddScoped(typeof(IOrganizationInviteRequestService), typeof(OrganizationInviteRequestService));
+            services.AddScoped(typeof(IProjectImportService), typeof(ProjectImportService));
             services.Configure<OrganizationInviteRequestSettings>(options =>
             {
                 options.BaseUrl = GetVarOrDefault("UI_URL", "http://localhost:9091");
