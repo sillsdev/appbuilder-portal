@@ -9,18 +9,14 @@ import {
   scoped,
   isPresent,
 } from '@bigtest/interactor';
-import { when } from '@bigtest/convergence';
-import { assert } from 'chai';
-import { Simulate } from 'react-dom/test-utils';
 
 @interactor
-class UserTalbeUserRoleInteractor extends Interactor {
-  open = clickable('[data-test-role-multi-select]');
+class UserTableUserRoleInteractor extends Interactor {
+  open = isPresent('[data-test-role-menu].visible');
   isOpen = isPresent('[data-test-role-menu].visible');
-  list = text('[data-test-role-multi-select] > div');
+  list = text('[data-test-role-no-edit] > div');
   organizationNames = text('[data-test-organization-name]');
   noEditText = text('[data-test-role-no-edit]');
-
   chooseUnder(role: string, organization: string) {
     return this.when(() => {
       const org = this.$$('[data-test-organization-name]').find((item) =>
@@ -49,15 +45,9 @@ class UserTalbeUserRoleInteractor extends Interactor {
 }
 
 @interactor
-class UserTableRowInteractor {
-  constructor(selector?: string) {}
-  role = scoped('[data-test-role-selector]', UserTalbeUserRoleInteractor);
-}
-
-@interactor
 export class UserTableInteractor {
   static defaultScope = '[data-test-userstable]';
-  constructor(selector?: string) {}
+  constructor() {}
 
   clickLockUser = clickable('[data-test-toggle-lock]:first-child');
   isUserActive = hasClass('[data-test-toggle-lock]:first-child', 'checked');
@@ -65,8 +55,8 @@ export class UserTableInteractor {
 
   groupDropdowns = collection('[data-test-group-multi-select]');
   groupDropdownCheckboxes = collection('[data-test-multi-group-checkbox]');
-  groupDropdownText = text('[data-test-group-multi-select] > div');
-  groupDropdownOrganizationName = collection('[data-test-group-multi-organization-name]');
+  groupDropdownText = text('[data-test-group-no-edit] > div');
+  groupDropdownOrganizationName = collection('[data-test-organization-name]');
 
   row = collection('[data-test-user-row]', {
     isActive: hasClass('[data-test-toggle-lock]', 'checked'),
@@ -76,8 +66,12 @@ export class UserTableInteractor {
     activeGroups: collection('[data-test-groups-active]', {
       text: text(),
     }),
+    groupOrganizations: collection('[data-test-organization-name]', {
+      text: text(),
+    }),
+    groupOrganizationsText: text('[data-test-organization-name]'),
 
-    role: scoped('[data-test-role-selector]', UserTalbeUserRoleInteractor),
+    role: scoped('[data-test-role-selector]', UserTableUserRoleInteractor),
   });
 
   async toggleRoleAt(index: number, role: string, organization: string) {

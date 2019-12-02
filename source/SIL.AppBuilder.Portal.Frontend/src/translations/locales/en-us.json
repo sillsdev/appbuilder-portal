@@ -391,6 +391,10 @@
     "noProducts": "This project has no configured products"
   },
   "users": {
+    "settingsTitle": "User Settings",
+    "userProfile": "User Profile",
+    "userGroups": "Group Memberships",
+    "userRoles": "Organization Roles",
     "noneFound": "No users matching the selected criteria were found.",
     "noRoles": "No roles assigned",
     "title": "Manage Users",

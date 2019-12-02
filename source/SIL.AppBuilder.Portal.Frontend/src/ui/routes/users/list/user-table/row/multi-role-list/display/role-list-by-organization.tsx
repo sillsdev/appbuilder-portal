@@ -33,7 +33,9 @@ export default withOrbit<INeededProps, IOrbitProps>(({ user }) => {
 
         return (
           <div key={organization.id}>
-            <span className='bold fs-11'>{organizationName}</span>
+            <span data-test-role-organization className='bold fs-11'>
+              {organizationName}
+            </span>
             <br />
             <ActiveRolesDisplay {...roleProps} />
           </div>
