@@ -22,7 +22,7 @@ import {
   recordsWithIdIn,
 } from '@data';
 
-export const pathName = '/users/:userId/editsettings/settings/groups';
+export const pathName = '/users/:userId/settings/groups';
 
 export interface INeededProps {
   user: UserResource;

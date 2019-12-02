@@ -50,12 +50,12 @@ describe('Acceptance | User Roles', () => {
     });
 
     beforeEach(async function() {
-      await visit('/users/2/editsettings/settings/roles');
+      await visit('/users/2/settings/roles');
       await when(() => page.isVisible);
     });
 
     it('is in users roles edit settings page', () => {
-      expect(location().pathname).to.equal('/users/2/editsettings/settings/roles');
+      expect(location().pathname).to.equal('/users/2/settings/roles');
     });
 
     it('returned one organization and it is DEVELOPERTOWN', () => {
@@ -208,7 +208,7 @@ describe('Acceptance | User Roles', () => {
       setupData();
 
       beforeEach(async function() {
-        await visit('/users/2/editsettings/settings/roles');
+        await visit('/users/2/settings/roles');
         await when(() => page.isVisible);
       });
 
@@ -271,7 +271,7 @@ describe('Acceptance | User Roles', () => {
       setupData();
 
       beforeEach(async function() {
-        await visit('/users/2/editsettings/settings/roles');
+        await visit('/users/2/settings/roles');
         await when(() => page.isVisible);
       });
 
@@ -398,12 +398,12 @@ describe('Acceptance | User Roles', () => {
     setupData();
 
     beforeEach(async function() {
-      await visit('/users/1/editsettings/settings/roles');
+      await visit('/users/1/settings/roles');
       await when(() => page.isVisible);
     });
 
     it('is in users page', () => {
-      expect(location().pathname).to.equal('/users/1/editsettings/settings/roles');
+      expect(location().pathname).to.equal('/users/1/settings/roles');
     });
 
     it('text instead of toggles', () => {

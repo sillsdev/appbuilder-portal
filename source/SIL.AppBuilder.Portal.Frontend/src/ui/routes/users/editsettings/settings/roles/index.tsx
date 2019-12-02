@@ -15,7 +15,7 @@ import { ROLE } from '~/data/models/role';
 import ActiveRolesDisplay from './active-roles-display';
 import RoleSelect from './role-select';
 
-export const pathName = '/users/:userId/editsettings/settings/roles';
+export const pathName = '/users/:userId/settings/roles';
 
 interface INeededProps {
   user: UserResource;

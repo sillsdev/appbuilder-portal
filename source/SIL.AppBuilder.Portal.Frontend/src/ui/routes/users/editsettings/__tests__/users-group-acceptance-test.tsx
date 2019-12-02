@@ -95,14 +95,14 @@ describe('Acceptance | User Groups', () => {
       });
 
       beforeEach(async function() {
-        await visit('/users/2/editsettings/settings/groups');
+        await visit('/users/2/settings/groups');
         await when(() => page.isVisible);
         await when(() => page.groupTab.isVisible);
       });
 
       it('is in users group page', () => {
         console.log(page.groupTab.orgGroups().length);
-        expect(location().pathname).to.equal('/users/2/editsettings/settings/groups');
+        expect(location().pathname).to.equal('/users/2/settings/groups');
       });
 
       it('returned one organization and it is DEVELOPERTOWN', () => {
@@ -301,7 +301,7 @@ describe('Acceptance | User Groups', () => {
       setupUsersMock();
 
       beforeEach(async function() {
-        await visit('/users/2/editsettings/settings/groups');
+        await visit('/users/2/settings/groups');
       });
 
       it('does not render second organization', () => {
@@ -376,7 +376,7 @@ describe('Acceptance | User Groups', () => {
       setupUsersMock();
 
       beforeEach(async function() {
-        await visit('/users/2/editsettings/settings/groups');
+        await visit('/users/2/settings/groups');
       });
 
       it('renders two organizations - DEVELOPERTOWN and SIL', () => {
