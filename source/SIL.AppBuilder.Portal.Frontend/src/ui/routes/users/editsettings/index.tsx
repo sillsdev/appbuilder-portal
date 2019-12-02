@@ -4,7 +4,7 @@ import { Switch } from 'react-router-dom';
 import { Route } from '~/lib/routing';
 
 import SettingsRoute, { pathName as settingsPath } from './settings';
-export const editSettingsPath = '/users/:userId/editsettings';
+export const editSettingsPath = '/users/:userId/settings';
 
 export default function UserEditRouter() {
   return (
