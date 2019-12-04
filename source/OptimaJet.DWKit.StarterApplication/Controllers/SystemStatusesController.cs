@@ -1,8 +1,6 @@
-﻿using System.Threading.Tasks;
-using JsonApiDotNetCore.Services;
+﻿using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 
@@ -19,11 +17,6 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             UserService userService)
             : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         {
-        }
-        [Route("system-statuss/get")]
-        public async Task<IActionResult> GetData()
-        {
-            return await base.GetAsync();
         }
     }
 }
