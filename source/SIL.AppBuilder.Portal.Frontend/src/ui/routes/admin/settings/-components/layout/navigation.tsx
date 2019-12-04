@@ -31,6 +31,10 @@ export default function Navigation() {
           to: paths.storeTypes.path(),
           text: t('admin.settings.navigation.storeTypes'),
         },
+        {
+          to: paths.buildEngines.path(),
+          text: t('admin.settings.navigation.buildEngines'),
+        },
       ]}
       exactRoutes={false}
     />

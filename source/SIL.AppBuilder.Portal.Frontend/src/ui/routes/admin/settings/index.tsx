@@ -11,6 +11,7 @@ import WorkflowDefinitionsRoute from './workflow-definitions';
 import ProductDefinitionsRoute from './product-definitions';
 import StoreTypesRoute from './store-types';
 import StoreRoute from './stores';
+import BuildEnginesRoute from './build-engines';
 
 const paths = adminPaths.settings;
 
@@ -22,6 +23,7 @@ function AdminSettingsRoute() {
       <Route path={paths.productDefinitions.path()} component={ProductDefinitionsRoute} />
       <Route path={paths.stores.path()} component={StoreRoute} />
       <Route path={paths.storeTypes.path()} component={StoreTypesRoute} />
+      <Route path={paths.buildEngines.path()} component={BuildEnginesRoute} />
     </Switch>
   );
 }

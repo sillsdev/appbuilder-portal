@@ -32,5 +32,8 @@ export const paths = {
     storeTypes: {
       path: () => '/admin/settings/store-types',
     },
+    buildEngines: {
+      path: () => '/admin/settings/build-engines',
+    },
   },
 };
