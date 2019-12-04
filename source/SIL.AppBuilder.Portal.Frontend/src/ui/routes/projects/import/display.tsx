@@ -92,10 +92,13 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
               <Form.Field className='flex-50'>
                 <label>{t('projectImport.importFile')}</label>
                 <input
+                  data-test-import-input-file
                   type='file'
                   name='file'
                   accept='application/json'
                   onChange={(e) => {
+                    console.log('onChange', e.target.files);
+                    debugger;
                     setJsonfile(e.target.files[0]);
                   }}
                 />
