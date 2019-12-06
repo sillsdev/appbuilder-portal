@@ -97,8 +97,6 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
                   name='file'
                   accept='application/json'
                   onChange={(e) => {
-                    console.log('onChange', e.target.files);
-                    debugger;
                     setJsonfile(e.target.files[0]);
                   }}
                 />

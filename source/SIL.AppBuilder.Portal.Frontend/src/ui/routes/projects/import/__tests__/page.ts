@@ -3,27 +3,6 @@ import groupInteractor from '@ui/components/inputs/group-select/__tests__/page';
 import applicationTypeInteractor from '@ui/components/inputs/application-type-select/__tests__/page';
 
 @interactor
-export class FileInputInteractor {
-  constructor(selector?: string) {}
-
-  change = (json: any) => {
-    console.log('change', json);
-    const file = new File([JSON.stringify(json)], 'file.json', { type: 'application/json' });
-
-    const fileList = {
-      0: file,
-      length: 1,
-      item: function(index: number) {
-        return file;
-      },
-    };
-    triggerable('input', {
-      target: { files: fileList },
-    });
-  };
-}
-
-@interactor
 export class ImportProjectsInteractor {
   constructor(selector?: string) {}
 
@@ -33,7 +12,24 @@ export class ImportProjectsInteractor {
 
   groupSelect = groupInteractor;
   applicationTypeSelect = applicationTypeInteractor;
-  importFileInput = new FileInputInteractor('[data-test-import-input-file]');
+  importFileInput = new Interactor('[data-test-import-input-file]');
+
+  async setFile(file: File) {
+    let input = await new Interactor().find('[data-test-import-input-file]');
+    var dt = new DataTransfer();
+    dt.items.add(file);
+    console.log('input:', input);
+    input.files = dt.files;
+
+    if ('createEvent' in document) {
+      var evtInput = document.createEvent('HTMLEvents');
+      evtInput.initEvent('input', true, false);
+      input.dispatchEvent(evtInput);
+      var evtChange = document.createEvent('HTMLEvents');
+      evtChange.initEvent('change', true, false);
+      input.dispatchEvent(evtChange);
+    }
+  }
 }
 
 export default new ImportProjectsInteractor('[data-test-import-projects-form]');

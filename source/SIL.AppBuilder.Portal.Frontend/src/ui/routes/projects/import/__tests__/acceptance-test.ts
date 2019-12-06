@@ -186,67 +186,31 @@ describe('Acceptance | Import Projects', () => {
       });
 
       describe('file is required', () => {
-        // Trying to hack in for now what is necessary to fill in the file input
-        var input = document.querySelector('input');
         const file = new File([JSON.stringify(scenarios.importFile())], 'file.json', {
           type: 'application/json',
         });
 
-        const fileList = {
-          0: file,
-          length: 1,
-          item: function(index: number) {
-            return file;
-          },
-        };
-
-        var event = new Event('change');
-        Object.defineProperty(event, 'target', { writable: false, value: { files: fileList } });
-
         beforeEach(async () => {
           page.groupSelect.chooseGroup('Group 1');
           page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
-          const file = new File([JSON.stringify(scenarios.importFile())], 'file.json', {
-            type: 'application/json',
-          });
-
-          console.log(input);
-          input.dispatchEvent(event);
+          await page.setFile(file);
         });
 
-        it('has enabled the save button', () => {
-          expect(page.isSaveDisabled).to.be.false;
-        });
-      });
-
-      describe('group defaults to first option', () => {
-        beforeEach(async function() {
-          await page.applicationTypeSelect.chooseApplicationType('Scripture App Builder');
-          // TODO: Need a way to fill in the file input
-        });
-
-        it('has a value', () => {
+        it('group has a value', () => {
           expect(page.groupSelect.selectedGroup).to.equal('Group 1');
         });
 
-        xit('has enabled the save button', () => {
-          expect(page.isSaveDisabled).to.be.false;
-        });
-      });
-
-      describe('type defaults to first option', () => {
-        beforeEach(async function() {
-          await page.groupSelect.chooseGroup('Group 1');
-          // TODO: Need a way to fill in the file input
-        });
-
-        it('has a value', () => {
+        it('type has a value', () => {
           expect(page.applicationTypeSelect.selectedApplicationType).to.equal(
             'Scripture App Builder'
           );
         });
 
-        xit('has enabled the save button', () => {
+        it('import is present', () => {
+          expect(page.importFileInput.isPresent).to.be.true;
+        });
+
+        it('has enabled the save button', () => {
           expect(page.isSaveDisabled).to.be.false;
         });
       });
