@@ -108,7 +108,14 @@
   "organizationInvites": {
     "subject": "[Scriptoria] Organization Invite Request"
   },
-  "organizationMembershipInvites":  {
+  "organizationMembershipInvites": {
     "subject": "You are invited to join {{organizationName}} at Scriptoria"
+  },
+  "importProject": {
+    "subject": "[Scriptoria] Project Import Report",
+    "addProject": "Add Project: Id={{projectId}}, Name={{projectName}}",
+    "existingProject": "Exisiting Project: Id={{projectId}}, Name={{projectName}}",
+    "addProduct": "Add Product: Id={productId}, ProjectId={projectId}, Definition={productDefinitionName} ({productDefinitionId}), Store={storeName} ({storeId})",
+    "existingProduct": "Existing Product: Id={productId}, ProjectId={projectId}, Definition={productDefinitionName} ({productDefinitionId}), Store={storeName} ({storeId})"
   }
 }
