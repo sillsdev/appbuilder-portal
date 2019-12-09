@@ -276,7 +276,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
-        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct">
+          <ActionParameter><![CDATA[{"environment":{"PUBLISH_DRAFT":"1"}}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -778,7 +780,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
-        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct">
+          <ActionParameter><![CDATA[{"environment":{"PUBLISH_DRAFT":"1"}}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -1172,7 +1176,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
-        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct">
+          <ActionParameter><![CDATA[{"environment":{"PUBLISH_DRAFT":"1"}}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
