@@ -46,7 +46,15 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
           reader.onerror = (error) => reject(error);
         });
 
-      const importData = await toEscapedString(jsonfile);
+      const fileToString = (file) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsText(file);
+          reader.onload = () => resolve(JSON.stringify(reader.result));
+          reader.onerror = (error) => reject(error);
+        });
+
+      const importData = await fileToString(jsonfile);
       await create({ importData }, groupId, typeId);
       toast.success(t('projectImport.createSuccess'));
       history.push(`/`);
