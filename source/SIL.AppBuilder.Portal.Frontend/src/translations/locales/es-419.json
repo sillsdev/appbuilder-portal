@@ -24,8 +24,8 @@
     "subtitle": "Librerías usadas por la licencia"
   },
   "notifications": {
-    "buildComplete": "The build for {projectName} has completed!",
-    "buildServerConnectionLost": "Connection to the build server has been lost!"
+    "buildComplete": "¡La construcción para {projectName} se ha completado!",
+    "buildServerConnectionLost": "¡Se ha perdido la conexión con el servidor de compilación!"
   },
   "common": {
     "search": "Buscar",
@@ -34,14 +34,14 @@
     "cancel": "Cancelar",
     "save": "Guardar",
     "name": "Nombre",
-    "clickToEdit": "Click to edit",
-    "none": "None",
+    "clickToEdit": "Haga clic para editar",
+    "none": "Ninguno",
     "abbreviation": "Abreviatura",
-    "general": "General Information",
-    "notAvailable": "Not Available",
-    "archive": "Archive",
-    "reactivate": "Reactivate",
-    "build": "Build / Rebuild",
+    "general": "Información general",
+    "notAvailable": "No disponible",
+    "archive": "Archivar",
+    "reactivate": "Reactivar",
+    "build": "Construir / Reconstruir",
     "rebuild": "Rebuild / Republish",
     "updated": "Updated",
     "continue": "Continue",
@@ -62,7 +62,7 @@
   },
   "directory": {
     "title": "Directorio de proyectos ({ numProjects })",
-    "search-help": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name",
+    "search-help": "Esto le permite realizar búsquedas: <br />• Nombre del proyecto <br />• Idioma del proyecto <br />• Nombre del propietario <br />• Nombre de la organización",
     "filters": {
       "dateRange": "Rango de Fechas"
     }
@@ -95,21 +95,21 @@
     "orgSubmit": "Agregar organización"
   },
   "newOrganization": {
-    "title": "Add organization"
+    "title": "Agregar organización"
   },
   "org": {
     "allOrganizations": "Todas las organizaciones",
     "createSuccess": "¡Organización creada exitosamente!",
     "settingsTitle": "Configuración de organización",
     "logoUrl": "Seleccionar logo",
-    "noteLogUrl": "Note: For optimal quality use a square image",
+    "noteLogUrl": "Nota: Para una calidad óptima, use una imagen cuadrada",
     "productsTitle": "Productos y Publicaciones",
     "makePrivateTitle": "Hacer Proyectos públicos por defecto",
     "makePrivateDescription": "\n      Cuando un proyecto es creado, será Público por defecto.\n      (Los proyectos privados no pueden ser visto por nadie fuera de su organización)",
     "productSelectTitle": "Selecciona todos los productos que quisieras estén disponibles para su organización",
-    "noproducts": "No products available",
-    "storesTitle": "Stores",
-    "storeSelectTitle": "Select all the stores you would like to make available to your organization",
+    "noproducts": "No hay productos disponibles",
+    "storesTitle": "Tiendas",
+    "storeSelectTitle": "Seleccione todas las tiendas que desea poner a disposición de su organización",
     "nostores": "No stores available",
     "navBasic": "Información básica",
     "navProducts": "Productos",
@@ -426,7 +426,7 @@
   },
   "stores": {
     "name": "Store",
-    "listTitle": "Stores",
+    "listTitle": "Tiendas",
     "attributes": {
       "name": "Nombre",
       "description": "Description"
@@ -444,7 +444,7 @@
         "workflowdefinitions": "Workflow Definitions",
         "productDefinitions": "Product Definitions",
         "storeTypes": "Store Types",
-        "stores": "Stores"
+        "stores": "Tiendas"
       },
       "organizations": {
         "title": "Organizations",
