@@ -206,8 +206,8 @@
     "noTasksTitle": "No tiene tareas asignadas.",
     "noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
     "reassign": "Reasignar",
-    "waiting": "Waiting {waitTime}",
-    "forNames": "for {allowedNames} to {activityName}",
+    "waiting": "Esperando {waitTime}",
+    "forNames": "para {allowedNames} a {activityName}",
     "scriptoria": "Scriptoria"
   },
   "projects": {
@@ -221,9 +221,9 @@
       "dropdown": {
         "orgProjects": "Proyectos de organización",
         "myProjects": "Mis Proyectos",
-        "activeProjects": "Active Projects",
+        "activeProjects": "Proyectos activos",
         "archived": "Proyectos archivados",
-        "all": "All Projects"
+        "all": "Todos los proyectos"
       }
     },
     "bulk": {
@@ -384,17 +384,17 @@
       "buildDate": "Fecha de compilación",
       "createdOn": "Fecha de creación",
       "updatedOn": "Fecha de actualización",
-      "activeSince": "Active Since"
+      "activeSince": "Activo desde"
     },
     "empty": "No se encontraron proyectos",
     "products": "Productos",
     "noProducts": "Este proyecto no tiene productos configurados"
   },
   "users": {
-    "settingsTitle": "User Settings",
-    "userProfile": "User Profile",
-    "userGroups": "Group Memberships",
-    "userRoles": "Organization Roles",
+    "settingsTitle": "Configuración de usuario",
+    "userProfile": "Perfil de usuario",
+    "userGroups": "Membresías de grupo",
+    "userRoles": "Roles de la organización",
     "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
     "noRoles": "No hay roles asignados",
     "title": "Administrar usuarios",
@@ -425,7 +425,7 @@
     }
   },
   "stores": {
-    "name": "Store",
+    "name": "Tienda",
     "listTitle": "Tiendas",
     "attributes": {
       "name": "Nombre",
@@ -468,7 +468,7 @@
         "description": "Descripción",
         "workflowScheme": "Workflow Scheme",
         "workflowBusinessFlow": "Workflow Business Flow",
-        "properties": "Properties",
+        "properties": "Propiedades",
         "add": "Add Workflow Definition",
         "edit": "Edit Workflow Definition",
         "storeType": "Tipo de tienda",
@@ -481,8 +481,8 @@
         "workflowType": "Workflow Type",
         "workflowTypes": {
           "1": "Startup",
-          "2": "Rebuild",
-          "3": "Republish"
+          "2": "Reconstruir",
+          "3": "Publicar nuevamente"
         }
       },
       "productDefinitions": {
@@ -491,7 +491,7 @@
         "add": "Add Product Definition",
         "edit": "Edit Product Definition",
         "description": "Description",
-        "properties": "Properties",
+        "properties": "Propiedades",
         "type": "Application Type",
         "workflow": "Workflow",
         "republishWorkflow": "Republish Workflow",
@@ -522,21 +522,21 @@
   "organization-membership": {
     "invite": {
       "error": {
-        "expired": "Invitation has expired",
-        "redeemed": "Invitation has already been redeemed",
-        "not-found": "Invitation was not found",
-        "unexpected": "Unexpected error occured: {response}",
-        "invalid-response": "We've received an invalid response... please refresh the page to try again."
+        "expired": "La invitación ha caducado",
+        "redeemed": "La invitación ya ha sido canjeada",
+        "not-found": "No se encontró la invitación",
+        "unexpected": "Ocurrió un error inesperado: {response}",
+        "invalid-response": "Hemos recibido una respuesta no válida... por favor, actualiza la página para intentarlo de nuevo."
       },
       "create": {
-        "success": "Invite sent to {email}.",
-        "error": "Error occured while trying to invite user.",
-        "invite-user-button-title": "Invite User",
-        "invite-user-modal-title": "Invite User",
-        "email-input-placeholder": "Enter email address",
-        "send-invite-button": "Send Invite"
+        "success": "Invitación enviada a {email}.",
+        "error": "Ocurrió un error mientras se intentaba invitar al usuario.",
+        "invite-user-button-title": "Invitar usuario",
+        "invite-user-modal-title": "Invitar usuario",
+        "email-input-placeholder": "Introduzca dirección de correo electrónico",
+        "send-invite-button": "Enviar invitación"
       },
-      "redemptionTitle": "Looking up invitation..."
+      "redemptionTitle": "Buscando invitación..."
     }
   }
 }
