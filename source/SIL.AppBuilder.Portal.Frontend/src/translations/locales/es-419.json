@@ -43,7 +43,7 @@
     "reactivate": "Reactivar",
     "build": "Construir / Reconstruir",
     "rebuild": "Rebuild / Republish",
-    "updated": "Updated",
+    "updated": "Actualizado",
     "continue": "Continue",
     "error": "Error",
     "workflow": "Workflow"
@@ -110,19 +110,19 @@
     "noproducts": "No hay productos disponibles",
     "storesTitle": "Tiendas",
     "storeSelectTitle": "Seleccione todas las tiendas que desea poner a disposición de su organización",
-    "nostores": "No stores available",
+    "nostores": "No hay tiendas disponibles",
     "navBasic": "Información básica",
     "navProducts": "Productos",
-    "navStores": "Stores",
+    "navStores": "Tiendas",
     "navGroups": "Grupos",
-    "nameError": "Name cannot be empty",
-    "abbreviationError": "Abbreviation cannot be empty",
-    "groupCreated": "Group created",
-    "groupEdited": "Group edited",
-    "groupDeleted": "Group deleted",
+    "nameError": "El nombre no puede estar vacío",
+    "abbreviationError": "La abreviatura no puede estar vacía",
+    "groupCreated": "Grupo creado",
+    "groupEdited": "Grupo editado",
+    "groupDeleted": "Grupo eliminado",
     "navInfrastructure": "Infraestructura",
     "infrastructureTitle": "Infraestructura",
-    "useDefaultBuildEngineTitle": "Use Default Build Engine",
+    "useDefaultBuildEngineTitle": "Usar el motor de compilación predeterminado",
     "groupsTitle": "Grupos",
     "noGroups": "Su organización no tiene grupos",
     "addGroupButton": "Agregar grupo",
@@ -152,7 +152,7 @@
     "pictureTitle": "Imagen de perfil",
     "general": "General",
     "generalInformation": "Información general",
-    "updated": "Profile updated successfully!",
+    "updated": "¡Perfil actualizado con éxito!",
     "updatePicture": "Actualize su imagen en Gravatar.com",
     "uploadPicture": "Cargar una nueva imagen",
     "firstName": "Nombre",
@@ -166,7 +166,7 @@
     "notificationSettingsTitle": "Configuración de notificaciones",
     "optOutOfEmailOption": "Deseo recibir notificaciones por correo electrónico",
     "sshSettingsTitle": "Administrar claves personales SSH",
-    "sshKeyLabel": "Publishing SSH Key",
+    "sshKeyLabel": "Publicando clave SSH",
     "visibleProfile": "Visibilidad del perfil",
     "noPhone": "Sin teléfono",
     "noTimezone": "(GMT-0)",
@@ -183,16 +183,16 @@
     "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
     "groupRequired": "Debe ser un miembro de al menos un grupo.",
     "userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",
-    "friendlyForbidden": "You are not allowed to do that. Please contact your organization administrator",
-    "forbiddenForAllOrgs": "You are not allowed to do that. Please select an organization",
+    "friendlyForbidden": "No se le permite hacer eso. Póngase en contacto con el administrador de su organización",
+    "forbiddenForAllOrgs": "No se le permite hacer eso. Por favor, seleccione una organización",
     "notAMemberOfOrg": "No es un miembro de esa organización",
     "notactiveUser": "User is not Active",
     "notactiveUserText": "\n      This user is currently set to not active.\n      <br /><br />\n      Please contact your organization administrator to discuss the reason for the status change.\n    ",
     "orgMembershipRequired": "Se requiere ser miembro de la organización",
     "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
     "orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página",
-    "verifyEmailTitle": "Please verify your email address",
-    "verifyEmailDescription": "\n      In order to use Scriptoria, we need you to verify your email address.\n      <br /><br />\n      Please log into your email and clik the verification link. ",
+    "verifyEmailTitle": "Por favor, verifique su dirección de correo electrónico",
+    "verifyEmailDescription": "\nPara poder usar Scriptoria, necesitamos que verifiques tu dirección de correo electrónico.\n      <br /><br />\n      Por favor, ingrese a su correo electrónico y haga clic en el enlace de verificación. ",
     "invalidProjectSelection": "No valid products available for selected project(s)"
   },
   "tasks": {
@@ -233,18 +233,18 @@
     }
   },
   "productDefinitions": {
-    "filterAllProjects": "All projects that contain..."
+    "filterAllProjects": "Todos los proyectos que contienen..."
   },
   "project": {
     "title": "Proyecto",
-    "organizationContact": "Organization Contact: ",
-    "projectOwner": "Project Owner: ",
+    "organizationContact": "Contacto de la organización: ",
+    "projectOwner": "Propietario del proyecto: ",
     "claimOwnership": "Claim Ownership",
     "claimSuccess": "Succesfully Claimed",
     "newProject": "Nuevo proyecto",
     "projectName": "Nombre de proyecto",
-    "noAvailableGroups": "There are no available groups for the selected organization",
-    "projectDescription": "Description",
+    "noAvailableGroups": "No hay grupos disponibles para la organización seleccionada",
+    "projectDescription": "Descripción",
     "projectGroup": "Grupo de proyecto",
     "languageCode": "Código de lenguaje",
     "type": "Tipo",
@@ -254,7 +254,7 @@
     "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesible por otras organizaciones",
     "createdOn": "Creado",
     "overview": "Información",
-    "productFiles": "Product files",
+    "productFiles": "Archivos de producto",
     "dropdown": {
       "transfer": "Transferir propiedad",
       "archive": "Archivar",
@@ -269,11 +269,11 @@
     "products": {
       "title": "Productos",
       "empty": "No tiene productos para este proyecto.",
-      "addRemove": "Add or Remove Products",
+      "addRemove": "Añadir o quitar productos",
       "popup": {
-        "title": "Select Products",
-        "done": "Done",
-        "empty": "No products available",
+        "title": "Seleccionar productos",
+        "done": "Hecho",
+        "empty": "No hay productos disponibles",
         "details": "Detalles"
       },
       "publications": {
@@ -286,8 +286,8 @@
         "console": "Console Text"
       },
       "options": {
-        "update": "update",
-        "publish": "publish"
+        "update": "actualizar",
+        "publish": "publicar"
       },
       "transitions": {
         "productDetails": "Product Details",
@@ -303,11 +303,11 @@
           "4": "{workflowType} Workflow Cancelled"
         }
       },
-      "updated": "Updated",
-      "size": "Size",
-      "filename": "Filename",
-      "published": "Published",
-      "unpublished": "Unpublished",
+      "updated": "Actualizado",
+      "size": "Tamaño",
+      "filename": "Nombre de archivo",
+      "published": "Publicado",
+      "unpublished": "Sin publicar",
       "numArtifacts": "{amount, plural, =0 {No Product Files} other {{ amount } Product Files}}",
       "noArtifacts": "No Product Files",
       "rebuild": "rebuild",
@@ -429,7 +429,7 @@
     "listTitle": "Tiendas",
     "attributes": {
       "name": "Nombre",
-      "description": "Description"
+      "description": "Descripción"
     }
   },
   "storeTypes": {
