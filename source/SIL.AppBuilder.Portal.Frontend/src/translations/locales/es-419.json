@@ -292,12 +292,12 @@
       "transitions": {
         "productDetails": "Product Details",
         "state": "State",
-        "user": "User",
-        "command": "Command",
-        "comment": "Comment",
-        "date": "Date",
+        "user": "Usuario",
+        "command": "Comando",
+        "comment": "Comentario",
+        "date": "Fecha",
         "transitionTypes": {
-          "1": "Activity",
+          "1": "Actividad",
           "2": "{workflowType} Workflow Started",
           "3": "{workflowType} Workflow Completed",
           "4": "{workflowType} Workflow Cancelled"
@@ -309,7 +309,7 @@
       "published": "Publicado",
       "unpublished": "Sin publicar",
       "numArtifacts": "{amount, plural, =0 {No Product Files} other {{ amount } Product Files}}",
-      "noArtifacts": "No Product Files",
+      "noArtifacts": "No hay archivos de producto",
       "rebuild": "reconstruir",
       "creationInProgress": "Pendiente: No puede añadir un producto hasta que la configuración del proyecto se haya completado."
     },
