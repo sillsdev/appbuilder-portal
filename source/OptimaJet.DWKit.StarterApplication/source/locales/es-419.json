@@ -20,7 +20,7 @@
       "buildFailedOwner": "<p>Build for product: {{productName}} project {{projectName}} failed.</p><p> The organization administrator has been notified of this issue</p>",
       "buildFailedAdmin": "<p>Build for product: {{productName}} project {{projectName}} failed.</p><p>Diagnostic information for Super Admins:</p><ul><li>BuildEngineUrl: {{buildEngineUrl}}</li><li>ProjectId: {{projectId}} </li><li>JobId: {{jobId}} </li><li> BuildId: {{buildId}}</li></ul>",
       "buildProductRecordNotFound": "<p>Build Failed: Unable to find product record with id: {{productId}}</p>",
-      "productFailedUnableToConnect": "<p>Failed to create product: {{productName}} project: {{projectName}}.</p><p>Unable to connect to build engine.</p>",
+      "productFailedUnableToConnect": "<p>Error al crear el producto: {{productName}} proyecto: {{projectName}}.</p><p>No se puede conectar para construir el motor.</p>",
       "productProjectUrlNotSet": "<p>Failed to create product: {{productName}} project: {{projectName}}.</p><p>Workflow Project URL not set so product creation was not attempted.</p>",
       "productCreatedSuccessfully": "<p>Product {{productName}} project {{projectName}} creation completed successfully</p>",
       "productCreationFailedOwner": "<p>Exceeded retries attempting to create product: {{productName}} project {{projectName}}.</p> The organization administrator has been notified of this issue.",
@@ -37,7 +37,7 @@
       "recordNotFound": "<p>Task {{taskName}} Failed: Unable to find record:</p><ul><li>recordName={{recordName}}</li><li>id={{recordId}}</li></ul>"
     },
     "subject": {
-      "userTaskAdded": "Scriptoria: {{activity}} Assigned For {{productName}} - {{project}}",
+      "userTaskAdded": "Scriptoria: {{activity}} asignado para {{productName}} - {{project}}",
       "buildengineConnected": "Scriptoria: {{orgName}} Build Engine Connected",
       "buildengineDisconnected": "Scriptoria: {{orgName}} Build Engine Disconnected",
       "projectFailedBuildEngine": "Scriptoria: Create Project {{projectName}} Failed",
