@@ -6,18 +6,18 @@
   "exampleForm": "Formulario de ejemplo",
   "updated": "¡Actualizado!",
   "opensource": "Código abierto",
-  "home": "Home",
+  "home": "Inicio",
   "locale-picker": {
-    "code": "Code",
-    "country": "Country",
-    "other": "Other Names",
+    "code": "Código",
+    "country": "País",
+    "other": "Otros nombres",
     "label": "Lenguaje",
-    "placeholder": "Search by Language...",
-    "region": "{num, plural, one {Region} other {Regions}}",
+    "placeholder": "Buscar por idioma...",
+    "region": "{num, plural,one {Region}other {Region}}",
     "name": "{num, plural, one {Name} other {Names}}",
     "tag": "{num, plural, one {Tag} other {Tags}}",
     "variant": "{num, plural, one {Variant} other {Variants}}",
-    "regionName": "Region Name"
+    "regionName": "Nombre de región"
   },
   "attributions": {
     "title": "Proyecto de código abierto usado en Scriptoria",
@@ -42,18 +42,18 @@
     "archive": "Archivar",
     "reactivate": "Reactivar",
     "build": "Construir / Reconstruir",
-    "rebuild": "Rebuild / Republish",
+    "rebuild": "Reconstruir/Volver a publicar",
     "updated": "Actualizado",
-    "continue": "Continue",
+    "continue": "Continuar",
     "error": "Error",
     "workflow": "Workflow"
   },
   "models": {
-    "add": "Add {name}",
-    "edit": "Edit {name}",
-    "save": "Save {name}",
-    "createSuccess": "{name} was successfully created!",
-    "updateSuccess": "{name} was successfully updated!"
+    "add": "Añadir {name}",
+    "edit": "Editar {name}",
+    "save": "Guardar {name}",
+    "createSuccess": "¡{name} fue creado con éxito!",
+    "updateSuccess": "¡{name} fue actualizado con éxito!"
   },
   "auth": {
     "title": "Scriptoria",
@@ -75,13 +75,13 @@
     "emptyNotifications": "No tienes notificaciones."
   },
   "sidebar": {
-    "myTasks": "My Tasks {count, plural, =0 {} other {({ count })}}",
+    "myTasks": "¡Mis tareas {count, plural, one {} =0 {} other {({ count })}}",
     "myProjects": "Mis Proyectos",
-    "activeProjects": "Active Projects",
+    "activeProjects": "Proyectos activos",
     "organizationProjects": "Proyectos de organización",
     "users": "Usuarios",
     "organizationSettings": "Configuración de organización",
-    "adminSettings": "Admin",
+    "adminSettings": "Administrador",
     "projectDirectory": "Directorio de proyectos",
     "addProject": "Agregar proyectos"
   },
@@ -133,18 +133,18 @@
     "buildEngineApiAccessToken": "Token de acceso del motor de construcción"
   },
   "products": {
-    "definition": "Useful files that result from a series of steps.",
-    "storeSelect": "Select a store for {name}",
-    "noStoresAvailable": "There are no stores available for the selected product. Please contact your organization administrator.",
+    "definition": "Archivos útiles que resultan de una serie de pasos.",
+    "storeSelect": "Seleccione una tienda para {name}",
+    "noStoresAvailable": "No hay tiendas disponibles para el producto seleccionado. Por favor, contacte con el administrador de su organización.",
     "actions": {
-      "executed": "{actionName} was successfully executed.",
-      "cancelled": "{actionName} was successfully cancelled.",
-      "rebuild": "Rebuild",
-      "republish": "Republish",
+      "executed": "{actionName} fue ejecutado con éxito.",
+      "cancelled": "{actionName} fue cancelado con éxito.",
+      "rebuild": "Reconstruir",
+      "republish": "Publicar nuevamente",
       "cancel": "Cancelar",
-      "noneAvailable": "No actions are currently available for this product.",
-      "bulkNotAllAllowed": "Not all of the selected projects' products can have the {action} action(s) applied.",
-      "dispatched": "The {action} action has been dispatched."
+      "noneAvailable": "No hay acciones disponibles actualmente para este producto.",
+      "bulkNotAllAllowed": "No todos los productos de los proyectos seleccionados pueden tener la acción {action} aplicada.",
+      "dispatched": "La acción {action} ha sido enviada."
     }
   },
   "profile": {
@@ -177,7 +177,7 @@
   },
   "errors": {
     "generic": "¡Ha ocurrido un error! {errorMessage}",
-    "requiredField": "The {field} is required, but has no value",
+    "requiredField": "El {field} es requerido, pero no tiene ningún valor",
     "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
     "notFoundTitle": "\n¡No encontrado!",
     "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
@@ -186,14 +186,14 @@
     "friendlyForbidden": "No se le permite hacer eso. Póngase en contacto con el administrador de su organización",
     "forbiddenForAllOrgs": "No se le permite hacer eso. Por favor, seleccione una organización",
     "notAMemberOfOrg": "No es un miembro de esa organización",
-    "notactiveUser": "User is not Active",
-    "notactiveUserText": "\n      This user is currently set to not active.\n      <br /><br />\n      Please contact your organization administrator to discuss the reason for the status change.\n    ",
+    "notactiveUser": "El usuario no está activo",
+    "notactiveUserText": "\n      Este usuario actualmente no está activo.\n      <br /><br />\n      Póngase en contacto con el administrador de su organización para discutir el motivo del cambio de estado.\n    ",
     "orgMembershipRequired": "Se requiere ser miembro de la organización",
     "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
     "orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página",
     "verifyEmailTitle": "Por favor, verifique su dirección de correo electrónico",
     "verifyEmailDescription": "\nPara poder usar Scriptoria, necesitamos que verifiques tu dirección de correo electrónico.\n      <br /><br />\n      Por favor, ingrese a su correo electrónico y haga clic en el enlace de verificación. ",
-    "invalidProjectSelection": "No valid products available for selected project(s)"
+    "invalidProjectSelection": "Productos no válidos disponibles para el/los proyecto(s) seleccionados"
   },
   "tasks": {
     "title": "Mis tareas",
