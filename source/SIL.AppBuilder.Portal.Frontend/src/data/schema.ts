@@ -3,6 +3,20 @@ import { KeyMap, Schema, SchemaSettings } from '@orbit/data';
 export const keyMap = new KeyMap();
 
 const schemaDefinition: SchemaSettings = {
+  // The no-var-requires rule lint check is turned off in config but doesn't seem to work
+  // and is still flagging the error here.
+  // Cancelling it out manually here since the plug in requires it and the babel
+  // doesn't support the import inflection = require('inflection) suggested alternative
+  /* eslint-disable @typescript-eslint/no-var-requires */
+  pluralize: (word) => {
+    var inflection = require('inflection');
+    return inflection.pluralize(word);
+  },
+  singularize: (word) => {
+    var inflection = require('inflection');
+    return inflection.singularize(word);
+  },
+  /* eslint-enable @typescript-eslint/no-var-requires */
   models: {
     organizationInvite: {
       keys: { remoteId: {} },
@@ -424,6 +438,16 @@ const schemaDefinition: SchemaSettings = {
       },
       relationships: {
         user: { type: 'hasOne', model: 'user', inverse: 'notifications' },
+      },
+    },
+    systemStatus: {
+      keys: { remoteId: {} },
+      attributes: {
+        buildEngineUrl: { type: 'string' },
+        buildEngineApiAccessToken: { type: 'string' },
+        systemAvailable: { type: 'boolean' },
+        dateCreated: { type: 'date' },
+        dateUpdated: { type: 'date' },
       },
     },
   },

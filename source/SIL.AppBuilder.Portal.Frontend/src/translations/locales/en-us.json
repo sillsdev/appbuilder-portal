@@ -444,7 +444,8 @@
         "workflowdefinitions": "Workflow Definitions",
         "productDefinitions": "Product Definitions",
         "storeTypes": "Store Types",
-        "stores": "Stores"
+        "stores": "Stores",
+        "buildEngines": "Build Engine Statuses"
       },
       "organizations": {
         "title": "Organizations",
@@ -468,7 +469,7 @@
         "description": "Description",
         "workflowScheme": "Workflow Scheme",
         "workflowBusinessFlow": "Workflow Business Flow",
-	"properties": "Properties",
+	      "properties": "Properties",
         "add": "Add Workflow Definition",
         "edit": "Edit Workflow Definition",
         "storeType": "Store Type",
@@ -515,7 +516,16 @@
         "editSuccess": "Store Type updated",
         "emptyName": "Name cannot be empty",
         "emptyType": "Need to select an Application Type",
-        "emptyWorkflow": "Nedd to select a Workflow definition"
+        "emptyWorkflow": "Need to select a Workflow definition"
+      },
+      "buildEngines": {
+        "title": "Build Engine Statuses",
+        "accessToken": "Build Engine API Access Token",
+        "websiteURL": "Website URL",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "status": "Status",
+        "lastUpdated": "Last update"
       }
     }
   },
