@@ -444,7 +444,8 @@
         "workflowdefinitions": "Definiciones de flujo de trabajo",
         "productDefinitions": "Definiciones de producto",
         "storeTypes": "Tipos de tienda",
-        "stores": "Tiendas"
+        "stores": "Tiendas",
+        "buildEngines": "Build Engine Statuses"
       },
       "organizations": {
         "title": "Organizaciones",
@@ -515,7 +516,16 @@
         "editSuccess": "Store Type updated",
         "emptyName": "Name cannot be empty",
         "emptyType": "Need to select an Application Type",
-        "emptyWorkflow": "Nedd to select a Workflow definition"
+        "emptyWorkflow": "Need to select a Workflow definition"
+      },
+      "buildEngines": {
+        "title": "Build Engine Statuses",
+        "accessToken": "Token de acceso del motor de construcción",
+        "websiteURL": "URL del sitio web",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "status": "Estado",
+        "lastUpdated": "Last update"
       }
     }
   },
