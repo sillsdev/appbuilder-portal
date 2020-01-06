@@ -5,6 +5,7 @@ FROM nginx:1.15.8-alpine AS base
 # so here is the nodejs search for that version of alpine
 # https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.9&repo=main
 #
+#
 RUN apk add --no-cache git curl bash
 RUN apk add --no-cache \
       --repository http://dl-3.alpinelinux.org/alpine/edge/community \
