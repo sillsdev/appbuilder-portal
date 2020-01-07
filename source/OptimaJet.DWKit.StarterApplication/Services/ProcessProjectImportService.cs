@@ -37,7 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public List<ImportProduct> Products { get; set; }
     }
 
-    public class ProjectImportService : IProjectImportService
+    public class ProcessProjectImportService : IProcessProjectImportService
     {
         private readonly ITranslator translator;
         protected readonly IJobRepository<ProjectImport> projectImportRepository;
@@ -47,10 +47,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         private readonly IJobRepository<Product,Guid> productRepository;
         private readonly IJobRepository<ProductDefinition> productDefinitionRepository;
         private readonly IJobRepository<Store> storeRepository;
-        private readonly IJobRepository<OrganizationStore> orgStoreRepository;
-        private readonly IJobRepository<OrganizationProductDefinition> orgProductDefinitionRepository;
 
-        public ProjectImportService(
+        public ProcessProjectImportService(
             ITranslator translator,
             IJobRepository<ProjectImport> projectImportRepository,
             IClient bugsnagClient,
@@ -58,9 +56,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             IJobRepository<Project> projectRepository,
             IJobRepository<Product,Guid> productRepository,
             IJobRepository<ProductDefinition> productDefinitionRepository,
-            IJobRepository<Store> storeRepository,
-            IJobRepository<OrganizationStore> orgStoreRepository,
-            IJobRepository<OrganizationProductDefinition> orgProductDefinitionRepository)
+            IJobRepository<Store> storeRepository)
         {
             this.translator = translator;
             this.projectImportRepository = projectImportRepository;
@@ -70,11 +66,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             this.productRepository = productRepository;
             this.productDefinitionRepository = productDefinitionRepository;
             this.storeRepository = storeRepository;
-            this.orgStoreRepository = orgStoreRepository;
-            this.orgProductDefinitionRepository = orgProductDefinitionRepository;
         }
 
-        public void Process(ProjectImportServiceData data)
+        public void Process(ProcessProjectImportServiceData data)
         {
             ProcessImportData(data.Id).Wait();
         }

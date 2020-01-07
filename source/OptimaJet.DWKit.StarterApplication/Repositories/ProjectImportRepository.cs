@@ -28,8 +28,8 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
         public override async Task<ProjectImport> CreateAsync(ProjectImport entity)
         {
             var result = await base.CreateAsync(entity);
-            var data = new ProjectImportServiceData { Id = result.Id };
-            backgroundJobClient.Enqueue<IProjectImportService>(service => service.Process(data));
+            var data = new ProcessProjectImportServiceData { Id = result.Id };
+            backgroundJobClient.Enqueue<IProcessProjectImportService>(service => service.Process(data));
             return result;
         }
     }

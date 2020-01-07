@@ -1,12 +1,12 @@
 ﻿using System;
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
-    public interface IProjectImportService
+    public interface IProcessProjectImportService
     {
-        void Process(ProjectImportServiceData data);
+        void Process(ProcessProjectImportServiceData data);
     }
 
-    public class ProjectImportServiceData
+    public class ProcessProjectImportServiceData
     {
         public int Id { get; set; }
     }

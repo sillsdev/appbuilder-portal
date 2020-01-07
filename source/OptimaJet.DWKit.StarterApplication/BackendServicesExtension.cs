@@ -168,7 +168,7 @@ namespace OptimaJet.DWKit.StarterApplication
                                  config.UsePostgreSqlStorage(configuration["ConnectionStrings:default"]));
 
             services.AddScoped(typeof(IOrganizationInviteRequestService), typeof(OrganizationInviteRequestService));
-            services.AddScoped(typeof(IProjectImportService), typeof(ProjectImportService));
+            services.AddScoped(typeof(IProcessProjectImportService), typeof(ProcessProjectImportService));
             services.Configure<OrganizationInviteRequestSettings>(options =>
             {
                 options.BaseUrl = GetVarOrDefault("UI_URL", "http://localhost:9091");
