@@ -82,6 +82,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<IResourceService<Organization>, OrganizationService>();
             services.AddScoped<IResourceService<Group>, GroupService>();
             services.AddScoped<IResourceService<Project>, ProjectService>();
+            services.AddScoped<IResourceService<ProjectImport>, ProjectImportService>();
             services.AddScoped<IResourceService<Product, Guid>, ProductService>();
             services.AddScoped<IResourceService<GroupMembership>, GroupMembershipService>();
             services.AddScoped<IResourceService<OrganizationMembership>, OrganizationMembershipService>();
