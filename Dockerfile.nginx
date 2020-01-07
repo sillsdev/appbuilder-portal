@@ -12,7 +12,9 @@ RUN apk add --no-cache \
       nodejs=10.14.2-r0 \
       npm=10.14.2-r0 \
       build-base \
+    && npm config set unsafe-perm true
     && npm install -qg yarn
+    && npm config set unsafe-perm false
 WORKDIR /src
 
 # ---- Dependencies ----
