@@ -31,5 +31,21 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
             string.IsNullOrWhiteSpace(properties)
                 ? new Dictionary<string, object>()
                 : JsonConvert.DeserializeObject<Dictionary<string, object>>(properties);
+
+        // https://stackoverflow.com/a/54427033/35577
+        public static string UnescapeJson(string escapedJsonString)
+        {
+            if (string.IsNullOrWhiteSpace(escapedJsonString))
+            {
+                return "{}";
+            }
+
+            string unescapedJsonString = JsonConvert.DeserializeObject<string>(escapedJsonString);
+            return unescapedJsonString;
+
+            //string finalUnescapedJsonString = JsonConvert.DeserializeObject<string>(unescapedJsonString);
+
+            //return finalUnescapedJsonString;
+        }
     }
 }
