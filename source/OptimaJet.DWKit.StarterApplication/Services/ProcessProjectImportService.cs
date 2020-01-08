@@ -11,6 +11,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
+using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using Serilog;
 
@@ -42,6 +44,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         private readonly ITranslator translator;
         protected readonly IJobRepository<ProjectImport> projectImportRepository;
         private readonly IClient bugsnagClient;
+        private readonly IBackgroundJobClient hangfireClient;
         protected readonly IJobRepository<Email> emailRepository;
         private readonly IJobRepository<Project> projectRepository;
         private readonly IJobRepository<Product,Guid> productRepository;
@@ -52,6 +55,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             ITranslator translator,
             IJobRepository<ProjectImport> projectImportRepository,
             IClient bugsnagClient,
+            IBackgroundJobClient hangfireClient,
             IJobRepository<Email> emailRepository,
             IJobRepository<Project> projectRepository,
             IJobRepository<Product,Guid> productRepository,
@@ -61,6 +65,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             this.translator = translator;
             this.projectImportRepository = projectImportRepository;
             this.bugsnagClient = bugsnagClient;
+            this.hangfireClient = hangfireClient;
             this.emailRepository = emailRepository;
             this.projectRepository = projectRepository;
             this.productRepository = productRepository;
@@ -79,6 +84,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .Where(pi => pi.Id == id)
                 .Include(pi => pi.Organization)
                 .Include(pi => pi.Owner)
+                .Include(pi => pi.Group)
+                .Include(pi => pi.Type)
                 .FirstOrDefaultAsync();
             if (projectImport == null)
             {
@@ -105,15 +112,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     // expected
                     project = new Project
                     {
+                        OwnerId = projectImport.OwnerId.Value,
+                        OrganizationId = projectImport.OrganizationId.Value,
+                        GroupId = projectImport.GroupId.Value,
+                        TypeId = projectImport.TypeId.Value,
                         ImportId = id,
                         Name = importProject.Name,
                         Description = importProject.Description,
                         Language = importProject.Language,
                         IsPublic = importProject.IsPublic,
                         AllowDownloads = importProject.AllowDownloads,
-                        AutomaticBuilds = importProject.AutomaticBuilds
+                        AutomaticBuilds = importProject.AutomaticBuilds,
+
                     };
                     var newProject = await projectRepository.CreateAsync(project);
+                    hangfireClient.Enqueue<BuildEngineProjectService>(service => service.ManageProject(newProject.Id, null));
+
                     importedProjects.Add(newProject);
                     await AddReportLine(report, locale, "newProject", new Dictionary<string, object>()
                     {
@@ -127,7 +141,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 }
                 else
                 {
-                    await AddReportLine(report, locale, "exisitingProject", new Dictionary<string, object>()
+                    await AddReportLine(report, locale, "existingProject", new Dictionary<string, object>()
                     {
                         ["projectId"] = project.Id,
                         ["projectName"] = project.Name,
@@ -178,25 +192,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                             StoreId = store.Id
                         };
                         var newProduct = await productRepository.CreateAsync(product);
+                        hangfireClient.Enqueue<WorkflowProductService>(service => service.ManageNewProduct(product.Id));
                         await AddReportLine(report, locale, "newProduct", new Dictionary<string, object>()
                         {
-                            ["productId"] = newProduct.Id,
                             ["projectId"] = newProduct.ProjectId,
-                            ["productionDefinitionName"] = productDefinition.Name,
-                            ["productionDefinitionId"] = productDefinition.Id,
+                            ["productDefinitionName"] = productDefinition.Name,
                             ["storeName"] = store.Name,
                             ["storeId"] = store.Id
-
                         });
                     }
                     else
                     {
                         await AddReportLine(report, locale, "existingProduct", new Dictionary<string, object>()
                         {
-                            ["productId"] = product.Id,
                             ["projectId"] = project.Id,
-                            ["productionDefinitionName"] = productDefinition.Name,
-                            ["productionDefinitionId"] = productDefinition.Id,
+                            ["productDefinitionName"] = productDefinition.Name,
                             ["storeName"] = store.Name,
                             ["storeId"] = store.Id
                         });
@@ -214,10 +224,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             report.Add(line);
         }
 
-        private async Task SendReportEmail(ProjectImport projectImport, List<string> report)
+        private async Task TranslateProperty(List<string> properties, string language, string name, string value)
+        {
+            string propertyName = await translator.TranslateAsync(language, "importProject", $"importProject.{name}", null);
+            string property = await translator.TranslateAsync(language, "importProject", "importProject.property", new Dictionary<string, object>()
+            {
+                ["name"] = propertyName,
+                ["value"] = value
+            });
+            properties.Add(property); 
+        }
+
+        private async Task SendReportEmail(ProjectImport projectImport, List<string> outputLines)
         {
             var locale = projectImport.Owner.LocaleOrDefault();
             string subject = await translator.TranslateAsync(locale, "importProject", "importProject.subject", null);
+            string title = await translator.TranslateAsync(locale, "importProject", "importProject.title", null);
+            string propertiesHeader = await translator.TranslateAsync(locale, "importProject", "importProject.propertiesHeader", null);
+            string outputHeader = await translator.TranslateAsync(locale, "importProject", "importProject.outputHeader", null);
+
+            var propertyLines = new List<string>();
+            await TranslateProperty(propertyLines, locale, "Owner", projectImport.Owner.Name);
+            await TranslateProperty(propertyLines, locale, "Group", projectImport.Group.Name);
+            await TranslateProperty(propertyLines, locale, "Organization", projectImport.Organization.Name);
+            await TranslateProperty(propertyLines, locale, "Application Type", projectImport.Type.Description);
 
             var email = new Email
             {
@@ -226,11 +256,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 ContentTemplate = "ProjectImport.txt",
                 ContentModel = new
                 {
-                    OrganizationName = projectImport.Organization.Name,
-                    Group = projectImport.Group.Name,
-                    Owner = projectImport.Owner.Name,
-                    Type = projectImport.Type.Name,
-                    Lines = report
+                    Title = title,
+                    PropertiesHeader = propertiesHeader,
+                    Properties = propertyLines,
+                    OutputHeader = outputHeader,
+                    Output = outputLines
                 }
             };
             await emailRepository.CreateAsync(email);

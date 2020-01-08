@@ -1,0 +1,20 @@
+﻿@{
+    DisableEncoding = true;
+}
+<html>
+<body>
+    <h2>@Model.Title</h2>
+    <p>@Model.PropertiesHeader</p>
+    <ul>
+    @foreach (var item in @Model.Properties) {
+        <li>@item</li>
+    }
+    </ul>
+    <p>@Model.OutputHeader</p>
+    <table>
+    @foreach (var line in Model.Output) {
+        <tr><td><p>@line</p></td></tr>
+    }
+    </table>
+</body>
+</html>
