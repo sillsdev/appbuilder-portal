@@ -11,7 +11,9 @@ RUN apk add --no-cache \
       nodejs=10.14.2-r0 \
       npm=10.14.2-r0 \
       build-base \
-    && npm install -qg yarn
+    && npm config set unsafe-perm true \
+    && npm install -qg yarn \
+    && npm config set unsafe-perm false
 WORKDIR /src
 
 # ---- Dependencies ----
@@ -20,6 +22,8 @@ COPY \
   source/SIL.AppBuilder.Portal.Frontend/package.json \
   source/SIL.AppBuilder.Portal.Frontend/yarn.lock \
   /src/
+# Work around 'could not get uid/gid' error during travis build
+RUN npm config set unsafe-perm true
 RUN yarn
 
 # ---- Build ----
