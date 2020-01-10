@@ -6,7 +6,6 @@ import {
   ProductDefinitionResource,
   ProjectResource,
   ProductResource,
-  attributesFor,
 } from '@data';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
