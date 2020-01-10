@@ -28,7 +28,7 @@ export default function Products({ project }: IProps) {
     dataStore,
     subscriptions: { products, organization },
   } = useOrbit<ISubscriptions>({
-    products: (q) => q.findRelatedRecords(project, 'products'),
+    products: (q) => q.findRecords('product').filter({ relation: 'project', record: project }),
     organization: (q) => q.findRelatedRecord(project, 'organization'),
     // cache busters
     userTasks: (q) => q.findRecords('userTask'),

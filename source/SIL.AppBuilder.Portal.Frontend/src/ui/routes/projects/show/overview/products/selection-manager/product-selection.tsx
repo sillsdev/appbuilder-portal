@@ -2,7 +2,13 @@ import React, { useCallback } from 'react';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { OrganizationResource, ProductDefinitionResource, ProjectResource } from '@data';
+import {
+  OrganizationResource,
+  ProductDefinitionResource,
+  ProjectResource,
+  ProductResource,
+  relationshipFor,
+} from '@data';
 
 import { i18nProps } from '@lib/i18n';
 import { attributesFor, pushPayload, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
@@ -12,18 +18,34 @@ import ProductDefinitionMultiSelect from './multi-select';
 
 import { useConditionalPoll } from '~/lib/hooks';
 
+import { isEmpty } from '~/lib/collection';
+
 interface IProps {
-  toggleModal: () => void;
-  isModalOpen: boolean;
+  toggleAddModal: () => void;
+  toggleDeleteModal: () => void;
+  isAddModalOpen: boolean;
+  isDeleteModalOpen: boolean;
   organization: OrganizationResource;
-  selected: ProductDefinitionResource[];
+  selected: ProductResource[];
   project: ProjectResource;
+  list: ProductDefinitionResource[];
   onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
 }
 
 export default function ProductSelector(props: IProps & i18nProps) {
   const { dataStore } = useOrbit();
-  const { t, toggleModal, isModalOpen, organization, selected, project, onChangeSelection } = props;
+  const {
+    t,
+    toggleAddModal,
+    toggleDeleteModal,
+    isAddModalOpen,
+    isDeleteModalOpen,
+    organization,
+    selected,
+    project,
+    onChangeSelection,
+    list,
+  } = props;
   const { workflowProjectUrl } = attributesFor(project);
 
   // there is a race condition where the page loads after
@@ -53,47 +75,115 @@ export default function ProductSelector(props: IProps & i18nProps) {
   }, [dataStore, project, workflowProjectUrl]);
 
   useConditionalPoll(pollCallback, 3000);
+  const inSelectedList = (element) => {
+    const el = selected.find((selectedItem) => {
+      const { data } = relationshipFor(selectedItem, 'productDefinition') || {};
+      return data.id === element.id;
+    });
+
+    return el !== undefined;
+  };
+
+  let addEnabled = false;
+  let removeEnabled = false;
+
+  if (!isEmpty(list) && workflowProjectUrl) {
+    list.map((element, index) => {
+      const isSelected = inSelectedList(element);
+      if (isSelected) {
+        removeEnabled = true;
+      } else {
+        addEnabled = true;
+      }
+    });
+  }
 
   return (
-    <Modal
-      data-test-project-product-popup
-      open={isModalOpen}
-      trigger={
-        <button
-          data-test-project-products-manage-button
-          className='ui button fs-13 bold uppercase
+    <div>
+      <Modal
+        data-test-project-product-add-popup
+        open={isAddModalOpen}
+        trigger={
+          <button
+            data-test-project-products-add-button
+            className='ui button fs-13 bold uppercase
             round-border-4 dark-blue-text
             thin-inverted-border bg-transparent'
-          disabled={!workflowProjectUrl}
-          onClick={toggleModal}
-        >
-          {t('project.products.addRemove')}
-        </button>
-      }
-      className='medium products-modal'
-      closeIcon={<CloseIcon className='close-modal' />}
-      onClose={toggleModal}
-    >
-      <Modal.Header>{t('project.products.popup.title')}</Modal.Header>
+            disabled={!addEnabled}
+            onClick={toggleAddModal}
+          >
+            {t('project.products.add')}
+          </button>
+        }
+        className='medium products-modal'
+        closeIcon={<CloseIcon className='close-modal' />}
+        onClose={toggleAddModal}
+      >
+        <Modal.Header>{t('project.products.popup.title')}</Modal.Header>
 
-      <Modal.Content>
-        <ProductDefinitionMultiSelect
-          organization={organization}
-          selected={selected}
-          project={project}
-          onChangeSelection={onChangeSelection}
-        />
-      </Modal.Content>
+        <Modal.Content>
+          <ProductDefinitionMultiSelect
+            organization={organization}
+            selected={selected}
+            project={project}
+            list={list}
+            onChangeSelection={onChangeSelection}
+            unselectedOnly={true}
+          />
+        </Modal.Content>
 
-      <Modal.Actions>
-        <button
-          data-test-project-product-close-button
-          className='ui button huge'
-          onClick={toggleModal}
-        >
-          {t('project.products.popup.done')}
-        </button>
-      </Modal.Actions>
-    </Modal>
+        <Modal.Actions>
+          <button
+            data-test-project-product-close-button
+            className='ui button huge'
+            onClick={toggleAddModal}
+          >
+            {t('project.products.popup.done')}
+          </button>
+        </Modal.Actions>
+      </Modal>
+      <Modal
+        data-test-project-product-remove-popup
+        open={isDeleteModalOpen}
+        trigger={
+          <button
+            data-test-project-products-remove-button
+            className='ui button fs-13 bold uppercase
+            round-border-4 dark-blue-text
+            thin-inverted-border bg-transparent'
+            disabled={!removeEnabled}
+            onClick={toggleDeleteModal}
+          >
+            {t('project.products.remove')}
+          </button>
+        }
+        className='medium products-modal'
+        closeIcon={<CloseIcon className='close-modal' />}
+        onClose={toggleDeleteModal}
+      >
+        <Modal.Header>{t('project.products.popup.title')}</Modal.Header>
+
+        <Modal.Content>
+          <ProductDefinitionMultiSelect
+            organization={organization}
+            selected={selected}
+            project={project}
+            list={list}
+            onChangeSelection={onChangeSelection}
+            selectedOnly={true}
+          />
+        </Modal.Content>
+
+        <Modal.Actions>
+          <button
+            data-test-project-product-close-button
+            className='ui button huge'
+            onClick={toggleDeleteModal}
+          >
+            {t('project.products.popup.done')}
+          </button>
+        </Modal.Actions>
+      </Modal>
+    </div>
   );
 }

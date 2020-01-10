@@ -17,8 +17,10 @@ interface INeededProps {
 
 export interface IProvidedProps {
   productSelection: {
-    isModalOpen: boolean;
-    toggleModal: () => void;
+    isAddModalOpen: boolean;
+    isDeleteModalOpen: boolean;
+    toggleAddModal: () => void;
+    toggleDeleteModal: () => void;
     storeNeededFor: ProductDefinitionResource;
     cancelStore: () => void;
     onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
@@ -30,16 +32,23 @@ export interface IProvidedProps {
 type IProps = INeededProps & i18nProps & IDataActionsProps & WithDataProps;
 
 interface IState {
-  isModalOpen: boolean;
+  isAddModalOpen: boolean;
+  isDeleteModalOpen: boolean;
   storeNeededFor?: ProductDefinitionResource;
   storeType?: StoreTypeResource;
 }
 
 export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
   return class extends React.Component<IProps & TWrappedProps, IState> {
-    state = { isModalOpen: false, storeNeededFor: undefined, storeType: undefined };
+    state = {
+      isAddModalOpen: false,
+      isDeleteModalOpen: false,
+      storeNeededFor: undefined,
+      storeType: undefined,
+    };
 
-    toggleModal = () => this.setState({ isModalOpen: !this.state.isModalOpen });
+    toggleAddModal = () => this.setState({ isAddModalOpen: !this.state.isAddModalOpen });
+    toggleDeleteModal = () => this.setState({ isDeleteModalOpen: !this.state.isDeleteModalOpen });
     showToast = () => toast.warning(this.props.t('project.products.creationInProgress'));
 
     handleProductAdd = async (definition: ProductDefinitionResource) => {
@@ -57,7 +66,6 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
       if (!storeType) {
         return await this.updateProduct(definition);
       }
-
       this.setState({ storeNeededFor: definition, storeType });
     };
 
@@ -77,11 +85,9 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
       const { productForProductDefinition } = this.props;
 
       const product = productForProductDefinition(definition);
-
       if (product) {
         return await this.updateProduct(definition);
       }
-
       return await this.handleProductAdd(definition);
     };
 
@@ -90,13 +96,15 @@ export function withProductSelectionState<TWrappedProps>(WrappedComponent) {
     };
 
     render() {
-      const { isModalOpen, storeNeededFor, storeType } = this.state;
+      const { isAddModalOpen, isDeleteModalOpen, storeNeededFor, storeType } = this.state;
 
       const props = {
         ...this.props,
         productSelection: {
-          isModalOpen,
-          toggleModal: this.toggleModal,
+          isAddModalOpen,
+          isDeleteModalOpen,
+          toggleAddModal: this.toggleAddModal,
+          toggleDeleteModal: this.toggleDeleteModal,
           onChangeSelection: this.onChangeSelection,
           storeNeededFor,
           onStoreSelect: this.updateProduct,

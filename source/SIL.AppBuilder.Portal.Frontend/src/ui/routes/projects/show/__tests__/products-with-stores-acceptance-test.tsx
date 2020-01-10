@@ -209,10 +209,10 @@ describe('Acceptance | Project View | Products With Stores', () => {
     let stores;
 
     beforeEach(async function() {
-      await page.clickManageProductButton();
+      await page.clickAddProductButton();
       await when(() => page.modal.isVisible);
 
-      products = new MultiSelectInteractor('[data-test-project-product-popup]');
+      products = new MultiSelectInteractor('[data-test-project-product-add-popup]');
       stores = new MultiSelectInteractor('[data-test-project-product-store-select-modal]');
     });
 
@@ -230,6 +230,10 @@ describe('Acceptance | Project View | Products With Stores', () => {
         });
 
         it('does not yet "check" the product', () => {
+          const items = products.itemsText();
+          const itemTexts = items.map((item) => item.text);
+          expect(itemTexts).to.contain('android_s3');
+          expect(itemTexts).to.contain('android_google');
           expect(products.itemNamed('android_s3').isChecked).to.equal(false);
         });
 
@@ -282,15 +286,18 @@ describe('Acceptance | Project View | Products With Stores', () => {
             await when(() =>
               assert(stores.isOverlayLoaderVisible, 'expected overlay loader to briefly be visible')
             );
-            await when(() => products.checkedItems().length > 0);
+            await when(() => products.itemNamed('android_s3').isVisible);
           });
 
           it('closed the stores modal', () => {
             expect(page.isStoreModalVisible).to.equal(false);
           });
 
-          it('the product is created, and now in the list of products', () => {
-            expect(products.checkedItems().length).to.equal(1);
+          it('the product is created, and not in list of products to add', () => {
+            const items = products.itemsText();
+            const itemTexts = items.map((item) => item.text);
+            expect(itemTexts).to.contain('android_s3');
+            expect(itemTexts).to.not.contain('android_google');
           });
         });
       });

@@ -20,6 +20,9 @@ export function useUserTaskHelpers() {
       'productDefinition',
       'workflow',
     ]);
+    if (!product || !workflow) {
+      return null;
+    }
     const id = idFromRecordIdentity(dataStore, product);
     const { workflowBusinessFlow } = attributesFor(workflow);
 
