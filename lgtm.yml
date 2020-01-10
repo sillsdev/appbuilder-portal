@@ -1,0 +1,8 @@
+extraction:
+  csharp:
+    index:
+      buildless: true
+      dotnet:
+        version: 2.1.500
+      solution: source/StarterPack.sln
+
