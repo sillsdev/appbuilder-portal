@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, Form, Checkbox } from 'semantic-ui-react';
+import { Card, Form } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
@@ -8,11 +8,11 @@ import ApplicationTypeSelect from '@ui/components/inputs/application-type-select
 import GroupSelect from '@ui/components/inputs/group-select';
 import { useCurrentUser } from '@data/containers/with-current-user';
 
-import { useRouter, useToggle } from '~/lib/hooks';
+import { useRouter } from '~/lib/hooks';
 
 import { withValue } from '~/lib/dom';
 
-import { idFromRecordIdentity, useOrbit } from 'react-orbitjs/dist';
+import { useOrbit } from 'react-orbitjs/dist';
 
 export default function Display({ currentOrganizationId, currentOrganization, create }) {
   const { history } = useRouter();
@@ -38,14 +38,6 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
     setDisableSubmit(true);
 
     try {
-      const toEscapedString = (file) =>
-        new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsText(file);
-          reader.onload = () => resolve(JSON.stringify(reader.result));
-          reader.onerror = (error) => reject(error);
-        });
-
       const fileToString = (file) =>
         new Promise((resolve, reject) => {
           const reader = new FileReader();

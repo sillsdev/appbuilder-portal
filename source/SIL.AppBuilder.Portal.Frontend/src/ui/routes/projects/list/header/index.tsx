@@ -10,8 +10,6 @@ import { ProjectFilterDropdown } from './dropdown';
 import { HeaderSearch } from './search';
 import { BulkButtons } from './bulk-buttons';
 
-import Sidebar from '~/ui/components/sidebar';
-
 interface IOwnProps {
   filter: string;
   onSearch: (term: string) => any;
