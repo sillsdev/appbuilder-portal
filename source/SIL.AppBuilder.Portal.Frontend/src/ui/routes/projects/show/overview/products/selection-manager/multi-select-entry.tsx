@@ -16,12 +16,12 @@ interface IOwnProps<T> {
   onChange: (el: T) => void;
   emptyListLabel?: string;
   displayProductIcon?: boolean;
-  readOnly?: boolean;
+  selectedOnly?: boolean;
 }
 
 type IProps<T> = IOwnProps<T> & i18nProps & IAttributeProps;
 
-export class MultiSelect<T extends ResourceObject> extends React.Component<IProps<T>> {
+export class MultiSelectEntry<T extends ResourceObject> extends React.Component<IProps<T>> {
   onChange = (element) => (e) => {
     e.preventDefault();
     this.props.onChange(element);
@@ -38,11 +38,27 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
     return el !== undefined;
   };
 
-  render() {
-    const { list, emptyListLabel, displayProductIcon, t, readOnly } = this.props;
-    const emptyLabel = emptyListLabel || t('common.noResults');
+  filterList = () => {
+    const { list, selectedOnly } = this.props;
+    let filteredList = [];
+    let filteredIndex = 0;
+    if (!isEmpty(list)) {
+      list.map((element) => {
+        const isSelected = this.inSelectedList(element);
+        if ((selectedOnly && isSelected) || (!selectedOnly && !isSelected)) {
+          filteredList[filteredIndex] = element;
+          filteredIndex++;
+        }
+      });
+    }
+    return filteredList;
+  };
 
-    if (isEmpty(list)) {
+  render() {
+    const { emptyListLabel, displayProductIcon, t } = this.props;
+    const emptyLabel = emptyListLabel || t('common.noResults');
+    const filteredList = this.filterList();
+    if (isEmpty(filteredList)) {
       return (
         <div data-test-multi-select>
           <div data-test-empty-list className='empty-list'>
@@ -54,15 +70,12 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
 
     return (
       <div data-test-multi-select>
-        {list.map((element, index) => {
-          const isSelected = this.inSelectedList(element);
-
+        {filteredList.map((element) => {
           return (
             <div
               key={element.id}
               className={`flex flex-column align-items-center
-              w-100 m-b-sm round-border-4 light-gray-text pointer
-              ${isSelected ? 'blue-light-border' : 'thin-border'}`}
+              w-100 m-b-sm round-border-4 light-gray-text pointer blue-light-border`}
               data-test-item
               onClick={this.onChange(element)}
             >
@@ -70,17 +83,8 @@ export class MultiSelect<T extends ResourceObject> extends React.Component<IProp
                 className={`flex flex-row align-items-center
                 w-100 p-sm bg-lightest-gray fs-14 round-border-4 thin-bottom-border`}
               >
-                <Checkbox
-                  data-test-item-checkbox
-                  className='m-r-sm'
-                  value={element.id}
-                  readOnly={readOnly}
-                  checked={isSelected}
-                />
-                {displayProductIcon && (
-                  <ProductIcon product={element} selected={isSelected} size={19} />
-                )}
-                <span data-test-item-text className={`p-l-xs-xs ${isSelected && 'black-text'}`}>
+                {displayProductIcon && <ProductIcon product={element} selected={true} size={19} />}
+                <span data-test-item-text className={`p-l-xs-xs black-text`}>
                   {attributesFor(element).name}
                 </span>
               </div>

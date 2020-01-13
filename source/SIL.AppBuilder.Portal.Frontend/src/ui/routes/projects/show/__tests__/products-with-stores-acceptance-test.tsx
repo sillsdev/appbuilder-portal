@@ -12,6 +12,8 @@ import { MultiSelectInteractor } from '~/ui/components/inputs/multi-select/-page
 
 import { ProductsInteractor } from '~/ui/routes/projects/show/overview/products/-page.ts';
 
+import { ProductMultiSelectInteractor } from '~/ui/routes/projects/show/overview/products/-multi';
+
 import i18n from '@translations';
 
 describe('Acceptance | Project View | Products With Stores', () => {
@@ -212,14 +214,15 @@ describe('Acceptance | Project View | Products With Stores', () => {
       await page.clickAddProductButton();
       await when(() => page.modal.isVisible);
 
-      products = new MultiSelectInteractor('[data-test-project-product-add-popup]');
+      products = new ProductMultiSelectInteractor('[data-test-project-product-add-popup]');
       stores = new MultiSelectInteractor('[data-test-project-product-store-select-modal]');
     });
 
     it('no products are selected', () => {
-      const selected = products.checkedItems();
-
-      expect(selected.length).to.equal(0);
+      const items = products.itemsText();
+      const itemTexts = items.map((item) => item.text);
+      expect(itemTexts).to.contain('android_s3');
+      expect(itemTexts).to.contain('android_google');
     });
 
     describe('the user clicks a product that requires a store...', () => {
@@ -234,7 +237,6 @@ describe('Acceptance | Project View | Products With Stores', () => {
           const itemTexts = items.map((item) => item.text);
           expect(itemTexts).to.contain('android_s3');
           expect(itemTexts).to.contain('android_google');
-          expect(products.itemNamed('android_s3').isChecked).to.equal(false);
         });
 
         it('shows a message saying to contact the org admin', () => {

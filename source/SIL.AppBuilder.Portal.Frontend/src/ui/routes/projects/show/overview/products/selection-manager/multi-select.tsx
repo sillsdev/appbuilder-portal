@@ -9,8 +9,9 @@ import {
 } from '@data';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { MultiSelect } from '@ui/components/inputs/multi-select';
 import { withOrbit } from 'react-orbitjs';
+
+import { MultiSelectEntry } from './multi-select-entry';
 
 interface INeededProps {
   organization: OrganizationResource;
@@ -19,7 +20,6 @@ interface INeededProps {
   list: ProductDefinitionResource[];
   onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
   selectedOnly?: boolean;
-  unselectedOnly?: boolean;
 }
 
 interface IPendingUpdates {
@@ -71,7 +71,6 @@ export default compose<IProps, INeededProps>(
         emptyListLabel,
         displayProductIcon,
         selectedOnly,
-        unselectedOnly,
       } = this.props;
 
       const selectProps = {
@@ -83,10 +82,9 @@ export default compose<IProps, INeededProps>(
         t,
         onChange: this.onSelectionChange,
         selectedOnly,
-        unselectedOnly,
       };
 
-      return <MultiSelect {...selectProps} />;
+      return <MultiSelectEntry {...selectProps} />;
     }
   }
 );

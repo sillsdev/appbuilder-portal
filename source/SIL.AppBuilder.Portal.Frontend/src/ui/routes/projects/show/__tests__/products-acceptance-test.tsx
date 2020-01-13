@@ -203,11 +203,6 @@ describe('Acceptance | Project View | Products', () => {
         expect(itemTexts).to.not.contain('android_amazon_app');
       });
 
-      it('existing project product is selected', () => {
-        const selector = page.productsList.removeModal.multiSelect;
-        expect(selector.itemNamed('android_s3').isChecked).to.equal(true);
-      });
-
       describe('remove an existing product', () => {
         beforeEach(async function() {
           await when(() => page.productsList.removeModal.isVisible);
@@ -235,12 +230,6 @@ describe('Acceptance | Project View | Products', () => {
         const itemTexts = items.map((item) => item.text);
         expect(itemTexts).to.not.contain('android_s3');
         expect(itemTexts).to.contain('android_amazon_app');
-      });
-
-      it('project product to be added is not selected', () => {
-        const selector = page.productsList.modal.multiSelect;
-
-        expect(selector.itemNamed('android_amazon_app').isChecked).to.equal(false);
       });
 
       describe('select a new product', () => {

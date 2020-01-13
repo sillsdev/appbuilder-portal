@@ -119,7 +119,7 @@ export default function ProductSelector(props: IProps & i18nProps) {
         closeIcon={<CloseIcon className='close-modal' />}
         onClose={toggleAddModal}
       >
-        <Modal.Header>{t('project.products.popup.title')}</Modal.Header>
+        <Modal.Header>{t('project.products.popup.addTitle')}</Modal.Header>
 
         <Modal.Content>
           <ProductDefinitionMultiSelect
@@ -128,19 +128,9 @@ export default function ProductSelector(props: IProps & i18nProps) {
             project={project}
             list={list}
             onChangeSelection={onChangeSelection}
-            unselectedOnly={true}
+            selectedOnly={false}
           />
         </Modal.Content>
-
-        <Modal.Actions>
-          <button
-            data-test-project-product-close-button
-            className='ui button huge'
-            onClick={toggleAddModal}
-          >
-            {t('project.products.popup.done')}
-          </button>
-        </Modal.Actions>
       </Modal>
       <Modal
         data-test-project-product-remove-popup
@@ -161,7 +151,7 @@ export default function ProductSelector(props: IProps & i18nProps) {
         closeIcon={<CloseIcon className='close-modal' />}
         onClose={toggleDeleteModal}
       >
-        <Modal.Header>{t('project.products.popup.title')}</Modal.Header>
+        <Modal.Header>{t('project.products.popup.removeTitle')}</Modal.Header>
 
         <Modal.Content>
           <ProductDefinitionMultiSelect
@@ -173,16 +163,6 @@ export default function ProductSelector(props: IProps & i18nProps) {
             selectedOnly={true}
           />
         </Modal.Content>
-
-        <Modal.Actions>
-          <button
-            data-test-project-product-close-button
-            className='ui button huge'
-            onClick={toggleDeleteModal}
-          >
-            {t('project.products.popup.done')}
-          </button>
-        </Modal.Actions>
       </Modal>
     </div>
   );
