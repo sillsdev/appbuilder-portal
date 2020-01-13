@@ -321,8 +321,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 { "project", product.Project.Name },
                 { "productName", product.ProductDefinition.Name },
                 { "status", task.Status },
-                { "originator", user.Name },
-                { "to", product.Project.Owner.Name },
+                { "originator", product.Project.Owner.Name },
+                { "to", user.Name },
                 { "comment", task.Comment ?? "" }
             };
 
