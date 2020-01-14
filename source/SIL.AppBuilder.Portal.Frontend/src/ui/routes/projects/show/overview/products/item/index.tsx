@@ -23,7 +23,7 @@ interface IOwnProps {
 
 type IProps = IOwnProps;
 
-export default function ProductItem({ product, includeHeader }) {
+export default function ProductItem({ product }) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
 

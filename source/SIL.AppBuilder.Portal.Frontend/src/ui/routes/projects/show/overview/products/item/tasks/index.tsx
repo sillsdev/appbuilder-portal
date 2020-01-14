@@ -82,7 +82,6 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
     }
     return allowedNames;
   };
-
   return (
     <div className='w-100 p-sm p-b-md m-l-md fs-13'>
       <AsyncWaiter fn={getTransition} sizeClass='m-t-sm m-b-sm'>

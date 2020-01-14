@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { isEmpty } from '@lib/collection';
+import { isEmpty, compareVia } from '@lib/collection';
 import {
   withDataActions,
   IProvidedProps as IDataActionsProps,
 } from '@data/containers/resources/project/with-data-actions';
+import { withRelationships } from '@data/containers/with-relationship';
 
 import {
   ProductDefinitionResource,
@@ -30,15 +31,22 @@ interface INeededProps {
 
 interface IOwnProps {
   isEmptyWorkflowProjectUrl: boolean;
+  list: ProductDefinitionResource[];
 }
 
 type IProps = IOwnProps & INeededProps & i18nProps & IDataActionsProps & IProductSelectionState;
 
 export default compose<IProps, INeededProps>(
   withTranslations,
-  withProps(({ project }) => {
+  withRelationships(({ organization }: INeededProps) => {
+    return {
+      list: [organization, 'organizationProductDefinitions', 'productDefinition'],
+    };
+  }),
+  withProps(({ project, list }) => {
     return {
       isEmptyWorkflowProjectUrl: isEmpty(attributesFor(project).workflowProjectUrl),
+      list: list.sort(compareVia((pd) => attributesFor(pd).name)),
     };
   }),
   withDataActions,
@@ -51,14 +59,13 @@ export default compose<IProps, INeededProps>(
         onStoreSelect,
         cancelStore: closeStoreModal,
       } = this.props.productSelection;
-
       await onStoreSelect(storeNeededFor, store);
 
       closeStoreModal();
     };
 
     render() {
-      const { productSelection, t, selected, organization, project } = this.props;
+      const { productSelection, t, selected, organization, project, list } = this.props;
 
       const { storeNeededFor, cancelStore, storeType } = productSelection;
 
@@ -80,6 +87,7 @@ export default compose<IProps, INeededProps>(
               selected,
               organization,
               project,
+              list,
               ...productSelection,
             }}
           />

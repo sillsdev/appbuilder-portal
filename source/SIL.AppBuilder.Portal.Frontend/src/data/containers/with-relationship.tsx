@@ -117,7 +117,10 @@ export function relationsFromPath(
 
   for (let i = 0; i < relationshipPath.length; i++) {
     segment = relationshipPath[i];
-    assert(`can't access segment (${segment}) on falsey model.`, !!model);
+    if (!model) {
+      console.debug(`can't access segment (${segment}) on falsey model.`);
+      return models;
+    }
 
     model = dataStore.cache.query((q) => q.findRelatedRecord(model, segment));
     models.push(model);

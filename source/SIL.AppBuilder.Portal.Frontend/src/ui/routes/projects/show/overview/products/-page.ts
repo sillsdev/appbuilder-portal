@@ -11,13 +11,16 @@ import {
 import { MultiSelectInteractor } from '@ui/components/inputs/multi-select/-page';
 import TransitionDetailsModalInteractor from '@ui/components/product-transitions/-modal';
 
-import ProductModalInteractor from './-modal';
+import AddProductModalInteractor from './-modal';
+import { RemoveProductModal } from './-modal';
 
 class Products {
-  clickManageProductButton = clickable('[data-test-project-products-manage-button]');
+  clickAddProductButton = clickable('[data-test-project-products-add-button]');
+  clickRemoveProductButton = clickable('[data-test-project-products-remove-button]');
   itemsText = collection('[data-test-project-product-name]');
   emptyLabel = text('[data-test-project-product-empty-text]');
-  isModalVisible = isPresent('[data-test-project-product-popup]');
+  isAddModalVisible = isPresent('[data-test-project-product-add-popup]');
+  isRemoveModalVisible = isPresent('[data-test-project-product-remove-popup]');
 
   products = collection('[data-test-project-product-item]', {
     name: text('[data-test-project-product-name]'),
@@ -37,8 +40,9 @@ class Products {
   }
 
   // TODO: don't use interactor in the name, it's an implementation detail
-  modalInteractor = ProductModalInteractor;
-  modal = ProductModalInteractor;
+  modalInteractor = AddProductModalInteractor;
+  modal = AddProductModalInteractor;
+  removeModal = RemoveProductModal;
 
   isStoreModalVisible = isPresent('[data-test-project-product-store-select-modal]');
   storeModal = scoped('[data-test-project-product-store-select-modal]', {

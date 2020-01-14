@@ -5,20 +5,21 @@ import {
   OrganizationResource,
   ProductDefinitionResource,
   ProjectResource,
-  attributesFor,
+  ProductResource,
 } from '@data';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
-import { compareVia } from '@lib/collection';
-import { MultiSelect } from '@ui/components/inputs/multi-select';
-import { withRelationships } from '@data/containers/with-relationship';
 import { withOrbit } from 'react-orbitjs';
+
+import { MultiSelectEntry } from './multi-select-entry';
 
 interface INeededProps {
   organization: OrganizationResource;
-  selected?: ProductDefinitionResource[];
+  selected?: ProductResource[];
   project: ProjectResource;
+  list: ProductDefinitionResource[];
   onChangeSelection: (definition: ProductDefinitionResource) => Promise<void>;
+  selectedOnly?: boolean;
 }
 
 interface IPendingUpdates {
@@ -29,7 +30,6 @@ interface IComposedProps {
   selectedItemJoinsWith: string;
   emptyListLabel: string;
   displayProductIcon: boolean;
-  list: ProductDefinitionResource[];
 }
 
 type IProps = INeededProps & i18nProps & IComposedProps;
@@ -37,17 +37,11 @@ type IProps = INeededProps & i18nProps & IComposedProps;
 export default compose<IProps, INeededProps>(
   withTranslations,
   withOrbit(),
-  withRelationships(({ organization }: INeededProps) => {
-    return {
-      list: [organization, 'organizationProductDefinitions', 'productDefinition'],
-    };
-  }),
-  withProps(({ t, list }: IProps) => {
+  withProps(({ t }: IProps) => {
     return {
       selectedItemJoinsWith: 'productDefinition',
       emptyListLabel: t('project.products.popup.empty'),
       displayProductIcon: true,
-      list: list.sort(compareVia((pd) => attributesFor(pd).name)),
     };
   })
 )(
@@ -76,6 +70,7 @@ export default compose<IProps, INeededProps>(
         selectedItemJoinsWith,
         emptyListLabel,
         displayProductIcon,
+        selectedOnly,
       } = this.props;
 
       const selectProps = {
@@ -86,9 +81,10 @@ export default compose<IProps, INeededProps>(
         selected,
         t,
         onChange: this.onSelectionChange,
+        selectedOnly,
       };
 
-      return <MultiSelect {...selectProps} />;
+      return <MultiSelectEntry {...selectProps} />;
     }
   }
 );

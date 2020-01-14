@@ -151,7 +151,6 @@ export function withDataActions<T>(WrappedComponent) {
 
     productForProductDefinition = (productDefinition) => {
       const { products } = this.props;
-
       const matchingProduct = products.find((product) => {
         const { data } = relationshipFor(product, 'productDefinition');
         return data.id === productDefinition.id;
@@ -164,7 +163,6 @@ export function withDataActions<T>(WrappedComponent) {
       const { project, dataStore } = this.props;
 
       const productSelected = this.productForProductDefinition(productDefinition);
-
       if (productSelected) {
         return dataStore.update((q) => q.removeRecord(productSelected), defaultOptions());
       }
@@ -204,7 +202,7 @@ export function withDataActions<T>(WrappedComponent) {
       const { project } = passedProps;
 
       return {
-        products: (q) => q.findRelatedRecords(project, 'products'),
+        products: (q) => q.findRecords('product').filter({ relation: 'project', record: project }),
       };
     }),
     requireProps('project')
