@@ -270,8 +270,11 @@
       "title": "Products",
       "empty": "You have no products for this project.",
       "addRemove": "Add or Remove Products",
+      "add": "Add Products",
+      "remove": "Remove Products",
       "popup": {
-        "title": "Select Products",
+        "addTitle": "Select Product to Add",
+        "removeTitle": "Select Product to Remove",
         "done": "Done",
         "empty": "No products available",
         "details": "Details"
