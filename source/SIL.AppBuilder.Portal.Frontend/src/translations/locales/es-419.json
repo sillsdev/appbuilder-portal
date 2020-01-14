@@ -270,8 +270,11 @@
       "title": "Productos",
       "empty": "No tiene productos para este proyecto.",
       "addRemove": "Añadir o quitar productos",
+      "add": "Add Products",
+      "remove": "Remove Products",
       "popup": {
-        "title": "Seleccionar productos",
+        "addTitle": "Select Product to Add",
+        "removeTitle": "Select Product to Remove",
         "done": "Hecho",
         "empty": "No hay productos disponibles",
         "details": "Detalles"
