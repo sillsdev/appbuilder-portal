@@ -1,36 +1,37 @@
 import { useCallback } from 'react';
 import { useOrbit } from 'react-orbitjs/dist';
 
-import { ProjectResource } from '@data';
+import { ProjectImportResource } from '@data';
 
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
-import { TYPE_NAME as PROJECT, ProjectAttributes } from '@data/models/project';
-import { useCurrentUser } from '@data/containers/with-current-user';
+import { TYPE_NAME as PROJECT_IMPORT, ProjectImportAttributes } from '@data/models/project-import';
 import { useCurrentOrganization } from '@data/containers/with-current-organization';
 import { recordIdentityFromKeys, create as createRecord } from '@data/store-helpers';
 
+import { useCurrentUser } from '~/data/containers/with-current-user';
+
 export interface IProvidedProps {
   create: (
-    attributes: ProjectAttributes,
+    attributes: ProjectImportAttributes,
     groupId: string,
     typeId: string
-  ) => Promise<ProjectResource>;
+  ) => Promise<ProjectImportResource>;
 }
 
-export function useNewProjectHelpers(): IProvidedProps {
+export function useProjectImportHelpers(): IProvidedProps {
   const { dataStore } = useOrbit();
-  const { currentUser } = useCurrentUser();
   const { currentOrganizationId } = useCurrentOrganization();
+  const { currentUser } = useCurrentUser();
 
   const create = useCallback(
-    async (attributes: ProjectAttributes, groupId: string, typeId: string) => {
+    async (attributes: ProjectImportAttributes, groupId: string, typeId: string) => {
       const groupIdentity = recordIdentityFromKeys({ type: 'group', id: groupId });
       const applicationTypeIdentity = recordIdentityFromKeys({
         type: 'applicationType',
         id: typeId,
       });
 
-      const project = await createRecord(dataStore, PROJECT, {
+      const projectImport = await createRecord(dataStore, PROJECT_IMPORT, {
         attributes,
         relationships: {
           owner: currentUser,
@@ -40,7 +41,7 @@ export function useNewProjectHelpers(): IProvidedProps {
         },
       });
 
-      return project;
+      return projectImport;
     },
     [currentOrganizationId, currentUser, dataStore]
   );

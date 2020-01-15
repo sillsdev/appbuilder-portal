@@ -112,6 +112,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             var product = await ProductRepository.Get()
                               .Where(p => p.Id == productId)
                               .Include(p => p.ProductDefinition)
+                              .Include(p => p.Project)
                               .FirstOrDefaultAsync();
 
             if (product == null)
@@ -120,6 +121,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 // Don't send exception because if the record is not there
                 // there doesn't seem much point in retrying
                 return;
+            }
+
+            if (String.IsNullOrEmpty(product.Project.WorkflowProjectUrl))
+            {
+                // If the WorkflowProjectUrl is not set, then the project has not
+                // yet been created in BuildEngine.  This could happen during ImportProject.
+                // Throw exception to retry
+                throw new Exception("WorkflowProjectUrl not available");
             }
 
             await StartProductWorkflowAsync(productId, product.ProductDefinition.WorkflowId);

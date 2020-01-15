@@ -108,7 +108,22 @@
   "organizationInvites": {
     "subject": "[Scriptoria] Organization Invite Request"
   },
-  "organizationMembershipInvites":  {
+  "organizationMembershipInvites": {
     "subject": "You are invited to join {{organizationName}} at Scriptoria"
+  },
+  "importProject": {
+    "subject": "[Scriptoria] Project Import Report",
+    "title": "Project Import Completed",
+    "propertiesHeader": "Properties",
+    "outputHeader": "Output",
+    "Owner": "Owner",
+    "Group": "Group",
+    "Organization": "Organization",
+    "Application Type": "Application Type",
+    "property": "{{name}}: {{value}}",
+    "newProject": "New Project: Id={{projectId}}, Name={{projectName}}",
+    "existingProject": "Existing Project: Id={{projectId}}, Name={{projectName}}",
+    "newProduct": "New Product: ProjectId={{projectId}}, Name={{productDefinitionName}}, Store={{storeName}}",
+    "existingProduct": "Existing Product: ProjectId={{projectId}}, Name={{productDefinitionName}}, Store={{storeName}}"
   }
 }

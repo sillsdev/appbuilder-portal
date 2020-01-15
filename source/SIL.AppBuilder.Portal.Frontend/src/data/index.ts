@@ -53,6 +53,7 @@ export { PRODUCT_BUILD_TYPE, ProductBuildResource } from './models/product-build
 export { PRODUCT_DEFINITIONS_TYPE, ProductDefinitionResource } from './models/product-definition';
 export { PRODUCTS_TYPE, ProductResource } from './models/product';
 export { PROJECTS_TYPE, ProjectResource } from './models/project';
+export { PROJECT_IMPORTS_TYPE, ProjectImportResource } from './models/project-import';
 export { REVIEWERS_TYPE, ReviewerResource } from './models/reviewer';
 export { ROLE_TYPE, RoleResource } from './models/role';
 export { STORE_TYPES_TYPE, StoreTypeResource } from './models/store-type';

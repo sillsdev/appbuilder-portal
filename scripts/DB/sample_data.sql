@@ -18,6 +18,7 @@ FROM "Organizations";
 
 INSERT INTO "OrganizationProductDefinitions" ("OrganizationId", "ProductDefinitionId") VALUES
 (1,      1),
+(1,      2),
 (2,      1),
 (3,      1),
 (2,      2),
@@ -33,12 +34,12 @@ FROM "StoreTypes";
 
 INSERT INTO "Stores" ("Id", "Name", "Description", "StoreTypeId") VALUES
 (1, 'wycliffeusa', 'Wycliffe USA - Google Play', 1),
-(2, 'wycliffeusa', 'Wycliffe USA - S3', 2),
+(2, 'wycliffeusa_s3', 'Wycliffe USA - S3', 2),
 (3, 'internetpublishingservice', 	'Internet Publishing Service (Kalaam) - Google Play', 1),
 (4, 'indhack', 				'Indigitous Hack - Google Play', 1),
-(5, 'wycliffeusa',			'Wycliffe USA - Amazon App Store', 3),
-(6, 'internetpublishingservice', 	'Internet Publishing Service (Kalaam) - Amazon App Store', 3),
-(7, 'indhack', 	'Indigitous Hack - Amazon App Store', 3);
+(5, 'wycliffeusa_ama',			'Wycliffe USA - Amazon App Store', 3),
+(6, 'internetpublishingservice_ama', 	'Internet Publishing Service (Kalaam) - Amazon App Store', 3),
+(7, 'indhack_ama', 	'Indigitous Hack - Amazon App Store', 3);
 
 SELECT SETVAL('"Stores_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "Stores";

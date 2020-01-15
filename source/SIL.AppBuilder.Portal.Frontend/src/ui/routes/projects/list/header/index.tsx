@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslations } from '@lib/i18n';
-import { RequireOrganization } from '@ui/components/authorization';
+import { ROLE } from '@data/models/role';
+import { RequireOrganization, RequireRole } from '@ui/components/authorization';
 
 import './styles.scss';
 
@@ -41,18 +42,35 @@ export default function Header({ filter, onSearch }: IOwnProps) {
           <BulkButtons afterBulkAction={afterBulkAction} tableName={filter} />
         </div>
 
-        <RequireOrganization
-          WithOrganization={() => (
-            <Link className='ui button basic blue m-r-md' to={'/projects/new'}>
-              {t('sidebar.addProject')}
-            </Link>
-          )}
-          Fallback={() => (
-            <button className='ui button disabled basic blue m-r-md' disabled>
-              {t('sidebar.addProject')}
-            </button>
-          )}
-        />
+        <div className='flex justify-content-space-between p-b-md-xs'>
+          <RequireRole roleName={ROLE.OrganizationAdmin}>
+            <RequireOrganization
+              WithOrganization={() => (
+                <Link className='ui button basic blue m-r-md' to={'/projects/import'}>
+                  {t('sidebar.importProjects')}
+                </Link>
+              )}
+              Fallback={() => (
+                <button className='ui button disabled basic blue m-r-md' disabled>
+                  {t('sidebar.importProjects')}
+                </button>
+              )}
+            />
+          </RequireRole>
+
+          <RequireOrganization
+            WithOrganization={() => (
+              <Link className='ui button basic blue m-r-md' to={'/projects/new'}>
+                {t('sidebar.addProject')}
+              </Link>
+            )}
+            Fallback={() => (
+              <button className='ui button disabled basic blue m-r-md' disabled>
+                {t('sidebar.addProject')}
+              </button>
+            )}
+          />
+        </div>
       </div>
     </div>
   );
