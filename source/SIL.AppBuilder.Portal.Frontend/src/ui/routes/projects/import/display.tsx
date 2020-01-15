@@ -70,6 +70,16 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
         <Card.Header className='flex-row justify-content-space-between'>
           <h1 className='ui header p-l-md p-r-md m-t-md m-b-md'>{t('project.importProjects')}</h1>
         </Card.Header>
+        <Card.Header className='flex-row justify-content-space-between'>
+          <a
+            className='item p-l-md p-r-md m-b-md'
+            target='_blank'
+            rel='noopener noreferrer'
+            href='https://sil-prd-aps-resources.s3.amazonaws.com/Project+Import.pdf'
+          >
+            {t('project.importProjectsHelp')}
+          </a>
+        </Card.Header>
 
         <Card.Content className='p-lg'>
           <Form data-test-import-projects-form>
