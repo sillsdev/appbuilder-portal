@@ -83,7 +83,8 @@
     "organizationSettings": "Organization Settings",
     "adminSettings": "Admin",
     "projectDirectory": "Project Directory",
-    "addProject": "Add Project"
+    "addProject": "Add Project",
+    "importProjects": "Import Projects"
   },
   "invitations": {
     "orgPrompt": "Like to sign up your organization?",
@@ -235,6 +236,10 @@
   "productDefinitions": {
     "filterAllProjects": "All projects that contain..."
   },
+  "projectImport": {
+    "importFile": "Import JSON File",
+    "createSuccess": "Project Import successfully created. You will receive an email when the import is completed."
+  },
   "project": {
     "title": "Project",
     "organizationContact": "Organization Contact: ",
@@ -242,6 +247,8 @@
     "claimOwnership": "Claim Ownership",
     "claimSuccess": "Succesfully Claimed",
     "newProject": "New Project",
+    "importProjects": "Import Projects",
+    "importProjectsHelp": "Import Projects Help",
     "projectName": "Project Name",
     "noAvailableGroups": "There are no available groups for the selected organization",
     "projectDescription": "Description",
