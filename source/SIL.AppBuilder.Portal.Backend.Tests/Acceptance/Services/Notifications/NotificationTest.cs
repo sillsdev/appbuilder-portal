@@ -204,10 +204,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(3, modifiedNotifications.Count);
             // Verify admin message
-            Assert.Equal("Build for product scriptureAppBuilder project Test Project failed. Status: failure  Review status at build engine http://gtis.guru.com:8443 for details", modifiedNotifications[1].Message);
+            Assert.Equal("Build for product scriptureAppBuilder project Test Project failed. Review logs in email for details.", modifiedNotifications[1].Message);
             Assert.Equal("http://gtis.guru.com:8443", modifiedNotifications[1].LinkUrl);
             // Verify user message
-            Assert.Equal("Build for product scriptureAppBuilder project Test Project failed. Status: failure The organization administrator has been notified of this issue.", modifiedNotifications[2].Message);
+            Assert.Equal("Build for product scriptureAppBuilder project Test Project failed. The organization administrator has been notified of this issue.", modifiedNotifications[2].Message);
             Assert.Equal("http://gtis.guru.com:8443", modifiedNotifications[2].LinkUrl);
         }
         [Fact]
@@ -228,10 +228,10 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(3, modifiedNotifications.Count);
             // Verify admin message
-            Assert.Equal("Build for product scriptureAppBuilder project Test Project 4/12 failed. Status: failure  Review status at build engine http://gtis.guru.com:8443 for details", modifiedNotifications[1].Message);
+            Assert.Equal("Build for product scriptureAppBuilder project Test Project 4/12 failed. Review logs in email for details.", modifiedNotifications[1].Message);
             Assert.Equal("http://gtis.guru.com:8443", modifiedNotifications[1].LinkUrl);
             // Verify user message
-            Assert.Equal("Build for product scriptureAppBuilder project Test Project 4/12 failed. Status: failure The organization administrator has been notified of this issue.", modifiedNotifications[2].Message);
+            Assert.Equal("Build for product scriptureAppBuilder project Test Project 4/12 failed. The organization administrator has been notified of this issue.", modifiedNotifications[2].Message);
             Assert.Equal("http://gtis.guru.com:8443", modifiedNotifications[2].LinkUrl);
         }
 
