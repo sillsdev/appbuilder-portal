@@ -1,3 +1,5 @@
+language: shell
+os: linux
 env:
   global:
     - DOCKER_COMPOSE_VERSION=1.17.0
@@ -11,11 +13,9 @@ stages:
   - "Security"
   - "Deploy"
 
-matrix:
+jobs:
   allow_failures:
     - name: "Frontend Typechecking"
-
-jobs:
   include:
     - stage: "Quality"
       name: "Frontend Linting"
@@ -46,7 +46,6 @@ jobs:
     - stage: "Tests"
       name: "Backend Tests"
       language: generic
-      sudo: required
       services:
         - docker
       addons:
@@ -72,7 +71,6 @@ jobs:
     - stage: "Build"
       name: "Build nginx"
       language: generic
-      sudo: required
       services:
         - docker
       addons:
@@ -87,7 +85,6 @@ jobs:
     - stage: "Build"
       name: "Build API"
       language: generic
-      sudo: required
       services:
         - docker
       addons:
@@ -104,7 +101,6 @@ jobs:
     #   name: "Check CVE Security of nginx Container"
     #   # if: branch IN (develop, master)
     #   language: generic
-    #   sudo: required
     #   services:
     #     - docker
     #   addons:
@@ -119,7 +115,6 @@ jobs:
       name: "Build and Push Docker Images"
       if: branch IN (develop, master) AND type IN (push, api)
       language: generic
-      sudo: required
       services:
         - docker
       addons:
