@@ -13,17 +13,26 @@ using OptimaJet.DWKit.StarterApplication.Services;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class NotificationsController : BaseController<Notification>
+  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+  public class NotificationsController : BaseController<Notification>
+  {
+    private readonly NotificationService notificationService;
+
+    public NotificationsController(
+        IJsonApiContext jsonApiContext,
+        NotificationService notificationService,
+        ICurrentUserContext currentUserContext,
+        OrganizationService organizationService,
+        UserService userService)
+        : base(jsonApiContext, notificationService, currentUserContext, organizationService, userService)
     {
-        public NotificationsController(
-            IJsonApiContext jsonApiContext,
-            IResourceService<Notification> resourceService,
-            ICurrentUserContext currentUserContext,
-            OrganizationService organizationService,
-            UserService userService)
-            : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
-        {
-        }
+      this.notificationService = notificationService;
     }
+    [HttpDelete("all")]
+    public async Task<IActionResult> DeleteAll()
+    {
+      await notificationService.DeleteAllAsync();
+      return Ok();
+    }
+  }
 }

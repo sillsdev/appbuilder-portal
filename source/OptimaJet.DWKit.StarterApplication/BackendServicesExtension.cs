@@ -105,6 +105,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddScoped<SendEmailService>();
             services.AddScoped<OrganizationMembershipService>();
             services.AddScoped<OrganizationMembershipInviteService>();
+            services.AddScoped<NotificationService>();
 
             return services;
         }
