@@ -55,7 +55,11 @@ export function useUserTasksForCurrentUser(
   const {
     subscriptions: { userTasks },
   } = useCache({
-    userTasks: (q) => q.findRecords('userTask').filter({ relation: 'user', record: currentUser }),
+    userTasks: (q) =>
+      q
+        .findRecords('userTask')
+        .filter({ relation: 'user', record: currentUser })
+        .sort({ attribute: 'dateUpdated', order: 'descending' }),
   });
 
   return { error, isLoading, userTasks: userTasks || [] };
