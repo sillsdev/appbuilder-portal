@@ -69,7 +69,7 @@ class ProjectTable {
 
       await matchingColumnName.toggle();
       await this.when(() =>
-        assert(!this.isOpen, `expected column selector to close after selecting "${columnName}"`)
+        assert(this.isOpen, `expected column selector to stay open after selecting "${columnName}"`)
       );
     },
   });
