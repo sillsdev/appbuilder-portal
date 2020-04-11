@@ -183,10 +183,15 @@ For authentication and authorization services:
 
 [<img src="readme_images/auth0-logo-whitebg.png" width="200">](https://auth0.com)
 
-For localization management:
+For building and deploying:
 
-[<img src="readme_images/crowdin-logo.png" width="200">](https://crowdin.com)
+[<img src="readme_images/travis-logo.png" width="200">](https://travis-ci.com)
 
 For error reporting:
 
 [<img src="readme_images/bugsnag-logo.png" width="200">](https://bugsnag.com/blog/bugsnag-loves-open-source)
+
+For localization management:
+
+[<img src="readme_images/crowdin-logo.png" width="200">](https://crowdin.com)
+
