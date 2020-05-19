@@ -19,6 +19,7 @@ i18n
   // to the backend even when translations already exist
   .init({
     resources: {},
+    whitelist: ['en-US', 'es-419', 'fr-FR'],
     fallbackLng: 'en-US',
     // lowerCaseLng: true,
     // nsSeparator: false,
