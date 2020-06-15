@@ -46,7 +46,7 @@ COPY --from=build-release /app/OptimaJet.DWKit.StarterApplication/Templates ./Te
 COPY --from=build-release /app/run-api.sh ./
 COPY scripts/DB/*.sql scripts/DB/PostgreSQL/*.sql /app/scripts/
 # Install dependencies
-RUN apk add --no-cache bash curl postgresql-client python py-pip py-setuptools git ca-certificates
+RUN apk add --no-cache bash curl postgresql-client python2 py-pip py-setuptools git ca-certificates
 RUN pip install python-dateutil
 RUN git clone https://github.com/s3tools/s3cmd.git /opt/s3cmd \
  && ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
