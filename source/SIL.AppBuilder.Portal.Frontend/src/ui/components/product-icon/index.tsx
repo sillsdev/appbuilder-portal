@@ -10,6 +10,7 @@ import { ProductDefinitionResource, ProductResource } from '@data';
 const colorStyles = {
   android: { color: '#a4c639' },
   html: { color: '#f5a623' },
+  pwa: { color: '#0096ff' },
 };
 
 const styles = (type, selected, size) => {
@@ -27,6 +28,7 @@ const DEFAULT_COLOR = { color: '#9b9b9b' };
 const iconMap = {
   android: (selected, size) => <AndroidIcon style={styles('android', selected, size)} />,
   html: (selected, size) => <WebIcon style={styles('html', selected, size)} />,
+  pwa: (selected, size) => <WebIcon style={styles('pwa', selected, size)} />,
   [undefined]: () => <MissingIcon />,
 };
 

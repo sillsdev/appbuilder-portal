@@ -16,7 +16,8 @@ FROM "ApplicationTypes";
 
 INSERT INTO "StoreTypes" ("Id", "Name", "Description") VALUES
 (1, 'google_play_store',	'Google Play Store'),
-(2, 's3_bucket',	'Amazon S3 Bucket');
+(2, 's3_bucket',	'Amazon S3 Bucket'),
+(3, 'cloud',	'Cloud Provider');
 
 SELECT SETVAL('"StoreTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "StoreTypes";

@@ -3175,6 +3175,41 @@
           "form": "SIL_AppBuilders_Approval_Pending"
         }
       ]
+    },
+    {
+      "id": "262dec8c-3a5c-da52-b250-3b210803c83f",
+      "name": "SIL_AppBuilders_Web_Flow",
+      "scheme": "SIL_Default_AppBuilders_Pwa_Cloud",
+      "defaultForm": "SIL_AppBuilders_Waiting",
+      "map": [
+        {
+          "states": [
+            "App Builder Configuration"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_App_Configuration"
+        },
+        {
+          "states": [
+            "Synchronize Data"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Synchronize_Data"
+        },
+        {
+          "states": [
+            "Verify and Publish"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Web_Verify"
+        }
+      ]
     }
   ],
   "modules": []
