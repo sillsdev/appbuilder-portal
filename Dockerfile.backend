@@ -46,10 +46,8 @@ COPY --from=build-release /app/OptimaJet.DWKit.StarterApplication/Templates ./Te
 COPY --from=build-release /app/run-api.sh ./
 COPY scripts/DB/*.sql scripts/DB/PostgreSQL/*.sql /app/scripts/
 # Install dependencies
-RUN apk add --no-cache bash curl postgresql-client python2 py-pip py-setuptools git ca-certificates
-RUN pip install python-dateutil
-RUN git clone https://github.com/s3tools/s3cmd.git /opt/s3cmd \
- && ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
+RUN apk add --no-cache bash curl postgresql-client python3 py3-pip ca-certificates
+RUN pip install s3cmd
 RUN curl -o /usr/local/bin/runny https://raw.githubusercontent.com/silinternational/runny/0.2/runny \
     && chmod a+x /usr/local/bin/runny
 RUN curl -o /usr/local/bin/s3-expand https://raw.githubusercontent.com/silinternational/s3-expand/master/s3-expand \
