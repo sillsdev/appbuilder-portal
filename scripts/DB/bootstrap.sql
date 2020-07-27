@@ -10,6 +10,7 @@ INSERT INTO "ApplicationTypes" ("Id", "Name", "Description") VALUES
 (1, 'scriptureappbuilder',	'Scripture App Builder'),
 (2, 'readingappbuilder',	'Reading App Builder'),
 (3, 'dictionaryappbuilder',	'Dictionary App Builder');
+(4, 'keyboardappbuilder',	'Keyboard App Builder');
 
 SELECT SETVAL('"ApplicationTypes_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "ApplicationTypes";
