@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@aspnet/signalr@^1.1.4", "@aspnet/signalr@~1.1.2":
+"@aspnet/signalr@^1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@aspnet/signalr/-/signalr-1.1.4.tgz#417cf808f4074a8aec45d27f03c4b8df9d96bb0b"
   integrity sha512-Jp9nPc8hmmhbG9OKiHe2fOKskBHfg+3Y9foSKHxjgGtyI743hXjGFv3uFlUg503K9f8Ilu63gQt3fDkLICBRyg==
@@ -890,6 +890,15 @@
     prop-types "^15.6.0"
     react-is "^16.6.3"
 
+"@microsoft/signalr@~3.0.0":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-3.0.3.tgz#43298b327612e61c53ad097d81c2278c4caa2938"
+  integrity sha512-2PyXycyBJTGt6ZS1//OEVY1olccY5yosRNUQSLkzJEZShKXIzP+oI24F1jcYYXCyEvPXk9XWinAz44nHi9zUgw==
+  dependencies:
+    eventsource "^1.0.7"
+    request "^2.88.0"
+    ws "^6.0.0"
+
 "@offirgolan/nise@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@offirgolan/nise/-/nise-4.1.0.tgz#11ef964cc8a7d8134555134b55c16b9d2b707387"
@@ -1171,13 +1180,13 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@ssv/signalr-client@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@ssv/signalr-client/-/signalr-client-1.1.0.tgz#95c174e1382edfc446f475f8c7a40d5760ce6675"
-  integrity sha512-d7x8nlplVGCdVAcwsQtYOMYPHWG1Pz3DZJsRGgxTqG87DJwscHx5/OGjsF7ICLG/DXrluW3In/6eJb8rlof5kw==
+"@ssv/signalr-client@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@ssv/signalr-client/-/signalr-client-2.0.0.tgz#ab8e2ea49b0272184cad54180d6d1f7b195ee877"
+  integrity sha512-jGyVNhJHmF1OHJ4yNbOcT2HEYaQtHkj6i0KrnzL6f6YrDod+XRRMfCzBFrFJ5/uVn2w8QP2+lJzb4Hrg6AK86A==
   dependencies:
-    "@aspnet/signalr" "~1.1.2"
-    tslib "^1.9.0"
+    "@microsoft/signalr" "~3.0.0"
+    tslib "^1.10.0"
 
 "@stardust-ui/react-component-event-listener@~0.38.0":
   version "0.38.0"
@@ -12046,6 +12055,11 @@ tsconfig-paths@^3.3.2, tsconfig-paths@^3.4.0:
     json5 "^1.0.1"
     minimist "^1.2.0"
     strip-bom "^3.0.0"
+
+tslib@^1.10.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
+  integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
 
 tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.10.0"
