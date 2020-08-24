@@ -9869,10 +9869,10 @@ react-fast-compare@^2.0.4:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
 
-react-hooks-fetch@0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/react-hooks-fetch/-/react-hooks-fetch-0.10.0.tgz#d61279477465aa03db174f364ae09eaa511d9033"
-  integrity sha512-sslDjz6tTUZZ5i1QlQu0yTTlQNIfb8RCnK+hE6DUks1AuXKD9ZNNCorZ5LFRLKyKFxOqn/K26/8A3raSlq9r9Q==
+react-hooks-fetch@0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/react-hooks-fetch/-/react-hooks-fetch-0.14.0.tgz#ef048ec5ee96ea69eda76d404e2e44a2459a2699"
+  integrity sha512-kxSfbl8azQsbhI3tzjTkJvOoGFLf/FKPzeLOn/ePugF9xCVLSvF6qiOOKa0O6+xt1nIWrVl5doBOHStR6xfG8Q==
 
 react-i18next@*, react-i18next@^10.0.2:
   version "10.11.1"
