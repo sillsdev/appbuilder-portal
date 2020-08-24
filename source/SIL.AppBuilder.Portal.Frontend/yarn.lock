@@ -781,12 +781,21 @@
   resolved "https://registry.yarnpkg.com/@bigtest/convergence/-/convergence-1.1.1.tgz#b314d8b1edc392d3e8780f99499a9a03aa528d54"
   integrity sha512-zorukvQJ7JxD5Jqy3ChzhCJzlD45bZudBASbgJvY5ffw5Hu+/9Ia/+8KlU1/XRWm32O2P5SBB2soHoFtGi1eGQ==
 
-"@bigtest/interactor@0.9.3":
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/@bigtest/interactor/-/interactor-0.9.3.tgz#f83fa868fc5742a482114af15d22f50677d3a81f"
-  integrity sha512-MKbhp/j1TtlSp1kIM1btvPrMbxn1eW2Notd5oUChBtEpnm8FDAiZIg6LED1aTsUxyRWf2qb5RlJyoy9HZjRgzQ==
+"@bigtest/globals@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@bigtest/globals/-/globals-0.6.0.tgz#1a46c3a0097af38ef3a4da16f95d1b893f587741"
+  integrity sha512-uYKU5Vu9jCS93dhOBJZ/+VOjm210TdvDuAIRfqQpWRUv924hKzM0ezDWOfNDUXdLoL0XOTsH+3G/lsqK1yOWuQ==
   dependencies:
-    "@bigtest/convergence" "^1.1.1"
+    "@bigtest/suite" "^0.5.2"
+    effection "^0.7.0"
+
+"@bigtest/interactor@0.15.0":
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/@bigtest/interactor/-/interactor-0.15.0.tgz#9fb7418e9975e810c377156022b4dd64212709f4"
+  integrity sha512-im6K4UMMN+0AZR3v6XkcTnuCJgexA7ywdyf0ya3Qrx5giE37QKazbA2rkn6dBIbBH1eieCUzVulymjHWMX3++w==
+  dependencies:
+    "@bigtest/globals" "^0.6.0"
+    "@bigtest/performance" "^0.5.0"
 
 "@bigtest/mirage@^0.0.1":
   version "0.0.1"
@@ -805,12 +814,22 @@
   dependencies:
     "@bigtest/convergence" "^1.1.1"
 
+"@bigtest/performance@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@bigtest/performance/-/performance-0.5.0.tgz#195f2c445cbe2ebe4357e08f7b39449240bf62d7"
+  integrity sha512-5lmaul6UIdyEApxapYumCShEdKca7PjwYlcIHiu/5iI032DUQsq4dygYMX07cgevfCZSR2fss57uMGfdB22GbQ==
+
 "@bigtest/react@^0.1.1":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@bigtest/react/-/react-0.1.2.tgz#52b1c0ac7d3bbded421f1407e0e8a589c5261951"
   integrity sha512-hAgpHGumryJX93Z8sudWtaaqKJM0SSfFLFZOvSKXDOP1iIqcd2rsVCFpKqk9fjr9mTaA6sZ1OWToh7Hy6wEqJA==
   dependencies:
     history "^4.7.2"
+
+"@bigtest/suite@^0.5.2":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@bigtest/suite/-/suite-0.5.3.tgz#7eec0ce28f5af5af8c9a2eb74f369498381212d3"
+  integrity sha512-vvjoUb8OFiKjAoh851ciG0EvdsQV7lQLQeV3ZGPgvi/xovZFsVkVQxI/4/uOUGHHo7Jxnkx6klmo7procRbaNg==
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
@@ -4306,6 +4325,11 @@ ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
+
+effection@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/effection/-/effection-0.7.0.tgz#9cdb74d075021af0715c18124038d3b0dca01363"
+  integrity sha512-p9Y1YiFI/WH5L1DzGJg/RFPFQgpXyHd1xKvGpFkzR8ah/nUGdcDtXHavj9wJgPpuHtxM2ef5YPXA7ySMmuEa1w==
 
 ejs@^2.6.1:
   version "2.6.2"
