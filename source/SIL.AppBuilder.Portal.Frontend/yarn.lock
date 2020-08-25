@@ -10407,10 +10407,18 @@ react-hooks-fetch@0.14.0:
   resolved "https://registry.yarnpkg.com/react-hooks-fetch/-/react-hooks-fetch-0.14.0.tgz#ef048ec5ee96ea69eda76d404e2e44a2459a2699"
   integrity sha512-kxSfbl8azQsbhI3tzjTkJvOoGFLf/FKPzeLOn/ePugF9xCVLSvF6qiOOKa0O6+xt1nIWrVl5doBOHStR6xfG8Q==
 
-react-i18next@*, react-i18next@^10.0.2:
+react-i18next@*:
   version "10.11.1"
   resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-10.11.1.tgz#29b9be5161143a11a7d3ee28769c091b26c525a5"
   integrity sha512-uzfMdGFbe0bZQkR8XyBUw1BV4rPBQ6X3+TgvMWdW94LeKrDrXBcyfokdejTYQpMlOMtf7TGrhQT9fLIfr+gftg==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+    html-parse-stringify2 "2.0.1"
+
+react-i18next@^11.0.0:
+  version "11.7.1"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-11.7.1.tgz#80c993bf7c4f07937ce0e5ff4e2d7d97bfe3f42f"
+  integrity sha512-K7qWaQ03Nc25BqSqdKz1iGU5inwNQnDVcen/tpiILEXyd0w/z+untrsuUy5Y3PqAkwJ7m1FACwBttSSitxDKQA==
   dependencies:
     "@babel/runtime" "^7.3.1"
     html-parse-stringify2 "2.0.1"
