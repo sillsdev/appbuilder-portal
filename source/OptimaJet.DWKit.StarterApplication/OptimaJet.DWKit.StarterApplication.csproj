@@ -31,7 +31,7 @@
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.3.101.41" />
     <PackageReference Include="Bugsnag.AspNet.Core" Version="2.2.0" />
     <PackageReference Include="BundlerMinifier.Core" Version="2.6.362" />
-    <PackageReference Include="dotenv.net" Version="1.0.3" />
+    <PackageReference Include="dotenv.net" Version="2.1.1" />
     <PackageReference Include="DWKit-Core" Version="2.6.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
