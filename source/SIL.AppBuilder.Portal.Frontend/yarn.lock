@@ -10454,9 +10454,9 @@ react-onclickoutside@^6.9.0:
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.9.0.tgz#a54bc317ae8cf6131a5d78acea55a11067f37a1f"
   integrity sha512-8ltIY3bC7oGhj2nPAvWOGi+xGFybPNhJM0V1H8hY/whNcXgmDeaeoCMPPd8VatrpTsUWjb/vGzrmu6SrXVty3A==
 
-"react-orbitjs@github:DeveloperTown/react-orbitjs#de5955cbc67fa5c2a872d2cef4aed169a0fcef57":
+"react-orbitjs@github:sillsdev/react-orbitjs#de5955cbc67fa5c2a872d2cef4aed169a0fcef57":
   version "0.1.10"
-  resolved "https://codeload.github.com/DeveloperTown/react-orbitjs/tar.gz/de5955cbc67fa5c2a872d2cef4aed169a0fcef57"
+  resolved "https://codeload.github.com/sillsdev/react-orbitjs/tar.gz/de5955cbc67fa5c2a872d2cef4aed169a0fcef57"
   dependencies:
     "@types/recompose" "0.30.3"
     hoist-non-react-statics "3.3.0"
