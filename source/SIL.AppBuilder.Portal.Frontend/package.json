@@ -180,7 +180,7 @@
     "karma-mocha": "^2.0.0",
     "karma-mocha-reporter": "^2.2.5",
     "karma-parallel": "^0.3.0",
-    "karma-typescript": "^4.0.0",
+    "karma-typescript": "^5.0.0",
     "karma-webpack": "^4.0.0",
     "karma-webpack-grep": "^1.0.1",
     "mocha": "^8.0.0",
