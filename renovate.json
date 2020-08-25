@@ -28,6 +28,11 @@
       ]
     },
     {
+      // Upgrading from 0.10 to 0.14 breaks (changed API)
+      "packageNames" : ["react-hooks-fetch"],
+      "enabled": false
+    },
+    {
       "sourceUrlPrefixes": ["https://github.com/aspnet/Extensions"],
       "groupName": "ASP.NET Extensions"
     },
