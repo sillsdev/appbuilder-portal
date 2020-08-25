@@ -68,7 +68,7 @@
     "react-router-dom": "^5.0.0",
     "react-state-helpers": "^1.6.6",
     "react-timezone": "^2.1.0",
-    "react-toastify": "^4.5.2",
+    "react-toastify": "^6.0.0",
     "react-use": "^9.0.0",
     "react-useinterval": "^1.0.1",
     "rebound": "^0.1.0",
