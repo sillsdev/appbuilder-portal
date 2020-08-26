@@ -33,6 +33,21 @@
       "enabled": false
     },
     {
+      // Upgrading from 0.15.14 to 0.16 breaks
+      // Probably (but not sure) due to react-orbitjs fork
+      "packageNames" : [
+        "orbit/coordinator",
+        "orbit/core",
+	"orbit/data",
+	"orbit/indexeddb",
+	"orbit/indexeddb-bucket",
+	"orbit/jsonapi",
+	"orbit/local-storage-bucket",
+	"orbit/store"
+      ],
+      "enabled": false
+    },
+    {
       "sourceUrlPrefixes": ["https://github.com/aspnet/Extensions"],
       "groupName": "ASP.NET Extensions"
     },
