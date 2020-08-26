@@ -33,6 +33,11 @@
       "enabled": false
     },
     {
+      // Upgrading from 2.0 to 4.0 breaks
+      "packageNames" : ["css-loader"],
+      "enabled": false
+    },
+    {
       // Upgrading from 0.15.14 to 0.16 breaks
       // Probably (but not sure) due to react-orbitjs fork
       "packageNames" : [
