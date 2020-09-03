@@ -250,9 +250,7 @@ class OrganizationForm extends React.Component<IProps, IState> {
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
                 onClick={this.submit}
               >
-                {organization
-                  ? t('admin.settings.organizations.edit')
-                  : t('admin.settings.organizations.add')}
+                {t('common.save')}
               </button>
 
               <button
