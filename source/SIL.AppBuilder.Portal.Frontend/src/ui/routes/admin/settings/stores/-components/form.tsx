@@ -114,7 +114,9 @@ export default function StoreForm({ save, cancel, store }) {
               className='ui button p-t-md p-b-md p-l-lg p-r-lg'
               onClick={onSubmit}
             >
-              {t('common.save')}
+              {isEditing
+                ? t('common.save')
+                : t('common.add')}
             </button>
 
             <button

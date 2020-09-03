@@ -334,7 +334,9 @@ class ProductDefinitionForm extends React.Component<IProps, IState> {
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
                 onClick={this.submit}
               >
-                {t('common.save')}
+                {productDefinition
+                  ? t('common.save')	
+                  : t('common.add')}
               </button>
 
               <button
