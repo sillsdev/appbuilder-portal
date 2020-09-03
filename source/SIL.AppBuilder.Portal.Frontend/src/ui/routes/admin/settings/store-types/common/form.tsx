@@ -111,9 +111,7 @@ class StoreTypeForm extends React.Component<IProps, IState> {
                 className='ui button p-t-md p-b-md p-l-lg p-r-lg'
                 onClick={this.submit}
               >
-                {storeType
-                  ? t('common.save')	
-                  : t('common.add')}
+                {storeType ? t('common.save') : t('common.add')}
               </button>
 
               <button
