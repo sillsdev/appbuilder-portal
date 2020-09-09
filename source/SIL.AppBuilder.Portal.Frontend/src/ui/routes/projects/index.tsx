@@ -15,6 +15,7 @@ import ArchivedProjectsRoute, { pathName as archivedProjectPath } from './list/a
 import NewProjectRoute, { pathName as newProjectPath } from './new';
 import ImportProjectsRoute, { pathName as importProjectsPath } from './import';
 import ProjectDetailRoute, { pathName as projectDetailPath } from './show';
+import ProjectEditRoute, { pathName as projectEditPath } from './edit';
 
 export default function ProjectsRoot() {
   return (
@@ -27,6 +28,7 @@ export default function ProjectsRoot() {
         <Route exact path={importProjectsPath} component={ImportProjectsRoute} />
         <Route exact path={allProjectPath} component={AllProjectsRoute} />
         <Route exact path={activeProjectPath} component={ActiveProjectsRoute} />
+        <Route exact path={projectEditPath} component={ProjectEditRoute} />
 
         <Route path={projectDetailPath} component={ProjectDetailRoute} />
 

@@ -48,8 +48,12 @@ export default function Details({ project }: IProps) {
           </p>
         </div>
       </div>
-      <div className='p-t-lg p-b-lg fs-16'>
-        <AutoSavingInput value={description} onChange={updateDescription} />
+
+      <div className='p-t-lg p-b-lg flex-grow'>
+        <h3 className='fs-11'>{t('project.projectDescription')}</h3>
+        <p data-test-project-detail-description className='p-b-sm fs-16'>
+          {description}
+        </p>
       </div>
     </div>
   );
