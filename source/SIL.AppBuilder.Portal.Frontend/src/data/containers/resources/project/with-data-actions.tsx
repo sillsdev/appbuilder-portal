@@ -44,6 +44,19 @@ export function useDataActions(project) {
   const updateAttribute = async (attribute: string, value: any) => {
     await dataStore.update((q) => q.replaceAttribute(project, attribute, value), defaultOptions());
   };
+  const updateAttributes = async (attributes: ProjectAttributes) => {
+    const { id, type } = project;
+
+    await dataStore.update(
+      (q) =>
+        q.replaceRecord({
+          id,
+          type,
+          attributes,
+        }),
+      defaultOptions()
+    );
+  };
 
   const updateOwner = (user: UserResource | string) => {
     if (typeof user === 'string') {
@@ -95,6 +108,7 @@ export function useDataActions(project) {
 
   return {
     updateAttribute,
+    updateAttributes,
     updateOwner,
     updateGroup,
     toggleArchiveProject,
