@@ -53,8 +53,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             {
                 if (SetBuildEngineEndpoint(project.Organization))
                 {
-                    var name = project.Owner.ExternalId.Replace("google-oauth2|", "g2=");
-                    name = name.Replace("auth0|", "a0=");
+                    var name = project.Owner.ExternalId;
                     var tokenRequest = new TokenRequest
                     {
                         Name = name

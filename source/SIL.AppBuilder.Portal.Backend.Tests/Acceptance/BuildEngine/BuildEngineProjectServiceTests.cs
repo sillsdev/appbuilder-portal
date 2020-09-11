@@ -486,7 +486,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var response = await buildProjectService.GetProjectTokenAsync(project2.Id);
             mockBuildEngine.Verify(x => x.GetProjectAccessToken(
                 It.Is<int>(i => i == project2.WorkflowProjectId),
-                It.Is<TokenRequest>(t => t.Name == "g2=123432423142312345678")
+                It.Is<TokenRequest>(t => t.Name == user1.ExternalId)
             ));
             Assert.NotNull(response);
             Assert.Equal(tokenResponse.SessionToken, response.SessionToken);
@@ -511,7 +511,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var response = await buildProjectService.GetProjectTokenAsync(project5.Id);
             mockBuildEngine.Verify(x => x.GetProjectAccessToken(
                 It.Is<int>(i => i == project5.WorkflowProjectId),
-                It.Is<TokenRequest>(t => t.Name == "a0=5c3e04df7493d43852060b26")
+                It.Is<TokenRequest>(t => t.Name == user2.ExternalId)
             ));
             Assert.NotNull(response);
             Assert.Equal(tokenResponse.SessionToken, response.SessionToken);
