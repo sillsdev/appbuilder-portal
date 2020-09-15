@@ -48,7 +48,7 @@ export default ({ project: { id }, t, toggleArchive, claimOwnership }) => {
           </div>
         </div>
         <div className='flex-grow m-l-sm'>
-          <Link className='gray-text' to={`/projects/${remoteId}/edit`}>
+          <Link data-test-project-edit className='gray-text' to={`/projects/${remoteId}/edit`}>
             <CreateIcon className='fs-16 m-t-sm' />
           </Link>
         </div>

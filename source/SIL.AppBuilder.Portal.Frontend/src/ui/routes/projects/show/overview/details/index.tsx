@@ -5,8 +5,6 @@ import { ProjectResource, attributesFor } from '@data';
 
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import { useTranslations } from '@lib/i18n';
-import * as toast from '@lib/toast';
-import AutoSavingInput from '@ui/components/inputs/auto-saving-input';
 
 interface IProps {
   project: ProjectResource;
@@ -15,21 +13,10 @@ interface IProps {
 export default function Details({ project }: IProps) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
-  const { updateAttribute } = useDataActions(project);
   const applicationType = dataStore.cache.query((q) => q.findRelatedRecord(project, 'type'));
 
   const { language, description } = attributesFor(project);
   const { description: type } = attributesFor(applicationType);
-
-  const updateDescription = async (value: string) => {
-    try {
-      await updateAttribute('description', value);
-
-      toast.success(t('common.updated'));
-    } catch (e) {
-      toast.error(e);
-    }
-  };
 
   return (
     <div data-test-project-details className='thin-bottom-border m-b-lg'>
