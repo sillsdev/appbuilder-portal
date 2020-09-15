@@ -31,6 +31,7 @@ export class ProjectInteractor {
   projectName = text('[data-test-project-name]');
   clickArchiveLink = clickable('[data-test-archive]');
   archiveText = text('[data-test-archive] span');
+  clickEditLink = clickable('[data-test-project-edit]');
   publicText = text('[data-test-project-visibility-label]');
   switchToFilesTab = clickable('[data-test-project-files-tab]');
 
