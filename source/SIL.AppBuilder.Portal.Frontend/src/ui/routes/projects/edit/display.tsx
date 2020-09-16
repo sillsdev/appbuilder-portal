@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Card, Form, Checkbox } from 'semantic-ui-react';
+import { Card, Form } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 import { ProjectResource, attributesFor, idFromRecordIdentity } from '@data';
@@ -74,11 +74,7 @@ export default function Details({ project }: IProps) {
               </Form.Field>
               <Form.Field className='flex-50'>
                 <label className='required'>{t('project.languageCode')}</label>
-                <LocaleInput
-                  data-test-language
-                  value={language}
-                  onChange={withValue(setLanguage)}
-                />
+                <LocaleInput value={language} onChange={withValue(setLanguage)} />
               </Form.Field>
             </div>
             <Form.Field className='flex-50'>

@@ -70,6 +70,10 @@ describe('Acceptance | Project edit', () => {
       expect(page.textDescription).to.eq('This is a fake project');
     });
 
+    it('displays the current language', () => {
+      expect(page.language.input.valueFromProps).to.eq('en');
+    });
+
     describe('If the cancel button is pressed', () => {
       beforeEach(async function() {
         await page.clickCancel();
