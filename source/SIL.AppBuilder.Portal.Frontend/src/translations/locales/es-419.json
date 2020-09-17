@@ -247,6 +247,7 @@
     "projectOwner": "Propietario del proyecto: ",
     "claimOwnership": "Claim Ownership",
     "claimSuccess": "Succesfully Claimed",
+    "editProject": "Edit Project",
     "newProject": "Nuevo proyecto",
     "importProjects": "Import Projects",
     "importProjectsHelp": "Import Projects Help",
