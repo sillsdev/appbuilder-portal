@@ -38,7 +38,7 @@ class Field extends React.Component<IProps & i18nProps, IState> {
     this.findLanguageCode = findLanguageCode(props.data);
     this.findLanguageInfo = findLanguageInfo(props.data);
 
-    const value = this.findLanguageCode(props.value) || '';
+    const value = this.findLanguageCode(props.value) || props.value;
     const matchData = this.languageInfoMatchingValue(value);
 
     this.state = {
