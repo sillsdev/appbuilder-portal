@@ -19,6 +19,7 @@ describe('Acceptance | Project view | project edit button', () => {
           attributes: {
             name: 'Fake project',
             isPublic: true,
+            language: 'en',
           },
           relationships: {
             organization: { data: { id: 1, type: 'organizations' } },
