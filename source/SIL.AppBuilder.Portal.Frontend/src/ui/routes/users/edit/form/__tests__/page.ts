@@ -14,6 +14,7 @@ export class FormInteractor {
 
   fillFirstName = fillable('[data-test-profile-firstname]');
   fillLastName = fillable('[data-test-profile-lastname]');
+  fillName = fillable('[data-test-profile-name]');
   fillEmail = fillable('[data-test-profile-email]');
   fillPhone = fillable('[data-test-profile-phone]');
   fillLocalization = fillable('[data-test-profile-localization]');
@@ -24,6 +25,7 @@ export class FormInteractor {
 
   firstname = value('[data-test-profile-firstname]');
   lastname = value('[data-test-profile-lastname]');
+  fullname = value('[data-test-profile-name]');
   email = value('[data-test-profile-email]');
   phone = value('[data-test-profile-phone]');
   localization = value('[data-test-profile-localization]');

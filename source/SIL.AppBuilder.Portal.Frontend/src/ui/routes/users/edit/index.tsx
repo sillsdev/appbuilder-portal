@@ -46,7 +46,7 @@ class Profile extends React.Component<IProps> {
     return (
       <div className='ui container profile'>
         <h1 className='fs-36 bold gray-text page-heading-border p-t-lg p-b-md m-b-lg'>
-          {t('profile.title')}: {user && user.attributes.givenName}
+          {t('profile.title')}: {user && user.attributes.name}
         </h1>
         <div>
           <h2 className='fs-21 bold gray-text m-b-lg'>{t('profile.general')}</h2>

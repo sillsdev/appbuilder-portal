@@ -70,11 +70,10 @@ class Row extends React.Component<IProps> {
 
   render() {
     const { user, t, roles, organizations } = this.props;
-    const { givenName, familyName, isLocked, email } = attributesFor(user);
+    const { name, isLocked, email } = attributesFor(user);
     const userId = idFromRecordIdentity(user);
 
-    const firstName = givenName || `(${t('profile.firstName')})`;
-    const lastName = familyName || `(${t('profile.lastName')})`;
+    const fullname = name || `(${t('profile.name')})`;
     const isActive = !isLocked;
     organizations.sort(compareVia((org) => attributesFor(org).name.toLowerCase()));
 
@@ -82,7 +81,7 @@ class Row extends React.Component<IProps> {
       <tr data-test-user-row={email || 'no-email-given'}>
         <td>
           <Link data-test-user-table-username to={`/users/${userId}/settings`}>
-            {firstName} {lastName}
+            {fullname}
           </Link>
         </td>
         <td data-test-role-selector>

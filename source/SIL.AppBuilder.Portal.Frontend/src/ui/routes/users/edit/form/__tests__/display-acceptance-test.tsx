@@ -21,6 +21,7 @@ describe('Acceptance | Edit Profile Form', () => {
           type: 'users',
           id: '1',
           attributes: {
+            name: 'first middle last',
             givenName: 'first',
             familyName: 'last',
             email: 'whatever@w.ver',
@@ -43,6 +44,7 @@ describe('Acceptance | Edit Profile Form', () => {
 
       it('renders the firstname', () => expect(page.firstname).to.equal('first'));
       it('renders lastname', () => expect(page.lastname).to.equal('last'));
+      it('renders the fullname', () => expect(page.fullname).to.equal('first middle last'));
       it('renders email', () => expect(page.email).to.equal('whatever@w.ver'));
       it('renders phone number', () => expect(page.phone).to.equal('no'));
       it('renders email notification', () => expect(page.isEmailNotificationChecked).to.be.false);
@@ -50,6 +52,7 @@ describe('Acceptance | Edit Profile Form', () => {
 
       describe('The form has values', () => {
         beforeEach(async () => {
+          await page.fillName('Fake Full Name');
           await page.fillFirstName('Fake');
           await page.fillLastName('Name');
           await page.fillEmail('fake@domain.com');
@@ -58,6 +61,7 @@ describe('Acceptance | Edit Profile Form', () => {
           await page.clickProfileVisibility();
         });
 
+        it('update the fullname', () => expect(page.fullname).to.equal('Fake Full Name'));
         it('updates the firstname', () => expect(page.firstname).to.equal('Fake'));
         it('updates lastname', () => expect(page.lastname).to.equal('Name'));
         it('updates email', () => expect(page.email).to.equal('fake@domain.com'));

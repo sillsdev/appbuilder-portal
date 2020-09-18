@@ -13,6 +13,7 @@ export interface IProps {
 }
 
 export interface IState {
+  name: string;
   givenName: string;
   familyName: string;
   email: string;
@@ -67,6 +68,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
   render() {
     const { mut, toggle } = this;
     const {
+      name,
       givenName,
       familyName,
       email,
@@ -80,7 +82,11 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
 
     return (
       <form data-test-edit-profile className='ui form'>
-        <div className='flex'>
+        <div className='field w-100-md p-r-lg'>
+          <label>{t('profile.name')}</label>
+          <input data-test-profile-name value={name || ''} onChange={mut('name')} />
+        </div>
+        <div className='flex m-t-lg'>
           <div className='flex w-100'>
             <div className='field w-50-md p-r-lg'>
               <label>{t('profile.firstName')}</label>

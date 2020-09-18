@@ -90,7 +90,13 @@ let users = {
     {
       id: 1,
       type: 'users',
-      attributes: { id: 1, auth0Id: fakeAuth0Id, familyName: 'fake', givenName: 'fake' },
+      attributes: {
+        id: 1,
+        auth0Id: fakeAuth0Id,
+        familyName: 'fake',
+        givenName: 'fake',
+        name: 'fake fake',
+      },
       relationships: {
         ['organization-memberships']: orgMemberships.relations[0],
       },
@@ -98,7 +104,7 @@ let users = {
     {
       type: 'users',
       id: 2,
-      attributes: { familyName: 'fake', givenName: 'One' },
+      attributes: { familyName: 'fake', givenName: 'One', name: 'One fake' },
       relationships: {
         ['organization-memberships']: orgMemberships.relations[1],
         'group-memberships': {},
@@ -107,7 +113,7 @@ let users = {
     {
       type: 'users',
       id: 3,
-      attributes: { familyName: 'fake', givenName: 'Two' },
+      attributes: { familyName: 'fake', givenName: 'Two', name: 'Two fake' },
       relationships: {
         ['organization-memberships']: orgMemberships.relations[2],
         'group-memberships': {},
