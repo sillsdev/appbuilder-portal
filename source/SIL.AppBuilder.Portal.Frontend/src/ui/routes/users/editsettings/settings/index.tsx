@@ -99,7 +99,7 @@ class SettingsRoute extends React.Component<IProps> {
     return (
       <div className='ui container' data-test-editsettings-manager>
         <h2 className='page-heading page-heading-border-sm'>
-          {t('users.settingsTitle')}: {user && user.attributes.givenName}
+          {t('users.settingsTitle')}: {user && user.attributes.name}
         </h2>
         <div className='flex-column-xs flex-row-sm align-items-start-sm'>
           <Navigation />
