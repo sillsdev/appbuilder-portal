@@ -159,7 +159,7 @@
     "uploadPicture": "Upload new picture",
     "firstName": "First name",
     "lastName": "Last name",
-    "name": "Name",
+    "name": "Display Name",
     "email": "Email",
     "phone": "Phone",
     "location": "Location",
