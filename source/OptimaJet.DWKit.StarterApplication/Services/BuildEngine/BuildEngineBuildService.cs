@@ -284,7 +284,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 { "consoleText", consoleTextUrl },
                 { "projectId", product.ProjectId },
                 { "jobId", product.WorkflowJobId},
-                { "buildId", product.WorkflowBuildId}
+                { "buildId", product.WorkflowBuildId},
+                { "projectUrl", product.Project.WorkflowAppProjectUrl }
             };
             await SendNotificationSvc.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "buildFailedOwner", "buildFailedAdmin", messageParms, consoleTextUrl);
             await UpdateProductBuild(buildEngineBuild, product, false);

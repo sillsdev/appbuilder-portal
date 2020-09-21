@@ -276,7 +276,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             ClearRecurringJob(product.Id);
             await UpdateProductPublication(buildEngineRelease, product, false);
-            var buildEngineUrl = product.Project.Organization.BuildEngineUrl;
+            var buildEngineUrl = product.Project.Organization.BuildEngineUrl + "/release-admin/view?id=" + product.WorkflowPublishId.ToString();
             var consoleTextUrl = buildEngineRelease.ConsoleText;
             var messageParms = new Dictionary<string, object>()
             {
@@ -288,7 +288,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 { "consoleTextUrl", consoleTextUrl },
                 { "jobId", product.WorkflowJobId },
                 { "buildId", product.WorkflowBuildId },
-                { "publishId", product.WorkflowPublishId }
+                { "publishId", product.WorkflowPublishId },
+                { "projectId", product.ProjectId },
+                { "projectUrl", product.Project.WorkflowAppProjectUrl }
             };
             await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(product.Project.Organization, product.Project.Owner, "releaseFailedOwner", "releaseFailedAdmin", messageParms, consoleTextUrl);
         }
