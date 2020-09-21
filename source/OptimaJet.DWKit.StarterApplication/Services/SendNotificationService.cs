@@ -52,7 +52,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // Don't resend notification to owner if they already received one as an org admin
             if (!sentNotifictionToOwner)
             {
-                await SendNotificationToUserAsync(owner, ownerMessageId, subs, linkUrl, false);
+                await SendNotificationToUserAsync(owner, ownerMessageId, subs, linkUrl, null, true);
             }
         }
         public async Task<bool> SendNotificationToOrgAdminsAsync(Organization organization, String messageId, Dictionary<string, object> subs, String linkUrl = "", int ownerId = 0)
@@ -86,6 +86,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 await SendNotificationToUserAsync(superAdmin, messageId, subs, linkUrl, forceEmail);
             }
         }
+        // forceEmail set to false sends notification with no email.  Set forceEmail to null to not force either way
         public async Task SendNotificationToUserAsync(User user, String messageId, Dictionary<string, object> subs, String linkUrl = "", bool? forceEmail = null, bool sendEmailImmediately = false)
         {
             var locale = user.LocaleOrDefault();

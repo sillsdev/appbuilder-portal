@@ -142,7 +142,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 OrganizationId = org1.Id,
                 Language = "eng-US",
                 IsPublic = true,
-                WorkflowProjectUrl = "ssh://APKAIKQTCJ3JIDKLHHDA@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-English-Greek"
+                WorkflowProjectUrl = "ssh://APKAIKQTCJ3JIDKLHHDA@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-English-Greek",
+                WorkflowAppProjectUrl = "https://dev.scriptoria.io/projects/1"
             });
             systemStatus1 = AddEntity<AppDbContext, SystemStatus>(new SystemStatus
             {
@@ -426,8 +427,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var userIds = notifications.Select(n => n.UserId);
             Assert.Contains(user1.Id, userIds);
             Assert.Contains(user2.Id, userIds);
-            
-            Assert.Equal($"{{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1\",\"consoleTextUrl\":\"https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log\",\"jobId\":{product2.WorkflowJobId},\"buildId\":{product2.WorkflowBuildId},\"publishId\":{product2.WorkflowPublishId}}}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal($"{{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/release-admin/view?id=3\",\"consoleTextUrl\":\"https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log\",\"jobId\":{product2.WorkflowJobId},\"buildId\":{product2.WorkflowBuildId},\"publishId\":{product2.WorkflowPublishId},\"projectId\":{product2.Project.Id},\"projectUrl\":\"https://dev.scriptoria.io/projects/1\"}}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("releaseFailedAdmin", notifications[0].MessageId);
             Assert.Equal(releaseResponse.ConsoleText, notifications[0].LinkUrl);
             var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublication>();

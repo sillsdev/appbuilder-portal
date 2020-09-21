@@ -137,7 +137,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                  OrganizationId = org1.Id,
                  Language = "eng-US",
                  IsPublic = true,
-                 WorkflowProjectUrl = "ssh://APKAIKQTCJ3JIDKLHHDA@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-English-Greek"
+                 WorkflowProjectUrl = "ssh://APKAIKQTCJ3JIDKLHHDA@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-English-Greek",
+                 WorkflowAppProjectUrl = "https://dev.scriptoria.io/projects/1"
              });
              systemStatus1 = AddEntity<AppDbContext, SystemStatus>(new SystemStatus
              {
@@ -461,7 +462,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             // Verify that notifications are sent to the user and the org admin
             var notifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, notifications.Count);
-            Assert.Equal($"{{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/build-admin/view?id=2\",\"consoleText\":\"https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log\",\"projectId\":{product2.ProjectId},\"jobId\":2,\"buildId\":2}}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal($"{{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/build-admin/view?id=2\",\"consoleText\":\"https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log\",\"projectId\":{product2.ProjectId},\"jobId\":2,\"buildId\":2,\"projectUrl\":\"https://dev.scriptoria.io/projects/1\"}}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("buildFailedAdmin", notifications[0].MessageId);
             Assert.Equal("https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log", notifications[0].LinkUrl);
          }
