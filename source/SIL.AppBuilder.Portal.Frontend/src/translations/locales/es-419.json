@@ -159,6 +159,7 @@
     "uploadPicture": "Cargar una nueva imagen",
     "firstName": "Nombre",
     "lastName": "Apellido",
+    "name": "Display Name",
     "email": "Correo electrónico",
     "phone": "Teléfono",
     "location": "Ubicación",
