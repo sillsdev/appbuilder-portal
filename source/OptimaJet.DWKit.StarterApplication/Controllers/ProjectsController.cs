@@ -31,15 +31,24 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         public async Task<IActionResult> GetProjectToken(int id)
         {
             var project = await service.GetAsync(id);
-            if (project == null || project.WorkflowProjectUrl == null)
+            if (project == null)
             {
-                return NotFound();
+                return NotFound($"Project id={id} not found");
+            }
+
+            if (project.WorkflowProjectUrl == null)
+            {
+                return NotFound($"Project id={id}: WorkflowProjectUrl is null");
             }
 
             var token = await BuildEngineProjectService.GetProjectTokenAsync(id);
-            if (token == null || token.SecretAccessKey == null)
+            if (token == null)
             {
-                return NotFound();
+                return NotFound($"Project id={id}: GetProjectToken returned null");
+            }
+            if (token.SecretAccessKey == null)
+            {
+                return NotFound($"Project id={id}: Token.SecretAccessKey is null");
             }
             var projectToken = new ProjectToken
             {
