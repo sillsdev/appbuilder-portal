@@ -7,6 +7,7 @@
   "updated": "¡Actualizado!",
   "opensource": "Código abierto",
   "home": "Inicio",
+  "tabAppName": "{count, plural, =0 {} other {({ count })}} Scriptoria",
   "locale-picker": {
     "code": "Código",
     "country": "País",
