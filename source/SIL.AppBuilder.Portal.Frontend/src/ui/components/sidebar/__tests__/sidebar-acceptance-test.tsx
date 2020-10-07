@@ -55,6 +55,10 @@ describe('Acceptance | Sidebar', () => {
       it('does not show a counter next to the tasks navigation', () => {
         expect(page.taskLinkText).to.equal('My Tasks');
       });
+
+      it('does not show a counter in the tab title', () => {
+        expect(document.title).to.equal('Scriptoria');
+      });
     });
 
     describe('there are tasks for the current user', () => {
@@ -240,9 +244,13 @@ describe('Acceptance | Sidebar', () => {
         await visit('/tasks');
       });
 
-      xit('shows a counter next to the tasks navigation', () => {
+      it('shows a counter next to the tasks navigation', () => {
         // for some reasing, the 1 doesn't show up until the test is complete :(
         expect(page.taskLinkText).to.equal('My Tasks (1)');
+      });
+
+      it('shows a counter in the tab title', () => {
+        expect(document.title).to.equal('(1) Scriptoria');
       });
     });
   });

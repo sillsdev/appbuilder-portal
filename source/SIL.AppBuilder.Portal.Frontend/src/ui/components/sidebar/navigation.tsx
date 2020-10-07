@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Helmet } from 'react-helmet';
 import { Menu } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 import { ROLE } from '@data/models/role';
@@ -40,6 +41,9 @@ export default function Navigation({ closeSidebar }: IProps) {
 
   return (
     <Menu className='m-t-none no-borders' pointing secondary vertical>
+      <Helmet defer={false}>
+        <title>{t('tabAppName', { count: userTasks.length })}</title>
+      </Helmet>
       <MenuItem
         data-test-tasks-link
         content={t('sidebar.myTasks', { count: userTasks.length })}
