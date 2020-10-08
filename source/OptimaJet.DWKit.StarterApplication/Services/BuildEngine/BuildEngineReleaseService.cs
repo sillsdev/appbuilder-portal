@@ -276,7 +276,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             ClearRecurringJob(product.Id);
             await UpdateProductPublication(buildEngineRelease, product, false);
-            var buildEngineUrl = product.Project.Organization.BuildEngineUrl + "/release-admin/view?id=" + product.WorkflowPublishId.ToString();
+            var buildEngineEndpoint = GetBuildEngineEndpoint(product.Project.Organization);
+            var endpointUrl = buildEngineEndpoint.IsValid() ? buildEngineEndpoint.Url : "";
+            var buildEngineUrl = endpointUrl + "/release-admin/view?id=" + product.WorkflowPublishId.ToString();
             var consoleTextUrl = buildEngineRelease.ConsoleText;
             var messageParms = new Dictionary<string, object>()
             {

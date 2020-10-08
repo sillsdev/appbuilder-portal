@@ -272,7 +272,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         {
             ClearRecurringJob(product.Id);
             await SaveArtifacts(product, buildEngineBuild, false);
-            var buildEngineUrl = product.Project.Organization.BuildEngineUrl + "/build-admin/view?id=" + product.WorkflowBuildId.ToString();
+            var buildEngineEndpoint = GetBuildEngineEndpoint(product.Project.Organization);
+            var endpointUrl = buildEngineEndpoint.IsValid() ? buildEngineEndpoint.Url : "";
+            var buildEngineUrl = endpointUrl + "/build-admin/view?id=" + product.WorkflowBuildId.ToString();
             var consoleTextUrl = buildEngineBuild.Artifacts["consoleText"];
             var messageParms = new Dictionary<string, object>()
             {
