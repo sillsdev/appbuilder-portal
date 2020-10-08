@@ -34,16 +34,25 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public OrganizationMembership CurrentUserMembership { get; set; }
         public OrganizationMembership organizationMembership1 { get; set; }
         public OrganizationMembership organizationMembership2 { get; set; }
+        public OrganizationMembership organizationMembership3 { get; set; }
+        public OrganizationMembership organizationMembership4 { get; set; }
         public Organization org1 { get; private set; }
+        public Organization org2 { get; private set; }
         public Group group1 { get; set; }
+        public Group group2 { get; set; }
         public GroupMembership groupMembership1 { get; set; }
         public GroupMembership groupMembership2 { get; set; }
+        public GroupMembership groupMembership3 { get; set; }
+        public GroupMembership groupMembership4 { get; set; }
         public ApplicationType type1 { get; set; }
         public Project project1 { get; set; }
+        public Project project2 { get; set; }
         public SystemStatus systemStatus1 { get; set; }
+        public SystemStatus systemStatus2 { get; set; }
         public ProductDefinition productDefinition1 { get; set; }
         public Product product1 { get; set; }
         public Product product2 { get; set; }
+        public Product product3 { get; set; }
         public WorkflowDefinition workflow1 { get; set; }
         public Store store1 { get; set; }
         public ProductArtifact artifact1 { get; set; }
@@ -51,6 +60,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
         public Role roleSA { get; set; }
         public UserRole ur1 { get; set; }
         public UserRole ur2 { get; set; }
+        public UserRole ur3 { get; set; }
 
         private void BuildTestData(bool available = true)
         {
@@ -87,6 +97,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 GivenName = "Test3",
                 FamilyName = "Testenson3"
             });
+            Environment.SetEnvironmentVariable("DEFAULT_BUILDENGINE_URL", "https://buildengine.testorg2");
+            Environment.SetEnvironmentVariable("DEFAULT_BUILDENGINE_API_ACCESS_TOKEN", "ReplaceAll");
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {
                 Name = "TestOrg1",
@@ -94,7 +106,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 BuildEngineUrl = "https://buildengine.testorg1",
                 BuildEngineApiAccessToken = "replace",
                 UseDefaultBuildEngine = false
-
+            });
+            org2 = AddEntity<AppDbContext, Organization>(new Organization
+            {
+                Name = "TestOrg1",
+                WebsiteUrl = "https://testorg1.org",
+                UseDefaultBuildEngine = true
             });
             CurrentUserMembership = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
             {
@@ -111,11 +128,27 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 UserId = user2.Id,
                 OrganizationId = org1.Id
             });
+            organizationMembership3 = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user2.Id,
+                OrganizationId = org2.Id
+            });
+            organizationMembership4 = AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user1.Id,
+                OrganizationId = org2.Id
+            });
             group1 = AddEntity<AppDbContext, Group>(new Group
             {
                 Name = "TestGroup1",
                 Abbreviation = "TG1",
                 OwnerId = org1.Id
+            });
+            group2 = AddEntity<AppDbContext, Group>(new Group
+            {
+                Name = "TestGroup2",
+                Abbreviation = "TG2",
+                OwnerId = org2.Id
             });
             groupMembership1 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
             {
@@ -126,6 +159,16 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             {
                 UserId = user2.Id,
                 GroupId = group1.Id
+            });
+            groupMembership3 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user2.Id,
+                GroupId = group2.Id
+            });
+            groupMembership4 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user1.Id,
+                GroupId = group2.Id
             });
             type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
             {
@@ -145,10 +188,29 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WorkflowProjectUrl = "ssh://APKAIKQTCJ3JIDKLHHDA@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-English-Greek",
                 WorkflowAppProjectUrl = "https://dev.scriptoria.io/projects/1"
             });
+            project2 = AddEntity<AppDbContext, Project>(new Project
+            {
+                Name = "Test Project2",
+                TypeId = type1.Id,
+                Description = "Test Description 2",
+                OwnerId = user1.Id,
+                GroupId = group2.Id,
+                OrganizationId = org2.Id,
+                Language = "eng-US",
+                IsPublic = true,
+                WorkflowProjectUrl = "ssh://APKAIKQTCJ3JIDKLHHDA@git-codecommit.us-east-1.amazonaws.com/v1/repos/scriptureappbuilder-DEM-LSDEV-eng-US-English-Greek",
+                WorkflowAppProjectUrl = "https://dev.scriptoria.io/projects/2"
+            });
             systemStatus1 = AddEntity<AppDbContext, SystemStatus>(new SystemStatus
             {
                 BuildEngineUrl = "https://buildengine.testorg1",
                 BuildEngineApiAccessToken = "replace",
+                SystemAvailable = available
+            });
+            systemStatus2 = AddEntity<AppDbContext, SystemStatus>(new SystemStatus
+            {
+                BuildEngineUrl = "https://buildengine.testorg2",
+                BuildEngineApiAccessToken = "ReplaceAll",
                 SystemAvailable = available
             });
             store1 = AddEntity<AppDbContext, Store>(new Store
@@ -189,6 +251,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 WorkflowBuildId = 2,
                 WorkflowPublishId = 3
             });
+            product3 = AddEntity<AppDbContext, Product>(new Product
+            {
+                ProjectId = project2.Id,
+                ProductDefinitionId = productDefinition1.Id,
+                StoreId = store1.Id,
+                WorkflowJobId = 1,
+                WorkflowBuildId = 2,
+                WorkflowPublishId = 3
+            });
             ur1 = AddEntity<AppDbContext, UserRole>(new UserRole
             {
                 UserId = user2.Id,
@@ -200,6 +271,12 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 UserId = user3.Id,
                 RoleId = roleSA.Id,
                 OrganizationId = org1.Id
+            });
+            ur3 = AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = user2.Id,
+                RoleId = roleOA.Id,
+                OrganizationId = org2.Id
             });
         }
 
@@ -428,6 +505,60 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Contains(user1.Id, userIds);
             Assert.Contains(user2.Id, userIds);
             Assert.Equal($"{{\"projectName\":\"Test Project1\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg1/release-admin/view?id=3\",\"consoleTextUrl\":\"https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log\",\"jobId\":{product2.WorkflowJobId},\"buildId\":{product2.WorkflowBuildId},\"publishId\":{product2.WorkflowPublishId},\"projectId\":{product2.Project.Id},\"projectUrl\":\"https://dev.scriptoria.io/projects/1\"}}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("releaseFailedAdmin", notifications[0].MessageId);
+            Assert.Equal(releaseResponse.ConsoleText, notifications[0].LinkUrl);
+            var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublication>();
+            Assert.Single(modifiedProductPublishes);
+            var publish = modifiedProductPublishes.First();
+            Assert.True(publish.Success.HasValue);
+            Assert.False(publish.Success.Value);
+            Assert.Equal(releaseResponse.ConsoleText, publish.LogUrl);
+        }
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task Get_Release_Check_Failure_With_Default_Build_Engine()
+        {
+            BuildTestData();
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            Assert.Empty(ReadTestData<AppDbContext, Notification>());
+
+            var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
+            mockBuildEngine.Reset();
+
+            var productBuild = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product3.Id,
+                BuildId = 2,
+            });
+            var productRelease = AddEntity<AppDbContext, ProductPublication>(new ProductPublication
+            {
+                ProductId = product3.Id,
+                ProductBuildId = productBuild.Id,
+                ReleaseId = 3
+            });
+
+            var releaseResponse = new ReleaseResponse
+            {
+                Id = 3,
+                BuildId = 2,
+                Status = "completed",
+                Result = "FAILURE",
+                Error = "Error",
+                ConsoleText = "https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log"
+            };
+
+            mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(),
+                                                    It.IsAny<int>(),
+                                                    It.IsAny<int>()))
+                           .Returns(releaseResponse);
+            await buildReleaseService.CheckReleaseAsync(product3.Id);
+            // Verify that notifications are sent to the user and the org admin
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(2, notifications.Count);
+
+            var userIds = notifications.Select(n => n.UserId);
+            Assert.Contains(user1.Id, userIds);
+            Assert.Contains(user2.Id, userIds);
+            Assert.Equal($"{{\"projectName\":\"Test Project2\",\"productName\":\"TestProd1\",\"releaseStatus\":\"completed\",\"releaseError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg2/release-admin/view?id=3\",\"consoleTextUrl\":\"https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_2/17/console.log\",\"jobId\":{product3.WorkflowJobId},\"buildId\":{product3.WorkflowBuildId},\"publishId\":{product3.WorkflowPublishId},\"projectId\":{product3.Project.Id},\"projectUrl\":\"https://dev.scriptoria.io/projects/2\"}}", notifications[0].MessageSubstitutionsJson);
             Assert.Equal("releaseFailedAdmin", notifications[0].MessageId);
             Assert.Equal(releaseResponse.ConsoleText, notifications[0].LinkUrl);
             var modifiedProductPublishes = ReadTestData<AppDbContext, ProductPublication>();
