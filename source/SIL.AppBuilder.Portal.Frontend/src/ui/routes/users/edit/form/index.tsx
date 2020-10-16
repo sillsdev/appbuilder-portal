@@ -120,7 +120,7 @@ class EditProfileDisplay extends React.Component<IProps & i18nProps, IState> {
             <ArrowDropDownIcon className='timezone-icon' />
             <TimezonePicker
               ref={(input) => (this.timezoneInput = input)}
-              className='w-100'
+              className='w-100 bg-timezone'
               value={timezone || ''}
               onChange={(tz) => {
                 this.setState({ timezone: tz });

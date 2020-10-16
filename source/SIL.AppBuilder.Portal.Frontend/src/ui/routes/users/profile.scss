@@ -1,0 +1,13 @@
+@import '../../styles/_base/variables.scss';
+
+.profile {
+  .timezone-icon {
+    position: absolute;
+    right: 5px;
+    top: 10px;
+  }
+  .bg-timezone ul {
+    background: $background;
+    z-index: 4;
+  }
+}
