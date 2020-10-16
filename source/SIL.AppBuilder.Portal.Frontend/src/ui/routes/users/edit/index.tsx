@@ -14,7 +14,7 @@ import { ICurrentUserProps, withCurrentUserContext } from '@data/containers/with
 import EditProfileForm from './form';
 import { withData } from './with-data';
 
-import './profile.scss';
+import '../profile.scss';
 
 export const pathName = '/users/:id/edit';
 

@@ -6,6 +6,7 @@ import TimezonePicker from 'react-timezone';
 import { UserResource } from '@data/models/user';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
+import '../../../profile.scss';
 
 export interface IProps {
   user: UserResource;
@@ -82,7 +83,7 @@ class ProfileRoute extends React.Component<IProps & i18nProps, IState> {
     const { t } = this.props;
 
     return (
-      <form data-test-edit-profile className='ui form'>
+      <form data-test-edit-profile className='ui form profile'>
         <div className='field w-100-md p-r-lg'>
           <label>{t('profile.name')}</label>
           <input data-test-profile-name value={name || ''} onChange={mut('name')} />
@@ -121,7 +122,7 @@ class ProfileRoute extends React.Component<IProps & i18nProps, IState> {
             <ArrowDropDownIcon className='timezone-icon' />
             <TimezonePicker
               ref={(input) => (this.timezoneInput = input)}
-              className='w-100'
+              className='w-100 bg-timezone'
               value={timezone || ''}
               onChange={(tz) => {
                 this.setState({ timezone: tz });
