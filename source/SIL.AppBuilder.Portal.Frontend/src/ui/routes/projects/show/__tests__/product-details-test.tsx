@@ -8,8 +8,6 @@ import {
   useFakeAuthentication,
 } from 'tests/helpers/index';
 
-import { TransactionDetailsInteractor } from '~/ui/components/product-transitions/-page';
-
 import { ProductsInteractor } from '~/ui/routes/projects/show/overview/products/-page.ts';
 
 import i18n from '@translations';
@@ -196,7 +194,7 @@ describe('Acceptance | Project View | Products Details', () => {
           },
           relationships: {},
           type: 'product-transitions',
-          id: '2650',
+          id: '2651',
         },
         {
           attributes: {
@@ -212,22 +210,6 @@ describe('Acceptance | Project View | Products Details', () => {
           },
           relationships: {},
           type: 'product-transitions',
-          id: '2651',
-        },
-        {
-          attributes: {
-            'workflow-user-id': null,
-            'allowed-user-names': null,
-            'initial-state': null,
-            'destination-state': null,
-            'transition-type': 2,
-            'workflow-type': 2,
-            'date-transition': '2018-10-20T16:19:09.878193',
-            command: null,
-            comment: null,
-          },
-          relationships: {},
-          type: 'product-transitions',
           id: '2652',
         },
         {
@@ -236,7 +218,7 @@ describe('Acceptance | Project View | Products Details', () => {
             'allowed-user-names': null,
             'initial-state': null,
             'destination-state': null,
-            'transition-type': 4,
+            'transition-type': 2,
             'workflow-type': 2,
             'date-transition': '2018-10-20T16:19:09.878193',
             command: null,
@@ -252,8 +234,8 @@ describe('Acceptance | Project View | Products Details', () => {
             'allowed-user-names': null,
             'initial-state': null,
             'destination-state': null,
-            'transition-type': 2,
-            'workflow-type': 3,
+            'transition-type': 4,
+            'workflow-type': 2,
             'date-transition': '2018-10-20T16:19:09.878193',
             command: null,
             comment: null,
@@ -262,8 +244,40 @@ describe('Acceptance | Project View | Products Details', () => {
           type: 'product-transitions',
           id: '2654',
         },
+        {
+          attributes: {
+            'workflow-user-id': null,
+            'allowed-user-names': null,
+            'initial-state': null,
+            'destination-state': null,
+            'transition-type': 2,
+            'workflow-type': 3,
+            'date-transition': '2018-10-20T16:19:09.878193',
+            command: null,
+            comment: null,
+          },
+          relationships: {},
+          type: 'product-transitions',
+          id: '2655',
+        },
+        {
+          attributes: {
+            'workflow-user-id': null,
+            'allowed-user-names': null,
+            'initial-state': 'Check Product Build',
+            'transition-type': 1,
+            'destination-state': 'Synchronize Data',
+            'date-transition': '2018-10-20T16:19:09.878193',
+            command: null,
+            comment:
+              'system.publish-failed,https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_1/1/console.log',
+          },
+          relationships: {},
+          type: 'product-transitions',
+          id: '2656',
+        },
       ],
-      meta: { 'total-records': 9 },
+      meta: { 'total-records': 10 },
     });
   });
 
@@ -276,7 +290,7 @@ describe('Acceptance | Project View | Products Details', () => {
 
     beforeEach(async function() {
       await page.productNamed('android_s3').clickDetailsLink();
-      await when(() => page.detailsModal.details().length === 9);
+      await when(() => page.detailsModal.details().length === 10);
     });
     it('opens modal', () => {
       expect(page.detailsModal.isVisible).to.be.true;
@@ -316,6 +330,18 @@ describe('Acceptance | Project View | Products Details', () => {
     });
     it('has a republish workflow started entry', () => {
       expect(page.detailsModal.detailNamed('Republish Workflow Started').user).to.be.empty;
+    });
+    describe('a publish error entry', () => {
+      it('has a translated comment', () => {
+        expect(page.detailsModal.detailNamed('Check Product Build').comment).to.contain(
+          'Publish failed'
+        );
+      });
+      it('has a link to the console text file', () => {
+        expect(page.detailsModal.detailNamed('Check Product Build').commentLink).to.contain(
+          'Console Text'
+        );
+      });
     });
   });
 });

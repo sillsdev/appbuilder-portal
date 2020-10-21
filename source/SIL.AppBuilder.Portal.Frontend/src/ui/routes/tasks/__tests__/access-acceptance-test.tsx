@@ -72,16 +72,32 @@ describe('Acceptance | Accessing Tasks', () => {
             attributes: {
               'activity-name': 'Definition',
               status: 'Definition',
-              comment: null,
+              comment: 'a comment!',
               'date-created': '2019-01-14T15:08:37.970292',
               'date-updated': '2019-01-14T15:08:37.970292',
             },
             relationships: {
-              user: { data: { type: 'users', id: '3' } },
+              user: { data: { type: 'users', id: '1' } },
               product: { data: { type: 'products', id: 'dce23290-e7db-40be-8f68-38553fd5378b' } },
             },
             type: 'user-tasks',
             id: '1',
+          },
+          {
+            attributes: {
+              'activity-name': 'Synchronize Data',
+              status: 'Synchronize Data',
+              comment:
+                'system.publish-failed,https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/publish_scriptureappbuilder_1/1/console.log',
+              'date-created': '2019-01-14T15:08:37.970292',
+              'date-updated': '2019-01-14T15:08:37.970292',
+            },
+            relationships: {
+              user: { data: { type: 'users', id: '1' } },
+              product: { data: { type: 'products', id: 'dce23290-e7db-40be-8f68-38553fd5378b' } },
+            },
+            type: 'user-tasks',
+            id: '2',
           },
         ],
         included: [
@@ -246,10 +262,22 @@ describe('Acceptance | Accessing Tasks', () => {
       await visit('/tasks');
     });
 
-    xit('renders a task with a comment', () => {
+    it('renders a task with a comment', () => {
       const text = page.tableText;
 
       expect(text).to.include('a comment!');
+    });
+    describe('for a task with a failed comment', () => {
+      it('displays the translated failure message', () => {
+        const text = page.tableText;
+
+        expect(text).to.include('Publish failed');
+      });
+      it('displays the console text link', () => {
+        const text = page.tableText;
+
+        expect(text).to.include('Console Text');
+      });
     });
   });
 });

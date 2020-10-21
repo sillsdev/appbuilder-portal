@@ -634,13 +634,35 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
                 BuildId = 2,
                 Status = "completed",
                 Result = "FAILURE",
-                Error = "Error"
+                Error = "Error",
+                ConsoleText = "https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/build_scriptureappbuilder_3/3/console.log"
             };
 
             mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(releaseResponse);
             var status = await buildReleaseService.GetStatusAsync(product2.Id);
             Assert.Equal(BuildEngineStatus.Failure, status);
         }
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task Get_Release_Get_ConsoleText()
+        {
+            BuildTestData();
+            var buildReleaseService = _fixture.GetService<BuildEngineReleaseService>();
+            var mockBuildEngine = Mock.Get(buildReleaseService.BuildEngineApi);
+            mockBuildEngine.Reset();
 
+            var releaseResponse = new ReleaseResponse
+            {
+                Id = 3,
+                BuildId = 2,
+                Status = "completed",
+                Result = "FAILURE",
+                Error = "Error",
+                ConsoleText = "https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/build_scriptureappbuilder_3/3/console.log"
+            };
+
+            mockBuildEngine.Setup(x => x.GetRelease(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(releaseResponse);
+            var consoleText = await buildReleaseService.GetConsoleText(product2.Id);
+            Assert.Equal("https://dem-aps-artifacts.s3.amazonaws.com/dem/jobs/build_scriptureappbuilder_3/3/console.log", consoleText);
+        }
     }
 }

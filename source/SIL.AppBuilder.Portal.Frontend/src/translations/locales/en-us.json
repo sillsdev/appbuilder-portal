@@ -562,5 +562,9 @@
       },
       "redemptionTitle": "Looking up invitation..."
     }
+  },
+  "system": {
+    "build-failed": "Build failed",
+    "publish-failed": "Publish failed"
   }
 }

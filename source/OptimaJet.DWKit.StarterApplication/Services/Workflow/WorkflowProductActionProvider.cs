@@ -134,7 +134,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     var service = scope.ServiceProvider.GetRequiredService<BuildEngineBuildService>();
                     var status = await service.GetStatusAsync(product.Id);
-                    buildFailed = (status == BuildEngineStatus.Failure);
+                    if (status == BuildEngineStatus.Failure)
+                    {
+                        buildFailed = true;
+                        var consoleTextUrl = await service.GetConsoleText(product.Id);
+                        product.WorkflowComment = "system.build-failed," + consoleTextUrl;
+                        await productRepository.UpdateAsync(product);
+                    }
                 }
                 Log.Information($"BuildEngineBuildFailed: {buildFailed}");
                 return buildFailed;
@@ -174,7 +180,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     var service = scope.ServiceProvider.GetRequiredService<BuildEngineReleaseService>();
                     var status = await service.GetStatusAsync(product.Id);
-                    publishFailed = (status == BuildEngineStatus.Failure);
+                    if (status == BuildEngineStatus.Failure)
+                    {
+                        publishFailed = true;
+                        var consoleTextUrl = await service.GetConsoleText(product.Id);
+                        product.WorkflowComment = "system.publish-failed," + consoleTextUrl;
+                        await productRepository.UpdateAsync(product);
+                    }
                 }
                 Log.Information($"BuildEnginePublishFailed: {publishFailed}");
 
@@ -295,6 +307,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             return product;
         }
 
+        private async Task ClearComment(ProcessInstance processInstance)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
+                {
+                    product.WorkflowComment = "";
+                    await productRepository.UpdateAsync(product);
+                }
+            }
+        }
         private async Task SendOwnerNotificationAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
             using (var scope = ServiceProvider.CreateScope())
@@ -396,7 +421,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             var currentstate = processInstance.CurrentState;
             var nextState = processInstance.ExecutedActivityState;
             var command = WorkflowInit.Runtime.GetLocalizedCommandName(processInstance.ProcessId, processInstance.CurrentCommand);
-
+            Log.Information($"Update Product Transition Async current: {currentstate} next: {nextState}");
             using (var scope = ServiceProvider.CreateScope())
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
@@ -419,19 +444,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     history = await productTransitionsRepository.CreateAsync(history);
                 }
 
-                // Only capture the command, user, and comment if Command Trigger Type.  DWKit will reuse the previous Command and IdentityIds on Auto Trigger Type.
+                // Only capture the command or userif Command Trigger Type.  DWKit will reuse the previous Command and IdentityIds on Auto Trigger Type.
                 // We don't want to report the previous Command or Identity with Auto Trigger Types.
                 if (processInstance.ExecutedTransition?.Trigger.Type == TriggerType.Command)
                 {
                     history.Command = command;
+
                     if (Guid.TryParse(processInstance.IdentityId, out Guid identityId))
                     {
                         history.WorkflowUserId = identityId;
                     }
-                    if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
-                    {
-                        history.Comment = product.WorkflowComment;
-                    }
+                }
+                if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
+                {
+                    history.Comment = product.WorkflowComment;
+                    await ClearComment(processInstance);
                 }
                 history.DateTransition = DateTime.UtcNow;
                 await productTransitionsRepository.UpdateAsync(history);

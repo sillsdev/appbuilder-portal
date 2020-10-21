@@ -157,7 +157,34 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     return BuildEngineStatus.Unavailable;
             }
         }
-
+        public async Task<String> GetConsoleText(Guid productId)
+        {
+            var emptyUrl = "";
+            var product = await ProductRepository.Get()
+                                                 .Where(p => p.Id == productId)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Organization)
+                                                 .FirstOrDefaultAsync();
+            if ((product == null) || (product.WorkflowJobId == 0) || (product.WorkflowBuildId == 0) || (product.WorkflowPublishId == 0))
+            {
+                return emptyUrl;
+            }
+            if (!BuildEngineLinkAvailable(product.Project.Organization))
+            {
+                return emptyUrl;
+            }
+            var buildEngineRelease = GetBuildEngineRelease(product);
+            if ((buildEngineRelease == null) || (buildEngineRelease.Id == 0))
+            {
+                return emptyUrl;
+            }
+            var consoleTextUrl = buildEngineRelease.ConsoleText;
+            if (consoleTextUrl == null)
+            {
+                return emptyUrl;
+            }
+            return consoleTextUrl;
+        }
         protected async Task CreateBuildEngineReleaseAsync(Product product, Dictionary<string, object> paramsDictionary, PerformContext context)
         {
             var channel = GetChannel(paramsDictionary);

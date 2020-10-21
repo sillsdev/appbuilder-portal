@@ -5,6 +5,7 @@ import { Label } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductIcon from '@ui/components/product-icon';
+import TransitionComment from '@ui/components/product-transitions/comment';
 import moment from 'moment';
 
 import {
@@ -99,7 +100,9 @@ class TaskRow extends React.Component<IProps> {
         {comment && (
           <tr data-test-comment className='no-top-border'>
             <td style={{ paddingTop: 0 }} className='fs-12 no-top-border' colSpan={5}>
-              <span className='p-l-lg block'>{comment}</span>
+              <div className='p-l-lg block'>
+                <TransitionComment comment={comment} />
+              </div>
             </td>
           </tr>
         )}

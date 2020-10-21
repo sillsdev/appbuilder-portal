@@ -543,6 +543,52 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Equal("buildFailedAdmin", notifications[0].MessageId);
             Assert.Equal("https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log", notifications[0].LinkUrl);
          }
+         [Fact(Skip = skipAcceptanceTest)]
+         public async Task Get_Build_Get_ConsoleText()
+         {
+            BuildTestData();
+            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
+            var mockWebClient = Mock.Get(buildBuildService.WebClient);
+            mockBuildEngine.Reset();
+            mockWebRequestWrapper.Reset();
+            mockWebClient.Reset();
+
+            var productBuild = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product2.Id,
+                BuildId = product2.WorkflowBuildId
+            });
+            var buildResponse = new BuildResponse
+            {
+                Id = 2,
+                JobId = 1,
+                Status = "completed",
+                Result = "FAILURE",
+                Error = "Error",
+                Artifacts = new Dictionary<string, string>() { { "consoleText", "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log" } }
+            };
+            var modifiedArtifact1 = new ProductArtifact
+            {
+                ProductId = product2.Id,
+                ArtifactType = "consoleText",
+                Url = "https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log",
+                ContentType = "text/plain",
+                FileSize = 1831,
+                LastModified = DateTime.UtcNow
+            };
+
+
+            mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
+
+            mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
+                                                                      a.ArtifactType == "consoleText")))
+                     .Returns(modifiedArtifact1);
+
+            var consoleText = await buildBuildService.GetConsoleText(product2.Id);
+            Assert.Equal("https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log", consoleText);
+        }
         [Fact(Skip = skipAcceptanceTest)]
         public async Task Get_Build_Check_Failure_Default_Build_Engine()
         {

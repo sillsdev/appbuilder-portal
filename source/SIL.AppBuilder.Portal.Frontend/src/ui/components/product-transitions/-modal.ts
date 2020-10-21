@@ -10,6 +10,7 @@ class TransitionDetailsModalInteractor {
     user: text('[data-test-transition-user] span'),
     command: text('[data-test-transition-command] span'),
     comment: text('[data-test-transition-comment] span'),
+    commentLink: text('[data-test-transition-comment] a'),
   });
 
   detailNamed(named: string) {
