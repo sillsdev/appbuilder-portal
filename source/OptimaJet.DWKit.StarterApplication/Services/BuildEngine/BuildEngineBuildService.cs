@@ -137,6 +137,66 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             return;
 
         }
+        public async Task<BuildEngineStatus> GetStatusAsync(Guid productId)
+        {
+            var product = await ProductRepository.Get()
+                                                 .Where(p => p.Id == productId)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Organization)
+                                                 .FirstOrDefaultAsync();
+            if ((product == null) || (product.WorkflowJobId == 0) || (product.WorkflowBuildId == 0))
+            {
+                return BuildEngineStatus.Unavailable;
+            }
+            if (!BuildEngineLinkAvailable(product.Project.Organization))
+            {
+                return BuildEngineStatus.Unavailable;
+            }
+            var buildEngineBuild = GetBuildEngineBuild(product);
+            if ((buildEngineBuild == null) || (buildEngineBuild.Id == 0))
+            {
+                return BuildEngineStatus.Unavailable;
+            }
+            switch (buildEngineBuild.Status)
+            {
+                case "initialized":
+                case "active":
+                case "postprocessing":
+                    return BuildEngineStatus.InProgress;
+                case "completed":
+                    return (buildEngineBuild.Result == "SUCCESS") ? BuildEngineStatus.Success : BuildEngineStatus.Failure;
+                default:
+                    return BuildEngineStatus.Unavailable;
+            }
+        }
+        public async Task<String> GetConsoleText(Guid productId)
+        {
+            var emptyUrl = "";
+            var product = await ProductRepository.Get()
+                                                 .Where(p => p.Id == productId)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Organization)
+                                                 .FirstOrDefaultAsync();
+            if ((product == null) || (product.WorkflowJobId == 0) || (product.WorkflowBuildId == 0))
+            {
+                return emptyUrl;
+            }
+            if (!BuildEngineLinkAvailable(product.Project.Organization))
+            {
+                return emptyUrl;
+            }
+            var buildEngineBuild = GetBuildEngineBuild(product);
+            if ((buildEngineBuild == null) || (buildEngineBuild.Id == 0))
+            {
+                return emptyUrl;
+            }
+            var consoleTextUrl = buildEngineBuild.Artifacts["consoleText"];
+            if (consoleTextUrl == null)
+            {
+                return null;
+            }
+            return consoleTextUrl;
+        }
         /// <summary>
         /// Remove any artifacts from previous build with this product.
         /// Cancel any current Hangfire recurring job still in progress
@@ -391,38 +451,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             }
 
             return updatedArtifact.LastModified;
-        }
-        public async Task<BuildEngineStatus> GetStatusAsync(Guid productId)
-        {
-            var product = await ProductRepository.Get()
-                                                 .Where(p => p.Id == productId)
-                                                 .Include(p => p.Project)
-                                                 .ThenInclude(pr => pr.Organization)
-                                                 .FirstOrDefaultAsync();
-            if ((product == null) || (product.WorkflowJobId == 0) || (product.WorkflowBuildId == 0))
-            {
-                return BuildEngineStatus.Unavailable;
-            }
-            if (!BuildEngineLinkAvailable(product.Project.Organization))
-            {
-                return BuildEngineStatus.Unavailable;
-            }
-            var buildEngineBuild = GetBuildEngineBuild(product);
-            if ((buildEngineBuild == null) || (buildEngineBuild.Id == 0))
-            {
-                return BuildEngineStatus.Unavailable;
-            }
-            switch (buildEngineBuild.Status)
-            {
-                case "initialized":
-                case "active":
-                case "postprocessing":
-                    return BuildEngineStatus.InProgress;
-                case "completed":
-                    return (buildEngineBuild.Result == "SUCCESS") ? BuildEngineStatus.Success : BuildEngineStatus.Failure;
-                default:
-                    return BuildEngineStatus.Unavailable;
-            }
         }
     }
 }

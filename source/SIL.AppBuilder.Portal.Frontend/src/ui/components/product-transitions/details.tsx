@@ -6,6 +6,8 @@ import { useCurrentUser } from '@data/containers/with-current-user';
 import CloseIcon from '@material-ui/icons/Close';
 import moment from 'moment';
 
+import TransitionComment from './comment';
+
 import { idFromRecordIdentity } from '~/data';
 
 import { get } from '~/lib/fetch';
@@ -155,7 +157,7 @@ export default function TransitionDetails({ product }) {
                   <span>{command}</span>
                 </div>
                 <div data-test-transition-comment className='flex-20'>
-                  <span>{comment}</span>
+                  <TransitionComment comment={comment} />
                 </div>
                 <div className='flex-20'>
                   <span>{getFormattedDate(dateTransition)}</span>

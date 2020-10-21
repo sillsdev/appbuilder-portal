@@ -224,10 +224,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     BackgroundJobClient.Enqueue<SendEmailService>(service => service.SendRejectEmail(product.Id, args, comment));
                 }
-                if (!String.IsNullOrWhiteSpace(product.WorkflowComment))
-                {
-                    BackgroundJobClient.Enqueue<BuildEngineProductService>(service => service.ClearComment(product.Id));
-                }
             }
 
         }
@@ -384,7 +380,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         {
 
             var mostRecentCommand = ProductTransitionRepository.Get()
-                .Where(pt => pt.ProductId == product.Id && pt.Command != null)
+                .Where(pt => pt.ProductId == product.Id && (pt.Command != null || !String.IsNullOrWhiteSpace(pt.Comment)))
                 .OrderByDescending(a => a.DateTransition)
                 .FirstOrDefault();
             return mostRecentCommand == null ? "" : mostRecentCommand.Comment;
