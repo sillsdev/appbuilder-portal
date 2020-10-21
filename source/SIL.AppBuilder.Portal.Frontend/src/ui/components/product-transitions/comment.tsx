@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTranslations } from '@lib/i18n';
 
 export default function TransitionComment({ comment }) {
