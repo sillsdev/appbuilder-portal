@@ -1,5 +1,7 @@
 import { compose, withProps } from 'recompose';
-import { withData as withOrbit } from 'react-orbitjs';
+import { attributesFor, withData as withOrbit } from 'react-orbitjs';
+
+import { compareVia } from '~/lib/collection';
 
 import {
   StoreResource,
@@ -32,6 +34,7 @@ export default compose(
 
     return {
       list: (stores || [])
+        .sort(compareVia((a) => attributesFor(a).name.toLowerCase()))
         .filter((store) => {
           return idFor(relationshipFor(store, 'storeType')) === ofStoreType.id;
         })
