@@ -22,6 +22,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowProductActionProvider : IWorkflowActionProvider
     {
+        private readonly string PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID = "PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID";
+        private readonly string PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE = "PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE";
+        private readonly string GOOGLE_PLAY_UPLOADED = "google_play_uploaded";
+        private readonly string ENVIRONMENT = "environment";
         private readonly Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>> _actions = new Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>>();
 
         private readonly Dictionary<string, Func<ProcessInstance, WorkflowRuntime, string, CancellationToken, Task>> _asyncActions =
@@ -50,6 +54,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncActions.Add("BuildEngine_PublishProduct", BuildEnginePublishProductAsync);
             _asyncActions.Add("GooglePlay_UpdatePublishLink", NoOperationAsync);
             _asyncActions.Add("SendReviewerLinkToProductFiles", SendReviewerLinkToProductFilesAsync);
+            _asyncActions.Add("Build_SetStatus", BuildSetStatusAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
             //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync);
@@ -58,10 +63,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncConditions.Add("BuildEngine_BuildFailed", BuildEngineBuildFailed);
             _asyncConditions.Add("BuildEngine_PublishCompleted", BuildEnginePublishCompleted);
             _asyncConditions.Add("BuildEngine_PublishFailed", BuildEnginePublishFailed);
+            _asyncConditions.Add("Build_AnyMatchingStatus", BuildAnyMatchingStatus);
 
             _conditions.Add("Should_Execute_Activity", ShouldExecuteActivity);
         }
-
 
         private async Task NoOperationAsync(ProcessInstance arg1, WorkflowRuntime arg2, string arg3, CancellationToken arg4)
         {
@@ -194,6 +199,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
+        private async Task<bool> BuildAnyMatchingStatus(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                var parmsDict = GetActionParameters(actionParameter);
+                if (parmsDict.ContainsKey(GOOGLE_PLAY_UPLOADED))
+                {
+                    var workflowParams = GetWorkflowParameters(processInstance);
+                    if (workflowParams.ContainsKey(ENVIRONMENT))
+                    {
+                        var environment = workflowParams[ENVIRONMENT] as Dictionary<string, object>;
+                        return environment.ContainsKey(PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID);
+                    }
+                    return false;
+                }
+                else
+                {
+                    throw new Exception($"Product {product.Id.ToString()}: unknown workflow action parameter: {actionParameter}");
+                }
+            }
+        }
+
         //
         // Actions
         //
@@ -280,7 +309,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
 
             return result;
-         }
+        }
+        private static void SetWorkflowParameter(ProcessInstance processInstance, string name, object value, ParameterPurpose purpose)
+        {
+            var json = JsonConvert.SerializeObject(value);
+            processInstance.SetParameter(name, json, purpose);
+        }
 
 
         private static Dictionary<string, object> GetParameters(ProcessInstance processInstance, string actionParameters)
@@ -347,7 +381,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 }
                 else
                 {
-                    throw new Exception($"Product {product.Id.ToString()}: Types not found in workflow action parameters");
+                    throw new Exception($"Product {product.Id}: Types not found in workflow action parameters");
+                }
+            }
+        }
+
+        private async Task BuildSetStatusAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                var parmsDict = GetActionParameters(actionParameter);
+                if (parmsDict.ContainsKey(GOOGLE_PLAY_UPLOADED))
+                {
+                    var service = scope.ServiceProvider.GetRequiredService<BuildEngineBuildService>();
+                    var versionCode = await service.GetVersionCodeAsync(product.Id);
+                    var environment = new Dictionary<string, object>();
+                    environment.Add(PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID, product.WorkflowBuildId.ToString());
+                    environment.Add(PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE, versionCode.ToString());
+                    SetWorkflowParameter(processInstance, ENVIRONMENT, environment, ParameterPurpose.Persistence);
+                }
+                else
+                {
+                    throw new Exception($"Product {product.Id}: unknown workflow action parameter: {actionParameter}");
                 }
             }
         }
