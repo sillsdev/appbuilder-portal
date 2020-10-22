@@ -452,5 +452,37 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
             return updatedArtifact.LastModified;
         }
+
+        public async Task<int> GetVersionCodeAsync(Guid productId)
+        {
+            var product = await ProductRepository.Get()
+                                                 .Where(p => p.Id == productId)
+                                                 .Include(p => p.Project)
+                                                 .ThenInclude(pr => pr.Organization)
+                                                 .FirstOrDefaultAsync();
+            if ((product == null) || (product.WorkflowJobId == 0) || (product.WorkflowBuildId == 0))
+            {
+                return 0;
+            }
+
+            var productBuild = await ProductBuildRepository.Get()
+                .Where(pb => pb.ProductId == product.Id && pb.BuildId == product.WorkflowBuildId)
+                .FirstOrDefaultAsync();
+            if (productBuild == null) { return 0; }
+
+            var versionCodeArtifact = await ProductArtifactRepository
+                .Get().Where(a => a.ProductId == product.Id && a.ProductBuildId == productBuild.Id && a.ArtifactType == "version")
+                .FirstOrDefaultAsync();
+
+            var versionJson = WebClient.DownloadString(versionCodeArtifact.Url);
+            var version = JsonConvert.DeserializeObject<Dictionary<string, object>>(versionJson);
+            if (version.ContainsKey("versionCode"))
+            {
+                var versionCode = version["versionCode"] as String;
+                return int.Parse(versionCode);
+            }
+
+            return 0;
+        }
     }
 }

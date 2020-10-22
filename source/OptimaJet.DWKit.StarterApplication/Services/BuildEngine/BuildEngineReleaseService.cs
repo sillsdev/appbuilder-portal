@@ -51,7 +51,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         public async Task CreateReleaseAsync(Guid productId, Dictionary<string, object> paramsDictionary, PerformContext context)
         {
-            var product = await ProductRepository.Get()
+                var product = await ProductRepository.Get()
                                                  .Where(p => p.Id == productId)
                                                  .Include(p => p.ProductDefinition)
                                                  .Include(p => p.Project)
