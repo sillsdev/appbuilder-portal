@@ -562,5 +562,9 @@
       },
       "redemptionTitle": "Buscando invitación..."
     }
+  },
+  "system": {
+    "build-failed": "Build failed",
+    "publish-failed": "Publish failed"
   }
 }
