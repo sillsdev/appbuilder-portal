@@ -291,7 +291,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="1080" Y="560" />
+      <Designer X="1080" Y="580" />
     </Activity>
     <Activity Name="App Store Preview" State="App Store Preview" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -330,7 +330,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
-      <Designer X="740" Y="900" />
+      <Designer X="760" Y="920" />
     </Activity>
     <Activity Name="Check Product Publish" State="Check Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
@@ -387,6 +387,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     </Activity>
     <Activity Name="Terminated" State="Terminated" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Designer X="1320" Y="270" />
+    </Activity>
+    <Activity Name="Set Google Play Uploaded" State="Set Google Play Uploaded" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </ActionRef>
+        <ActionRef Order="2" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="170" Y="890" />
     </Activity>
   </Activities>
   <Transitions>
@@ -516,7 +528,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="478" Y="673" />
     </Transition>
-    <Transition Name="Create App Store Entry_Activity_1_1" To="Verify and Publish" From="Create App Store Entry" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Create App Store Entry_Activity_1_1" To="Set Google Play Uploaded" From="Create App Store Entry" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
       </Restrictions>
@@ -526,7 +538,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer />
+      <Designer X="268" Y="833" />
     </Transition>
     <Transition Name="Verify and Publish_Activity_1_1" To="Product Publish" From="Verify and Publish" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -550,7 +562,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="689" Y="674" />
+      <Designer X="719" Y="683" />
     </Transition>
     <Transition Name="Product Publish_Activity_1_1" To="Check Product Publish" From="Product Publish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -714,8 +726,32 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Triggers>
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="true" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </Condition>
       </Conditions>
       <Designer />
+    </Transition>
+    <Transition Name="Google Play Upload_Verify and Publish_1" To="Verify and Publish" From="Set Google Play Uploaded" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" NameRef="" ConditionInversion="false" />
+      </Conditions>
+      <Designer X="395" Y="853" />
+    </Transition>
+    <Transition Name="Skip_Create_App_Entry_If_Already_Uploaded" To="Verify and Publish" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false" ResultOnPreExecution="false">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer X="816" Y="808" />
     </Transition>
   </Transitions>
 </Process>')
@@ -880,6 +916,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="420" Y="160" />
     </Activity>
+    <Activity Name="Set Google Play Uploaded" State="Set Google Play Uploaded" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </ActionRef>
+        <ActionRef Order="2" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="120" Y="860" />
+    </Activity>
   </Activities>
   <Transitions>
     <Transition Name="Job Creation_Activity_1_1" To="Check Product Creation" From="Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
@@ -972,7 +1020,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="478" Y="673" />
     </Transition>
-    <Transition Name="Create App Store Entry_Activity_1_1" To="Verify and Publish" From="Create App Store Entry" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Create App Store Entry_Activity_1_1" To="Set Google Play Uploaded" From="Create App Store Entry" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="OrgAdmin" />
       </Restrictions>
@@ -982,7 +1030,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer />
+      <Designer X="240" Y="805" />
     </Transition>
     <Transition Name="Verify and Publish_Activity_1_1" To="Product Publish" From="Verify and Publish" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1098,6 +1146,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Triggers>
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="true" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </Condition>
       </Conditions>
       <Designer X="1018" Y="703" />
     </Transition>
@@ -1113,13 +1164,34 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Set Google Play Uploaded_Verify and Publish_1" To="Verify and Publish" From="Set Google Play Uploaded" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="371" Y="875" />
+    </Transition>
+    <Transition Name="Check Product Build_Verify and Publish_1" To="Verify and Publish" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false" ResultOnPreExecution="false">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer X="827" Y="738" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 	
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
-('SIL_OwnerAdmin_AppBuilders_Android_GooglePlay',	'<Process Name="SIL_OwnerAdmin_AppBuilders_Android_GooglePlay" CanBeInlined="false">
+('SIL_OwnerAdmin_AppBuilders_Android_GooglePlay', '<Process Name="SIL_OwnerAdmin_AppBuilders_Android_GooglePlay" CanBeInlined="false">
   <Designer />
   <Actors>
     <Actor Name="Owner" Rule="IsOwner" Value="" />
@@ -1276,6 +1348,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="420" Y="160" />
     </Activity>
+    <Activity Name="Set Google Play Uploaded" State="Set Google Play Uploaded" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </ActionRef>
+        <ActionRef Order="2" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="130" Y="840" />
+    </Activity>
   </Activities>
   <Transitions>
     <Transition Name="Job Creation_Activity_1_1" To="Check Product Creation" From="Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
@@ -1368,7 +1452,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="478" Y="673" />
     </Transition>
-    <Transition Name="Create App Store Entry_Activity_1_1" To="Verify and Publish" From="Create App Store Entry" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+    <Transition Name="Create App Store Entry_Activity_1_1" To="Set Google Play Uploaded" From="Create App Store Entry" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
@@ -1378,7 +1462,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer />
+      <Designer X="258" Y="794" />
     </Transition>
     <Transition Name="Verify and Publish_Activity_1_1" To="Product Publish" From="Verify and Publish" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1494,6 +1578,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Triggers>
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="true" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </Condition>
       </Conditions>
       <Designer X="1018" Y="703" />
     </Transition>
@@ -1506,6 +1593,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Triggers>
       <Conditions>
         <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Set Google Play Uploaded_Verify and Publish_1" To="Verify and Publish" From="Set Google Play Uploaded" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="415" Y="855" />
+    </Transition>
+    <Transition Name="Check Product Build_Verify and Publish_1" To="Verify and Publish" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false" ResultOnPreExecution="false">
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+        </Condition>
       </Conditions>
       <Designer />
     </Transition>
