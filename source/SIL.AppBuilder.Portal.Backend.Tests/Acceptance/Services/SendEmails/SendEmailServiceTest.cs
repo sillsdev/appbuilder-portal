@@ -278,10 +278,14 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             sendEmailService.SendProductReviewEmail(product1.Id, parmsDict);
             var emails = ReadTestData<AppDbContext, Email>();
             Assert.Equal(2, emails.Count);
-            var expectedContent = "{\"Links\":\"<p><a href = http://www.test.com/testfile.apk>apk</a></p><p><a href = http://www.test.com/listing.txt>play-listing</a></p>\",\"Message\":\"<p>Please review TestProd1 for project Test Project1.</p><p>The links below will connect you with the product files to be reviewed:</p>\"}";
+            var expectedContent = "{\"Links\":\"<p><a href = http://www.test.com/testfile.apk>apk</a></p><p><a href = http://www.test.com/listing.txt>play-listing</a></p>\",\"Message\":\"<p>David Moore,</p><p>You have been asked to review the following app:<br>Project: Test Project1<br>Product: TestProd1</p><p>Here are the product files to be reviewed:<br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;testfile.apk>apk</a><br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;listing.txt>play-listing</a> </p><p>Send feedback to: Test Testenson1 (test-email1@test.test)</p>\"}";
+            var expectedContent2 = "{\"Links\":\"<p><a href = http://www.test.com/testfile.apk>apk</a></p><p><a href = http://www.test.com/listing.txt>play-listing</a></p>\",\"Message\":\"<p>Chris Hubbard,</p><p>You have been asked to review the following app:<br>Project: Test Project1<br>Product: TestProd1</p><p>Here are the product files to be reviewed:<br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;testfile.apk>apk</a><br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;listing.txt>play-listing</a> </p><p>Send feedback to: Test Testenson1 (test-email1@test.test)</p>\"}";
             Assert.Equal(expectedContent, emails[0].ContentModelJson);
+            Assert.Equal(expectedContent2, emails[1].ContentModelJson);
             Assert.Equal("ReviewProduct.txt", emails[0].ContentTemplate);
-            Assert.Equal("Scriptoria: TestProd1 Test Project1 Ready for Review", emails[0].Subject);
+            Assert.Equal("Test Project1 app - ready for review", emails[0].Subject);
+            Assert.Equal("david_moore1@sil.org", emails[0].To);
+            Assert.Equal("chris_hubbard@sil.org", emails[1].To);
         }
         [Fact]
         public void SendRejectEmail()
