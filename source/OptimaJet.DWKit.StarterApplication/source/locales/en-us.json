@@ -32,7 +32,7 @@
       "releaseFailedOwner": "<p>Publish for product: {{productName}} project {{projectName}} failed.</p><p>Project URL: {{projectUrl}}</p><p> The organization administrator has been notified of this issue.</p>",
       "releaseFailedAdmin": "<p>Publish for product: {{productName}} project {{projectName}} failed.</p><p>Project URL: {{projectUrl}}</p><p>Diagnostic information for Super Admins:</p><ul><li>BuildEngineUrl: {{buildEngineUrl}}</li><li>ProjectId: {{projectId}} </li><li>JobId: {{jobId}} </li><li> BuildId: {{buildId}}</li><li>PublishId: {{publishId}} </li></ul>",
       "releaseProductRecordNotFound": "<p>Release Failed: Unable to find product record with id: {{productId}}</p>",
-      "reviewProduct": "<p>Please review {{productName}} for project {{projectName}}.</p><p>The links below will connect you with the product files to be reviewed:</p>",
+      "reviewProduct": "<p>{{reviewerName}},</p><p>You have been asked to review the following app:<br>Project: {{projectName}}<br>Product: {{productName}}</p><p>Here are the product files to be reviewed:<br><a href = {{apkUrl}}>apk</a><br><a href = {{playListingUrl}}>play-listing</a> </p><p>Send feedback to: {{ownerName}} ({{ownerEmail}})</p>",
       "rejectionEmail":  "<p>The organization administrator has returned {{projectName}} to state {{newState}} from state {{previousState}} with the following comment:<br><br>{{comment}}</p>",
       "recordNotFound":  "<p>Task {{taskName}} Failed: Unable to find record:</p><ul><li>recordName={{recordName}}</li><li>id={{recordId}}</li></ul>"
     },
@@ -67,7 +67,7 @@
       "releaseFailedOwner": "Scriptoria: Publish {{projectName}} {{productName}} Failed",
       "releaseFailedAdmin": "Scriptoria: Publish {{projectName}} {{productName}} Failed",
       "releaseProductRecordNotFound": "Scriptoria: Release Failed: Product {{productId}}",
-      "reviewProduct": "Scriptoria: {{productName}} {{projectName}} Ready for Review",
+      "reviewProduct": "{{projectName}} app - ready for review",
       "rejectionEmail":  "Scriptoria: {{projectName}} {{productName}} Returned",
       "recordNotFound":  "Scriptoria: Task {{taskName}} Failed"
 

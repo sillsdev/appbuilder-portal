@@ -67,6 +67,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .Include(p => p.ProductDefinition)
                 .Include(p => p.Project)
                     .ThenInclude(pr => pr.Reviewers)
+                .Include(p => p.Project)
+                    .ThenInclude(pr => pr.Owner)
                 .Include(p => p.ProductBuilds)
                     .ThenInclude(pb => pb.ProductArtifacts)
                 .FirstOrDefaultAsync();
@@ -76,21 +78,40 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 // Create a list of names/urls for all artifacts for this build
                 var links = BuildLinks(parmsDict, lastBuildRecord);
-                await SendEmailToReviewersAsync(product, links);
+                await SendEmailToReviewersAsync(product, links, lastBuildRecord);
             }
         }
-        protected async Task SendEmailToReviewersAsync(Product product, string links)
+        protected async Task SendEmailToReviewersAsync(Product product, string links, ProductBuild productBuild)
         {
+            var apkUrl = "";
+            var apkArtifact = productBuild.ProductArtifacts.Find(a => a.ArtifactType == "apk");
+            if (apkArtifact != null)
+            {
+                apkUrl = apkArtifact.Url;
+            }
+            var playListingUrl = "";
+            var playListingArtifact = productBuild.ProductArtifacts.Find(a => a.ArtifactType == "play-listing");
+            if (playListingArtifact != null)
+            {
+                playListingUrl = playListingArtifact.Url;
+            }
             var subsDictionary = new Dictionary<string, object>
                     {
                         {"productName", product.ProductDefinition.Name},
-                        {"projectName", product.Project.Name}
+                        {"projectName", product.Project.Name},
+                        {"links", links},
+                        {"ownerName", product.Project.Owner.Name},
+                        {"ownerEmail", product.Project.Owner.Email},
+                        {"apkUrl", apkUrl},
+                        {"playListingUrl", playListingUrl}
                     };
+
             var reviewers = product.Project.Reviewers;
             if (reviewers != null)
             {
                 foreach (var reviewer in reviewers)
                 {
+                    subsDictionary["reviewerName"] = reviewer.Name;
                     dynamic contentModel = new System.Dynamic.ExpandoObject();
                     contentModel.Links = links;
                     await SendEmailAsync(reviewer.Email,
