@@ -34,7 +34,7 @@ export default compose(
 
     return {
       list: (stores || [])
-        .sort(compareVia((a) => attributesFor(a).name || ''.toLowerCase()))
+        .sort(compareVia((a) => (attributesFor(a).name || '').toLowerCase()))
         .filter((store) => {
           return idFor(relationshipFor(store, 'storeType')) === ofStoreType.id;
         })
