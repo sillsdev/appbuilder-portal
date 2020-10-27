@@ -71,6 +71,7 @@
   },
   "header": {
     "myProfile": "My Profile",
+    "community": "Community",
     "help": "Help",
     "signOut": "Sign out",
     "clearAll": "Clear All",
