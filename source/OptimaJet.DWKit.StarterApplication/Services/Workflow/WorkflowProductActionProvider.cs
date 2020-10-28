@@ -13,10 +13,9 @@ using System.Threading.Tasks;
 using OptimaJet.DWKit.StarterApplication.Services.BuildEngine;
 using Hangfire;
 using OptimaJet.DWKit.Application;
-using OptimaJet.DWKit.Core.Model;
-using OptimaJet.DWKit.Core;
 using OptimaJet.DWKit.StarterApplication.Utility;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
@@ -211,7 +210,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     var workflowParams = GetWorkflowParameters(processInstance);
                     if (workflowParams.ContainsKey(ENVIRONMENT))
                     {
-                        var environment = workflowParams[ENVIRONMENT] as Dictionary<string, object>;
+                        var environment = workflowParams[ENVIRONMENT] as JObject;
                         return environment.ContainsKey(PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID);
                     }
                     return false;
