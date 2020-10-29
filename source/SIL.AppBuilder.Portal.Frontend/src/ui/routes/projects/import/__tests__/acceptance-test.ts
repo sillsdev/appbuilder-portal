@@ -85,7 +85,7 @@ const scenarios = {
           id: '1',
           type: 'application-types',
           attributes: {
-            name: 'readingappbuilder',
+            name: 'scriptureappbuilder',
             description: 'Scripture App Builder',
           },
         },
@@ -93,7 +93,7 @@ const scenarios = {
           id: '2',
           type: 'application-types',
           attributes: {
-            name: 'scriptureappbuilder',
+            name: 'readingappbuilder',
             description: 'Reading App Builder',
           },
         },
@@ -101,6 +101,28 @@ const scenarios = {
       meta: {
         'total-records': 2,
       },
+    };
+  },
+  groups() {
+    return {
+      data: [
+        {
+          id: 1,
+          type: 'groups',
+          attributes: { name: 'Group 1' },
+          relationships: {
+            owner: { data: { id: 1, type: 'organizations' } },
+          },
+        },
+      ],
+      included: [
+        {
+          id: 1,
+          type: 'organizations',
+          attributes: { name: 'SIL' },
+          relationships: {},
+        },
+      ],
     };
   },
   importFile() {
@@ -162,6 +184,7 @@ describe('Acceptance | Import Projects', () => {
 
       beforeEach(function() {
         this.mockGet(200, '/application-types', scenarios.applicationTypes());
+        this.mockGet(200, '/groups?include=owner', scenarios.groups());
         this.server.get('/assets/language/langtags.json').intercept((req, res) => {
           res.status(200);
           res.json([
