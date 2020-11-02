@@ -309,12 +309,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             return result;
         }
-        private static void SetWorkflowParameter(ProcessInstance processInstance, string name, object value, ParameterPurpose purpose)
-        {
-            var json = JsonConvert.SerializeObject(value);
-            processInstance.SetParameter(name, json, purpose);
-        }
 
+        private static void MergeWorkflowParameter(ProcessInstance processInstance, string name, JObject value)
+        {
+            var workflowParams = GetWorkflowParameters(processInstance);
+            JObject newParams = value;
+            if (workflowParams.ContainsKey(name))
+            {
+                newParams = workflowParams[name] as JObject;
+                newParams.Merge(value, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Merge });
+            }
+            var json = JsonConvert.SerializeObject(newParams);
+            processInstance.SetParameter(name, json, ParameterPurpose.Persistence);
+        }
 
         private static Dictionary<string, object> GetParameters(ProcessInstance processInstance, string actionParameters)
         {
@@ -396,10 +403,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     var service = scope.ServiceProvider.GetRequiredService<BuildEngineBuildService>();
                     var versionCode = await service.GetVersionCodeAsync(product.Id);
-                    var environment = new Dictionary<string, object>();
+                    var environment = new JObject();
                     environment.Add(PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID, product.WorkflowBuildId.ToString());
                     environment.Add(PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE, versionCode.ToString());
-                    SetWorkflowParameter(processInstance, ENVIRONMENT, environment, ParameterPurpose.Persistence);
+                    MergeWorkflowParameter(processInstance, ENVIRONMENT, environment);
                 }
                 else
                 {
