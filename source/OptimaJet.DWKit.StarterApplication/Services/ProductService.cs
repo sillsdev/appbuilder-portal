@@ -406,22 +406,30 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         /// <returns></returns>
         public async Task<ProductArtifact> GetPublishedFile(Guid id, String type)
         {
-            var publication = await ProductPublicationsRepository.Get()
+            var publications = await ProductPublicationsRepository.Get()
                 .Where(pp => pp.ProductId == id && pp.Success == true)
                 .Include(pp => pp.ProductBuild)
                     .ThenInclude(pb => pb.ProductArtifacts)
                 .OrderByDescending(p => p.Id)
-                .FirstOrDefaultAsync();
-            if (publication == null || publication.ProductBuild.ProductArtifacts == null)
+                .ToListAsync();
+            foreach(var publication in publications)
             {
-                // Return null if product has not been successfully published
-                return null;
-            }
-            var artifact = publication.ProductBuild.ProductArtifacts
-                .Where(pa => pa.ArtifactType == type)
-                .FirstOrDefault();
+                if (publication == null || publication.ProductBuild.ProductArtifacts == null)
+                {
+                    continue;
+                }
+                var artifact = publication.ProductBuild.ProductArtifacts
+                    .Where(pa => pa.ArtifactType == type)
+                    .FirstOrDefault();
 
-            return artifact;
+                if (artifact != null)
+                {
+                    return artifact;
+                }
+            }
+
+            // Return null if product has not been successfully published
+            return null;
         }
     }
 }
