@@ -336,7 +336,7 @@
       },
       "organizationDownloads": {
         "title": "Allow Other Organizations to download",
-        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files be able to download the outputs of the products"
+        "description": "When this setting is on, any Scriptoria User that is able to view your project in the Directory will be able to download the Product Files (the outputs of the products)."
       },
       "visibility": {
         "title": "Public Visibility",
