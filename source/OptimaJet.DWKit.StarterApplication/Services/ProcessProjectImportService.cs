@@ -104,7 +104,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             foreach (var importProject in importData.Projects)
             {
                 var project = await projectRepository.Get()
-                    .Where(p => p.Name == importProject.Name)
+                    .Where(p => p.Name == importProject.Name && p.OrganizationId == projectImport.OrganizationId.Value)
                     .Include(p => p.Products)
                     .FirstOrDefaultAsync();
                 if (project == null)
