@@ -5,6 +5,7 @@ class TransitionDetailsModalInteractor {
 
   isVisible = hasClass('visible');
   closePopup = clickable('[data-test-transition-details-close]');
+  storeName = text('[data-test-product-store-name] span');
   details = collection('[data-test-transition-details-record]', {
     state: text('[data-test-transition-state] span'),
     user: text('[data-test-transition-user] span'),

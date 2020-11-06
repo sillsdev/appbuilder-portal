@@ -306,6 +306,7 @@
       },
       "transitions": {
         "productDetails": "Product Details",
+        "storeName": "Store Name",
         "state": "State",
         "user": "User",
         "command": "Command",

@@ -98,6 +98,15 @@ const scenarios = {
           'product-definition': { data: { type: 'product-definitions', id: 1 } },
           project: { data: { type: 'projects', id: 1 } },
           productBuilds: { data: [] },
+          store: { data: { type: 'stores', id: 1 } },
+        },
+      },
+      {
+        type: 'stores',
+        id: 1,
+        attributes: {
+          description: 'Test Store',
+          name: 'test_store',
         },
       },
     ],
@@ -119,6 +128,7 @@ const scenarios = {
           'product-definition': { data: { type: 'product-definitions', id: 1 } },
           project: { data: { type: 'projects', id: 1 } },
           productBuilds: { data: [{ type: 'product-build', id: 1 }] },
+          store: { data: { type: 'stores', id: 1 } },
         },
       },
       {
@@ -129,6 +139,14 @@ const scenarios = {
         },
         relationships: {
           product: { data: { type: 'product', id: 1 } },
+        },
+      },
+      {
+        type: 'stores',
+        id: 1,
+        attributes: {
+          description: 'Test Store',
+          name: 'test_store',
         },
       },
     ],
@@ -150,6 +168,7 @@ const scenarios = {
           'product-definition': { data: { type: 'product-definitions', id: 1 } },
           project: { data: { type: 'projects', id: 1 } },
           productBuilds: { data: [{ type: 'product-build', id: 1 }] },
+          store: { data: { type: 'stores', id: 1 } },
         },
       },
       {
@@ -160,6 +179,14 @@ const scenarios = {
         },
         relationships: {
           product: { data: { type: 'product', id: 1 } },
+        },
+      },
+      {
+        type: 'stores',
+        id: 1,
+        attributes: {
+          description: 'Test Store',
+          name: 'test_store',
         },
       },
     ],
@@ -182,6 +209,7 @@ const scenarios = {
           project: { data: { type: 'projects', id: 1 } },
           productBuilds: { data: [{ type: 'product-build', id: 1 }] },
           productPublications: { data: [{ type: 'product-publication', id: 1 }] },
+          store: { data: { type: 'stores', id: 1 } },
         },
       },
       {
@@ -212,6 +240,14 @@ const scenarios = {
           productBuild: { data: { type: 'product-build', id: 1 } },
         },
       },
+      {
+        type: 'stores',
+        id: 1,
+        attributes: {
+          description: 'Test Store',
+          name: 'test_store',
+        },
+      },
     ],
   },
   oneBuildPublishInProgress: {
@@ -231,6 +267,7 @@ const scenarios = {
           project: { data: { type: 'projects', id: 1 } },
           productBuilds: { data: [{ type: 'product-build', id: 1 }] },
           productPublications: { data: [{ type: 'product-publication', id: 1 }] },
+          store: { data: { type: 'stores', id: 1 } },
         },
       },
       {
@@ -256,6 +293,14 @@ const scenarios = {
         relationships: {
           product: { data: { type: 'product', id: 1 } },
           productBuild: { data: { type: 'product-build', id: 1 } },
+        },
+      },
+      {
+        type: 'stores',
+        id: 1,
+        attributes: {
+          description: 'Test Store',
+          name: 'test_store',
         },
       },
     ],

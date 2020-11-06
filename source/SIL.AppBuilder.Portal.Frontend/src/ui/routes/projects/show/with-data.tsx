@@ -30,6 +30,7 @@ export function withData(WrappedComponent) {
             'products.user-tasks.user',
             // 'products.user-tasks.product.product-definition.workflow',
             'products.product-definition',
+            'products.store',
             // 'products.product-workflow',
             'organization.organization-product-definitions.product-definition.workflow.store-type',
             'group',
