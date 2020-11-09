@@ -381,6 +381,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
                 var parmsDict = GetParameters(processInstance, actionParameter);
+                if (!String.IsNullOrEmpty(product.WorkflowComment))
+                {
+                    parmsDict.Add("Comment", product.WorkflowComment);
+                }
                 if (parmsDict.ContainsKey("types"))
                 {
                     BackgroundJobClient.Enqueue<SendEmailService>(s => s.SendProductReviewEmail(product.Id, parmsDict));

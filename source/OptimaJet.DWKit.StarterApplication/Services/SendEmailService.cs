@@ -78,16 +78,27 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             {
                 // Create a list of names/urls for all artifacts for this build
                 var links = BuildLinks(parmsDict, lastBuildRecord);
-                await SendEmailToReviewersAsync(product, links, lastBuildRecord);
+                object value = null;
+                string comment = "";
+                if (parmsDict.TryGetValue("Comment", out value))
+                {
+                    comment = value.ToString();
+                }
+                await SendEmailToReviewersAsync(product, links, comment, lastBuildRecord);
             }
         }
-        protected async Task SendEmailToReviewersAsync(Product product, string links, ProductBuild productBuild)
+        protected async Task SendEmailToReviewersAsync(Product product, string links, string comment, ProductBuild productBuild)
         {
             var apkUrl = "";
             var apkArtifact = productBuild.ProductArtifacts.Find(a => a.ArtifactType == "apk");
             if (apkArtifact != null)
             {
                 apkUrl = apkArtifact.Url;
+            }
+            var messageId = "reviewProduct";
+            if (!String.IsNullOrEmpty(comment))
+            {
+                messageId = "reviewProductWithComment";
             }
             var playListingUrl = "";
             var playListingArtifact = productBuild.ProductArtifacts.Find(a => a.ArtifactType == "play-listing");
@@ -103,7 +114,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                         {"ownerName", product.Project.Owner.Name},
                         {"ownerEmail", product.Project.Owner.Email},
                         {"apkUrl", apkUrl},
-                        {"playListingUrl", playListingUrl}
+                        {"playListingUrl", playListingUrl},
+                        {"comment", comment}
                     };
 
             var reviewers = product.Project.Reviewers;
@@ -116,7 +128,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     contentModel.Links = links;
                     await SendEmailAsync(reviewer.Email,
                                          reviewer.LocaleOrDefault(),
-                                         "reviewProduct",
+                                         messageId,
                                          subsDictionary,
                                          contentModel,
                                          "ReviewProduct.txt");
