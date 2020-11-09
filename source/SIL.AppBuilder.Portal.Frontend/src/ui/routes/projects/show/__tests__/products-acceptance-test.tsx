@@ -65,6 +65,7 @@ describe('Acceptance | Project View | Products', () => {
               relationships: {
                 'product-definition': { data: { type: 'product-definitions', id: 1 } },
                 project: { data: { type: 'projects', id: 1 } },
+                store: { data: { type: 'stores', id: 1 } },
               },
             },
             {
@@ -146,6 +147,14 @@ describe('Acceptance | Project View | Products', () => {
               attributes: {},
               relationships: {},
             },
+            {
+              type: 'stores',
+              id: 1,
+              attributes: {
+                description: 'Test Store',
+                name: 'test_store',
+              },
+            },
           ],
         },
         requestCustomizer
@@ -166,8 +175,19 @@ describe('Acceptance | Project View | Products', () => {
             relationships: {
               project: { data: { id: 1, type: 'projects' } },
               'product-definition': { data: { id: 2, type: 'product-definitions' } },
+              store: { data: { type: 'stores', id: 1 } },
             },
           },
+          included: [
+            {
+              type: 'stores',
+              id: 1,
+              attributes: {
+                description: 'Test Store',
+                name: 'test_store',
+              },
+            },
+          ],
         },
         requestCustomizer
       );
@@ -285,6 +305,7 @@ describe('Acceptance | Project View | Products', () => {
             relationships: {
               'product-definition': { data: { type: 'product-definitions', id: 1 } },
               project: { data: { type: 'projects', id: 1 } },
+              store: { data: { type: 'stores', id: 1 } },
             },
           },
           {
@@ -319,6 +340,14 @@ describe('Acceptance | Project View | Products', () => {
             attributes: {
               description: 'Publish Android App to Google Play',
               name: 'android_amazon_app',
+            },
+          },
+          {
+            type: 'stores',
+            id: 1,
+            attributes: {
+              description: 'Test Store',
+              name: 'test_store',
             },
           },
         ],
@@ -441,6 +470,7 @@ describe('Acceptance | Project View | Products', () => {
             relationships: {
               'product-definition': { data: { type: 'product-definitions', id: 1 } },
               project: { data: { type: 'projects', id: 1 } },
+              store: { data: { type: 'stores', id: 1 } },
             },
           },
           {
@@ -456,6 +486,7 @@ describe('Acceptance | Project View | Products', () => {
             relationships: {
               'product-definition': { data: { type: 'product-definitions', id: 2 } },
               project: { data: { type: 'projects', id: 1 } },
+              store: { data: { type: 'stores', id: 1 } },
             },
           },
           {
@@ -490,6 +521,14 @@ describe('Acceptance | Project View | Products', () => {
             attributes: {
               description: 'Publish Android App to Google Play',
               name: 'android_amazon_app',
+            },
+          },
+          {
+            type: 'stores',
+            id: 1,
+            attributes: {
+              description: 'Test Store',
+              name: 'test_store',
             },
           },
         ],

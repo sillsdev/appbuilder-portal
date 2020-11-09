@@ -8,17 +8,21 @@ import moment from 'moment';
 
 import TransitionComment from './comment';
 
-import { idFromRecordIdentity } from '~/data';
+import { StoreResource, ProductResource, idFromRecordIdentity } from '~/data';
 
 import { get } from '~/lib/fetch';
 
-export default function TransitionDetails({ product }) {
+export interface IProps {
+  product: ProductResource;
+}
+export default function TransitionDetails({ product }: IProps) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
+
+  const store: StoreResource = dataStore.cache.query((q) => q.findRelatedRecord(product, 'store'));
   const [transitions, setTransitions] = useState([]);
   const { currentUser } = useCurrentUser();
   const { timezone } = attributesFor(currentUser);
-
   const productRemoteId = remoteIdentityFrom(dataStore, product).keys.remoteId;
 
   useEffect(() => {
@@ -64,6 +68,7 @@ export default function TransitionDetails({ product }) {
     }
     return userName;
   };
+
   const getFormattedDate = (dateTransition: string) => {
     let formattedDate = '';
     if (dateTransition) {
@@ -96,6 +101,16 @@ export default function TransitionDetails({ product }) {
     );
     return stateString;
   };
+  const getStoreName = (store: StoreResource) => {
+    let storeName = null;
+    if (store) {
+      const { name } = attributesFor(store);
+      if (name) {
+        storeName = name;
+      }
+    }
+    return storeName;
+  };
   return (
     <Modal
       data-test-transitions-modal
@@ -111,7 +126,15 @@ export default function TransitionDetails({ product }) {
     >
       <Modal.Header>{t('project.products.transitions.productDetails')}</Modal.Header>
       <Modal.Content>
-        <div className='flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md gray-text bold'>
+        <div data-test-product-store>
+          <div className='thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md gray-text bold'>
+            <span>{t('project.products.transitions.storeName')}</span>
+          </div>
+          <div data-test-product-store-name className='p-l-md p-t-sm p-b-sm p-r-md'>
+            <span>{getStoreName(store)}</span>
+          </div>
+        </div>
+        <div className='flex thin-bottom-border p-l-md p-t-md p-b-sm p-r-md gray-text bold'>
           <div className='flex-25'>
             <span>{t('project.products.transitions.state')}</span>
           </div>

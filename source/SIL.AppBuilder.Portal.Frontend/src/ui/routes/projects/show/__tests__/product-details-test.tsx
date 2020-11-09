@@ -64,6 +64,7 @@ describe('Acceptance | Project View | Products Details', () => {
           relationships: {
             'product-definition': { data: { type: 'product-definitions', id: 1 } },
             project: { data: { type: 'projects', id: 1 } },
+            store: { data: { type: 'stores', id: 1 } },
           },
         },
         {
@@ -98,6 +99,14 @@ describe('Acceptance | Project View | Products Details', () => {
           attributes: {
             description: 'Publish Android App to Google Play',
             name: 'android_amazon_app',
+          },
+        },
+        {
+          type: 'stores',
+          id: 1,
+          attributes: {
+            description: 'Test Store',
+            name: 'test_store',
           },
         },
       ],
@@ -297,6 +306,9 @@ describe('Acceptance | Project View | Products Details', () => {
     });
     it('has a button with Details text', () => {
       expect(page.productNamed('android_s3').detailsText).to.equal('Details');
+    });
+    it('has a store name displayed', () => {
+      expect(page.detailsModal.storeName).to.equal('test_store');
     });
     it('sets command', () => {
       expect(page.detailsModal.detailNamed('Readiness Check').command).to.equal('Continue');
