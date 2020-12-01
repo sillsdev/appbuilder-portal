@@ -8,8 +8,8 @@
 # Examples
 #
 #  On Travis CI
-#    ./scripts/build-api.sh $TRAVIS_COMMIT $TRAVI_BRANCH
-#    ./scripts/build-nginx.sh $TRAVIS_COMMIT $TRAVI_BRANCH
+#    ./scripts/build-api.sh $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_EVENT_TYPE
+#    ./scripts/build-nginx.sh $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_EVENT_TYPE
 #
 #  Locally
 #    LOCAL_BUILD=true ./scripts/build-api.sh
@@ -26,9 +26,11 @@ if [[ $LOCAL_BUILD == "true" ]]; then
 
   export CURRENT_VERSION=${1:-$git_version}
   export CURRENT_BRANCH=${2:-$git_branch}
+  export BUILD_TYPE=local
 else
   export CURRENT_VERSION=$1
   export CURRENT_BRANCH=$2
+  export BUILD_TYPE=$3
 fi
 
 echo "Starting Build for Commit: $CURRENT_VERSION"
@@ -49,8 +51,10 @@ esac
 
 # Are we going to deploy this C.I. run? If so, we need to tell the build scripts
 # to also push the images after building them.
-if [[ $CURRENT_BRANCH == *"develop"* ]] || [[ $CURRENT_BRANCH == *"master"* ]]; then
-  export PUSH_TO_DOCKER_REGISTRY='true'
+if [[ "$BUILD_TYPE" != "local" ]] && [[ "$BUILD_TYPE" != "pull_request" ]]; then
+  if [[ $CURRENT_BRANCH == *"develop"* ]] || [[ $CURRENT_BRANCH == *"master"* ]]; then
+    export PUSH_TO_DOCKER_REGISTRY='true'
+  fi
 fi
 
 

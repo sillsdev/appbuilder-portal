@@ -80,7 +80,7 @@ jobs:
       before_install:
         - sudo pip install --upgrade --force-reinstall pip==9.0.3
       script:
-        - time ./scripts/build-nginx.sh $TRAVIS_COMMIT $TRAVIS_BRANCH
+        - time ./scripts/build-nginx.sh $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_EVENT_TYPE
 
     - stage: "Build"
       name: "Build API"
@@ -94,7 +94,7 @@ jobs:
       before_install:
         - sudo pip install --upgrade --force-reinstall pip==9.0.3
       script:
-        - time ./scripts/build-api.sh $TRAVIS_COMMIT $TRAVIS_BRANCH
+        - time ./scripts/build-api.sh $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_EVENT_TYPE
 
 
     # - stage: "Security"
