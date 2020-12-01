@@ -26,10 +26,11 @@ export default class DataSocketClient extends Socket<DataHub> {
   start() {
     super.start();
 
-    this.onData$$ = this.hub.on<string>('RemoteDataHasUpdated').subscribe((json: string) => {
+    this.onData$$ = this.hub.on<string>('RemoteDataHasUpdated').subscribe(async (json: string) => {
       let data = JSON.parse(json);
 
       try {
+        await this.dataStore.requestQueue.process();
         dataToLocalCache(this.dataStore, data);
       } catch (e) {
         console.error(['received data from socket', data, e]);
