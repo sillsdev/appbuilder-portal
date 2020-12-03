@@ -24,10 +24,7 @@ function AppName() {
 
 export default function Header() {
   const dispatch = useDispatch();
-  const showSidebar = useCallback(
-    () => dispatch(showSidebarInStore()),
-    [dispatch]
-  );
+  const showSidebar = useCallback(() => dispatch(showSidebarInStore()), [dispatch]);
 
   return (
     <div data-test-header-menu className='ui menu menu-navbar'>

@@ -11,10 +11,7 @@ import {
 function Layout({ children }) {
   const isSidebarVisible = useSelector((state: any) => state.ui.isSidebarVisible);
   const dispatch = useDispatch();
-  const hideSidebar = useCallback(
-    () => dispatch(hideSidebarInStore()),
-    [dispatch]
-  );
+  const hideSidebar = useCallback(() => dispatch(hideSidebarInStore()), [dispatch]);
 
   const sidebarStatus = isSidebarVisible ? 'is-sidebar-visible' : 'is-sidebar-hidden';
 
