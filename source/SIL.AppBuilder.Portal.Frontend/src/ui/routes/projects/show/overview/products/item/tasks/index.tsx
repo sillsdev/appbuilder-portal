@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { useOrbit, attributesFor } from 'react-orbitjs';
+import { useOrbit, useCache, attributesFor } from 'react-orbitjs';
 import Store from '@orbit/store';
 import { Link } from 'react-router-dom';
 
@@ -37,6 +37,7 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   const { foundCurrentUser, workTask } = useCurrentUserTask({ product });
   const { isSuperAdmin } = useCurrentUser();
   const workflowAdminUrl = `${env.dwkit.adminUrl}/Account/Login/?ReturnUrl=/admin%3Fapanel%3Dworkflowinstances%26aid%3D${productRemoteId}`;
+  const { subscriptions: { userTasks } } = useCache({ userTasks: (q) => q.findRecords('userTask') });
   const getTransition = useCallback(async () => {
     let transition = null;
     let response = await authenticatedGet(`/api/products/${productRemoteId}/transitions/active`, {
@@ -84,7 +85,7 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   };
   return (
     <div className='w-100 p-sm p-b-md m-l-md fs-13'>
-      <AsyncWaiter fn={getTransition} sizeClass='m-t-sm m-b-sm'>
+      <AsyncWaiter fn={getTransition} deps={[productRemoteId, t, userTasks]} sizeClass='m-t-sm m-b-sm'>
         {({ value }) => {
           setTransition(value);
           let waitTime = '';

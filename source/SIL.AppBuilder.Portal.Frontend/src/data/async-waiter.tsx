@@ -6,11 +6,13 @@ import { PageLoader } from '~/ui/components/loaders';
 export function AsyncWaiter<Fn extends Function>({
   children,
   fn,
+  deps = [],
   loadingProps = {},
   sizeClass,
 }: {
   children?: any;
   fn: Fn;
+  deps?: any[];
   loadingProps?: any;
   sizeClass?: string;
 }) {
@@ -18,7 +20,7 @@ export function AsyncWaiter<Fn extends Function>({
     throw new Error(`Function passed to AsyncWaiter must not be falsey`);
   }
 
-  const state = useAsync(fn as any);
+  const state = useAsync(fn as any, deps);
   const { error, loading, value } = state;
 
   if (error) {
