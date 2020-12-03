@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { useCallback } from 'react';
 import CreateIcon from '@material-ui/icons/Create';
 import StoreIcon from '@material-ui/icons/Shop';
 import SyncIcon from '@material-ui/icons/Sync';
 import { useOrbit } from 'react-orbitjs';
-import { useRedux } from 'use-redux';
+import { useDispatch } from 'react-redux';
 
 import { attributesFor, idFromRecordIdentity, OrganizationResource } from '@data';
 
@@ -19,7 +20,6 @@ interface IOwnProps {
 export default function OrganizationItem({ organization }: IOwnProps) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
-  const [, dispatch] = useRedux();
 
   const owner = dataStore.cache.query((q) => q.findRelatedRecord(organization, 'owner'));
 
@@ -29,9 +29,11 @@ export default function OrganizationItem({ organization }: IOwnProps) {
 
   const remoteId = idFromRecordIdentity(organization as any);
 
-  const switchToOrg = () => {
-    dispatch(setCurrentOrganization(remoteId));
-  };
+  const dispatch = useDispatch();
+  const switchToOrg = useCallback(
+    () => dispatch(setCurrentOrganization(remoteId)),
+    [dispatch]
+  );
 
   return (
     <div className='flex p-md fs-13 m-b-sm thin-border round-border-4'>

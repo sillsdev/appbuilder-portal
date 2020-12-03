@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRedux } from 'use-redux';
+import { useDispatch } from 'react-redux';
 import { useOrbit } from 'react-orbitjs';
 import { deleteToken } from '@lib/auth0';
 
@@ -14,7 +14,7 @@ export interface IProvidedProps {
 }
 
 export function LogoutProvider({ children }) {
-  const [, dispatch] = useRedux();
+  const dispatch = useDispatch();
   const { dataStore } = useOrbit();
   const { history } = useRouter();
   const { refreshAuth } = useAuth();

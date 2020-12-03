@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useRedux } from 'use-redux';
+import { useSelector } from 'react-redux';
 import { every } from 'lodash';
 
 import { useTranslations } from '~/lib/i18n';
@@ -35,7 +35,7 @@ export const BulkButtons = withBulkActions<IExpectedProps>(function BulkButtons(
 }) {
   const { t } = useTranslations();
   const { location } = useRouter();
-  const [reduxState] = useRedux();
+  const reduxState = useSelector(x => x);
   const { dataStore } = useOrbit();
   const { currentUser } = useCurrentUser();
   const selectedRows = rowSelectionsFor(reduxState, tableName);
