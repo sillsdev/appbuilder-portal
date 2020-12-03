@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { useActionCreators, useSelectors } from 'use-redux';
+import { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Header from '@ui/components/header';
 import Sidebar from '@ui/components/sidebar';
 import {
@@ -8,8 +9,12 @@ import {
 } from '@store/user-interface';
 
 function Layout({ children }) {
-  const [isSidebarVisible] = useSelectors((state) => state.ui.isSidebarVisible);
-  const [hideSidebar] = useActionCreators(hideSidebarInStore);
+  const isSidebarVisible = useSelector((state: any) => state.ui.isSidebarVisible);
+  const dispatch = useDispatch();
+  const hideSidebar = useCallback(
+    () => dispatch(hideSidebarInStore()),
+    [dispatch]
+  );
 
   const sidebarStatus = isSidebarVisible ? 'is-sidebar-visible' : 'is-sidebar-hidden';
 

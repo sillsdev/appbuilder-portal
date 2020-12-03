@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useRedux } from 'use-redux';
+import { useSelector } from 'react-redux';
 
 import { rowSelectionsFor } from '~/redux-store/data/selectors';
 
@@ -36,7 +36,7 @@ interface IProps {
 
 export function ProductSelection({ tableName, onChange, onPermissionRetrieval }: IProps) {
   const { t } = useTranslations();
-  const [reduxState] = useRedux();
+  const reduxState = useSelector(x => x);
   const { dataStore } = useOrbit();
   const { isSelected, toggle, selected } = useSelectionManager();
   const selectedRows: ProjectResource[] = rowSelectionsFor(reduxState, tableName);

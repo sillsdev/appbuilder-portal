@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useActionCreators } from 'use-redux';
+import { useDispatch } from 'react-redux';
 import LocaleSwitch from '@ui/components/inputs/locale-switch';
 
 import Notifications from './notifications';
@@ -23,7 +23,11 @@ function AppName() {
 }
 
 export default function Header() {
-  const [showSidebar] = useActionCreators(showSidebarInStore);
+  const dispatch = useDispatch();
+  const showSidebar = useCallback(
+    () => dispatch(showSidebarInStore()),
+    [dispatch]
+  );
 
   return (
     <div data-test-header-menu className='ui menu menu-navbar'>

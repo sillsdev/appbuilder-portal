@@ -1,4 +1,4 @@
-import { useRedux } from 'use-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { setCurrentOrganization } from '~/redux-store/data';
 
@@ -23,8 +23,8 @@ export function useCurrentOrganization() {
   } = useOrbit({
     all: (q) => q.findRecords('organization'),
   });
-  const [store, dispatch] = useRedux();
-  const { currentOrganizationId } = store.data;
+  const dispatch = useDispatch();
+  const { currentOrganizationId } = useSelector((x: any) => x.data);
 
   const currentUserOrganizations = retrieveRelation(dataStore, [
     currentUser,

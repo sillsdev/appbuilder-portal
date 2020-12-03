@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useRedux } from 'use-redux';
+import { useSelector } from 'react-redux';
 
 import { rowSelectionsFor } from '~/redux-store/data/selectors';
 
@@ -29,7 +29,7 @@ import { ProductSelection } from './product-selection';
 
 export function BulkProductSelection({ disabled, tableName }) {
   const { t } = useTranslations();
-  const [reduxState] = useRedux();
+  const reduxState = useSelector(x => x);
   const { isOpen, close, open } = useModalState();
   const [selection, updateSelection] = useState([]);
   const [permissions, setPermissions] = useState({});
