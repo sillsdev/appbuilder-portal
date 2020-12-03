@@ -35,7 +35,7 @@ export const BulkButtons = withBulkActions<IExpectedProps>(function BulkButtons(
 }) {
   const { t } = useTranslations();
   const { location } = useRouter();
-  const reduxState = useSelector(x => x);
+  const reduxState = useSelector((x) => x);
   const { dataStore } = useOrbit();
   const { currentUser } = useCurrentUser();
   const selectedRows = rowSelectionsFor(reduxState, tableName);

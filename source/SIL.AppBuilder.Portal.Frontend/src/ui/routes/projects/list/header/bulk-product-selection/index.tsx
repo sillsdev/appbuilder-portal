@@ -29,7 +29,7 @@ import { ProductSelection } from './product-selection';
 
 export function BulkProductSelection({ disabled, tableName }) {
   const { t } = useTranslations();
-  const reduxState = useSelector(x => x);
+  const reduxState = useSelector((x) => x);
   const { isOpen, close, open } = useModalState();
   const [selection, updateSelection] = useState([]);
   const [permissions, setPermissions] = useState({});

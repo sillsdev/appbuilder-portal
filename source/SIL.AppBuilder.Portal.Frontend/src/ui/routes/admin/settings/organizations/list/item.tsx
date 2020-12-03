@@ -30,10 +30,7 @@ export default function OrganizationItem({ organization }: IOwnProps) {
   const remoteId = idFromRecordIdentity(organization as any);
 
   const dispatch = useDispatch();
-  const switchToOrg = useCallback(
-    () => dispatch(setCurrentOrganization(remoteId)),
-    [dispatch]
-  );
+  const switchToOrg = useCallback(() => dispatch(setCurrentOrganization(remoteId)), [dispatch]);
 
   return (
     <div className='flex p-md fs-13 m-b-sm thin-border round-border-4'>

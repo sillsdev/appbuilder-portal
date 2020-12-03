@@ -36,7 +36,7 @@ interface IProps {
 
 export function ProductSelection({ tableName, onChange, onPermissionRetrieval }: IProps) {
   const { t } = useTranslations();
-  const reduxState = useSelector(x => x);
+  const reduxState = useSelector((x) => x);
   const { dataStore } = useOrbit();
   const { isSelected, toggle, selected } = useSelectionManager();
   const selectedRows: ProjectResource[] = rowSelectionsFor(reduxState, tableName);
