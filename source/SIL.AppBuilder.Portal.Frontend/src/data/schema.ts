@@ -200,6 +200,25 @@ const schemaDefinition: SchemaSettings = {
         productActions: { type: 'hasOne', model: 'productAction', inverse: 'products' },
         productWorkflow: { type: 'hasOne', model: 'productWorkflow', inverse: 'products' },
         productPublications: { type: 'hasMany', model: 'productPublication', inverse: 'product' },
+        productTransitions: { type: 'hasMany', model: 'productTransition', inverse: 'product' },
+      },
+    },
+    productTransition: {
+      keys: { remoteId: {} },
+      attributes: {
+        allowedUserNames: { type: 'string' },
+        command: { type: 'string' },
+        comment: { type: 'string' },
+        dateStarted: { type: 'string' },
+        dateTransition: { type: 'string' },
+        destinationState: { type: 'string' },
+        initialState: { type: 'string' },
+        transitionType: { type: 'number' },
+        workflowType: { type: 'string' },
+        workflowUserId: { type: 'string' },
+      },
+      relationships: {
+        product: { type: 'hasOne', model: 'product', inverse: 'productTransitions' },
       },
     },
     productAction: {
