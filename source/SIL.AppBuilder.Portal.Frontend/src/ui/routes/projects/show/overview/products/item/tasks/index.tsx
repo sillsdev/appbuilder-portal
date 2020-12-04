@@ -1,8 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOrbit, useCache, attributesFor } from 'react-orbitjs';
 import Store from '@orbit/store';
 import { Link } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
+
+import { PageLoader } from '~/ui/components/loaders';
 
 import * as env from '@env';
 
@@ -19,8 +21,6 @@ import { useUserTaskHelpers } from '~/data/containers/resources/user-task';
 import { get as authenticatedGet } from '@lib/fetch';
 
 import { handleResponse } from '~/data/containers/with-current-user/fetcher';
-
-import { AsyncWaiter } from '~/data/async-waiter';
 
 import { useCurrentUserTask } from './with-data';
 
@@ -48,23 +48,26 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
       q.findRelatedRecords({ type: 'product', id: product.id }, 'productTransitions'),
   });
   const [productTransitions] = useDebounce(_productTransitions, 500);
-  const getTransition = useCallback(async () => {
-    let transition = null;
-    let response = await authenticatedGet(`/api/products/${productRemoteId}/transitions/active`, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        Pragma: 'no-cache',
-        Expires: 0,
-      },
-    });
-    try {
-      let json = await handleResponse(response, t);
-      transition = json.data;
-    } catch (e) {
-      console.debug('error occurred on handling transition response');
-    }
-    return transition;
-  }, [productRemoteId, t]);
+
+  useEffect(() => {
+    (async () => {
+      let response = await authenticatedGet(`/api/products/${productRemoteId}/transitions/active`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          Pragma: 'no-cache',
+          Expires: 0,
+        },
+      });
+      try {
+        let json = await handleResponse(response, t);
+        setTransition(json.data);
+      } catch (e) {
+        console.debug('error occurred on handling transition response');
+        setTransition(null);
+      }
+    })();
+  }, [productRemoteId, t, productTransitions]);
+
   const getWaitTime = (attributes, task, relativeTimeAgo, dataStore: Store) => {
     let waitTime = '';
     // Get wait time from user task if it exists, otherwise compute from transition
@@ -93,46 +96,36 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
     }
     return allowedNames;
   };
+
+  let waitTime = '';
+  let allowedNames = '';
+  let activityName = '';
+  if (transition) {
+    const attributes = attributesFor(transition);
+    activityName = attributes['initial-state'];
+    allowedNames = getAllowedNames(attributes);
+    waitTime = getWaitTime(attributes, workTask, relativeTimeAgo, dataStore);
+  }
   return (
     <div className='w-100 p-sm p-b-md m-l-md fs-13'>
-      <AsyncWaiter
-        fn={getTransition}
-        deps={[productRemoteId, t, productTransitions]}
-        sizeClass='m-t-sm m-b-sm'
-      >
-        {({ value }) => {
-          setTransition(value);
-          let waitTime = '';
-          let allowedNames = '';
-          let activityName = '';
-          if (transition) {
-            const attributes = attributesFor(transition);
-            activityName = attributes['initial-state'];
-            allowedNames = getAllowedNames(attributes);
-            waitTime = getWaitTime(attributes, workTask, relativeTimeAgo, dataStore);
-          }
-          return (
-            <div>
-              {transition && (
-                <div key={transition.id}>
-                  <span className='red-text'>{t('tasks.waiting', { waitTime })}</span>&nbsp;
-                  {t('tasks.forNames', { allowedNames, activityName })}
-                  {foundCurrentUser && (
-                    <Link className='m-l-md bold uppercase' to={pathToWorkflow(workTask)}>
-                      {t('common.continue')}
-                    </Link>
-                  )}
-                  {isSuperAdmin && (
-                    <a className='m-l-md bold uppercase' target='_blank' href={workflowAdminUrl}>
-                      {t('common.workflow')}
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        }}
-      </AsyncWaiter>
+      {transition ? (
+        <div key={transition.id}>
+          <span className='red-text'>{t('tasks.waiting', { waitTime })}</span>&nbsp;
+          {t('tasks.forNames', { allowedNames, activityName })}
+          {foundCurrentUser && (
+            <Link className='m-l-md bold uppercase' to={pathToWorkflow(workTask)}>
+              {t('common.continue')}
+            </Link>
+          )}
+          {isSuperAdmin && (
+            <a className='m-l-md bold uppercase' target='_blank' href={workflowAdminUrl}>
+              {t('common.workflow')}
+            </a>
+          )}
+        </div>
+      ) : (
+        <PageLoader sizeClass='m-t-sm m-b-sm' />
+      )}
     </div>
   );
 }
