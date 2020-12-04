@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useOrbit, useCache, attributesFor } from 'react-orbitjs';
 import Store from '@orbit/store';
 import { Link } from 'react-router-dom';
+import { useDebounce } from 'use-debounce';
 
 import * as env from '@env';
 
@@ -23,6 +24,8 @@ import { AsyncWaiter } from '~/data/async-waiter';
 
 import { useCurrentUserTask } from './with-data';
 
+import { useLiveData } from '~/data/live';
+
 interface IProps {
   product: ProductResource;
 }
@@ -36,10 +39,15 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   const [transition, setTransition] = useState(null);
   const { foundCurrentUser, workTask } = useCurrentUserTask({ product });
   const { isSuperAdmin } = useCurrentUser();
+  useLiveData(`product-transitions`);
   const workflowAdminUrl = `${env.dwkit.adminUrl}/Account/Login/?ReturnUrl=/admin%3Fapanel%3Dworkflowinstances%26aid%3D${productRemoteId}`;
   const {
-    subscriptions: { userTasks },
-  } = useCache({ userTasks: (q) => q.findRecords('userTask') });
+    subscriptions: { productTransitions: _productTransitions },
+  } = useCache({
+    productTransitions: (q) =>
+      q.findRelatedRecords({ type: 'product', id: product.id }, 'productTransitions'),
+  });
+  const [productTransitions] = useDebounce(_productTransitions, 500);
   const getTransition = useCallback(async () => {
     let transition = null;
     let response = await authenticatedGet(`/api/products/${productRemoteId}/transitions/active`, {
@@ -89,7 +97,7 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
     <div className='w-100 p-sm p-b-md m-l-md fs-13'>
       <AsyncWaiter
         fn={getTransition}
-        deps={[productRemoteId, t, userTasks]}
+        deps={[productRemoteId, t, productTransitions]}
         sizeClass='m-t-sm m-b-sm'
       >
         {({ value }) => {
