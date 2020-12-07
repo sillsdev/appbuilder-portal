@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { compose } from 'recompose';
+import { compose, branch, renderNothing } from 'recompose';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { Label } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
@@ -114,12 +114,11 @@ class TaskRow extends React.Component<IProps> {
 export default compose<INeededProps, IProps>(
   withTranslations,
   withRouter,
-  withOrbit(({ userTask }) => {
-    return {
-      product: (q) => q.findRelatedRecord(userTask, 'product'),
-      assignedTo: (q) => q.findRelatedRecord(userTask, 'user'),
-    };
-  }),
+  withOrbit(({ userTask }) => ({
+    product: (q) => q.findRelatedRecord(userTask, 'product'),
+    assignedTo: (q) => q.findRelatedRecord(userTask, 'user'),
+  })),
+  branch(({ product }) => !product, renderNothing),
   withOrbit(({ product }) => ({
     project: (q) => q.findRelatedRecord(product, 'project'),
     productDefinition: (q) => q.findRelatedRecord(product, 'productDefinition'),
