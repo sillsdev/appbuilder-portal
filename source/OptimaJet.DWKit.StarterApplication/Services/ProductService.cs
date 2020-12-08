@@ -14,6 +14,7 @@ using JsonApiDotNetCore.Internal.Query;
 using Hangfire;
 using OptimaJet.DWKit.StarterApplication.Services.Workflow;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
@@ -25,6 +26,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         IEntityRepository<Store> StoreRepository { get; }
         public IEntityRepository<UserRole> UserRolesRepository { get; }
         public IEntityRepository<ProductPublication> ProductPublicationsRepository { get; }
+        public IEntityRepository<UserTask> UserTaskRepostiory { get; }
         IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
@@ -45,6 +47,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             IEntityRepository<Store> storeRepository,
             IEntityRepository<UserRole> userRolesRepository,
             IEntityRepository<ProductPublication> productPublicationsRepository,
+            IEntityRepository<UserTask> userTaskRepostiory,
             IBackgroundJobClient hangfireClient,
             ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
         {
@@ -54,6 +57,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             StoreRepository = storeRepository;
             UserRolesRepository = userRolesRepository;
             ProductPublicationsRepository = productPublicationsRepository;
+            UserTaskRepostiory = userTaskRepostiory;
             HangfireClient = hangfireClient;
             UserRepository = userRepository;
             ProjectRepository = projectRepository;
@@ -125,10 +129,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
         public override async Task<bool> DeleteAsync(Guid id)
         {
-            var products = await GetAsync();
-            var product = products.SingleOrDefault(p => p.Id == id);
+            var product = await GetProductForTasks(id);
             if (product != null)
             {
+                // Force delete of UserTasks instead of allowing cascade delete so that notifications will be sent.
+                var userTasks = product.UserTasks.ToList();
+                foreach (var userTask in userTasks)
+                {
+                    Log.Debug($"Force Delete UserTask: product=${id}, userId={userTask.UserId}, userTaskId={userTask.Id}");
+                    await this.UserTaskRepostiory.DeleteAsync(userTask.Id);
+                }
                 HangfireClient.Enqueue<WorkflowProductService>(service => service.ManageDeletedProduct(product.Id, product.ProjectId));
             }
 
@@ -254,6 +264,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                     .ThenInclude(pw => pw.Scheme)
                 .Include(p => p.ProductDefinition)
                 .Include(p => p.Project)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task<Product> GetProductForTasks(Guid id)
+        {
+            return await ProductRepository.Get()
+                .Where(p => p.Id == id)
+                .Include(p => p.UserTasks)
                 .FirstOrDefaultAsync();
         }
 
