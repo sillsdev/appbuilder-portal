@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from 'react-orbitjs';
+import { useQuery, useCache } from 'react-orbitjs';
 
 import { buildFindRecord, buildOptions } from '@data';
 
@@ -8,6 +8,8 @@ import { PageLoader } from '~/ui/components/loaders';
 import { PageError } from '~/ui/components/errors';
 
 import { useRouter } from '~/lib/hooks';
+
+import { keyMap } from '~/data/schema';
 
 export function withData(WrappedComponent) {
   return function ProjectDataFetcher(props) {
@@ -41,6 +43,16 @@ export function withData(WrappedComponent) {
           ],
         }),
       ],
+    });
+
+    useCache({
+      ...(project && {
+        project: (q) =>
+          q.findRecord({
+            type: 'project',
+            id: keyMap.keyToId('project', 'remoteId', id),
+          }),
+      }),
     });
 
     if (error) return <PageError error={error} />;
