@@ -53,11 +53,11 @@
     "pretty-bytes": "^5.1.0",
     "pretty-ms": "^7.0.0",
     "query-string": "^6.1.0",
-    "react": "^16.8.0",
+    "react": "^16.9.0",
     "react-autosuggest": "^10.0.0",
     "react-datepicker": "^3.0.0",
     "react-day-picker": "^7.1.10",
-    "react-dom": "^16.8.0",
+    "react-dom": "^16.9.0",
     "react-dropzone-component": "^3.2.0",
     "react-helmet": "^6.1.0",
     "react-hooks-fetch": "0.10.0",
@@ -211,8 +211,8 @@
     "whatwg-fetch": "^3.0.0"
   },
   "resolutions": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
   },
   "volta": {
     "node": "10.17.0",
