@@ -27,18 +27,6 @@ jobs:
           echo Docker version
           docker --version
           docker-compose --version
-
-      - name: Frontend linting
-        run: ./run yarn && ./run yarn lint --quiet
-
-      - name: Frontend tests
-        run: |
-          COVERAGE=true ./run yarn && ./run yarn test:ci
-
-      - name: Backend Tests
-        run: |
-          echo "building docker containers..."
-          time ( ./run ci:build > /dev/null 2>&1 )
-          echo "docker containers built!"
-          echo "Running the backend commands..."
-          time ( ./run ci:api )       
+          echo
+          echo Environment
+          env
