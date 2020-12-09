@@ -1,0 +1,31 @@
+name: Scriptoria CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 0' # weekly
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get environment info
+        run: |
+          echo Python version
+          python --version
+          pip --version
+          echo
+          echo Node version
+          node --version
+          yarn --version
+          npm --version
+          echo
+          echo Docker version
+          docker --version
+          docker-compose --version
+
+       
