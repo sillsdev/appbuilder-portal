@@ -21,7 +21,8 @@ export default function ProjectsRoot() {
   return (
     <div className='ui container'>
       <Switch>
-        <Route exact path={myProjectPath} component={MyProjectsRoute} />
+        <Route exact     path={myProjectPath} 
+               component={MyProjectsRoute} />
         <Route exact path={organizationProjectPath} component={OrganizationProjectsRoute} />
         <Route exact path={archivedProjectPath} component={ArchivedProjectsRoute} />
         <Route exact path={newProjectPath} component={NewProjectRoute} />
