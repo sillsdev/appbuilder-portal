@@ -29,7 +29,7 @@ if [[ $LOCAL_BUILD == "true" ]]; then
   export BUILD_TYPE=local
 else
   export CURRENT_VERSION=$1
-  export CURRENT_BRANCH=$2
+  export CURRENT_BRANCH=${2/refs\/heads\//}
   export BUILD_TYPE=$3
 fi
 
@@ -52,7 +52,7 @@ esac
 # Are we going to deploy this C.I. run? If so, we need to tell the build scripts
 # to also push the images after building them.
 if [[ "$BUILD_TYPE" != "local" ]] && [[ "$BUILD_TYPE" != "pull_request" ]]; then
-  if [[ $CURRENT_BRANCH == *"develop"* ]] || [[ $CURRENT_BRANCH == *"master"* ]]; then
+  if [[ $CURRENT_BRANCH == *"develop"* ]] || [[ $CURRENT_BRANCH == *"master"* ]] || [[ $CURRENT_BRANCH == *"github-actions"* ]]; then
     export PUSH_TO_DOCKER_REGISTRY='true'
   fi
 fi
@@ -68,6 +68,7 @@ fi
 which jq && jq --version
 
 
+mkdir -p $HOME/.local/bin
 if [ `builtin type -p aws` ]; then
   echo "System already has the aws cli";
 else

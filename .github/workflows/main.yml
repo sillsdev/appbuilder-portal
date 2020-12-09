@@ -1,0 +1,62 @@
+name: Scriptoria CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 0' # weekly
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    env: 
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY__AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY__AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.DEPLOY__AWS_DEFAULT_REGION }}
+      AWS_ECR_ACCOUNT: ${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get environment info
+        run: |
+          echo Python version
+          python --version
+          pip --version
+          echo
+          echo Node version
+          node --version
+          yarn --version
+          npm --version
+          echo
+          echo Docker version
+          docker --version
+          docker-compose --version
+          echo
+          echo Env
+          env
+
+      - name: Frontend linting
+        run: ./run yarn && ./run yarn lint --quiet
+
+      - name: Frontend tests
+        run: |
+          COVERAGE=true ./run yarn && ./run yarn test:ci
+
+      - name: Backend tests
+        run: |
+          echo "building docker containers..."
+          time ( ./run ci:build > /dev/null 2>&1 )
+          echo "docker containers built!"
+          echo "Running the backend commands..."
+          time ( ./run ci:api )       
+
+      - name: Build nginx
+        run: ./scripts/build-nginx.sh $GITHUB_SHA $GITHUB_REF $GITHUB_EVENT_NAME
+
+      - name: Build API
+        run: ./scripts/build-api.sh $GITHUB_SHA $GITHUB_REF $GITHUB_EVENT_NAME
+
+      - name: Deploy
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch') && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
+        run: ./scripts/deploy-to-ecs.sh $GITHUB_SHA $GITHUB_REF
