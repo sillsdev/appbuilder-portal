@@ -23,8 +23,8 @@ export function useCurrentUserTask({ product }: INeededProps): IProvidedDataProp
   });
 
   const foundCurrentUser = tasks.some((task) => {
-    const user = dataStore.cache.query((q) => q.findRelatedRecord(task, 'user'));
-    return user.id === currentUser.id;
+    const user = task && dataStore.cache.query((q) => q.findRelatedRecord(task, 'user'));
+    return user && user.id === currentUser.id;
   });
 
   return { foundCurrentUser, workTask: tasks.slice(-1)[0] };
