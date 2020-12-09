@@ -67,8 +67,14 @@ describe('Acceptance | Notifications', () => {
   });
 
   describe('menu interactions', () => {
-    it('it indicates unread notifications', () => {
-      expect(page.hasUnreadNotificationsIndicator).to.be.true;
+    describe('Notifications', () => {
+      beforeEach(async () => {
+        await when(() => page.hasUnreadNotificationsIndicator);
+      });
+
+      it('it indicates unread notifications', () => {
+        expect(page.hasUnreadNotificationsIndicator).to.be.true;
+      });
     });
 
     describe('Open Notification dropdown', () => {
