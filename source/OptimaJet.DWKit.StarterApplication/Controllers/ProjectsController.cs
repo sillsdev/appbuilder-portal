@@ -36,6 +36,12 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 return NotFound($"Project id={id} not found");
             }
 
+            var owner = await userService.GetAsync(project.OwnerId);
+            if (owner.ExternalId != currentUserContext.Auth0Id)
+            {
+                return NotFound($"Project id={id} not owned by {currentUserContext.Name}");
+            }
+
             if (project.WorkflowProjectUrl == null)
             {
                 return NotFound($"Project id={id}: WorkflowProjectUrl is null");
