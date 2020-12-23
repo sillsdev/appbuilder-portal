@@ -16,5 +16,7 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         public String Url { get; set; }
         [Attr("region")]
         public String Region { get; set; }
+        [Attr("read-only")]
+        public bool ReadOnly { get; set; }
     }
 }

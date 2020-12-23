@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -19,13 +20,16 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             ICurrentUserContext currentUserContext,
             OrganizationService organizationService,
             IBuildEngineProjectService buildEngineProjectService,
+            ProjectService projectService,
             UserService userService)
             : base(jsonApiContext, resourceService, currentUserContext, organizationService, userService)
         {
             BuildEngineProjectService = buildEngineProjectService;
+            ProjectService = projectService;
         }
 
         public IBuildEngineProjectService BuildEngineProjectService { get; }
+        public ProjectService ProjectService { get; }
 
         [HttpPost("{id}/token")]
         public async Task<IActionResult> GetProjectToken(int id)
@@ -36,18 +40,29 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 return NotFound($"Project id={id} not found");
             }
 
-            var owner = await userService.GetAsync(project.OwnerId);
-            if (owner.ExternalId != currentUserContext.Auth0Id)
-            {
-                return NotFound($"Project id={id} not owned by {currentUserContext.Name}");
-            }
-
             if (project.WorkflowProjectUrl == null)
             {
                 return NotFound($"Project id={id}: WorkflowProjectUrl is null");
             }
 
-            var token = await BuildEngineProjectService.GetProjectTokenAsync(id);
+            var role = await ProjectService.GetUserRoleForProject(project, CurrentUser.Id);
+            bool readOnly;
+            if (CurrentUser.Id == project.OwnerId)
+            {
+                readOnly = false;
+            } else if (role != null && role.RoleName == RoleName.OrganizationAdmin)
+            {
+                readOnly = true;
+            }
+            else if (CurrentUser.HasRole(RoleName.SuperAdmin)) {
+                readOnly = true;
+            }
+            else
+            {
+                return NotFound($"Project id={id}, user={CurrentUser.Name} does not have permission");
+            }
+
+            var token = await BuildEngineProjectService.GetProjectTokenAsync(id, readOnly);
             if (token == null)
             {
                 return NotFound($"Project id={id}: GetProjectToken returned null");
@@ -64,7 +79,8 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 AccessKeyId = token.AccessKeyId,
                 Expiration = token.Expiration,
                 Url = project.WorkflowProjectUrl,
-                Region = token.Region
+                Region = token.Region,
+                ReadOnly = token.ReadOnly
             };
             return Ok(projectToken);
         }

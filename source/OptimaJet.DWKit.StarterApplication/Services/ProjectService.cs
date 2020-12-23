@@ -6,6 +6,7 @@ using Hangfire;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OptimaJet.DWKit.StarterApplication.Forms.Projects;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -115,6 +116,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 HangfireClient.Enqueue<BuildEngineProjectService>(service => service.ManageProject(project.Id, null));
             }
             return project;
+        }
+
+        public async Task<UserRole> GetUserRoleForProject(Project project, int userId)
+        {
+            UserRole role = await UserRolesRepository.Get()
+                .Where(ur => ur.OrganizationId == project.OrganizationId)
+                .Where(ur => ur.UserId == userId)
+                .FirstOrDefaultAsync();
+            return role;
         }
     }
 
