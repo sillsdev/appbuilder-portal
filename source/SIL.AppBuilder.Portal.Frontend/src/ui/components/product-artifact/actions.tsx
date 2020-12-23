@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useOrbit, remoteIdentityFrom, attributesFor } from 'react-orbitjs';
+import { useOrbit, useCache, remoteIdentityFrom, attributesFor } from 'react-orbitjs';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
 import { Dropdown } from 'semantic-ui-react';
 import { useTranslations } from '@lib/i18n';
+import { useDebounce } from 'use-debounce';
+
+import { useLiveData } from '~/data/live';
 
 import { handleResponse } from '~/data/containers/with-current-user/fetcher';
 
@@ -22,6 +25,15 @@ export default function ItemActions({ product }) {
 
   const productRemoteId = remoteIdentityFrom(dataStore, product).keys.remoteId;
 
+  useLiveData(`product-transitions`);
+  const {
+    subscriptions: { productTransitions: _productTransitions },
+  } = useCache({
+    productTransitions: (q) =>
+      q.findRelatedRecords({ type: 'product', id: product.id }, 'productTransitions'),
+  });
+  const [productTransitions] = useDebounce(_productTransitions, 500);
+
   useEffect(() => {
     async function fetcher() {
       let response = await get(`/api/products/${productRemoteId}/actions`);
@@ -38,7 +50,7 @@ export default function ItemActions({ product }) {
     }
 
     fetcher();
-  }, [productRemoteId, actions.length === 0]);
+  }, [productRemoteId, actions.length === 0, productTransitions]);
 
   const invokeAction = useCallback(
     async (actionName: string) => {
