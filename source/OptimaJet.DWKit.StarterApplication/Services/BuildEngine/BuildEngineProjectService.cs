@@ -40,7 +40,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             // Hangfire methods cannot be async, hence the Wait
             ManageProjectAsync(projectId, context).Wait();
         }
-        public async Task<TokenResponse> GetProjectTokenAsync(int projectId)
+        public async Task<TokenResponse> GetProjectTokenAsync(int projectId, bool readOnly)
         {
             var project = await ProjectRepository.Get()
                 .Where(p => p.Id == projectId)
@@ -56,7 +56,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                     var name = project.Owner.ExternalId;
                     var tokenRequest = new TokenRequest
                     {
-                        Name = name
+                        Name = name,
+                        ReadOnly = readOnly
                     };
                     var tokenResponse = BuildEngineApi.GetProjectAccessToken(project.WorkflowProjectId, tokenRequest);
                     return tokenResponse;

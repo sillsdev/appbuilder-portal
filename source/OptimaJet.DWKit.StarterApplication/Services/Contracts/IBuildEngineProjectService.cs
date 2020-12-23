@@ -10,7 +10,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         IRecurringJobManager RecurringJobManager { get; set; }
         SendNotificationService SendNotificationSvc { get; }
 
-        Task<TokenResponse> GetProjectTokenAsync(int projectId);
+        Task<TokenResponse> GetProjectTokenAsync(int projectId, bool readOnly);
         void ManageProject(int projectId, PerformContext context);
         Task ManageProjectAsync(int projectId, PerformContext context);
     }

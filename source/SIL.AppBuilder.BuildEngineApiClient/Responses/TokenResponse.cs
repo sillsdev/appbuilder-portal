@@ -8,5 +8,6 @@ namespace SIL.AppBuilder.BuildEngineApiClient
         public String AccessKeyId { get; set; }
         public String Expiration { get; set; }
         public String Region { get; set; }
+        public bool ReadOnly { get; set; }
     }
 }
