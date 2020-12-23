@@ -36,7 +36,7 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   const productRemoteId = idFromRecordIdentity(product as any);
   const { relativeTimeAgo } = useTimezoneFormatters();
   const { pathToWorkflow } = useUserTaskHelpers();
-  const [transition, setTransition] = useState(null);
+  const [transition, setTransition] = useState(undefined);
   const { foundCurrentUser, workTask } = useCurrentUserTask({ product });
   const { isSuperAdmin } = useCurrentUser();
   useLiveData(`product-transitions`);
@@ -108,23 +108,25 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
   }
   return (
     <div className='w-100 p-sm p-b-md m-l-md fs-13'>
-      {transition ? (
-        <div key={transition.id}>
-          <span className='red-text'>{t('tasks.waiting', { waitTime })}</span>&nbsp;
-          {t('tasks.forNames', { allowedNames, activityName })}
-          {foundCurrentUser && (
-            <Link className='m-l-md bold uppercase' to={pathToWorkflow(workTask)}>
-              {t('common.continue')}
-            </Link>
-          )}
-          {isSuperAdmin && (
-            <a className='m-l-md bold uppercase' target='_blank' href={workflowAdminUrl}>
-              {t('common.workflow')}
-            </a>
-          )}
-        </div>
-      ) : (
+      {transition === undefined ? (
         <PageLoader sizeClass='m-t-sm m-b-sm' />
+      ) : (
+        transition && (
+          <div key={transition.id}>
+            <span className='red-text'>{t('tasks.waiting', { waitTime })}</span>&nbsp;
+            {t('tasks.forNames', { allowedNames, activityName })}
+            {foundCurrentUser && (
+              <Link className='m-l-md bold uppercase' to={pathToWorkflow(workTask)}>
+                {t('common.continue')}
+              </Link>
+            )}
+            {isSuperAdmin && (
+              <a className='m-l-md bold uppercase' target='_blank' href={workflowAdminUrl}>
+                {t('common.workflow')}
+              </a>
+            )}
+          </div>
+        )
       )}
     </div>
   );
