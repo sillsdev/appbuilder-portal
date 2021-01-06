@@ -118,13 +118,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             return project;
         }
 
-        public async Task<UserRole> GetUserRoleForProject(Project project, int userId)
+        public async Task<List<UserRole>> GetUserRolesForProject(Project project, int userId)
         {
-            UserRole role = await UserRolesRepository.Get()
+            List<UserRole> roles = await UserRolesRepository.Get()
                 .Where(ur => ur.OrganizationId == project.OrganizationId)
                 .Where(ur => ur.UserId == userId)
-                .FirstOrDefaultAsync();
-            return role;
+                .ToListAsync();
+            return roles;
         }
     }
 

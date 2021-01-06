@@ -45,12 +45,13 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 return NotFound($"Project id={id}: WorkflowProjectUrl is null");
             }
 
-            var role = await ProjectService.GetUserRoleForProject(project, CurrentUser.Id);
+            var roles = await ProjectService.GetUserRolesForProject(project, CurrentUser.Id);
+
             bool readOnly;
             if (CurrentUser.Id == project.OwnerId)
             {
                 readOnly = false;
-            } else if (role != null && role.RoleName == RoleName.OrganizationAdmin)
+            } else if (roles != null && roles.Exists(role => role.RoleName == RoleName.OrganizationAdmin))
             {
                 readOnly = true;
             }
