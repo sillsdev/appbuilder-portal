@@ -18,7 +18,7 @@ interface IProps {
 }
 
 interface ISubscriptions {
-  products: ProductResource[];
+  _products: ProductResource[];
   organization: OrganizationResource;
 }
 
@@ -26,13 +26,27 @@ export default function Products({ project }: IProps) {
   const { t } = useTranslations();
   const {
     dataStore,
-    subscriptions: { products, organization },
+    subscriptions: { _products, organization },
   } = useOrbit<ISubscriptions>({
-    products: (q) => q.findRecords('product').filter({ relation: 'project', record: project }),
+    _products: (q) => q.findRecords('product'),
     organization: (q) => q.findRelatedRecord(project, 'organization'),
     // cache busters
     userTasks: (q) => q.findRecords('userTask'),
     project: (q) => q.findRecord(project),
+  });
+
+  const products = _products.filter((product) => {
+    if (
+      product.relationships.project &&
+      'data' in product.relationships.project &&
+      product.relationships.project.data &&
+      'id' in product.relationships.project.data &&
+      product.relationships.project.data.id === project.id
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   });
 
   useLiveData(`projects/${idFromRecordIdentity(dataStore, project)}`);
