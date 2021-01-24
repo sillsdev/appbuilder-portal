@@ -58,6 +58,10 @@ export default function ProductTasksForCurrentUser({ product }: IProps) {
           Expires: 0,
         },
       });
+      if (response.status === 404) {
+        setTransition(null);
+        return;
+      }
       try {
         let json = await handleResponse(response, t);
         setTransition(json.data);

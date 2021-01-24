@@ -212,13 +212,27 @@ export function withDataActions<T>(WrappedComponent) {
   }
 
   return compose(
-    withOrbit((passedProps) => {
-      const { project } = passedProps;
-
-      return {
-        products: (q) => q.findRecords('product').filter({ relation: 'project', record: project }),
-      };
-    }),
+    withOrbit((passedProps) => ({
+      products: (q) => q.findRecords('product'),
+    })),
+    (component) => (props) => {
+      return component({
+        ...props,
+        products: props.products.filter((product) => {
+          if (
+            product.relationships.project &&
+            'data' in product.relationships.project &&
+            product.relationships.project.data &&
+            'id' in product.relationships.project.data &&
+            product.relationships.project.data.id === props.project.id
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        }),
+      });
+    },
     requireProps('project')
   )(ProjectDataActionWrapper);
 }
