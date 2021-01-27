@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Verify_And_Publish",
-  "lastUpdate": "2019-05-10T20:47:01.379196+00:00",
+  "lastUpdate": "2021-01-27T14:36:30.5940302+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -89,10 +89,26 @@
       "isLoadable": true
     },
     {
+      "id": "736f1461-508a-118b-2dfd-f43a986c5ca1",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "b9483737-4e64-f059-2d3c-1a28dbfb5697",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "7e06b5a0-05b3-00d2-505a-0be39e9cd1f5",
       "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
       "control": "dropdown_language",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "2470d34a-f1a1-d2b5-eb94-6f94bafbf0c1",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "7e06b5a0-05b3-00d2-505a-0be39e9cd1f5",
+      "isEditable": false,
       "isLoadable": true
     },
     {
@@ -106,22 +122,6 @@
       "id": "404f4e24-7c4e-09c8-cd44-a2cadb3507ea",
       "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
       "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "736f1461-508a-118b-2dfd-f43a986c5ca1",
-      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
-      "control": "input_store",
-      "parentId": "b9483737-4e64-f059-2d3c-1a28dbfb5697",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "2470d34a-f1a1-d2b5-eb94-6f94bafbf0c1",
-      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
-      "control": "input_store_listing_language",
-      "parentId": "7e06b5a0-05b3-00d2-505a-0be39e9cd1f5",
-      "isEditable": false,
       "isLoadable": true
     }
   ],
@@ -208,7 +208,50 @@
           "isLoadable": true
         }
       ],
-      "readOnly": true
+      "readOnly": true,
+      "triggers": []
+    },
+    {
+      "id": "def0a460-8640-5b1c-ede5-67b802089042",
+      "entityId": "b89c79d3-ff69-4995-ab14-db90e298b7f9",
+      "filter": "ProductReviewers",
+      "control": "gridview_2",
+      "dataMap": [
+        {
+          "id": "473b1fb7-1cbe-e549-3c9a-8ef8e54e799d",
+          "attributeId": "0a2b52b4-bd37-4f43-bd7c-e43b03f0d2e7",
+          "control": "Email",
+          "isEditable": false,
+          "isLoadable": true
+        },
+        {
+          "id": "1d801ec5-bfd7-79fa-20bc-f7f10de96b2c",
+          "attributeId": "bd189001-8e59-48e5-b8ea-7b3eb752b0ff",
+          "isEditable": false,
+          "isLoadable": true
+        },
+        {
+          "id": "d824c6a2-c8dc-2ae4-78f0-820a2cdf63eb",
+          "attributeId": "920c2bd4-8ac2-4133-8939-b5d78237fb79",
+          "control": "Name",
+          "isEditable": false,
+          "isLoadable": true
+        },
+        {
+          "id": "9a3047aa-e770-ca37-0616-35264364af5d",
+          "attributeId": "b993da45-f2e3-48f0-ac48-9749764ed055",
+          "isEditable": false,
+          "isLoadable": true
+        },
+        {
+          "id": "b8ab019c-87ae-58f4-9a4f-0d50d86e0284",
+          "attributeId": "aedb1af9-33c9-4d91-a292-e172c0043ec9",
+          "isEditable": false,
+          "isLoadable": true
+        }
+      ],
+      "readOnly": true,
+      "triggers": []
     }
   ]
 }

@@ -194,6 +194,63 @@
         "autoHeight": false,
         "minHeight": "",
         "pageSize": ""
+      },
+      {
+        "key": "header_3",
+        "data-buildertype": "header",
+        "content": "Reviewers",
+        "size": "small"
+      },
+      {
+        "key": "gridview_2",
+        "data-buildertype": "gridview",
+        "columns": [
+          {
+            "key": "Id",
+            "name": "Id",
+            "type": "number",
+            "width": 100,
+            "sortable": true,
+            "filterable": false,
+            "resizable": false
+          },
+          {
+            "key": "Name",
+            "name": "Name",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "width": ""
+          },
+          {
+            "key": "Email",
+            "name": "Email",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "type": "",
+            "width": ""
+          }
+        ],
+        "events": {
+          "onRowDblClick": {
+            "active": false,
+            "actions": [],
+            "targets": [],
+            "parameters": []
+          },
+          "onRowClick": {
+            "actions": [],
+            "active": true,
+            "targets": [],
+            "parameters": []
+          }
+        },
+        "defaultSort": "Id ASC",
+        "autoHeight": false,
+        "minHeight": "",
+        "pageSize": "",
+        "style-height": ""
       }
     ]
   }
