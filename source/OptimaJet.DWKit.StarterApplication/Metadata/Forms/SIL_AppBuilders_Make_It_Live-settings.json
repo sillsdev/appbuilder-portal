@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Make_It_Live",
-  "lastUpdate": "2020-12-17T19:28:56.5196126+00:00",
+  "lastUpdate": "2021-01-27T15:35:13.6260307+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -84,7 +84,6 @@
     {
       "id": "9bda6301-5d16-bffd-4201-c058145db11e",
       "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
-      "control": "dropdown_store",
       "isEditable": true,
       "isLoadable": true
     },
@@ -99,8 +98,15 @@
     {
       "id": "1a18c404-a772-6645-b2b2-e9d477b9058d",
       "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
-      "control": "dropdown_language",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "7ac3d7d7-fc6a-c999-2ad5-a949838e2ec8",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "1a18c404-a772-6645-b2b2-e9d477b9058d",
+      "isEditable": false,
       "isLoadable": true
     },
     {
@@ -114,14 +120,6 @@
       "id": "55ce5467-4b61-dd39-17ac-cfca01019ff3",
       "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
       "isEditable": true,
-      "isLoadable": true
-    },
-    {
-      "id": "7ac3d7d7-fc6a-c999-2ad5-a949838e2ec8",
-      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
-      "control": "input_store_listing_language",
-      "parentId": "1a18c404-a772-6645-b2b2-e9d477b9058d",
-      "isEditable": false,
       "isLoadable": true
     }
   ],
