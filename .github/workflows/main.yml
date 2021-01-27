@@ -3,6 +3,14 @@ name: Scriptoria CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log Level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Tags'
   schedule:
     - cron: '0 0 * * 0' # weekly
 
