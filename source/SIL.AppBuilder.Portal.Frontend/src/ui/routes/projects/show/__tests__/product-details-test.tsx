@@ -307,8 +307,8 @@ describe('Acceptance | Project View | Products Details', () => {
     it('has a button with Details text', () => {
       expect(page.productNamed('android_s3').detailsText).to.equal('Details');
     });
-    it('has a store name displayed', () => {
-      expect(page.detailsModal.storeName).to.equal('test_store');
+    it('has a store name displayed using description', () => {
+      expect(page.detailsModal.storeName).to.equal('Test Store');
     });
     it('sets command', () => {
       expect(page.detailsModal.detailNamed('Readiness Check').command).to.equal('Continue');

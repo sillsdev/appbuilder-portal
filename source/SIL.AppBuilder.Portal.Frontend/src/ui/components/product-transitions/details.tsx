@@ -101,15 +101,15 @@ export default function TransitionDetails({ product }: IProps) {
     );
     return stateString;
   };
-  const getStoreName = (store: StoreResource) => {
-    let storeName = null;
+  const getStoreDescription = (store: StoreResource) => {
+    let storeDescription = null;
     if (store) {
-      const { name } = attributesFor(store);
-      if (name) {
-        storeName = name;
+      const { description } = attributesFor(store);
+      if (description) {
+        storeDescription = description;
       }
     }
-    return storeName;
+    return storeDescription;
   };
   return (
     <Modal
@@ -131,7 +131,7 @@ export default function TransitionDetails({ product }: IProps) {
             <span>{t('project.products.transitions.storeName')}</span>
           </div>
           <div data-test-product-store-name className='p-l-md p-t-sm p-b-sm p-r-md'>
-            <span>{getStoreName(store)}</span>
+            <span>{getStoreDescription(store)}</span>
           </div>
         </div>
         <div className='flex thin-bottom-border p-l-md p-t-md p-b-sm p-r-md gray-text bold'>
