@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Web_Verify",
-  "lastUpdate": "2020-08-13T15:14:27.5945031+00:00",
+  "lastUpdate": "2021-01-27T19:33:16.5864819+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -193,6 +193,46 @@
           "attributeId": "e4ea61c8-ab9d-426c-9c93-6b80ec2b191c",
           "control": "ProductBuildId",
           "parentId": "bb8b3455-2610-3e84-08e5-e63f2f69acb6",
+          "isEditable": false,
+          "isLoadable": true
+        }
+      ],
+      "readOnly": true,
+      "triggers": []
+    },
+    {
+      "id": "02e3bf4e-2be2-8d72-337d-754fce3a8738",
+      "entityId": "b89c79d3-ff69-4995-ab14-db90e298b7f9",
+      "filter": "ProductReviewers",
+      "control": "gridview_2",
+      "dataMap": [
+        {
+          "id": "6a94af76-7c97-7e37-c173-f691e2b8c0d9",
+          "attributeId": "0a2b52b4-bd37-4f43-bd7c-e43b03f0d2e7",
+          "isEditable": false,
+          "isLoadable": true
+        },
+        {
+          "id": "1723b760-6ca5-3693-f937-44b952998f3f",
+          "attributeId": "bd189001-8e59-48e5-b8ea-7b3eb752b0ff",
+          "isEditable": false,
+          "isLoadable": true
+        },
+        {
+          "id": "e0b7b777-17b2-8b13-a420-298766533fc7",
+          "attributeId": "920c2bd4-8ac2-4133-8939-b5d78237fb79",
+          "isEditable": false,
+          "isLoadable": true
+        },
+        {
+          "id": "d5ce894a-d34f-61ed-3f88-adc5c5eb0ae4",
+          "attributeId": "b993da45-f2e3-48f0-ac48-9749764ed055",
+          "isEditable": false,
+          "isLoadable": true
+        },
+        {
+          "id": "1b02da40-ff58-d3e4-da91-f1eeb303a007",
+          "attributeId": "aedb1af9-33c9-4d91-a292-e172c0043ec9",
           "isEditable": false,
           "isLoadable": true
         }
