@@ -195,6 +195,8 @@
     "notactiveUserText": "\n      This user is currently set to not active.\n      <br /><br />\n      Please contact your organization administrator to discuss the reason for the status change.\n    ",
     "orgMembershipRequired": "Organization Membership is Required",
     "orgMembershipRequiredText": "\n      In order to use Scriptoria, you must be a member of at least one organization.\n      <br /><br />\n      Please contact your organization administrator to discuss receiving an invite to\n      an organization on Scriptoria.\n    ",
+    "orgMembershipChanged": "Organization Membership has Changed",
+    "orgMembershipChangedText": "\n      Your organization membership has changed.\n      <br /><br />\n      This can take a few moments to process. Please sign out, wait a minute, and then sign in again for the change to take affect.\n    ",
     "orgMustBeSelected": "An organization must be selected to view this page",
     "verifyEmailTitle": "Please verify your email address",
     "verifyEmailDescription": "\n      In order to use Scriptoria, we need you to verify your email address.\n      <br /><br />\n      Please log into your email and clik the verification link. ",
