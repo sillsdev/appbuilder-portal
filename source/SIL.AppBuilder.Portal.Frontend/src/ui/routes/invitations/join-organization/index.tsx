@@ -28,14 +28,12 @@ type IProps = IOwnProps & WithDataProps & ICurrentUserProps;
 interface IState {
   isLoading: boolean;
   error?: Error;
-  organizationMembershipId?: string;
 }
 
 class JoinOrganizationRoute extends React.Component<IProps, IState> {
   state = {
     isLoading: true,
     error: null,
-    organizationMembershipId: null,
   };
 
   get token() {
@@ -81,9 +79,7 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
         await this.captureAndThrowError(result);
       }
 
-      const json = await tryParseJson(result);
-      await pushPayload(dataStore, json);
-      this.setState({ isLoading: false, error: null, organizationMembershipId: json.data.id });
+      this.setState({ isLoading: false, error: null });
     } catch (error) {
       this.setState({ isLoading: false, error });
     }
@@ -91,23 +87,18 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
 
   componentDidMount() {
     if (this.hasValidToken) {
-      this.redeemInvitation(this.token);
+      this.redeemInvitation();
     }
   }
 
   render() {
-    const { isLoading, error, organizationMembershipId } = this.state;
+    const { isLoading, error } = this.state;
 
     if (this.hasValidToken) {
       if (isLoading || error) {
         return <OrganizationMembershipInvitiationLoading error={error} />;
       } else {
-        return (
-          <Redirect
-            push={true}
-            to={`/invitations/organization-membership/${this.token}/finished/${organizationMembershipId}`}
-          />
-        );
+        return <Redirect push={true} to={'/organization-membership-changed'} />;
       }
     } else {
       return <Redirect push={true} to={notFoundPath} />;
