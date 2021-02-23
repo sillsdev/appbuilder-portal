@@ -38,8 +38,12 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         {
             try
             {
-                var membership = await organizationMembershipInviteService.RedeemAsync(Token);
-                return Ok(membership);
+                var invite = await organizationMembershipInviteService.RedeemAsync(Token);
+                return Ok(invite);
+            }
+            catch (InviteUserNotFoundException)
+            {
+                return Error(new JsonApiDotNetCore.Internal.Error(404, "organization-membership.invite.error.user-not-found"));
             }
             catch (InviteExpiredException)
             {
