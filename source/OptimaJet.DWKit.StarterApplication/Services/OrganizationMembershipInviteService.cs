@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using Hangfire.Common;
 using I18Next.Net.Plugins;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Services;
@@ -11,9 +12,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using Serilog;
 
 namespace OptimaJet.DWKit.StarterApplication.Services
 {
+    public class InviteUserNotFoundException : Exception { }
     public class InviteExpiredException: Exception { }
     public class InviteRedeemedException: Exception { }
     public class InviteNotFoundExcpetion: Exception { }
@@ -26,6 +29,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         private readonly IEntityRepository<OrganizationMembership> organizationMembershipRepository;
         private readonly IJobRepository<Email> emailRepository;
         private readonly ITranslator translator;
+        private readonly IRecurringJobManager recurringJobManager;
         protected readonly OrganizationInviteRequestSettings settings;
 
         public OrganizationMembershipInviteService(
@@ -35,6 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             IEntityRepository<OrganizationMembership> organizationMembershipRepository,
             ILoggerFactory loggerFactory,
             IBackgroundJobClient backgroundJobClient,
+            IRecurringJobManager recurringJobManager,
             IJobRepository<Email> emailRepository,
             ITranslator translator,
             IOptions<OrganizationInviteRequestSettings> options
@@ -42,6 +47,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         {
             this.currentUserRepository = currentUserRepository;
             this.backgroundJobClient = backgroundJobClient;
+            this.recurringJobManager = recurringJobManager;
             this.organizationMembershipInviteRepository = organizationMembershipInviteRepository;
             this.organizationMembershipRepository = organizationMembershipRepository;
             this.emailRepository = emailRepository;
@@ -56,13 +62,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             return result;
         }
 
-        public async Task<OrganizationMembership> RedeemAsync(Guid token)
+        public async Task<OrganizationMembershipInvite> RedeemAsync(Guid token)
         {
             var invite = await organizationMembershipInviteRepository.Get()
                                     .Include(omi => omi.Organization)
                                     .Where(omi => omi.Token == token)
                                     .DefaultIfEmpty(null)
                                     .FirstOrDefaultAsync();
+
+            var currentUser = await currentUserRepository.GetCurrentUser();
+            if (currentUser == null)
+            {
+                throw new InviteUserNotFoundException();
+            }
 
             if (invite == null)
             {
@@ -79,24 +91,42 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 throw new InviteExpiredException();
             }
 
-            var currentUser = await currentUserRepository.GetCurrentUser();
-
-
-            var membership = currentUser.OrganizationMemberships.Find(om => om.OrganizationId == invite.OrganizationId);
-
-            if (membership == null)
-            {
-                membership = await organizationMembershipRepository.CreateAsync(new OrganizationMembership
-                {
-                    Organization = invite.Organization,
-                    User = currentUser
-                });
-            }
-
             invite.Redeemed = true;
             await organizationMembershipInviteRepository.UpdateAsync(invite.Id, invite);
 
-            return membership;
+            var monitorJob = Job.FromExpression<OrganizationMembershipInviteService>(service => service.ProcessRedeem(currentUser.Id, invite.OrganizationId));
+            recurringJobManager.AddOrUpdate(GetHangfireToken(currentUser.Id, invite.OrganizationId), monitorJob, "* * * * *");
+            return invite;
+        }
+
+        protected string GetHangfireToken(int userId, int orgId)
+        {
+            return "ProcessRedeem_" + userId + "_" + orgId;
+        }
+
+        protected void ClearRecurringJob(int userId, int orgId)
+        {
+            var jobToken = GetHangfireToken(userId, orgId);
+            recurringJobManager.RemoveIfExists(jobToken);
+        }
+
+        public async Task ProcessRedeem(int userId, int organizationId )
+        {
+            var membership = await organizationMembershipRepository.Get().FirstOrDefaultAsync(om => om.OrganizationId == organizationId && om.UserId == userId);
+            if (membership == null)
+            {
+                Log.Information($"ProcessRedeem: Membership not found for userId={userId}, orgId={organizationId}: Creating!");
+                membership = await organizationMembershipRepository.CreateAsync(new OrganizationMembership
+                {
+                    OrganizationId = organizationId,
+                    UserId = userId
+                });
+            }
+            else
+            {
+                Log.Information($"ProcessRedeem: Membership found for userId={userId}, orgId={organizationId}: Ignoring.");
+            }
+            ClearRecurringJob(userId, organizationId);
         }
 
         public async Task sendInviteEmail(int inviteId)
