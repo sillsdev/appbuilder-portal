@@ -124,14 +124,22 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
 
         public override Task OnConnectedAsync()
         {
-            _connections.Add(GetConnectedUserId(), Context.ConnectionId);
+            var connectedUserId = GetConnectedUserId();
+            if (connectedUserId != null)
+            {
+                _connections.Add(connectedUserId, Context.ConnectionId);
+            }
             
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            _connections.Remove(GetConnectedUserId(), Context.ConnectionId);
+            var connectedUserId = GetConnectedUserId();
+            if (connectedUserId != null)
+            {
+                _connections.Remove(connectedUserId, Context.ConnectionId);
+            }
             
             return base.OnDisconnectedAsync(exception);
         }
@@ -188,7 +196,7 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
                 .Where(user => user.ExternalId == auth0Id)
                 .FirstOrDefault();
 
-            return currentUser.Id.ToString();
+            return currentUser != null ? currentUser.Id.ToString() : null;
         }
     }
 }
