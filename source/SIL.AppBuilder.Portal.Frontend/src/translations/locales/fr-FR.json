@@ -7,6 +7,7 @@
   "updated": "Updated!",
   "opensource": "Open Source",
   "home": "Home",
+  "tabAppName": "{count, plural, =0 {} other {({ count })}} Scriptoria",
   "locale-picker": {
     "code": "Code",
     "country": "Country",
@@ -33,6 +34,7 @@
     "change": "Change",
     "cancel": "Cancel",
     "save": "Save",
+    "add": "Add",
     "name": "Name",
     "clickToEdit": "Click to edit",
     "none": "None",
@@ -42,9 +44,11 @@
     "archive": "Archive",
     "reactivate": "Reactivate",
     "build": "Build / Rebuild",
+    "rebuild": "Rebuild / Republish",
     "updated": "Updated",
     "continue": "Continue",
-    "error": "Error"
+    "error": "Error",
+    "workflow": "Workflow"
   },
   "models": {
     "add": "Add {name}",
@@ -67,20 +71,23 @@
   },
   "header": {
     "myProfile": "My Profile",
+    "community": "Community",
     "help": "Help",
     "signOut": "Sign out",
     "clearAll": "Clear All",
     "emptyNotifications": "You have no notifications."
   },
   "sidebar": {
-    "myTasks": "My Tasks",
+    "myTasks": "My Tasks {count, plural, =0 {} other {({ count })}}",
     "myProjects": "My Projects",
+    "activeProjects": "Active Projects",
     "organizationProjects": "Organization Projects",
     "users": "Users",
     "organizationSettings": "Organization Settings",
     "adminSettings": "Admin",
     "projectDirectory": "Project Directory",
-    "addProject": "Add Project"
+    "addProject": "Add Project",
+    "importProjects": "Import Projects"
   },
   "invitations": {
     "orgPrompt": "Like to sign up your organization?",
@@ -139,7 +146,9 @@
       "rebuild": "Rebuild",
       "republish": "Republish",
       "cancel": "Cancel",
-      "noneAvailable": "No actions are currently available for this product."
+      "noneAvailable": "No actions are currently available for this product.",
+      "bulkNotAllAllowed": "Not all of the selected projects' products can have the {action} action(s) applied.",
+      "dispatched": "The {action} action has been dispatched."
     }
   },
   "profile": {
@@ -152,6 +161,7 @@
     "uploadPicture": "Upload new picture",
     "firstName": "First name",
     "lastName": "Last name",
+    "name": "Display Name",
     "email": "Email",
     "phone": "Phone",
     "location": "Location",
@@ -181,11 +191,16 @@
     "friendlyForbidden": "You are not allowed to do that. Please contact your organization administrator",
     "forbiddenForAllOrgs": "You are not allowed to do that. Please select an organization",
     "notAMemberOfOrg": "You are not a member of that organization",
+    "notactiveUser": "User is not Active",
+    "notactiveUserText": "\n      This user is currently set to not active.\n      <br /><br />\n      Please contact your organization administrator to discuss the reason for the status change.\n    ",
     "orgMembershipRequired": "Organization Membership is Required",
     "orgMembershipRequiredText": "\n      In order to use Scriptoria, you must be a member of at least one organization.\n      <br /><br />\n      Please contact your organization administrator to discuss receiving an invite to\n      an organization on Scriptoria.\n    ",
+    "orgMembershipChanged": "Organization Membership has Changed",
+    "orgMembershipChangedText": "\n      Your organization membership has changed.\n      <br /><br />\n      This can take a few moments to process. Please sign out, wait a minute, and then sign in again for the change to take affect.\n    ",
     "orgMustBeSelected": "An organization must be selected to view this page",
     "verifyEmailTitle": "Please verify your email address",
-    "verifyEmailDescription": "\n      In order to use Scriptoria, we need you to verify your email address.\n      <br /><br />\n      Please log into your email and clik the verification link. "
+    "verifyEmailDescription": "\n      In order to use Scriptoria, we need you to verify your email address.\n      <br /><br />\n      Please log into your email and clik the verification link. ",
+    "invalidProjectSelection": "No valid products available for selected project(s)"
   },
   "tasks": {
     "title": "My Tasks",
@@ -199,24 +214,37 @@
     "noTasksDescription": "Tasks that require your attention will appear here.",
     "reassign": "Reassign",
     "waiting": "Waiting {waitTime}",
-    "forYou": "for you to {activityName}"
+    "forNames": "for {allowedNames} to {activityName}",
+    "scriptoria": "Scriptoria"
   },
   "projects": {
     "noBuilds": "No Builds Yet",
     "latestBuild": "Latest Build ({version})",
+    "buildPending": "Build Pending",
+    "buildFailed": "Build Failed",
     "switcher": {
       "myProjects": "My Projects ({numProjects})",
       "archived": "Archived ({numProjects})",
       "dropdown": {
         "orgProjects": "Organization Projects",
         "myProjects": "My Projects",
+        "activeProjects": "Active Projects",
         "archived": "Archived Projects",
         "all": "All Projects"
+      }
+    },
+    "bulk": {
+      "buildModal": {
+        "title": "Perform Bulk Rebuild/Republish"
       }
     }
   },
   "productDefinitions": {
     "filterAllProjects": "All projects that contain..."
+  },
+  "projectImport": {
+    "importFile": "Import JSON File",
+    "createSuccess": "Project Import successfully created. You will receive an email when the import is completed."
   },
   "project": {
     "title": "Project",
@@ -224,7 +252,10 @@
     "projectOwner": "Project Owner: ",
     "claimOwnership": "Claim Ownership",
     "claimSuccess": "Succesfully Claimed",
+    "editProject": "Edit Project",
     "newProject": "New Project",
+    "importProjects": "Import Projects",
+    "importProjectsHelp": "Import Projects Help",
     "projectName": "Project Name",
     "noAvailableGroups": "There are no available groups for the selected organization",
     "projectDescription": "Description",
@@ -253,14 +284,42 @@
       "title": "Products",
       "empty": "You have no products for this project.",
       "addRemove": "Add or Remove Products",
+      "add": "Add Products",
+      "remove": "Remove Products",
       "popup": {
-        "title": "Select Products",
+        "addTitle": "Select Product to Add",
+        "removeTitle": "Select Product to Remove",
         "done": "Done",
-        "empty": "No products available"
+        "empty": "No products available",
+        "details": "Details"
+      },
+      "publications": {
+        "channel": "Channel",
+        "status": "Status",
+        "date": "Publish Date",
+        "url": "Publish Url",
+        "succeeded": "Success",
+        "failed": "Failure",
+        "console": "Console Text"
       },
       "options": {
         "update": "update",
         "publish": "publish"
+      },
+      "transitions": {
+        "productDetails": "Product Details",
+        "storeName": "Store Name",
+        "state": "State",
+        "user": "User",
+        "command": "Command",
+        "comment": "Comment",
+        "date": "Date",
+        "transitionTypes": {
+          "1": "Activity",
+          "2": "{workflowType} Workflow Started",
+          "3": "{workflowType} Workflow Completed",
+          "4": "{workflowType} Workflow Cancelled"
+        }
       },
       "updated": "Updated",
       "size": "Size",
@@ -280,7 +339,7 @@
       },
       "organizationDownloads": {
         "title": "Allow Other Organizations to download",
-        "description": "When this setting is on, any Scriptoria User this is able to view your project in the Directory will be able to download your Products' Files"
+        "description": "When this setting is on, any Scriptoria User that is able to view your project in the Directory will be able to download the Product Files (the outputs of the products)."
       },
       "visibility": {
         "title": "Public Visibility",
@@ -342,13 +401,18 @@
       "buildVersion": "Build Version",
       "buildDate": "Build Date",
       "createdOn": "Created On",
-      "updatedOn": "Updated On"
+      "updatedOn": "Updated On",
+      "activeSince": "Active Since"
     },
     "empty": "No projects found",
     "products": "Products",
     "noProducts": "This project has no configured products"
   },
   "users": {
+    "settingsTitle": "User Settings",
+    "userProfile": "User Profile",
+    "userGroups": "Group Memberships",
+    "userRoles": "Organization Roles",
     "noneFound": "No users matching the selected criteria were found.",
     "noRoles": "No roles assigned",
     "title": "Manage Users",
@@ -398,7 +462,8 @@
         "workflowdefinitions": "Workflow Definitions",
         "productDefinitions": "Product Definitions",
         "storeTypes": "Store Types",
-        "stores": "Stores"
+        "stores": "Stores",
+        "buildEngines": "Build Engine Statuses"
       },
       "organizations": {
         "title": "Organizations",
@@ -422,6 +487,7 @@
         "description": "Description",
         "workflowScheme": "Workflow Scheme",
         "workflowBusinessFlow": "Workflow Business Flow",
+        "properties": "Properties",
         "add": "Add Workflow Definition",
         "edit": "Edit Workflow Definition",
         "storeType": "Store Type",
@@ -429,7 +495,14 @@
         "enabledDescription": "Workflow definitions may not be used until enabled.",
         "workflowAdded": "Workflow Definition added",
         "workflowUpdated": "Workflow Definition updated",
-        "emptyStoreType": "Need to select a store type for this workflow definition"
+        "emptyStoreType": "Need to select a store type for this workflow definition",
+        "emptyWorkflowType": "Need to select a workflow type for this workflow definition",
+        "workflowType": "Workflow Type",
+        "workflowTypes": {
+          "1": "Startup",
+          "2": "Rebuild",
+          "3": "Republish"
+        }
       },
       "productDefinitions": {
         "title": "Product Definitions",
@@ -437,13 +510,17 @@
         "add": "Add Product Definition",
         "edit": "Edit Product Definition",
         "description": "Description",
+        "properties": "Properties",
         "type": "Application Type",
         "workflow": "Workflow",
+        "republishWorkflow": "Republish Workflow",
+        "rebuildWorkflow": "Rebuild Workflow",
         "addSuccess": "Product Definition added",
         "editSuccess": "Product Definition updated",
         "emptyName": "Name cannot be empty",
         "emptyType": "Need to select an Application Type",
-        "emptyWorkflow": "Nedd to select a Workflow definition"
+        "emptyWorkflow": "Need to select a Workflow definition",
+        "noWorkflow": "No Workflow Required"
       },
       "storeTypes": {
         "title": "Store Types",
@@ -457,7 +534,16 @@
         "editSuccess": "Store Type updated",
         "emptyName": "Name cannot be empty",
         "emptyType": "Need to select an Application Type",
-        "emptyWorkflow": "Nedd to select a Workflow definition"
+        "emptyWorkflow": "Need to select a Workflow definition"
+      },
+      "buildEngines": {
+        "title": "Build Engine Statuses",
+        "accessToken": "Build Engine API Access Token",
+        "websiteURL": "Website URL",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "status": "Status",
+        "lastUpdated": "Last update"
       }
     }
   },
@@ -480,5 +566,9 @@
       },
       "redemptionTitle": "Looking up invitation..."
     }
+  },
+  "system": {
+    "build-failed": "Build failed",
+    "publish-failed": "Publish failed"
   }
 }
