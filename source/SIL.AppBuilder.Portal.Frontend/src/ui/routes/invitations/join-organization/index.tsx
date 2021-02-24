@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { match as Match, Redirect } from 'react-router';
 import { compose } from 'recompose';
-import { withData, WithDataProps } from 'react-orbitjs';
 import { requireAuth } from '@lib/auth';
 import { patch, tryParseJson } from '@lib/fetch';
 import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
@@ -23,7 +22,7 @@ interface IOwnProps {
   match: Match<Params>;
 }
 
-type IProps = IOwnProps & WithDataProps & ICurrentUserProps;
+type IProps = IOwnProps & ICurrentUserProps;
 
 interface IState {
   isLoading: boolean;
@@ -66,7 +65,6 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
   };
 
   redeemInvitation = async () => {
-    const { dataStore } = this.props;
     try {
       const result = await patch(`/api/organization-membership-invites/redeem/${this.token}`, {
         headers: {
@@ -108,6 +106,5 @@ class JoinOrganizationRoute extends React.Component<IProps, IState> {
 
 export default compose(
   withCurrentUserContext,
-  withData({}),
   requireAuth({ redirectOnMissingMemberships: false })
 )(JoinOrganizationRoute);
