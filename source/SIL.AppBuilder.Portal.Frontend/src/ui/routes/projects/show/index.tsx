@@ -22,6 +22,7 @@ export default compose(
   withRole(ROLE.OrganizationAdmin, {
     redirectTo: '/',
     checkOrganizationOf: ({ project }) => project,
+    checkGroupsOf: ({ project }) => project,
     overrideIf: ({ project, currentUser }) => isRelatedTo(project, 'owner', currentUser.id),
   })
 )(Display);

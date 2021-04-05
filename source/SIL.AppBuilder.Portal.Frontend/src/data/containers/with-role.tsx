@@ -16,7 +16,9 @@ import { UserResource } from '../models/user';
 import { RoleResource, ROLE } from '../models/role';
 import { isRelatedTo, attributesFor } from '../helpers';
 import { UserRoleResource } from '../models/user-role';
+import { GroupResource } from '../models/group';
 
+import { retrieveRelation } from './with-relationship';
 import { withCurrentUserContext, ICurrentUserProps } from './with-current-user';
 import {
   withCurrentOrganization,
@@ -30,6 +32,7 @@ export interface IOptions<TWrappedProps> {
   redirectTo?: string;
   componentOnForbidden?: any;
   checkOrganizationOf?: (props: TWrappedProps) => ResourceObject;
+  checkGroupsOf?: (props: TWrappedProps) => ResourceObject;
   overrideIf?: (props: TWrappedProps) => boolean;
   passthroughOnForbidden?: boolean;
 }
@@ -75,6 +78,7 @@ export function withRole<TWrappedProps extends {}>(
     forAnyOrganization,
     redirectTo,
     checkOrganizationOf,
+    checkGroupsOf,
     overrideIf,
     componentOnForbidden: OnForbidden,
     passthroughOnForbidden,
@@ -114,6 +118,7 @@ export function withRole<TWrappedProps extends {}>(
         let resultOfResource = false;
         let resultOfOrganization = false;
         let resultOfAnyOrganization = false;
+        let resultOfGroups = false;
 
         if (anyOrganization) {
           const results = anyOrganization.map((org) => {
@@ -138,7 +143,13 @@ export function withRole<TWrappedProps extends {}>(
           resultOfResource = roleInOrganizationOfResource(currentUser, dataStore, resource, role);
         }
 
-        return resultOfOrganization || resultOfResource;
+        if (checkGroupsOf) {
+          const resource = checkGroupsOf((this.props as any) as TWrappedProps);
+
+          resultOfGroups = inGroupOfResource(currentUser, dataStore, resource);
+        }
+
+        return resultOfOrganization || resultOfResource || resultOfGroups;
       };
 
       componentDidUpdate() {
@@ -262,4 +273,16 @@ export function roleInOrganizationOfResource(
   const organization = dataStore.cache.query((q) => q.findRelatedRecord(resource, 'organization'));
 
   return roleInOrganization(currentUser, dataStore, organization, role);
+}
+
+export function inGroupOfResource(
+  currentUser: UserResource,
+  dataStore: Store,
+  resource: any
+): boolean {
+  const group = dataStore.cache.query((q) => q.findRelatedRecord(resource, 'group'));
+  const groups = retrieveRelation(dataStore, [currentUser, 'groupMemberships', 'group']);
+  const groupIds = (groups || []).map((o) => o && o.id);
+
+  return groupIds.includes(group.id);
 }
