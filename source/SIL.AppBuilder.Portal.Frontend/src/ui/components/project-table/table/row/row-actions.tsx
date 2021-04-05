@@ -4,6 +4,7 @@ import MoreVerticalIcon from '@material-ui/icons/MoreVert';
 import { useOrbit } from 'react-orbitjs';
 import { useCurrentUser } from '@data/containers/with-current-user';
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
+import { retrieveRelation } from '@data/containers/with-relationship';
 import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
 
@@ -22,6 +23,9 @@ export default function RowActions({ project }: IProps) {
   const { claimOwnership, toggleArchiveProject } = useDataActions(project);
 
   const owner = dataStore.cache.query((q) => q.findRelatedRecord(project, 'owner'));
+  const group = dataStore.cache.query((q) => q.findRelatedRecord(project, 'group'));
+  const groups = retrieveRelation(dataStore, [currentUser, 'groupMemberships', 'group']);
+  const groupIds = (groups || []).map((o) => o && o.id);
 
   const { dateArchived } = attributesFor(project);
 
@@ -30,6 +34,7 @@ export default function RowActions({ project }: IProps) {
     : t('project.dropdown.reactivate');
 
   const isCurrentUserOwner = currentUser.id === owner.id;
+  const isCurrentUserInGroup = groupIds.includes(group.id);
 
   return (
     <Dropdown
@@ -51,10 +56,10 @@ export default function RowActions({ project }: IProps) {
           }}
         >
           <Dropdown.Item text={dropdownItemText} onClick={toggleArchiveProject} />
-          {!isCurrentUserOwner && (
-            <Dropdown.Item text={t('project.claimOwnership')} onClick={claimOwnership} />
-          )}
         </RequireRole>
+        {!isCurrentUserOwner && isCurrentUserInGroup && (
+          <Dropdown.Item text={t('project.claimOwnership')} onClick={claimOwnership} />
+        )}{' '}
       </Dropdown.Menu>
     </Dropdown>
   );
