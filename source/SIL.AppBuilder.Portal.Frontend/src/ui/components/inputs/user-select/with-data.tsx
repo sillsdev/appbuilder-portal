@@ -66,7 +66,7 @@ export function withData(WrappedComponent) {
     const isOwnerInList = filtered.find((user) => user.id === selected);
 
     if (!isOwnerInList) {
-      const owner = filtered.find((user) => user.id === selected);
+      const owner = users.find((user) => user.id === selected);
 
       if (owner) {
         filtered.push(owner);
