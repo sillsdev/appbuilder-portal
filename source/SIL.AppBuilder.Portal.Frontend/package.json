@@ -46,7 +46,7 @@
     "inflection": "^1.12.0",
     "jwt-decode": "^2.2.0",
     "keyboardjs": "^2.5.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "md5-hash": "^1.0.1",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
