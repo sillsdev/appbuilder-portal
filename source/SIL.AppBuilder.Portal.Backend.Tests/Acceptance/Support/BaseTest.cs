@@ -246,7 +246,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             NeedsTestData<AppDbContext, Role>(new List<Role> {
                 new Role { RoleName = RoleName.SuperAdmin },
                 new Role { RoleName = RoleName.OrganizationAdmin },
-                new Role { RoleName = RoleName.AppBuilder }
+                new Role { RoleName = RoleName.AppBuilder },
+                new Role { RoleName = RoleName.Author }
             });
         }
 

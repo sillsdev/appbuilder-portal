@@ -107,6 +107,11 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasForeignKey(rp => rp.ProjectId);
 
             projectEntity
+                .HasMany(p => p.Authors)
+                .WithOne(c => c.Project)
+                .HasForeignKey(c => c.ProjectId);
+
+            projectEntity
                 .Property(p => p.AllowDownloads)
                 .HasDefaultValue(true);
 
@@ -220,6 +225,11 @@ namespace OptimaJet.DWKit.StarterApplication.Data
                 .HasForeignKey("OrganizationId")
                 .OnDelete(DeleteBehavior.SetNull);
 
+            projectImportEntity
+                .HasOne(p => p.Type)
+                .WithMany()
+                .HasForeignKey("TypeId")
+                .OnDelete(DeleteBehavior.SetNull);
 
             workflowDefinitionEntity
                 .Property(w => w.Type)
@@ -295,5 +305,6 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<ProductBuild> ProductBuilds { get; set; }
         public DbSet<ProductPublication> ProductPublications { get; set; }
         public DbSet<ProjectImport> ProjectImports { get; set; }
+        public DbSet<Author> Authors { get; set; }
     }
 }

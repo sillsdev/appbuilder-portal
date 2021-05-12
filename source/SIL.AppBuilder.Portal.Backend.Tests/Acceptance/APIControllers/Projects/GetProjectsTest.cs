@@ -41,10 +41,38 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
         public Reviewer reviewer1 { get; set; }
         public Reviewer reviewer2 { get; set; }
         public Reviewer reviewer3 { get; set; }
+        public Role roleContrib { get; set; }
+        public Author author1 { get; set; }
+        public Author author2 { get; set; }
+        public Author author3 { get; set; }
 
         private void BuildTestData()
         {
             CurrentUser = NeedsCurrentUser();
+            user1 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id1",
+                Email = "test-email1@test.test",
+                Name = "Test Testenson1",
+                GivenName = "Test1",
+                FamilyName = "Testenson1"
+            });
+            user2 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id2",
+                Email = "test-email2@test.test",
+                Name = "Test Testenson2",
+                GivenName = "Test2",
+                FamilyName = "Testenson2"
+            });
+            user3 = AddEntity<AppDbContext, User>(new User
+            {
+                ExternalId = "test-auth0-id3",
+                Email = "test-email3@test.test",
+                Name = "Test Testenson3",
+                GivenName = "Test3",
+                FamilyName = "Testenson3"
+            });
             org1 = AddEntity<AppDbContext, Organization>(new Organization
             {
                 Name = "TestOrg1",
@@ -82,6 +110,40 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 UserId = CurrentUser.Id,
                 OrganizationId = org2.Id
             });
+            AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user1.Id,
+                OrganizationId = org1.Id
+            });
+            AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user2.Id,
+                OrganizationId = org1.Id
+            });
+            AddEntity<AppDbContext, OrganizationMembership>(new OrganizationMembership
+            {
+                UserId = user3.Id,
+                OrganizationId = org1.Id
+            });
+            roleContrib = AddEntity<AppDbContext, Role>(new Role
+            {
+                RoleName = RoleName.Author
+            });
+            AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = user1.Id,
+                RoleId = roleContrib.Id
+            });
+            AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = user2.Id,
+                RoleId = roleContrib.Id
+            });
+            AddEntity<AppDbContext, UserRole>(new UserRole
+            {
+                UserId = user3.Id,
+                RoleId = roleContrib.Id
+            });
             group1 = AddEntity<AppDbContext, Group>(new Group
             {
                 Name = "TestGroup1",
@@ -109,6 +171,21 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             groupMembership1 = AddEntity<AppDbContext, GroupMembership>(new GroupMembership
             {
                 UserId = CurrentUser.Id,
+                GroupId = group1.Id
+            });
+            AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user1.Id,
+                GroupId = group1.Id
+            });
+            AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user2.Id,
+                GroupId = group1.Id
+            });
+            AddEntity<AppDbContext, GroupMembership>(new GroupMembership
+            {
+                UserId = user3.Id,
                 GroupId = group1.Id
             });
             type1 = AddEntity<AppDbContext, ApplicationType>(new ApplicationType
@@ -189,7 +266,21 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
                 Email = "david_moore1@sil.org",
                 ProjectId = project2.Id
             });
-
+            author1 = AddEntity<AppDbContext, Author>(new Author
+            {
+                UserId = user1.Id,
+                ProjectId = project1.Id
+            });
+            author2 = AddEntity<AppDbContext, Author>(new Author
+            {
+                UserId = user2.Id,
+                ProjectId = project1.Id
+            });
+            author3 = AddEntity<AppDbContext, Author>(new Author
+            {
+                UserId = user3.Id,
+                ProjectId = project1.Id
+            });
         }
 
         [Fact]
@@ -267,8 +358,31 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Contains(reviewer1.Id, reviewerIds);
             Assert.Contains(reviewer2.Id, reviewerIds);
             Assert.DoesNotContain(reviewer3.Id, reviewerIds);
+            var reviewer = projects.FirstOrDefault().Reviewers.FirstOrDefault();
+            Assert.Equal(reviewer1.Name, reviewer.Name);
+            Assert.Equal(reviewer1.ProjectId, project1.Id);
         }
 
+        [Fact]
+        public async Task GetProjects_IncludeAuthors()
+        {
+            BuildTestData();
+
+            var response = await Get("/api/projects?include=authors", allOrgs: true);
+            var responseString = response.Content.ToString();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var projects = await DeserializeList<Project>(response);
+
+            Assert.Equal(3, projects.Count);
+            var AuthorIds = projects.FirstOrDefault().Authors.Select(r => r.Id);
+            Assert.Equal(3, AuthorIds.Count());
+            Assert.Contains(author1.Id, AuthorIds);
+            //var c = projects.FirstOrDefault().Authors.FirstOrDefault();
+            //Assert.Equal(project1.Id, c.ProjectId);
+            //Assert.Equal(user1.Id, c.UserId);
+        }
 
         [Fact]
         public async Task GetProjects_ForDirectory()

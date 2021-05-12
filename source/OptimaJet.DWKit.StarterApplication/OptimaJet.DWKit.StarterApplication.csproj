@@ -21,8 +21,8 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Project</StartAction>
-    <LaunchBrowser>false</LaunchBrowser>
-    <ApplicationURL>http://localhost:5000</ApplicationURL>
+    <ExternalConsole>true</ExternalConsole>
+    <ApplicationURL>http://localhost:5407</ApplicationURL>
   </PropertyGroup>
 
   <ItemGroup>
