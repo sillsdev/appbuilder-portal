@@ -150,6 +150,7 @@ const schemaDefinition: SchemaSettings = {
         owner: { type: 'hasOne', model: 'user', inverse: 'projects' },
         group: { type: 'hasOne', model: 'group', inverse: 'projects' },
         reviewers: { type: 'hasMany', model: 'reviewer', inverse: 'project' },
+        authors: { type: 'hasMany', model: 'author', inverse: 'project'},
         type: { type: 'hasOne', model: 'applicationType', inverse: 'projects' },
       },
     },
@@ -435,7 +436,16 @@ const schemaDefinition: SchemaSettings = {
         userRoles: { type: 'hasMany', model: 'userRole', inverse: 'user' },
         groups: { type: 'hasMany', model: 'group', inverse: 'users' },
         notifications: { type: 'hasMany', model: 'notification', inverse: 'user' },
+        authors : { type: 'hasMany', model: 'author', inverse: 'user'},
       },
+    },
+    author: {
+      keys: { remoteId: {} },
+      attributes: { },
+      relationships: {
+        project: { type: 'hasOne', model: 'project', inverse: 'authors' },
+        user: { type: 'hasOne', model: 'user', inverse: 'authors' },
+      }
     },
     workflowDefinition: {
       keys: { remoteId: {} },
