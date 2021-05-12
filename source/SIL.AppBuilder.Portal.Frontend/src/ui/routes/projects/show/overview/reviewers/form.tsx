@@ -5,10 +5,8 @@ import { isEmpty } from '@lib/collection';
 import { isValidEmail } from '@lib/validations';
 import { ResourceObject } from 'jsonapi-typescript';
 import { attributesFor } from '@data/helpers';
-import { ProjectAttributes } from '@data/models/project';
+import { ProjectAttributes, ProjectResource } from '@data/models/project';
 import { UserAttributes } from '@data/models/user';
-
-import { PROJECTS_TYPE } from '@data';
 
 import { USERS_TYPE } from '@data';
 
@@ -24,7 +22,7 @@ import { withCurrentUserContext } from '@data/containers/with-current-user';
 import LocaleSelect from '@ui/components/inputs/locale-select';
 
 interface Params {
-  project: ResourceObject<PROJECTS_TYPE, ProjectAttributes>;
+  project: ProjectResource;
 }
 interface IOwnProps {
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;

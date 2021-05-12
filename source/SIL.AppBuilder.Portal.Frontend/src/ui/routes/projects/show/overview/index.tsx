@@ -7,6 +7,7 @@ import { useTranslations } from '~/lib/i18n';
 import Details from './details';
 import Products from './products';
 import Owners from './owners';
+import Authors from './authors';
 import Reviewers from './reviewers';
 import Settings from './settings';
 
@@ -33,6 +34,7 @@ export default ({ project }) => {
           </div>
         )}
         <Owners project={project} />
+        <Authors project={project} />
         <Reviewers project={project} />
       </div>
     </div>

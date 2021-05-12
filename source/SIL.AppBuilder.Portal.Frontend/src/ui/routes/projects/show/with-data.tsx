@@ -40,6 +40,7 @@ export function withData(WrappedComponent) {
             'owner.organization-memberships.organization',
             'reviewers',
             'type',
+            'authors.user',
           ],
         }),
       ],

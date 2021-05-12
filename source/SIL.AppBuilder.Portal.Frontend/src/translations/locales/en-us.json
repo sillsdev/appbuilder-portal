@@ -351,6 +351,16 @@
       "organization": "Organization",
       "projectOwner": "Project Owner",
       "projectGroup": "Project Group",
+      "authors": {
+        "title": "Authors",
+        "add": "add author",
+        "close": "close",
+	"form": {
+	  "user": "user",
+	  "userError": "User cannot be empty",
+	  "submit": "Add Author"
+	}
+      },
       "reviewers": {
         "title": "Reviewers",
         "add": "add reviewer",

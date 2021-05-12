@@ -34,6 +34,7 @@ export { query, pushPayload } from 'react-orbitjs';
 
 export { PUSH_PAYLOAD_OPERATION } from './push-payload-operations';
 
+export { AUTHORS_TYPE, AuthorResource } from './models/author';
 export { APPLICATION_TYPES_TYPE, ApplicationTypeResource } from './models/application-type';
 export { GROUP_MEMBERSHIPS_TYPE, GroupMembershipResource } from './models/group-membership';
 export { GROUPS_TYPE, GroupResource } from './models/group';
