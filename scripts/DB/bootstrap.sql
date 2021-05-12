@@ -1,7 +1,8 @@
 INSERT INTO "Roles" ("Id", "RoleName") VALUES
 (1, 1), /* super admin */
 (2, 2), /* org admin */
-(3, 3); /* app builder */
+(3, 3), /* app builder */
+(4, 4); /* author */
 
 SELECT SETVAL('"Roles_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "Roles";
