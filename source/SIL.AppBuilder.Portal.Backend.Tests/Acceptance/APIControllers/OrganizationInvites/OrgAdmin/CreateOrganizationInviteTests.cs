@@ -23,7 +23,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Organiza
         {
             try {
                 BuildTestData();
-            } catch (System.InvalidOperationException e) {
+            } catch (System.InvalidOperationException) {
                 // why
             }
             

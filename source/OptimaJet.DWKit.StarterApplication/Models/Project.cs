@@ -52,6 +52,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasMany("reviewers", Link.None)]
         public virtual List<Reviewer> Reviewers { get; set; }
 
+        [HasMany("authors", Link.None)]
+        public virtual List<Author> Authors { get; set; }
+
         [Attr("allow-downloads")]
         public bool? AllowDownloads { get; set; } = true;
 

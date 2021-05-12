@@ -6,5 +6,6 @@ namespace OptimaJet.DWKit.StarterApplication.Models
     SuperAdmin = 1,
     OrganizationAdmin = 2,
     AppBuilder = 3, // default
+    Author = 4,
   }
 }
