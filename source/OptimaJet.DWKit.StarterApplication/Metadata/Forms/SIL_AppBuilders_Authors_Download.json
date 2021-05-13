@@ -1,0 +1,133 @@
+[
+  {
+    "key": "workflowbar",
+    "data-buildertype": "workflowbar",
+    "events": {
+      "onCommandClick": {
+        "active": true,
+        "actions": [
+          "validate",
+          "save",
+          "workflowExecuteCommand",
+          "refresh"
+        ],
+        "targets": [],
+        "parameters": []
+      },
+      "onSetStateClick": {
+        "active": true,
+        "actions": [
+          "validate",
+          "save",
+          "workflowSetState",
+          "refresh"
+        ],
+        "targets": [],
+        "parameters": []
+      }
+    },
+    "blockSetState": true
+  },
+  {
+    "key": "form_2",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "textarea_comment",
+        "data-buildertype": "textarea",
+        "label": "Comment",
+        "fluid": true,
+        "rows": "2"
+      },
+      {
+        "key": "staticcontent_hr",
+        "data-buildertype": "staticcontent",
+        "content": "<hr style=\"height:5px;\"/>",
+        "isHtml": true,
+        "style-customcss": "",
+        "style-source": "height:5px;"
+      }
+    ]
+  },
+  {
+    "key": "form_1",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "header_1",
+        "data-buildertype": "header",
+        "content": "Author Download",
+        "size": "medium"
+      },
+      {
+        "key": "formgroup_2",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_project_name",
+            "data-buildertype": "input",
+            "label": "Project Name",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-width": "",
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_project_description",
+            "data-buildertype": "input",
+            "label": "Project Description",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-source": "",
+            "style-width": "",
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
+        "key": "formgroup_1",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_store",
+            "data-buildertype": "input",
+            "label": "Store",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_store_listing_language",
+            "data-buildertype": "input",
+            "label": "Store Listing Language",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
+        "key": "input_app_project_url",
+        "data-buildertype": "input",
+        "label": "App Project URL",
+        "fluid": true,
+        "onChangeTimeout": 200,
+        "readOnly": true
+      },
+      {
+        "key": "staticcontent_1",
+        "data-buildertype": "staticcontent",
+        "content": "<h3>Instructions</h3>\n<p>To be sure you are updating the latest version of this published project, please download the project before making changes. This can be done in one of two different ways:</p>\n<ol>\n<li>Download a new copy</li>\n<ul>\n<li>From the <strong>File</strong> menu, select <strong>Open App From Scriptoria...</strong></li>\n<li>Copy and Paste the above <strong>App Project URL</strong> into the <strong>Enter the project URL</strong> field. </li>\n<li>Click <strong>Login</strong> to connect to Scriptoria.</li>\n<li>Click <strong>Download</strong> to download a new copy of the project from the app publishing repository.</li>\n<li>Click <strong>OK</strong> to add the project to you list of projects.</li>\n</ul>\n<li>Update current project</li>\n<ul>\n<li>In the <strong>Publishing > App Publishing</strong> configuration page:\n<ul>\n<li>Enable Scriptoria by selecting the <strong>We would like to use Scriptoria</strong> option (if not already selected).</li>\n</ul>\n</li>\n<li>In the <strong>Publishing > Scriptoria</strong> configuration page:\n<ul>\n<li>Copy and Paste the above <strong>App Project URL</strong> into the <strong>Enter App Project URL</strong> field (if not already set). </li>\n<li>Click <strong>Login</strong> to connect to Scriptoria.</li>\n<li>Click <strong>Download</strong> and successfully update the project from the app publishing repository.</li>\n</ul>\n</ol>\n\n",
+        "isHtml": true
+      }
+    ]
+  }
+]
