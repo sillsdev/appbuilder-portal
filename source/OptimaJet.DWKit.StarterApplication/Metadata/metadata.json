@@ -3173,6 +3173,24 @@
             "*"
           ],
           "form": "SIL_AppBuilders_Approval_Pending"
+        },
+        {
+          "states": [
+            "Author Upload"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Authors_Upload"
+        },
+        {
+          "states": [
+            "Author Download"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Authors_Download"
         }
       ]
     },
