@@ -7,5 +7,6 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         StartWorkflow = 2,
         EndWorkflow = 3,
         CancelWorkflow = 4,
+        ProjectAccess = 5
     }
 }

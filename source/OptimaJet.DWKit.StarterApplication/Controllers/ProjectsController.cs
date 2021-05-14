@@ -31,6 +31,10 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         public IBuildEngineProjectService BuildEngineProjectService { get; }
         public ProjectService ProjectService { get; }
 
+        private static string TOKEN_USE_QUERY_PARAM = "use";
+        private static string TOKEN_USE_HEADER = "Use";
+
+
         [HttpPost("{id}/token")]
         public async Task<IActionResult> GetProjectToken(int id)
         {
@@ -102,6 +106,18 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 Region = token.Region,
                 ReadOnly = token.ReadOnly
             };
+
+            var use = readOnly.Value ? "ReadOnly Access" : "ReadWrite Access";
+            if (HttpContext.Request.Query.ContainsKey(TOKEN_USE_QUERY_PARAM))
+            {
+                use = HttpContext.Request.Query[TOKEN_USE_QUERY_PARAM];
+            }
+            if (HttpContext.Request.Headers.ContainsKey(TOKEN_USE_HEADER))
+            {
+                use = HttpContext.Request.Headers[TOKEN_USE_HEADER];
+            }
+            ProjectService.AddTokenUse(project, CurrentUser, use);
+
             return Ok(projectToken);
         }
     }

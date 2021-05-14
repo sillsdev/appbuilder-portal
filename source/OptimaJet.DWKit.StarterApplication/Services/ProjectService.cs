@@ -138,6 +138,11 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .ToListAsync();
             return authors;
         }
+
+        public void AddTokenUse(Project project, User user, String use)
+        {
+            HangfireClient.Enqueue<WorkflowProjectService>(service => service.AddTokenUse(project.Id, user.Id, use));
+        }
     }
 
 }

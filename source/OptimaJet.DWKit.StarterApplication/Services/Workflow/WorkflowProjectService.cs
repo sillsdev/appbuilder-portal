@@ -1,17 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using OptimaJet.DWKit.Application;
-using OptimaJet.DWKit.Core;
-using OptimaJet.DWKit.Core.Model;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
-using OptimaJet.Workflow.Core.Runtime;
-using Serilog;
-using static OptimaJet.DWKit.StarterApplication.Services.Workflow.WorkflowProductService;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
@@ -19,14 +11,20 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
     {
 
         public IJobRepository<Project> ProjectRepository { get; }
+        public IJobRepository<ProductTransition> ProductTransitionRepository { get; }
+        public IJobRepository<User> UserRepository { get; }
         public WorkflowProductService WorkflowProductService { get; }
 
         public WorkflowProjectService(
             IJobRepository<Project> projectRepository,
+            IJobRepository<ProductTransition> productTransitionRepository,
+            IJobRepository<User> userRepository,
             WorkflowProductService productService
         )
         {
             this.ProjectRepository = projectRepository;
+            ProductTransitionRepository = productTransitionRepository;
+            UserRepository = userRepository;
             this.WorkflowProductService = productService;
         }
 
@@ -83,6 +81,43 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             if (project.DateActive != projectDateActive)
             {
                 await ProjectRepository.UpdateAsync(project);
+            }
+        }
+
+        public void AddTokenUse(int projectId, int userId, string use)
+        {
+            AddTokenUseAsync(projectId,userId, use).Wait();
+        }
+
+        public async Task AddTokenUseAsync(int projectId, int userId, string use)
+        {
+            var project = await this.ProjectRepository.Get()
+                .Include(proj => proj.Products)
+                .Where(p => p.Id == projectId)
+                .FirstOrDefaultAsync();
+
+            var user = await this.UserRepository.Get()
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (project == null || user == null)
+            {
+                return;
+            }
+
+            foreach (var product in project.Products)
+            {
+                var transition = new ProductTransition
+                {
+                    ProductId = product.Id,
+                    AllowedUserNames = string.Empty,
+                    TransitionType = ProductTransitionType.ProjectAccess,
+                    InitialState = "Project " + use,
+                    WorkflowUserId = user.WorkflowUserId,
+                    DateTransition = DateTime.UtcNow
+                };
+
+                await ProductTransitionRepository.CreateAsync(transition);
             }
         }
     }
