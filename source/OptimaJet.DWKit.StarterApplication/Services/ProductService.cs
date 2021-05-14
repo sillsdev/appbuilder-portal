@@ -211,6 +211,29 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // Running the startup workflow.  Return empty list
             return new List<string>();
         }
+        public async Task<IEnumerable<ProductTransition>> GetProductTransitionsForDisplayAsync(Guid id)
+        {
+            var product = await ProductRepository.Get()
+                .Where(p => p.Id == id)
+                .Include(p => p.Transitions)
+                .FirstOrDefaultAsync();
+            if (product == null)
+            {
+                return null;
+            }
+            else
+            {
+                var completedTransitions = product.Transitions
+                    .Where(t => t.DateTransition != null)
+                    .OrderBy(t => t.DateTransition)
+                    .ToList();
+                var notCompletedTransitions = product.Transitions
+                    .Where(t => t.DateTransition == null)
+                    .OrderBy(t => t.Id)
+                    .ToList();
+                return completedTransitions.Concat(notCompletedTransitions);
+            }
+        }
         public async Task<List<ProductTransition>> GetProductTransitionsAsync(Guid id)
         {
             var product = await ProductRepository.Get()

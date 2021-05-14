@@ -47,7 +47,7 @@ export default function TransitionDetails({ product }: IProps) {
     dateTransition: string,
     transitionType: number
   ) => {
-    if (transitionType != 1) {
+    if (transitionType != 1 && transitionType != 5) {
       return '';
     }
     let userName = t('appName');
@@ -83,6 +83,8 @@ export default function TransitionDetails({ product }: IProps) {
     let transitionClass = 'artifact-item flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md bold';
     if (transitionType === 1) {
       transitionClass = 'artifact-item flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md';
+    } else if (transitionType === 5) {
+      transitionClass = 'artifact-item flex thin-bottom-border p-l-md p-t-sm p-b-sm p-r-md';
     }
     return transitionClass;
   };
@@ -91,6 +93,11 @@ export default function TransitionDetails({ product }: IProps) {
       const initialState = attributes['initial-state'];
       return initialState;
     }
+    if (transitionType === 5) {
+      const initialState = "► " + attributes['initial-state'];
+      return initialState;
+    }
+    
     const workflowType: number = attributes['workflow-type'];
     const workflowTypeString = t(
       `admin.settings.workflowDefinitions.workflowTypes.${workflowType.toString()}`

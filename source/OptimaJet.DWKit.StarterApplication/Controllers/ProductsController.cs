@@ -68,7 +68,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         [HttpGet("{id}/transitions")]
         public async Task<IActionResult> GetProductTransitions(Guid id)
         {
-            var transitions = await ProductService.GetProductTransitionsAsync(id);
+            var transitions = await ProductService.GetProductTransitionsForDisplayAsync(id);
             if (transitions == null)
             {
                 return NotFound();
