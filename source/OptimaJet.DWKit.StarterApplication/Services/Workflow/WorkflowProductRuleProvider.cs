@@ -33,6 +33,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _rules.Add("CheckRole", new RuleFunction { CheckFunction = RoleCheck, GetFunction = RoleGet });
             _rules.Add("IsOwner", new RuleFunction { CheckFunction = ProjectOwnerCheck, GetFunction = ProjectOwnerGet });
             _rules.Add("IsOrgAdmin", new RuleFunction { CheckFunction = OrgAdminCheck, GetFunction = OrgAdminGet });
+            _rules.Add("IsAuthor", new RuleFunction { CheckFunction = ProjectAuthorCheck, GetFunction = ProjectAuthorGet });
+
         }
 
         //
@@ -147,6 +149,67 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     .FirstOrDefault();
                 var workflowUserId = product?.Project.Owner.WorkflowUserId;
                 return workflowUserId.HasValue && workflowUserId.Value == new Guid(identityId);
+            }
+        }
+
+        //
+        // IsAuthor
+        //
+        public IEnumerable<string> ProjectAuthorGet(ProcessInstance processInstance, WorkflowRuntime runtime, string parameter)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                var product = productRepository.Get()
+                    .Where(p => p.Id == processInstance.ProcessId)
+                    .Include(p => p.Project)
+                        .ThenInclude(p => p.Authors)
+                            .ThenInclude(a => a.User)
+                    .FirstOrDefault();
+                if (product == null)
+                {
+                    return new List<string>();
+                }
+
+                var authorWorkflowUserIds = product.Project.Authors.Select(a => a.User.WorkflowUserId.Value.ToString()).ToList();
+                return authorWorkflowUserIds;
+
+                //var organization = product.Project.Organization;
+                //var orgAdmins = userRolesRepository.Get()
+                //    .Include(ur => ur.User)
+                //    .Include(ur => ur.Role)
+                //    .Where(ur => ur.OrganizationId == organization.Id && ur.Role.RoleName == RoleName.OrganizationAdmin && ur.User.WorkflowUserId.HasValue)
+                //    .Select(r => r.User.WorkflowUserId.Value.ToString())
+                //    .ToList();
+                //return orgAdmins;
+            }
+        }
+
+        public bool ProjectAuthorCheck(ProcessInstance processInstance, WorkflowRuntime runtime, string identityId, string parameter)
+        {
+            var workflowUserId = new Guid(identityId);
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                var userRolesRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<UserRole>>();
+                var product = productRepository.Get()
+                    .Where(p => p.Id == processInstance.ProcessId)
+                    .Include(p => p.Project)
+                        .ThenInclude(p => p.Authors)
+                            .ThenInclude(a => a.User)
+                    .FirstOrDefault();
+                if (product == null)
+                {
+                    return false;
+                }
+
+                var author = product.Project.Authors.Where(a => a.User.WorkflowUserId.GetValueOrDefault() == workflowUserId).FirstOrDefault();
+                return author != null;
+                //var userRole = userRolesRepository.Get()
+                //    .Include(ur => ur.User)
+                //    .Where(ur => ur.OrganizationId == product.Project.OrganizationId && ur.User.WorkflowUserId.HasValue && ur.User.WorkflowUserId.Value == workflowUserId)
+                //    .FirstOrDefault();
+                //return userRole != null;
             }
         }
 

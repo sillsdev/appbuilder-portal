@@ -24,6 +24,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         private readonly string PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID = "PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID";
         private readonly string PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE = "PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE";
         private readonly string GOOGLE_PLAY_UPLOADED = "google_play_uploaded";
+        private readonly string AUTHOR_CAN_UPLOAD = "author_can_upload";
         private readonly string ENVIRONMENT = "environment";
         private readonly Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>> _actions = new Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>>();
 
@@ -54,6 +55,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncActions.Add("GooglePlay_UpdatePublishLink", NoOperationAsync);
             _asyncActions.Add("SendReviewerLinkToProductFiles", SendReviewerLinkToProductFilesAsync);
             _asyncActions.Add("Build_SetStatus", BuildSetStatusAsync);
+            _asyncActions.Add("Project_SetStatus", ProjectSetStatusAsync);
 
             //Register your conditions in _conditions and _asyncConditions dictionaries
             //_asyncConditions.Add("CheckBigBossMustSign", CheckBigBossMustSignAsync);
@@ -63,6 +65,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             _asyncConditions.Add("BuildEngine_PublishCompleted", BuildEnginePublishCompleted);
             _asyncConditions.Add("BuildEngine_PublishFailed", BuildEnginePublishFailed);
             _asyncConditions.Add("Build_AnyMatchingStatus", BuildAnyMatchingStatus);
+            _asyncConditions.Add("Project_HasAuthors", ProjectHasAuthors);
 
             _conditions.Add("Should_Execute_Activity", ShouldExecuteActivity);
         }
@@ -219,6 +222,21 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     throw new Exception($"Product {product.Id.ToString()}: unknown workflow action parameter: {actionParameter}");
                 }
+            }
+        }
+
+        private async Task<bool> ProjectHasAuthors(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                var product = await GetProductForProcess(processInstance, productRepository);
+
+                var authorsRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Author>>();
+                var authors = await authorsRepository.Get()
+                    .Where(a => a.ProjectId == product.ProjectId)
+                    .ToListAsync();
+                return (authors != null) && authors.Count > 0;
             }
         }
 
@@ -417,6 +435,40 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     throw new Exception($"Product {product.Id}: unknown workflow action parameter: {actionParameter}");
                 }
             }
+        }
+
+        private async Task ProjectSetStatusAsync(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
+                Product product = await GetProductForProcess(processInstance, productRepository);
+                var parmsDict = GetActionParameters(actionParameter);
+                if (parmsDict.ContainsKey(AUTHOR_CAN_UPLOAD))
+                {
+                    if (int.TryParse(parmsDict[AUTHOR_CAN_UPLOAD].ToString(), out int value))
+                    {
+                        var authorRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Author>>();
+                        var authors = await authorRepository.Get()
+                                        .Where(a => a.ProjectId == product.ProjectId)
+                                        .ToListAsync();
+                        foreach (var author in authors)
+                        {
+                            author.CanUpdate = (value != 0);
+                            await authorRepository.UpdateAsync(author);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Product {product.Id}: unable to parse value for workflow action parameter: {actionParameter}");
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Product {product.Id}: unknown workflow action parameter or bad value: {actionParameter}");
+                }
+            }
+
         }
 
         #region DWKit Execution Callbacks
