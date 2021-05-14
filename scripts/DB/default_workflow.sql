@@ -207,6 +207,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -221,6 +222,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
     <Command Name="Hold" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -257,6 +260,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -399,6 +405,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="170" Y="890" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="40" Y="560" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="40" Y="690" />
     </Activity>
   </Activities>
   <Transitions>
@@ -737,7 +764,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Trigger Type="Auto" />
       </Triggers>
       <Conditions>
-        <Condition Type="Always" NameRef="" ConditionInversion="false" />
+        <Condition Type="Always" />
       </Conditions>
       <Designer X="395" Y="853" />
     </Transition>
@@ -753,6 +780,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="816" Y="808" />
     </Transition>
+    <Transition Name="Synchronize Data_Author Download_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="325" Y="513" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="385" Y="725" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -765,6 +852,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -779,6 +867,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
     <Command Name="Hold" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -806,6 +896,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -927,6 +1020,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="120" Y="860" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="80" Y="460" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="80" Y="600" />
     </Activity>
   </Activities>
   <Transitions>
@@ -1185,6 +1299,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="827" Y="738" />
     </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="447" Y="490" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="354" Y="690" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -1197,6 +1371,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -1211,6 +1386,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
     <Command Name="Hold" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -1238,6 +1415,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -1359,6 +1539,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="130" Y="840" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="120" Y="460" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="120" Y="600" />
     </Activity>
   </Activities>
   <Transitions>
@@ -1617,6 +1818,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="501" Y="481" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="382" Y="688" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -1629,6 +1890,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -1642,6 +1904,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Back" />
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -1650,6 +1914,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -1730,6 +1997,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="40" Y="250" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="110" Y="590" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="230" Y="710" />
     </Activity>
   </Activities>
   <Transitions>
@@ -1823,15 +2111,6 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="536" Y="616" />
     </Transition>
-    <Transition Name="Initial_Product Build_1" To="Product Rebuild" From="Initial" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
-      <Triggers>
-        <Trigger Type="Auto" />
-      </Triggers>
-      <Conditions>
-        <Condition Type="Otherwise" />
-      </Conditions>
-      <Designer />
-    </Transition>
     <Transition Name="Check Product Build_Verify and Publish_1" To="Verify and Publish" From="Check Product Build" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
         <Trigger Type="Auto" />
@@ -1882,6 +2161,75 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Synchronize Data_Author Download_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="357" Y="638" />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="172" Y="538" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="413" Y="611" />
+    </Transition>
+    <Transition Name="Initial_Product Rebuild_1" To="Product Rebuild" From="Initial" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -1894,6 +2242,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -1907,6 +2256,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Back" />
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -1915,6 +2266,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -1997,6 +2351,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="40" Y="250" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="130" Y="600" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="280" Y="740" />
     </Activity>
   </Activities>
   <Transitions>
@@ -2149,6 +2524,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="174" Y="559" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="439" Y="590" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -2161,6 +2596,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -2175,6 +2611,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
     <Command Name="Hold" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -2211,6 +2649,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -2314,6 +2755,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     </Activity>
     <Activity Name="Terminated" State="Terminated" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Designer X="1220" Y="290" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="20" Y="480" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="20" Y="660" />
     </Activity>
   </Activities>
   <Transitions>
@@ -2572,6 +3034,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer X="284" Y="558" />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="293" Y="681" />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="410" Y="509" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="354" Y="716" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -2584,6 +3106,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -2598,6 +3121,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
     <Command Name="Hold" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -2625,6 +3150,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -2717,6 +3245,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="320" Y="180" />
     </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="40" Y="480" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="40" Y="620" />
+    </Activity>
   </Activities>
   <Transitions>
     <Transition Name="Job Creation_Activity_1_1" To="Check Product Creation" From="Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
@@ -2899,6 +3448,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="396" Y="515" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="330" Y="715" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -2911,6 +3520,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -2924,6 +3534,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Back" />
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -2932,6 +3544,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -3015,6 +3630,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="40" Y="250" />
     </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="130" Y="590" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="280" Y="710" />
+    </Activity>
   </Activities>
   <Transitions>
     <Transition Name="SynchronizeData_Activity_1_1" To="Product Rebuild" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
@@ -3165,6 +3801,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         </Condition>
       </Conditions>
       <Designer />
+    </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="173" Y="550" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="449" Y="581" />
     </Transition>
   </Transitions>
 </Process>')
@@ -3178,6 +3874,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -3192,6 +3889,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
     <Command Name="Hold" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -3219,6 +3918,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -3310,6 +4012,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="320" Y="180" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="20" Y="480" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="20" Y="660" />
     </Activity>
   </Activities>
   <Transitions>
@@ -3492,6 +4215,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Condition Type="Always" />
       </Conditions>
       <Designer />
+    </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="290" Y="680" />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="364" Y="510" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="357" Y="715" />
     </Transition>
   </Transitions>
 </Process>')
@@ -3505,6 +4288,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -3518,6 +4302,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Back" />
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -3526,6 +4312,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -3608,6 +4397,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="40" Y="250" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="150" Y="580" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="280" Y="720" />
     </Activity>
   </Activities>
   <Transitions>
@@ -3760,6 +4570,66 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer X="327" Y="551" />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="402" Y="650" />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="181" Y="538" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="442" Y="592" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -3772,6 +4642,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -3786,6 +4657,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
     <Command Name="Hold" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -3813,6 +4686,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -3904,6 +4780,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="320" Y="180" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="20" Y="460" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="20" Y="620" />
     </Activity>
   </Activities>
   <Transitions>
@@ -4087,18 +4984,79 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="281" Y="659" />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="406" Y="518" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="346" Y="719" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
 	"Scheme" = excluded."Scheme";
 
 INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
-('SIL_AppBuilders_Html_Cloud_Rebuild', '<Process Name="SIL_AppBuilders_Html_Cloud_Rebuild" CanBeInlined="false">
+('SIL_Default_AppBuilders_Html_Cloud_Rebuild', '<Process Name="SIL_Default_AppBuilders_Html_Cloud_Rebuild" CanBeInlined="false">
   <Designer />
   <Actors>
     <Actor Name="Owner" Rule="IsOwner" Value="" />
     <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
     <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
   </Actors>
   <Parameters>
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
@@ -4112,6 +5070,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Back" />
     <Command Name="Rebuild" />
     <Command Name="Email Reviewers" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -4120,6 +5080,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -4202,6 +5165,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <ActionRef Order="1" NameRef="WriteProductTransition" />
       </PreExecutionImplementation>
       <Designer X="40" Y="250" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="130" Y="600" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="280" Y="720" />
     </Activity>
   </Activities>
   <Transitions>
@@ -4353,6 +5337,420 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         </Condition>
       </Conditions>
       <Designer />
+    </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="172" Y="562" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="450" Y="577" />
+    </Transition>
+  </Transitions>
+</Process>')
+ON CONFLICT("Code") DO UPDATE SET
+	"Scheme" = excluded."Scheme";
+	
+INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
+('SIL_AppBuilders_Html_Cloud_Rebuild', '<Process Name="SIL_AppBuilders_Html_Cloud_Rebuild" CanBeInlined="false">
+  <Designer />
+  <Actors>
+    <Actor Name="Owner" Rule="IsOwner" Value="" />
+    <Actor Name="OrgAdmin" Rule="IsOrgAdmin" Value="" />
+    <Actor Name="Admins" Rule="CheckRole" Value="Admins" />
+    <Actor Name="Author" Rule="IsAuthor" Value="" />
+  </Actors>
+  <Parameters>
+    <Parameter Name="Comment" Type="String" Purpose="Temporary" />
+    <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
+    <Parameter Name="environment" Type="String" Purpose="Persistence" />
+  </Parameters>
+  <Commands>
+    <Command Name="Approve" />
+    <Command Name="Reject" />
+    <Command Name="Continue" />
+    <Command Name="Back" />
+    <Command Name="Rebuild" />
+    <Command Name="Email Reviewers" />
+    <Command Name="Transfer to Authors" />
+    <Command Name="Take Back" />
+  </Commands>
+  <Timers>
+    <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
+  </Timers>
+  <Activities>
+    <Activity Name="Synchronize Data" State="Synchronize Data" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":0}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="280" Y="450" />
+    </Activity>
+    <Activity Name="Product Rebuild" State="Product Rebuild" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="BuildEngine_BuildProduct">
+          <ActionParameter><![CDATA[{"targets":"html"}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="390" Y="260" />
+    </Activity>
+    <Activity Name="Check Product Build" State="Check Product Build" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="720" Y="260" />
+    </Activity>
+    <Activity Name="Verify and Publish" State="Verify and Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="750" Y="420" />
+    </Activity>
+    <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct">
+          <ActionParameter><![CDATA[{"targets":"rclone"}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="700" Y="570" />
+    </Activity>
+    <Activity Name="Check Product Publish" State="Check Product Publish" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="700" Y="720" />
+    </Activity>
+    <Activity Name="Published" State="Published" IsInitial="False" IsFinal="True" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="1020" Y="720" />
+    </Activity>
+    <Activity Name="Email Reviewers" State="Email Reviewers" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="SendReviewerLinkToProductFiles">
+          <ActionParameter><![CDATA[{"types":["apk","play-listing"]}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <Designer X="1060" Y="420" />
+    </Activity>
+    <Activity Name="Initial" State="Initial" IsInitial="True" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="40" Y="250" />
+    </Activity>
+    <Activity Name="Author Download" State="Author Download" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="140" Y="580" />
+    </Activity>
+    <Activity Name="Author Upload" State="Author Upload" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Project_SetStatus">
+          <ActionParameter><![CDATA[{"author_can_upload":1}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="280" Y="710" />
+    </Activity>
+  </Activities>
+  <Transitions>
+    <Transition Name="SynchronizeData_Activity_1_1" To="Product Rebuild" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Product Build_Activity_1_1" To="Check Product Build" From="Product Rebuild" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Build_SynchronizeData_1" To="Synchronize Data" From="Check Product Build" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildFailed" ConditionInversion="false" />
+      </Conditions>
+      <Designer X="690" Y="389" />
+    </Transition>
+    <Transition Name="Check Product Build_Check Product Build_1" To="Check Product Build" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Timer" NameRef="CheckReady" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_Activity_1_1" To="Product Publish" From="Verify and Publish" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Approve" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_SynchronizeData_1" To="Synchronize Data" From="Verify and Publish" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Reject" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Product Publish_Activity_1_1" To="Check Product Publish" From="Product Publish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Publish_Check Product Publish_1" To="Check Product Publish" From="Check Product Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Timer" NameRef="CheckReady" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer X="925" Y="687" />
+    </Transition>
+    <Transition Name="Check Product Publish_SynchronizeData_1" To="Synchronize Data" From="Check Product Publish" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishFailed" ConditionInversion="false" />
+      </Conditions>
+      <Designer X="536" Y="616" />
+    </Transition>
+    <Transition Name="Initial_Product Build_1" To="Product Rebuild" From="Initial" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Otherwise" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Check Product Build_Verify and Publish_1" To="Verify and Publish" From="Check Product Build" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Verify and Publish_Email Reviewers_1" To="Email Reviewers" From="Verify and Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Email Reviewers" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Email Reviewers_Verify and Publish_1" To="Verify and Publish" From="Email Reviewers" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="1006" Y="378" />
+    </Transition>
+    <Transition Name="Check Product Publish_Published_1" To="Published" From="Check Product Publish" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Initial_Synchronize Data_1" To="Synchronize Data" From="Initial" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Should_Execute_Activity" ConditionInversion="false" ResultOnPreExecution="false">
+          <ActionParameter><![CDATA[Synchronize Data]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Synchronize Data_Activity_1_1" To="Author Download" From="Synchronize Data" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Transfer to Authors" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="Project_HasAuthors" ConditionInversion="false" ResultOnPreExecution="false" />
+      </Conditions>
+      <Designer />
+    </Transition>
+    <Transition Name="Author Download_Activity_1_1" To="Author Upload" From="Author Download" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="298" Y="669" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_1" To="Synchronize Data" From="Author Upload" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Author" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Continue" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="391" Y="642" />
+    </Transition>
+    <Transition Name="Author Download_Synchronize Data_1" To="Synchronize Data" From="Author Download" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="185" Y="537" />
+    </Transition>
+    <Transition Name="Author Upload_Synchronize Data_2" To="Synchronize Data" From="Author Upload" Classifier="Reverse" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Take Back" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="456" Y="611" />
     </Transition>
   </Transitions>
 </Process>')
