@@ -45,25 +45,44 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 return NotFound($"Project id={id}: WorkflowProjectUrl is null");
             }
 
-            var roles = await ProjectService.GetUserRolesForProject(project, CurrentUser.Id);
-
-            bool readOnly;
+            // Check ownership
+            bool? readOnly = null;
             if (CurrentUser.Id == project.OwnerId)
             {
                 readOnly = false;
-            } else if (roles != null && roles.Exists(role => role.RoleName == RoleName.OrganizationAdmin))
+            }
+
+            // Check roles
+            if (!readOnly.HasValue)
             {
-                readOnly = true;
+                var roles = await ProjectService.GetUserRolesForProject(project, CurrentUser.Id);
+
+                if ((roles != null) && roles.Exists(role => role.RoleName == RoleName.OrganizationAdmin))
+                {
+                    readOnly = true;
+                }
+                else if (CurrentUser.HasRole(RoleName.SuperAdmin)) {
+                    readOnly = true;
+                }
             }
-            else if (CurrentUser.HasRole(RoleName.SuperAdmin)) {
-                readOnly = true;
+
+            // Check authors 
+            if (!readOnly.HasValue)
+            {
+                var authors = await ProjectService.GetAuthorsForProject(project);
+                Author author = null;
+                if ((authors != null) && ((author = authors.Find(a => a.UserId == CurrentUser.Id)) != null))
+                {
+                    readOnly = !author.CanUpdate;
+                }
             }
-            else
+
+            if (!readOnly.HasValue)
             {
                 return NotFound($"Project id={id}, user={CurrentUser.Name} does not have permission");
             }
 
-            var token = await BuildEngineProjectService.GetProjectTokenAsync(id, readOnly);
+            var token = await BuildEngineProjectService.GetProjectTokenAsync(id, readOnly.Value);
             if (token == null)
             {
                 return NotFound($"Project id={id}: GetProjectToken returned null");

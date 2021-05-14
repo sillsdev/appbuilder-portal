@@ -29,6 +29,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public CurrentUserRepository CurrentUserRepository { get; }
         public IEntityRepository<Organization> OrganizationRepository { get; set; }
         public IEntityRepository<UserRole> UserRolesRepository { get; }
+        public IEntityRepository<Author> AuthorRepository { get; }
 
         public ProjectService(
             IBackgroundJobClient hangfireClient,
@@ -41,6 +42,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             GroupRepository groupRepository,
             IEntityRepository<Organization> organizationRepository,
             IEntityRepository<UserRole> userRolesRepository,
+            IEntityRepository<Author> authorRepository,
             ILoggerFactory loggerFactory) : base(jsonApiContext, projectRepository, loggerFactory)
         {
             OrganizationContext = organizationContext;
@@ -51,6 +53,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             GroupRepository = groupRepository;
             OrganizationRepository = organizationRepository;
             UserRolesRepository = userRolesRepository;
+            AuthorRepository = authorRepository;
             ProjectRepository = (ProjectRepository)projectRepository;
             CurrentUserRepository = currentUserRepository;
         }
@@ -125,6 +128,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .Where(ur => ur.UserId == userId)
                 .ToListAsync();
             return roles;
+        }
+
+        public async Task<List<Author>> GetAuthorsForProject(Project project)
+        {
+            List<Author> authors = await AuthorRepository.Get()
+                .Where(a => a.ProjectId == project.Id)
+                .Include(a => a.User)
+                .ToListAsync();
+            return authors;
         }
     }
 
