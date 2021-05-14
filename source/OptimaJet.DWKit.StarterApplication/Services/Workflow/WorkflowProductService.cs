@@ -248,8 +248,12 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 .GetAllActorsForDirectCommandTransitions(product.Id, activityName : instance.ActivityName)
                 .ToList();
 
+            var workflowUserIdsForInverse = Runtime
+                .GetAllActorsForReverseCommandTransitions(product.Id, activityName: instance.ActivityName)
+                .ToList();
+
             var users = UserRepository.Get()
-                .Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
+                .Where(u => workflowUserIds.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()) || workflowUserIdsForInverse.Contains(u.WorkflowUserId.GetValueOrDefault().ToString()))
                 .ToList();
                 
             foreach (var user in users)
