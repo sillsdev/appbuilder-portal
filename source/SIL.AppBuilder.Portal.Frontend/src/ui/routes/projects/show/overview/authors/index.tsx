@@ -4,9 +4,9 @@ import { compose } from 'recompose';
 import { ProjectResource, AuthorResource } from '@data';
 
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { WithDataProps } from 'react-orbitjs';
 
 import { withAuthors } from './with-authors';
-import { WithDataProps } from 'react-orbitjs';
 import AddAuthorForm from './form';
 import AuthorItem from './item';
 
@@ -38,10 +38,8 @@ class Authors extends React.Component<IProps> {
 
     const group = dataStore.cache.query((q) => q.findRelatedRecord(project, 'group'));
     const organization = dataStore.cache.query((q) => q.findRelatedRecord(project, 'organization'));
-  
-    const text = isAddFormVisible
-      ? t('project.side.authors.close')
-      : t('project.side.authors.add');
+
+    const text = isAddFormVisible ? t('project.side.authors.close') : t('project.side.authors.add');
 
     return (
       <div data-test-project-authors className='authors'>
@@ -51,12 +49,12 @@ class Authors extends React.Component<IProps> {
             {text}
           </a>
         </div>
-        {isAddFormVisible && <AddAuthorForm project={project} organization={organization} group={group} />}
+        {isAddFormVisible && (
+          <AddAuthorForm project={project} organization={organization} group={group} />
+        )}
         <div className='list'>
-  {authors &&
-    authors.map((author) => <AuthorItem key={author.id} author={author} />)}
-</div>
-
+          {authors && authors.map((author) => <AuthorItem key={author.id} author={author} />)}
+        </div>
       </div>
     );
   }
