@@ -2,7 +2,7 @@ import * as React from 'react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
 
-import { defaultOptions, AuthorS_TYPE } from '@data';
+import { defaultOptions, AUTHORS_TYPE } from '@data';
 
 import { AuthorAttributes } from '@data/models/author';
 
@@ -51,10 +51,7 @@ export function withDataActions<T>(WrappedComponent) {
     updateAttribute = async (attribute: string, value: any) => {
       const { author, dataStore } = this.props;
 
-      await dataStore.update(
-        (q) => q.replaceAttribute(author, attribute, value),
-        defaultOptions()
-      );
+      await dataStore.update((q) => q.replaceAttribute(author, attribute, value), defaultOptions());
 
       this.forceUpdate();
     };

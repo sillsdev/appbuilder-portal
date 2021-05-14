@@ -12,6 +12,7 @@ import {
 } from '@data/containers/resources/author/with-data-actions';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { WithDataProps } from 'react-orbitjs';
+
 import { retrieveRelation } from '~/data/containers/with-relationship';
 
 interface Params {
@@ -34,10 +35,10 @@ class AuthorItem extends React.Component<IProps> {
   };
 
   render() {
-    const { author, dataStore  } = this.props;
+    const { author, dataStore } = this.props;
     const user = dataStore.cache.query((q) => q.findRelatedRecord(author, 'user'));
     const { name } = attributesFor(user);
-    
+
     const itemText = name;
 
     return (
