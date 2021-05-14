@@ -12,5 +12,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [HasOne("project")]
         public virtual Project Project { get; set; }
         public int ProjectId { get; set; }
+
+        [Attr("can-update")]
+        public bool? CanUpdate { get; set; } = false;
     }
 }
