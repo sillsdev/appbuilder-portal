@@ -94,7 +94,7 @@ export default function TransitionDetails({ product }: IProps) {
       return initialState;
     }
     if (transitionType === 5) {
-      const initialState = '► ' + attributes['initial-state'];
+      const initialState = '★ ' + attributes['initial-state'];
       return initialState;
     }
 
