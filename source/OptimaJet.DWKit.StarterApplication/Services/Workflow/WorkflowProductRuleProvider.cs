@@ -173,15 +173,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
                 var authorWorkflowUserIds = product.Project.Authors.Select(a => a.User.WorkflowUserId.Value.ToString()).ToList();
                 return authorWorkflowUserIds;
-
-                //var organization = product.Project.Organization;
-                //var orgAdmins = userRolesRepository.Get()
-                //    .Include(ur => ur.User)
-                //    .Include(ur => ur.Role)
-                //    .Where(ur => ur.OrganizationId == organization.Id && ur.Role.RoleName == RoleName.OrganizationAdmin && ur.User.WorkflowUserId.HasValue)
-                //    .Select(r => r.User.WorkflowUserId.Value.ToString())
-                //    .ToList();
-                //return orgAdmins;
             }
         }
 
@@ -205,11 +196,6 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
                 var author = product.Project.Authors.Where(a => a.User.WorkflowUserId.GetValueOrDefault() == workflowUserId).FirstOrDefault();
                 return author != null;
-                //var userRole = userRolesRepository.Get()
-                //    .Include(ur => ur.User)
-                //    .Where(ur => ur.OrganizationId == product.Project.OrganizationId && ur.User.WorkflowUserId.HasValue && ur.User.WorkflowUserId.Value == workflowUserId)
-                //    .FirstOrDefault();
-                //return userRole != null;
             }
         }
 
