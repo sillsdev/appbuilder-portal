@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using JsonApiDotNetCore.Data;
+﻿using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -31,13 +29,19 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         public IBuildEngineProjectService BuildEngineProjectService { get; }
         public ProjectService ProjectService { get; }
 
-        private static string TOKEN_USE_QUERY_PARAM = "use";
         private static string TOKEN_USE_HEADER = "Use";
-
+        private static string TOKEN_USE_UPLOAD = "Upload";
+        private static string TOKEN_USE_DOWNLOAD = "Download";
 
         [HttpPost("{id}/token")]
         public async Task<IActionResult> GetProjectToken(int id)
         {
+            string tokenUse = null;
+            if (HttpContext.Request.Headers.ContainsKey(TOKEN_USE_HEADER))
+            {
+                tokenUse = HttpContext.Request.Headers[TOKEN_USE_HEADER];
+            }
+
             var project = await service.GetAsync(id);
             if (project == null)
             {
@@ -83,17 +87,26 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
             if (!readOnly.HasValue)
             {
-                return NotFound($"Project id={id}, user={CurrentUser.Name} does not have permission");
+                var message = $"Project id={id}, user=\"{CurrentUser.Name}\" does not have permission";
+                ThrowJsonErrorMessage(403, message);
+            }
+
+            if (tokenUse != null && tokenUse.Equals(TOKEN_USE_UPLOAD) && readOnly.Value)
+            {
+                var message = $"Project id={id}, user=\"{CurrentUser.Name}\" does not have permission to Upload";
+                ThrowJsonErrorMessage(403, message);
             }
 
             var token = await BuildEngineProjectService.GetProjectTokenAsync(id, readOnly.Value);
             if (token == null)
             {
-                return NotFound($"Project id={id}: GetProjectToken returned null");
+                var message = $"Project id={id}: GetProjectToken returned null";
+                ThrowJsonErrorMessage(400, message);
             }
             if (token.SecretAccessKey == null)
             {
-                return NotFound($"Project id={id}: Token.SecretAccessKey is null");
+                var message = $"Project id={id}: Token.SecretAccessKey is null";
+                ThrowJsonErrorMessage(400, message);
             }
             var projectToken = new ProjectToken
             {
@@ -108,10 +121,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             };
 
             var use = readOnly.Value ? "ReadOnly Access" : "ReadWrite Access";
-            if (HttpContext.Request.Query.ContainsKey(TOKEN_USE_QUERY_PARAM))
-            {
-                use = HttpContext.Request.Query[TOKEN_USE_QUERY_PARAM];
-            }
+
             if (HttpContext.Request.Headers.ContainsKey(TOKEN_USE_HEADER))
             {
                 use = HttpContext.Request.Headers[TOKEN_USE_HEADER];
