@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Controllers;
+using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -82,6 +84,15 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             var newEntity = await userService.CreateAsync(newUser);
 
             return newEntity;
+        }
+
+        protected void ThrowJsonErrorMessage(int statusCode, string message, Exception innerException = null)
+        {
+            if (innerException == null)
+            {
+                throw new JsonApiException(statusCode, message);
+            }
+            throw new JsonApiException(statusCode, message, innerException);
         }
     }
 }
