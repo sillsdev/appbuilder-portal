@@ -358,9 +358,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             Assert.Contains(reviewer1.Id, reviewerIds);
             Assert.Contains(reviewer2.Id, reviewerIds);
             Assert.DoesNotContain(reviewer3.Id, reviewerIds);
-            var reviewer = projects.FirstOrDefault().Reviewers.FirstOrDefault();
-            Assert.Equal(reviewer1.Name, reviewer.Name);
-            Assert.Equal(reviewer1.ProjectId, project1.Id);
         }
 
         [Fact]
@@ -379,9 +376,6 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.APIControllers.Projects
             var AuthorIds = projects.FirstOrDefault().Authors.Select(r => r.Id);
             Assert.Equal(3, AuthorIds.Count());
             Assert.Contains(author1.Id, AuthorIds);
-            //var c = projects.FirstOrDefault().Authors.FirstOrDefault();
-            //Assert.Equal(project1.Id, c.ProjectId);
-            //Assert.Equal(user1.Id, c.UserId);
         }
 
         [Fact]
