@@ -318,7 +318,8 @@
           "1": "Actividad",
           "2": "{workflowType} Workflow Started",
           "3": "{workflowType} Workflow Completed",
-          "4": "{workflowType} Workflow Cancelled"
+          "4": "{workflowType} Workflow Cancelled",
+          "5": "{workflowType} Project Access"
         }
       },
       "updated": "Actualizado",
@@ -351,6 +352,16 @@
       "organization": "Organización",
       "projectOwner": "Propietario del proyecto",
       "projectGroup": "Grupo de proyecto",
+      "authors": {
+        "title": "Authors",
+        "add": "add author",
+        "close": "cerrar",
+        "form": {
+          "user": "user",
+          "userError": "User cannot be empty",
+          "submit": "Add Author"
+        }
+      },
       "reviewers": {
         "title": "Revisores",
         "add": "Agregar revisor",
