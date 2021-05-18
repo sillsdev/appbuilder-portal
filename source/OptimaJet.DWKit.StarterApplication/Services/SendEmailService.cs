@@ -134,6 +134,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                                          "ReviewProduct.txt");
                 }
             }
+
+            var owner = product.Project.Owner;
+            subsDictionary["reviewerName"] = "REVIEWER_NAME";
+            dynamic ownerContentModel = new System.Dynamic.ExpandoObject();
+            ownerContentModel.Links = links;
+            subsDictionary["ownerName"] = owner.Name;
+            subsDictionary["reviewerNames"] = string.Join(", ", reviewers.Select(r => r.Name + "(" + r.Email + ")").ToList());
+            await SendEmailAsync(owner.Email, owner.LocaleOrDefault(), messageId, subsDictionary, ownerContentModel, "ReviewProduct.txt", "reviewOwnerPrefix");
         }
         public void SendRejectEmail(Guid productId, WorkflowProductService.ProductActivityChangedArgs args, String comment)
         {
@@ -188,13 +196,19 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             dynamic contentModel = new System.Dynamic.ExpandoObject();
             await SendEmailAsync(user.Email, locale, "rejectionEmail", subsDictionary, contentModel, "Notification.txt");
         }
-        protected async Task SendEmailAsync(string emailAddress, string locale, string messageId, Dictionary<string, object> subsDictionary, dynamic contentModel, string template)
+        protected async Task SendEmailAsync(string emailAddress, string locale, string messageId, Dictionary<string, object> subsDictionary, dynamic contentModel, string template, string prefixMessageId = null)
         {
             var fullBodyId = "notifications.body." + messageId;
             var fullSubjectId = "notifications.subject." + messageId;
             var subject = await Translator.TranslateAsync(locale, "notifications", fullSubjectId, subsDictionary);
             subject = HttpUtility.HtmlDecode(subject);
             var body = await Translator.TranslateAsync(locale, "notifications", fullBodyId, subsDictionary);
+            if (prefixMessageId != null)
+            {
+                var fullPrefixMessageId = "notifications.body." + prefixMessageId;
+                var bodyPrefix = await Translator.TranslateAsync(locale, "notifications", fullPrefixMessageId, subsDictionary);
+                body = bodyPrefix + body;
+            }
             contentModel.Message = body;
 
             var email = new Email
