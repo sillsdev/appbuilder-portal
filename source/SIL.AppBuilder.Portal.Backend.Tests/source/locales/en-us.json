@@ -29,7 +29,7 @@
         "releaseFailedUnableToConnect": "<p>Failed to create release for product: {{productName}} project: {{projectName}}.</p><p>Unable to connect to build engine.</p>",
         "releaseFailedUnableToCreate": "<p>Failed to create release for product: {{productName}} project: {{projectName}}.</p><p>Retries exceeded for attempt to create release on build machine.</p>",
         "releaseCompletedSuccessfully": "<p>Release for product: {{productName}} project: {{projectName}} completed successfully</p>",
-        "reviewOwnerPrefix": "<p>{{ownerName}},</p><p>The following message was sent to the these reviewers:<br>{{reviewerNames}}<br></p><hr/>",
+        "reviewOwnerPrefix": "<p>{{ownerName}},</p><p>The following message was sent to the these reviewers:<br>{{reviewerNames}}<br></p><hr>",
         "releaseFailedOwner": "<p>Publish for product: {{productName}} project {{projectName}} failed.</p><p>Project URL: {{projectUrl}}</p><p> The organization administrator has been notified of this issue.</p>",
         "releaseFailedAdmin": "<p>Publish for product: {{productName}} project {{projectName}} failed.</p><p>Project URL: {{projectUrl}}</p><p>Diagnostic information for Super Admins:</p><ul><li>BuildEngineUrl: {{buildEngineUrl}}</li><li>ProjectId: {{projectId}} </li><li>JobId: {{jobId}} </li><li> BuildId: {{buildId}}</li><li>PublishId: {{publishId}} </li></ul>",
         "releaseProductRecordNotFound": "<p>Release Failed: Unable to find product record with id: {{productId}}</p>",
