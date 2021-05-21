@@ -3191,6 +3191,15 @@
             "*"
           ],
           "form": "SIL_AppBuilders_Authors_Download"
+        },
+        {
+          "states": [
+            "Author Configuration"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_App_Configuration"
         }
       ]
     },
@@ -3244,6 +3253,15 @@
             "*"
           ],
           "form": "SIL_AppBuilders_Authors_Upload"
+        },
+        {
+          "states": [
+            "Author Configuration"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_App_Configuration"
         }
       ]
     }
