@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
+using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -87,26 +89,26 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
             if (!readOnly.HasValue)
             {
-                var message = $"Project id={id}, user=\"{CurrentUser.Name}\" does not have permission";
-                ThrowJsonErrorMessage(403, message);
+                var message = $"Project id={id}, user='{CurrentUser.Name}' with email='{CurrentUser.Email}' does not have permission to access";
+                return JsonResult(403, message);
             }
 
             if (tokenUse != null && tokenUse.Equals(TOKEN_USE_UPLOAD) && readOnly.Value)
             {
-                var message = $"Project id={id}, user=\"{CurrentUser.Name}\" does not have permission to Upload";
-                ThrowJsonErrorMessage(403, message);
+                var message = $"Project id={id}, user='{CurrentUser.Name}' with email='{CurrentUser.Email}' does not have permission to Upload";
+                return JsonResult(403, message);
             }
 
             var token = await BuildEngineProjectService.GetProjectTokenAsync(id, readOnly.Value);
             if (token == null)
             {
                 var message = $"Project id={id}: GetProjectToken returned null";
-                ThrowJsonErrorMessage(400, message);
+                return JsonResult(400, message);
             }
             if (token.SecretAccessKey == null)
             {
                 var message = $"Project id={id}: Token.SecretAccessKey is null";
-                ThrowJsonErrorMessage(400, message);
+                return JsonResult(400, message);
             }
             var projectToken = new ProjectToken
             {

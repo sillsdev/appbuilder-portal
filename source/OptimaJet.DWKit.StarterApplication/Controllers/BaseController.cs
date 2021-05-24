@@ -4,7 +4,7 @@ using JsonApiDotNetCore.Controllers;
 using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 
@@ -22,7 +22,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         }
     }
 
-    public class BaseController<T, TId> : JsonApiController<T, TId>  where T : class, IIdentifiable<TId>
+    public class BaseController<T, TId> : JsonApiController<T, TId> where T : class, IIdentifiable<TId>
     {
         protected IResourceService<T, TId> service;
         protected IJsonApiContext jsonApiContext;
@@ -86,13 +86,15 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             return newEntity;
         }
 
-        protected void ThrowJsonErrorMessage(int statusCode, string message, Exception innerException = null)
+        protected IActionResult JsonResult(int statusCode, string title)
         {
-            if (innerException == null)
-            {
-                throw new JsonApiException(statusCode, message);
-            }
-            throw new JsonApiException(statusCode, message, innerException);
+            var errorCollection = new ErrorCollection();
+            var error = new Error(statusCode, title);
+            errorCollection.Add(error);
+
+            Response.StatusCode = statusCode;
+            var result = new JsonResult(errorCollection);
+            return result;
         }
     }
 }
