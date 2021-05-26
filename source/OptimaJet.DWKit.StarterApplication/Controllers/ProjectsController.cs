@@ -83,7 +83,10 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 Author author = null;
                 if ((authors != null) && ((author = authors.Find(a => a.UserId == CurrentUser.Id)) != null))
                 {
-                    readOnly = !author.CanUpdate;
+                    // Kalaam now wants authors to be able to update at any time.  In the future, we can add a setting
+                    // on the author to whether they are a restricted author or not. I don't have time to add the UI at the moment.
+                    //readOnly = !author.CanUpdate;
+                    readOnly = false;
                 }
             }
 
