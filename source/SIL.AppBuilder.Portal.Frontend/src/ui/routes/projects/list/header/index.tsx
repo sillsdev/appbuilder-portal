@@ -58,18 +58,20 @@ export default function Header({ filter, onSearch }: IOwnProps) {
             />
           </RequireRole>
 
-          <RequireOrganization
-            WithOrganization={() => (
-              <Link className='ui button basic blue m-r-md' to={'/projects/new'}>
-                {t('sidebar.addProject')}
-              </Link>
-            )}
-            Fallback={() => (
-              <button className='ui button disabled basic blue m-r-md' disabled>
-                {t('sidebar.addProject')}
-              </button>
-            )}
-          />
+          <RequireRole roleName={ROLE.AppBuilder}>
+            <RequireOrganization
+              WithOrganization={() => (
+                <Link className='ui button basic blue m-r-md' to={'/projects/new'}>
+                  {t('sidebar.addProject')}
+                </Link>
+              )}
+              Fallback={() => (
+                <button className='ui button disabled basic blue m-r-md' disabled>
+                  {t('sidebar.addProject')}
+                </button>
+              )}
+            />
+          </RequireRole>
         </div>
       </div>
     </div>
