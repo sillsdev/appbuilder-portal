@@ -8,6 +8,7 @@ export enum ROLE {
   SuperAdmin = 'SuperAdmin',
   OrganizationAdmin = 'OrganizationAdmin',
   AppBuilder = 'AppBuilder',
+  Author = 'Author',
 }
 
 export interface RoleAttributes extends AttributesObject {
