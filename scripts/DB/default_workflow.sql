@@ -224,6 +224,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Hold" />
     <Command Name="Transfer to Authors" />
     <Command Name="Take Back" />
+    <Command Name="New App" />
+    <Command Name="Existing App" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -442,6 +444,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="420" Y="280" />
     </Activity>
+    <Activity Name="Set Google Play Existing" State="Set Google Play Existing" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="820" Y="450" />
+    </Activity>
   </Activities>
   <Transitions>
     <Transition Name="Job Creation_Activity_1_1" To="Check Product Creation" From="Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
@@ -488,12 +502,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
       <Triggers>
-        <Trigger Type="Command" NameRef="Continue" />
+        <Trigger Type="Command" NameRef="New App" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="942" Y="502" />
+      <Designer X="765" Y="503" />
     </Transition>
     <Transition Name="SynchronizeData_Activity_1_1" To="Product Build" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -523,7 +537,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildFailed" ConditionInversion="false" />
       </Conditions>
-      <Designer X="1070" Y="476" />
+      <Designer X="1063" Y="523" />
     </Transition>
     <Transition Name="Check Product Build_Check Product Build_1" To="Check Product Build" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -790,7 +804,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
         <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false" ResultOnPreExecution="false">
-          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1","google_play_existing":"1"}]]></ActionParameter>
         </Condition>
       </Conditions>
       <Designer X="816" Y="808" />
@@ -891,6 +905,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="676" Y="367" />
     </Transition>
+    <Transition Name="App Builder Configuration_Activity_1_2" To="Set Google Play Existing" From="App Builder Configuration" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Existing App" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="691" Y="475" />
+    </Transition>
+    <Transition Name="Set Google Play Existing_Product Build_1" To="Product Build" From="Set Google Play Existing" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="992" Y="547" />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -920,6 +955,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Hold" />
     <Command Name="Transfer to Authors" />
     <Command Name="Take Back" />
+    <Command Name="New App" />
+    <Command Name="Existing App" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -1108,6 +1145,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </PreExecutionImplementation>
       <Designer X="420" Y="280" />
     </Activity>
+    <Activity Name="Set Google Play Existing" State="Set Google Play Existing" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="830" Y="440" />
+    </Activity>
   </Activities>
   <Transitions>
     <Transition Name="Job Creation_Activity_1_1" To="Check Product Creation" From="Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
@@ -1126,7 +1175,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_ProductCreated" ConditionInversion="false" ResultOnPreExecution="true" />
       </Conditions>
-      <Designer />
+      <Designer X="908" Y="420" />
     </Transition>
     <Transition Name="Check Job Creation_Check Job Creation_1" To="Check Product Creation" From="Check Product Creation" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -1142,12 +1191,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
       <Triggers>
-        <Trigger Type="Command" NameRef="Continue" />
+        <Trigger Type="Command" NameRef="New App" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="757" Y="499" />
+      <Designer X="759" Y="510" />
     </Transition>
     <Transition Name="SynchronizeData_Activity_1_1" To="Product Build" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1177,7 +1226,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildFailed" ConditionInversion="false" />
       </Conditions>
-      <Designer X="1065" Y="525" />
+      <Designer X="1061" Y="534" />
     </Transition>
     <Transition Name="Check Product Build_Check Product Build_1" To="Check Product Build" From="Check Product Build" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Triggers>
@@ -1360,7 +1409,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
         <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false" ResultOnPreExecution="false">
-          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1","google_play_existing":"1"}]]></ActionParameter>
         </Condition>
       </Conditions>
       <Designer X="827" Y="738" />
@@ -1461,6 +1510,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="340" Y="373" />
     </Transition>
+    <Transition Name="App Builder Configuration_Activity_1_2" To="Set Google Play Existing" From="App Builder Configuration" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Existing App" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="692" Y="476" />
+    </Transition>
+    <Transition Name="Set Google Play Existing_Product Build_1" To="Product Build" From="Set Google Play Existing" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -1490,6 +1560,8 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Command Name="Hold" />
     <Command Name="Transfer to Authors" />
     <Command Name="Take Back" />
+    <Command Name="New App" />
+    <Command Name="Existing App" />
   </Commands>
   <Timers>
     <Timer Name="CheckReady" Type="Interval" Value="30s" NotOverrideIfExists="false" />
@@ -1675,6 +1747,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Implementation>
       <Designer X="430" Y="280" />
     </Activity>
+    <Activity Name="Set Google Play Existing" State="Set Google Play Existing" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
+      <Implementation>
+        <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </ActionRef>
+      </Implementation>
+      <PreExecutionImplementation>
+        <ActionRef Order="1" NameRef="WriteProductTransition" />
+      </PreExecutionImplementation>
+      <Designer X="820" Y="460" />
+    </Activity>
   </Activities>
   <Transitions>
     <Transition Name="Job Creation_Activity_1_1" To="Check Product Creation" From="Product Creation" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
@@ -1709,12 +1793,12 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
       <Triggers>
-        <Trigger Type="Command" NameRef="Continue" />
+        <Trigger Type="Command" NameRef="New App" />
       </Triggers>
       <Conditions>
         <Condition Type="Always" />
       </Conditions>
-      <Designer X="757" Y="499" />
+      <Designer X="766" Y="505" />
     </Transition>
     <Transition Name="SynchronizeData_Activity_1_1" To="Product Build" From="Synchronize Data" Classifier="Direct" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
@@ -1894,7 +1978,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
         <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="true" ResultOnPreExecution="true">
-          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1","google_play_existing":"1"}]]></ActionParameter>
         </Condition>
       </Conditions>
       <Designer X="1018" Y="703" />
@@ -1927,7 +2011,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_BuildCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
         <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false" ResultOnPreExecution="false">
-          <ActionParameter><![CDATA[{"google_play_uploaded":"1"}]]></ActionParameter>
+          <ActionParameter><![CDATA[{"google_play_uploaded":"1","google_play_existing":"1"}]]></ActionParameter>
         </Condition>
       </Conditions>
       <Designer />
@@ -2027,6 +2111,27 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Condition Type="Always" />
       </Conditions>
       <Designer X="684" Y="375" />
+    </Transition>
+    <Transition Name="App Builder Configuration_Activity_1_2" To="Set Google Play Existing" From="App Builder Configuration" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Restrictions>
+        <Restriction Type="Allow" NameRef="Owner" />
+      </Restrictions>
+      <Triggers>
+        <Trigger Type="Command" NameRef="Existing App" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="679" Y="476" />
+    </Transition>
+    <Transition Name="Set Google Play Existing_Product Build_1" To="Product Build" From="Set Google Play Existing" Classifier="Direct" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Always" />
+      </Conditions>
+      <Designer X="985" Y="550" />
     </Transition>
   </Transitions>
 </Process>')

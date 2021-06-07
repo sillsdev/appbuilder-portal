@@ -24,6 +24,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
         private readonly string PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID = "PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID";
         private readonly string PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE = "PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE";
         private readonly string GOOGLE_PLAY_UPLOADED = "google_play_uploaded";
+        private readonly string GOOGLE_PLAY_EXISTING = "google_play_existing";
         private readonly string AUTHOR_CAN_UPLOAD = "author_can_upload";
         private readonly string ENVIRONMENT = "environment";
         private readonly Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>> _actions = new Dictionary<string, Action<ProcessInstance, WorkflowRuntime, string>>();
@@ -203,26 +204,31 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private async Task<bool> BuildAnyMatchingStatus(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
         {
+            bool retval = false;
             using (var scope = ServiceProvider.CreateScope())
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
+                var workflowParams = GetWorkflowParameters(processInstance);
                 var parmsDict = GetActionParameters(actionParameter);
                 if (parmsDict.ContainsKey(GOOGLE_PLAY_UPLOADED))
                 {
-                    var workflowParams = GetWorkflowParameters(processInstance);
                     if (workflowParams.ContainsKey(ENVIRONMENT))
                     {
                         var environment = workflowParams[ENVIRONMENT] as JObject;
-                        return environment.ContainsKey(PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID);
+                        retval |= environment.ContainsKey(PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID);
                     }
-                    return false;
                 }
-                else
+                if (parmsDict.ContainsKey(GOOGLE_PLAY_EXISTING))
                 {
-                    throw new Exception($"Product {product.Id.ToString()}: unknown workflow action parameter: {actionParameter}");
+                    if (workflowParams.ContainsKey(ENVIRONMENT))
+                    {
+                        var environment = workflowParams[ENVIRONMENT] as JObject;
+                        retval |= environment.ContainsKey(GOOGLE_PLAY_EXISTING);
+                    }
                 }
             }
+            return retval;
         }
 
         private async Task<bool> ProjectHasAuthors(ProcessInstance processInstance, WorkflowRuntime runtime, string actionParameter, CancellationToken token)
@@ -428,6 +434,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     var environment = new JObject();
                     environment.Add(PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID, product.WorkflowBuildId.ToString());
                     environment.Add(PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE, versionCode.ToString());
+                    MergeWorkflowParameter(processInstance, ENVIRONMENT, environment);
+                }
+                else if (parmsDict.ContainsKey(GOOGLE_PLAY_EXISTING))
+                {
+                    var environment = new JObject();
+                    var value = parmsDict[GOOGLE_PLAY_EXISTING].ToString();
+                    environment.Add(GOOGLE_PLAY_EXISTING, value);
                     MergeWorkflowParameter(processInstance, ENVIRONMENT, environment);
                 }
                 else

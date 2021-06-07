@@ -125,7 +125,7 @@
       {
         "key": "staticcontent_1",
         "data-buildertype": "staticcontent",
-        "content": "<h3>Instructions</h3>\n<ul>\n<li>In the <strong>Publishing > App Publishing</strong> configuration page:\n<ul>\n<li>Enable Scriptoria by selecting the <strong>We would like to use Scriptoria</strong> option.</li>\n</ul>\n</li>\n<li>In the <strong>Publishing > Scriptoria</strong> configuration page:\n<ul>\n<li>Copy and Paste the above <strong>App Project URL</strong> into the <strong>Enter App Project URL</strong> field. </li>\n<li>Click <strong>Login...</strong> to connect to Scriptoria.</li>\n<li>Click <strong>Upload</strong> and successfully upload the data to the app publishing repository.</li>\n</ul>\n</li>\n</ul>\n\n",
+        "content": "<h3>Instructions</h3>\n<ul>\n<li>In the <strong>Publishing > App Publishing</strong> configuration page:\n<ul>\n<li>Enable Scriptoria by selecting the <strong>We would like to use Scriptoria</strong> option.</li>\n</ul>\n</li>\n<li>In the <strong>Publishing > Scriptoria</strong> configuration page:\n<ul>\n<li>Copy and Paste the above <strong>App Project URL</strong> into the <strong>Enter App Project URL</strong> field. </li>\n<li>Click <strong>Login...</strong> to connect to Scriptoria.</li>\n<li>Click <strong>Upload</strong> and successfully upload the data to the app publishing repository.</li>\n</ul>\n</li>\n<li>To continue:\n<ul>\n<li>If this is a new app that has not been uploaded to Google Play yet, click <strong>New App</strong>.</li>\n<li>If this is an app that already exists in Google Play, click <strong>Existing App</strong>. \n</ul>\n</ul>\n\n",
         "isHtml": true
       }
     ]

@@ -1,0 +1,135 @@
+{
+  "name": "SIL_AppBuilders_GooglePlay_Configuration",
+  "lastUpdate": "2021-06-03T13:08:50.945853-04:00",
+  "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
+  "isTemplate": false,
+  "triggers": [],
+  "dataMap": [
+    {
+      "id": "c8a8a12b-d6d8-5a1e-29bf-5cf87fd2bf55",
+      "attributeId": "441e60ec-8a68-4c74-bcc4-853a678f11c3",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "cd2b648f-a1fb-ee90-a4a9-08c65bc2880e",
+      "attributeId": "37ecc7d1-c69e-4b7b-b611-409fe36392f7",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "8db61265-f6cc-e6a8-b4ce-0e23b379f867",
+      "attributeId": "7fc91699-2b16-4ab1-a91a-1d0d3401f5e3",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "6ec3d8ac-e0ca-f621-03fb-69218ccceba9",
+      "attributeId": "1018080e-7abe-4a87-bd07-721dc54fc6b0",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "7b04c087-9e2b-75cd-bae0-dbc97d817640",
+      "attributeId": "e079ff30-3aec-49eb-824b-fea61e4da080",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "6e2ee507-ef0c-ede8-236e-03a8f6704a63",
+      "attributeId": "ea5a6fff-2aa8-4bb5-bff4-6aac4e54f7f6",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "2f6b6164-14e8-0df2-f899-1e1554b2da71",
+      "attributeId": "8b4cbff0-c11c-4b11-b9af-41073629e00b",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "10aa2b6a-6893-b986-c75f-68ef6ade05e2",
+      "attributeId": "cc8522c4-bc11-4669-a876-3ab71cfeba1f",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "ff63a9a6-9d42-ce32-9d4d-265094fa916b",
+      "attributeId": "8759b596-a767-45c0-9e30-387b41e190c9",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "36da15a1-8134-7ed5-2527-608ece6c4dcf",
+      "attributeId": "46ebc3ca-16f9-4cf2-bea0-5d52f30e031e",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "cdfd3fee-d16d-2965-7dc7-ce05a211ad86",
+      "attributeId": "adbd24f4-7b15-4635-9195-79e7ca35c172",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "a339389c-dc05-6e50-b587-f1558944a5ad",
+      "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "b3657c01-9b2a-77cb-64b8-b7a4fa6c276f",
+      "attributeId": "da31659f-07de-4af3-b377-7ac8109c00fd",
+      "control": "textarea_comment",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "15cec4c2-7312-95a3-3464-abf2947ad647",
+      "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "f7bb5790-c479-98bf-c7ad-8964c327342f",
+      "attributeId": "bb53ed42-a7f1-4cbe-9173-e53f30cfe993",
+      "control": "input_project_description",
+      "parentId": "6e2ee507-ef0c-ede8-236e-03a8f6704a63",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "71299655-f832-9def-21fc-cc300a57ca4b",
+      "attributeId": "91d50027-b78e-41fc-91ed-dc1ce2df80cf",
+      "control": "input_project_name",
+      "parentId": "6e2ee507-ef0c-ede8-236e-03a8f6704a63",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "314879d2-258d-732b-9d86-95abf9d686c0",
+      "attributeId": "9ad0eb42-710a-4e92-8304-d055d8deee30",
+      "control": "input_app_project_url",
+      "parentId": "6e2ee507-ef0c-ede8-236e-03a8f6704a63",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "36cfb2eb-a35b-3eba-9d4b-50ea7d6d4fbe",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "cdfd3fee-d16d-2965-7dc7-ce05a211ad86",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
+      "id": "d1476090-4576-0ed8-8f62-7d120887707a",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "a339389c-dc05-6e50-b587-f1558944a5ad",
+      "isEditable": false,
+      "isLoadable": true
+    }
+  ],
+  "dataColl": []
+}

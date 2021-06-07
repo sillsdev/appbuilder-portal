@@ -3096,7 +3096,7 @@
           "roles": [
             "*"
           ],
-          "form": "SIL_AppBuilders_App_Configuration"
+          "form": "SIL_AppBuilders_GooglePlay_Configuration"
         },
         {
           "states": [
@@ -3199,7 +3199,7 @@
           "roles": [
             "*"
           ],
-          "form": "SIL_AppBuilders_App_Configuration"
+          "form": "SIL_AppBuilders_Author_App_Configuration"
         }
       ]
     },
@@ -3261,7 +3261,7 @@
           "roles": [
             "*"
           ],
-          "form": "SIL_AppBuilders_App_Configuration"
+          "form": "SIL_AppBuilders_Author_App_Configuration"
         }
       ]
     }
