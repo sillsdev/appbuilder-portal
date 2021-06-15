@@ -316,6 +316,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Create App Store Entry" State="Create App Store Entry" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_draft":"1"}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -334,9 +337,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
-        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct">
-          <ActionParameter><![CDATA[{"environment":{"PUBLISH_DRAFT":"1"}}]]></ActionParameter>
-        </ActionRef>
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -635,6 +636,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Triggers>
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="true" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </Condition>
       </Conditions>
       <Designer />
     </Transition>
@@ -926,6 +930,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer X="992" Y="547" />
     </Transition>
+    <Transition Name="Check Product Publish_Published_1" To="Published" From="Check Product Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -1029,6 +1045,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Create App Store Entry" State="Create App Store Entry" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_draft":"1"}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -1047,9 +1066,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
-        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct">
-          <ActionParameter><![CDATA[{"environment":{"PUBLISH_DRAFT":"1"}}]]></ActionParameter>
-        </ActionRef>
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -1300,6 +1317,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Triggers>
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="true" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </Condition>
       </Conditions>
       <Designer />
     </Transition>
@@ -1531,6 +1551,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Conditions>
       <Designer />
     </Transition>
+    <Transition Name="Check Product Publish_Published_1" To="Published" From="Check Product Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
+    </Transition>
   </Transitions>
 </Process>')
 ON CONFLICT("Code") DO UPDATE SET
@@ -1634,6 +1666,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Create App Store Entry" State="Create App Store Entry" IsInitial="False" IsFinal="False" IsForSetState="True" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
+        <ActionRef Order="2" NameRef="Build_SetStatus">
+          <ActionParameter><![CDATA[{"google_play_draft":"1"}]]></ActionParameter>
+        </ActionRef>
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -1652,9 +1687,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Activity Name="Product Publish" State="Product Publish" IsInitial="False" IsFinal="False" IsForSetState="False" IsAutoSchemeUpdate="True">
       <Implementation>
         <ActionRef Order="1" NameRef="UpdateProductTransition" />
-        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct">
-          <ActionParameter><![CDATA[{"environment":{"PUBLISH_DRAFT":"1"}}]]></ActionParameter>
-        </ActionRef>
+        <ActionRef Order="2" NameRef="BuildEngine_PublishProduct" />
       </Implementation>
       <PreExecutionImplementation>
         <ActionRef Order="1" NameRef="WriteProductTransition" />
@@ -1902,6 +1935,9 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
       </Triggers>
       <Conditions>
         <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" ResultOnPreExecution="true" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="true" ResultOnPreExecution="true">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </Condition>
       </Conditions>
       <Designer />
     </Transition>
@@ -2132,6 +2168,18 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
         <Condition Type="Always" />
       </Conditions>
       <Designer X="985" Y="550" />
+    </Transition>
+    <Transition Name="Check Product Publish_Published_1" To="Published" From="Check Product Publish" Classifier="NotSpecified" AllowConcatenationType="And" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
+      <Triggers>
+        <Trigger Type="Auto" />
+      </Triggers>
+      <Conditions>
+        <Condition Type="Action" NameRef="BuildEngine_PublishCompleted" ConditionInversion="false" />
+        <Condition Type="Action" NameRef="Build_AnyMatchingStatus" ConditionInversion="false">
+          <ActionParameter><![CDATA[{"google_play_existing":"1"}]]></ActionParameter>
+        </Condition>
+      </Conditions>
+      <Designer />
     </Transition>
   </Transitions>
 </Process>')

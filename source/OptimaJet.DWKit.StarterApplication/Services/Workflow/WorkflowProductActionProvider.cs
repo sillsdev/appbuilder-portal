@@ -21,8 +21,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 {
     public class WorkflowProductActionProvider : IWorkflowActionProvider
     {
+        private readonly string PUBLISH_GOOGLE_PLAY_DRAFT = "PUBLISH_GOOGLE_PLAY_DRAFT";
         private readonly string PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID = "PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID";
         private readonly string PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE = "PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE";
+        private readonly string GOOGLE_PLAY_DRAFT = "google_play_draft";
         private readonly string GOOGLE_PLAY_UPLOADED = "google_play_uploaded";
         private readonly string GOOGLE_PLAY_EXISTING = "google_play_existing";
         private readonly string AUTHOR_CAN_UPLOAD = "author_can_upload";
@@ -225,6 +227,14 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     {
                         var environment = workflowParams[ENVIRONMENT] as JObject;
                         retval |= environment.ContainsKey(GOOGLE_PLAY_EXISTING);
+                    }
+                }
+                if (parmsDict.ContainsKey(GOOGLE_PLAY_DRAFT))
+                {
+                    if (workflowParams.ContainsKey(ENVIRONMENT))
+                    {
+                        var environment = workflowParams[ENVIRONMENT] as JObject;
+                        retval |= environment.ContainsKey(PUBLISH_GOOGLE_PLAY_DRAFT);
                     }
                 }
             }
@@ -441,6 +451,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                     var environment = new JObject();
                     var value = parmsDict[GOOGLE_PLAY_EXISTING].ToString();
                     environment.Add(GOOGLE_PLAY_EXISTING, value);
+                    MergeWorkflowParameter(processInstance, ENVIRONMENT, environment);
+                }
+                else if (parmsDict.ContainsKey(GOOGLE_PLAY_DRAFT))
+                {
+                    var environment = new JObject();
+                    var value = parmsDict[GOOGLE_PLAY_DRAFT].ToString();
+                    environment.Add(PUBLISH_GOOGLE_PLAY_DRAFT, value);
                     MergeWorkflowParameter(processInstance, ENVIRONMENT, environment);
                 }
                 else
