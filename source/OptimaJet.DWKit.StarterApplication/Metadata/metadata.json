@@ -3046,7 +3046,7 @@
       "name": "ProductLatestApk",
       "definedOnServer": false,
       "type": 0,
-      "source": "var id = entities.Select(e => (int) e.WorkflowBuildId).Max();\n\nreturn Filter.And.LikeLeft(\"apk\", \"ArtifactType\").Equal(id, \"ProductBuildId\");",
+      "source": "var id = entities.Select(e => (int) e.WorkflowBuildId).Max();\nvar types = new List<String> { \"apk\", \"arm-apk\", \"arm64-apk\", \"x86-apk\", \"x86_64-apk\", \"aab\" };\nreturn Filter.And.In(types, \"ArtifactType\").Equal(id, \"ProductBuildId\");",
       "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
       "isAsync": false
     },

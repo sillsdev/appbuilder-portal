@@ -116,7 +116,7 @@
       {
         "key": "staticcontent_instructions",
         "data-buildertype": "staticcontent",
-        "content": "<h3>Instructions</h3>\n<ul>\n<li>Download the APK file by clicking on the entry with type <em>apk</em> in the <em>Product Files</em> grid view.</li>\n<li>Test it.</li>\n<li>Open the preview of the store listing by clicking on the entry with type <em>play-listing</em> in the <em>Product Files</em> grid view.</li>\n\n<li>Click <strong>Approve</strong> when you are satisfied that everything is ready to go and the app will be published.</li>\n</ul>\nNote: The first time the app is published, the Organization Admin will need to do extra work to make it live.  After the first time, it will be available in a shorter amount of time.",
+        "content": "<h3>Instructions</h3>\n<ul>\n<li>Download the APK or AAB file by clicking on the entry with type <em>apk</em> or <em>aab</em> in the <em>Product Files</em> grid view.</li>\n<li>Test the app. See <a href=\"https://scriptoria.io/docs/Installing+Android+Apps+For+Testing.pdf\" target=\"_blank\">Installing Android Apps For Testing</a> for help.</li>\n<li>Open the preview of the store listing by clicking on the entry with type <em>play-listing</em> in the <em>Product Files</em> grid view.</li>\n\n<li>Click <strong>Approve</strong> when you are satisfied that everything is ready to go and the app will be published.</li>\n</ul>\nNote: The first time the app is published, the Organization Admin will need to do extra work to make it live.  After the first time, it will be available in a shorter amount of time.",
         "isHtml": true,
         "style-marginBottom": ""
       },
