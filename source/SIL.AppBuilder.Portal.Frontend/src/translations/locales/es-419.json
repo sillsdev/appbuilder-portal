@@ -64,7 +64,7 @@
   },
   "directory": {
     "title": "Directorio de proyectos ({ numProjects })",
-    "search-help": "Esto le permite realizar búsquedas: <br />• Nombre del proyecto <br />• Idioma del proyecto <br />• Nombre del propietario <br />• Nombre de la organización",
+    "search-help": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name",
     "filters": {
       "dateRange": "Rango de Fechas"
     }
