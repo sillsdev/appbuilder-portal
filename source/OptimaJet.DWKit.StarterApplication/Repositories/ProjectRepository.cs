@@ -75,11 +75,13 @@ namespace OptimaJet.DWKit.StarterApplication.Repositories
                 return entities
                     .Include(p => p.Owner)
                     .Include(p => p.Organization)
+                    .Include(p => p.Group)
                     .Where(p => (
                         EFUtils.Like(p.Name, value) 
                         || EFUtils.Like(p.Language, value)
                         || EFUtils.Like(p.Organization.Name, value)
                         || EFUtils.Like(p.Owner.Name, value)
+                        || EFUtils.Like(p.Group.Name, value)
                     ));
             }
 
