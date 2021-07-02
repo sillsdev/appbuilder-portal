@@ -22,12 +22,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
         private Mock<IBackgroundJobClient> backgroundJobClient;
         private Mock<IHubContext<JSONAPIHub>> dataHubContext;
         private Mock<IBuildEngineProjectService> projectService;
+        private Mock<WebRequestWrapper> webRequestWrapper;
+
 
         public NoAuthStartup(IHostingEnvironment env) : base(env)
         {
             backgroundJobClient = new Mock<IBackgroundJobClient>();
             dataHubContext = new Mock<IHubContext<JSONAPIHub>> { DefaultValue = DefaultValue.Mock };
             projectService = new Mock<IBuildEngineProjectService>();
+            webRequestWrapper = new Mock<WebRequestWrapper>();
         }
 
         public IServiceCollection ConfiguredServices { get; private set; }
@@ -77,6 +80,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 {
                     services.AddScoped(s => projectService.Object);
                 }
+
+                services.AddScoped<WebRequestWrapper>(s => webRequestWrapper.Object);
 
 
                 services.AddEventDispatchers();

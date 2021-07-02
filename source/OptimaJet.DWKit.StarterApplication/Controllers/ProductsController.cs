@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
+using OptimaJet.DWKit.StarterApplication.Utility;
 
 namespace OptimaJet.DWKit.StarterApplication.Controllers
 {
@@ -15,14 +17,17 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
         public ProductsController(
             IJsonApiContext jsonApiContext,
             ICurrentUserContext currentUserContext,
+            WebRequestWrapper webRequestWrapper,
             OrganizationService organizationService,
             ProductService productService,
             UserService userService)
             : base(jsonApiContext, productService, currentUserContext, organizationService, userService)
         {
+            WebRequestWrapper = webRequestWrapper;
             ProductService = productService;
         }
 
+        public WebRequestWrapper WebRequestWrapper { get; }
         public ProductService ProductService { get; }
 
         [HttpGet("{id}/actions")]
@@ -63,6 +68,35 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 return NotFound();
             }
             return Redirect(productArtifact.Url);
+        }
+
+        [AllowAnonymous]
+        [HttpHead("{id}/files/published/{type}")]
+        public async Task<IActionResult> CheckPublishedFile(Guid id, String type)
+        {
+            var ifModifiedSince = "";
+
+            if (HttpContext.Request.Headers.ContainsKey("If-Modified-Since"))
+            {
+                ifModifiedSince = HttpContext.Request.Headers["If-Modified-Since"];
+            }
+
+            var productArtifact = await ProductService.GetPublishedFile(id, type);
+            if (productArtifact == null)
+            {
+                return NotFound();
+            }
+
+            var updatedArtifact = WebRequestWrapper.GetFileInfo(productArtifact);
+            HttpContext.Response.Headers.Add("Last-Modified", updatedArtifact.LastModified?.ToUniversalTime().ToString("r"));
+
+            var lastModified = updatedArtifact.LastModified?.ToUniversalTime().ToString("r");
+            if (ifModifiedSince.CompareTo(lastModified) == 0)
+            {
+                return StatusCode(304);
+            }
+
+            return Ok();
         }
 
         [HttpGet("{id}/transitions")]

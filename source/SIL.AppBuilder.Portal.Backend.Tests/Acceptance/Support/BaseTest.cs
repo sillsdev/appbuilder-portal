@@ -45,6 +45,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Support
             return await MakeRequest(request, organizationId, addOrgHeader, allOrgs);
         }
 
+        public async Task<HttpResponseMessage> Head(string url, string date, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
+        {
+            var httpMethod = new HttpMethod("HEAD");
+            var request = new HttpRequestMessage(httpMethod, url);
+            request.Headers.Add("If-Modified-Since", date);
+
+            return await MakeRequest(request, organizationId, addOrgHeader, allOrgs);
+        }
+
         public async Task<HttpResponseMessage> Patch(string url, object content, string organizationId = "", bool addOrgHeader = true, bool allOrgs = false)
         {
             var httpMethod = new HttpMethod("PATCH");
