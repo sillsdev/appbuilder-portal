@@ -20,8 +20,17 @@ namespace OptimaJet.DWKit.StarterApplication.Utility
                 {
                     JObject baseObject = result[kv.Key] as JObject;
                     JObject higherObject = kv.Value as JObject;
-                    baseObject.Merge(higherObject, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
-                    result[kv.Key] = baseObject;
+                    if (baseObject != null && higherObject != null)
+                    {
+                        // Treat as object and merge values
+                        baseObject.Merge(higherObject, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+                        result[kv.Key] = baseObject;
+                    }
+                    else
+                    {
+                        // Treat as string and replace/add value
+                        result[kv.Key] = kv.Value;
+                    }
                 }
             }
             return result;

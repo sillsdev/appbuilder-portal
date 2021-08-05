@@ -211,7 +211,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
-                var workflowParams = GetWorkflowParameters(processInstance);
+                var workflowParams = GetWorkflowParameters(processInstance, null);
                 var parmsDict = GetActionParameters(actionParameter);
                 if (parmsDict.ContainsKey(GOOGLE_PLAY_UPLOADED))
                 {
@@ -287,7 +287,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowBuildId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = GetParameters(processInstance, actionParameter);
+                    var parmsDict = GetParameters(processInstance, "build", actionParameter);
                     BackgroundJobClient.Enqueue<BuildEngineBuildService>(s => s.CreateBuild(product.Id, parmsDict, null));
                     Log.Information($"BuildEngineCreateBuild: productId={product.Id}, projectName={product.Project.Name}");
                 }
@@ -308,7 +308,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowPublishId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = GetParameters(processInstance, actionParameter);
+                    var parmsDict = GetParameters(processInstance, "release", actionParameter);
                     BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, parmsDict, null));
                     Log.Information($"BuildEnginePublishProduct: productId={product.Id}, projectName={product.Project.Name}");
                 }
@@ -332,13 +332,59 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             }
         }
 
-        private static Dictionary<string, object> GetWorkflowParameters(ProcessInstance processInstance)
+
+
+        private static void AddKeyValueToParameters(Dictionary<string,object> parameters, string strKey, string strValue)
+        {
+            if (strValue.Contains("{"))
+            {
+                // Convert from JSON to Object
+                var higherObject = JsonConvert.DeserializeObject(strValue) as JObject;
+                if (parameters.ContainsKey(strKey))
+                {
+                    var baseObject = parameters[strKey] as JObject;
+                    baseObject.Merge(higherObject, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+                    parameters[strKey] = baseObject;
+                }
+                else
+                {
+                    parameters[strKey] = higherObject;
+                }
+            }
+            else
+            {
+                // Use as string
+                parameters[strKey] = strValue;
+            }
+        }
+
+        private static Dictionary<string, object> GetWorkflowParameters(ProcessInstance processInstance, string scope)
         {
             var result = new Dictionary<string, object>();
+            var scoped = new Dictionary<string, string>();
             foreach (var entry in processInstance.ProcessParameters.Where(p => p.Purpose != ParameterPurpose.System))
             {
-                var value = JsonConvert.DeserializeObject(entry.Value.ToString());
-                result.Add(entry.Name, value);
+                var strValue = entry.Value.ToString();
+                var strKey = entry.Name;
+                // Allow for scoped names so "build:targets" will become "targets"
+                // Scoped values should be assigned after non-scoped
+                if (strKey.Contains(":"))
+                {
+                    // Use scoped values for this scope and ignore others
+                    if (scope != null && strKey.StartsWith(scope + ":"))
+                    {
+                        strKey = strKey.Split(":")[1];
+                        scoped[strKey] = strValue;
+                    }
+                }
+                else
+                {
+                    AddKeyValueToParameters(result, strKey, strValue);
+                }
+            }
+            foreach (var entry in scoped)
+            {
+                AddKeyValueToParameters(result, entry.Key, entry.Value);
             }
 
             return result;
@@ -346,7 +392,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private static void MergeWorkflowParameter(ProcessInstance processInstance, string name, JObject value)
         {
-            var workflowParams = GetWorkflowParameters(processInstance);
+            var workflowParams = GetWorkflowParameters(processInstance, null);
             JObject newParams = value;
             if (workflowParams.ContainsKey(name))
             {
@@ -357,10 +403,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             processInstance.SetParameter(name, json, ParameterPurpose.Persistence);
         }
 
-        private static Dictionary<string, object> GetParameters(ProcessInstance processInstance, string actionParameters)
+        private static Dictionary<string, object> GetParameters(ProcessInstance processInstance, string scope, string actionParameters)
         {
             var actionParams = GetActionParameters(actionParameters);
-            var workflowParams = GetWorkflowParameters(processInstance);
+            var workflowParams = GetWorkflowParameters(processInstance, scope);
             var resultParams = JsonUtils.MergeProperties(actionParams, workflowParams);
             return resultParams;
         }
@@ -414,7 +460,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             {
                 var productRepository = scope.ServiceProvider.GetRequiredService<IJobRepository<Product, Guid>>();
                 Product product = await GetProductForProcess(processInstance, productRepository);
-                var parmsDict = GetParameters(processInstance, actionParameter);
+                var parmsDict = GetParameters(processInstance, "review", actionParameter);
                 if (!String.IsNullOrEmpty(product.WorkflowComment))
                 {
                     parmsDict.Add("Comment", product.WorkflowComment);
