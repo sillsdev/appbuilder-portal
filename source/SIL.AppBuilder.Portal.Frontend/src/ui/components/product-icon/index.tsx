@@ -1,6 +1,7 @@
 import * as React from 'react';
 import AndroidIcon from '@material-ui/icons/Android';
 import WebIcon from '@material-ui/icons/Web';
+import ArchiveIcon from '@material-ui/icons/Archive';
 import MissingIcon from '@material-ui/icons/ErrorOutline';
 
 import { attributesFor } from '@data';
@@ -11,6 +12,7 @@ const colorStyles = {
   android: { color: '#a4c639' },
   html: { color: '#f5a623' },
   pwa: { color: '#0096ff' },
+  package: { color: '#115293' }
 };
 
 const styles = (type, selected, size) => {
@@ -29,6 +31,7 @@ const iconMap = {
   android: (selected, size) => <AndroidIcon style={styles('android', selected, size)} />,
   html: (selected, size) => <WebIcon style={styles('html', selected, size)} />,
   pwa: (selected, size) => <WebIcon style={styles('pwa', selected, size)} />,
+  package: (selected, size) => <ArchiveIcon style={styles('package', selected, size)} />,
   [undefined]: () => <MissingIcon />,
 };
 
