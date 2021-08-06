@@ -308,7 +308,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
                 {
                     product.WorkflowPublishId = 0;
                     await productRepository.UpdateAsync(product);
-                    var parmsDict = GetParameters(processInstance, "release", actionParameter);
+                    var parmsDict = GetParameters(processInstance, "publish", actionParameter);
                     BackgroundJobClient.Enqueue<BuildEngineReleaseService>(s => s.CreateRelease(product.Id, parmsDict, null));
                     Log.Information($"BuildEnginePublishProduct: productId={product.Id}, projectName={product.Project.Name}");
                 }

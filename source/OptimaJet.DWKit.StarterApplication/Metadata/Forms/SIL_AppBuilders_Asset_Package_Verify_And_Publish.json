@@ -1,0 +1,248 @@
+[
+  {
+    "key": "workflowbar",
+    "data-buildertype": "workflowbar",
+    "events": {
+      "onCommandClick": {
+        "active": true,
+        "actions": [
+          "validate",
+          "save",
+          "workflowExecuteCommand",
+          "refresh"
+        ],
+        "targets": [],
+        "parameters": []
+      },
+      "onSetStateClick": {
+        "active": true,
+        "actions": [
+          "validate",
+          "save",
+          "workflowSetState",
+          "refresh"
+        ],
+        "targets": [],
+        "parameters": []
+      }
+    },
+    "blockSetState": true
+  },
+  {
+    "key": "form_2",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "textarea_comment",
+        "data-buildertype": "textarea",
+        "label": "Comment",
+        "fluid": true,
+        "rows": "2"
+      },
+      {
+        "key": "staticcontent_hr",
+        "data-buildertype": "staticcontent",
+        "content": "<hr style=\"height:5px;\"/>",
+        "isHtml": true
+      }
+    ]
+  },
+  {
+    "key": "form_1",
+    "data-buildertype": "form",
+    "children": [
+      {
+        "key": "header_1",
+        "data-buildertype": "header",
+        "content": "Verify and Publish",
+        "size": "medium"
+      },
+      {
+        "key": "formgroup_2",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_project_name",
+            "data-buildertype": "input",
+            "label": "Project Name",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-width": "",
+            "style-customcss": "six wide field"
+          },
+          {
+            "key": "input_project_description",
+            "data-buildertype": "input",
+            "label": "Project Description",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-source": "",
+            "style-width": "",
+            "style-customcss": "ten wide field"
+          }
+        ],
+        "widthsCustom": "16",
+        "style-marginTop": "15px"
+      },
+      {
+        "key": "formgroup_1",
+        "data-buildertype": "formgroup",
+        "widths": "custom",
+        "children": [
+          {
+            "key": "input_store",
+            "data-buildertype": "input",
+            "label": "Store",
+            "fluid": true,
+            "onChangeTimeout": 200,
+            "readOnly": true,
+            "style-customcss": "six wide field"
+          }
+        ],
+        "widthsCustom": "16"
+      },
+      {
+        "key": "staticcontent_instructions",
+        "data-buildertype": "staticcontent",
+        "content": "<h3>Instructions</h3>\n<ul>\n<li>Get preview link by clicking on the entry with type <em>asset-preview</em> in the <em>Product Files</em> grid view.</li>\n<li>Test the asset package by setting the <strong>Container App URL</strong> in a Container App project to the preview link. Then Run the iOS Container App in an iOS Simulator.</li>\n\n<li>Click <strong>Approve</strong> when you are satisfied that everything is ready to go and the app will be published.</li>\n</ul>\n",
+        "isHtml": true,
+        "style-marginBottom": ""
+      },
+      {
+        "key": "header_2",
+        "data-buildertype": "header",
+        "content": "Product Files",
+        "size": "small"
+      },
+      {
+        "key": "gridview_1",
+        "data-buildertype": "gridview",
+        "columns": [
+          {
+            "key": "ProductBuildId",
+            "name": "BuildId",
+            "type": "number",
+            "width": 100,
+            "sortable": true,
+            "filterable": false,
+            "resizable": false
+          },
+          {
+            "key": "ArtifactType",
+            "name": "Type",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "width": 150
+          },
+          {
+            "key": "FileSize",
+            "name": "Size",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "type": "number",
+            "width": 100
+          },
+          {
+            "key": "Url",
+            "name": "Link",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "type": "link"
+          },
+          {
+            "key": "Id",
+            "name": "FileId",
+            "type": "number",
+            "width": 100,
+            "sortable": true,
+            "filterable": false,
+            "resizable": false
+          }
+        ],
+        "events": {
+          "onRowDblClick": {
+            "active": false,
+            "actions": [],
+            "targets": [],
+            "parameters": []
+          },
+          "onRowClick": {
+            "actions": [
+              "openArtifactLink"
+            ],
+            "active": true,
+            "targets": [],
+            "parameters": []
+          }
+        },
+        "defaultSort": "Id ASC",
+        "autoHeight": false,
+        "minHeight": "",
+        "pageSize": ""
+      },
+      {
+        "key": "header_3",
+        "data-buildertype": "header",
+        "content": "Reviewers",
+        "size": "small"
+      },
+      {
+        "key": "gridview_2",
+        "data-buildertype": "gridview",
+        "columns": [
+          {
+            "key": "Id",
+            "name": "Id",
+            "type": "number",
+            "width": 100,
+            "sortable": true,
+            "filterable": false,
+            "resizable": false
+          },
+          {
+            "key": "Name",
+            "name": "Name",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "width": ""
+          },
+          {
+            "key": "Email",
+            "name": "Email",
+            "sortable": true,
+            "filterable": false,
+            "resizable": false,
+            "type": "",
+            "width": ""
+          }
+        ],
+        "events": {
+          "onRowDblClick": {
+            "active": false,
+            "actions": [],
+            "targets": [],
+            "parameters": []
+          },
+          "onRowClick": {
+            "actions": [],
+            "active": true,
+            "targets": [],
+            "parameters": []
+          }
+        },
+        "defaultSort": "Id ASC",
+        "autoHeight": false,
+        "minHeight": "",
+        "pageSize": "",
+        "style-height": ""
+      }
+    ]
+  }
+]

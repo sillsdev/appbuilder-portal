@@ -190,6 +190,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             var channel = GetChannel(paramsDictionary);
             var targets = GetTargets(paramsDictionary, "google-play");
             var environment = GetEnvironment(paramsDictionary);
+            environment["PRODUCT_ID"] = product.Id.ToString();
             var release = new Release
             {
                 Channel = channel,

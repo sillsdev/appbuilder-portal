@@ -3067,6 +3067,15 @@
       "source": "// entities are List<DynamicEntity> of mapped properties for the form (Product properties and form field names)\n// DateBuilt, DateCreated, DatePublished, DateUpdated, ProductDefinitionId, ProjectId, WorkflowBuildId, WorkflowJobId,\n// WorkflowPublishId, Id, dropdown_store, dropdown_language, textarea_comment, input_project_description, input_project_name\nif (entities != null && entities.Count > 0)\n{\n    var entity1 = entities.First();\n    foreach(var pair in entity1.ToDictionary())\n    {\n        Console.WriteLine(\":::: Property: \" + pair.ToString());\n    }\n} \nvar id = entities.Select(e => (int) e.ProjectId).Max();\nConsole.WriteLine(\":::: Entity: \" + id);\n\n//return Filter.Empty;\nreturn Filter.And.Equal(id, \"projectid\");\n",
       "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
       "isAsync": false
+    },
+    {
+      "id": "9bd9d9bc-5b94-5c08-2676-84e3c32a4d87",
+      "name": "ProductLatestAssetPackage",
+      "definedOnServer": false,
+      "type": 0,
+      "source": "var id = entities.Select(e => (int) e.WorkflowBuildId).Max();\nvar types = new List<String> { \"asset-package\", \"asset-preview\"};\nreturn Filter.And.In(types, \"ArtifactType\").Equal(id, \"ProductBuildId\");",
+      "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
+      "isAsync": false
     }
   ],
   "businessFlow": [
@@ -3262,6 +3271,68 @@
             "*"
           ],
           "form": "SIL_AppBuilders_Author_App_Configuration"
+        }
+      ]
+    },
+    {
+      "id": "c329f9d0-a564-d9bd-4e81-ebd5f50aba79",
+      "name": "SIL_AppBuilders_AssetPackage_Flow",
+      "scheme": "SIL_NoAdmin_AppBuilders_Android_S3",
+      "defaultForm": "SIL_AppBuilders_Waiting",
+      "map": [
+        {
+          "states": [
+            "Author Configuration"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Author_App_Configuration"
+        },
+        {
+          "states": [
+            "App Builder Configuration"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_App_Configuration"
+        },
+        {
+          "states": [
+            "Author Download"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Authors_Download"
+        },
+        {
+          "states": [
+            "Synchronize Data"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Synchronize_Data"
+        },
+        {
+          "states": [
+            "Verify and Publish"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Asset_Package_Verify_And_Publish"
+        },
+        {
+          "states": [
+            "Published"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Published"
         }
       ]
     }
