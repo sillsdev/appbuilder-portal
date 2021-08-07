@@ -63,7 +63,7 @@ describe('Acceptance | My Projects | Column selector', () => {
       it('product name is set', () => {
         const productNames = pageInteractor.projectTable.productNames();
         const productNamesText = productNames.map((i) => i.text);
-        expect(productNamesText).to.contain('Android To S3');
+        expect(productNamesText).to.contain('Android to S3');
       });
     });
   });
