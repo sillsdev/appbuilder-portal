@@ -12,7 +12,7 @@ const colorStyles = {
   android: { color: '#a4c639' },
   html: { color: '#f5a623' },
   pwa: { color: '#0096ff' },
-  package: { color: '#115293' }
+  package: { color: '#115293' },
 };
 
 const styles = (type, selected, size) => {
