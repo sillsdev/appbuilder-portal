@@ -1,6 +1,6 @@
 {
   "name": "SIL_AppBuilders_Create_App_Entry",
-  "lastUpdate": "2021-06-16T17:29:34.4262549+00:00",
+  "lastUpdate": "2021-08-09T17:34:22.8646377+00:00",
   "entityId": "4dfa6b6f-de02-4ddd-8289-b0b4f3e11d66",
   "isTemplate": false,
   "triggers": [],
@@ -89,10 +89,26 @@
       "isLoadable": true
     },
     {
+      "id": "00aede91-01e7-c5f9-0e94-b00a27ce43ce",
+      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
+      "control": "input_store",
+      "parentId": "dc1949d0-6c35-e5cf-ef0a-07658b884e0d",
+      "isEditable": false,
+      "isLoadable": true
+    },
+    {
       "id": "1907593e-4fae-146b-af86-aaffdfd8ebf0",
       "attributeId": "78de324a-7e58-4cd8-a407-d4410b3359cf",
       "control": "dropdown_language",
       "isEditable": true,
+      "isLoadable": true
+    },
+    {
+      "id": "52590a64-d734-f3ee-7d6f-23824f2416a3",
+      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
+      "control": "input_store_listing_language",
+      "parentId": "1907593e-4fae-146b-af86-aaffdfd8ebf0",
+      "isEditable": false,
       "isLoadable": true
     },
     {
@@ -107,29 +123,13 @@
       "attributeId": "bcfed538-25b4-48cd-8bc8-e98c16b86043",
       "isEditable": true,
       "isLoadable": true
-    },
-    {
-      "id": "00aede91-01e7-c5f9-0e94-b00a27ce43ce",
-      "attributeId": "64a3979d-2730-4cfe-a8fe-2793b3562f3c",
-      "control": "input_store",
-      "parentId": "dc1949d0-6c35-e5cf-ef0a-07658b884e0d",
-      "isEditable": false,
-      "isLoadable": true
-    },
-    {
-      "id": "52590a64-d734-f3ee-7d6f-23824f2416a3",
-      "attributeId": "ef3b22f3-57c8-473b-89d9-f4ed672936dd",
-      "control": "input_store_listing_language",
-      "parentId": "1907593e-4fae-146b-af86-aaffdfd8ebf0",
-      "isEditable": false,
-      "isLoadable": true
     }
   ],
   "dataColl": [
     {
       "id": "a6599701-b635-ff49-1396-40961e697792",
       "entityId": "7ad334d2-b660-43d0-8520-9491eb0f0083",
-      "filter": "ProductLatestApk",
+      "filter": "ProductLatestAab",
       "control": "gridview_1",
       "dataMap": [
         {
@@ -200,7 +200,8 @@
           "isLoadable": true
         }
       ],
-      "readOnly": true
+      "readOnly": true,
+      "triggers": []
     }
   ]
 }
