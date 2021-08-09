@@ -114,6 +114,9 @@
     <None Update="Metadata\Forms\SIL_AppBuilders_Web_Verify-code.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Metadata\Forms\SIL_AppBuilders_Asset_Package_Verify_And_Publish-code.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Metadata\Forms\top-code.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
