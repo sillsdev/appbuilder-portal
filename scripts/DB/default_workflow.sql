@@ -140,7 +140,33 @@ DO UPDATE SET
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId",
 	"Type" = excluded."Type";
+
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties") VALUES
+(13,	'asset_package',	'1',	'SIL Default Workflow for Publishing Asset Packages',	'SIL_NoAdmin_AppBuilders_Android_S3',	'SIL_AppBuilders_AssetPackage_Flow',	2,	1, '{ "build:targets" : "asset-package" }')
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+	"Properties" = excluded."Properties";
 		
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties") VALUES
+(14,	'asset_package_rebuild',	'1',	'SIL Default Workflow for Rebuilding Asset Packages',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_AppBuilders_AssetPackage_Flow',	2,	2, '{ "build:targets" : "asset-package" }')
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+	"Properties" = excluded."Properties";
+
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId", "RebuildWorkflowId", "RepublishWorkflowId") VALUES
 (1,	'Android App to Google Play',	1,	'Build an Android App from a Scripture App Builder project and publish to a Google Play Store. The Organization Admin has to approve of the project and review the store preview. The Organization Admin has access to Google Play Console.',	1, 2, 3)
 ON CONFLICT ("Id")
@@ -213,6 +239,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -960,6 +990,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -1581,6 +1615,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -2199,6 +2237,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{&quot;Synchronize Data&quot;:false}" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -2551,6 +2593,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -2905,6 +2951,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -3466,6 +3516,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -3931,6 +3985,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -4285,6 +4343,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -4750,6 +4812,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -5104,6 +5170,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />
@@ -5569,6 +5639,10 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     <Parameter Name="Comment" Type="String" Purpose="Temporary" />
     <Parameter Name="ShouldExecute" Type="String" Purpose="Persistence" InitialValue="{ &quot;Synchronize Data&quot; : false }" />
     <Parameter Name="environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:targets" Type="String" Purpose="Persistence" />
+    <Parameter Name="build:environment" Type="String" Purpose="Persistence" />
+    <Parameter Name="publish:environment" Type="String" Purpose="Persistence" />
   </Parameters>
   <Commands>
     <Command Name="Approve" />

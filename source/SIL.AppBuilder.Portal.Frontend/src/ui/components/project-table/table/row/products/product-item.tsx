@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-import { titleize } from 'inflected';
+//import { titleize } from 'inflected';
 import { attributesFor } from '@data/helpers';
 import ProductIcon from '@ui/components/product-icon';
 
@@ -53,7 +53,7 @@ class ProductItem extends React.Component<IProps> {
     const { productDefinition } = this.props;
     const { name } = attributesFor(productDefinition);
 
-    const readableName = titleize(name);
+    const readableName = name; //titleize(name);
 
     return readableName;
   };
