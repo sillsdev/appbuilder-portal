@@ -3089,6 +3089,110 @@
   ],
   "businessFlow": [
     {
+      "id": "da8142c2-d152-4996-b462-a791a91cc652",
+      "name": "SIL_Default_AppBuilders_Android_S3_Flow",
+      "scheme": "SIL_Default_AppBuilders_Android_S3",
+      "defaultForm": "SIL_AppBuilders_Waiting",
+      "map": [
+        {
+          "states": [
+            "Approval"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Project_Approval"
+        },
+        {
+          "states": [
+            "RepoConfig",
+            "Repo Configuration",
+            "Project Configuration",
+            "App Configuration",
+            "App Builder Configuration"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_App_Configuration"
+        },
+        {
+          "states": [
+            "SynchronizeData",
+            "Synchronize Data"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Synchronize_Data"
+        },
+        {
+          "states": [
+            "VerifyAndPublish",
+            "Verify and Publish"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Verify_And_Publish"
+        },
+        {
+          "states": [
+            "Published"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Published"
+        },
+        {
+          "states": [
+            "Readiness Check"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Readiness_Check"
+        },
+        {
+          "states": [
+            "Approval Pending"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Approval_Pending"
+        },
+        {
+          "states": [
+            "Author Upload"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Authors_Upload"
+        },
+        {
+          "states": [
+            "Author Download"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Authors_Download"
+        },
+        {
+          "states": [
+            "Author Configuration"
+          ],
+          "roles": [
+            "*"
+          ],
+          "form": "SIL_AppBuilders_Author_App_Configuration"
+        }
+      ]
+    },
+    {
       "id": "f57d6c03-490c-6534-55e9-fa1d8708c699",
       "name": "SIL_Default_AppBuilders_Android_GooglePlay_Flow",
       "scheme": "SIL_Default_AppBuilders_Android_GooglePlay",
@@ -3154,7 +3258,7 @@
           "roles": [
             "*"
           ],
-          "form": "SIL_AppBuilders_Verify_And_Publish"
+          "form": "SIL_AppBuilders_GooglePlay_Verify_And_Publish"
         },
         {
           "states": [

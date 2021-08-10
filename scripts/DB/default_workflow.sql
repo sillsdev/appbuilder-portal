@@ -34,7 +34,7 @@ DO UPDATE SET
 	"StoreTypeId" = excluded."StoreTypeId";
 	
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
-(4,	'sil_android_s3',	1,	'1',	'SIL Default Workflow for Publish to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	2)
+(4,	'sil_android_s3',	1,	'1',	'SIL Default Workflow for Publish to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_S3_Flow',	2)
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
@@ -46,7 +46,7 @@ DO UPDATE SET
 	"StoreTypeId" = excluded."StoreTypeId";
 
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
-(5,	'sil_android_s3_rebuild',	2,	'1',	'SIL Default Workflow for Rebuilding to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	2)
+(5,	'sil_android_s3_rebuild',	2,	'1',	'SIL Default Workflow for Rebuilding to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_Default_AppBuilders_Android_S3_Flow',	2)
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
@@ -82,7 +82,7 @@ DO UPDATE SET
 	"Type" = excluded."Type";
 
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES
-(8, 'na_android_s3', '1', 'No Admin Workflow for Publishing to S3', 'SIL_NoAdmin_AppBuilders_Android_S3', 'SIL_Default_AppBuilders_Android_GooglePlay_Flow', 2, 1)
+(8, 'na_android_s3', '1', 'No Admin Workflow for Publishing to S3', 'SIL_NoAdmin_AppBuilders_Android_S3', 'SIL_Default_AppBuilders_Android_S3_Flow', 2, 1)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",

@@ -105,16 +105,19 @@
     <None Update="Metadata\Forms\SIL_AppBuilders_App_Store_Review-code.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Metadata\Forms\SIL_AppBuilders_Asset_Package_Verify_And_Publish-code.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Metadata\Forms\SIL_AppBuilders_Create_App_Entry-code.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Metadata\Forms\SIL_AppBuilders_GooglePlay_Verify_And_Publish-code.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Metadata\Forms\SIL_AppBuilders_Verify_And_Publish-code.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Metadata\Forms\SIL_AppBuilders_Web_Verify-code.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Metadata\Forms\SIL_AppBuilders_Asset_Package_Verify_And_Publish-code.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Metadata\Forms\top-code.js">
