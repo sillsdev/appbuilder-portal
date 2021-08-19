@@ -12,7 +12,7 @@
 # NOTE: the CWD/PWD should be the frontend folder. not scripts.
 set -e
 
-url="https://raw.githubusercontent.com/silnrsi/sldr/master/extras/langtags.json"
+url="https://raw.githubusercontent.com/silnrsi/langtags/master/pub/langtags.json"
 folder="./src/public/assets/language/"
 tempPath="${folder}langtags.tmp.json"
 target1Path="${folder}langtags.json"

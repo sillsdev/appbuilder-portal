@@ -38,9 +38,6 @@ let output = {
     types: {
       ...toAbbrTextMap(ldn.types.type),
     },
-    transformNames: {
-      ...toAbbrTextMap(ldn.transformNames.transformName),
-    },
     measurementSystemNames: {
       ...toAbbrTextMap(ldn.measurementSystemNames.measurementSystemName),
     },
