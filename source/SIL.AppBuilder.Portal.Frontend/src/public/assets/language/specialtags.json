@@ -15,5 +15,10 @@
       "fonupa",
       "fonxsamp"
     ]
+  },
+  {
+    "api": "1.2.1",
+    "date": "2021-07-16",
+    "tag": "_version"
   }
 ]
