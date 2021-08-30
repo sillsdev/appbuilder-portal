@@ -1912,7 +1912,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     </Transition>
     <Transition Name="Create App Store Entry_SynchronizeData_1" To="Synchronize Data" From="Create App Store Entry" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
-        <Restriction Type="Allow" NameRef="OrgAdmin" />
+        <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Reject" />
@@ -2011,7 +2011,7 @@ INSERT INTO "WorkflowScheme" ("Code", "Scheme") VALUES
     </Transition>
     <Transition Name="Make It Live_SynchronizeData_1" To="Synchronize Data" From="Make It Live" Classifier="Reverse" AllowConcatenationType="Or" RestrictConcatenationType="And" ConditionsConcatenationType="And" IsFork="false" MergeViaSetState="false" DisableParentStateControl="false">
       <Restrictions>
-        <Restriction Type="Allow" NameRef="OrgAdmin" />
+        <Restriction Type="Allow" NameRef="Owner" />
       </Restrictions>
       <Triggers>
         <Trigger Type="Command" NameRef="Reject" />
