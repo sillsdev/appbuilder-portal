@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useOrbit, idFromRecordIdentity } from 'react-orbitjs';
-import { isEmpty } from '@lib/collection';
+import { compareVia, isEmpty } from '@lib/collection';
 
-import { ProjectResource, ProductResource, OrganizationResource } from '@data';
+import { ProjectResource, ProductResource, OrganizationResource, attributesFor } from '@data';
 
 import { useTranslations } from '@lib/i18n';
 
@@ -65,7 +65,12 @@ export default function Products({ project }: IProps) {
       </div>
     );
   } else {
-    productList = products.map((product) => <ProductItem key={product.id} product={product} />);
+    const sortedProducts = products.sort(
+      compareVia((product) => attributesFor(product).dateCreated, false)
+    );
+    productList = sortedProducts.map((product) => (
+      <ProductItem key={product.id} product={product} />
+    ));
   }
 
   return (
