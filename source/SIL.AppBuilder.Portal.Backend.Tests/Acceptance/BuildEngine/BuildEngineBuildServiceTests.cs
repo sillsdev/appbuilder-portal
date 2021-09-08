@@ -646,6 +646,60 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             Assert.Equal("https://sil-stg-aps-artifacts.s3.amazonaws.com/stg/jobs/build_scriptureappbuilder_1/2/English_Greek-4.7-output.log", notifications[0].LinkUrl);
         }
         [Fact(Skip = skipAcceptanceTest)]
+        public async Task Get_Build_Check_Failure_Missing_ConsoleLog_Default_Build_Engine()
+        {
+            BuildTestData();
+            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var mockWebRequestWrapper = Mock.Get(buildBuildService.WebRequestWrapper);
+            var mockWebClient = Mock.Get(buildBuildService.WebClient);
+            mockBuildEngine.Reset();
+            mockWebRequestWrapper.Reset();
+            mockWebClient.Reset();
+
+            var productBuild = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product3.Id,
+                BuildId = product3.WorkflowBuildId
+            });
+            var buildResponse = new BuildResponse
+            {
+                Id = 2,
+                JobId = 1,
+                Status = "completed",
+                Result = "FAILURE",
+                Error = "Error",
+                Artifacts = new Dictionary<string, string>() { { "cloudWatch", "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logEvent:group=/aws/codebuild/build_app-cth;stream=25de05b1-3a4c-4b5f-a423-e706348d9622" } }
+            };
+            var modifiedArtifact1 = new ProductArtifact
+            {
+                ProductId = product3.Id,
+                ArtifactType = "cloudWatch",
+                Url = "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logEvent:group=/aws/codebuild/build_app-cth;stream=25de05b1-3a4c-4b5f-a423-e706348d9622",
+                LastModified = DateTime.UtcNow
+            };
+
+
+            mockBuildEngine.Setup(x => x.GetBuild(It.IsAny<int>(), It.IsAny<int>())).Returns(buildResponse);
+
+            mockWebRequestWrapper.Setup(x => x.GetFileInfo(It.Is<ProductArtifact>(a =>
+                                                                      a.ArtifactType == "cloudWatch")))
+                     .Returns(modifiedArtifact1);
+
+            await buildBuildService.CheckBuildAsync(product3.Id);
+            var builds = ReadTestData<AppDbContext, ProductBuild>();
+            Assert.Single(builds);
+            var modifiedProductBuild = builds.FirstOrDefault();
+            Assert.False(modifiedProductBuild.Success);
+
+            // Verify that notifications are sent to the user and the org admin
+            var notifications = ReadTestData<AppDbContext, Notification>();
+            Assert.Equal(2, notifications.Count);
+            Assert.Equal($"{{\"projectName\":\"Test Project2\",\"productName\":\"TestProd1\",\"buildStatus\":\"completed\",\"buildError\":\"Error\",\"buildEngineUrl\":\"https://buildengine.testorg2/build-admin/view?id=2\",\"consoleText\":null,\"projectId\":{product3.ProjectId},\"jobId\":2,\"buildId\":2,\"projectUrl\":\"https://dev.scriptoria.io/projects/2\"}}", notifications[0].MessageSubstitutionsJson);
+            Assert.Equal("buildFailedAdmin", notifications[0].MessageId);
+            Assert.Null(notifications[0].LinkUrl);
+        }
+        [Fact(Skip = skipAcceptanceTest)]
          public async Task Get_Build_Status_Unavailable()
          {
              BuildTestData();
