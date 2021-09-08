@@ -190,11 +190,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             {
                 return emptyUrl;
             }
-            var consoleTextUrl = buildEngineBuild.Artifacts["consoleText"];
-            if (consoleTextUrl == null)
-            {
-                return null;
-            }
+            // If there was an errror while starting the process, then the consoleText will not be produced.
+            var consoleTextUrl = emptyUrl;
+            buildEngineBuild.Artifacts.TryGetValue("consoleText", out consoleTextUrl);
             return consoleTextUrl;
         }
         /// <summary>
@@ -336,7 +334,9 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             var buildEngineEndpoint = GetBuildEngineEndpoint(product.Project.Organization);
             var endpointUrl = buildEngineEndpoint.IsValid() ? buildEngineEndpoint.Url : "";
             var buildEngineUrl = endpointUrl + "/build-admin/view?id=" + product.WorkflowBuildId.ToString();
-            var consoleTextUrl = buildEngineBuild.Artifacts["consoleText"];
+            // If there was an errror while starting the process, then the consoleText will not be produced.
+            var consoleTextUrl = "";
+            buildEngineBuild.Artifacts.TryGetValue("consoleText", out consoleTextUrl);
             var messageParms = new Dictionary<string, object>()
             {
                 { "projectName", product.Project.Name },
