@@ -89,6 +89,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
             var updatedArtifact = WebRequestWrapper.GetFileInfo(productArtifact);
             HttpContext.Response.Headers.Add("Last-Modified", updatedArtifact.LastModified?.ToUniversalTime().ToString("r"));
+            HttpContext.Response.Headers.Add("Content-Length", updatedArtifact.FileSize.ToString());
 
             var lastModified = updatedArtifact.LastModified?.ToUniversalTime().ToString("r");
             if (ifModifiedSince.CompareTo(lastModified) == 0)

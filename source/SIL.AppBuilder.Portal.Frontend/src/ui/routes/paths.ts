@@ -11,3 +11,4 @@ export const openSourcePath = '/open-source';
 export const tasksPath = '/tasks';
 export const requestOrgAccessSuccessPath = '/request-access-for-organization/success';
 export const requestOrgAccessPath = '/request-access-for-organization';
+export const downloadsPath = '/downloads';

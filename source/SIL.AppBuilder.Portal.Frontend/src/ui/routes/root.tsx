@@ -19,6 +19,7 @@ import ProjectsRoute from '@ui/routes/projects';
 import UsersRoute from '@ui/routes/users';
 import OpenSourceRoute from '@ui/routes/open-source';
 import ErrorRootRoute from '@ui/routes/errors';
+import DownloadsRootRoute from '@ui/routes/downloads';
 
 import AuthenticatedLayout from '~/ui/components/layout';
 
@@ -57,6 +58,7 @@ export default function RootPage() {
           <Route path={paths.loginPath} component={LoginRoute} />
           <Route path={paths.invitationsPath} component={InvitationsRoute} />
           <Route path={paths.openSourcePath} component={OpenSourceRoute} />
+          <Route path={paths.downloadsPath} component={DownloadsRootRoute} />
           <Route exact path={paths.requestOrgAccessPath} component={RequestOrgAccessRoute} />
           <Route
             path={paths.requestOrgAccessSuccessPath}
