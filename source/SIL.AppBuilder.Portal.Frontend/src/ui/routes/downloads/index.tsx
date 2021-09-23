@@ -6,7 +6,7 @@ import DownloadProducts, { pathName as downloadProductsPath } from './products';
 
 export default function DownloadsRootRoute() {
   return (
-    <div className='ui container'>
+    <div className='ui container flex-100'>
       <Switch>
         <Route exact path={downloadProductsPath} component={DownloadProducts} />
         <Route component={NotFound} />

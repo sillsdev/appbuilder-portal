@@ -581,5 +581,8 @@
   "system": {
     "build-failed": "Build failed",
     "publish-failed": "Publish failed"
+  },
+  "downloads": {
+    "title" : "Downloads"
   }
 }

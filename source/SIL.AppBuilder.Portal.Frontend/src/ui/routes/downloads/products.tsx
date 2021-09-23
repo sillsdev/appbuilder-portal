@@ -25,14 +25,14 @@ export default function DownloadProducts() {
 
   return (
     <div className='ui text container'>
-      <h4 className='ui header p-t-lg uppercase'>{t('project.productFiles')}</h4>
+      <h3 className='ui header p-t-lg'>{t('downloads.title')}</h3>
 
       <div className='content flex'>
-        <Link to={url} download target='_blank' className='flex flex-60'>
+        <Link to={url} download target='_blank' className='flex-50'>
           {type.toUpperCase()}
         </Link>
 
-        <FileSize size={size} className='flex flex-40' />
+        <FileSize size={size} className='flex-50' />
       </div>
     </div>
   );
