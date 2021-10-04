@@ -472,5 +472,33 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             // Return null if product has not been successfully published
             return null;
         }
+
+        public async Task<ProductArtifact> GetPublishedAppDetails(String package)
+        {
+            var publications = await ProductPublicationsRepository.Get()
+                .Where(pp => pp.Package == package && pp.Success == true)
+                .Include(pp => pp.ProductBuild)
+                    .ThenInclude(pb => pb.ProductArtifacts)
+                .OrderByDescending(p => p.Id)
+                .ToListAsync();
+
+            foreach (var publication in publications)
+            {
+                if (publication == null || publication.ProductBuild.ProductArtifacts == null)
+                {
+                    continue;
+                }
+                var artifact = publication.ProductBuild.ProductArtifacts
+                    .Where(pa => pa.ArtifactType == "play-listing-manifest")
+                    .FirstOrDefault();
+
+                if (artifact != null)
+                {
+                    return artifact;
+                }
+            }
+
+            return null;
+        }
     }
 }

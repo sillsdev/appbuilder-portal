@@ -48,6 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication
                 {
                     builder.AddResource<ProductActions,Guid>("product-actions");
                     builder.AddResource<ProjectToken>("project-tokens");
+                    builder.AddResource<AppDetails,Guid>("app-details");
                 });
             });
 

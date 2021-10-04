@@ -26,6 +26,9 @@ namespace OptimaJet.DWKit.StarterApplication.Models
         [Attr("success")]
         public bool? Success { get; set; }
 
+        [Attr("package")]
+        public string Package { get; set; }
+
         [Attr("date-created")]
         public DateTime? DateCreated { get; set; }
 
