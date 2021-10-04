@@ -225,6 +225,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 var targets = GetTargets(parmsDictionary, "apk play-listing");
                 var environment = GetEnvironment(parmsDictionary);
                 environment["PRODUCT_ID"] = product.Id.ToString();
+                environment["PROJECT_ID"] = product.ProjectId.ToString();
                 var build = new Build
                 {
                     Targets = targets,

@@ -39,6 +39,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var productTransitionEntity = modelBuilder.Entity<ProductTransition>();
             var workflowSchemeEntity = modelBuilder.Entity<WorkflowScheme>();
             var projectImportEntity = modelBuilder.Entity<ProjectImport>();
+            var productPublicationEntity = modelBuilder.Entity<ProductPublication>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
@@ -238,6 +239,9 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             productTransitionEntity
                 .Property(t => t.TransitionType)
                 .HasDefaultValue(ProductTransitionType.Activity);
+
+            productPublicationEntity
+                .HasIndex(p => p.Package);
 
 
             productWorkflowSchemeEntity.ToTable("WorkflowProcessScheme");

@@ -1,10 +1,14 @@
-﻿using System;
+﻿ using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Utility;
@@ -18,16 +22,19 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             IJsonApiContext jsonApiContext,
             ICurrentUserContext currentUserContext,
             WebRequestWrapper webRequestWrapper,
+            IWebClient webClient,
             OrganizationService organizationService,
             ProductService productService,
             UserService userService)
             : base(jsonApiContext, productService, currentUserContext, organizationService, userService)
         {
             WebRequestWrapper = webRequestWrapper;
+            WebClient = webClient;
             ProductService = productService;
         }
 
         public WebRequestWrapper WebRequestWrapper { get; }
+        public IWebClient WebClient { get; }
         public ProductService ProductService { get; }
 
         [HttpGet("{id}/actions")]
@@ -98,6 +105,74 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             }
 
             return Ok();
+        }
+
+        class ManifestResponse
+        {
+            public string url;
+            public string icon;
+            public string color;
+            [JsonProperty("default-language")]
+            public string defaultLanguage;
+            public List<string> languages;
+            public List<string> files;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{package}/published")]
+        public async Task<IActionResult> GetPublishedAppDetails(string package)
+        {
+            // Get the play-listing/manifest.json artifact
+            var manifestArtifact = await ProductService.GetPublishedAppDetails(package);
+            if (manifestArtifact == null)
+            {
+                return NotFound();
+            }
+
+            // Get the size of the apk
+            var apkArtifact = await ProductService.GetPublishedFile(manifestArtifact.ProductId, "apk");
+            if (apkArtifact == null)
+            {
+                return NotFound();
+            }
+            var updatedApkArtifact = WebRequestWrapper.GetFileInfo(apkArtifact);
+
+            // Get the contents of the manifest.json
+            var manifestJson = await WebClient.DownloadStringTaskAsync(manifestArtifact.Url);
+
+            var manifest = JsonConvert.DeserializeObject<ManifestResponse>(manifestJson);
+            var url = manifest.url;
+            var titles = new Dictionary<string,string>(manifest.languages.Count);
+            var descriptions = new Dictionary<string,string>(manifest.languages.Count);
+            foreach(string language in manifest.languages)
+            {
+                var title = "";
+                var titleSearch = $"{language}/title.txt";
+                var titlePath = manifest.files.Where(s => s.Contains(titleSearch)).FirstOrDefault();
+                if (!string.IsNullOrEmpty(titlePath)) { title = await WebClient.DownloadStringTaskAsync(url + titlePath); }
+                titles.Add(language, title.Trim());
+
+                var description = "";
+                var descriptionSearch = $"{language}/short_description.txt";
+                var descriptionPath = manifest.files.Where(s => s.Contains(descriptionSearch)).FirstOrDefault();
+                if (!string.IsNullOrEmpty(descriptionPath)) { description = await WebClient.DownloadStringTaskAsync(url + descriptionPath); }
+                descriptions.Add(language, description);
+            }
+
+            var details = new AppDetails
+            {
+                Id = manifestArtifact.ProductId,
+                Link = $"/api/products/{manifestArtifact.ProductId}/files/published/apk",
+                Size = updatedApkArtifact.FileSize.Value,
+                DefaultLanguage = manifest.defaultLanguage,
+                Color = manifest.color,
+                Icon = url + manifest.icon,
+                Languages = manifest.languages,
+                Titles = titles,
+                Descriptions = descriptions
+            };
+
+            return Ok(details);
         }
 
         [HttpGet("{id}/transitions")]

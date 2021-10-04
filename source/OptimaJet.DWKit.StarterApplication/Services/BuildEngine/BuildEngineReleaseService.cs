@@ -10,6 +10,7 @@ using SIL.AppBuilder.BuildEngineApiClient;
 using System.Threading.Tasks;
 using Hangfire.Server;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -191,6 +192,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             var targets = GetTargets(paramsDictionary, "google-play");
             var environment = GetEnvironment(paramsDictionary);
             environment["PRODUCT_ID"] = product.Id.ToString();
+            environment["PROJECT_ID"] = product.ProjectId.ToString();
             var release = new Release
             {
                 Channel = channel,
@@ -275,14 +277,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
         private async Task UpdateProductPublication(ReleaseResponse buildEngineRelease, Product product, bool success)
         {
-            var publication = await PublicationRepository.Get().Where(p => p.ReleaseId == buildEngineRelease.Id && p.ProductId == product.Id).FirstOrDefaultAsync();
+            var publication = await PublicationRepository.Get()
+                .Where(p => p.ReleaseId == buildEngineRelease.Id && p.ProductId == product.Id)
+                .Include(p => p.ProductBuild)
+                    .ThenInclude(pb => pb.ProductArtifacts)
+                .FirstOrDefaultAsync();
             if (publication == null)
             {
                 throw new Exception($"Failed to find ProductPublish: ReleaseId={buildEngineRelease.Id}");
             }
             publication.Success = success;
             publication.LogUrl = buildEngineRelease.ConsoleText;
-            await PublicationRepository.UpdateAsync(publication);
 
             if (success)
             {
@@ -297,7 +302,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                         await ProductRepository.UpdateAsync(product);
                     }
                 }
+
+                var packageFile = publication.ProductBuild.ProductArtifacts.Where(pa => pa.ArtifactType == "package_name").FirstOrDefault();
+                if (packageFile != null)
+                {
+                    var packageName = WebClient.DownloadString(packageFile.Url);
+                    publication.Package = packageName.Trim();
+                }
             }
+
+            await PublicationRepository.UpdateAsync(publication);
         }
 
         protected async Task ReleaseCreationFailedAsync(Product product, ReleaseResponse buildEngineRelease)
