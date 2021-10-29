@@ -219,7 +219,7 @@
   },
   "projects": {
     "noBuilds": "No Builds Yet",
-    "latestBuild": "Latest Build ({version})",
+    "latestBuild": "Última compilación ({version})",
     "buildPending": "Build Pending",
     "buildFailed": "Build Failed",
     "switcher": {
@@ -273,7 +273,7 @@
       "transfer": "Transferir propiedad",
       "archive": "Archivar",
       "reactivate": "Reactivar",
-      "build": "Build"
+      "build": "Compilar"
     },
     "details": {
       "title": "Detalles",
@@ -516,13 +516,13 @@
         }
       },
       "productDefinitions": {
-        "title": "Product Definitions",
+        "title": "Definiciones de producto",
         "name": "Product definition Name",
-        "add": "Add Product Definition",
+        "add": "Añadir definición de producto",
         "edit": "Edit Product Definition",
-        "description": "Description",
+        "description": "Descripción",
         "properties": "Propiedades",
-        "type": "Application Type",
+        "type": "Tipo de aplicación",
         "workflow": "Workflow",
         "republishWorkflow": "Republish Workflow",
         "rebuildWorkflow": "Rebuild Workflow",
