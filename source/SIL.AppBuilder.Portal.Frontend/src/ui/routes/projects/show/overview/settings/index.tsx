@@ -29,25 +29,28 @@ class Settings extends React.Component<IProps> {
   render() {
     const { t, project } = this.props;
     const { automaticBuilds, allowDownloads, isPublic } = attributesFor(project);
+    const showAutoRebuilds = false;
 
     return (
       <div className='settings'>
         <h3 className='fs-21'>{t('project.settings.title')}</h3>
-        <div className='flex justify-content-space-around thin-bottom-border m-b-lg p-b-lg'>
-          <div className='flex-grow'>
-            <h4 className='fs-16 m-b-sm'>{t('project.settings.automaticRebuild.title')}</h4>
-            <p className='fs-13'>{t('project.settings.automaticRebuild.description')}</p>
+        {showAutoRebuilds && (
+          <div className='flex justify-content-space-around thin-bottom-border m-b-lg p-b-lg'>
+            <div className='flex-grow'>
+              <h4 className='fs-16 m-b-sm'>{t('project.settings.automaticRebuild.title')}</h4>
+              <p className='fs-13'>{t('project.settings.automaticRebuild.description')}</p>
+            </div>
+            <div className='flex-shrink'>
+              <Checkbox
+                data-test-project-settings-automatic-build
+                toggle
+                name='automaticBuilds'
+                defaultChecked={automaticBuilds}
+                onChange={this.toggle}
+              />
+            </div>
           </div>
-          <div className='flex-shrink'>
-            <Checkbox
-              data-test-project-settings-automatic-build
-              toggle
-              name='automaticBuilds'
-              defaultChecked={automaticBuilds}
-              onChange={this.toggle}
-            />
-          </div>
-        </div>
+        )}
         <div className='flex justify-content-space-around thin-bottom-border m-b-lg p-b-lg'>
           <div className='flex-grow'>
             <h4 className='fs-16 m-b-sm'>{t('project.settings.organizationDownloads.title')}</h4>
