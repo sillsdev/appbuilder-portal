@@ -184,7 +184,7 @@
     "karma-webpack": "^4.0.0",
     "karma-webpack-grep": "^1.0.1",
     "mocha": "^8.0.0",
-    "node-sass": "^4.9.0",
+    "node-sass": "^7.0.0",
     "prettier": "^1.14.3",
     "react-test-renderer": "^16.4.0",
     "redux-devtools-extension": "^2.13.5",
