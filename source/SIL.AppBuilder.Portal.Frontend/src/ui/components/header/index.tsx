@@ -52,9 +52,11 @@ export default function Header() {
             <LocaleSwitch />
           </div>
 
+          {/*
           <div className='item'>
             <Notifications />
           </div>
+          */}
 
           <div className='item'>
             <UserDropdown />

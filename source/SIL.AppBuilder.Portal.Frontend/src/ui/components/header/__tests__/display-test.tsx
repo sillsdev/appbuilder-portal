@@ -36,7 +36,7 @@ describe('Acceptance | Component | Header', () => {
         await headerHelper.clickNotification();
       });
 
-      it('is open', () => {
+      xit('is open', () => {
         expect(headerHelper.isNotificationMenuOpen).to.be.true;
       });
     });
