@@ -153,7 +153,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
             BackgroundJobClient.Enqueue<WorkflowProjectService>(service => service.UpdateProjectActive(product.ProjectId));
         }
 
-        private Dictionary<string, object> DeserializePropertiers(string properties)
+        private Dictionary<string, object> DeserializeProperties(string properties)
         {
             try
             {
@@ -168,9 +168,10 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
         private void SetProcessProperties(CreateInstanceParams parms, ProductDefinition productDefinition, WorkflowDefinition workflowDefinition)
         {
-            var workflowProperties = DeserializePropertiers(workflowDefinition.Properties);
-            var productProperties = DeserializePropertiers(productDefinition.Properties);
-            var properties = JsonUtils.MergeProperties(productProperties, workflowProperties);
+            var definitionProperties = GetDefinitionProperties(productDefinition, workflowDefinition);
+            var workflowProperties = DeserializeProperties(workflowDefinition.Properties);
+            var productProperties = DeserializeProperties(productDefinition.Properties);
+            var properties = JsonUtils.MergeProperties(definitionProperties, JsonUtils.MergeProperties(productProperties, workflowProperties));
 
             // ProcessParameters are Dictionary<string,object>
             // The values are expected to be strings (our decision, not a DWKit limitation)
@@ -179,6 +180,18 @@ namespace OptimaJet.DWKit.StarterApplication.Services.Workflow
 
             var parameters = properties.ToDictionary(kv => kv.Key, kv => (object)kv.Value.ToString());
             parms.InitialProcessParameters = parameters;     
+        }
+
+        private Dictionary<string, object> GetDefinitionProperties(ProductDefinition productDefinition, WorkflowDefinition workflowDefinition)
+        {
+            Dictionary<string, object> properties = new Dictionary<string, object>();
+            // initialize the environment (used by build and publish scripts) of the type of workflow (startup, rebuild, republish)
+            // so that certain publish activities can be done only at startup of a product. q
+            var environment = new JObject();
+            environment.Add("WORKFLOW_TYPE", workflowDefinition.TypeNameString);
+            environment.Add("WORKFLOW_PRODUCT_NAME", productDefinition.Name);
+            properties.Add("environment", environment);
+            return properties;
         }
 
         public async Task ProductProcessChangedAsync(ProductProcessChangedArgs args)

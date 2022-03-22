@@ -216,16 +216,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 }
             }
         }
-        protected async Task CreateBuildEngineBuildAsync(Product product, Dictionary<string, object> parmsDictionary, PerformContext context)
+        protected async Task CreateBuildEngineBuildAsync(Product product, Dictionary<string, object> paramsDictionary, PerformContext context)
         {
             await ResetPreviousBuildAsync(product);
             BuildResponse buildResponse = null;
             if (SetBuildEngineEndpoint(product.Project.Organization))
             {
-                var targets = GetTargets(parmsDictionary, "apk play-listing");
-                var environment = GetEnvironment(parmsDictionary);
-                environment["PRODUCT_ID"] = product.Id.ToString();
-                environment["PROJECT_ID"] = product.ProjectId.ToString();
+                var targets = GetTargets(paramsDictionary, "apk play-listing");
+                var environment = GetEnvironment(paramsDictionary);
+                AddProductProperitiesToEnvironment(environment, product, paramsDictionary);
                 var build = new Build
                 {
                     Targets = targets,
