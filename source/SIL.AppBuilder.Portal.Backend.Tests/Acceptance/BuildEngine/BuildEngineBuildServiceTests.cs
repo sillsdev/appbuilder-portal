@@ -23,6 +23,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
          {
          }
          const string skipAcceptanceTest = null; //"Acceptance Test disabled"; // Set to null to be able to run/debug using Unit Test Runner
+         const string uiUrl = "https://app.scriptoria.test";
          public User CurrentUser { get; set; }
          public User user1 { get; set; }
          public User user2 { get; set; }
@@ -95,6 +96,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
              });
              Environment.SetEnvironmentVariable("DEFAULT_BUILDENGINE_URL", "https://buildengine.testorg2");
              Environment.SetEnvironmentVariable("DEFAULT_BUILDENGINE_API_ACCESS_TOKEN", "ReplaceAll");
+             Environment.SetEnvironmentVariable("UI_URL", uiUrl);
              org1 = AddEntity<AppDbContext, Organization>(new Organization
              {
                  Name = "TestOrg1",
@@ -355,7 +357,53 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
              var notifications = ReadTestData<AppDbContext, Notification>();
              Assert.Empty(notifications);
          }
-         [Fact(Skip = skipAcceptanceTest)]
+        [Fact(Skip = skipAcceptanceTest)]
+        public async Task Build_CreateAsync_Environment()
+        {
+            BuildTestData();
+            var buildBuildService = _fixture.GetService<BuildEngineBuildService>();
+            var mockBuildEngine = Mock.Get(buildBuildService.BuildEngineApi);
+            var mockRecurringTaskManager = Mock.Get(buildBuildService.RecurringJobManager);
+            mockRecurringTaskManager.Reset();
+            mockBuildEngine.Reset();
+
+            var buildResponse = new BuildResponse
+            {
+                Id = 2,
+                JobId = 1,
+                Status = "initialized",
+                Result = "",
+                Error = ""
+            };
+            var parmsDictionary = new Dictionary<string, object>
+            {
+                 {"targets", "apk play-listing" }
+            };
+            var projectUrl = uiUrl + "/projects/" + product1.ProjectId;
+            mockBuildEngine.Setup(x => x.CreateBuild(It.IsAny<int>(), It.IsAny<Build>())).Returns(buildResponse);
+            await buildBuildService.CreateBuildAsync(product1.Id, parmsDictionary, null);
+            mockBuildEngine.Verify(x => x.CreateBuild(
+                It.Is<int>(b => b == product1.WorkflowJobId),
+                It.Is<Build>(b =>
+                    checkEnv(b, "UI_URL", uiUrl) &&
+                    checkEnv(b, "PRODUCT_ID", product1.Id.ToString()) &&
+                    checkEnv(b, "PROJECT_ID", product1.ProjectId.ToString()) &&
+                    checkEnv(b, "PROJECT_NAME", product1.Project.Name) &&
+                    checkEnv(b, "PROJECT_DESCRIPTION", product1.Project.Description) &&
+                    checkEnv(b, "PROJECT_URL", projectUrl) &&
+                    checkEnv(b, "PROJECT_LANGUAGE", product1.Project.Language) &&
+                    checkEnv(b, "PROJECT_ORGANIZATION", product1.Project.Organization.Name) &&
+                    checkEnv(b, "PROJECT_OWNER_NAME", product1.Project.Owner.Name) &&
+                    checkEnv(b, "PROJECT_OWNER_EMAIL", product1.Project.Owner.Email) &&
+                    b.Targets.CompareTo(parmsDictionary["targets"]) == 0
+                )
+            ));
+        }
+        private bool checkEnv(Build build, String name, String value)
+        {
+            return build.Environment.ContainsKey(name) && build.Environment[name].CompareTo(value) == 0;
+        }
+        [Fact(Skip = skipAcceptanceTest)]
          public async Task Build_Check_BuildAsync()
          {
              BuildTestData();

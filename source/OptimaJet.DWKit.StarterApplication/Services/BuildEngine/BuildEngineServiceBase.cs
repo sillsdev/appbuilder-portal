@@ -115,6 +115,24 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 
             }
         }
+
+        protected static void AddProductProperitiesToEnvironment(Dictionary<string, string> environment, Product product, Dictionary<string, object> paramsDict)
+        {
+            string uiUrl = GetVarOrDefault("UI_URL", "http://localhost:9091");
+            string projectUrl = uiUrl + "/projects/" + product.ProjectId;
+
+            environment["UI_URL"] = uiUrl;
+            environment["PRODUCT_ID"] = product.Id.ToString();
+            environment["PROJECT_ID"] = product.ProjectId.ToString();
+            environment["PROJECT_NAME"] = product.Project.Name;
+            environment["PROJECT_DESCRIPTION"] = product.Project.Description;
+            environment["PROJECT_URL"] = projectUrl;
+            environment["PROJECT_LANGUAGE"] = product.Project.Language;
+            environment["PROJECT_ORGANIZATION"] = product.Project.Organization.Name;
+            environment["PROJECT_OWNER_NAME"] = product.Project.Owner.Name;
+            environment["PROJECT_OWNER_EMAIL"] = product.Project.Owner.Email;
+
+        }
         protected static Dictionary<string, string> GetEnvironment(Dictionary<string, object> paramsDict)
         {
             var environment = new Dictionary<string, string>();
