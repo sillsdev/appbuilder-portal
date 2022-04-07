@@ -42,6 +42,7 @@ namespace OptimaJet.DWKit.StarterApplication
             services.AddJsonApi<AppDbContext>(options => {
                 options.Namespace = "api";
                 options.IncludeTotalRecordCount = true;
+                options.DefaultRelationshipLinks = JsonApiDotNetCore.Models.Link.None;
                 
                 options.EnableOperations = true;
                 options.BuildResourceGraph((builder) =>
