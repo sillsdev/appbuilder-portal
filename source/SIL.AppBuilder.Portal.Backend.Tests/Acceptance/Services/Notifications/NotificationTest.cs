@@ -132,6 +132,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             BuildTestData();
             var notificationParm = new Dictionary<string, object>()
             {
+                { "minutes", "30" },
                 { "url", "http://gtis.guru.com:8443" },
                 { "token", "replace" }
             };
@@ -151,6 +152,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
 
             var notificationParm = new Dictionary<string, object>()
             {
+                { "minutes", "30" },
                 { "url", "http://gtis.guru.com:8443" },
                 { "token", "replace" }
             };
@@ -172,6 +174,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             BuildTestData();
             var notificationParm = new Dictionary<string, object>()
             {
+                { "minutes", "30" },
                 { "url", "http://gtis.guru.com:8443" },
                 { "token", "replace" }
             };

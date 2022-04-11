@@ -174,8 +174,13 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         }
         protected async Task sendStatusUpdateNotificationAsync(SystemStatus systemEntry)
         {
+            var lastUpdate = systemEntry.DateUpdated ?? DateTime.UtcNow;
+            var now = DateTime.UtcNow;
+            TimeSpan ts = now - lastUpdate;
+            int minutes = (int)Math.Round(ts.TotalMinutes);
             var messageParms = new Dictionary<string, object>()
                 {
+                    { "minutes", minutes.ToString() },
                     { "url", systemEntry.BuildEngineUrl },
                     { "token", systemEntry.BuildEngineApiAccessToken }
                 };

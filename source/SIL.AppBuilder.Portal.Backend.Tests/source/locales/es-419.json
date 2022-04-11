@@ -3,7 +3,7 @@
         "body": {
             "log": "Log",
             "userTaskAdded": "<p>Dear {{to}}: </p><p> A new task has been assigned to you by Scriptoria. </p><p>  {{activityName}} for {{productName}} - {{project}} by {{originator}}. </p><p> Comment: {{comment}}</p>",
-            "buildengineDisconnected": "<p>Build Engine URL {{url}} disconnected for 30 minutes</p>",
+            "buildengineDisconnected": "<p>Build Engine URL {{url}} disconnected for {{minutes}} minutes</p>",
             "projectFailedBuildEngine": "<p>Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}.</p>",
             "projectFailedUnableToCreate": "<p>Failed to create project {{projectName}} at build engine.</p>",
             "projectCreatedSuccessfully": "<p>Project {{projectName}} creation completed successfully</p>",
@@ -74,7 +74,7 @@
         },
         "notification": {
             "userTaskAdded": "Task {{activityName}} assigned for {{productName}} - {{project}}.",
-            "buildengineDisconnected": "Build Engine URL {{url}} disconnected for 30 minutes",
+            "buildengineDisconnected": "Build Engine URL {{url}} disconnected for {{minutes}} minutes",
             "projectFailedBuildEngine": "Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}.",
             "projectFailedUnableToCreate": "Failed to create project {{projectName}} at build engine.",
             "projectCreatedSuccessfully": "Project {{projectName}} creation completed successfully.",

@@ -120,6 +120,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
 
             var notificationParm = new
             {
+                minutes = "30",
                 url = "http://gtis.guru.com:8443",
                 token = "replace"
             };
@@ -241,6 +242,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             BuildTestData();
             var notificationParm = new
             {
+                minutes = "30",
                 url = "http://gtis.guru.com:8443",
                 token = "replace"
             };
