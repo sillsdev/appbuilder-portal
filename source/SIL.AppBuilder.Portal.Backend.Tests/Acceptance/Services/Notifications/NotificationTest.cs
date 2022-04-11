@@ -132,16 +132,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             BuildTestData();
             var notificationParm = new Dictionary<string, object>()
             {
-                { "orgName", "SIL International" },
                 { "url", "http://gtis.guru.com:8443" },
                 { "token", "replace" }
             };
 
             var sendNotificationService = _fixture.GetService<SendNotificationService>();
-            await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "buildengineConnected", notificationParm);
+            await sendNotificationService.SendNotificationToUserAsync(CurrentUser, "buildengineDisconnected", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
-            Assert.Equal("Build Engine for organization SIL International status change: connected", modifiedNotifications[1].Message);
+            Assert.Equal("Build Engine URL http://gtis.guru.com:8443 disconnected for 30 minutes", modifiedNotifications[1].Message);
         }
         [Fact]
         public async Task TestSendNotificationToOwnerAndAdmin()
@@ -152,16 +151,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
 
             var notificationParm = new Dictionary<string, object>()
             {
-                { "orgName", "SIL International" },
                 { "url", "http://gtis.guru.com:8443" },
                 { "token", "replace" }
             };
 
             var sendNotificationService = _fixture.GetService<SendNotificationService>();
-            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(org1, CurrentUser, "buildengineConnected", notificationParm);
+            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(org1, CurrentUser, "buildengineDisconnected", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(3, modifiedNotifications.Count);
-            Assert.Equal("Build Engine for organization SIL International status change: connected", modifiedNotifications[1].Message);
+            Assert.Equal("Build Engine URL http://gtis.guru.com:8443 disconnected for 30 minutes", modifiedNotifications[1].Message);
             backgroundJobClientMock.Verify(x => x.Create(
                 It.Is<Job>(job =>
                            job.Method.Name == "SendEmailNotificationImmediate" &&
@@ -174,16 +172,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             BuildTestData();
             var notificationParm = new Dictionary<string, object>()
             {
-                { "orgName", "SIL International" },
                 { "url", "http://gtis.guru.com:8443" },
                 { "token", "replace" }
             };
 
             var sendNotificationService = _fixture.GetService<SendNotificationService>();
-            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(org1, user1, "buildengineConnected", notificationParm);
+            await sendNotificationService.SendNotificationToOrgAdminsAndOwnerAsync(org1, user1, "buildengineDisconnected", notificationParm);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
             Assert.Equal(2, modifiedNotifications.Count);
-            Assert.Equal("Build Engine for organization SIL International status change: connected", modifiedNotifications[1].Message);
+            Assert.Equal("Build Engine URL http://gtis.guru.com:8443 disconnected for 30 minutes", modifiedNotifications[1].Message);
 
         }
         [Fact]

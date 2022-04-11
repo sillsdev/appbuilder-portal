@@ -231,9 +231,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             var emails = ReadTestData<AppDbContext, Email>();
             Assert.Single(emails);
             var email = emails[0];
-            Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
+            Assert.Equal("Scriptoria: http://gtis.guru.com:8443 Build Engine Disconnected", email.Subject);
             Assert.Equal("Notification.txt", email.ContentTemplate);
-            Assert.Equal("{\"BuildEngineUrlText\":\"\",\"LinkUrl\":null,\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\"}", email.ContentModelJson);
+            Assert.Equal("{\"BuildEngineUrlText\":\"\",\"LinkUrl\":null,\"Message\":\"<p>Build Engine URL http:&#x2F;&#x2F;gtis.guru.com:8443 disconnected for 30 minutes</p>\"}", email.ContentModelJson);
         }
         [Fact]
         public async Task Send_EmailAsyncWithLink()
@@ -264,7 +264,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             var email = emails[0];
             Assert.Equal("Scriptoria: http://gtis.guru.com:8443 Build Engine Disconnected", email.Subject);
             Assert.Equal("NotificationWithLink.txt", email.ContentTemplate);
-            Assert.Equal("{\"BuildEngineUrlText\":\"Log\",\"LinkUrl\":\"http://org-prd-aps-files.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/1/project-version-output.log\",\"Message\":\"<p>Build Engine URL {{url}} disconnected for 30 minutes</p>\"}", email.ContentModelJson);
+            Assert.Equal("{\"BuildEngineUrlText\":\"Log\",\"LinkUrl\":\"http://org-prd-aps-files.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/1/project-version-output.log\",\"Message\":\"<p>Build Engine URL http:&#x2F;&#x2F;gtis.guru.com:8443 disconnected for 30 minutes</p>\"}", email.ContentModelJson);
         }
         [Fact]
         public void SendProductReviewEmail()
