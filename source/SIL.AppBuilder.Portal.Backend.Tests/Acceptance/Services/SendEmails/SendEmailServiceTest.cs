@@ -120,16 +120,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
 
             var notificationParm = new
             {
-                orgName = "SIL International",
                 url = "http://gtis.guru.com:8443",
                 token = "replace"
             };
             var serializedParm = JsonConvert.SerializeObject(notificationParm);
             notification1 = AddEntity<AppDbContext, Notification>(new Notification
             {
-                MessageId = "buildengineConnected",
+                MessageId = "buildengineDisconnected",
                 MessageSubstitutionsJson = serializedParm,
-                Message = "Build Engine for organization SIL International status change: connected",
+                Message = "Build Engine URL http://192.168.0.25 disconnected for 30 minutes",
                 UserId = user1.Id,
                 SendEmail = true
             });
@@ -242,16 +241,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             BuildTestData();
             var notificationParm = new
             {
-                orgName = "SIL International",
                 url = "http://gtis.guru.com:8443",
                 token = "replace"
             };
             var serializedParm = JsonConvert.SerializeObject(notificationParm);
             notification2 = AddEntity<AppDbContext, Notification>(new Notification
             {
-                MessageId = "buildengineConnected",
+                MessageId = "buildengineDisconnected",
                 MessageSubstitutionsJson = serializedParm,
-                Message = "Build Engine for organization SIL International status change: connected",
+                Message = "Build Engine URL http://gtis.guru.com:8443 disconnected for 30 minutes",
                 UserId = user1.Id,
                 LinkUrl = "http://org-prd-aps-files.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/1/project-version-output.log"
             });
@@ -264,9 +262,9 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             var emails = ReadTestData<AppDbContext, Email>();
             Assert.Single(emails);
             var email = emails[0];
-            Assert.Equal("Scriptoria: SIL International Build Engine Connected", email.Subject);
+            Assert.Equal("Scriptoria: http://gtis.guru.com:8443 Build Engine Disconnected", email.Subject);
             Assert.Equal("NotificationWithLink.txt", email.ContentTemplate);
-            Assert.Equal("{\"BuildEngineUrlText\":\"Log\",\"LinkUrl\":\"http://org-prd-aps-files.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/1/project-version-output.log\",\"Message\":\"<p>Build Engine for organization SIL International status change: connected</p>\"}", email.ContentModelJson);
+            Assert.Equal("{\"BuildEngineUrlText\":\"Log\",\"LinkUrl\":\"http://org-prd-aps-files.s3.amazonaws.com/prd/jobs/build_scriptureappbuilder_1/1/project-version-output.log\",\"Message\":\"<p>Build Engine URL {{url}} disconnected for 30 minutes</p>\"}", email.ContentModelJson);
         }
         [Fact]
         public void SendProductReviewEmail()

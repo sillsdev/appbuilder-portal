@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
 using SIL.AppBuilder.BuildEngineApiClient;
+using Hangfire;
+using Job = Hangfire.Common.Job;
+using Newtonsoft.Json;
 
 namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
 {
@@ -18,13 +21,15 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
         public IJobRepository<UserRole> UserRolesRepository { get; }
         public SendNotificationService SendNotificationService { get; }
         public IBuildEngineApi BuildEngineApi { get; }
+        public IRecurringJobManager RecurringJobManager { get; }
 
         public BuildEngineSystemMonitor(
             IJobRepository<Organization> organizationRepository,
             IJobRepository<SystemStatus> systemStatusRepository,
             IJobRepository<UserRole> userRolesRepository,
             SendNotificationService sendNotificationService,
-            IBuildEngineApi buildEngineApi
+            IBuildEngineApi buildEngineApi,
+            IRecurringJobManager recurringJobManager
         )
         {
             OrganizationRepository = organizationRepository;
@@ -32,6 +37,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             UserRolesRepository = userRolesRepository;
             SendNotificationService = sendNotificationService;
             BuildEngineApi = buildEngineApi;
+            RecurringJobManager = recurringJobManager;
         }
         public void CheckBuildEngineStatus()
         {
@@ -88,8 +94,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 {
                     systemEntry.SystemAvailable = available;
                     await SystemStatusRepository.UpdateAsync(systemEntry);
-                    await sendStatusUpdateNotificationAsync(systemEntry);
-                 }
+                    if (available)
+                    {
+                        ClearRecurringJob(systemEntry.BuildEngineUrl);
+                    } else
+                    {
+                        var notificationJob = Job.FromExpression<BuildEngineSystemMonitor>(task => task.sendStatusUpdateNotification(systemEntry));
+                        var cronString = GetPeriodString();
+                        RecurringJobManager.AddOrUpdate(GetHangfireToken(systemEntry.BuildEngineUrl), notificationJob, cronString);
+
+                    }
+                }
             }
         }
 
@@ -153,23 +168,37 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
                 return false;
             }
         }
+        public void sendStatusUpdateNotification(SystemStatus systemEntry)
+        {
+            sendStatusUpdateNotificationAsync(systemEntry).Wait();
+        }
         protected async Task sendStatusUpdateNotificationAsync(SystemStatus systemEntry)
         {
-            var organizations = OrganizationRepository.Get()
-                                                      .Where(o => (o.BuildEngineUrl == systemEntry.BuildEngineUrl)
-                                                             && (o.BuildEngineApiAccessToken == systemEntry.BuildEngineApiAccessToken));
-             foreach (Organization organization in organizations)
-            {
-                var messageParms = new Dictionary<string, object>()
+            var messageParms = new Dictionary<string, object>()
                 {
-                    { "orgName", organization.Name },
-                    { "url", organization.BuildEngineUrl },
-                    { "token", organization.BuildEngineApiAccessToken }
+                    { "url", systemEntry.BuildEngineUrl },
+                    { "token", systemEntry.BuildEngineApiAccessToken }
                 };
-                await SendNotificationService.SendNotificationToOrgAdminsAsync(organization,
-                                                                               systemEntry.SystemAvailable ? "buildengineConnected" : "buildengineDisconnected",
-                                                                               messageParms);
-            }
+            await SendNotificationService.SendNotificationToSuperAdminsAsync("buildengineDisconnected", messageParms, "", true);
         }
+        protected String GetPeriodString()
+        {
+            var date = DateTime.Now;
+            var minuteOffset = date.Minute % 30;
+            var minutePlusHalf = minuteOffset + 30;
+            var cronString = minuteOffset.ToString() + "," + minutePlusHalf.ToString() + " * * * *";
+            return cronString;
+        }
+        protected void ClearRecurringJob(String buildEngineUrl)
+        {
+            var jobToken = GetHangfireToken(buildEngineUrl);
+            RecurringJobManager.RemoveIfExists(jobToken);
+            return;
+        }
+        protected String GetHangfireToken(String buildEngineUrl)
+        {
+            return "BuildEngineSystemMonitor" + buildEngineUrl;
+        }
+
     }
 }
