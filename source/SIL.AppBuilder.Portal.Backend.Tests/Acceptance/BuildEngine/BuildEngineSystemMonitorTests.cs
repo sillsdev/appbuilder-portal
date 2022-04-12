@@ -1,5 +1,7 @@
 ﻿using System;
 using JsonApiDotNetCore.Data;
+using Hangfire;
+using Job = Hangfire.Common.Job;
 using Moq;
 using OptimaJet.DWKit.StarterApplication.Data;
 using OptimaJet.DWKit.StarterApplication.Models;
@@ -143,13 +145,15 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
 
             var systemStatus1 = systemStatuses[0];
             Assert.True(systemStatus1.SystemAvailable);
-            var notifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Equal(4, notifications.Count);
         }
         [Fact]
         public void MonitorSystem_Unavailable()
         {
             SetTestData();
+            var recurringJobManager = _fixture.GetService<IRecurringJobManager>();
+            var recurringJobManagerMock = Mock.Get(recurringJobManager);
+            recurringJobManagerMock.Reset();
+
             var systat3 = AddEntity<AppDbContext, SystemStatus>(new SystemStatus
             {
                 BuildEngineUrl = "https://buildengine.testorg1",
@@ -168,8 +172,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.BuildEngine
             var systemStatus1 = systemStatuses[0];
             Assert.False(systemStatus1.SystemAvailable);
 
-            var notifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Single(notifications);
+            // A single recurring task is created for the entry that changed from enabled to disabled
+            recurringJobManagerMock.Verify(x => x.AddOrUpdate(It.IsAny<String>(), It.IsAny<Job>(), It.IsAny<String>(), It.IsAny<RecurringJobOptions>()), Times.Exactly(1));
 
         }
     }

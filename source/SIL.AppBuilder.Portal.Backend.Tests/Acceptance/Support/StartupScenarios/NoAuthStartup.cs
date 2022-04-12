@@ -20,6 +20,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
     public class NoAuthStartup : BaseTestStartup
     {
         private Mock<IBackgroundJobClient> backgroundJobClient;
+        private Mock<IRecurringJobManager> recurringJobManager;
         private Mock<IHubContext<JSONAPIHub>> dataHubContext;
         private Mock<IBuildEngineProjectService> projectService;
         private Mock<WebRequestWrapper> webRequestWrapper;
@@ -29,6 +30,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
         public NoAuthStartup(IHostingEnvironment env) : base(env)
         {
             backgroundJobClient = new Mock<IBackgroundJobClient>();
+            recurringJobManager = new Mock<IRecurringJobManager>();
             dataHubContext = new Mock<IHubContext<JSONAPIHub>> { DefaultValue = DefaultValue.Mock };
             projectService = new Mock<IBuildEngineProjectService>();
             webRequestWrapper = new Mock<WebRequestWrapper>();
@@ -77,6 +79,7 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Support.StartupScenarios
                 services.AddScoped<IHubContext<JSONAPIHub>>(s => dataHubContext.Object);
 
                 services.AddScoped<IBackgroundJobClient>(s => backgroundJobClient.Object);
+                services.AddScoped<IRecurringJobManager>(s => recurringJobManager.Object);
                 var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IBuildEngineProjectService));
                 if (serviceDescriptor == null)
                 {
