@@ -74,7 +74,7 @@
         },
         "notification": {
             "userTaskAdded": "Task {{activityName}} assigned for {{productName}} - {{project}}.",
-            "buildengineDisconnected": "<p>Build Engine URL {{url}} disconnected for {{minutes}} minutes</p>",
+            "buildengineDisconnected": "Build Engine URL {{url}} disconnected for {{minutes}} minutes",
             "projectFailedBuildEngine": "Failed to create project {{projectName}}. Could not connect to build engine for organization {{orgName}}.",
             "projectFailedUnableToCreate": "Failed to create project {{projectName}} at build engine.",
             "projectCreatedSuccessfully": "Project {{projectName}} creation completed successfully.",
