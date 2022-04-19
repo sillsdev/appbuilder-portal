@@ -83,7 +83,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 .ToList();
             foreach (User superAdmin in superAdmins.Distinct(new IdentifiableComparer()))
             {
-                await SendNotificationToUserAsync(superAdmin, messageId, subs, linkUrl, forceEmail);
+                await SendNotificationToUserAsync(superAdmin, messageId, subs, linkUrl, forceEmail, true);
             }
         }
         // forceEmail set to false sends notification with no email.  Set forceEmail to null to not force either way
@@ -99,19 +99,22 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                 sendEmail = forceEmail.Value;
             }
 
-            var notification = new Notification
+            if (sendEmail)
             {
-                UserId = user.Id,
-                Message = translated,
-                SendEmail = sendEmail,
-                MessageSubstitutions = subs,
-                MessageId = messageId,
-                LinkUrl = linkUrl
-            };
-            var updatedNotification = await NotificationRepository.CreateAsync(notification);
-            if (sendEmailImmediately)
-            {
-                BackgroundJobClient.Enqueue<SendNotificationService>(service => service.SendEmailNotificationImmediate(updatedNotification.Id));
+                var notification = new Notification
+                {
+                    UserId = user.Id,
+                    Message = translated,
+                    SendEmail = sendEmail,
+                    MessageSubstitutions = subs,
+                    MessageId = messageId,
+                    LinkUrl = linkUrl
+                };
+                var updatedNotification = await NotificationRepository.CreateAsync(notification);
+                if (sendEmailImmediately)
+                {
+                    BackgroundJobClient.Enqueue<SendNotificationService>(service => service.SendEmailNotificationImmediate(updatedNotification.Id));
+                }
             }
         }
 
@@ -146,7 +149,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         public void NotificationEmailMonitor()
         {
             // Get limits from environment
-            int sendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MIN_MINUTES", 60);
+            int sendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MIN_MINUTES", 1);
             int dontSendNotificationEmailMinutes = GetIntVarOrDefault("NOTIFICATION_SEND_EMAIL_MAX_MINUTES", 180);
             var now = DateTime.UtcNow;
             var oldestCreationDateToSend = now.AddMinutes(-dontSendNotificationEmailMinutes);
