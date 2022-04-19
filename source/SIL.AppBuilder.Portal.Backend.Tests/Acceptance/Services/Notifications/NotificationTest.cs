@@ -307,10 +307,8 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.Notifications
             var sendNotificationService = _fixture.GetService<SendNotificationService>();
             await sendNotificationService.SendNotificationToSuperAdminsAsync("projectFailedBuildEngine", notificationParm, "", false);
             var modifiedNotifications = ReadTestData<AppDbContext, Notification>();
-            Assert.Equal(2, modifiedNotifications.Count);
-            var notification = modifiedNotifications[1];
-            Assert.False(notification.SendEmail);
-            Assert.Equal(CurrentUser.Id, notification.UserId);
+            // Change to test because sending notifications that do not result in emails doesn't add them to the DB
+            Assert.Single(modifiedNotifications);
         }
     }
 }
