@@ -37,7 +37,7 @@
     "@orbit/store": "0.15.25",
     "@ssv/signalr-client": "^2.0.0",
     "auth0-js": "^9.6.1",
-    "auth0-lock": "^11.7.2",
+    "auth0-lock": "^11.33.0",
     "i18next": "^19.0.0",
     "i18next-browser-languagedetector": "^6.0.0",
     "i18next-icu": "^1.0.1",
