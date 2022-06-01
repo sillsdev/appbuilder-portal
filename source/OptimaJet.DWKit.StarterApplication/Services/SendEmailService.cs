@@ -89,23 +89,55 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         }
         protected async Task SendEmailToReviewersAsync(Product product, string links, string comment, ProductBuild productBuild)
         {
+            var hasComments = !String.IsNullOrEmpty(comment);
             var apkUrl = "";
             var apkArtifact = productBuild.ProductArtifacts.Find(a => a.ArtifactType == "apk");
             if (apkArtifact != null)
             {
                 apkUrl = apkArtifact.Url;
             }
-            var messageId = "reviewProduct";
-            if (!String.IsNullOrEmpty(comment))
+            var pwaUrl = "";
+            var pwaArtifact = productBuild.ProductArtifacts.Find(a => a.ArtifactType == "pwa");
+            if (pwaArtifact != null)
             {
-                messageId = "reviewProductWithComment";
+                pwaUrl = pwaArtifact.Url;
             }
+            var hasPwa = !String.IsNullOrEmpty(pwaUrl);
+
             var playListingUrl = "";
             var playListingArtifact = productBuild.ProductArtifacts.Find(a => a.ArtifactType == "play-listing");
             if (playListingArtifact != null)
             {
                 playListingUrl = playListingArtifact.Url;
             }
+            var hasPlayListing = !String.IsNullOrEmpty(playListingUrl);
+
+            var assetPreviewUrl = "";
+            var assetPreviewArtifact = productBuild.ProductArtifacts.Find(a => a.ArtifactType == "asset-preview");
+            if (assetPreviewArtifact != null)
+            {
+                assetPreviewUrl = assetPreviewArtifact.Url;
+            }
+            var hasAssetPreview = !String.IsNullOrEmpty(assetPreviewUrl);
+            var messageId = "reviewProduct";
+            if (hasAssetPreview)
+            {
+                messageId = "reviewAssetPackage";
+            }
+            else if (hasPwa)
+            {
+                messageId = "reviewPwaProduct";
+            }
+            else if (!hasPlayListing)
+            {
+                messageId = "reviewProductNoPlayListing";
+            }
+            if (hasComments)
+            {
+                messageId = messageId + "WithComment";
+            }
+
+
             var subsDictionary = new Dictionary<string, object>
                     {
                         {"productName", product.ProductDefinition.Name},
@@ -115,6 +147,8 @@ namespace OptimaJet.DWKit.StarterApplication.Services
                         {"ownerEmail", product.Project.Owner.Email},
                         {"apkUrl", apkUrl},
                         {"playListingUrl", playListingUrl},
+                        {"assetPreviewUrl", assetPreviewUrl},
+                        {"pwaUrl", pwaUrl },
                         {"comment", comment}
                     };
 

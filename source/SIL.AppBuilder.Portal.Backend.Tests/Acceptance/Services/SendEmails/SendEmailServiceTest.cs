@@ -33,11 +33,19 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
         public Project project1 { get; set; }
         public ApplicationType type1 { get; set; }
         public Product product1 { get; set; }
+        public Product product2 { get; set; }
+        public Product product3 { get; set; }
         public ProductDefinition productDefinition1 { get; set; }
+        public ProductDefinition productDefinition2 { get; set; }
+        public ProductDefinition productDefinition3 { get; set; }
         public ProductArtifact productArtifact1 { get; set; }
         public ProductArtifact productArtifact2 { get; set; }
         public ProductArtifact productArtifact3 { get; set; }
+        public ProductArtifact productArtifact4 { get; set; }
+        public ProductArtifact productArtifact5 { get; set; }
         public ProductBuild productBuild1 { get; set; }
+        public ProductBuild productBuild2 { get; set; }
+        public ProductBuild productBuild3 { get; set; }
         public Reviewer reviewer1 { get; set; }
         public Reviewer reviewer2 { get; set; }
         public WorkflowDefinition workflow1 { get; set; }
@@ -164,15 +172,51 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
                 Description = "This is a test product",
                 WorkflowId = workflow1.Id
             });
+            productDefinition2 = AddEntity<AppDbContext, ProductDefinition>(new ProductDefinition
+            {
+                Name = "TestAssetProd",
+                TypeId = type1.Id,
+                Description = "iOS Asset Package",
+                WorkflowId = workflow1.Id
+            });
+            productDefinition3 = AddEntity<AppDbContext, ProductDefinition>(new ProductDefinition
+            {
+                Name = "TestPwaProd",
+                TypeId = type1.Id,
+                Description = "PWA",
+                WorkflowId = workflow1.Id
+            });
             product1 = AddEntity<AppDbContext, Product>(new Product
             {
                 ProjectId = project1.Id,
                 ProductDefinitionId = productDefinition1.Id
             });
+            product2 = AddEntity<AppDbContext, Product>(new Product
+            {
+                ProjectId = project1.Id,
+                ProductDefinitionId = productDefinition2.Id
+            });
+            product3 = AddEntity<AppDbContext, Product>(new Product
+            {
+                ProjectId = project1.Id,
+                ProductDefinitionId = productDefinition3.Id
+            });
             productBuild1 = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
             {
                 ProductId = product1.Id,
                 BuildId = 1,
+                Version = "1"
+            });
+            productBuild2 = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product2.Id,
+                BuildId = 2,
+                Version = "1"
+            });
+            productBuild3 = AddEntity<AppDbContext, ProductBuild>(new ProductBuild
+            {
+                ProductId = product3.Id,
+                BuildId = 3,
                 Version = "1"
             });
             productArtifact1 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
@@ -202,7 +246,24 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
                 FileSize = 1000,
                 ContentType = "test"
             });
-
+            productArtifact4 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product2.Id,
+                ProductBuildId = productBuild2.Id,
+                ArtifactType = "asset-preview",
+                Url = "http://www.test.com/preview.html",
+                FileSize = 1000,
+                ContentType = "test"
+            });
+            productArtifact5 = AddEntity<AppDbContext, ProductArtifact>(new ProductArtifact
+            {
+                ProductId = product3.Id,
+                ProductBuildId = productBuild3.Id,
+                ArtifactType = "pwa",
+                Url = "http://www.test.com/test.zip",
+                FileSize = 1000,
+                ContentType = "test"
+            });
             reviewer1 = AddEntity<AppDbContext, Reviewer>(new Reviewer
             {
                 Name = "David Moore",
@@ -312,6 +373,51 @@ namespace SIL.AppBuilder.Portal.Backend.Tests.Acceptance.Services.SendEmails
             Assert.Equal("chris_hubbard@sil.org", emails[1].To);
             Assert.Equal("test-email1@test.test", emails[2].To);
         }
+        [Fact]
+        public void SendProductReviewEmailForAssetPackage()
+        {
+            BuildTestData();
+            var sendEmailService = _fixture.GetService<SendEmailService>();
+            var actionParm = "{\"types\" : [\"apk\", \"play-listing\"]}";
+            var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParm);
+            sendEmailService.SendProductReviewEmail(product2.Id, parmsDict);
+            var emails = ReadTestData<AppDbContext, Email>();
+            Assert.Equal(3, emails.Count);
+            var expectedContent = "{\"Links\":\"\",\"Message\":\"<p>David Moore,</p><p>You have been asked to review the following app:<br>Project: Test Project1<br>Product: TestAssetProd</p><p>Here are the product files to be reviewed:<br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;preview.html>asset-preview</a><br></p><p>Send feedback to: Test Testenson1 (test-email1@test.test)</p>\"}";
+            var expectedContent2 = "{\"Links\":\"\",\"Message\":\"<p>Chris Hubbard,</p><p>You have been asked to review the following app:<br>Project: Test Project1<br>Product: TestAssetProd</p><p>Here are the product files to be reviewed:<br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;preview.html>asset-preview</a><br></p><p>Send feedback to: Test Testenson1 (test-email1@test.test)</p>\"}";
+            var expectedContent3 = "{\"Links\":\"\",\"Message\":\"<p>Test Testenson1,</p><p>The following message was sent to the these reviewers:<br>David Moore(david_moore1@sil.org), Chris Hubbard(chris_hubbard@sil.org)<br></p><hr><p>REVIEWER_NAME,</p><p>You have been asked to review the following app:<br>Project: Test Project1<br>Product: TestAssetProd</p><p>Here are the product files to be reviewed:<br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;preview.html>asset-preview</a><br></p><p>Send feedback to: Test Testenson1 (test-email1@test.test)</p>\"}";
+            Assert.Equal(expectedContent, emails[0].ContentModelJson);
+            Assert.Equal(expectedContent2, emails[1].ContentModelJson);
+            Assert.Equal(expectedContent3, emails[2].ContentModelJson);
+            Assert.Equal("ReviewProduct.txt", emails[0].ContentTemplate);
+            Assert.Equal("Test Project1 app - ready for review", emails[0].Subject);
+            Assert.Equal("david_moore1@sil.org", emails[0].To);
+            Assert.Equal("chris_hubbard@sil.org", emails[1].To);
+            Assert.Equal("test-email1@test.test", emails[2].To);
+        }
+        [Fact]
+        public void SendProductReviewEmailForPWA()
+        {
+            BuildTestData();
+            var sendEmailService = _fixture.GetService<SendEmailService>();
+            var actionParm = "{\"types\" : [\"apk\", \"play-listing\"]}";
+            var parmsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(actionParm);
+            sendEmailService.SendProductReviewEmail(product3.Id, parmsDict);
+            var emails = ReadTestData<AppDbContext, Email>();
+            Assert.Equal(3, emails.Count);
+            var expectedContent = "{\"Links\":\"\",\"Message\":\"<p>David Moore,</p><p>You have been asked to review the following app:<br>Project: Test Project1<br>Product: TestPwaProd</p><p>Here are the product files to be reviewed:<br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;test.zip>pwa</a><br></p><p>Send feedback to: Test Testenson1 (test-email1@test.test)</p>\"}";
+            var expectedContent2 = "{\"Links\":\"\",\"Message\":\"<p>Chris Hubbard,</p><p>You have been asked to review the following app:<br>Project: Test Project1<br>Product: TestPwaProd</p><p>Here are the product files to be reviewed:<br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;test.zip>pwa</a><br></p><p>Send feedback to: Test Testenson1 (test-email1@test.test)</p>\"}";
+            var expectedContent3 = "{\"Links\":\"\",\"Message\":\"<p>Test Testenson1,</p><p>The following message was sent to the these reviewers:<br>David Moore(david_moore1@sil.org), Chris Hubbard(chris_hubbard@sil.org)<br></p><hr><p>REVIEWER_NAME,</p><p>You have been asked to review the following app:<br>Project: Test Project1<br>Product: TestPwaProd</p><p>Here are the product files to be reviewed:<br><a href = http:&#x2F;&#x2F;www.test.com&#x2F;test.zip>pwa</a><br></p><p>Send feedback to: Test Testenson1 (test-email1@test.test)</p>\"}";
+            Assert.Equal(expectedContent, emails[0].ContentModelJson);
+            Assert.Equal(expectedContent2, emails[1].ContentModelJson);
+            Assert.Equal(expectedContent3, emails[2].ContentModelJson);
+            Assert.Equal("ReviewProduct.txt", emails[0].ContentTemplate);
+            Assert.Equal("Test Project1 app - ready for review", emails[0].Subject);
+            Assert.Equal("david_moore1@sil.org", emails[0].To);
+            Assert.Equal("chris_hubbard@sil.org", emails[1].To);
+            Assert.Equal("test-email1@test.test", emails[2].To);
+        }
+
         [Fact]
         public void SendRejectEmail()
         {
