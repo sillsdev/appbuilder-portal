@@ -48,7 +48,7 @@
     "keyboardjs": "^2.5.1",
     "lodash": "^4.17.11",
     "md5-hash": "^1.0.1",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "moment-timezone": "^0.5.21",
     "pretty-bytes": "^5.1.0",
     "pretty-ms": "^7.0.0",
