@@ -38,6 +38,7 @@ export default class AuthorSelectDisplay extends React.Component<IProps> {
       <Dropdown
         data-test-user-select
         disabled={disableSelection || false}
+        scrolling
         options={userOptions}
         value={selected}
         onChange={this.onSelect}

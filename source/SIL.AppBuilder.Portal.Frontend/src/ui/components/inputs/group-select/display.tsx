@@ -32,6 +32,7 @@ export default function GroupSelectDisplay({
     <Dropdown
       data-test-group-select
       disabled={disableSelection || false}
+      scrolling
       options={groupOptions}
       value={selected}
       onChange={onSelect}
