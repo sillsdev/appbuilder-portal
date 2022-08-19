@@ -48,7 +48,7 @@
     "updated": "Actualizado",
     "continue": "Continuar",
     "error": "Error",
-    "workflow": "Workflow"
+    "workflow": "Flujo trabajo"
   },
   "models": {
     "add": "Añadir {name}",
@@ -219,7 +219,7 @@
   },
   "projects": {
     "noBuilds": "No Builds Yet",
-    "latestBuild": "Latest Build ({version})",
+    "latestBuild": "Última compilación ({version})",
     "buildPending": "Build Pending",
     "buildFailed": "Build Failed",
     "switcher": {
@@ -273,7 +273,7 @@
       "transfer": "Transferir propiedad",
       "archive": "Archivar",
       "reactivate": "Reactivar",
-      "build": "Build"
+      "build": "Compilar"
     },
     "details": {
       "title": "Detalles",
@@ -516,35 +516,35 @@
         }
       },
       "productDefinitions": {
-        "title": "Product Definitions",
+        "title": "Definiciones de producto",
         "name": "Product definition Name",
-        "add": "Add Product Definition",
-        "edit": "Edit Product Definition",
-        "description": "Description",
+        "add": "Añadir definición de producto",
+        "edit": "Editar definición de producto",
+        "description": "Descripción",
         "properties": "Propiedades",
-        "type": "Application Type",
-        "workflow": "Workflow",
+        "type": "Tipo de aplicación",
+        "workflow": "Flujo trabajo",
         "republishWorkflow": "Republish Workflow",
         "rebuildWorkflow": "Rebuild Workflow",
-        "addSuccess": "Product Definition added",
-        "editSuccess": "Product Definition updated",
-        "emptyName": "Name cannot be empty",
-        "emptyType": "Need to select an Application Type",
+        "addSuccess": "Definición del producto añadida",
+        "editSuccess": "Definición del producto actualizada",
+        "emptyName": "Nombre no puede estar vacío",
+        "emptyType": "Necesita seleccionar un tipo de aplicación",
         "emptyWorkflow": "Need to select a Workflow definition",
         "noWorkflow": "No Workflow Required"
       },
       "storeTypes": {
-        "title": "Store Types",
+        "title": "Tipos de tienda",
         "name": "Store Type Name",
-        "add": "Add Store Type",
-        "edit": "Edit Store Type",
-        "description": "Description",
-        "type": "Application Type",
-        "workflow": "Workflow",
-        "addSuccess": "Store Type added",
-        "editSuccess": "Store Type updated",
-        "emptyName": "Name cannot be empty",
-        "emptyType": "Need to select an Application Type",
+        "add": "Añadir tipo de tienda",
+        "edit": "Editar tipo de tienda",
+        "description": "Descripción",
+        "type": "Tipo de aplicación",
+        "workflow": "Flujo de trabajo",
+        "addSuccess": "Tipo de tienda añadido",
+        "editSuccess": "Tipo de tienda actualizado",
+        "emptyName": "Nombre no puede estar vacío",
+        "emptyType": "Necesita seleccionar un tipo de aplicación",
         "emptyWorkflow": "Need to select a Workflow definition"
       },
       "buildEngines": {
@@ -581,5 +581,8 @@
   "system": {
     "build-failed": "Build failed",
     "publish-failed": "Publish failed"
+  },
+  "downloads": {
+    "title": "Downloads"
   }
 }
