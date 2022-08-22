@@ -1,4 +1,4 @@
-FROM node:10.17.0
+FROM --platform=linux/amd64 node:10.17.0
 
 ARG CHROME_VERSION="google-chrome-stable"
 
