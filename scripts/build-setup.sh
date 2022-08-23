@@ -82,7 +82,3 @@ if [ `builtin type -p ecs-deploy` ]; then
 else
   (cd $HOME/.local/bin && curl -O https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy && chmod +x ecs-deploy)
 fi
-
-if [[ $PUSH_TO_DOCKER_REGISTRY == "true" ]]; then
-  eval $(aws ecr get-login --no-include-email --region us-east-1) #needs AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars
-fi
