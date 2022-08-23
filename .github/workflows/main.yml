@@ -6,18 +6,18 @@ on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Log Level'
+        description: "Log Level"
         required: true
-        default: 'warning'
+        default: "warning"
       tags:
-        description: 'Tags'
+        description: "Tags"
   schedule:
-    - cron: '0 0 * * 0' # weekly
+    - cron: "0 0 * * 0" # weekly
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
-    env: 
+    runs-on: ubuntu-20.04
+    env:
       AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY__AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY__AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.DEPLOY__AWS_DEFAULT_REGION }}
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14"
 
       - name: Get environment info
         run: |
@@ -60,7 +60,21 @@ jobs:
           time ( ./run ci:build > /dev/null 2>&1 )
           echo "docker containers built!"
           echo "Running the backend commands..."
-          time ( ./run ci:api )       
+          time ( ./run ci:api )
+
+      - name: Configure AWS credentials (SIL)
+        id: aws_sil
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEPLOY__AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEPLOY__AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.DEPLOY__AWS_DEFAULT_REGION }}
+
+      - name: Login to AWS ECR (SIL)
+        id: ecr_sil
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: ${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}
 
       - name: Build nginx
         run: ./scripts/build-nginx.sh $GITHUB_SHA $GITHUB_REF $GITHUB_EVENT_NAME
