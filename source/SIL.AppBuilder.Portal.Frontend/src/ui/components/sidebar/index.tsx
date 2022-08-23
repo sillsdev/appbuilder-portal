@@ -18,7 +18,7 @@ export default function Sidebar({ closeSidebar, className }: IProps) {
   return (
     <div
       data-test-sidebar
-      className={`sidebar bg-white border-right-dark border-top-dark ${className}`}
+      className={`sidebar bg-white border-right-dark overflows border-top-dark ${className}`}
     >
       <Header
         closeSidebar={closeSidebar}
