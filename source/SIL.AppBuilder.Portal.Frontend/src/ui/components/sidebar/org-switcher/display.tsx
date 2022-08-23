@@ -49,13 +49,7 @@ export default function OrgSwitcherDisplay(props: IProps) {
   const noResults = !results || results.length === 0;
 
   return (
-    <Menu
-      data-test-org-switcher
-      className='m-t-none no-borders h-100 overflows'
-      pointing
-      secondary
-      vertical
-    >
+    <Menu data-test-org-switcher className='m-t-none no-borders h-100' pointing secondary vertical>
       {showSearch && (
         <Menu.Item
           data-test-org-switcher-search
