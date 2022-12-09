@@ -100,7 +100,7 @@ export default function ItemActions({ product }) {
         })}
         <TransitionDetails product={product} />
         <RequireRole roleName={ROLE.OrganizationAdmin}>
-          <ProductProperties text='Foobar' product={product} />
+          <ProductProperties product={product} />
         </RequireRole>
       </Dropdown.Menu>
     </Dropdown>
