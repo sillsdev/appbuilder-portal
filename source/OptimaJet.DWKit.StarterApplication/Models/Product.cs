@@ -64,5 +64,8 @@ namespace OptimaJet.DWKit.StarterApplication.Models
 
         [HasMany("product-publications", Link.None)]
         public virtual List<ProductPublication> ProductPublications { get; set; }
+
+        [Attr("properties")]
+        public string Properties { get; set; }
     }
 }

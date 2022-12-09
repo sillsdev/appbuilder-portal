@@ -48,7 +48,8 @@
     "updated": "Updated",
     "continue": "Continue",
     "error": "Error",
-    "workflow": "Workflow"
+    "workflow": "Workflow",
+    "default": "Default"
   },
   "models": {
     "add": "Add {name}",
@@ -148,7 +149,8 @@
       "cancel": "Cancel",
       "noneAvailable": "No actions are currently available for this product.",
       "bulkNotAllAllowed": "Not all of the selected projects' products can have the {action} action(s) applied.",
-      "dispatched": "The {action} action has been dispatched."
+      "dispatched": "The {action} action has been dispatched.",
+      "properties": "Properties"
     }
   },
   "profile": {
@@ -291,7 +293,8 @@
         "removeTitle": "Select Product to Remove",
         "done": "Done",
         "empty": "No products available",
-        "details": "Details"
+        "details": "Details",
+        "properties": "Publishing Properties"
       },
       "publications": {
         "channel": "Channel",
@@ -321,6 +324,13 @@
           "4": "{workflowType} Workflow Cancelled",
           "5": "{workflowType} Project Access"
         }
+      },
+      "properties": {
+        "computeType": "Compute Type",
+        "selectComputeType": "Select compute type",
+        "small": "Small",
+        "medium": "Medium",
+        "title": "Product Publishing Properties"
       },
       "updated": "Updated",
       "size": "Size",
@@ -356,11 +366,11 @@
         "title": "Authors",
         "add": "add author",
         "close": "close",
-	"form": {
-	  "user": "user",
-	  "userError": "User cannot be empty",
-	  "submit": "Add Author"
-	}
+        "form": {
+          "user": "user",
+          "userError": "User cannot be empty",
+          "submit": "Add Author"
+        }
       },
       "reviewers": {
         "title": "Reviewers",
@@ -583,6 +593,6 @@
     "publish-failed": "Publish failed"
   },
   "downloads": {
-    "title" : "Downloads"
+    "title": "Downloads"
   }
 }

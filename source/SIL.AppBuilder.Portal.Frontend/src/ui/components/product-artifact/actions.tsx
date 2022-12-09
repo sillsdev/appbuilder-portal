@@ -10,12 +10,15 @@ import { useLiveData } from '~/data/live';
 import { handleResponse } from '~/data/containers/with-current-user/fetcher';
 
 import TransitionDetails from '@ui/components/product-transitions/details';
+import ProductProperties from '@ui/components/product-properties';
 
 import { put, get } from '~/lib/fetch';
 
 import * as toast from '~/lib/toast';
 
 import { preventDefault } from '~/lib/dom';
+import { ROLE } from '@data/models/role';
+import { RequireRole } from '@ui/components/authorization';
 
 export default function ItemActions({ product }) {
   const { t } = useTranslations();
@@ -96,6 +99,9 @@ export default function ItemActions({ product }) {
           );
         })}
         <TransitionDetails product={product} />
+        <RequireRole roleName={ROLE.OrganizationAdmin}>
+          <ProductProperties text='Foobar' product={product} />
+        </RequireRole>
       </Dropdown.Menu>
     </Dropdown>
   );
