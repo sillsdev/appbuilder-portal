@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Repositories;
+using OptimaJet.DWKit.StarterApplication.Utility;
 using SIL.AppBuilder.BuildEngineApiClient;
 using static OptimaJet.DWKit.StarterApplication.Utility.EnvironmentHelpers;
 
@@ -131,6 +132,16 @@ namespace OptimaJet.DWKit.StarterApplication.Services.BuildEngine
             environment["PROJECT_ORGANIZATION"] = product.Project.Organization.Name;
             environment["PROJECT_OWNER_NAME"] = product.Project.Owner.Name;
             environment["PROJECT_OWNER_EMAIL"] = product.Project.Owner.Email;
+
+            if (!string.IsNullOrEmpty(product.Properties))
+            {
+                var productProperties = JsonUtils.DeserializeProperties(product.Properties);
+                var productEnv = GetEnvironment(productProperties);
+                foreach(var kv in productEnv)
+                {
+                    environment[kv.Key] = kv.Value;
+                }
+            }
 
         }
         protected static Dictionary<string, string> GetEnvironment(Dictionary<string, object> paramsDict)
