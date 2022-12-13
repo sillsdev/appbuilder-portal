@@ -1,6 +1,7 @@
 import { useOrbit } from 'react-orbitjs/dist';
 
 import { defaultOptions } from '@data';
+
 import { ProductAttributes } from '~/data/models/product';
 
 export function useDataActions(product) {

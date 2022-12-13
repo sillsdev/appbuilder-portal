@@ -17,6 +17,7 @@ import { put, get } from '~/lib/fetch';
 import * as toast from '~/lib/toast';
 
 import { preventDefault } from '~/lib/dom';
+
 import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
 
