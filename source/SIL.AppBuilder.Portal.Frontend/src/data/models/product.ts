@@ -11,6 +11,7 @@ export interface ProductAttributes extends AttributesObject {
   dateBuilt: string;
   versionBuilt: string;
   publishLink: string;
+  properties: string;
 }
 
 export type ProductResource = ResourceObject<PRODUCTS_TYPE, ProductAttributes>;

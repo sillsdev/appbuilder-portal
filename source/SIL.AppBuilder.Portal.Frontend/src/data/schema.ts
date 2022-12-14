@@ -189,6 +189,7 @@ const schemaDefinition: SchemaSettings = {
         dateBuilt: { type: 'string' },
         versionBuilt: { type: 'string' },
         publishLink: { type: 'string' },
+        properties: { type: 'string' },
       },
       relationships: {
         project: { type: 'hasOne', model: 'project', inverse: 'products' },
