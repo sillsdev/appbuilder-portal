@@ -48,7 +48,8 @@
     "updated": "Actualizado",
     "continue": "Continuar",
     "error": "Error",
-    "workflow": "Flujo trabajo"
+    "workflow": "Flujo trabajo",
+    "default": "Default"
   },
   "models": {
     "add": "Añadir {name}",
@@ -148,7 +149,8 @@
       "cancel": "Cancelar",
       "noneAvailable": "No hay acciones disponibles actualmente para este producto.",
       "bulkNotAllAllowed": "No todos los productos de los proyectos seleccionados pueden tener la acción {action} aplicada.",
-      "dispatched": "La acción {action} ha sido enviada."
+      "dispatched": "La acción {action} ha sido enviada.",
+      "properties": "Properties"
     }
   },
   "profile": {
@@ -291,7 +293,8 @@
         "removeTitle": "Select Product to Remove",
         "done": "Hecho",
         "empty": "No hay productos disponibles",
-        "details": "Detalles"
+        "details": "Detalles",
+        "properties": "Publishing Properties"
       },
       "publications": {
         "channel": "Channel",
@@ -321,6 +324,13 @@
           "4": "{workflowType} Workflow Cancelled",
           "5": "{workflowType} Project Access"
         }
+      },
+      "properties": {
+        "computeType": "Compute Type",
+        "selectComputeType": "Select compute type",
+        "small": "Small",
+        "medium": "Medium",
+        "title": "Product Publishing Properties"
       },
       "updated": "Actualizado",
       "size": "Tamaño",
