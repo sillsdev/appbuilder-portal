@@ -21,6 +21,7 @@ export default function TransitionDetails({ product }: IProps) {
 
   const store: StoreResource = dataStore.cache.query((q) => q.findRelatedRecord(product, 'store'));
   const [transitions, setTransitions] = useState([]);
+  const [fetchData, setFetchData] = useState(false);
   const { currentUser } = useCurrentUser();
   const { timezone } = attributesFor(currentUser);
   const productRemoteId = remoteIdentityFrom(dataStore, product).keys.remoteId;
@@ -38,8 +39,11 @@ export default function TransitionDetails({ product }: IProps) {
       }
     }
 
-    fetcher();
-  }, [productRemoteId, transitions.length === 0]);
+    if (fetchData) {
+      fetcher();
+      setFetchData(false);
+    }
+  }, [productRemoteId, fetchData]);
 
   const getUserName = (
     workflowId: string,
@@ -121,6 +125,10 @@ export default function TransitionDetails({ product }: IProps) {
   return (
     <Modal
       data-test-transitions-modal
+      onOpen={() => {
+        setFetchData(true);
+        console.log('DEBUG: setFectchData');
+      }}
       trigger={
         <Dropdown.Item
           data-test-transition-details-button
