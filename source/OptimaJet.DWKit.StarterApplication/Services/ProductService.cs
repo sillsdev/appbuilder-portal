@@ -26,6 +26,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
         IEntityRepository<Store> StoreRepository { get; }
         public IEntityRepository<UserRole> UserRolesRepository { get; }
         public IEntityRepository<ProductPublication> ProductPublicationsRepository { get; }
+        public IEntityRepository<ProductBuild>ProductBuildsRepository { get; }
         public IEntityRepository<UserTask> UserTaskRepostiory { get; }
         IBackgroundJobClient HangfireClient { get; }
         UserRepository UserRepository { get; set; }
@@ -47,6 +48,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             IEntityRepository<Store> storeRepository,
             IEntityRepository<UserRole> userRolesRepository,
             IEntityRepository<ProductPublication> productPublicationsRepository,
+            IEntityRepository<ProductBuild>productBuildsRepository,
             IEntityRepository<UserTask> userTaskRepostiory,
             IBackgroundJobClient hangfireClient,
             ILoggerFactory loggerFactory) : base(jsonApiContext, productRepository, loggerFactory)
@@ -57,6 +59,7 @@ namespace OptimaJet.DWKit.StarterApplication.Services
             StoreRepository = storeRepository;
             UserRolesRepository = userRolesRepository;
             ProductPublicationsRepository = productPublicationsRepository;
+            ProductBuildsRepository = productBuildsRepository;
             UserTaskRepostiory = userTaskRepostiory;
             HangfireClient = hangfireClient;
             UserRepository = userRepository;
@@ -210,6 +213,17 @@ namespace OptimaJet.DWKit.StarterApplication.Services
 
             // Running the startup workflow.  Return empty list
             return new List<string>();
+        }
+        public async Task<IEnumerable<ProductBuild>> GetProductBuildsAsync(Guid id)
+        {
+            var builds = await ProductBuildsRepository.Get()
+                .Where(b => b.ProductId == id)
+                .Include(b => b.ProductArtifacts)
+                .Include(b => b.ProductPublications)
+                .OrderByDescending(b => b.DateCreated)
+                .ToListAsync();
+
+            return builds;
         }
         public async Task<IEnumerable<ProductTransition>> GetProductTransitionsForDisplayAsync(Guid id)
         {

@@ -178,6 +178,17 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             return Ok(details);
         }
 
+        [HttpGet("{id}/builds")]
+        public async Task<IActionResult> GetProductBuilds(Guid id)
+        {
+            var builds = await ProductService.GetProductBuildsAsync(id);
+            if (builds == null)
+            {
+                return NotFound();
+            }
+            return Ok(builds);
+        }
+
         [HttpGet("{id}/transitions")]
         public async Task<IActionResult> GetProductTransitions(Guid id)
         {
