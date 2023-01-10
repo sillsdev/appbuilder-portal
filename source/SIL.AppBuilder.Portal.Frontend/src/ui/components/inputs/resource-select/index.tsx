@@ -28,7 +28,8 @@ export default class ResourceSelect<T extends ResourceObject> extends React.Comp
   render() {
     const { noResourcesLabel, items, labelField, value, onChange, ...other } = this.props;
 
-    if (!items || items.length === 0) {
+    console.log(`ResourceSet: items=${items}, value=${value}`);
+    if (!items || items.length === 0 || value === undefined) {
       return <Dropdown data-test-resource-select disabled text={noResourcesLabel} />;
     }
 

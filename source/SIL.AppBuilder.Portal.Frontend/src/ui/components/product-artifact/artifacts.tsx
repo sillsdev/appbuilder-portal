@@ -20,9 +20,9 @@ export default function ProductArtifact({ product, productBuild }) {
   let artifacts = [];
 
   if (productBuild) {
-    artifacts = dataStore.cache.query((q) =>
-      q.findRelatedRecords(productBuild, 'productArtifacts')
-    );
+    // artifacts = dataStore.cache.query((q) =>
+    //   q.findRelatedRecords(productBuild, 'productArtifacts')
+    // );
   }
 
   return (

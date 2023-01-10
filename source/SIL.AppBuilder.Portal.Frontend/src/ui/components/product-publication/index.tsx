@@ -25,9 +25,9 @@ export default function Publication({ product, productBuild }) {
   let publications = [];
 
   if (productBuild) {
-    publications = dataStore.cache.query((q) =>
-      q.findRelatedRecords(productBuild, 'productPublications')
-    );
+    // publications = dataStore.cache.query((q) =>
+    //   q.findRelatedRecords(productBuild, 'productPublications')
+    // );
   }
   let attributes = null;
   let date = '';

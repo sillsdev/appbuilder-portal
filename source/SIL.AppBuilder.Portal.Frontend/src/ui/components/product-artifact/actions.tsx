@@ -10,6 +10,7 @@ import { useLiveData } from '~/data/live';
 import { handleResponse } from '~/data/containers/with-current-user/fetcher';
 
 import TransitionDetails from '@ui/components/product-transitions/details';
+import ProductFiles from '@ui/components/product-artifact/modal';
 import ProductProperties from '@ui/components/product-properties';
 
 import { put, get } from '~/lib/fetch';
@@ -100,6 +101,7 @@ export default function ItemActions({ product }) {
           );
         })}
         <TransitionDetails product={product} />
+        <ProductFiles product={product} />
         <RequireRole roleName={ROLE.OrganizationAdmin}>
           <ProductProperties product={product} />
         </RequireRole>

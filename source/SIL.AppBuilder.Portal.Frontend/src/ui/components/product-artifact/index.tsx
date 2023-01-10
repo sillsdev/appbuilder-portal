@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useOrbit } from 'react-orbitjs';
+import React, { useEffect, useState } from 'react';
+import { useOrbit, remoteIdentityFrom } from 'react-orbitjs';
+import { get } from '~/lib/fetch';
 
 import { ProductBuildResource, attributesFor } from '@data';
 
@@ -13,21 +14,34 @@ import Artifacts from './artifacts';
 
 export default function Builds({ product }) {
   const { t } = useTranslations();
-  const {
-    subscriptions: { productBuilds },
-  } = useOrbit({
-    productBuilds: (q) => q.findRelatedRecords(product, 'productBuilds'),
-  });
+  const { dataStore } = useOrbit();
+  const [builds, setBuilds] = useState([]);
+  const [activeVersion, setActiveVersion] = useState();
+  const productRemoteId = remoteIdentityFrom(dataStore, product).keys.remoteId;
 
-  const sortedBuilds = productBuilds.sort(
-    compareVia((build) => attributesFor(build).buildId, true)
-  );
-  const [activeVersion, setActiveVersion] = useState((sortedBuilds || [])[0]);
+  useEffect(() => {
+    async function fetcher() {
+      let response = await get(`/api/products/${productRemoteId}/builds`);
+      try {
+        let json = await response.json();
+
+        let builds = json.data;
+        let sortedBuilds = builds.sort(compareVia((build) => attributesFor(build).buildId, true));
+
+        setBuilds(sortedBuilds || []);
+        setActiveVersion((sortedBuilds || [])[0]);
+      } catch (e) {
+        console.debug('builds not ready, or do not exist');
+      }
+    }
+
+    fetcher();
+  }, [productRemoteId, builds.length === 0]);
 
   return (
     <div data-test-build>
       <ResourceSelect
-        items={sortedBuilds}
+        items={builds}
         labelField={(build: ProductBuildResource) => {
           // Looking at the default value here, you may notice that there are extra spaces
           // around the t(...). This is intentional, as the outputs are either:
@@ -49,7 +63,7 @@ export default function Builds({ product }) {
             }
           }
 
-          if (build === sortedBuilds[0]) {
+          if (build === builds[0]) {
             return t('projects.latestBuild', { version });
           }
           return version;
