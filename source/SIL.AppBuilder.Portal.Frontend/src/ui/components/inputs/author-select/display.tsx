@@ -34,12 +34,21 @@ export default class AuthorSelectDisplay extends React.Component<IProps> {
         };
       });
 
+    const userOptionsSorted = userOptions.sort((a, b) => {
+      let ta = a.text.toLowerCase(),
+        tb = b.text.toLowerCase();
+
+      if (ta < tb) return -1;
+      if (ta > tb) return 1;
+      return 0;
+    });
+
     return (
       <Dropdown
         data-test-user-select
         disabled={disableSelection || false}
         scrolling
-        options={userOptions}
+        options={userOptionsSorted}
         value={selected}
         onChange={this.onSelect}
       />
