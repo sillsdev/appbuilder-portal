@@ -21,6 +21,16 @@ export default function ProductLink({ product, name }) {
         <LaunchIcon />
       </a>
     ),
+    asset: (productId) => (
+      <a
+        data-test-product-apklink
+        className='m-l-sm'
+        href={`/api/products/${productId}/files/published/asset-package`}
+        target='_blank'
+      >
+        <LaunchIcon />
+      </a>
+    ),
     html: () => <div />,
     [undefined]: () => <div />,
   };
