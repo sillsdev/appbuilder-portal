@@ -3082,7 +3082,7 @@
       "name": "ProductLatestAab",
       "definedOnServer": false,
       "type": 0,
-      "source": "var id = entities.Select(e => (int) e.WorkflowBuildId).Max();\nvar types = new List<String> { \"aab\" };\nreturn Filter.And.In(types, \"ArtifactType\").Equal(id, \"ProductBuildId\");",
+      "source": "var id = entities.Select(e => (int) e.WorkflowBuildId).Max();\nvar types = new List<String> { \"aab\", \"data-safety-csv\" };\nreturn Filter.And.In(types, \"ArtifactType\").Equal(id, \"ProductBuildId\");",
       "usings": "System;\nSystem.Collections;\nSystem.Collections.Generic;\nSystem.Linq;\nSystem.Threading;\nSystem.Threading.Tasks;\nOptimaJet.Workflow;\nOptimaJet.Workflow.Core.Runtime;\nOptimaJet.Workflow.Core.Model;\nOptimaJet.DWKit.Core;\nOptimaJet.DWKit.Core.Model;",
       "isAsync": false
     }
