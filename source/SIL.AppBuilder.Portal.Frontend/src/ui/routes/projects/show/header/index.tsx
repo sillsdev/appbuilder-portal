@@ -33,7 +33,7 @@ export default ({ project: { id }, t, toggleArchive, claimOwnership }) => {
   const remoteId = idFromRecordIdentity(project as any);
 
   return (
-    <div className='page-heading page-heading-border-sm'>
+    <div className='page-heading'>
       <div className='flex justify-content-space-around'>
         <div className='flex-shrink'>
           <h1 data-test-project-name className='fs-24 m-b-sm'>

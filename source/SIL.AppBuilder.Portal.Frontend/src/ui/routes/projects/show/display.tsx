@@ -66,7 +66,9 @@ export default function ProjectShowDisplay({ project }: IProps) {
         }}
       />
 
-      <Tab
+      <Overview project={project} />
+
+      {/* <Tab
         menu={{ text: true }}
         className='tabs'
         panes={[
@@ -81,7 +83,6 @@ export default function ProjectShowDisplay({ project }: IProps) {
             ),
             render: () => (
               <Tab.Pane attached={false}>
-                <Overview project={project} />
               </Tab.Pane>
             ),
           },
@@ -101,7 +102,7 @@ export default function ProjectShowDisplay({ project }: IProps) {
             ),
           },
         ]}
-      />
+      /> */}
     </div>
   );
 }
