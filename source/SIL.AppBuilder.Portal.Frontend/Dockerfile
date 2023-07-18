@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:10.17.0
+FROM --platform=linux/amd64 node:10.17.0-buster
 
 ARG CHROME_VERSION="google-chrome-stable"
 
@@ -9,10 +9,9 @@ RUN mkdir /app \
 
   # Chrome is needed for automated acceptance testing
   && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+  && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
   && apt-get update -qqy \
-  && apt-get -qqy install \
-    ${CHROME_VERSION:-google-chrome-stable} \
+  && apt-get -qqy install ${CHROME_VERSION:-google-chrome-stable} \
 
   # Clean up (smaller resulting image)
   && rm /etc/apt/sources.list.d/google-chrome.list \
