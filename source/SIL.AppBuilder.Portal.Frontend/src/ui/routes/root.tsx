@@ -20,6 +20,7 @@ import UsersRoute from '@ui/routes/users';
 import OpenSourceRoute from '@ui/routes/open-source';
 import ErrorRootRoute from '@ui/routes/errors';
 import DownloadsRootRoute from '@ui/routes/downloads';
+import FilesRoute from '@ui/routes/files';
 
 import AuthenticatedLayout from '~/ui/components/layout';
 
@@ -47,6 +48,7 @@ export default function RootPage() {
               paths.organizationsPath,
               paths.directoryPath,
               paths.projectsPath,
+              paths.filesPath,
               paths.usersPath,
               '/form',
               '/flow',
@@ -87,6 +89,7 @@ function AuthenticatedRoutes() {
 
             <Route path={paths.directoryPath} component={DirectoryRoute} />
             <Route path={paths.projectsPath} component={ProjectsRoute} />
+            <Route path={paths.filesPath} component={FilesRoute} />
 
             <Route path={paths.usersPath} component={UsersRoute} />
 
