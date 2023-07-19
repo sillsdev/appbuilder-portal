@@ -11,11 +11,9 @@ import {
 
 import page from './page';
 
-async function visitTheFilesTab() {
-  visit('/projects/1');
+async function visitTheFilesPage() {
+  visit('/products/1/files');
   await when(() => page.isPresent);
-  await page.switchToFilesTab();
-  await when(() => page.projectFiles.isPresent);
 }
 
 const projectResource = (attributes = {}, relationships = {}) => {
@@ -306,3 +304,112 @@ const scenarios = {
     ],
   },
 };
+
+describe('Acceptance | Product Files', () => {
+  resetBrowser();
+  useFakeAuthentication();
+  setupApplicationTest();
+
+  describe('no builds yet', () => {
+    let customizer: (server, req, resp) => Promise<void>;
+
+    const requestCustomizer = async (server, req, resp) => {
+      if (customizer) {
+        await customizer(server, req, resp);
+      }
+    };
+    beforeEach(function() {
+      customizer = null;
+      this.mockGet(200, 'users', { data: [] }, requestCustomizer);
+      this.mockGet(200, '/groups', { data: [] }, requestCustomizer);
+      this.mockGet(200, 'projects/1', scenarios.noBuilds, requestCustomizer);
+    });
+
+    beforeEach(async () => {
+      await visitTheFilesPage();
+    });
+
+    it('render no builds', () => {
+      expect(page.selectedBuild).equal('No Builds Yet');
+    });
+
+    it('renders no artifacts', () => {
+      expect(page.artifactCount).contains('No Product Files');
+    });
+  });
+
+  describe('there is one build', () => {
+    beforeEach(function() {
+      this.mockGet(200, 'users', { data: [] });
+      this.mockGet(200, 'groups', { data: [] });
+    });
+
+    describe('the build was successful', () => {
+      beforeEach(async function() {
+        this.mockGet(200, 'projects/1', scenarios.oneBuildSuccess);
+
+        await visitTheFilesPage();
+      });
+
+      it('shows the version number', () => {
+        expect(page.selectedBuild).contains('v1.0.0');
+      });
+
+      it('does not show the publish detail', () => {
+        expect(page.publicationInfoVisible).to.be.false;
+      });
+    });
+
+    describe('the build has not yet finished', () => {
+      beforeEach(async function() {
+        this.mockGet(200, 'projects/1', scenarios.oneBuildPending);
+
+        await visitTheFilesPage();
+      });
+
+      it('does not show a version, and instead indicates that it is pending', () => {
+        expect(page.selectedBuild).contains('Build Pending');
+      });
+    });
+
+    describe('the build was published', () => {
+      beforeEach(async function() {
+        this.mockGet(200, 'projects/1', scenarios.oneBuildPublished);
+
+        await visitTheFilesPage();
+      });
+
+      it('shows the version number', () => {
+        expect(page.selectedBuild).contains('v1.0.0');
+      });
+
+      it('shows the publish detail', () => {
+        expect(page.publicationInfoVisible).to.be.true;
+      });
+
+      it('has production publishing channel', () => {
+        expect(page.publicationChannel).contains('production');
+      });
+
+      it('has a successful status', () => {
+        expect(page.publicationStatus).contains('Success');
+      });
+    });
+
+    describe('the publish is in progress', () => {
+      beforeEach(async function() {
+        this.mockGet(200, 'projects/1', scenarios.oneBuildPublishInProgress);
+
+        await visitTheFilesPage();
+      });
+
+      it('shows the version number', () => {
+        expect(page.selectedBuild).contains('v1.0.0');
+      });
+
+      it('does not display the publish information', () => {
+        expect(page.publicationInfoVisible).to.be.false;
+      });
+    });
+  });
+});
