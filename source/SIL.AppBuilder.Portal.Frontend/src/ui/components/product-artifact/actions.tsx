@@ -100,13 +100,13 @@ export default function ItemActions({ product }) {
             />
           );
         })}
+        <TransitionDetails product={product} />
         <Dropdown.Item
           as={Link}
           to={`/products/${productRemoteId}/files`}
           className='capitalize'
           text={t('project.productFiles')}
         />
-        <TransitionDetails product={product} />
         <RequireRole roleName={ROLE.OrganizationAdmin}>
           <ProductProperties product={product} />
         </RequireRole>
