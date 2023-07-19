@@ -27,8 +27,6 @@ export function withData(WrappedComponent) {
         (q) => buildFindRecord(q, 'project', id),
         buildOptions({
           include: [
-            //'products.product-builds.product-artifacts',
-            //'products.product-builds.product-publications',
             'products.user-tasks.user',
             // 'products.user-tasks.product.product-definition.workflow',
             'products.product-definition',

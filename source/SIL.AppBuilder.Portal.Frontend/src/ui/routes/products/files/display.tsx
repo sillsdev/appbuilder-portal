@@ -6,6 +6,8 @@ import { useRouter } from '~/lib/hooks';
 
 import { ProductResource } from '@data';
 
+import './styles.scss';
+
 export interface Params {
   id: string;
 }
