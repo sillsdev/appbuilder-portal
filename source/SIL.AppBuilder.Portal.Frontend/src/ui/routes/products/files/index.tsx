@@ -3,11 +3,12 @@ import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { withTranslations } from '@lib/i18n';
 
 import Display from './display';
+import { withData } from './with-data';
 
-export const pathName = '/files/:id';
+export const pathName = '/products/:id/files';
 
 export default compose(
   withTranslations,
-  withCurrentUserContext
-  // todo - extract this to a more general thing?
+  withCurrentUserContext,
+  withData
 )(Display);

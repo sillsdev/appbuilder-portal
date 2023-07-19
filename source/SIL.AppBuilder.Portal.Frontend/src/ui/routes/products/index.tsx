@@ -5,13 +5,13 @@ import { Route } from '~/lib/routing';
 
 import { NotFound } from '@ui/routes/errors';
 
-import FilesShowRoute, { pathName as filesShowPath } from './show';
+import FilesRoute, { pathName as filesPath } from './files';
 
-export default function FilesRoute() {
+export default function ProductsRoute() {
   return (
     <div className='ui container'>
       <Switch>
-        <Route path={filesShowPath} component={FilesShowRoute} />
+        <Route path={filesPath} component={FilesRoute} />
 
         <Route component={NotFound} />
       </Switch>
