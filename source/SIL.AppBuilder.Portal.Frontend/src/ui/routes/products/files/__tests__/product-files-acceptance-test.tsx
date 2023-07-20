@@ -16,49 +16,8 @@ async function visitTheFilesPage() {
   await when(() => page.isPresent);
 }
 
-const projectResource = (attributes = {}, relationships = {}) => {
-  return {
-    type: 'projects',
-    id: 1,
-    attributes: {
-      name: 'Fake project',
-      workflowProjectUrl: 'project.url',
-      ...attributes,
-    },
-    relationships: {
-      organization: { data: { id: 1, type: 'organizations' } },
-      group: { data: { id: 1, type: 'groups' } },
-      owner: { data: { id: 2, type: 'users' } },
-      reviewers: { data: [] },
-      products: { data: [{ id: 1, type: 'products' }] },
-      ...relationships,
-    },
-  };
-};
-
 const defaultIncluded = () => {
   return [
-    { type: 'organizations', id: 1 },
-    { type: 'groups', id: 1, attributes: { name: 'Some Group' } },
-    { type: 'users', id: 2, attributes: { familyName: 'last', givenName: 'first' } },
-    {
-      type: 'organization-product-definitions',
-      id: 1,
-      attributes: {},
-      relationships: {
-        organization: { data: { type: 'organization', id: 1 } },
-        'product-definition': { data: { type: 'product-definitions', id: 1 } },
-      },
-    },
-    {
-      type: 'organization-product-definitions',
-      id: 2,
-      attributes: {},
-      relationships: {
-        organization: { data: { type: 'organization', id: 1 } },
-        'product-definition': { data: { type: 'product-definitions', id: 2 } },
-      },
-    },
     {
       type: 'product-definitions',
       id: 1,
@@ -80,55 +39,41 @@ const defaultIncluded = () => {
 
 const scenarios = {
   noBuilds: {
-    data: projectResource(),
-    included: [
-      ...defaultIncluded(),
-      {
-        type: 'products',
-        id: 1,
-        attributes: {
-          'date-created': '2018-10-20T16:19:09.878193',
-          'date-updated': '2018-10-20T16:19:09.878193',
-          'date-built': null,
-          'date-published': null,
-        },
-        relationships: {
-          'product-definition': { data: { type: 'product-definitions', id: 1 } },
-          project: { data: { type: 'projects', id: 1 } },
-          productBuilds: { data: [] },
-          store: { data: { type: 'stores', id: 1 } },
-        },
+    data: {
+      type: 'products',
+      id: 1,
+      attributes: {
+        'date-created': '2018-10-20T16:19:09.878193',
+        'date-updated': '2018-10-20T16:19:09.878193',
+        'date-built': null,
+        'date-published': null,
       },
-      {
-        type: 'stores',
-        id: 1,
-        attributes: {
-          description: 'Test Store',
-          name: 'test_store',
-        },
+      relationships: {
+        'product-definition': { data: { type: 'product-definitions', id: 1 } },
+        productBuilds: { data: [] },
       },
-    ],
+    },
+    included: [...defaultIncluded()],
   },
   oneBuildSuccess: {
-    data: projectResource(),
+    data: {
+      type: 'products',
+      id: 1,
+      attributes: {
+        'date-created': '2018-10-20T16:19:09.878193',
+        'date-updated': '2018-10-20T16:19:09.878193',
+        'date-built': null,
+        'date-published': null,
+      },
+      relationships: {
+        'product-definition': { data: { type: 'product-definitions', id: 1 } },
+        project: { data: { type: 'projects', id: 1 } },
+        productBuilds: { data: [{ type: 'product-build', id: 1 }] },
+        store: { data: { type: 'stores', id: 1 } },
+      },
+    },
     included: [
       ...defaultIncluded(),
-      {
-        type: 'products',
-        id: 1,
-        attributes: {
-          'date-created': '2018-10-20T16:19:09.878193',
-          'date-updated': '2018-10-20T16:19:09.878193',
-          'date-built': null,
-          'date-published': null,
-        },
-        relationships: {
-          'product-definition': { data: { type: 'product-definitions', id: 1 } },
-          project: { data: { type: 'projects', id: 1 } },
-          productBuilds: { data: [{ type: 'product-build', id: 1 }] },
-          store: { data: { type: 'stores', id: 1 } },
-        },
-      },
       {
         type: 'product-build',
         id: 1,
@@ -150,25 +95,24 @@ const scenarios = {
     ],
   },
   oneBuildPending: {
-    data: projectResource(),
+    data: {
+      type: 'products',
+      id: 1,
+      attributes: {
+        'date-created': '2018-10-20T16:19:09.878193',
+        'date-updated': '2018-10-20T16:19:09.878193',
+        'date-built': null,
+        'date-published': null,
+      },
+      relationships: {
+        'product-definition': { data: { type: 'product-definitions', id: 1 } },
+        project: { data: { type: 'projects', id: 1 } },
+        productBuilds: { data: [{ type: 'product-build', id: 1 }] },
+        store: { data: { type: 'stores', id: 1 } },
+      },
+    },
     included: [
       ...defaultIncluded(),
-      {
-        type: 'products',
-        id: 1,
-        attributes: {
-          'date-created': '2018-10-20T16:19:09.878193',
-          'date-updated': '2018-10-20T16:19:09.878193',
-          'date-built': null,
-          'date-published': null,
-        },
-        relationships: {
-          'product-definition': { data: { type: 'product-definitions', id: 1 } },
-          project: { data: { type: 'projects', id: 1 } },
-          productBuilds: { data: [{ type: 'product-build', id: 1 }] },
-          store: { data: { type: 'stores', id: 1 } },
-        },
-      },
       {
         type: 'product-build',
         id: 1,
@@ -190,26 +134,25 @@ const scenarios = {
     ],
   },
   oneBuildPublished: {
-    data: projectResource(),
+    data: {
+      type: 'products',
+      id: 1,
+      attributes: {
+        'date-created': '2018-10-20T16:19:09.878193',
+        'date-updated': '2018-10-20T16:19:09.878193',
+        'date-built': '2018-10-20T16:19:09.878193',
+        'date-published': '2018-10-20T16:19:09.878193',
+      },
+      relationships: {
+        'product-definition': { data: { type: 'product-definitions', id: 1 } },
+        project: { data: { type: 'projects', id: 1 } },
+        productBuilds: { data: [{ type: 'product-build', id: 1 }] },
+        productPublications: { data: [{ type: 'product-publication', id: 1 }] },
+        store: { data: { type: 'stores', id: 1 } },
+      },
+    },
     included: [
       ...defaultIncluded(),
-      {
-        type: 'products',
-        id: 1,
-        attributes: {
-          'date-created': '2018-10-20T16:19:09.878193',
-          'date-updated': '2018-10-20T16:19:09.878193',
-          'date-built': '2018-10-20T16:19:09.878193',
-          'date-published': '2018-10-20T16:19:09.878193',
-        },
-        relationships: {
-          'product-definition': { data: { type: 'product-definitions', id: 1 } },
-          project: { data: { type: 'projects', id: 1 } },
-          productBuilds: { data: [{ type: 'product-build', id: 1 }] },
-          productPublications: { data: [{ type: 'product-publication', id: 1 }] },
-          store: { data: { type: 'stores', id: 1 } },
-        },
-      },
       {
         type: 'product-build',
         id: 1,
@@ -249,25 +192,24 @@ const scenarios = {
     ],
   },
   oneBuildPublishInProgress: {
-    data: projectResource(),
+    data: {
+      type: 'products',
+      id: 1,
+      attributes: {
+        'date-created': '2018-10-20T16:19:09.878193',
+        'date-updated': '2018-10-20T16:19:09.878193',
+        'date-built': '2018-10-20T16:19:09.878193',
+      },
+      relationships: {
+        'product-definition': { data: { type: 'product-definitions', id: 1 } },
+        project: { data: { type: 'projects', id: 1 } },
+        productBuilds: { data: [{ type: 'product-build', id: 1 }] },
+        productPublications: { data: [{ type: 'product-publication', id: 1 }] },
+        store: { data: { type: 'stores', id: 1 } },
+      },
+    },
     included: [
       ...defaultIncluded(),
-      {
-        type: 'products',
-        id: 1,
-        attributes: {
-          'date-created': '2018-10-20T16:19:09.878193',
-          'date-updated': '2018-10-20T16:19:09.878193',
-          'date-built': '2018-10-20T16:19:09.878193',
-        },
-        relationships: {
-          'product-definition': { data: { type: 'product-definitions', id: 1 } },
-          project: { data: { type: 'projects', id: 1 } },
-          productBuilds: { data: [{ type: 'product-build', id: 1 }] },
-          productPublications: { data: [{ type: 'product-publication', id: 1 }] },
-          store: { data: { type: 'stores', id: 1 } },
-        },
-      },
       {
         type: 'product-build',
         id: 1,
@@ -322,7 +264,7 @@ describe('Acceptance | Product Files', () => {
       customizer = null;
       this.mockGet(200, 'users', { data: [] }, requestCustomizer);
       this.mockGet(200, '/groups', { data: [] }, requestCustomizer);
-      this.mockGet(200, 'projects/1', scenarios.noBuilds, requestCustomizer);
+      this.mockGet(200, 'products/1', scenarios.noBuilds, requestCustomizer);
     });
 
     beforeEach(async () => {
@@ -346,7 +288,7 @@ describe('Acceptance | Product Files', () => {
 
     describe('the build was successful', () => {
       beforeEach(async function() {
-        this.mockGet(200, 'projects/1', scenarios.oneBuildSuccess);
+        this.mockGet(200, 'products/1', scenarios.oneBuildSuccess);
 
         await visitTheFilesPage();
       });
@@ -362,7 +304,7 @@ describe('Acceptance | Product Files', () => {
 
     describe('the build has not yet finished', () => {
       beforeEach(async function() {
-        this.mockGet(200, 'projects/1', scenarios.oneBuildPending);
+        this.mockGet(200, 'products/1', scenarios.oneBuildPending);
 
         await visitTheFilesPage();
       });
@@ -374,7 +316,7 @@ describe('Acceptance | Product Files', () => {
 
     describe('the build was published', () => {
       beforeEach(async function() {
-        this.mockGet(200, 'projects/1', scenarios.oneBuildPublished);
+        this.mockGet(200, 'products/1', scenarios.oneBuildPublished);
 
         await visitTheFilesPage();
       });
@@ -398,7 +340,7 @@ describe('Acceptance | Product Files', () => {
 
     describe('the publish is in progress', () => {
       beforeEach(async function() {
-        this.mockGet(200, 'projects/1', scenarios.oneBuildPublishInProgress);
+        this.mockGet(200, 'products/1', scenarios.oneBuildPublishInProgress);
 
         await visitTheFilesPage();
       });
