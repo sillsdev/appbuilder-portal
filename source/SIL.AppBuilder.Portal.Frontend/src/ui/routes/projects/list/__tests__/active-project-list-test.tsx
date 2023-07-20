@@ -51,10 +51,10 @@ describe('Acceptance | Project Table | Active list', () => {
         expect(itemsText).to.contain('Build Version');
         expect(itemsText).to.contain('Build Date');
         expect(itemsText).to.contain('Active Since');
+        expect(itemsText).to.contain('Language');
 
         expect(itemsText).to.not.contain('Updated On');
         expect(itemsText).to.not.contain('Organization');
-        expect(itemsText).to.not.contain('Language');
         expect(itemsText).to.not.contain('Created On');
       });
     });

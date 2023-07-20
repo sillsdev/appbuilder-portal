@@ -44,10 +44,10 @@ describe('Acceptance | My Projects | Column selector', () => {
         expect(itemsText).to.contain('Owner');
         expect(itemsText).to.contain('Group');
         expect(itemsText).to.contain('Build Version');
+        expect(itemsText).to.contain('Language');
 
         expect(itemsText).to.not.contain('Updated On');
         expect(itemsText).to.not.contain('Organization');
-        expect(itemsText).to.not.contain('Language');
         expect(itemsText).to.not.contain('Build Date');
         expect(itemsText).to.not.contain('Created On');
         expect(itemsText).to.not.contain('Active Since');
