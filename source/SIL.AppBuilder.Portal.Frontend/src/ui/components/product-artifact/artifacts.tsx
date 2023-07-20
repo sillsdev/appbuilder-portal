@@ -12,7 +12,7 @@ import { useToggle } from '~/lib/hooks';
 export default function ProductArtifact({ product, productBuild }) {
   const { t } = useTranslations();
   const { dataStore } = useOrbit();
-  const [areArtifactsVisible, toggleShowArtifacts] = useToggle(false);
+  const [areArtifactsVisible, toggleShowArtifacts] = useToggle(true);
 
   const productDefinition = dataStore.cache.query((q) =>
     q.findRelatedRecord(product, 'productDefinition')

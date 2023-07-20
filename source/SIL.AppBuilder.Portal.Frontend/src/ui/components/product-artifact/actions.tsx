@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useOrbit, useCache, remoteIdentityFrom, attributesFor } from 'react-orbitjs';
 import MoreVerticalIcon from '@material-ui/icons/MoreVert';
 import { Dropdown } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import { useTranslations } from '@lib/i18n';
 import { useDebounce } from 'use-debounce';
 
@@ -100,6 +101,12 @@ export default function ItemActions({ product }) {
           );
         })}
         <TransitionDetails product={product} />
+        <Dropdown.Item
+          as={Link}
+          to={`/products/${productRemoteId}/files`}
+          className='capitalize'
+          text={t('project.productFiles')}
+        />
         <RequireRole roleName={ROLE.OrganizationAdmin}>
           <ProductProperties product={product} />
         </RequireRole>
