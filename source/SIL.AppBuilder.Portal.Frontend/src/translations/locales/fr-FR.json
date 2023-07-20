@@ -151,6 +151,9 @@
       "bulkNotAllAllowed": "Not all of the selected projects' products can have the {action} action(s) applied.",
       "dispatched": "The {action} action has been dispatched.",
       "properties": "Properties"
+    },
+    "files": {
+      "title": "Product Files"
     }
   },
   "profile": {
