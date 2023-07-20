@@ -82,6 +82,6 @@ jobs:
       - name: Build API
         run: ./scripts/build-api.sh $GITHUB_SHA $GITHUB_REF $GITHUB_EVENT_NAME
 
-      # - name: Deploy
-      #  if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch') && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
-      #  run: ./scripts/deploy-to-ecs.sh $GITHUB_SHA $GITHUB_REF
+      - name: Deploy
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch') && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
+        run: ./scripts/deploy-to-ecs.sh $GITHUB_SHA $GITHUB_REF
