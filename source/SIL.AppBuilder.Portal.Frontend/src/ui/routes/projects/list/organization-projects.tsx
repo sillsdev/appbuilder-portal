@@ -33,6 +33,7 @@ export default compose(
     defaultColumns: [
       COLUMN_KEY.PROJECT_OWNER,
       COLUMN_KEY.PROJECT_GROUP,
+      COLUMN_KEY.PROJECT_LANGUAGE,
       COLUMN_KEY.PRODUCT_BUILD_VERSION,
       COLUMN_KEY.PRODUCT_UPDATED_ON,
     ],
