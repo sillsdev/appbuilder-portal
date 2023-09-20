@@ -13,3 +13,4 @@ export const requestOrgAccessSuccessPath = '/request-access-for-organization/suc
 export const requestOrgAccessPath = '/request-access-for-organization';
 export const downloadsPath = '/downloads';
 export const productsPath = '/products';
+export const userAccountDeletePath = '/user-account-delete';

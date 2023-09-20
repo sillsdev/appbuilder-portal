@@ -9,13 +9,7 @@ export function withPublicProject<T>(idGetter: (props: T) => string) {
         const id = idGetter(props);
 
         const options = buildOptions({
-          include: [
-            'organization.owner',
-            'group',
-            'owner',
-            'products.product-definition.type',
-            'products.product-builds.product-artifacts',
-          ],
+          include: ['organization.owner', 'group', 'owner', 'products.product-definition.type'],
           fields: {
             // owner: 'name,email',
           },

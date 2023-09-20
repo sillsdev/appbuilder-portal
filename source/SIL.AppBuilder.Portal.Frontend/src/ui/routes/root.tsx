@@ -21,6 +21,7 @@ import OpenSourceRoute from '@ui/routes/open-source';
 import ErrorRootRoute from '@ui/routes/errors';
 import DownloadsRootRoute from '@ui/routes/downloads';
 import ProductsRoute from '@ui/routes/products';
+import UserAccountDeleteRoute from '@ui/routes/user-account-delete';
 
 import AuthenticatedLayout from '~/ui/components/layout';
 
@@ -61,6 +62,7 @@ export default function RootPage() {
           <Route path={paths.invitationsPath} component={InvitationsRoute} />
           <Route path={paths.openSourcePath} component={OpenSourceRoute} />
           <Route path={paths.downloadsPath} component={DownloadsRootRoute} />
+          <Route path={paths.userAccountDeletePath} component={UserAccountDeleteRoute} />
           <Route exact path={paths.requestOrgAccessPath} component={RequestOrgAccessRoute} />
           <Route
             path={paths.requestOrgAccessSuccessPath}
