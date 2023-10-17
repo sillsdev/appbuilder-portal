@@ -125,6 +125,219 @@ async function main() {
 			create: { Id, Name, Description, StoreTypeId }
 		});
 	}
+
+	// WorkflowDefnitions
+	const workflowDefinitionData = [
+		{
+			Id: 1,
+			Name: 'sil_android_google_play',
+			Type: 1,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Publishing to Google Play',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Android_GooglePlay',
+			WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
+			StoreTypeId: 1
+		},
+		{
+			Id: 2,
+			Name: 'sil_android_google_play_rebuild',
+			Type: 2,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Rebuilding to Google Play',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Android_GooglePlay_Rebuild',
+			WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
+			StoreTypeId: 1
+		},
+		{
+			Id: 3,
+			Name: 'sil_android_google_play_republish',
+			Type: 3,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Republish to Google Play',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Android_GooglePlay_Republish',
+			WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
+			StoreTypeId: 1
+		},
+		{
+			Id: 4,
+			Name: 'sil_android_s3',
+			Type: 1,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Publish to Amazon S3 Bucket',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3',
+			WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
+			StoreTypeId: 2
+		},
+		{
+			Id: 5,
+			Name: 'sil_android_s3_rebuild',
+			Type: 2,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Rebuilding to Amazon S3 Bucket',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3_Rebuild',
+			WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
+			StoreTypeId: 2
+		},
+		{
+			Id: 6,
+			Name: 'la_android_google_play',
+			Type: 1,
+			Enabled: true,
+			Description: 'Low Admin Workflow for Publishing to Google Play',
+			WorkflowScheme: 'SIL_LowAdmin_AppBuilders_Android_GooglePlay',
+			WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
+			StoreTypeId: 1
+		},
+		{
+			Id: 7,
+			Name: 'oa_android_google_play',
+			Type: 1,
+			Enabled: true,
+			Description: 'Owner Admin Workflow for Publishing to Google Play',
+			WorkflowScheme: 'SIL_OwnerAdmin_AppBuilders_Android_GooglePlay',
+			WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
+			StoreTypeId: 1
+		},
+		{
+			Id: 8,
+			Name: 'na_android_s3',
+			Type: 1,
+			Enabled: true,
+			Description: 'No Admin Workflow for Publishing to S3',
+			WorkflowScheme: 'SIL_NoAdmin_AppBuilders_Android_S3',
+			WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
+			StoreTypeId: 2
+		},
+		{
+			Id: 9,
+			Name: 'pwa_cloud',
+			Type: 1,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Publishing PWA to Cloud',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Pwa_Cloud',
+			WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
+			StoreTypeId: 3
+		},
+		{
+			Id: 10,
+			Name: 'pwa_cloud_rebuild',
+			Type: 2,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Rebuilding PWA to Cloud',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Pwa_Cloud_Rebuild',
+			WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
+			StoreTypeId: 3
+		},
+		{
+			Id: 11,
+			Name: 'html_cloud',
+			Type: 1,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Publishing HTML to Cloud',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Html_Cloud',
+			WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
+			StoreTypeId: 3
+		},
+		{
+			Id: 12,
+			Name: 'html_cloud_rebuild',
+			Type: 2,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Rebuilding HTML to Cloud',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Html_Cloud_Rebuild',
+			WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
+			StoreTypeId: 3
+		},
+		{
+			Id: 13,
+			Name: 'asset_package',
+			Type: 1,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Publishing Asset Packages',
+			WorkflowScheme: 'SIL_NoAdmin_AppBuilders_Android_S3',
+			WorkflowBusinessFlow: 'SIL_AppBuilders_AssetPackage_Flow',
+			StoreTypeId: 2,
+			Properties: '{ "build:targets" : "asset-package" }'
+		},
+		{
+			Id: 14,
+			Name: 'asset_package_rebuild',
+			Type: 2,
+			Enabled: true,
+			Description: 'SIL Default Workflow for Rebuilding Asset Packages',
+			WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3_Rebuild',
+			WorkflowBusinessFlow: 'SIL_AppBuilders_AssetPackage_Flow',
+			StoreTypeId: 2,
+			Properties: '{ "build:targets" : "asset-package" }'
+		}
+	];
+
+	for (const data of workflowDefinitionData) {
+		await prisma.workflowDefinitions.upsert({
+			where: { Id: data.Id },
+			update: data,
+			create: data
+		});
+	}
+
+	const productDefinitionData = [
+		{
+			Id: 1,
+			Name: 'Android App to Google Play',
+			TypeId: 1,
+			Description:
+				'Build an Android App from a Scripture App Builder project and publish to a Google Play Store. The Organization Admin has to approve of the project and review the store preview. The Organization Admin has access to Google Play Console.',
+			WorkflowId: 1,
+			RebuildWorkflowId: 2,
+			RepublishWorkflowId: 3
+		},
+		{
+			Id: 2,
+			Name: 'Android App to Amazon S3 Bucket',
+			TypeId: 1,
+			Description:
+				'Build an Android App from a Scripture App Builder project and publish to an Amazon S3 Bucket',
+			WorkflowId: 4,
+			RebuildWorkflowId: 5
+		},
+		{
+			Id: 3,
+			Name: 'Android App to Google Play (Low Admin)',
+			TypeId: 1,
+			Description:
+				'Build an Android App from a Scripture App Builder project and publish to a Google Play Store, but with less approval and oversight required. The Organization Admin has access to Google Play Console.',
+			WorkflowId: 6,
+			RebuildWorkflowId: 2,
+			RepublishWorkflowId: 3
+		},
+		{
+			Id: 4,
+			Name: 'Android App to Amazon S3 Bucket (No Admin)',
+			TypeId: 1,
+			Description:
+				'Build an Android App from a Scripture App Builder project and publish to an Amazon S3 Bucket, but with no admin required.',
+			WorkflowId: 8,
+			RebuildWorkflowId: 5
+		},
+		{
+			Id: 5,
+			Name: 'Android App to Google Play (Owner Admin)',
+			TypeId: 1,
+			Description:
+				'Build an Android App from a Scripture App Builder project and publish to a Google Play Store, but with no approval and oversight required. The owner of the project has access to Google Play Console.',
+			WorkflowId: 7,
+			RebuildWorkflowId: 2,
+			RepublishWorkflowId: 3
+		}
+	];
+
+	for (const data of productDefinitionData) {
+		await prisma.productDefinitions.upsert({
+			where: { Id: data.Id },
+			update: data,
+			create: data
+		});
+	}
 }
 main()
 	.then(async () => {
