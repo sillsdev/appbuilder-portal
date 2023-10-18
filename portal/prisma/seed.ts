@@ -1,4 +1,13 @@
 import { PrismaClient } from '@prisma/client';
+import { Command, Option } from 'commander';
+
+const program = new Command();
+program
+	.addOption(new Option('-v, --verbose [level]', 'verbose logging').argParser(parseInt).default(0))
+	.addOption(new Option('-o, --organizations', 'include default organizations'));
+program.parse(process.argv);
+const options = program.opts();
+if (options.verbose) console.log(options);
 
 const prisma = new PrismaClient();
 async function main() {
@@ -337,6 +346,250 @@ async function main() {
 			update: data,
 			create: data
 		});
+	}
+
+	if (options.organizations) {
+		const usersData = [
+			{
+				Id: 1,
+				Name: 'Chris Hubbard',
+				Email: 'chris_hubbard@sil.org',
+				ExternalId: 'google-oauth2|116747902156680384840',
+				FamilyName: 'Hubbard',
+				GivenName: 'Chris',
+				IsLocked: false
+			},
+			{
+				Id: 2,
+				Name: 'David Moore',
+				Email: 'david_moore1@sil.org',
+				ExternalId: 'google-oauth2|114981819181509824425',
+				FamilyName: 'Moore',
+				GivenName: 'David',
+				IsLocked: false
+			},
+			{
+				Id: 3,
+				Name: 'Bill Dyck',
+				Email: 'bill_dyck@sil.org',
+				ExternalId: 'google-oauth2|102643649500459434996',
+				FamilyName: 'Dyck',
+				GivenName: 'Bill',
+				IsLocked: false
+			},
+			{
+				Id: 4,
+				Name: 'Loren Hawthorne',
+				Email: 'loren_hawthorne@sil.org',
+				ExternalId: 'google-oauth2|116603781884964961816',
+				FamilyName: 'Hawthorne',
+				GivenName: 'Loren',
+				IsLocked: false
+			},
+			{
+				Id: 5,
+				Name: 'Chris Hubbard (Kalaam)',
+				Email: 'chris.kalaam@gmail.com',
+				ExternalId: 'auth0|5b578f6197af652b19f9bb41',
+				FamilyName: 'Hubbard',
+				GivenName: 'Chris',
+				IsLocked: false
+			}
+		];
+
+		for (const userData of usersData) {
+			await prisma.users.upsert({
+				where: { Id: userData.Id },
+				update: userData,
+				create: userData
+			});
+		}
+
+		const organizationsData = [
+			{
+				Id: 1,
+				Name: 'SIL International',
+				WebsiteUrl: 'https://sil.org',
+				BuildEngineUrl: 'https://replace.scriptoria.io:8443',
+				BuildEngineApiAccessToken: 'replace',
+				LogoUrl: 'https://sil-prd-aps-resources.s3.amazonaws.com/sil/sil_logo.png',
+				OwnerId: 1
+			},
+			{
+				Id: 2,
+				Name: 'Kalaam Media',
+				WebsiteUrl: 'https://kalaam.org',
+				BuildEngineUrl: 'https://replace.scriptoria.io:8443',
+				BuildEngineApiAccessToken: 'replace',
+				LogoUrl: 'https://s3.amazonaws.com/sil-prd-aps-resources/ips/wildfire_flame_logo.png',
+				OwnerId: 1
+			},
+			{
+				Id: 3,
+				Name: 'Faith Comes By Hearing',
+				WebsiteUrl: 'https://kalaam.org',
+				BuildEngineUrl: 'https://replace.scriptoria.io:8443',
+				BuildEngineApiAccessToken: 'replace',
+				LogoUrl:
+					'https://play-lh.googleusercontent.com/yXm_WKG7_DJxL3IPYFul6iYfRNzWGdSbOJad7acWt28Xc6jSdlJCXPgrJOc-mdkf5_OE',
+				OwnerId: 1
+			},
+			{
+				Id: 4,
+				Name: 'Scripture Earth',
+				WebsiteUrl: 'https://scriptureearth.org',
+				BuildEngineUrl: 'https://replace.scriptoria.io:8443',
+				BuildEngineApiAccessToken: 'replace',
+				LogoUrl: 'https://s3.amazonaws.com/sil-prd-aps-resources/scriptureearth/se_logo.png',
+				OwnerId: 1
+			}
+		];
+
+		for (const organizationData of organizationsData) {
+			await prisma.organizations.upsert({
+				where: { Id: organizationData.Id },
+				update: organizationData,
+				create: organizationData
+			});
+		}
+
+		const storesData = [
+			{ Id: 1, Name: 'wycliffeusa', Description: 'Wycliffe USA - Google Play', StoreTypeId: 1 },
+			{
+				Id: 2,
+				Name: 'internetpublishingservice',
+				Description: 'Internet Publishing Service (Kalaam) - Google Play',
+				StoreTypeId: 1
+			},
+			{ Id: 3, Name: 'indhack', Description: 'Indigitous Hack - Google Play', StoreTypeId: 1 }
+		];
+
+		for (const storeData of storesData) {
+			await prisma.stores.upsert({
+				where: { Id: storeData.Id },
+				update: storeData,
+				create: storeData
+			});
+		}
+
+		const organizationProductDefinitionsData = [
+			{ Id: 1, OrganizationId: 1, ProductDefinitionId: 1 },
+			{ Id: 2, OrganizationId: 2, ProductDefinitionId: 1 },
+			{ Id: 3, OrganizationId: 3, ProductDefinitionId: 1 }
+		];
+
+		for (const data of organizationProductDefinitionsData) {
+			await prisma.organizationProductDefinitions.upsert({
+				where: {
+					Id: data.Id
+				},
+				update: data,
+				create: data
+			});
+		}
+
+		const organizationStoresData = [
+			{ Id: 1, OrganizationId: 1, StoreId: 1 },
+			{ Id: 2, OrganizationId: 2, StoreId: 2 },
+			{ Id: 3, OrganizationId: 3, StoreId: 3 },
+			{ Id: 4, OrganizationId: 4, StoreId: 3 }
+		];
+
+		for (const data of organizationStoresData) {
+			await prisma.organizationStores.upsert({
+				where: { Id: data.Id },
+				update: data,
+				create: data
+			});
+		}
+
+		const groupsData = [
+			{ Id: 1, Name: 'Language Software Development', Abbreviation: 'LSDEV', OwnerId: 1 },
+			{ Id: 2, Name: 'Chad Branch', Abbreviation: 'CHB', OwnerId: 1 },
+			{ Id: 3, Name: 'Mexico Branch', Abbreviation: 'MXB', OwnerId: 1 },
+			{ Id: 4, Name: 'AuSIL', Abbreviation: 'AAB', OwnerId: 1 },
+			{ Id: 5, Name: 'Americas Group', Abbreviation: 'AMG', OwnerId: 1 },
+			{ Id: 6, Name: 'Asia Area', Abbreviation: 'ASA', OwnerId: 1 },
+			{ Id: 7, Name: 'Camaroon Branch', Abbreviation: 'CMB', OwnerId: 1 },
+			{ Id: 8, Name: 'Roma Region', Abbreviation: 'RMA', OwnerId: 1 },
+			{ Id: 9, Name: 'The Seed Company', Abbreviation: 'RSM', OwnerId: 1 },
+			{ Id: 10, Name: 'SIL International', Abbreviation: 'SIL', OwnerId: 1 },
+			{ Id: 11, Name: 'Mainland Southeast Asia Group', Abbreviation: 'THG', OwnerId: 1 },
+			{ Id: 12, Name: 'Wycliffe Taiwan', Abbreviation: 'TWN', OwnerId: 1 },
+			{ Id: 13, Name: 'West Africa', Abbreviation: 'WAF', OwnerId: 1 },
+			{ Id: 14, Name: 'Kalaam', Abbreviation: 'KAL', OwnerId: 2 },
+			{ Id: 15, Name: 'FCBH', Abbreviation: 'FCBH', OwnerId: 3 },
+			{ Id: 16, Name: 'Scripture Earth', Abbreviation: 'SE', OwnerId: 4 }
+		];
+
+		for (const data of groupsData) {
+			await prisma.groups.upsert({
+				where: { Id: data.Id },
+				update: data,
+				create: data
+			});
+		}
+
+		const organizationMembershipsData = [
+			{ Id: 1, UserId: 1, OrganizationId: 1 }, // chris_hubbard@sil.org - SIL
+			{ Id: 2, UserId: 1, OrganizationId: 2 }, // chris_hubbard@sil.org - Kalaam
+			{ Id: 3, UserId: 1, OrganizationId: 3 }, // chris_hubbard@sil.org - FCBH
+			{ Id: 4, UserId: 2, OrganizationId: 1 }, // david_moore1@sil.org - SIL
+			{ Id: 5, UserId: 3, OrganizationId: 1 }, // bill_dyck@sil.org - SIL
+			{ Id: 6, UserId: 3, OrganizationId: 4 }, // bill_dyck@sil.org - SE
+			{ Id: 7, UserId: 4, OrganizationId: 1 }, // loren_hawthorne@sil.org - SIL
+			{ Id: 8, UserId: 5, OrganizationId: 2 } // chris.kalaam@gmail.com - Kalaam
+		];
+
+		for (const data of organizationMembershipsData) {
+			await prisma.organizationMemberships.upsert({
+				where: { Id: data.Id },
+				update: data,
+				create: data
+			});
+		}
+
+		const groupMembershipsData = [
+			{ Id: 1, UserId: 1, GroupId: 1 },
+			{ Id: 2, UserId: 2, GroupId: 1 },
+			{ Id: 3, UserId: 3, GroupId: 5 },
+			{ Id: 4, UserId: 3, GroupId: 6 },
+			{ Id: 5, UserId: 3, GroupId: 11 },
+			{ Id: 6, UserId: 3, GroupId: 12 },
+			{ Id: 7, UserId: 3, GroupId: 16 },
+			{ Id: 8, UserId: 4, GroupId: 3 },
+			{ Id: 9, UserId: 5, GroupId: 14 }
+		];
+
+		for (const data of groupMembershipsData) {
+			await prisma.groupMemberships.upsert({
+				where: { Id: data.Id },
+				update: data,
+				create: data
+			});
+		}
+
+		const userRolesData = [
+			{ Id: 1, UserId: 1, RoleId: 1, OrganizationId: 1 }, // chris_hubbard@sil.org - SuperAdmin - SIL
+			{ Id: 2, UserId: 1, RoleId: 2, OrganizationId: 1 }, // chris_hubbard@sil.org - OrgAdmin - SIL
+			{ Id: 3, UserId: 1, RoleId: 1, OrganizationId: 2 }, // chris_hubbard@sil.org - SuperAdmin - Kalaam
+			{ Id: 4, UserId: 1, RoleId: 1, OrganizationId: 3 }, // chris_hubbard@sil.org - SuperAdmin - FCBH
+			{ Id: 5, UserId: 1, RoleId: 1, OrganizationId: 4 }, // chris_hubbard@sil.org - SuperAdmin - SE
+			{ Id: 6, UserId: 2, RoleId: 1, OrganizationId: 1 }, // david_moore1@sil.org - SuperAdmin - SIL
+			{ Id: 7, UserId: 2, RoleId: 2, OrganizationId: 1 }, // david_moore1@sil.org - OrgAdmin - SIL
+			{ Id: 8, UserId: 3, RoleId: 2, OrganizationId: 1 }, // bill_dyck@sil.org - OrgAdmin - SIL
+			{ Id: 9, UserId: 3, RoleId: 2, OrganizationId: 4 }, // bill_dyck@sil.org - OrgAdmin - SE
+			{ Id: 10, UserId: 4, RoleId: 3, OrganizationId: 1 }, // loren_hawthorne@sil.org - AppBuilder - SIL
+			{ Id: 11, UserId: 5, RoleId: 3, OrganizationId: 3 } // chris.kalaam@gmail.com - AppBuilder - Kalaam
+		];
+
+		for (const data of userRolesData) {
+			await prisma.userRoles.upsert({
+				where: { Id: data.Id },
+				update: data,
+				create: data
+			});
+		}
 	}
 }
 main()
