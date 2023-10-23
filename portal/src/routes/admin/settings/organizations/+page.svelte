@@ -3,5 +3,5 @@
 </script>
 
 <div class="max-w-screen-md mx-auto">
-	<h1>{$_('tasks.title')}</h1>
+	<h1>{$_('admin.settings.title')}</h1>
 </div>
