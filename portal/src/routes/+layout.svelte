@@ -147,7 +147,7 @@
 <style>
 	.navbar {
 		padding: 0px;
-		height: 3rem;
+		height: 4rem;
 		min-height: 3rem;
 	}
 	.menu-item-divider-bottom {
