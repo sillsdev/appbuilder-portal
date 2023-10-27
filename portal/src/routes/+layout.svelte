@@ -6,10 +6,14 @@
 	import { HamburgerIcon } from '$lib/icons';
 	import LanguageSelector from '$lib/components/LanguageSelector.svelte';
 
+	let drawerToggle: HTMLInputElement;
+	function closeDrawer() {
+		drawerToggle.click();
+	}
+
 	$: organization = 1;
 
 	function isActive(currentRoute: string | null, menuRoute: string) {
-		console.log(`currentRoute:${currentRoute}, menuRoute:${menuRoute}`);
 		return currentRoute?.startsWith(menuRoute);
 	}
 </script>
@@ -31,7 +35,12 @@
 </div>
 
 <div class="drawer lg:drawer-open">
-	<input id="primary-content-drawer" type="checkbox" class="drawer-toggle" />
+	<input
+		id="primary-content-drawer"
+		type="checkbox"
+		class="drawer-toggle"
+		bind:this={drawerToggle}
+	/>
 	<div class="drawer-content flex flex-row items-start justify-start">
 		<slot />
 	</div>
@@ -46,6 +55,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/tasks')}
 					href="{base}/tasks"
+					on:click={closeDrawer}
 				>
 					{$_('sidebar.myTasks', { values: { count: 1 } })}
 				</a>
@@ -55,6 +65,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/projects/own')}
 					href="{base}/projects/own"
+					on:click={closeDrawer}
 				>
 					{$_('sidebar.myProjects')}
 				</a>
@@ -64,6 +75,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/projects/organization')}
 					href="{base}/projects/organization"
+					on:click={closeDrawer}
 				>
 					{$_('sidebar.organizationProjects')}
 				</a>
@@ -73,6 +85,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/projects/active')}
 					href="{base}/projects/active"
+					on:click={closeDrawer}
 				>
 					{$_('sidebar.activeProjects')}
 				</a>
@@ -82,6 +95,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/users')}
 					href="{base}/users"
+					on:click={closeDrawer}
 				>
 					{$_('sidebar.users')}
 				</a>
@@ -91,6 +105,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/organizations/[id]/settings')}
 					href="{base}/organizations/{organization}/settings"
+					on:click={closeDrawer}
 				>
 					{$_('sidebar.organizationSettings')}
 				</a>
@@ -100,6 +115,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/admin/settings/organizations')}
 					href="{base}/admin/settings/organizations"
+					on:click={closeDrawer}
 				>
 					{$_('sidebar.adminSettings')}
 				</a>
@@ -109,6 +125,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/directory')}
 					href="{base}/directory"
+					on:click={closeDrawer}
 				>
 					{$_('sidebar.projectDirectory')}
 				</a>
@@ -118,6 +135,7 @@
 					class="rounded-none"
 					class:active-menu-item={isActive($page.route.id, '/open-source')}
 					href="{base}/open-source"
+					on:click={closeDrawer}
 				>
 					{$_('opensource')}
 				</a>
