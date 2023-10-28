@@ -5,3 +5,7 @@
 h1 {
     @apply text-2xl font-bold p-8;
   }
+
+  h2 {
+    @apply text-xl font-bold p-4;
+  }
