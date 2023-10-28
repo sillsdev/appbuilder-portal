@@ -2,4 +2,4 @@
 	import { _ } from 'svelte-i18n';
 </script>
 
-<h2>{$_('admin.settings.organizations.title')}</h2>
+<h2>{$_('admin.settings.storeTypes.title')}</h2>
