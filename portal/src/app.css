@@ -9,3 +9,7 @@ h1 {
   h2 {
     @apply text-xl font-bold p-4;
   }
+
+  h3 {
+    @apply text-lg font-bold p-2;
+  }

@@ -31,7 +31,7 @@
 				</li>
 			{/each}
 		</ul>
-		<div>
+		<div class="flex">
 			<slot />
 		</div>
 	</div>
