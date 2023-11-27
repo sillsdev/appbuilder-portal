@@ -40,6 +40,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             var workflowSchemeEntity = modelBuilder.Entity<WorkflowScheme>();
             var projectImportEntity = modelBuilder.Entity<ProjectImport>();
             var productPublicationEntity = modelBuilder.Entity<ProductPublication>();
+            var productUserChangeEntity = modelBuilder.Entity<ProductUserChange>();
 
             userEntity
                 .HasMany(u => u.OrganizationMemberships)
@@ -243,6 +244,12 @@ namespace OptimaJet.DWKit.StarterApplication.Data
             productPublicationEntity
                 .HasIndex(p => p.Package);
 
+            productUserChangeEntity
+                .HasOne(p => p.Product)
+                .WithMany()
+                .HasForeignKey("ProductId")
+                .OnDelete(DeleteBehavior.SetNull);
+
 
             productWorkflowSchemeEntity.ToTable("WorkflowProcessScheme");
 
@@ -308,6 +315,7 @@ namespace OptimaJet.DWKit.StarterApplication.Data
         public DbSet<ProductTransition> ProductTransitions { get; set; }
         public DbSet<ProductBuild> ProductBuilds { get; set; }
         public DbSet<ProductPublication> ProductPublications { get; set; }
+        public DbSet<ProductUserChange> ProductUserChanges { get; set; }
         public DbSet<ProjectImport> ProjectImports { get; set; }
         public DbSet<Author> Authors { get; set; }
     }
