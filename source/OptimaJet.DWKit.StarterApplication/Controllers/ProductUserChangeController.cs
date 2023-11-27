@@ -19,11 +19,5 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
 
         {
         }
-
-        public override Task<IActionResult> PostAsync([FromBody] ProductUserChange entity)
-        {
-
-            return base.PostAsync(entity);
-        }
     }
 }
