@@ -67,6 +67,7 @@
     "react-redux": "^7.1.0",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
+    "react-scripts": "3.0.1",
     "react-state-helpers": "^1.6.6",
     "react-timezone": "^2.1.0",
     "react-toastify": "^4.5.2",
