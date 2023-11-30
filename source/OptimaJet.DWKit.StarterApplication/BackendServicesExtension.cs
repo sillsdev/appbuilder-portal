@@ -9,6 +9,7 @@ using JsonApiDotNetCore.Configuration;
 using JsonApiDotNetCore.Data;
 using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCore.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
@@ -247,7 +248,9 @@ namespace OptimaJet.DWKit.StarterApplication
             .AddCookie(options => {
                 options.ExpireTimeSpan = TimeSpan.FromDays(365);
                 options.LoginPath = "/Account/Login/";
-            });
+            })
+            // B2B Bearer authentication
+            .AddScheme<AuthenticationSchemeOptions, UserManagementBearerAuthenticationHandler>(UserManagementBearerAuthenticationHandler.AuthenticationScheme, null);
 
             services.AddAuthorization(options =>
             {
