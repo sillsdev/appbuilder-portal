@@ -45,8 +45,8 @@ case "$CURRENT_BRANCH" in
 esac
 
 case "$CURRENT_BRANCH" in
-  master)  export ECS_CLUSTER=aps-prd ;;
-  develop) export ECS_CLUSTER=aps-stg ;;
+  master)  export ECS_CLUSTER=scriptoria-prd ;;
+  develop) export ECS_CLUSTER=scriptoria-stg ;;
 esac
 
 # Are we going to deploy this C.I. run? If so, we need to tell the build scripts
