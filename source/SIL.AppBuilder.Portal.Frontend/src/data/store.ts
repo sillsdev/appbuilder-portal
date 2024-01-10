@@ -31,7 +31,7 @@ export function defaultSourceOptions() {
     headers: {
       ...defaultHeaders(),
     },
-    timeout: 10000,
+    timeout: 60000,
   };
 }
 
