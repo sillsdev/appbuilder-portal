@@ -1,0 +1,490 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuidOssp(map: "uuid-ossp")]
+}
+
+model ApplicationTypes {
+  Id                 Int                  @id(map: "PK_ApplicationTypes") @default(autoincrement())
+  Name               String?
+  Description        String?
+  ProductDefinitions ProductDefinitions[]
+  ProjectImports     ProjectImports[]
+  Projects           Projects[]
+}
+
+model Authors {
+  Id        Int      @id(map: "PK_Authors") @default(autoincrement())
+  UserId    Int
+  ProjectId Int
+  CanUpdate Boolean?
+  Projects  Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Authors_Projects_ProjectId")
+  Users     Users    @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Authors_Users_UserId")
+
+  @@index([ProjectId], map: "IX_Authors_ProjectId")
+  @@index([UserId], map: "IX_Authors_UserId")
+}
+
+model Emails {
+  Id               Int      @id(map: "PK_Emails") @default(autoincrement())
+  To               String?
+  Cc               String?
+  Bcc              String?
+  Subject          String?
+  ContentTemplate  String?
+  ContentModelJson String?
+  Created          DateTime @db.Timestamp
+}
+
+model GroupMemberships {
+  Id      Int    @id(map: "PK_GroupMemberships") @default(autoincrement())
+  UserId  Int
+  GroupId Int
+  Group   Groups @relation(fields: [GroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GroupMemberships_Groups_GroupId")
+  User    Users  @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GroupMemberships_Users_UserId")
+
+  @@index([GroupId], map: "IX_GroupMemberships_GroupId")
+  @@index([UserId], map: "IX_GroupMemberships_UserId")
+}
+
+model Groups {
+  Id               Int                @id(map: "PK_Groups") @default(autoincrement())
+  Name             String?
+  Abbreviation     String?
+  OwnerId          Int
+  GroupMemberships GroupMemberships[]
+  Owner            Organizations      @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Groups_Organizations_OwnerId")
+  ProjectImports   ProjectImports[]
+  Projects         Projects[]
+
+  @@index([OwnerId], map: "IX_Groups_OwnerId")
+}
+
+model Notifications {
+  Id                       Int       @id(map: "PK_Notifications") @default(autoincrement())
+  MessageId                String?
+  UserId                   Int
+  DateRead                 DateTime? @db.Timestamp
+  DateEmailSent            DateTime? @db.Timestamp
+  DateCreated              DateTime? @db.Timestamp
+  DateUpdated              DateTime? @db.Timestamp
+  Message                  String?
+  MessageSubstitutionsJson String?
+  SendEmail                Boolean
+  LinkUrl                  String?
+  User                     Users     @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Notifications_Users_UserId")
+
+  @@index([UserId], map: "IX_Notifications_UserId")
+}
+
+model OrganizationInviteRequests {
+  Id            Int       @id(map: "PK_OrganizationInviteRequests") @default(autoincrement())
+  Name          String?
+  OrgAdminEmail String?
+  WebsiteUrl    String?
+  DateCreated   DateTime? @db.Timestamp
+  DateUpdated   DateTime? @db.Timestamp
+}
+
+model OrganizationInvites {
+  Id         Int     @id(map: "PK_OrganizationInvites") @default(autoincrement())
+  Name       String?
+  OwnerEmail String?
+  Token      String?
+}
+
+model OrganizationMembershipInvites {
+  Id             Int           @id(map: "PK_OrganizationMembershipInvites") @default(autoincrement())
+  Token          String        @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  Email          String
+  Expires        DateTime      @default(dbgenerated("(CURRENT_DATE + 7)")) @db.Timestamp
+  Redeemed       Boolean       @default(false)
+  InvitedById    Int
+  OrganizationId Int
+  DateCreated    DateTime?     @db.Timestamp
+  DateUpdated    DateTime?     @db.Timestamp
+  Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Organizations_OrganizationId")
+  User           Users         @relation(fields: [InvitedById], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Users_InvitedById")
+
+  @@index([InvitedById], map: "IX_OrganizationMembershipInvites_InvitedById")
+  @@index([OrganizationId], map: "IX_OrganizationMembershipInvites_OrganizationId")
+}
+
+model OrganizationMemberships {
+  Id             Int           @id(map: "PK_OrganizationMemberships") @default(autoincrement())
+  UserId         Int
+  OrganizationId Int
+  Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMemberships_Organizations_OrganizationId")
+  User           Users         @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMemberships_Users_UserId")
+
+  @@index([OrganizationId], map: "IX_OrganizationMemberships_OrganizationId")
+  @@index([UserId], map: "IX_OrganizationMemberships_UserId")
+}
+
+model OrganizationProductDefinitions {
+  Id                  Int                @id(map: "PK_OrganizationProductDefinitions") @default(autoincrement())
+  OrganizationId      Int
+  ProductDefinitionId Int
+  Organization        Organizations      @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationProductDefinitions_Organizations_OrganizationId")
+  ProductDefinition   ProductDefinitions @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationProductDefinitions_ProductDefinitions_ProductDe~")
+
+  @@index([OrganizationId], map: "IX_OrganizationProductDefinitions_OrganizationId")
+  @@index([ProductDefinitionId], map: "IX_OrganizationProductDefinitions_ProductDefinitionId")
+}
+
+model OrganizationStores {
+  Id             Int           @id(map: "PK_OrganizationStores") @default(autoincrement())
+  OrganizationId Int
+  StoreId        Int
+  Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationStores_Organizations_OrganizationId")
+  Store          Stores        @relation(fields: [StoreId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationStores_Stores_StoreId")
+
+  @@index([OrganizationId], map: "IX_OrganizationStores_OrganizationId")
+  @@index([StoreId], map: "IX_OrganizationStores_StoreId")
+}
+
+model Organizations {
+  Id                             Int                              @id(map: "PK_Organizations") @default(autoincrement())
+  Name                           String?
+  WebsiteUrl                     String?
+  BuildEngineUrl                 String?
+  BuildEngineApiAccessToken      String?
+  LogoUrl                        String?
+  UseDefaultBuildEngine          Boolean?                         @default(true)
+  PublicByDefault                Boolean?                         @default(true)
+  OwnerId                        Int
+  Groups                         Groups[]
+  OrganizationMembershipInvites  OrganizationMembershipInvites[]
+  OrganizationMemberships        OrganizationMemberships[]
+  OrganizationProductDefinitions OrganizationProductDefinitions[]
+  OrganizationStores             OrganizationStores[]
+  Owner                          Users                            @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Organizations_Users_OwnerId")
+  ProjectImports                 ProjectImports[]
+  Projects                       Projects[]
+  UserRoles                      UserRoles[]
+
+  @@index([OwnerId], map: "IX_Organizations_OwnerId")
+}
+
+model ProductArtifacts {
+  Id             Int           @id(map: "PK_ProductArtifacts") @default(autoincrement())
+  ProductId      String        @db.Uuid
+  ProductBuildId Int
+  ArtifactType   String?
+  Url            String?
+  FileSize       BigInt?
+  ContentType    String?
+  DateCreated    DateTime?     @db.Timestamp
+  DateUpdated    DateTime?     @db.Timestamp
+  ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_ProductBuilds_ProductBuildId")
+  Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_Products_ProductId")
+
+  @@index([ProductBuildId], map: "IX_ProductArtifacts_ProductBuildId")
+  @@index([ProductId], map: "IX_ProductArtifacts_ProductId")
+}
+
+model ProductBuilds {
+  Id                  Int                   @id(map: "PK_ProductBuilds") @default(autoincrement())
+  ProductId           String                @db.Uuid
+  BuildId             Int
+  Version             String?
+  DateCreated         DateTime?             @db.Timestamp
+  DateUpdated         DateTime?             @db.Timestamp
+  Success             Boolean?
+  ProductArtifacts    ProductArtifacts[]
+  Product             Products              @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
+  ProductPublications ProductPublications[]
+
+  @@index([ProductId], map: "IX_ProductBuilds_ProductId")
+}
+
+model ProductDefinitions {
+  Id                             Int                              @id(map: "PK_ProductDefinitions") @default(autoincrement())
+  Name                           String?
+  TypeId                         Int
+  Description                    String?
+  WorkflowId                     Int
+  RebuildWorkflowId              Int?
+  RepublishWorkflowId            Int?
+  Properties                     String?
+  OrganizationProductDefinitions OrganizationProductDefinitions[]
+  ApplicationTypes               ApplicationTypes                 @relation(fields: [TypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_ApplicationTypes_TypeId")
+  RebuildWorkflow                WorkflowDefinitions?             @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions", fields: [RebuildWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RebuildWorkflowId")
+  RepublishWorkflow              WorkflowDefinitions?             @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions", fields: [RepublishWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RepublishWorkflowId")
+  Workflow                       WorkflowDefinitions              @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions", fields: [WorkflowId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_WorkflowId")
+  Products                       Products[]
+
+  @@index([RebuildWorkflowId], map: "IX_ProductDefinitions_RebuildWorkflowId")
+  @@index([RepublishWorkflowId], map: "IX_ProductDefinitions_RepublishWorkflowId")
+  @@index([TypeId], map: "IX_ProductDefinitions_TypeId")
+  @@index([WorkflowId], map: "IX_ProductDefinitions_WorkflowId")
+}
+
+model ProductPublications {
+  Id             Int           @id(map: "PK_ProductPublications") @default(autoincrement())
+  ProductId      String        @db.Uuid
+  ProductBuildId Int
+  ReleaseId      Int
+  Channel        String?
+  LogUrl         String?
+  Success        Boolean?
+  DateCreated    DateTime?     @db.Timestamp
+  DateUpdated    DateTime?     @db.Timestamp
+  Package        String?
+  ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductBuildId")
+  Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
+
+  @@index([Package], map: "IX_ProductPublications_Package")
+  @@index([ProductBuildId], map: "IX_ProductPublications_ProductBuildId")
+  @@index([ProductId], map: "IX_ProductPublications_ProductId")
+}
+
+model ProductTransitions {
+  Id               Int       @id(map: "PK_ProductTransitions") @default(autoincrement())
+  ProductId        String    @db.Uuid
+  WorkflowUserId   String?   @db.Uuid
+  AllowedUserNames String?
+  InitialState     String?
+  DestinationState String?
+  Command          String?
+  DateTransition   DateTime? @db.Timestamp
+  Comment          String?
+  TransitionType   Int       @default(1)
+  WorkflowType     Int?
+  Product          Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductTransitions_Products_ProductId")
+
+  @@index([ProductId], map: "IX_ProductTransitions_ProductId")
+}
+
+model Products {
+  Id                  String                @id(map: "PK_Products") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ProjectId           Int
+  ProductDefinitionId Int
+  StoreId             Int?
+  StoreLanguageId     Int?
+  DateCreated         DateTime?             @db.Timestamp
+  DateUpdated         DateTime?             @db.Timestamp
+  WorkflowJobId       Int
+  WorkflowBuildId     Int
+  DateBuilt           DateTime?             @db.Timestamp
+  WorkflowPublishId   Int
+  WorkflowComment     String?
+  DatePublished       DateTime?             @db.Timestamp
+  PublishLink         String?
+  VersionBuilt        String?
+  Properties          String?
+  ProductArtifacts    ProductArtifacts[]
+  ProductBuilds       ProductBuilds[]
+  ProductPublications ProductPublications[]
+  ProductTransitions  ProductTransitions[]
+  ProductDefinition   ProductDefinitions    @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_ProductDefinitions_ProductDefinitionId")
+  Project             Projects              @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_Projects_ProjectId")
+  StoreLanguage       StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
+  Store               Stores?               @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
+  UserTasks           UserTasks[]
+
+  @@index([ProductDefinitionId], map: "IX_Products_ProductDefinitionId")
+  @@index([ProjectId], map: "IX_Products_ProjectId")
+  @@index([StoreId], map: "IX_Products_StoreId")
+  @@index([StoreLanguageId], map: "IX_Products_StoreLanguageId")
+}
+
+model ProjectImports {
+  Id               Int               @id(map: "PK_ProjectImports") @default(autoincrement())
+  ImportData       String?
+  TypeId           Int?
+  OwnerId          Int?
+  GroupId          Int?
+  OrganizationId   Int?
+  DateCreated      DateTime?         @db.Timestamp
+  DateUpdated      DateTime?         @db.Timestamp
+  ApplicationTypes ApplicationTypes? @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_ApplicationTypes_TypeId")
+  Groups           Groups?           @relation(fields: [GroupId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Groups_GroupId")
+  Organizations    Organizations?    @relation(fields: [OrganizationId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Organizations_OrganizationId")
+  Users            Users?            @relation(fields: [OwnerId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Users_OwnerId")
+  Projects         Projects[]
+
+  @@index([GroupId], map: "IX_ProjectImports_GroupId")
+  @@index([OrganizationId], map: "IX_ProjectImports_OrganizationId")
+  @@index([OwnerId], map: "IX_ProjectImports_OwnerId")
+  @@index([TypeId], map: "IX_ProjectImports_TypeId")
+}
+
+model Projects {
+  Id                       Int              @id(map: "PK_Projects") @default(autoincrement())
+  Name                     String?
+  TypeId                   Int
+  Description              String?
+  OwnerId                  Int
+  GroupId                  Int
+  OrganizationId           Int
+  Language                 String?
+  IsPublic                 Boolean?         @default(true)
+  DateCreated              DateTime?        @db.Timestamp
+  DateUpdated              DateTime?        @db.Timestamp
+  DateArchived             DateTime?        @db.Timestamp
+  AllowDownloads           Boolean?         @default(true)
+  AutomaticBuilds          Boolean?         @default(true)
+  WorkflowProjectId        Int              @default(0)
+  WorkflowProjectUrl       String?
+  WorkflowAppProjectUrl    String?
+  DateActive               DateTime?        @db.Timestamp
+  ImportId                 Int?
+  PublishAfterAutoRebuilds Boolean?
+  SoftwareUpdateRebuilds   Boolean?
+  Authors                  Authors[]
+  Products                 Products[]
+  ApplicationType          ApplicationTypes @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_Projects_ApplicationTypes_TypeId")
+  Group                    Groups           @relation(fields: [GroupId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Groups_GroupId")
+  Organization             Organizations    @relation(fields: [OrganizationId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Organizations_OrganizationId")
+  ProjectImport            ProjectImports?  @relation(fields: [ImportId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Projects_ProjectImports_ImportId")
+  Owner                    Users            @relation(fields: [OwnerId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
+  Reviewers                Reviewers[]
+
+  @@index([GroupId], map: "IX_Projects_GroupId")
+  @@index([ImportId], map: "IX_Projects_ImportId")
+  @@index([OrganizationId], map: "IX_Projects_OrganizationId")
+  @@index([OwnerId], map: "IX_Projects_OwnerId")
+  @@index([TypeId], map: "IX_Projects_TypeId")
+}
+
+model Reviewers {
+  Id        Int      @id(map: "PK_Reviewers") @default(autoincrement())
+  Name      String?
+  Email     String?
+  ProjectId Int
+  Locale    String?
+  Project   Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Reviewers_Projects_ProjectId")
+
+  @@index([ProjectId], map: "IX_Reviewers_ProjectId")
+}
+
+model Roles {
+  Id        Int         @id(map: "PK_Roles") @default(autoincrement())
+  RoleName  Int
+  UserRoles UserRoles[]
+}
+
+model StoreLanguages {
+  Id          Int        @id(map: "PK_StoreLanguages") @default(autoincrement())
+  Name        String?
+  Description String?
+  StoreTypeId Int
+  Products    Products[]
+  StoreType   StoreTypes @relation(fields: [StoreTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_StoreLanguages_StoreTypes_StoreTypeId")
+
+  @@index([StoreTypeId], map: "IX_StoreLanguages_StoreTypeId")
+}
+
+model StoreTypes {
+  Id                  Int                   @id(map: "PK_StoreTypes") @default(autoincrement())
+  Name                String?
+  Description         String?
+  StoreLanguages      StoreLanguages[]
+  Stores              Stores[]
+  WorkflowDefinitions WorkflowDefinitions[]
+}
+
+model Stores {
+  Id                 Int                  @id(map: "PK_Stores") @default(autoincrement())
+  Name               String?
+  Description        String?
+  StoreTypeId        Int
+  OrganizationStores OrganizationStores[]
+  Products           Products[]
+  StoreType          StoreTypes           @relation(fields: [StoreTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Stores_StoreTypes_StoreTypeId")
+
+  @@index([StoreTypeId], map: "IX_Stores_StoreTypeId")
+}
+
+model SystemStatuses {
+  Id                        Int       @id(map: "PK_SystemStatuses") @default(autoincrement())
+  BuildEngineUrl            String?
+  BuildEngineApiAccessToken String?
+  SystemAvailable           Boolean
+  DateCreated               DateTime? @db.Timestamp
+  DateUpdated               DateTime? @db.Timestamp
+}
+
+model UserRoles {
+  Id             Int           @id(map: "PK_UserRoles") @default(autoincrement())
+  UserId         Int
+  RoleId         Int
+  OrganizationId Int
+  Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Organizations_OrganizationId")
+  Role           Roles         @relation(fields: [RoleId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Roles_RoleId")
+  User           Users         @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Users_UserId")
+
+  @@index([OrganizationId], map: "IX_UserRoles_OrganizationId")
+  @@index([RoleId], map: "IX_UserRoles_RoleId")
+  @@index([UserId], map: "IX_UserRoles_UserId")
+}
+
+model UserTasks {
+  Id           Int       @id(map: "PK_UserTasks") @default(autoincrement())
+  UserId       Int
+  ProductId    String    @db.Uuid
+  ActivityName String?
+  Status       String?
+  Comment      String?
+  DateCreated  DateTime? @db.Timestamp
+  DateUpdated  DateTime? @db.Timestamp
+  Product      Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Products_ProductId")
+  User         Users     @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Users_UserId")
+
+  @@index([ProductId], map: "IX_UserTasks_ProductId")
+  @@index([UserId], map: "IX_UserTasks_UserId")
+}
+
+model Users {
+  Id                            Int                             @id(map: "PK_Users") @default(autoincrement())
+  Name                          String?
+  GivenName                     String?
+  FamilyName                    String?
+  Email                         String?
+  Phone                         String?
+  Timezone                      String?
+  Locale                        String?
+  IsLocked                      Boolean
+  ExternalId                    String?
+  ProfileVisibility             Int                             @default(1)
+  EmailNotification             Boolean?                        @default(true)
+  WorkflowUserId                String?                         @db.Uuid
+  DateCreated                   DateTime?                       @db.Timestamp
+  DateUpdated                   DateTime?                       @db.Timestamp
+  Authors                       Authors[]
+  GroupMemberships              GroupMemberships[]
+  Notifications                 Notifications[]
+  OrganizationMembershipInvites OrganizationMembershipInvites[]
+  OrganizationMemberships       OrganizationMemberships[]
+  Organizations                 Organizations[]
+  ProjectImports                ProjectImports[]
+  Projects                      Projects[]
+  UserRoles                     UserRoles[]
+  UserTasks                     UserTasks[]
+
+  @@index([WorkflowUserId], map: "IX_Users_WorkflowUserId")
+}
+
+model WorkflowDefinitions {
+  Id                   Int                  @id(map: "PK_WorkflowDefinitions") @default(autoincrement())
+  Name                 String?
+  Enabled              Boolean
+  Description          String?
+  WorkflowScheme       String?
+  WorkflowBusinessFlow String?
+  StoreTypeId          Int?
+  Type                 Int                  @default(1)
+  Properties           String?
+  RebuildWorkflows     ProductDefinitions[] @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions")
+  RepublishWorkflows   ProductDefinitions[] @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions")
+  Workflows            ProductDefinitions[] @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions")
+  StoreType            StoreTypes?          @relation(fields: [StoreTypeId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_WorkflowDefinitions_StoreTypes_StoreTypeId")
+
+  @@index([StoreTypeId], map: "IX_WorkflowDefinitions_StoreTypeId")
+}
