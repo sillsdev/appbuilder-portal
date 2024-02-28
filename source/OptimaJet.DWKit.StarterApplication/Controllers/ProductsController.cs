@@ -1,6 +1,5 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using JsonApiDotNetCore.Services;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OptimaJet.DWKit.StarterApplication.Models;
 using OptimaJet.DWKit.StarterApplication.Services;
 using OptimaJet.DWKit.StarterApplication.Utility;
@@ -143,7 +141,12 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
             var manifestJson = await WebClient.DownloadStringTaskAsync(manifestArtifact.Url);
 
             var manifest = JsonConvert.DeserializeObject<ManifestResponse>(manifestJson);
-            var url = manifest.url;
+
+	        // The bucket in the URL stored in the manifest can change over time. The URL from 
+	        // the artifact query is updated when buckets change.  Update the hostname stored
+	        // in the manifest file based on the hostname from the artifact query.
+	        var manifestUri = new Uri(manifestArtifact.Url);
+            var url = new UriBuilder(new Uri(manifest.url)) { Host = manifestUri.Host }.Uri.ToString();
             var titles = new Dictionary<string,string>(manifest.languages.Count);
             var descriptions = new Dictionary<string,string>(manifest.languages.Count);
             foreach(string language in manifest.languages)
@@ -151,6 +154,7 @@ namespace OptimaJet.DWKit.StarterApplication.Controllers
                 var title = "";
                 var titleSearch = $"{language}/title.txt";
                 var titlePath = manifest.files.Where(s => s.Contains(titleSearch)).FirstOrDefault();
+
                 if (!string.IsNullOrEmpty(titlePath)) { title = await WebClient.DownloadStringTaskAsync(url + titlePath); }
                 titles.Add(language, title.Trim());
 
