@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n';
 	import type { PageData } from './$types';
+	import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
 
 	export let data: PageData;
 </script>
@@ -13,16 +14,13 @@
 
 	<div class="flex flex-col w-full">
 		{#each data.productDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? "") ?? 0) as pD}
-			<div class="flex flex-row border-2 p-2 mx-4 m-2">
-				<div>
-					<h3>{pD.Name}</h3>
-					<p><b>{$_('admin.settings.productDefinitions.type')}: </b> {pD.ApplicationTypes.Name}</p>
-					<p><b>{$_('admin.settings.productDefinitions.workflow')}: </b> {pD.Workflow.Name}</p>
-					<p><b>{$_('admin.settings.productDefinitions.rebuildWorkflow')}: </b> {pD.RebuildWorkflow?.Name ?? ""}</p>
-					<p><b>{$_('admin.settings.productDefinitions.republishWorkflow')}: </b> {pD.RepublishWorkflow?.Name ?? ""}</p>
-					<p><b>{$_('admin.settings.productDefinitions.description')}: </b> {pD.Description}</p>
-				</div>
-			</div>
+			<InternationalizedDataBox title="{pD.Name}" fields="{[
+				{ key: 'admin.settings.productDefinitions.type', value: pD.ApplicationTypes.Name },
+				{ key: 'admin.settings.productDefinitions.workflow', value: pD.Workflow.Name },
+				{ key: 'admin.settings.productDefinitions.rebuildWorkflow', value: pD.RebuildWorkflow?.Name },
+				{ key: 'admin.settings.productDefinitions.republishWorkflow', value: pD.RepublishWorkflow?.Name },
+				{ key: 'admin.settings.productDefinitions.description', value: pD.Description }
+			]}"/>
 		{/each}
 	</div>
 </div>

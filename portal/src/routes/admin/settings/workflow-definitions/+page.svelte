@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
+import type { PageData } from './$types';
 	import { _ } from 'svelte-i18n';
 
 	export let data: PageData;
 </script>
 
-<div class="flex flex-col">
+<div class="flex grow flex-col">
 	<h2>{$_('admin.settings.workflowDefinitions.title')}</h2>
 
 	<div class="btn btn-outline rounded-none m-4 mt-0">
@@ -13,29 +14,15 @@
 	</div>
 
 	<div class="flex flex-col w-full">
-		{#each data.workflowDefinitions as wd}
-			<div class="flex flex-row border-2 p-2 w-full ml-4 m-2">
-				<div>
-					<h3>{wd.Name}</h3>
-					<p><b>{$_('admin.settings.workflowDefinitions.description')}: </b> {wd.Description}</p>
-					<p>
-						<b>{$_('admin.settings.workflowDefinitions.storeType')}: </b>
-						{wd.StoreType?.Name}
-					</p>
-					<p>
-						<b>{$_('admin.settings.workflowDefinitions.workflowType')}: </b>
-						{$_('admin.settings.workflowDefinitions.workflowTypes.' + wd.Type)}
-					</p>
-					<p>
-						<b>{$_('admin.settings.workflowDefinitions.workflowScheme')}: </b>
-						{wd.WorkflowScheme}
-					</p>
-					<p>
-						<b>{$_('admin.settings.workflowDefinitions.workflowBusinessFlow')}: </b>
-						{wd.WorkflowBusinessFlow}
-					</p>
-				</div>
-			</div>
+		{#each data.workflowDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? "") ?? 0) as wd}
+			<InternationalizedDataBox title="{wd.Name}" fields="{[
+
+					{ key: 'admin.settings.workflowDefinitions.description', value: wd.Description },
+					{ key: 'admin.settings.workflowDefinitions.storeType', value: wd.StoreType?.Name },
+					{ key: 'admin.settings.workflowDefinitions.workflowType', value: $_('admin.settings.workflowDefinitions.workflowTypes.' + wd.Type) },
+					{ key: 'admin.settings.workflowDefinitions.workflowScheme', value: wd.WorkflowScheme },
+					{ key: 'admin.settings.workflowDefinitions.workflowBusinessFlow', value: wd.WorkflowBusinessFlow },
+			]}" />
 		{/each}
 	</div>
 </div>
