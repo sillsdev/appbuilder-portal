@@ -17,21 +17,24 @@
 	}
 </script>
 
-<div>
-	<h1>{$_('admin.settings.title')}</h1>
+<div class="w-full max-w-6xl mx-auto">
 	<div class="flex flex-row">
-		<ul class="menu p-4">
-			{#each adminLinks as adminLink}
-				<li class="border-2 w-60">
-					<a
-						class="rounded-none bg-base-200 p-3"
-						class:active={isActive($page.route.id, adminLink.route)}
-						href="{base}/admin/settings/{adminLink.route}">{$_(adminLink.text)}</a
-					>
-				</li>
-			{/each}
-		</ul>
-		<div class="flex">
+		<div class="p-4 sticky top-0 self-start">
+			<h1 class="p-4">{$_('admin.settings.title')}</h1>
+			<ul class="menu p-0 rounded border border-slate-600">
+				{#each adminLinks as adminLink}
+					<li class="w-60 border-t border-slate-600">
+						<a
+							class="rounded-none bg-base-200 p-3"
+							class:active={isActive($page.route.id, adminLink.route)}
+							href="{base}/admin/settings/{adminLink.route}">{$_(adminLink.text)}</a
+						>
+					</li>
+				{/each}
+			</ul>
+
+		</div>
+		<div class="flex grow">
 			<slot />
 		</div>
 	</div>
