@@ -7,8 +7,8 @@
 		{ text: 'admin.settings.navigation.organizations', route: 'organizations' },
 		{ text: 'admin.settings.navigation.workflowdefinitions', route: 'workflow-definitions' },
 		{ text: 'admin.settings.navigation.productDefinitions', route: 'product-definitions' },
-		{ text: 'admin.settings.navigation.storeTypes', route: 'store-types' },
 		{ text: 'admin.settings.navigation.stores', route: 'stores' },
+		{ text: 'admin.settings.navigation.storeTypes', route: 'store-types' },
 		{ text: 'admin.settings.navigation.buildEngines', route: 'build-engines' }
 	];
 
@@ -34,7 +34,7 @@
 			</ul>
 
 		</div>
-		<div class="flex grow">
+		<div class="flex grow mt-4">
 			<slot />
 		</div>
 	</div>
