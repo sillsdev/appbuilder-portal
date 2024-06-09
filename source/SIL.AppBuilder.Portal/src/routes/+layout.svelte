@@ -44,7 +44,7 @@
 				bind:this={drawerToggle}
 				/>
 				
-					<div class="h-full drawer-side">
+					<div class="h-full drawer-side shrink-0">
 						<label for="primary-content-drawer" class="drawer-overlay" />
 						<ul
 							class="menu menu-lg mt-16 lg:mt-0 rounded-r-xl p-0 w-full min-[480px]:w-1/2 min-[720px]:w-1/3 lg:border-r-2 lg:w-72 bg-base-100 text-base-content h-full"
@@ -112,7 +112,7 @@
 							<li>
 								<a
 									class="rounded-none"
-									class:active-menu-item={isActive($page.route.id, '/admin/settings/organizations')}
+									class:active-menu-item={isActive($page.route.id, '/admin/settings')}
 									href="{base}/admin/settings/organizations"
 									on:click={closeDrawer}
 								>
