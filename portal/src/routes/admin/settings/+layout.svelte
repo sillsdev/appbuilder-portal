@@ -20,10 +20,11 @@
 <div class="w-full max-w-6xl mx-auto">
 	<div class="flex flex-row">
 		<div class="p-4 sticky top-0 self-start">
-			<h1 class="p-4">{$_('admin.settings.title')}</h1>
+			<!-- No idea why tailwind text-nowrap won't work, but this does -->
+			<h1 class="p-4 [text-wrap:nowrap]">{$_('admin.settings.title')}</h1>
 			<ul class="menu p-0 rounded border border-slate-600">
 				{#each adminLinks as adminLink}
-					<li class="w-60 border-t border-slate-600">
+					<li class="w-60 border-t border-slate-600 w-full">
 						<a
 							class="rounded-none bg-base-200 p-3"
 							class:active={isActive($page.route.id, adminLink.route)}
