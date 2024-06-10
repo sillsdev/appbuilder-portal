@@ -91,3 +91,11 @@ services:
       - ui-dist:/app/dist
       - ui-node_modules:/app/node_modules
       - ui-yarn-cache:/.yarn-cache
+  svelte-ui:
+    build: 
+      context: ./source/SIL.AppBuilder.Portal/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
