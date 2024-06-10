@@ -34,7 +34,7 @@
 			</ul>
 
 		</div>
-		<div class="flex grow mt-4">
+		<div class="flex grow mt-16">
 			<slot />
 		</div>
 	</div>
