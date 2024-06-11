@@ -6,7 +6,6 @@
 	export let data: PageData;
 </script>
 
-
 <div class="flex grow flex-col">
 	<h2>{$_('admin.settings.storeTypes.title')}</h2>
 
@@ -16,9 +15,10 @@
 
 	<div class="flex flex-col w-full">
 		{#each data.storeTypes as storeType}
-			<InternationalizedDataBox title="{storeType.Name}" fields="{[
-				{ key: 'stores.attributes.description', value: storeType.Description },
-			]}" />
+			<InternationalizedDataBox
+				title={storeType.Name}
+				fields={[{ key: 'stores.attributes.description', value: storeType.Description }]}
+			/>
 		{/each}
 	</div>
 </div>

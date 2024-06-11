@@ -8,4 +8,3 @@ export const load = (async () => {
 
 	return { storeTypes };
 }) satisfies PageServerLoad;
-

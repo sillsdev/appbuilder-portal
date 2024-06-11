@@ -13,11 +13,17 @@
 
 	<div class="flex flex-col w-full">
 		{#each data.organizations as organization}
-			<InternationalizedDataBox title="{organization.Name}" fields="{[
-				{ key: ('admin.settings.organizations.owner'), value: organization.Owner.Name },
-				{ key: ('admin.settings.organizations.buildEngineURL'), value: organization.WebsiteUrl },
-				{ key: ('admin.settings.organizations.accessToken'), value: organization.BuildEngineApiAccessToken }
-			]}" />	
+			<InternationalizedDataBox
+				title={organization.Name}
+				fields={[
+					{ key: 'admin.settings.organizations.owner', value: organization.Owner.Name },
+					{ key: 'admin.settings.organizations.buildEngineURL', value: organization.WebsiteUrl },
+					{
+						key: 'admin.settings.organizations.accessToken',
+						value: organization.BuildEngineApiAccessToken
+					}
+				]}
+			/>
 		{/each}
 	</div>
 </div>

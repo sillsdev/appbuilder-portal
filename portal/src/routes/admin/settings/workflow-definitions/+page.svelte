@@ -1,6 +1,6 @@
 <script lang="ts">
 	import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
-import type { PageData } from './$types';
+	import type { PageData } from './$types';
 	import { _ } from 'svelte-i18n';
 
 	export let data: PageData;
@@ -14,15 +14,23 @@ import type { PageData } from './$types';
 	</div>
 
 	<div class="flex flex-col w-full">
-		{#each data.workflowDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? "") ?? 0) as wd}
-			<InternationalizedDataBox title="{wd.Name}" fields="{[
-
+		{#each data.workflowDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as wd}
+			<InternationalizedDataBox
+				title={wd.Name}
+				fields={[
 					{ key: 'admin.settings.workflowDefinitions.description', value: wd.Description },
 					{ key: 'admin.settings.workflowDefinitions.storeType', value: wd.StoreType?.Name },
-					{ key: 'admin.settings.workflowDefinitions.workflowType', value: $_('admin.settings.workflowDefinitions.workflowTypes.' + wd.Type) },
+					{
+						key: 'admin.settings.workflowDefinitions.workflowType',
+						value: $_('admin.settings.workflowDefinitions.workflowTypes.' + wd.Type)
+					},
 					{ key: 'admin.settings.workflowDefinitions.workflowScheme', value: wd.WorkflowScheme },
-					{ key: 'admin.settings.workflowDefinitions.workflowBusinessFlow', value: wd.WorkflowBusinessFlow },
-			]}" />
+					{
+						key: 'admin.settings.workflowDefinitions.workflowBusinessFlow',
+						value: wd.WorkflowBusinessFlow
+					}
+				]}
+			/>
 		{/each}
 	</div>
 </div>

@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 h1 {
-    @apply text-2xl font-bold p-8;
-  }
+	@apply text-2xl font-bold p-8;
+}
 
-  h2 {
-    @apply text-xl font-bold p-4;
-  }
+h2 {
+	@apply text-xl font-bold p-4;
+}
 
-  h3 {
-    @apply text-lg font-bold p-2;
-  }
+h3 {
+	@apply text-lg font-bold p-2;
+}

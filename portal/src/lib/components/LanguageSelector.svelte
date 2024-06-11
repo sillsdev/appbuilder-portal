@@ -30,7 +30,7 @@
 			tabindex="0"
 		>
 			<LanguageIcon color="white" />
-	</div>
+		</div>
 		<div class="dropdown-content z-10 bg-base-200 w-48 rounded-md overflow-y-auto">
 			<ul class="menu menu-compact gap-1 p-2" tabindex="-1">
 				{#each $locales as lang}
