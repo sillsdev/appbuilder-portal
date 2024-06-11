@@ -33,7 +33,6 @@
 					</li>
 				{/each}
 			</ul>
-
 		</div>
 		<div class="flex grow mt-16">
 			<slot />
