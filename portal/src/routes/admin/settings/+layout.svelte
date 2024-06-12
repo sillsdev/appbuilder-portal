@@ -35,7 +35,9 @@
       </ul>
     </div>
     <div class="flex grow mt-16">
-      <slot />
+      <div class="flex grow flex-col">
+        <slot />
+      </div>
     </div>
   </div>
 </div>
