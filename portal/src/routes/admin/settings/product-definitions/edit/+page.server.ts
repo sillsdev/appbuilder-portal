@@ -4,7 +4,6 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
-import { goto } from '$app/navigation';
 import { base } from '$app/paths';
 
 const editSchema = v.object({
@@ -17,16 +16,7 @@ const editSchema = v.object({
   description: v.nullable(v.string()),
   properties: v.nullable(v.string())
 });
-// const requestSchema = v.object({
-//   id: v.pipe(v.number(), v.minValue(0), v.integer())
-// });
 export const load = (async ({ url }) => {
-  //   const requestForm = await superValidate(
-  //     Object.fromEntries(url.searchParams),
-  //     valibot(requestSchema)
-  //   );
-  //   console.log(request);
-  //   console.log(requestForm);
   const id = parseInt(url.searchParams.get('id') ?? '');
   if (isNaN(id)) {
     return redirect(302, base + '/admin/settings/product-definitions');
@@ -59,42 +49,40 @@ export const load = (async ({ url }) => {
 
 export const actions = {
   async edit({ cookies, request }) {
-    // const data = Object.fromEntries(await request.formData());
     const form = await superValidate(request, valibot(editSchema));
-    console.log(form);
     if (!form.valid) {
-      return fail(400, { form });
+      return fail(400, { form, ok: false, errors: form.errors });
     }
-    return { ok: true };
-    // try {
-    //   const {
-    //     id,
-    //     name,
-    //     applicationType,
-    //     workflow,
-    //     rebuildWorkflow,
-    //     republishWorkflow,
-    //     description,
-    //     properties
-    //   } = form.data;
-    //   await prisma.productDefinitions.update({
-    //     where: {
-    //       Id: id
-    //     },
-    //     data: {
-    //       TypeId: applicationType,
-    //       Name: name,
-    //       WorkflowId: workflow,
-    //       RebuildWorkflowId: rebuildWorkflow,
-    //       RepublishWorkflowId: republishWorkflow,
-    //       Description: description,
-    //       Properties: properties
-    //     }
-    //   });
-    // } catch (e) {
-    //   if (e instanceof v.ValiError) return { errors: e.issues };
-    //   throw e;
-    // }
+    try {
+      const {
+        id,
+        name,
+        applicationType,
+        workflow,
+        rebuildWorkflow,
+        republishWorkflow,
+        description,
+        properties
+      } = form.data;
+      await prisma.productDefinitions.update({
+        where: {
+          Id: id
+        },
+        data: {
+          TypeId: applicationType,
+          Name: name,
+          WorkflowId: workflow,
+          RebuildWorkflowId: rebuildWorkflow,
+          RepublishWorkflowId: republishWorkflow,
+          Description: description,
+          Properties: properties
+        }
+      });
+      return { ok: true, form };
+    } catch (e) {
+      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
+      throw e;
+    }
     // const Id = data.get('id');
     // const name = data.get('name');
     // const applicationType = data.get('applicationType');
