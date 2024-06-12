@@ -4,9 +4,9 @@ import prisma from '$lib/prisma';
 import type { PageServerLoad } from './$types';
 
 export const load = (async () => {
-	const stores = await prisma.stores.findMany({
-		include: { StoreType: true }
-	});
+  const stores = await prisma.stores.findMany({
+    include: { StoreType: true }
+  });
 
-	return { stores };
+  return { stores };
 }) satisfies PageServerLoad;

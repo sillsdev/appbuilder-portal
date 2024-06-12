@@ -1,601 +1,601 @@
 {
-	"appName": "Scriptoria",
-	"welcome": "Bienvenidos a Scriptoria",
-	"search": "Buscar",
-	"contactUs": "Contáctanos",
-	"exampleForm": "Formulario de ejemplo",
-	"updated": "¡Actualizado!",
-	"opensource": "Código abierto",
-	"home": "Inicio",
-	"tabAppName": "{count, plural, =0 {} other {({ count })}} Scriptoria",
-	"locale-picker": {
-		"code": "Código",
-		"country": "País",
-		"other": "Otros nombres",
-		"label": "Lenguaje",
-		"placeholder": "Buscar por idioma...",
-		"region": "{num, plural,one {Region}other {Region}}",
-		"name": "{num, plural, one {Name} other {Names}}",
-		"tag": "{num, plural, one {Tag} other {Tags}}",
-		"variant": "{num, plural, one {Variant} other {Variants}}",
-		"regionName": "Nombre de región"
-	},
-	"attributions": {
-		"title": "Proyecto de código abierto usado en Scriptoria",
-		"subtitle": "Librerías usadas por la licencia"
-	},
-	"notifications": {
-		"buildComplete": "¡La construcción para {projectName} se ha completado!",
-		"buildServerConnectionLost": "¡Se ha perdido la conexión con el servidor de compilación!"
-	},
-	"common": {
-		"search": "Buscar",
-		"noResults": "Sin resultados...",
-		"change": "Cambiar",
-		"cancel": "Cancelar",
-		"save": "Guardar",
-		"add": "Añadir",
-		"name": "Nombre",
-		"clickToEdit": "Haga clic para editar",
-		"none": "Ninguno",
-		"abbreviation": "Abreviatura",
-		"general": "Información general",
-		"notAvailable": "No disponible",
-		"archive": "Archivar",
-		"reactivate": "Reactivar",
-		"build": "Construir / Reconstruir",
-		"rebuild": "Reconstruir/Volver a publicar",
-		"updated": "Actualizado",
-		"continue": "Continuar",
-		"error": "Error",
-		"workflow": "Flujo trabajo",
-		"default": "Default"
-	},
-	"models": {
-		"add": "Añadir {name}",
-		"edit": "Editar {name}",
-		"save": "Guardar {name}",
-		"createSuccess": "¡{name} fue creado con éxito!",
-		"updateSuccess": "¡{name} fue actualizado con éxito!"
-	},
-	"auth": {
-		"title": "Scriptoria",
-		"signup": "Registrarse",
-		"login": "Ingresar"
-	},
-	"directory": {
-		"title": "Directorio de proyectos ({ numProjects })",
-		"search-help": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name",
-		"filters": {
-			"dateRange": "Rango de Fechas"
-		}
-	},
-	"header": {
-		"myProfile": "Mi perfil",
-		"community": "Community",
-		"help": "Ayuda",
-		"signOut": "Salir",
-		"clearAll": "Limpiar todo",
-		"emptyNotifications": "No tienes notificaciones."
-	},
-	"sidebar": {
-		"myTasks": "¡Mis tareas {count, plural, one {} =0 {} other {({ count })}}",
-		"myProjects": "Mis Proyectos",
-		"activeProjects": "Proyectos activos",
-		"organizationProjects": "Proyectos de organización",
-		"users": "Usuarios",
-		"organizationSettings": "Configuración de organización",
-		"adminSettings": "Administrador",
-		"projectDirectory": "Directorio de proyectos",
-		"addProject": "Agregar proyectos",
-		"importProjects": "Import Projects"
-	},
-	"invitations": {
-		"orgPrompt": "¿Te gustaría registrar a tu organización?",
-		"missingTokenTitle": "El token de invitación no existe",
-		"missingTokenPrompt": "Por favor revise el enlace y vuelva a intentarlo",
-		"orgInviteTitle": "¡Ud. ha sido invitado a crear una organización!",
-		"orgName": "Nombre de organización",
-		"orgUrl": "Dirección Web de la organización",
-		"orgSubmit": "Agregar organización"
-	},
-	"newOrganization": {
-		"title": "Agregar organización"
-	},
-	"org": {
-		"allOrganizations": "Todas las organizaciones",
-		"createSuccess": "¡Organización creada exitosamente!",
-		"settingsTitle": "Configuración de organización",
-		"logoUrl": "Seleccionar logo",
-		"noteLogUrl": "Nota: Para una calidad óptima, use una imagen cuadrada",
-		"productsTitle": "Productos y Publicaciones",
-		"makePrivateTitle": "Hacer Proyectos públicos por defecto",
-		"makePrivateDescription": "\n      Cuando un proyecto es creado, será Público por defecto.\n      (Los proyectos privados no pueden ser visto por nadie fuera de su organización)",
-		"productSelectTitle": "Selecciona todos los productos que quisieras estén disponibles para su organización",
-		"noproducts": "No hay productos disponibles",
-		"storesTitle": "Tiendas",
-		"storeSelectTitle": "Seleccione todas las tiendas que desea poner a disposición de su organización",
-		"nostores": "No hay tiendas disponibles",
-		"navBasic": "Información básica",
-		"navProducts": "Productos",
-		"navStores": "Tiendas",
-		"navGroups": "Grupos",
-		"nameError": "El nombre no puede estar vacío",
-		"abbreviationError": "La abreviatura no puede estar vacía",
-		"groupCreated": "Grupo creado",
-		"groupEdited": "Grupo editado",
-		"groupDeleted": "Grupo eliminado",
-		"navInfrastructure": "Infraestructura",
-		"infrastructureTitle": "Infraestructura",
-		"useDefaultBuildEngineTitle": "Usar el motor de compilación predeterminado",
-		"groupsTitle": "Grupos",
-		"noGroups": "Su organización no tiene grupos",
-		"addGroupButton": "Agregar grupo",
-		"basicTitle": "Información básica",
-		"orgName": "Nombre de organización",
-		"save": "Guardar",
-		"buildEngineUrl": "URL del motor de compilación",
-		"buildEngineApiAccessToken": "Token de acceso del motor de construcción"
-	},
-	"products": {
-		"definition": "Archivos útiles que resultan de una serie de pasos.",
-		"storeSelect": "Seleccione una tienda para {name}",
-		"noStoresAvailable": "No hay tiendas disponibles para el producto seleccionado. Por favor, contacte con el administrador de su organización.",
-		"actions": {
-			"executed": "{actionName} fue ejecutado con éxito.",
-			"cancelled": "{actionName} fue cancelado con éxito.",
-			"rebuild": "Reconstruir",
-			"republish": "Publicar nuevamente",
-			"cancel": "Cancelar",
-			"noneAvailable": "No hay acciones disponibles actualmente para este producto.",
-			"bulkNotAllAllowed": "No todos los productos de los proyectos seleccionados pueden tener la acción {action} aplicada.",
-			"dispatched": "La acción {action} ha sido enviada.",
-			"properties": "Properties"
-		},
-		"files": {
-			"title": "Product Files"
-		}
-	},
-	"profile": {
-		"title": "Perfil",
-		"pictureTitle": "Imagen de perfil",
-		"general": "General",
-		"generalInformation": "Información general",
-		"updated": "¡Perfil actualizado con éxito!",
-		"updatePicture": "Actualize su imagen en Gravatar.com",
-		"uploadPicture": "Cargar una nueva imagen",
-		"firstName": "Nombre",
-		"lastName": "Apellido",
-		"name": "Display Name",
-		"email": "Correo electrónico",
-		"phone": "Teléfono",
-		"location": "Ubicación",
-		"timezone": "Zona horaria",
-		"locale": "Idioma",
-		"timezonePlaceholder": "Seleccione su zona horaria...",
-		"notificationSettingsTitle": "Configuración de notificaciones",
-		"optOutOfEmailOption": "Deseo recibir notificaciones por correo electrónico",
-		"sshSettingsTitle": "Administrar claves personales SSH",
-		"sshKeyLabel": "Publicando clave SSH",
-		"visibleProfile": "Visibilidad del perfil",
-		"noPhone": "Sin teléfono",
-		"noTimezone": "(GMT-0)",
-		"visibility": {
-			"visible": "La información de mi perfil es pública",
-			"restricted": "Mi información de perfil es restringida al público"
-		}
-	},
-	"errors": {
-		"generic": "¡Ha ocurrido un error! {errorMessage}",
-		"requiredField": "El {field} es requerido, pero no tiene ningún valor",
-		"notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
-		"notFoundTitle": "\n¡No encontrado!",
-		"notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
-		"groupRequired": "Debe ser un miembro de al menos un grupo.",
-		"userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",
-		"friendlyForbidden": "No se le permite hacer eso. Póngase en contacto con el administrador de su organización",
-		"forbiddenForAllOrgs": "No se le permite hacer eso. Por favor, seleccione una organización",
-		"notAMemberOfOrg": "No es un miembro de esa organización",
-		"notactiveUser": "El usuario no está activo",
-		"notactiveUserText": "\n      Este usuario actualmente no está activo.\n      <br /><br />\n      Póngase en contacto con el administrador de su organización para discutir el motivo del cambio de estado.\n    ",
-		"orgMembershipRequired": "Se requiere ser miembro de la organización",
-		"orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
-		"orgMembershipChanged": "Organization Membership has Changed",
-		"orgMembershipChangedText": "\n      Your organization membership has changed.\n      <br /><br />\n      This can take a few moments to process. Please sign out, wait a minute, and then sign in again for the change to take effect.\n    ",
-		"orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página",
-		"verifyEmailTitle": "Por favor, verifique su dirección de correo electrónico",
-		"verifyEmailDescription": "\nPara poder usar Scriptoria, necesitamos que verifiques tu dirección de correo electrónico.\n      <br /><br />\n      Por favor, ingrese a su correo electrónico y haga clic en el enlace de verificación. ",
-		"invalidProjectSelection": "Productos no válidos disponibles para el/los proyecto(s) seleccionados"
-	},
-	"tasks": {
-		"title": "Mis tareas",
-		"project": "Proyecto",
-		"product": "Producto",
-		"assignedTo": "Asignado a",
-		"status": "Estado",
-		"waitTime": "Tiempo de espera",
-		"unclaimed": "[sin asignar]",
-		"noTasksTitle": "No tiene tareas asignadas.",
-		"noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
-		"reassign": "Reasignar",
-		"waiting": "Esperando {waitTime}",
-		"forNames": "para {allowedNames} a {activityName}",
-		"scriptoria": "Scriptoria"
-	},
-	"projects": {
-		"noBuilds": "No Builds Yet",
-		"latestBuild": "Última compilación ({version})",
-		"buildPending": "Build Pending",
-		"buildFailed": "Build Failed",
-		"switcher": {
-			"myProjects": "Mis proyectos ({numProjects})",
-			"archived": "Archivados ({numProjects})",
-			"dropdown": {
-				"orgProjects": "Proyectos de organización",
-				"myProjects": "Mis Proyectos",
-				"activeProjects": "Proyectos activos",
-				"archived": "Proyectos archivados",
-				"all": "Todos los proyectos"
-			}
-		},
-		"bulk": {
-			"buildModal": {
-				"title": "Perform Bulk Rebuild/Republish"
-			}
-		}
-	},
-	"productDefinitions": {
-		"filterAllProjects": "Todos los proyectos que contienen..."
-	},
-	"projectImport": {
-		"importFile": "Import JSON File",
-		"createSuccess": "Project Import successfully created. You will receive an email when the import is completed."
-	},
-	"project": {
-		"title": "Proyecto",
-		"organizationContact": "Contacto de la organización: ",
-		"projectOwner": "Propietario del proyecto: ",
-		"claimOwnership": "Claim Ownership",
-		"claimSuccess": "Succesfully Claimed",
-		"editProject": "Edit Project",
-		"newProject": "Nuevo proyecto",
-		"importProjects": "Import Projects",
-		"importProjectsHelp": "Import Projects Help",
-		"projectName": "Nombre de proyecto",
-		"noAvailableGroups": "No hay grupos disponibles para la organización seleccionada",
-		"projectDescription": "Descripción",
-		"projectGroup": "Grupo de proyecto",
-		"languageCode": "Código de lenguaje",
-		"type": "Tipo",
-		"public": "Público",
-		"private": "Privado",
-		"visibilityLabel": "Público",
-		"visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesible por otras organizaciones",
-		"createdOn": "Creado",
-		"overview": "Información",
-		"productFiles": "Archivos de producto",
-		"dropdown": {
-			"transfer": "Transferir propiedad",
-			"archive": "Archivar",
-			"reactivate": "Reactivar",
-			"build": "Compilar"
-		},
-		"details": {
-			"title": "Detalles",
-			"language": "Lenguaje",
-			"type": "Tipo de proyecto"
-		},
-		"products": {
-			"title": "Productos",
-			"empty": "No tiene productos para este proyecto.",
-			"addRemove": "Añadir o quitar productos",
-			"add": "Add Products",
-			"remove": "Remove Products",
-			"popup": {
-				"addTitle": "Select Product to Add",
-				"removeTitle": "Select Product to Remove",
-				"done": "Hecho",
-				"empty": "No hay productos disponibles",
-				"details": "Detalles",
-				"properties": "Publishing Properties"
-			},
-			"publications": {
-				"channel": "Channel",
-				"status": "Estado",
-				"date": "Publish Date",
-				"url": "Publish Url",
-				"succeeded": "Success",
-				"failed": "Failure",
-				"console": "Console Text"
-			},
-			"options": {
-				"update": "actualizar",
-				"publish": "publicar"
-			},
-			"transitions": {
-				"productDetails": "Product Details",
-				"storeName": "Store Name",
-				"state": "State",
-				"user": "Usuario",
-				"command": "Comando",
-				"comment": "Comentario",
-				"date": "Fecha",
-				"transitionTypes": {
-					"1": "Actividad",
-					"2": "{workflowType} Workflow Started",
-					"3": "{workflowType} Workflow Completed",
-					"4": "{workflowType} Workflow Cancelled",
-					"5": "{workflowType} Project Access"
-				}
-			},
-			"properties": {
-				"computeType": "Compute Type",
-				"selectComputeType": "Select compute type",
-				"small": "Small",
-				"medium": "Medium",
-				"title": "Product Publishing Properties"
-			},
-			"updated": "Actualizado",
-			"size": "Tamaño",
-			"filename": "Nombre de archivo",
-			"published": "Publicado",
-			"unpublished": "Sin publicar",
-			"numArtifacts": "{amount, plural, =0 {No Product Files} other {{ amount } Product Files}}",
-			"noArtifacts": "No hay archivos de producto",
-			"rebuild": "reconstruir",
-			"creationInProgress": "Pendiente: No puede añadir un producto hasta que la configuración del proyecto se haya completado."
-		},
-		"settings": {
-			"title": "Configuración",
-			"automaticRebuild": {
-				"title": "Recompilaciones automáticas",
-				"description": "Cuando las recompilaciones automáticas están activadas, Scriptoria reconstruirá sus productos automáticamente cuando el código fuente se actualice"
-			},
-			"organizationDownloads": {
-				"title": "Permitir descargar a otras organizaciones",
-				"description": "When this setting is on, any Scriptoria User that is able to view your project in the Directory will be able to download the Product Files (the outputs of the products)."
-			},
-			"visibility": {
-				"title": "Visibilidad pública",
-				"description": "Los proyectos públicos permiten a cualquier usuario de Scriptoria ver su proyecto en el Directorio"
-			}
-		},
-		"side": {
-			"repositoryLocation": "Ubicación del repositorio",
-			"organization": "Organización",
-			"projectOwner": "Propietario del proyecto",
-			"projectGroup": "Grupo de proyecto",
-			"authors": {
-				"title": "Authors",
-				"add": "add author",
-				"close": "cerrar",
-				"form": {
-					"user": "user",
-					"userError": "User cannot be empty",
-					"submit": "Add Author"
-				}
-			},
-			"reviewers": {
-				"title": "Revisores",
-				"add": "Agregar revisor",
-				"close": "cerrar",
-				"form": {
-					"name": "nombre",
-					"nameError": "Nombre no puede estar vacío",
-					"email": "correo electrónico",
-					"emptyEmailError": "Correo electrónico no puede estar vacío",
-					"invalidEmailError": "Dirección de correo electrónico no válida",
-					"submit": "Agregar revisor"
-				}
-			}
-		},
-		"operations": {
-			"archive": {
-				"success": "Proyecto archivado",
-				"error": "Ocurrió un error al intentar archivar el proyecto"
-			},
-			"reactivate": {
-				"success": "Proyecto reactivado",
-				"error": "Ocurrió un error al intentar reactivar el proyecto"
-			},
-			"automaticBuilds": {
-				"on": "Compilaciones automáticas está activada",
-				"off": "Compilaciones automáticas está desactivada",
-				"error": "Error: No pudimos cambiar el estado de \"compilación automática\""
-			},
-			"allowDownloads": {
-				"on": "Permitir descarga de proyecto está activada",
-				"off": "Permitir descarga de proyecto está desactivada",
-				"error": "Error: No pudimos cambiar el estado de \"permitir descargas\""
-			},
-			"isPublic": {
-				"on": "La visibilidad del proyecto está establecida como Público",
-				"off": "La visibilidad del proyecto está establecida como Privado",
-				"error": "Error: No se ha podido cambiar la visibilidad del proyecto"
-			}
-		}
-	},
-	"projectTable": {
-		"columns": {
-			"project": "Proyecto",
-			"owner": "Propietario",
-			"organization": "Organización",
-			"language": "Idioma",
-			"group": "Grupo",
-			"buildVersion": "Versión de compilación",
-			"buildDate": "Fecha de compilación",
-			"createdOn": "Fecha de creación",
-			"updatedOn": "Fecha de actualización",
-			"activeSince": "Activo desde"
-		},
-		"empty": "No se encontraron proyectos",
-		"products": "Productos",
-		"noProducts": "Este proyecto no tiene productos configurados"
-	},
-	"users": {
-		"settingsTitle": "Configuración de usuario",
-		"userProfile": "Perfil de usuario",
-		"userGroups": "Membresías de grupo",
-		"userRoles": "Roles de la organización",
-		"noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
-		"noRoles": "No hay roles asignados",
-		"title": "Administrar usuarios",
-		"addUser": {
-			"placeholder": "Ingrese un correo electrónico",
-			"button": "Añadir usuario a {organization}",
-			"modalTitle": "Añadir usuario a {organization}",
-			"modalAddButton": "Añadir",
-			"error": "No se ha encontrado ningún usuario con esa dirección de correo electrónico. Por favor, pídeles que cree una cuenta."
-		},
-		"table": {
-			"columns": {
-				"name": "Nombre",
-				"role": "Rol",
-				"groups": "Grupos",
-				"active": "Activo"
-			}
-		},
-		"operations": {
-			"lock": {
-				"success": "Usuario bloqueado. Un usuario bloqueado no podrá iniciar sesión en Scriptoria.",
-				"error": "Ocurrió un error al bloquear el usuario"
-			},
-			"unlock": {
-				"success": "Usuario activo. El usuario ahora podrá iniciar sesión en Scriptoria.",
-				"error": "ocurrió un error al activar el usuario"
-			}
-		}
-	},
-	"stores": {
-		"name": "Tienda",
-		"listTitle": "Tiendas",
-		"attributes": {
-			"name": "Nombre",
-			"description": "Descripción"
-		}
-	},
-	"storeTypes": {
-		"name": "Tipo de tienda",
-		"listTitle": "Tipos de tienda"
-	},
-	"admin": {
-		"settings": {
-			"title": "Configuración del administrador",
-			"navigation": {
-				"organizations": "Organizaciones",
-				"workflowdefinitions": "Definiciones de flujo de trabajo",
-				"productDefinitions": "Definiciones de producto",
-				"storeTypes": "Tipos de tienda",
-				"stores": "Tiendas",
-				"buildEngines": "Build Engine Statuses"
-			},
-			"organizations": {
-				"title": "Organizaciones",
-				"name": "Nombre de la organización",
-				"owner": "Propietario",
-				"emptyOwner": "Necesita seleccionar un propietario para esta organización",
-				"add": "Añadir organización",
-				"addSuccess": "Organización añadida",
-				"edit": "Editar organización",
-				"editSuccess": "Organización actualizada",
-				"websiteURL": "URL del sitio web",
-				"buildEngineURL": "Build Engine URL",
-				"accessToken": "Build Engine API Access Token",
-				"logoURL": "URL del logotipo",
-				"publicByDefault": "Público por defecto",
-				"publicByDefaultDescription": "Los proyectos creados bajo esta organización son públicos por defecto"
-			},
-			"workflowDefinitions": {
-				"title": "Definiciones de flujo de trabajo",
-				"name": "Nombre de la definición del flujo de trabajo",
-				"description": "Descripción",
-				"workflowScheme": "Workflow Scheme",
-				"workflowBusinessFlow": "Workflow Business Flow",
-				"properties": "Propiedades",
-				"add": "Add Workflow Definition",
-				"edit": "Edit Workflow Definition",
-				"storeType": "Tipo de tienda",
-				"enabled": "Habilitado",
-				"enabledDescription": "Workflow definitions may not be used until enabled.",
-				"workflowAdded": "Workflow Definition added",
-				"workflowUpdated": "Workflow Definition updated",
-				"emptyStoreType": "Need to select a store type for this workflow definition",
-				"emptyWorkflowType": "Need to select a workflow type for this workflow definition",
-				"workflowType": "Workflow Type",
-				"workflowTypes": {
-					"1": "Startup",
-					"2": "Reconstruir",
-					"3": "Publicar nuevamente"
-				}
-			},
-			"productDefinitions": {
-				"title": "Definiciones de producto",
-				"name": "Product definition Name",
-				"add": "Añadir definición de producto",
-				"edit": "Editar definición de producto",
-				"description": "Descripción",
-				"properties": "Propiedades",
-				"type": "Tipo de aplicación",
-				"workflow": "Flujo trabajo",
-				"republishWorkflow": "Republish Workflow",
-				"rebuildWorkflow": "Rebuild Workflow",
-				"addSuccess": "Definición del producto añadida",
-				"editSuccess": "Definición del producto actualizada",
-				"emptyName": "Nombre no puede estar vacío",
-				"emptyType": "Necesita seleccionar un tipo de aplicación",
-				"emptyWorkflow": "Need to select a Workflow definition",
-				"noWorkflow": "No Workflow Required"
-			},
-			"storeTypes": {
-				"title": "Tipos de tienda",
-				"name": "Store Type Name",
-				"add": "Añadir tipo de tienda",
-				"edit": "Editar tipo de tienda",
-				"description": "Descripción",
-				"type": "Tipo de aplicación",
-				"workflow": "Flujo de trabajo",
-				"addSuccess": "Tipo de tienda añadido",
-				"editSuccess": "Tipo de tienda actualizado",
-				"emptyName": "Nombre no puede estar vacío",
-				"emptyType": "Necesita seleccionar un tipo de aplicación",
-				"emptyWorkflow": "Need to select a Workflow definition"
-			},
-			"buildEngines": {
-				"title": "Build Engine Statuses",
-				"accessToken": "Token de acceso del motor de construcción",
-				"websiteURL": "URL del sitio web",
-				"connected": "Connected",
-				"disconnected": "Disconnected",
-				"status": "Estado",
-				"lastUpdated": "Last update"
-			}
-		}
-	},
-	"organization-membership": {
-		"invite": {
-			"error": {
-				"expired": "La invitación ha caducado",
-				"redeemed": "La invitación ya ha sido canjeada",
-				"not-found": "No se encontró la invitación",
-				"unexpected": "Ocurrió un error inesperado: {response}",
-				"invalid-response": "Hemos recibido una respuesta no válida... por favor, actualiza la página para intentarlo de nuevo."
-			},
-			"create": {
-				"success": "Invitación enviada a {email}.",
-				"error": "Ocurrió un error mientras se intentaba invitar al usuario.",
-				"invite-user-button-title": "Invitar usuario",
-				"invite-user-modal-title": "Invitar usuario",
-				"email-input-placeholder": "Introduzca dirección de correo electrónico",
-				"send-invite-button": "Enviar invitación"
-			},
-			"redemptionTitle": "Buscando invitación..."
-		}
-	},
-	"system": {
-		"build-failed": "Build failed",
-		"publish-failed": "Publish failed"
-	},
-	"downloads": {
-		"title": "Downloads"
-	}
+  "appName": "Scriptoria",
+  "welcome": "Bienvenidos a Scriptoria",
+  "search": "Buscar",
+  "contactUs": "Contáctanos",
+  "exampleForm": "Formulario de ejemplo",
+  "updated": "¡Actualizado!",
+  "opensource": "Código abierto",
+  "home": "Inicio",
+  "tabAppName": "{count, plural, =0 {} other {({ count })}} Scriptoria",
+  "locale-picker": {
+    "code": "Código",
+    "country": "País",
+    "other": "Otros nombres",
+    "label": "Lenguaje",
+    "placeholder": "Buscar por idioma...",
+    "region": "{num, plural,one {Region}other {Region}}",
+    "name": "{num, plural, one {Name} other {Names}}",
+    "tag": "{num, plural, one {Tag} other {Tags}}",
+    "variant": "{num, plural, one {Variant} other {Variants}}",
+    "regionName": "Nombre de región"
+  },
+  "attributions": {
+    "title": "Proyecto de código abierto usado en Scriptoria",
+    "subtitle": "Librerías usadas por la licencia"
+  },
+  "notifications": {
+    "buildComplete": "¡La construcción para {projectName} se ha completado!",
+    "buildServerConnectionLost": "¡Se ha perdido la conexión con el servidor de compilación!"
+  },
+  "common": {
+    "search": "Buscar",
+    "noResults": "Sin resultados...",
+    "change": "Cambiar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "add": "Añadir",
+    "name": "Nombre",
+    "clickToEdit": "Haga clic para editar",
+    "none": "Ninguno",
+    "abbreviation": "Abreviatura",
+    "general": "Información general",
+    "notAvailable": "No disponible",
+    "archive": "Archivar",
+    "reactivate": "Reactivar",
+    "build": "Construir / Reconstruir",
+    "rebuild": "Reconstruir/Volver a publicar",
+    "updated": "Actualizado",
+    "continue": "Continuar",
+    "error": "Error",
+    "workflow": "Flujo trabajo",
+    "default": "Default"
+  },
+  "models": {
+    "add": "Añadir {name}",
+    "edit": "Editar {name}",
+    "save": "Guardar {name}",
+    "createSuccess": "¡{name} fue creado con éxito!",
+    "updateSuccess": "¡{name} fue actualizado con éxito!"
+  },
+  "auth": {
+    "title": "Scriptoria",
+    "signup": "Registrarse",
+    "login": "Ingresar"
+  },
+  "directory": {
+    "title": "Directorio de proyectos ({ numProjects })",
+    "search-help": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name",
+    "filters": {
+      "dateRange": "Rango de Fechas"
+    }
+  },
+  "header": {
+    "myProfile": "Mi perfil",
+    "community": "Community",
+    "help": "Ayuda",
+    "signOut": "Salir",
+    "clearAll": "Limpiar todo",
+    "emptyNotifications": "No tienes notificaciones."
+  },
+  "sidebar": {
+    "myTasks": "¡Mis tareas {count, plural, one {} =0 {} other {({ count })}}",
+    "myProjects": "Mis Proyectos",
+    "activeProjects": "Proyectos activos",
+    "organizationProjects": "Proyectos de organización",
+    "users": "Usuarios",
+    "organizationSettings": "Configuración de organización",
+    "adminSettings": "Administrador",
+    "projectDirectory": "Directorio de proyectos",
+    "addProject": "Agregar proyectos",
+    "importProjects": "Import Projects"
+  },
+  "invitations": {
+    "orgPrompt": "¿Te gustaría registrar a tu organización?",
+    "missingTokenTitle": "El token de invitación no existe",
+    "missingTokenPrompt": "Por favor revise el enlace y vuelva a intentarlo",
+    "orgInviteTitle": "¡Ud. ha sido invitado a crear una organización!",
+    "orgName": "Nombre de organización",
+    "orgUrl": "Dirección Web de la organización",
+    "orgSubmit": "Agregar organización"
+  },
+  "newOrganization": {
+    "title": "Agregar organización"
+  },
+  "org": {
+    "allOrganizations": "Todas las organizaciones",
+    "createSuccess": "¡Organización creada exitosamente!",
+    "settingsTitle": "Configuración de organización",
+    "logoUrl": "Seleccionar logo",
+    "noteLogUrl": "Nota: Para una calidad óptima, use una imagen cuadrada",
+    "productsTitle": "Productos y Publicaciones",
+    "makePrivateTitle": "Hacer Proyectos públicos por defecto",
+    "makePrivateDescription": "\n      Cuando un proyecto es creado, será Público por defecto.\n      (Los proyectos privados no pueden ser visto por nadie fuera de su organización)",
+    "productSelectTitle": "Selecciona todos los productos que quisieras estén disponibles para su organización",
+    "noproducts": "No hay productos disponibles",
+    "storesTitle": "Tiendas",
+    "storeSelectTitle": "Seleccione todas las tiendas que desea poner a disposición de su organización",
+    "nostores": "No hay tiendas disponibles",
+    "navBasic": "Información básica",
+    "navProducts": "Productos",
+    "navStores": "Tiendas",
+    "navGroups": "Grupos",
+    "nameError": "El nombre no puede estar vacío",
+    "abbreviationError": "La abreviatura no puede estar vacía",
+    "groupCreated": "Grupo creado",
+    "groupEdited": "Grupo editado",
+    "groupDeleted": "Grupo eliminado",
+    "navInfrastructure": "Infraestructura",
+    "infrastructureTitle": "Infraestructura",
+    "useDefaultBuildEngineTitle": "Usar el motor de compilación predeterminado",
+    "groupsTitle": "Grupos",
+    "noGroups": "Su organización no tiene grupos",
+    "addGroupButton": "Agregar grupo",
+    "basicTitle": "Información básica",
+    "orgName": "Nombre de organización",
+    "save": "Guardar",
+    "buildEngineUrl": "URL del motor de compilación",
+    "buildEngineApiAccessToken": "Token de acceso del motor de construcción"
+  },
+  "products": {
+    "definition": "Archivos útiles que resultan de una serie de pasos.",
+    "storeSelect": "Seleccione una tienda para {name}",
+    "noStoresAvailable": "No hay tiendas disponibles para el producto seleccionado. Por favor, contacte con el administrador de su organización.",
+    "actions": {
+      "executed": "{actionName} fue ejecutado con éxito.",
+      "cancelled": "{actionName} fue cancelado con éxito.",
+      "rebuild": "Reconstruir",
+      "republish": "Publicar nuevamente",
+      "cancel": "Cancelar",
+      "noneAvailable": "No hay acciones disponibles actualmente para este producto.",
+      "bulkNotAllAllowed": "No todos los productos de los proyectos seleccionados pueden tener la acción {action} aplicada.",
+      "dispatched": "La acción {action} ha sido enviada.",
+      "properties": "Properties"
+    },
+    "files": {
+      "title": "Product Files"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "pictureTitle": "Imagen de perfil",
+    "general": "General",
+    "generalInformation": "Información general",
+    "updated": "¡Perfil actualizado con éxito!",
+    "updatePicture": "Actualize su imagen en Gravatar.com",
+    "uploadPicture": "Cargar una nueva imagen",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "name": "Display Name",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "location": "Ubicación",
+    "timezone": "Zona horaria",
+    "locale": "Idioma",
+    "timezonePlaceholder": "Seleccione su zona horaria...",
+    "notificationSettingsTitle": "Configuración de notificaciones",
+    "optOutOfEmailOption": "Deseo recibir notificaciones por correo electrónico",
+    "sshSettingsTitle": "Administrar claves personales SSH",
+    "sshKeyLabel": "Publicando clave SSH",
+    "visibleProfile": "Visibilidad del perfil",
+    "noPhone": "Sin teléfono",
+    "noTimezone": "(GMT-0)",
+    "visibility": {
+      "visible": "La información de mi perfil es pública",
+      "restricted": "Mi información de perfil es restringida al público"
+    }
+  },
+  "errors": {
+    "generic": "¡Ha ocurrido un error! {errorMessage}",
+    "requiredField": "El {field} es requerido, pero no tiene ningún valor",
+    "notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
+    "notFoundTitle": "\n¡No encontrado!",
+    "notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
+    "groupRequired": "Debe ser un miembro de al menos un grupo.",
+    "userForbidden": "Ocurrió un error: Prohibido. Por favor, contacte al administrador de su organización.",
+    "friendlyForbidden": "No se le permite hacer eso. Póngase en contacto con el administrador de su organización",
+    "forbiddenForAllOrgs": "No se le permite hacer eso. Por favor, seleccione una organización",
+    "notAMemberOfOrg": "No es un miembro de esa organización",
+    "notactiveUser": "El usuario no está activo",
+    "notactiveUserText": "\n      Este usuario actualmente no está activo.\n      <br /><br />\n      Póngase en contacto con el administrador de su organización para discutir el motivo del cambio de estado.\n    ",
+    "orgMembershipRequired": "Se requiere ser miembro de la organización",
+    "orgMembershipRequiredText": "\n      Para utilizar Scriptoria, debe ser miembro de por lo menos una organización.\n      <br /><br />\n      Por favor, contacte con el administrador de su organización para solicitar una invitación a\n      una organización de Scriptoria.\n    ",
+    "orgMembershipChanged": "Organization Membership has Changed",
+    "orgMembershipChangedText": "\n      Your organization membership has changed.\n      <br /><br />\n      This can take a few moments to process. Please sign out, wait a minute, and then sign in again for the change to take effect.\n    ",
+    "orgMustBeSelected": "Debe seleccionar una organización para visualizar esta página",
+    "verifyEmailTitle": "Por favor, verifique su dirección de correo electrónico",
+    "verifyEmailDescription": "\nPara poder usar Scriptoria, necesitamos que verifiques tu dirección de correo electrónico.\n      <br /><br />\n      Por favor, ingrese a su correo electrónico y haga clic en el enlace de verificación. ",
+    "invalidProjectSelection": "Productos no válidos disponibles para el/los proyecto(s) seleccionados"
+  },
+  "tasks": {
+    "title": "Mis tareas",
+    "project": "Proyecto",
+    "product": "Producto",
+    "assignedTo": "Asignado a",
+    "status": "Estado",
+    "waitTime": "Tiempo de espera",
+    "unclaimed": "[sin asignar]",
+    "noTasksTitle": "No tiene tareas asignadas.",
+    "noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
+    "reassign": "Reasignar",
+    "waiting": "Esperando {waitTime}",
+    "forNames": "para {allowedNames} a {activityName}",
+    "scriptoria": "Scriptoria"
+  },
+  "projects": {
+    "noBuilds": "No Builds Yet",
+    "latestBuild": "Última compilación ({version})",
+    "buildPending": "Build Pending",
+    "buildFailed": "Build Failed",
+    "switcher": {
+      "myProjects": "Mis proyectos ({numProjects})",
+      "archived": "Archivados ({numProjects})",
+      "dropdown": {
+        "orgProjects": "Proyectos de organización",
+        "myProjects": "Mis Proyectos",
+        "activeProjects": "Proyectos activos",
+        "archived": "Proyectos archivados",
+        "all": "Todos los proyectos"
+      }
+    },
+    "bulk": {
+      "buildModal": {
+        "title": "Perform Bulk Rebuild/Republish"
+      }
+    }
+  },
+  "productDefinitions": {
+    "filterAllProjects": "Todos los proyectos que contienen..."
+  },
+  "projectImport": {
+    "importFile": "Import JSON File",
+    "createSuccess": "Project Import successfully created. You will receive an email when the import is completed."
+  },
+  "project": {
+    "title": "Proyecto",
+    "organizationContact": "Contacto de la organización: ",
+    "projectOwner": "Propietario del proyecto: ",
+    "claimOwnership": "Claim Ownership",
+    "claimSuccess": "Succesfully Claimed",
+    "editProject": "Edit Project",
+    "newProject": "Nuevo proyecto",
+    "importProjects": "Import Projects",
+    "importProjectsHelp": "Import Projects Help",
+    "projectName": "Nombre de proyecto",
+    "noAvailableGroups": "No hay grupos disponibles para la organización seleccionada",
+    "projectDescription": "Descripción",
+    "projectGroup": "Grupo de proyecto",
+    "languageCode": "Código de lenguaje",
+    "type": "Tipo",
+    "public": "Público",
+    "private": "Privado",
+    "visibilityLabel": "Público",
+    "visibilityDescription": "Si usted hace su proyecto privado, no será visible en el directorio o accesible por otras organizaciones",
+    "createdOn": "Creado",
+    "overview": "Información",
+    "productFiles": "Archivos de producto",
+    "dropdown": {
+      "transfer": "Transferir propiedad",
+      "archive": "Archivar",
+      "reactivate": "Reactivar",
+      "build": "Compilar"
+    },
+    "details": {
+      "title": "Detalles",
+      "language": "Lenguaje",
+      "type": "Tipo de proyecto"
+    },
+    "products": {
+      "title": "Productos",
+      "empty": "No tiene productos para este proyecto.",
+      "addRemove": "Añadir o quitar productos",
+      "add": "Add Products",
+      "remove": "Remove Products",
+      "popup": {
+        "addTitle": "Select Product to Add",
+        "removeTitle": "Select Product to Remove",
+        "done": "Hecho",
+        "empty": "No hay productos disponibles",
+        "details": "Detalles",
+        "properties": "Publishing Properties"
+      },
+      "publications": {
+        "channel": "Channel",
+        "status": "Estado",
+        "date": "Publish Date",
+        "url": "Publish Url",
+        "succeeded": "Success",
+        "failed": "Failure",
+        "console": "Console Text"
+      },
+      "options": {
+        "update": "actualizar",
+        "publish": "publicar"
+      },
+      "transitions": {
+        "productDetails": "Product Details",
+        "storeName": "Store Name",
+        "state": "State",
+        "user": "Usuario",
+        "command": "Comando",
+        "comment": "Comentario",
+        "date": "Fecha",
+        "transitionTypes": {
+          "1": "Actividad",
+          "2": "{workflowType} Workflow Started",
+          "3": "{workflowType} Workflow Completed",
+          "4": "{workflowType} Workflow Cancelled",
+          "5": "{workflowType} Project Access"
+        }
+      },
+      "properties": {
+        "computeType": "Compute Type",
+        "selectComputeType": "Select compute type",
+        "small": "Small",
+        "medium": "Medium",
+        "title": "Product Publishing Properties"
+      },
+      "updated": "Actualizado",
+      "size": "Tamaño",
+      "filename": "Nombre de archivo",
+      "published": "Publicado",
+      "unpublished": "Sin publicar",
+      "numArtifacts": "{amount, plural, =0 {No Product Files} other {{ amount } Product Files}}",
+      "noArtifacts": "No hay archivos de producto",
+      "rebuild": "reconstruir",
+      "creationInProgress": "Pendiente: No puede añadir un producto hasta que la configuración del proyecto se haya completado."
+    },
+    "settings": {
+      "title": "Configuración",
+      "automaticRebuild": {
+        "title": "Recompilaciones automáticas",
+        "description": "Cuando las recompilaciones automáticas están activadas, Scriptoria reconstruirá sus productos automáticamente cuando el código fuente se actualice"
+      },
+      "organizationDownloads": {
+        "title": "Permitir descargar a otras organizaciones",
+        "description": "When this setting is on, any Scriptoria User that is able to view your project in the Directory will be able to download the Product Files (the outputs of the products)."
+      },
+      "visibility": {
+        "title": "Visibilidad pública",
+        "description": "Los proyectos públicos permiten a cualquier usuario de Scriptoria ver su proyecto en el Directorio"
+      }
+    },
+    "side": {
+      "repositoryLocation": "Ubicación del repositorio",
+      "organization": "Organización",
+      "projectOwner": "Propietario del proyecto",
+      "projectGroup": "Grupo de proyecto",
+      "authors": {
+        "title": "Authors",
+        "add": "add author",
+        "close": "cerrar",
+        "form": {
+          "user": "user",
+          "userError": "User cannot be empty",
+          "submit": "Add Author"
+        }
+      },
+      "reviewers": {
+        "title": "Revisores",
+        "add": "Agregar revisor",
+        "close": "cerrar",
+        "form": {
+          "name": "nombre",
+          "nameError": "Nombre no puede estar vacío",
+          "email": "correo electrónico",
+          "emptyEmailError": "Correo electrónico no puede estar vacío",
+          "invalidEmailError": "Dirección de correo electrónico no válida",
+          "submit": "Agregar revisor"
+        }
+      }
+    },
+    "operations": {
+      "archive": {
+        "success": "Proyecto archivado",
+        "error": "Ocurrió un error al intentar archivar el proyecto"
+      },
+      "reactivate": {
+        "success": "Proyecto reactivado",
+        "error": "Ocurrió un error al intentar reactivar el proyecto"
+      },
+      "automaticBuilds": {
+        "on": "Compilaciones automáticas está activada",
+        "off": "Compilaciones automáticas está desactivada",
+        "error": "Error: No pudimos cambiar el estado de \"compilación automática\""
+      },
+      "allowDownloads": {
+        "on": "Permitir descarga de proyecto está activada",
+        "off": "Permitir descarga de proyecto está desactivada",
+        "error": "Error: No pudimos cambiar el estado de \"permitir descargas\""
+      },
+      "isPublic": {
+        "on": "La visibilidad del proyecto está establecida como Público",
+        "off": "La visibilidad del proyecto está establecida como Privado",
+        "error": "Error: No se ha podido cambiar la visibilidad del proyecto"
+      }
+    }
+  },
+  "projectTable": {
+    "columns": {
+      "project": "Proyecto",
+      "owner": "Propietario",
+      "organization": "Organización",
+      "language": "Idioma",
+      "group": "Grupo",
+      "buildVersion": "Versión de compilación",
+      "buildDate": "Fecha de compilación",
+      "createdOn": "Fecha de creación",
+      "updatedOn": "Fecha de actualización",
+      "activeSince": "Activo desde"
+    },
+    "empty": "No se encontraron proyectos",
+    "products": "Productos",
+    "noProducts": "Este proyecto no tiene productos configurados"
+  },
+  "users": {
+    "settingsTitle": "Configuración de usuario",
+    "userProfile": "Perfil de usuario",
+    "userGroups": "Membresías de grupo",
+    "userRoles": "Roles de la organización",
+    "noneFound": "No se encontraron usuarios con esos criterios de búsqueda.",
+    "noRoles": "No hay roles asignados",
+    "title": "Administrar usuarios",
+    "addUser": {
+      "placeholder": "Ingrese un correo electrónico",
+      "button": "Añadir usuario a {organization}",
+      "modalTitle": "Añadir usuario a {organization}",
+      "modalAddButton": "Añadir",
+      "error": "No se ha encontrado ningún usuario con esa dirección de correo electrónico. Por favor, pídeles que cree una cuenta."
+    },
+    "table": {
+      "columns": {
+        "name": "Nombre",
+        "role": "Rol",
+        "groups": "Grupos",
+        "active": "Activo"
+      }
+    },
+    "operations": {
+      "lock": {
+        "success": "Usuario bloqueado. Un usuario bloqueado no podrá iniciar sesión en Scriptoria.",
+        "error": "Ocurrió un error al bloquear el usuario"
+      },
+      "unlock": {
+        "success": "Usuario activo. El usuario ahora podrá iniciar sesión en Scriptoria.",
+        "error": "ocurrió un error al activar el usuario"
+      }
+    }
+  },
+  "stores": {
+    "name": "Tienda",
+    "listTitle": "Tiendas",
+    "attributes": {
+      "name": "Nombre",
+      "description": "Descripción"
+    }
+  },
+  "storeTypes": {
+    "name": "Tipo de tienda",
+    "listTitle": "Tipos de tienda"
+  },
+  "admin": {
+    "settings": {
+      "title": "Configuración del administrador",
+      "navigation": {
+        "organizations": "Organizaciones",
+        "workflowdefinitions": "Definiciones de flujo de trabajo",
+        "productDefinitions": "Definiciones de producto",
+        "storeTypes": "Tipos de tienda",
+        "stores": "Tiendas",
+        "buildEngines": "Build Engine Statuses"
+      },
+      "organizations": {
+        "title": "Organizaciones",
+        "name": "Nombre de la organización",
+        "owner": "Propietario",
+        "emptyOwner": "Necesita seleccionar un propietario para esta organización",
+        "add": "Añadir organización",
+        "addSuccess": "Organización añadida",
+        "edit": "Editar organización",
+        "editSuccess": "Organización actualizada",
+        "websiteURL": "URL del sitio web",
+        "buildEngineURL": "Build Engine URL",
+        "accessToken": "Build Engine API Access Token",
+        "logoURL": "URL del logotipo",
+        "publicByDefault": "Público por defecto",
+        "publicByDefaultDescription": "Los proyectos creados bajo esta organización son públicos por defecto"
+      },
+      "workflowDefinitions": {
+        "title": "Definiciones de flujo de trabajo",
+        "name": "Nombre de la definición del flujo de trabajo",
+        "description": "Descripción",
+        "workflowScheme": "Workflow Scheme",
+        "workflowBusinessFlow": "Workflow Business Flow",
+        "properties": "Propiedades",
+        "add": "Add Workflow Definition",
+        "edit": "Edit Workflow Definition",
+        "storeType": "Tipo de tienda",
+        "enabled": "Habilitado",
+        "enabledDescription": "Workflow definitions may not be used until enabled.",
+        "workflowAdded": "Workflow Definition added",
+        "workflowUpdated": "Workflow Definition updated",
+        "emptyStoreType": "Need to select a store type for this workflow definition",
+        "emptyWorkflowType": "Need to select a workflow type for this workflow definition",
+        "workflowType": "Workflow Type",
+        "workflowTypes": {
+          "1": "Startup",
+          "2": "Reconstruir",
+          "3": "Publicar nuevamente"
+        }
+      },
+      "productDefinitions": {
+        "title": "Definiciones de producto",
+        "name": "Product definition Name",
+        "add": "Añadir definición de producto",
+        "edit": "Editar definición de producto",
+        "description": "Descripción",
+        "properties": "Propiedades",
+        "type": "Tipo de aplicación",
+        "workflow": "Flujo trabajo",
+        "republishWorkflow": "Republish Workflow",
+        "rebuildWorkflow": "Rebuild Workflow",
+        "addSuccess": "Definición del producto añadida",
+        "editSuccess": "Definición del producto actualizada",
+        "emptyName": "Nombre no puede estar vacío",
+        "emptyType": "Necesita seleccionar un tipo de aplicación",
+        "emptyWorkflow": "Need to select a Workflow definition",
+        "noWorkflow": "No Workflow Required"
+      },
+      "storeTypes": {
+        "title": "Tipos de tienda",
+        "name": "Store Type Name",
+        "add": "Añadir tipo de tienda",
+        "edit": "Editar tipo de tienda",
+        "description": "Descripción",
+        "type": "Tipo de aplicación",
+        "workflow": "Flujo de trabajo",
+        "addSuccess": "Tipo de tienda añadido",
+        "editSuccess": "Tipo de tienda actualizado",
+        "emptyName": "Nombre no puede estar vacío",
+        "emptyType": "Necesita seleccionar un tipo de aplicación",
+        "emptyWorkflow": "Need to select a Workflow definition"
+      },
+      "buildEngines": {
+        "title": "Build Engine Statuses",
+        "accessToken": "Token de acceso del motor de construcción",
+        "websiteURL": "URL del sitio web",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "status": "Estado",
+        "lastUpdated": "Last update"
+      }
+    }
+  },
+  "organization-membership": {
+    "invite": {
+      "error": {
+        "expired": "La invitación ha caducado",
+        "redeemed": "La invitación ya ha sido canjeada",
+        "not-found": "No se encontró la invitación",
+        "unexpected": "Ocurrió un error inesperado: {response}",
+        "invalid-response": "Hemos recibido una respuesta no válida... por favor, actualiza la página para intentarlo de nuevo."
+      },
+      "create": {
+        "success": "Invitación enviada a {email}.",
+        "error": "Ocurrió un error mientras se intentaba invitar al usuario.",
+        "invite-user-button-title": "Invitar usuario",
+        "invite-user-modal-title": "Invitar usuario",
+        "email-input-placeholder": "Introduzca dirección de correo electrónico",
+        "send-invite-button": "Enviar invitación"
+      },
+      "redemptionTitle": "Buscando invitación..."
+    }
+  },
+  "system": {
+    "build-failed": "Build failed",
+    "publish-failed": "Publish failed"
+  },
+  "downloads": {
+    "title": "Downloads"
+  }
 }
