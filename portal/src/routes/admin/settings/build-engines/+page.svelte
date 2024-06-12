@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { _, getDateFormatter, locale } from 'svelte-i18n';
+	import { _, locale } from 'svelte-i18n';
 	import type { PageData } from './$types';
 	import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
 

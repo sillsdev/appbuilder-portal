@@ -12,7 +12,7 @@
 		return;
 	}
 
-	function isActive(lang: string, current: any) {
+	function isActive(lang: string, current: string | null | undefined) {
 		if (lang === current?.substring(0, 2)) {
 			return 'active';
 		} else {
