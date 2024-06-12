@@ -99,3 +99,4 @@ services:
       - "3000:3000"
     environment:
       VITE_DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
+      ORIGIN: "http://localhost:3000"

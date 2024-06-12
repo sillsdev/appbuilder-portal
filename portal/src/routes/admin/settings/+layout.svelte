@@ -13,7 +13,7 @@
   ];
 
   function isActive(currentRoute: string | null, menuRoute: string) {
-    return currentRoute?.endsWith(menuRoute);
+    return currentRoute?.startsWith(`${base}/admin/settings/${menuRoute}`);
   }
 </script>
 
@@ -24,7 +24,7 @@
       <h1 class="p-4 [text-wrap:nowrap]">{$_('admin.settings.title')}</h1>
       <ul class="menu p-0 rounded border border-slate-600">
         {#each adminLinks as adminLink}
-          <li class="w-60 border-t border-slate-600 w-full">
+          <li class="w-60 border-t border-slate-600 w-full [top:-1px]">
             <a
               class="rounded-none bg-base-200 p-3"
               class:active={isActive($page.route.id, adminLink.route)}
