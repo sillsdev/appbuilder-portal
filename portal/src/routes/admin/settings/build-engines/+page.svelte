@@ -30,31 +30,29 @@
   }
 </script>
 
-<div class="flex grow flex-col">
-  <h2>{$_('admin.settings.buildEngines.title')}</h2>
+<h2>{$_('admin.settings.buildEngines.title')}</h2>
 
-  <div class="flex flex-col w-full">
-    {#each data.buildEngines as buildEngine}
-      <InternationalizedDataBox
-        title={buildEngine.BuildEngineUrl}
-        fields={[
-          {
-            key: 'admin.settings.buildEngines.accessToken',
-            value: buildEngine.BuildEngineApiAccessToken
-          },
-          {
-            key: 'admin.settings.buildEngines.status',
-            value: $_(
-              'admin.settings.buildEngines.' +
-                (buildEngine.SystemAvailable ? 'connected' : 'disconnected')
-            )
-          },
-          {
-            key: 'admin.settings.buildEngines.lastUpdated',
-            value: buildEngine.DateUpdated ? getRelativeTime(buildEngine.DateUpdated) : 'null'
-          }
-        ]}
-      />
-    {/each}
-  </div>
+<div class="flex flex-col w-full">
+  {#each data.buildEngines as buildEngine}
+    <InternationalizedDataBox
+      title={buildEngine.BuildEngineUrl}
+      fields={[
+        {
+          key: 'admin.settings.buildEngines.accessToken',
+          value: buildEngine.BuildEngineApiAccessToken
+        },
+        {
+          key: 'admin.settings.buildEngines.status',
+          value: $_(
+            'admin.settings.buildEngines.' +
+              (buildEngine.SystemAvailable ? 'connected' : 'disconnected')
+          )
+        },
+        {
+          key: 'admin.settings.buildEngines.lastUpdated',
+          value: buildEngine.DateUpdated ? getRelativeTime(buildEngine.DateUpdated) : 'null'
+        }
+      ]}
+    />
+  {/each}
 </div>

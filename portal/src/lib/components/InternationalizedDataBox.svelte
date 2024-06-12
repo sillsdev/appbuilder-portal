@@ -17,7 +17,7 @@
 </script>
 
 <div class="flex flex-row border border-slate-600 p-2 mx-4 m-1 rounded-md">
-  <div class="relative">
+  <div class="relative w-full">
     <h3>{title}</h3>
     {#if editable}
       <button class="absolute right-2 top-2" on:click={() => dispatch('edit')}
