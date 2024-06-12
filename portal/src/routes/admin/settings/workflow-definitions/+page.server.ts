@@ -4,9 +4,9 @@ import prisma from '$lib/prisma';
 import type { PageServerLoad } from './$types';
 
 export const load = (async () => {
-	const workflowDefinitions = await prisma.workflowDefinitions.findMany({
-		include: { StoreType: true }
-	});
+  const workflowDefinitions = await prisma.workflowDefinitions.findMany({
+    include: { StoreType: true }
+  });
 
-	return { workflowDefinitions };
+  return { workflowDefinitions };
 }) satisfies PageServerLoad;
