@@ -51,5 +51,8 @@
 	"type": "module",
 	"volta": {
 		"node": "18.16.1"
+	},
+	"dependencies": {
+		"zod": "^3.23.8"
 	}
 }
