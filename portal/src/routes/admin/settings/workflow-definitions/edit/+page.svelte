@@ -71,14 +71,26 @@
       bind:value={$superFormData.properties}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.workflowDefinitions.enabled">
-    <input
-      type="checkbox"
-      class="toggle toggle-info"
-      name="enabled"
-      bind:checked={$superFormData.enabled}
-    />
-  </LabeledFormInput>
+  <div>
+    <label>
+      <div class="label flex flex-row">
+        <div class="flex flex-col">
+          <span class="">
+            {$_('admin.settings.workflowDefinitions.enabled')}
+          </span>
+          <span class="text-sm">
+            {$_('admin.settings.workflowDefinitions.enabledDescription')}
+          </span>
+        </div>
+        <input
+          name="enabled"
+          class="toggle toggle-info"
+          type="checkbox"
+          bind:checked={$superFormData.enabled}
+        />
+      </div>
+    </label>
+  </div>
   <div>
     <input type="submit" class="btn btn-primary" value="Submit" />
     <a class="btn" href="/admin/settings/workflow-definitions">Cancel</a>
