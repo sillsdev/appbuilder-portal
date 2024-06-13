@@ -110,6 +110,6 @@
   </div>
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href="/admin/settings/stores">Cancel</a>
+    <a class="btn" href="/admin/settings/organizations">Cancel</a>
   </div>
 </form>
