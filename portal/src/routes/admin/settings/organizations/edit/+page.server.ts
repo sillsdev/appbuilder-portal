@@ -1,0 +1,116 @@
+import prisma from '$lib/prisma';
+import { superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
+import type { Actions, PageServerLoad } from './$types';
+import { fail, redirect } from '@sveltejs/kit';
+import { base } from '$app/paths';
+
+const editSchema = v.object({
+  id: v.pipe(v.number(), v.minValue(0), v.integer()),
+  name: v.nullable(v.string()),
+  owner: v.pipe(v.number(), v.minValue(0), v.integer()),
+  websiteURL: v.nullable(v.string()),
+  buildEngineURL: v.nullable(v.string()),
+  buildEngineAccessToken: v.nullable(v.string()),
+  logoURL: v.nullable(v.string()),
+  publicByDefault: v.boolean(),
+  stores: v.array(
+    v.object({
+      storeId: v.pipe(v.number(), v.minValue(0), v.integer()),
+      enabled: v.boolean()
+    })
+  )
+});
+export const load = (async ({ url }) => {
+  const id = parseInt(url.searchParams.get('id') ?? '');
+  if (isNaN(id)) {
+    return redirect(302, base + '/admin/settings/organizations');
+  }
+  const data = await prisma.organizations.findFirst({
+    where: {
+      Id: id
+    }
+  });
+  const orgStores = await prisma.organizationStores.findMany({
+    where: {
+      OrganizationId: id
+    }
+  });
+  if (!data) return redirect(302, base + '/admin/settings/organizations');
+  const users = await prisma.users.findMany();
+  const orgStoreNumList = new Set(orgStores.map((s) => s.StoreId));
+  const stores = await prisma.stores.findMany();
+  const enabledStores = stores.map((store) => ({
+    storeId: store.Id,
+    enabled: orgStoreNumList.has(store.Id)
+  }));
+  const options = { users, stores };
+  const form = await superValidate(
+    {
+      id: data.Id,
+      name: data.Name,
+      owner: data.OwnerId,
+      websiteURL: data.WebsiteUrl,
+      buildEngineURL: data.BuildEngineUrl,
+      buildEngineAccessToken: data.BuildEngineApiAccessToken,
+      logoURL: data.LogoUrl,
+      publicByDefault: data.PublicByDefault ?? false,
+      stores: enabledStores
+    },
+    valibot(editSchema)
+  );
+  return { form, options };
+}) satisfies PageServerLoad;
+
+export const actions = {
+  async edit({ cookies, request }) {
+    const form = await superValidate(request, valibot(editSchema));
+    if (!form.valid) {
+      return fail(400, { form, ok: false, errors: form.errors });
+    }
+    console.dir(form, { depth: null });
+    // return { ok: true, form };
+    try {
+      const {
+        id,
+        name,
+        buildEngineAccessToken,
+        buildEngineURL,
+        logoURL,
+        owner,
+        publicByDefault,
+        websiteURL,
+        stores
+      } = form.data;
+      await prisma.organizations.update({
+        where: {
+          Id: id
+        },
+        data: {
+          Name: name,
+          BuildEngineApiAccessToken: buildEngineAccessToken,
+          BuildEngineUrl: buildEngineURL,
+          LogoUrl: logoURL,
+          OwnerId: owner,
+          PublicByDefault: publicByDefault,
+          WebsiteUrl: websiteURL,
+          OrganizationStores: {
+            deleteMany: {},
+            create: stores
+              .filter((s) => s.enabled)
+              .map((s) => ({
+                Store: {
+                  connect: { Id: s.storeId }
+                }
+              }))
+          }
+        }
+      });
+      return { ok: true, form };
+    } catch (e) {
+      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
+      throw e;
+    }
+  }
+} satisfies Actions;
