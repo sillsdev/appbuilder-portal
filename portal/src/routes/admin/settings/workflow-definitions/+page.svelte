@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
   import type { PageData } from './$types';
   import { _ } from 'svelte-i18n';
@@ -15,6 +16,8 @@
 <div class="flex flex-col w-full">
   {#each data.workflowDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as wd}
     <InternationalizedDataBox
+      editable
+      on:edit={() => goto('/admin/settings/workflow-definitions/edit?id=' + wd.Id)}
       title={wd.Name}
       fields={[
         {
