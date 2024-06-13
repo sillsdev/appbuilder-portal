@@ -66,14 +66,28 @@
       bind:value={$superFormData.logoURL}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.publicByDefault">
-    <input
-      name="publicByDefault"
-      class="toggle toggle-info"
-      type="checkbox"
-      bind:checked={$superFormData.publicByDefault}
-    />
-  </LabeledFormInput>
+  <div>
+    <label>
+      <div class="label flex flex-row">
+        <div class="flex flex-col">
+          <span class="">
+            {$_('admin.settings.organizations.publicByDefault')}
+          </span>
+          <span class="text-sm">
+            {$_('admin.settings.organizations.publicByDefaultDescription')}
+          </span>
+        </div>
+        <input
+          name="publicByDefault"
+          class="toggle toggle-info"
+          type="checkbox"
+          bind:checked={$superFormData.publicByDefault}
+        />
+      </div>
+    </label>
+  </div>
+
+  <!-- <LabeledFormInput name="admin.settings.organizations.publicByDefault" /> -->
   <div class="border border-opacity-15 border-gray-50 rounded-lg p-2">
     <!-- OrganizationStores -->
     <div>
