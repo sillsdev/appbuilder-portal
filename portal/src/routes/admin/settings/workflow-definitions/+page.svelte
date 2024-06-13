@@ -7,8 +7,6 @@
   export let data: PageData;
 </script>
 
-<h2>{$_('admin.settings.workflowDefinitions.title')}</h2>
-
 <div class="btn btn-outline rounded-none m-4 mt-0">
   {$_('admin.settings.workflowDefinitions.add')}
 </div>
