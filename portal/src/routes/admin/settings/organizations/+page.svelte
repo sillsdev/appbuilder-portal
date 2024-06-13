@@ -8,9 +8,9 @@
   export let data: PageData;
 </script>
 
-<div class="btn btn-outline rounded-none m-4 mt-0">
+<a href="organizations/new" class="btn btn-outline rounded-none m-4 mt-0">
   {$_('admin.settings.organizations.add')}
-</div>
+</a>
 
 <div class="flex flex-col w-full">
   {#each data.organizations as organization}
