@@ -22,7 +22,6 @@ export const load = (async ({ url }) => {
     }
   });
   if (!data) return redirect(302, base + '/admin/settings/store-types');
-  const options = await prisma.storeTypes.findMany();
   const form = await superValidate(
     {
       id: data.Id,
@@ -31,7 +30,7 @@ export const load = (async ({ url }) => {
     },
     valibot(editSchema)
   );
-  return { form, options };
+  return { form };
 }) satisfies PageServerLoad;
 
 export const actions = {

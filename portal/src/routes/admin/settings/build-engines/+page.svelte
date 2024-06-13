@@ -30,8 +30,6 @@
   }
 </script>
 
-<h2>{$_('admin.settings.buildEngines.title')}</h2>
-
 <div class="flex flex-col w-full">
   {#each data.buildEngines as buildEngine}
     <DataDisplayBox

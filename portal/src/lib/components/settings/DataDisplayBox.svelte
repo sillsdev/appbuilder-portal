@@ -20,8 +20,8 @@
   <div class="relative w-full">
     <h3>{title}</h3>
     {#if editable}
-      <button class="absolute right-2 top-2" on:click={() => dispatch('edit')}
-        ><Icon icon="mdi:pencil" /></button
+      <button title="Edit" class="absolute right-2 top-2" on:click={() => dispatch('edit')}
+        ><Icon width="24" icon="mdi:pencil" /></button
       >
     {/if}
     {#each fields as field}
@@ -30,5 +30,6 @@
         {field.value ?? ''}
       </p>
     {/each}
+    <slot />
   </div>
 </div>
