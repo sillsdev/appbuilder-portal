@@ -3,7 +3,7 @@
   import { _ } from 'svelte-i18n';
   import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
-  import InternationalizedInput from '$lib/components/InternationalizedInput.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
 
   export let data: PageData;
   export let form: ActionData;
@@ -18,15 +18,15 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$superFormData.id} />
-  <InternationalizedInput name="admin.settings.productDefinitions.name">
+  <LabeledFormInput name="admin.settings.productDefinitions.name">
     <input
       class="input w-full input-bordered"
       type="text"
       name="name"
       bind:value={$superFormData.name}
     />
-  </InternationalizedInput>
-  <InternationalizedInput name="admin.settings.productDefinitions.type">
+  </LabeledFormInput>
+  <LabeledFormInput name="admin.settings.productDefinitions.type">
     <select
       class="select select-bordered"
       name="applicationType"
@@ -36,15 +36,15 @@
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
-  </InternationalizedInput>
-  <InternationalizedInput name="admin.settings.productDefinitions.workflow">
+  </LabeledFormInput>
+  <LabeledFormInput name="admin.settings.productDefinitions.workflow">
     <select class="select select-bordered" name="workflow" bind:value={$superFormData.workflow}>
       {#each workflows.filter((w) => w.Type) as workflow}
         <option value={workflow.Id}>{workflow.Name}</option>
       {/each}
     </select>
-  </InternationalizedInput>
-  <InternationalizedInput name="admin.settings.productDefinitions.rebuildWorkflow">
+  </LabeledFormInput>
+  <LabeledFormInput name="admin.settings.productDefinitions.rebuildWorkflow">
     <select
       class="select select-bordered"
       name="rebuildWorkflow"
@@ -55,8 +55,8 @@
         <option value={workflow.Id}>{workflow.Name}</option>
       {/each}
     </select>
-  </InternationalizedInput>
-  <InternationalizedInput name="admin.settings.productDefinitions.republishWorkflow">
+  </LabeledFormInput>
+  <LabeledFormInput name="admin.settings.productDefinitions.republishWorkflow">
     <select
       class="select select-bordered"
       name="republishWorkflow"
@@ -67,21 +67,21 @@
         <option value={workflow.Id}>{workflow.Name}</option>
       {/each}
     </select>
-  </InternationalizedInput>
-  <InternationalizedInput name="admin.settings.productDefinitions.description">
+  </LabeledFormInput>
+  <LabeledFormInput name="admin.settings.productDefinitions.description">
     <textarea
       name="description"
       class="textarea textarea-bordered w-full"
       bind:value={$superFormData.description}
     />
-  </InternationalizedInput>
-  <InternationalizedInput name="admin.settings.productDefinitions.properties">
+  </LabeledFormInput>
+  <LabeledFormInput name="admin.settings.productDefinitions.properties">
     <textarea
       name="properties"
       class="textarea textarea-bordered w-full"
       bind:value={$superFormData.properties}
     />
-  </InternationalizedInput>
+  </LabeledFormInput>
   <div>
     <input type="submit" class="btn btn-primary" value="Submit" />
     <a class="btn" href="/admin/settings/product-definitions">Cancel</a>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _, locale } from 'svelte-i18n';
   import type { PageData } from './$types';
-  import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
+  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
 
   export let data: PageData;
   let relativeTimeFormatter = new Intl.RelativeTimeFormat($locale!);
@@ -34,7 +34,7 @@
 
 <div class="flex flex-col w-full">
   {#each data.buildEngines as buildEngine}
-    <InternationalizedDataBox
+    <DataDisplayBox
       title={buildEngine.BuildEngineUrl}
       fields={[
         {

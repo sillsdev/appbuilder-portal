@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { _ } from 'svelte-i18n';
-  import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
+  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
 
   export let data: PageData;
 </script>
@@ -14,7 +14,7 @@
 
 <div class="flex flex-col w-full">
   {#each data.organizations as organization}
-    <InternationalizedDataBox
+    <DataDisplayBox
       title={organization.Name}
       fields={[
         { key: 'admin.settings.organizations.owner', value: organization.Owner.Name },

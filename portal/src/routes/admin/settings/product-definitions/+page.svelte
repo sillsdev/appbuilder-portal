@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
-  import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
+  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   // import SuperDebug, { superForm } from 'sveltekit-superforms';
@@ -33,7 +33,7 @@
 
 <div class="flex flex-col w-full">
   {#each data.productDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as pD}
-    <InternationalizedDataBox
+    <DataDisplayBox
       editable
       on:edit={() => goto(base + '/admin/settings/product-definitions/edit?id=' + pD.Id)}
       title={pD.Name}
