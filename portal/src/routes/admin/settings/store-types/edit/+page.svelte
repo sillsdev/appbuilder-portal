@@ -30,7 +30,7 @@
       bind:value={$superFormData.description}
     />
   </LabeledFormInput>
-  <div>
+  <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
     <a class="btn" href="/admin/settings/store-types">Cancel</a>
   </div>
