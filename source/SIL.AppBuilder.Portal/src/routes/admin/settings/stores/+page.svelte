@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
-  import InternationalizedDataBox from '$lib/components/InternationalizedDataBox.svelte';
+  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
 
   export let data: PageData;
 </script>
@@ -14,7 +14,7 @@
 
 <div class="flex flex-col w-full">
   {#each data.stores as store}
-    <InternationalizedDataBox
+    <DataDisplayBox
       title={store.Name}
       fields={[
         { key: 'stores.attributes.description', value: store.Description },
