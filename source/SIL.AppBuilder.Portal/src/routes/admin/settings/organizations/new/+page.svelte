@@ -20,10 +20,10 @@
 
 <form class="m-4" method="post" action="?/new" use:enhance>
   <LabeledFormInput name="admin.settings.organizations.name">
-    <input type="text" name="name" class="input input-bordered w-full" value={$form.name} />
+    <input type="text" name="name" class="input input-bordered w-full" bind:value={$form.name} />
   </LabeledFormInput>
   <LabeledFormInput name="admin.settings.organizations.owner">
-    <select class="select select-bordered" name="owner">
+    <select class="select select-bordered" name="owner" bind:value={$form.owner}>
       {#each data.options.users as user}
         <option value={user.Id}>{user.Name}</option>
       {/each}
@@ -34,7 +34,7 @@
       type="text"
       name="websiteURL"
       class="input input-bordered w-full"
-      value={$form.websiteURL}
+      bind:value={$form.websiteURL}
     />
   </LabeledFormInput>
   <LabeledFormInput name="admin.settings.organizations.buildEngineURL">
@@ -42,7 +42,7 @@
       type="text"
       name="buildEngineURL"
       class="input input-bordered w-full"
-      value={$form.buildEngineURL}
+      bind:value={$form.buildEngineURL}
     />
   </LabeledFormInput>
   <LabeledFormInput name="admin.settings.organizations.accessToken">
@@ -50,11 +50,16 @@
       type="text"
       name="buildEngineAccessToken"
       class="input input-bordered w-full"
-      value={$form.buildEngineAccessToken}
+      bind:value={$form.buildEngineAccessToken}
     />
   </LabeledFormInput>
   <LabeledFormInput name="admin.settings.organizations.logoURL">
-    <input type="text" name="logoURL" class="input input-bordered w-full" value={$form.logoURL} />
+    <input
+      type="text"
+      name="logoURL"
+      class="input input-bordered w-full"
+      bind:value={$form.logoURL}
+    />
   </LabeledFormInput>
   <div>
     <label>
