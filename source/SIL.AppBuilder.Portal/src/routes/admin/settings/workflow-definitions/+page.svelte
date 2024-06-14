@@ -7,9 +7,9 @@
   export let data: PageData;
 </script>
 
-<div class="btn btn-outline rounded-none m-4 mt-0">
+<a href="workflow-definitions/new" class="btn btn-outline rounded-none m-4 mt-0">
   {$_('admin.settings.workflowDefinitions.add')}
-</div>
+</a>
 
 <div class="flex flex-col w-full">
   {#each data.workflowDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as wd}

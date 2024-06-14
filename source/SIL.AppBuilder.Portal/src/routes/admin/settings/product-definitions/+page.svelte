@@ -27,9 +27,9 @@
   // let editing = false;
 </script>
 
-<div class="btn btn-outline rounded-none m-4 mt-0">
+<a href="product-definitions/new" class="btn btn-outline rounded-none m-4 mt-0">
   {$_('admin.settings.productDefinitions.add')}
-</div>
+</a>
 
 <div class="flex flex-col w-full">
   {#each data.productDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as pD}
