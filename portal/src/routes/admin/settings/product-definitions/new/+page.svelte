@@ -7,7 +7,7 @@
 
   export let data: PageData;
 
-  const { form, enhance, message } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/product-definitions');
@@ -80,6 +80,16 @@
       bind:value={$form.properties}
     />
   </LabeledFormInput>
+  {#if $allErrors.length}
+    <ul>
+      {#each $allErrors as error}
+        <li class="text-red-500">
+          <b>{error.path}:</b>
+          {error.messages.join('. ')}
+        </li>
+      {/each}
+    </ul>
+  {/if}
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
     <a class="btn" href="/admin/settings/product-definitions">Cancel</a>
