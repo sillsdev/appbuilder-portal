@@ -7,7 +7,7 @@
 
   export let data: PageData;
   export let form: ActionData;
-  const { form: superFormData, enhance } = superForm(data.form);
+  const { form: superFormData, enhance, allErrors } = superForm(data.form);
 
   $: if (form?.ok) goto('/admin/settings/stores');
 </script>
@@ -37,6 +37,16 @@
       {/each}
     </select>
   </LabeledFormInput>
+  {#if $allErrors.length}
+    <ul>
+      {#each $allErrors as error}
+        <li class="text-red-500">
+          <b>{error.path}:</b>
+          {error.messages.join('. ')}
+        </li>
+      {/each}
+    </ul>
+  {/if}
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
     <a class="btn" href="/admin/settings/stores">Cancel</a>
