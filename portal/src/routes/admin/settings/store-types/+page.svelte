@@ -7,9 +7,9 @@
   export let data: PageData;
 </script>
 
-<div class="btn btn-outline rounded-none m-4 mt-0">
+<a href="store-types/new" class="btn btn-outline rounded-none m-4 mt-0">
   {$_('admin.settings.storeTypes.add')}
-</div>
+</a>
 
 <div class="flex flex-col w-full">
   {#each data.storeTypes as storeType}
