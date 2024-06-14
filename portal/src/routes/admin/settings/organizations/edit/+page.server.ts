@@ -69,7 +69,6 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false, errors: form.errors });
     }
-    console.dir(form, { depth: null });
     // return { ok: true, form };
     try {
       const {

@@ -7,19 +7,19 @@ import { fail } from '@sveltejs/kit';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),
-  websiteURL: v.nullable(v.string()),
-  buildEngineURL: v.nullable(v.string()),
-  buildEngineAccessToken: v.nullable(v.string()),
-  logoURL: v.nullable(v.string()),
-  useDefaultBuildEngine: v.boolean(),
-  publicByDefault: v.boolean(),
-  owner: v.pipe(v.number(), v.minValue(0), v.integer())
+  applicationType: v.pipe(v.number(), v.minValue(1), v.integer()),
+  workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
+  rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
+  republishWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
+  description: v.nullable(v.string()),
+  properties: v.nullable(v.string())
 });
 
 export const load = (async ({ url }) => {
   const form = await superValidate(valibot(createSchema));
   const options = {
-    users: await prisma.users.findMany()
+    applicationTypes: await prisma.applicationTypes.findMany(),
+    workflows: await prisma.workflowDefinitions.findMany()
   };
   return { form, options };
 }) satisfies PageServerLoad;
@@ -30,27 +30,26 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false, errors: form.errors });
     }
+    console.dir(form, { depth: null });
     try {
       const {
-        buildEngineAccessToken,
-        buildEngineURL,
-        logoURL,
         name,
-        owner,
-        publicByDefault,
-        useDefaultBuildEngine,
-        websiteURL
+        applicationType,
+        workflow,
+        rebuildWorkflow,
+        republishWorkflow,
+        description,
+        properties
       } = form.data;
-      await prisma.organizations.create({
+      await prisma.productDefinitions.create({
         data: {
           Name: name,
-          BuildEngineApiAccessToken: buildEngineAccessToken,
-          BuildEngineUrl: buildEngineURL,
-          LogoUrl: logoURL,
-          OwnerId: owner,
-          PublicByDefault: publicByDefault,
-          UseDefaultBuildEngine: useDefaultBuildEngine,
-          WebsiteUrl: websiteURL
+          TypeId: applicationType,
+          WorkflowId: workflow,
+          RebuildWorkflowId: rebuildWorkflow,
+          RepublishWorkflowId: republishWorkflow,
+          Description: description,
+          Properties: properties
         }
       });
       return { ok: true, form };

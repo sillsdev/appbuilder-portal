@@ -26,7 +26,7 @@
         },
         {
           key: 'admin.settings.organizations.buildEngineURL',
-          value: organization.WebsiteUrl
+          value: organization.BuildEngineUrl
         },
         {
           key: 'admin.settings.organizations.accessToken',
