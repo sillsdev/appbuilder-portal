@@ -7,9 +7,9 @@
   export let data: PageData;
 </script>
 
-<div class="btn btn-outline rounded-none m-4 mt-0">
+<a href="stores/new" class="btn btn-outline rounded-none m-4 mt-0">
   {$_('models.add', { values: { name: $_('stores.name') } })}
-</div>
+</a>
 
 <div class="flex flex-col w-full">
   {#each data.stores as store}
