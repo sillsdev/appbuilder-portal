@@ -18,6 +18,8 @@
     "seed": "ts-node --esm prisma/seed.ts"
   },
   "devDependencies": {
+    "@auth/core": "^0.32.0",
+    "@auth/sveltekit": "^1.2.0",
     "@iconify/svelte": "^3.1.4",
     "@playwright/test": "^1.28.1",
     "@prisma/client": "^5.4.2",
