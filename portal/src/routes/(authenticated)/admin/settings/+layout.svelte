@@ -13,7 +13,7 @@
   ];
 
   function isActive(currentRoute: string | null, menuRoute: string) {
-    return currentRoute?.startsWith(`${base}/admin/settings/${menuRoute}`);
+    return currentRoute?.startsWith(`${base}/(authenticated)/admin/settings/${menuRoute}`);
   }
 </script>
 

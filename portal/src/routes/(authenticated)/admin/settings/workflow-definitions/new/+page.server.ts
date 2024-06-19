@@ -7,20 +7,21 @@ import { fail } from '@sveltejs/kit';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),
-  applicationType: v.pipe(v.number(), v.minValue(1), v.integer()),
-  workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
-  rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
-  republishWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
+  storeType: v.pipe(v.number(), v.minValue(1), v.integer()),
+  workflowType: v.pipe(v.number(), v.minValue(1), v.integer()),
+  workflowScheme: v.nullable(v.string()),
+  workflowBusinessFlow: v.nullable(v.string()),
   description: v.nullable(v.string()),
-  properties: v.nullable(v.string())
+  properties: v.nullable(v.string()),
+  enabled: v.boolean()
 });
 
 export const load = (async ({ url }) => {
   const form = await superValidate(valibot(createSchema));
   const options = {
-    applicationTypes: await prisma.applicationTypes.findMany(),
-    workflows: await prisma.workflowDefinitions.findMany()
+    storeType: await prisma.storeTypes.findMany()
   };
+
   return { form, options };
 }) satisfies PageServerLoad;
 
@@ -30,26 +31,27 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false, errors: form.errors });
     }
-    console.dir(form, { depth: null });
     try {
       const {
         name,
-        applicationType,
-        workflow,
-        rebuildWorkflow,
-        republishWorkflow,
         description,
-        properties
+        properties,
+        enabled,
+        storeType,
+        workflowBusinessFlow,
+        workflowScheme,
+        workflowType
       } = form.data;
-      await prisma.productDefinitions.create({
+      await prisma.workflowDefinitions.create({
         data: {
           Name: name,
-          TypeId: applicationType,
-          WorkflowId: workflow,
-          RebuildWorkflowId: rebuildWorkflow,
-          RepublishWorkflowId: republishWorkflow,
           Description: description,
-          Properties: properties
+          Properties: properties,
+          Enabled: enabled,
+          StoreTypeId: storeType,
+          WorkflowBusinessFlow: workflowBusinessFlow,
+          WorkflowScheme: workflowScheme,
+          Type: workflowType
         }
       });
       return { ok: true, form };
