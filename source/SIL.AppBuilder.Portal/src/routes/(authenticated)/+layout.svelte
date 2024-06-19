@@ -4,7 +4,7 @@
   import { base } from '$app/paths';
   import { HamburgerIcon } from '$lib/icons';
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
-  import { SignIn } from '@auth/sveltekit/components';
+  import { signOut } from '@auth/sveltekit/client';
 
   let drawerToggle: HTMLInputElement;
   function closeDrawer() {
@@ -32,6 +32,40 @@
   </div>
   <div class="navbar-end">
     <LanguageSelector />
+    <div class="dropdown dropdown-end">
+      <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
+      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+      <div class="btn btn-ghost m-2 p-2 rounded-xl" tabindex="0">
+        <img
+          src={$page.data.session?.user?.image}
+          alt="User profile"
+          referrerpolicy="no-referrer"
+          class="h-full rounded-xl"
+        />
+      </div>
+      <div class="dropdown-content w-36 z-10 bg-base-200 rounded-md overflow-y-auto">
+        <ul class="menu menu-compact gap-1 p-2">
+          <li>
+            <a href="/users/{$page.data.session?.user?.userId ?? ''}/edit"
+              >{$_('header.myProfile')}</a
+            >
+          </li>
+          <li>
+            <a target="_blank" href="https://community.scripture.software.sil.org/c/scriptoria/24"
+              >{$_('header.community')}</a
+            >
+          </li>
+          <li>
+            <a target="_blank" href="https://scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf"
+              >{$_('header.help')}</a
+            >
+          </li>
+          <li>
+            <button on:click={() => signOut({ callbackUrl: '/' })}>{$_('header.signOut')}</button>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 <div class="flex grow min-h-0">
@@ -162,5 +196,8 @@
   .active-menu-item {
     border-left: 5px solid #1c3258; /* Adjust the border color and width to your preferences */
     font-weight: bold;
+  }
+  :global(.signOutButton > button) {
+    width: 100%;
   }
 </style>
