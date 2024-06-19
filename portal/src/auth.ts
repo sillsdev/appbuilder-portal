@@ -1,7 +1,16 @@
 // hooks.server.ts
-import { SvelteKitAuth, type SvelteKitAuthConfig } from '@auth/sveltekit';
+import prisma, { getOrCreateUser, getUserFromId } from '$lib/prisma';
+import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
+
+declare module '@auth/sveltekit' {
+  interface Session {
+    user: {
+      userId: number;
+    } & DefaultSession['user'];
+  }
+}
 
 const config: SvelteKitAuthConfig = {
   providers: [
@@ -18,6 +27,25 @@ const config: SvelteKitAuthConfig = {
   debug: true,
   session: {
     maxAge: 60 * 60 * 24 // 24 hours
+  },
+  callbacks: {
+    async signIn({ profile }) {
+      if (!profile) return false;
+      await getOrCreateUser(profile);
+      return true;
+    },
+    async jwt({ profile, token }) {
+      if (!profile) return token;
+      const dbUser = await getOrCreateUser(profile);
+      token.userId = dbUser.Id;
+      return token;
+    },
+    async session({ session, token }) {
+      // const dbUser = await getUserFromId(token.userId);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (session.user as any).userId = token.userId;
+      return session;
+    }
   }
 };
 // Handles the /auth route, which is used to handle external auth0 authentication

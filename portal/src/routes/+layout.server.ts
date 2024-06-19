@@ -1,7 +1,7 @@
+import prisma from '$lib/prisma';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
-  return {
-    session: await event.locals.auth()
-  };
+  const uData = await event.locals.auth();
+  return { session: uData };
 };
