@@ -25,7 +25,7 @@ export const { handle: authRouteHandle, signIn, signOut } = SvelteKitAuth(config
 
 // Locks down the authenticated routes by redirecting to /login
 export const localRouteHandle: Handle = async ({ event, resolve }) => {
-  if (!event.route.id?.startsWith('/(unauthenticated)')) {
+  if (!event.route.id?.startsWith('/(unauthenticated)') && event.route.id !== '/') {
     const session = await event.locals.auth();
     if (!session) return redirect(303, '/login');
   }
