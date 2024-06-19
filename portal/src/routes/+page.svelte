@@ -15,8 +15,8 @@
       </div>
     </div>
   </div>
-  <div class="loginside bg-slate-800 py-8">
-    <div class="p-4">
+  <div class="loginside bg-slate-800 flex flex-col">
+    <div class="p-4 py-8 grow">
       <!-- <form action="/login"> -->
       <h3>{$_('auth.login')}</h3>
       <!-- <input type="hidden" name="providerId" value="auth0" /> -->
@@ -27,6 +27,16 @@
       </SignIn>
       <!-- </form> -->
     </div>
+    <SignIn
+      className="w-full p-4"
+      provider="auth0"
+      signInPage="login"
+      authorizationParams={{ prompt: 'login', screen_hint: 'signup' }}
+    >
+      <div slot="submitButton" class="btn w-full my-2">
+        {$_('auth.login')} / {$_('auth.signup')} with new session
+      </div>
+    </SignIn>
   </div>
 </div>
 
