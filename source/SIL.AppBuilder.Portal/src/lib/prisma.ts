@@ -2,9 +2,17 @@
 
 import type { Auth0Profile } from '@auth/core/providers/auth0';
 import type { Profile } from '@auth/sveltekit';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
+import type { DefaultArgs } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
+
+export enum RoleId {
+  SuperAdmin = 1,
+  OrgAdmin,
+  AppBuilder,
+  Author
+}
 
 export async function getOrCreateUser(profile: Profile) {
   const result = await prisma.users.findFirst({
@@ -25,10 +33,6 @@ export async function getOrCreateUser(profile: Profile) {
       IsLocked: false
     }
   });
-}
-
-export function getUserFromId(id: number) {
-  return prisma.users.findUnique({ where: { Id: id } });
 }
 
 export default prisma;
