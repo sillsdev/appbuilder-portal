@@ -5,13 +5,20 @@
   import { HamburgerIcon } from '$lib/icons';
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { signOut } from '@auth/sveltekit/client';
+  import type { LayoutData } from './$types';
+  import Icon from '@iconify/svelte';
+
+  export let data: LayoutData;
 
   let drawerToggle: HTMLInputElement;
   function closeDrawer() {
     drawerToggle.click();
   }
 
-  $: organization = 1;
+  $: organizationId = data.organizations[0].Id;
+  $: organization = data.organizations.find(v => v.Id === organizationId);
+
+  let orgMenuOpen = false;
   // $: console.log($page.data);
 
   function isActive(currentRoute: string | null, menuRoute: string) {
@@ -79,8 +86,10 @@
 
     <div class="h-full drawer-side shrink-0 z-10">
       <label for="primary-content-drawer" class="drawer-overlay" />
+      <div class="h-full overflow-hidden w-full rounded-r-xl lg:w-72 lg:border-r-2 min-[480px]:w-1/2 min-[720px]:w-1/3">
+
       <ul
-        class="menu menu-lg mt-16 lg:mt-0 rounded-r-xl p-0 w-full min-[480px]:w-1/2 min-[720px]:w-1/3 lg:border-r-2 lg:w-72 bg-base-100 text-base-content h-full"
+        class="menu menu-lg mt-16 lg:mt-0 p-0 w-full bg-base-100 text-base-content h-full"
       >
         <li>
           <a
@@ -172,7 +181,47 @@
             {$_('opensource')}
           </a>
         </li>
-      </ul>
+        </ul>
+        <ul
+        class="menu menu-lg mt-16 lg:mt-0 p-0 w-full lg:w-72 bg-base-100 text-base-content h-full"
+        style="transition: transform 0.15s; transform: translate(0, {orgMenuOpen ? '-100%' : '0'});"
+        >
+          {#each data.organizations as org}
+            <li>
+              <button class="rounded-none" on:click={() => {organizationId = org.Id; orgMenuOpen = false }}
+            class:active-menu-item={organizationId === org.Id}
+                >
+                <span class="w-8 h-8 bg-white mr-2 border-4 border-base-300">
+                  {#if organization?.LogoUrl}
+                    <img src="{organization?.LogoUrl}" alt="{organization?.Name} logo">
+                  {:else}
+                    &nbsp;
+                  {/if}
+                </span>
+                
+                {org.Name}
+              </button>
+            </li>
+          {/each}
+        </ul>
+          <div class="[height:70px] w-full absolute bottom-0 bg-base-300">
+            <div class="h-full flex flex-row items-center">
+              <button tabindex="0" on:click={() => orgMenuOpen = !orgMenuOpen} class="flex items-center w-full p-4">
+                <span class="w-8 h-8 bg-white mr-2">
+                  {#if organization?.LogoUrl}
+                    <img src="{organization?.LogoUrl}" alt="{organization?.Name} logo">
+                  {:else}
+                    &nbsp;
+                  {/if}
+                </span>
+                <span class="">
+                  {organization?.Name ?? 'No organization'}
+                </span>
+                <Icon icon="gridicons:dropdown" width="24" style="transition: transform 0.15s; transform: rotate({orgMenuOpen ? '180' : '0'}deg)"/>
+              </button>
+            </div>
+          </div>
+      </div>
     </div>
     <div class="drawer-content grow flex flex-row items-start justify-start">
       <slot />

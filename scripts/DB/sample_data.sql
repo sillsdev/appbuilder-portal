@@ -86,7 +86,7 @@ INSERT INTO "OrganizationMemberships" ("UserId", "OrganizationId") VALUES
 ( 5, 3), -- bill_dyck@sil.org - Kalaam
 ( 6, 1), -- loren_hawthorne@sil.org - SIL
 ( 7, 1), -- chris@bluevire.com - SIL
-( 8, 1); -- 7dev7urandom@gmail.com - Micah
+( 8, 1); -- 7dev7urandom@gmail.com - SIL
 
 INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 ( 1, 1), -- chris_hubbard@sil.org - LSDEV
@@ -95,7 +95,7 @@ INSERT INTO "GroupMemberships" ("UserId", "GroupId") VALUES
 ( 2, 15), -- david_moore1@sil.org - KAL_AF
 ( 3, 14), -- lt.sego@gmail.com - Development (DT)
 ( 7, 1), -- chris@bluevire.com - LSDEV
-( 8, 1); -- 7dev7urandom@gmail.com - Micah
+( 8, 1); -- 7dev7urandom@gmail.com - LSDEV
 
 INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 ( 1, 1, 1), -- chris_hubbard@sil.org - SuperAdmin - SIL
@@ -109,7 +109,7 @@ INSERT INTO "UserRoles" ("UserId", "RoleId", "OrganizationId") VALUES
 ( 2, 2, 3), -- david_moore1@sil.org - OrgAdmin - Kalaam
 ( 4, 3, 3), -- chris.kalaam@gmail.com - AppBuilder - Kalaam
 ( 7, 3, 1), -- chris@bluevire.com - AppBuilder - Kalaam
-( 8, 1, 1); -- 7dev7urandom@gmail.com - SuperAdmin - Micah
+( 8, 1, 1); -- 7dev7urandom@gmail.com - SuperAdmin - SIL
 
 SELECT SETVAL('"UserRoles_Id_seq"', COALESCE(MAX("Id"), 1) )
 FROM "UserRoles";
