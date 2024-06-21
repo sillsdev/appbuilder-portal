@@ -335,8 +335,6 @@ model Projects {
   WorkflowAppProjectUrl    String?
   DateActive               DateTime?        @db.Timestamp
   ImportId                 Int?
-  PublishAfterAutoRebuilds Boolean?
-  SoftwareUpdateRebuilds   Boolean?
   Authors                  Authors[]
   Products                 Products[]
   ApplicationType          ApplicationTypes @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_Projects_ApplicationTypes_TypeId")
