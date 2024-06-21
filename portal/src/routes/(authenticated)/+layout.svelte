@@ -196,19 +196,19 @@
               <button class="rounded-none" on:click={() => {organizationId = org.Id; orgMenuOpen = false }}
             class:active-menu-item={organizationId === org.Id}
                 >
-                <span class="w-8 h-8 bg-white mr-2 border-4 border-base-300">
-                  {#if organization?.LogoUrl}
-                    <img src="{organization?.LogoUrl}" alt="{organization?.Name} logo">
+                <span class="w-8 h-8 bg-white mr-2 border-base-300">
+                  {#if org?.LogoUrl}
+                    <img src="{org?.LogoUrl}" alt="{org?.Name} logo">
                   {:else}
                     &nbsp;
                   {/if}
                 </span>
-                
                 {org.Name}
               </button>
             </li>
           {/each}
         </ul>
+        {#if data.organizations.length > 1}
           <div class="[height:70px] w-full absolute bottom-0 bg-base-300">
             <div class="h-full flex flex-row items-center">
               <button tabindex="0" on:click={() => orgMenuOpen = !orgMenuOpen} class="flex items-center w-full p-4">
@@ -226,6 +226,7 @@
               </button>
             </div>
           </div>
+          {/if}
       </div>
     </div>
     <div class="drawer-content grow items-start justify-start">
