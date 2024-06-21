@@ -7,6 +7,7 @@
   import { signOut } from '@auth/sveltekit/client';
   import type { LayoutData } from './$types';
   import Icon from '@iconify/svelte';
+  import { dev } from '$app/environment';
 
   export let data: LayoutData;
 
@@ -25,6 +26,10 @@
     return currentRoute?.startsWith(`${base}/(authenticated)${menuRoute}`);
   }
 </script>
+
+<svelte:head>
+  <title>{$_('tabAppName', { values: { count: data.numberOfTasks }})}{dev ? ' - SvelteKit' : ''}</title>
+</svelte:head>
 
 <div class="shrink-0 navbar bg-[#1C3258]">
   <div class="navbar-start">
@@ -98,7 +103,7 @@
             href="{base}/tasks"
             on:click={closeDrawer}
           >
-            {$_('sidebar.myTasks', { values: { count: 1 } })}
+            {$_('sidebar.myTasks', { values: { count: data.numberOfTasks } })}
           </a>
         </li>
         <li>
@@ -223,7 +228,7 @@
           </div>
       </div>
     </div>
-    <div class="drawer-content grow flex flex-row items-start justify-start">
+    <div class="drawer-content grow items-start justify-start">
       <slot />
     </div>
   </div>
