@@ -20,5 +20,10 @@ export const load: LayoutServerLoad = async (event) => {
         }
       }
     });
-  return { organizations };
+  const numberOfTasks = await prisma.userTasks.count({
+    where: {
+      UserId: userId
+    }
+  });
+  return { organizations, numberOfTasks };
 };
