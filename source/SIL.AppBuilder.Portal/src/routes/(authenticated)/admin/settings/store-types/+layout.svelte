@@ -1,6 +1,6 @@
 <script>
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
 </script>
 
-<h2>{$_('admin.settings.storeTypes.title')}</h2>
+<h2>{m.admin_settings_storeTypes_title()}</h2>
 <slot />

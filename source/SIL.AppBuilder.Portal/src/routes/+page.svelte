@@ -1,13 +1,13 @@
 <script lang="ts">
   import { SignIn } from '@auth/sveltekit/components';
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
 </script>
 
 <div class="w-full h-full flex flex-rc text-white">
   <div class="relative fg2">
     <div class="bksil">
       <div class="p-4">
-        <h1>{$_('welcome')}</h1>
+        <h1>{m.welcome()}</h1>
         <p>
           Scriptoria is a service that helps you keep your apps made with the App Builders software
           up-to-date.
@@ -18,11 +18,11 @@
   <div class="loginside bg-slate-800 flex flex-col">
     <div class="p-4 py-8 grow">
       <!-- <form action="/login"> -->
-      <h3>{$_('auth.login')}</h3>
+      <h3>{m.auth_login()}</h3>
       <!-- <input type="hidden" name="providerId" value="auth0" /> -->
       <SignIn className="w-full" provider="auth0" signInPage="login">
         <div slot="submitButton" class="btn btn-primary w-full my-2">
-          {$_('auth.login')} / {$_('auth.signup')}
+          {m.auth_login()} / {m.auth_signup()}
         </div>
       </SignIn>
       <!-- </form> -->
@@ -34,7 +34,7 @@
       authorizationParams={{ prompt: 'login', screen_hint: 'signup' }}
     >
       <div slot="submitButton" class="btn w-full my-2">
-        {$_('auth.login')} / {$_('auth.signup')} with new session
+        {m.auth_login()} / {m.auth_signup()} with new session
       </div>
     </SignIn>
   </div>

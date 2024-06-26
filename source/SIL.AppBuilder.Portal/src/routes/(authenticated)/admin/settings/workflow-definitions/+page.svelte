@@ -2,13 +2,13 @@
   import { goto } from '$app/navigation';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import type { PageData } from './$types';
-  import { _ } from 'svelte-i18n';
+  import * as m from '$lib/paraglide/messages';
 
   export let data: PageData;
 </script>
 
 <a href="workflow-definitions/new" class="btn btn-outline rounded-none m-4 mt-0">
-  {$_('admin.settings.workflowDefinitions.add')}
+  {m.admin_settings_workflowDefinitions_add()}
 </a>
 
 <div class="flex flex-col w-full">
@@ -19,23 +19,28 @@
       title={wd.Name}
       fields={[
         {
-          key: 'admin.settings.workflowDefinitions.description',
+          key: 'admin_settings_workflowDefinitions_description',
           value: wd.Description
         },
         {
-          key: 'admin.settings.workflowDefinitions.storeType',
+          key: 'admin_settings_workflowDefinitions_storeType',
           value: wd.StoreType?.Name
         },
         {
-          key: 'admin.settings.workflowDefinitions.workflowType',
-          value: $_('admin.settings.workflowDefinitions.workflowTypes.' + wd.Type)
+          key: 'admin_settings_workflowDefinitions_workflowType',
+          value: [
+            ,
+            m.admin_settings_workflowDefinitions_workflowTypes_1(),
+            m.admin_settings_workflowDefinitions_workflowTypes_2(),
+            m.admin_settings_workflowDefinitions_workflowTypes_3()
+          ][wd.Type]
         },
         {
-          key: 'admin.settings.workflowDefinitions.workflowScheme',
+          key: 'admin_settings_workflowDefinitions_workflowScheme',
           value: wd.WorkflowScheme
         },
         {
-          key: 'admin.settings.workflowDefinitions.workflowBusinessFlow',
+          key: 'admin_settings_workflowDefinitions_workflowBusinessFlow',
           value: wd.WorkflowBusinessFlow
         }
       ]}

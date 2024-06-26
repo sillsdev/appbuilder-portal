@@ -1,9 +1,5 @@
-import { locale } from "svelte-i18n";
-import { get} from "svelte/store"
-let relativeTimeFormatter = new Intl.RelativeTimeFormat(get(locale)!);
-locale.subscribe((value) => {
-  relativeTimeFormatter = new Intl.RelativeTimeFormat(value!);
-});
+import { languageTag } from "./paraglide/runtime";
+const relativeTimeFormatter = new Intl.RelativeTimeFormat(languageTag());
 export function getRelativeTime(date: Date) {
   // in miliseconds
   const units = {

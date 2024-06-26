@@ -1,6 +1,6 @@
 <script lang="ts">
   import SuperDebug, { superForm } from 'sveltekit-superforms';
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
   import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -23,7 +23,7 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$superFormData.id} />
-  <LabeledFormInput name="admin.settings.organizations.name">
+  <LabeledFormInput name="admin_settings_organizations_name">
     <input
       class="input w-full input-bordered"
       type="text"
@@ -31,14 +31,14 @@
       bind:value={$superFormData.name}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.owner">
+  <LabeledFormInput name="admin_settings_organizations_owner">
     <select class="select select-bordered" name="owner" bind:value={$superFormData.owner}>
       {#each data.options.users as option}
         <option value={option.Id}>{option.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.websiteURL">
+  <LabeledFormInput name="admin_settings_organizations_websiteURL">
     <input
       name="websiteURL"
       class="input input-bordered w-full"
@@ -46,7 +46,7 @@
       bind:value={$superFormData.websiteURL}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.buildEngineURL">
+  <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
     <input
       name="buildEngineURL"
       class="input input-bordered w-full"
@@ -54,7 +54,7 @@
       bind:value={$superFormData.buildEngineURL}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.accessToken">
+  <LabeledFormInput name="admin_settings_organizations_accessToken">
     <input
       name="buildEngineAccessToken"
       class="input input-bordered w-full"
@@ -62,7 +62,7 @@
       bind:value={$superFormData.buildEngineAccessToken}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.logoURL">
+  <LabeledFormInput name="admin_settings_organizations_logoURL">
     <input
       name="logoURL"
       class="input input-bordered w-full"
@@ -75,10 +75,10 @@
       <div class="label flex flex-row">
         <div class="flex flex-col">
           <span class="">
-            {$_('admin.settings.organizations.publicByDefault')}
+            {m.admin_settings_organizations_publicByDefault()}
           </span>
           <span class="text-sm">
-            {$_('admin.settings.organizations.publicByDefaultDescription')}
+            {m.admin_settings_organizations_publicByDefaultDescription()}
           </span>
         </div>
         <input
@@ -91,14 +91,14 @@
     </label>
   </div>
 
-  <!-- <LabeledFormInput name="admin.settings.organizations.publicByDefault" /> -->
+  <!-- <LabeledFormInput name="admin_settings_organizations_publicByDefault" /> -->
   <div class="border border-opacity-15 border-gray-50 rounded-lg p-2">
     <!-- OrganizationStores -->
     <div>
-      <span>{$_('org.storesTitle')}</span>
+      <span>{m.org_storesTitle()}</span>
       <br />
       <span class="label-text">
-        {$_('org.storeSelectTitle')}
+        {m.org_storeSelectTitle()}
       </span>
     </div>
     {#each $superFormData.stores as store}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -16,20 +16,20 @@
   });
 </script>
 
-<h3>{$_('newOrganization.title')}</h3>
+<h3>{m.newOrganization_title()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="admin.settings.organizations.name">
+  <LabeledFormInput name="admin_settings_organizations_name">
     <input type="text" name="name" class="input input-bordered w-full" bind:value={$form.name} />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.owner">
+  <LabeledFormInput name="admin_settings_organizations_owner">
     <select class="select select-bordered" name="owner" bind:value={$form.owner}>
       {#each data.options.users as user}
         <option value={user.Id}>{user.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.websiteURL">
+  <LabeledFormInput name="admin_settings_organizations_websiteURL">
     <input
       type="text"
       name="websiteURL"
@@ -37,7 +37,7 @@
       bind:value={$form.websiteURL}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.buildEngineURL">
+  <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
     <input
       type="text"
       name="buildEngineURL"
@@ -45,7 +45,7 @@
       bind:value={$form.buildEngineURL}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.accessToken">
+  <LabeledFormInput name="admin_settings_organizations_accessToken">
     <input
       type="text"
       name="buildEngineAccessToken"
@@ -53,7 +53,7 @@
       bind:value={$form.buildEngineAccessToken}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.organizations.logoURL">
+  <LabeledFormInput name="admin_settings_organizations_logoURL">
     <input
       type="text"
       name="logoURL"
@@ -66,10 +66,10 @@
       <div class="label flex flex-row">
         <div class="flex flex-col">
           <span class="">
-            {$_('admin.settings.organizations.publicByDefault')}
+            {m.admin_settings_organizations_publicByDefault()}
           </span>
           <span class="text-sm">
-            {$_('admin.settings.organizations.publicByDefaultDescription')}
+            {m.admin_settings_organizations_publicByDefaultDescription()}
           </span>
         </div>
         <input
