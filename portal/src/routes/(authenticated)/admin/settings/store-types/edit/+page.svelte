@@ -1,6 +1,6 @@
 <script lang="ts">
   import SuperDebug, { superForm } from 'sveltekit-superforms';
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
   import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -15,7 +15,7 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$superFormData.id} />
-  <LabeledFormInput name="admin.settings.storeTypes.name">
+  <LabeledFormInput name="admin_settings_storeTypes_name">
     <input
       class="input w-full input-bordered"
       type="text"
@@ -23,7 +23,7 @@
       bind:value={$superFormData.name}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.storeTypes.description">
+  <LabeledFormInput name="admin_settings_storeTypes_description">
     <textarea
       name="description"
       class="textarea textarea-bordered w-full"

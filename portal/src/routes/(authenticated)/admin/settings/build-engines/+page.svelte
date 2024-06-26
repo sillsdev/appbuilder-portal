@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _, locale } from 'svelte-i18n';
+  import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { getRelativeTime } from '$lib/relativeTime';
@@ -13,18 +13,17 @@
       title={buildEngine.BuildEngineUrl}
       fields={[
         {
-          key: 'admin.settings.buildEngines.accessToken',
+          key: 'admin_settings_buildEngines_accessToken',
           value: buildEngine.BuildEngineApiAccessToken
         },
         {
-          key: 'admin.settings.buildEngines.status',
-          value: $_(
-            'admin.settings.buildEngines.' +
-              (buildEngine.SystemAvailable ? 'connected' : 'disconnected')
-          )
+          key: 'admin_settings_buildEngines_status',
+          value: buildEngine.SystemAvailable
+            ? m.admin_settings_buildEngines_connected()
+            : m.admin_settings_buildEngines_disconnected()
         },
         {
-          key: 'admin.settings.buildEngines.lastUpdated',
+          key: 'admin_settings_buildEngines_lastUpdated',
           value: buildEngine.DateUpdated ? getRelativeTime(buildEngine.DateUpdated) : 'null'
         }
       ]}

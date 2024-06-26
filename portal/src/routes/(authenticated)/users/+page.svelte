@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
 </script>
 
-<h1>{$_('users.title')}</h1>
+<h1>{m.users_title()}</h1>
