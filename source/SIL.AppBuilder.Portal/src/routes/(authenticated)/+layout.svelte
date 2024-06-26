@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages"
   import { page } from '$app/stores';
   import { base } from '$app/paths';
   import { HamburgerIcon } from '$lib/icons';
@@ -28,8 +28,9 @@
 </script>
 
 <svelte:head>
+  
   <title
-    >{$_('tabAppName', { values: { count: data.numberOfTasks } })}{dev ? ' - SvelteKit' : ''}</title
+    >{data.numberOfTasks ? m.tabAppName_other({ count: data.numberOfTasks }) : m.tabAppName_zero()}{dev ? ' - SvelteKit' : ''}</title
   >
 </svelte:head>
 
@@ -41,7 +42,7 @@
     >
       <HamburgerIcon color="white" />
     </label>
-    <p class="uppercase text-white lg:ps-4">{$_('appName')}</p>
+    <p class="uppercase text-white lg:ps-4">{m.appName()}</p>
     <!-- <p>SCRIPTORIA</p> -->
   </div>
   <div class="navbar-end">
@@ -61,21 +62,21 @@
         <ul class="menu menu-compact gap-1 p-2">
           <li>
             <a href="/users/{$page.data.session?.user?.userId ?? ''}/edit"
-              >{$_('header.myProfile')}</a
+              >{m.header_myProfile()}</a
             >
           </li>
           <li>
             <a target="_blank" href="https://community.scripture.software.sil.org/c/scriptoria/24"
-              >{$_('header.community')}</a
+              >{m.header_community()}</a
             >
           </li>
           <li>
             <a target="_blank" href="https://scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf"
-              >{$_('header.help')}</a
+              >{m.header_help()}</a
             >
           </li>
           <li>
-            <button on:click={() => signOut({ callbackUrl: '/' })}>{$_('header.signOut')}</button>
+            <button on:click={() => signOut({ callbackUrl: '/' })}>{m.header_signOut()}</button>
           </li>
         </ul>
       </div>
@@ -104,7 +105,7 @@
               href="{base}/tasks"
               on:click={closeDrawer}
             >
-              {$_('sidebar.myTasks', { values: { count: data.numberOfTasks } })}
+              {data.numberOfTasks ? m.sidebar_myTasks_other({ count: data.numberOfTasks }) : m.sidebar_myTasks_zero()}
             </a>
           </li>
           <li>
@@ -114,7 +115,7 @@
               href="{base}/projects/own"
               on:click={closeDrawer}
             >
-              {$_('sidebar.myProjects')}
+              {m.sidebar_myProjects()}
             </a>
           </li>
           <li>
@@ -124,7 +125,7 @@
               href="{base}/projects/organization"
               on:click={closeDrawer}
             >
-              {$_('sidebar.organizationProjects')}
+              {m.sidebar_organizationProjects()}
             </a>
           </li>
           <li>
@@ -134,7 +135,7 @@
               href="{base}/projects/active"
               on:click={closeDrawer}
             >
-              {$_('sidebar.activeProjects')}
+              {m.sidebar_activeProjects()}
             </a>
           </li>
           <li>
@@ -144,7 +145,7 @@
               href="{base}/users"
               on:click={closeDrawer}
             >
-              {$_('sidebar.users')}
+              {m.sidebar_users()}
             </a>
           </li>
           <li>
@@ -154,7 +155,7 @@
               href="{base}/organizations/{organization}/settings"
               on:click={closeDrawer}
             >
-              {$_('sidebar.organizationSettings')}
+              {m.sidebar_organizationSettings()}
             </a>
           </li>
           <li>
@@ -164,7 +165,7 @@
               href="{base}/admin/settings/organizations"
               on:click={closeDrawer}
             >
-              {$_('sidebar.adminSettings')}
+              {m.sidebar_adminSettings()}
             </a>
           </li>
           <li class="menu-item-divider-top menu-item-divider-bottom">
@@ -174,7 +175,7 @@
               href="{base}/directory"
               on:click={closeDrawer}
             >
-              {$_('sidebar.projectDirectory')}
+              {m.sidebar_projectDirectory()}
             </a>
           </li>
           <li>
@@ -184,7 +185,7 @@
               href="{base}/open-source"
               on:click={closeDrawer}
             >
-              {$_('opensource')}
+              {m.opensource()}
             </a>
           </li>
         </ul>

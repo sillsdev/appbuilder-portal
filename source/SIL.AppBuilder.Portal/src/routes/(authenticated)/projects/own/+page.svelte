@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
 </script>
 
-<h1>{$_('projects.switcher.dropdown.myProjects')}</h1>
+<h1>{m.projects_switcher_dropdown_myProjects()}</h1>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -16,13 +16,13 @@
   });
 </script>
 
-<h3>{$_('models.add', { values: { name: $_('admin.settings.storeTypes.add') } })}</h3>
+<h3>{m.models_add({ name: m.admin_settings_storeTypes_add() })}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="admin.settings.storeTypes.name">
+  <LabeledFormInput name="admin_settings_storeTypes_name">
     <input type="text" name="name" class="input input-bordered w-full" bind:value={$form.name} />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.storeTypes.description">
+  <LabeledFormInput name="admin_settings_storeTypes_description">
     <input
       type="text"
       name="description"

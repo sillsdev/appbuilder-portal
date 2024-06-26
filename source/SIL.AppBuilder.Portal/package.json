@@ -12,7 +12,8 @@
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
     "test:integration": "playwright test",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "flatten-locales": "ts-node --esm scripts/flatten.ts"
   },
   "prisma": {
     "seed": "ts-node --esm prisma/seed.ts"
@@ -21,6 +22,8 @@
     "@auth/core": "^0.32.0",
     "@auth/sveltekit": "^1.2.0",
     "@iconify/svelte": "^3.1.4",
+    "@inlang/paraglide-js": "1.11.0",
+    "@inlang/paraglide-sveltekit": "^0.10.8",
     "@playwright/test": "^1.28.1",
     "@prisma/client": "^5.4.2",
     "@sveltejs/adapter-node": "^5.0.1",
@@ -41,8 +44,7 @@
     "prettier-plugin-svelte": "^2.10.1",
     "prisma": "^5.4.2",
     "svelte": "^4.0.5",
-    "svelte-check": "^3.4.3",
-    "svelte-i18n": "^4.0.0",
+    "svelte-check": "^3.8.4",
     "sveltekit-superforms": "^2.15.1",
     "tailwindcss": "^3.3.3",
     "ts-node": "^10.9.1",

@@ -1,10 +1,10 @@
 <script>
   import { SignIn } from '@auth/sveltekit/components';
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
 </script>
 
 <div class="card bg-slate-50 dark:bg-slate-800 border p-4">
-  <h2 class="text-center m-4">{$_('welcome')}</h2>
+  <h2 class="text-center m-4">{m.welcome()}</h2>
   <SignIn provider="auth0" signInPage="login" class="mx-auto my-4">
     <div slot="submitButton" class="btn btn-primary w-full mx-auto">Sign In</div>
   </SignIn>
