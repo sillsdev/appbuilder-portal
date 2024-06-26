@@ -6,10 +6,11 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
   import { createEventDispatcher } from 'svelte';
-  import { _ } from 'svelte-i18n';
+  import * as m from '$lib/paraglide/messages';
+  import type { ValidI13nKey } from '$lib/i18n';
 
   export let title;
-  export let fields: { key: string; value?: string | null }[];
+  export let fields: { key: ValidI13nKey; value?: string | null }[];
   export let editable = false;
   const dispatch = createEventDispatcher<{
     edit: null;
@@ -26,7 +27,7 @@
     {/if}
     {#each fields as field}
       <p>
-        <b>{$_(field.key)}: </b>
+        <b>{m[field.key]()}: </b>
         {field.value ?? ''}
       </p>
     {/each}

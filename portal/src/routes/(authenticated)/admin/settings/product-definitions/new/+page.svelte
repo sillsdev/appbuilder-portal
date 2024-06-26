@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -16,13 +16,13 @@
   });
 </script>
 
-<h3>{$_('admin.settings.productDefinitions.add')}</h3>
+<h3>{m.admin_settings_productDefinitions_add()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="admin.settings.productDefinitions.name">
+  <LabeledFormInput name="admin_settings_productDefinitions_name">
     <input type="text" name="name" class="input input-bordered w-full" bind:value={$form.name} />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.productDefinitions.type">
+  <LabeledFormInput name="admin_settings_productDefinitions_type">
     <select
       class="select select-bordered"
       name="applicationType"
@@ -33,38 +33,38 @@
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.productDefinitions.workflow">
+  <LabeledFormInput name="admin_settings_productDefinitions_workflow">
     <select class="select select-bordered" name="workflow" bind:value={$form.workflow}>
       {#each data.options.workflows.filter((w) => w.Type === 1) as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.productDefinitions.rebuildWorkflow">
+  <LabeledFormInput name="admin_settings_productDefinitions_rebuildWorkflow">
     <select
       class="select select-bordered"
       name="rebuildWorkflow"
       bind:value={$form.rebuildWorkflow}
     >
-      <option value={null}>{$_('admin.settings.productDefinitions.noWorkflow')}</option>
+      <option value={null}>{m.admin_settings_productDefinitions_noWorkflow()}</option>
       {#each data.options.workflows.filter((w) => w.Type === 2) as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.productDefinitions.republishWorkflow">
+  <LabeledFormInput name="admin_settings_productDefinitions_republishWorkflow">
     <select
       class="select select-bordered"
       name="republishWorkflow"
       bind:value={$form.republishWorkflow}
     >
-      <option value={null}>{$_('admin.settings.productDefinitions.noWorkflow')}</option>
+      <option value={null}>{m.admin_settings_productDefinitions_noWorkflow()}</option>
       {#each data.options.workflows.filter((w) => w.Type === 3) as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.productDefinitions.description">
+  <LabeledFormInput name="admin_settings_productDefinitions_description">
     <input
       type="text"
       name="description"
@@ -72,7 +72,7 @@
       bind:value={$form.description}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin.settings.productDefinitions.properties">
+  <LabeledFormInput name="admin_settings_productDefinitions_properties">
     <input
       type="text"
       name="properties"

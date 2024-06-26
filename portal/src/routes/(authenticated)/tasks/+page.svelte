@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
   import type { PageData } from './$types';
   import { getRelativeTime } from '$lib/relativeTime';
   import Icon from '@iconify/svelte';
@@ -26,15 +26,15 @@
 </script>
 
 <div class="w-full">
-  <h1>{$_('tasks.title')}</h1>
+  <h1>{m.tasks_title()}</h1>
   <div class="m-4 relative mt-0">
     {#if data.tasks.length > 0}
       <table class="w-full">
         <thead>
           <tr class="border-b-2 text-left">
-            <th>{$_('tasks.product')}</th>
-            <th>{$_('tasks.project')}</th>
-            <th>{$_('tasks.waitTime')}</th>
+            <th>{m.tasks_product()}</th>
+            <th>{m.tasks_project()}</th>
+            <th>{m.tasks_waitTime()}</th>
           </tr>
         </thead>
         <tbody>
@@ -72,8 +72,8 @@
       </table>
     {:else}
       <div class="pl-4">
-        <h3 class="p-0">{$_('tasks.noTasksTitle')}</h3>
-        <span>{$_('tasks.noTasksDescription')}</span>
+        <h3 class="p-0">{m.tasks_noTasksTitle()}</h3>
+        <span>{m.tasks_noTasksDescription()}</span>
       </div>
     {/if}
   </div>

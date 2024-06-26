@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { goto } from '$app/navigation';
@@ -8,7 +8,7 @@
 </script>
 
 <a href="store-types/new" class="btn btn-outline rounded-none m-4 mt-0">
-  {$_('admin.settings.storeTypes.add')}
+  {m.admin_settings_storeTypes_add()}
 </a>
 
 <div class="flex flex-col w-full">
@@ -17,7 +17,7 @@
       editable
       on:edit={() => goto('/admin/settings/store-types/edit?id=' + storeType.Id)}
       title={storeType.Name}
-      fields={[{ key: 'stores.attributes.description', value: storeType.Description }]}
+      fields={[{ key: 'stores_attributes_description', value: storeType.Description }]}
     />
   {/each}
 </div>

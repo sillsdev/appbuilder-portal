@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import Icon from '@iconify/svelte';
   import { goto } from '$app/navigation';
@@ -9,7 +9,7 @@
 </script>
 
 <a href="organizations/new" class="btn btn-outline rounded-none m-4 mt-0">
-  {$_('admin.settings.organizations.add')}
+  {m.admin_settings_organizations_add()}
 </a>
 
 <div class="flex flex-col w-full">
@@ -19,17 +19,17 @@
       on:edit={() => goto('/admin/settings/organizations/edit?id=' + organization.Id)}
       title={organization.Name}
       fields={[
-        { key: 'admin.settings.organizations.owner', value: organization.Owner.Name },
+        { key: 'admin_settings_organizations_owner', value: organization.Owner.Name },
         {
-          key: 'admin.settings.organizations.websiteURL',
+          key: 'admin_settings_organizations_websiteURL',
           value: organization.WebsiteUrl
         },
         {
-          key: 'admin.settings.organizations.buildEngineURL',
+          key: 'admin_settings_organizations_buildEngineURL',
           value: organization.BuildEngineUrl
         },
         {
-          key: 'admin.settings.organizations.accessToken',
+          key: 'admin_settings_organizations_accessToken',
           value: organization.BuildEngineApiAccessToken
         }
       ]}

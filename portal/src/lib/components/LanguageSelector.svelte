@@ -1,27 +1,20 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
   import { LanguageIcon } from '$lib/icons';
-  import { _, locale, locales } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
+  import { languageTag, setLanguageTag, type AvailableLanguageTag } from '$lib/paraglide/runtime';
+  import { i18n } from '$lib/i18n';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
 
-  function setLocale(lang: string | null | undefined): undefined {
-    locale.set(lang);
-    const elem = document.activeElement as HTMLElement;
-    if (elem) {
-      elem?.blur();
-    }
-    return;
-  }
-
-  function isActive(lang: string, current: string | null | undefined) {
-    if (lang === current?.substring(0, 2)) {
-      return 'active';
-    } else {
-      return 'inactive';
-    }
+  function switchToLanguage(newLanguage: AvailableLanguageTag) {
+    const canonicalPath = i18n.route($page.url.pathname);
+    const localizedPath = i18n.resolveRoute(canonicalPath, newLanguage);
+    goto(localizedPath);
   }
 </script>
 
-{#key $_('lang')}
+{#key languageTag()}
   <div class="dropdown dropdown-end">
     <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -33,17 +26,17 @@
     </div>
     <div class="dropdown-content z-10 bg-base-200 w-48 rounded-md overflow-y-auto">
       <ul class="menu menu-compact gap-1 p-2" tabindex="-1">
-        {#each $locales as lang}
+        {#each i18n.config.runtime.availableLanguageTags as lang}
           <li>
             <div
-              class="btn flex {isActive(lang, $locale)}"
-              on:click={setLocale(lang)}
-              on:keypress={setLocale(lang)}
+              class="btn flex {lang === languageTag() ? 'active' : 'inactive'}"
+              on:click={() => switchToLanguage(lang)}
+              on:keypress={() => switchToLanguage(lang)}
               role="button"
               tabindex="0"
             >
-              <Icon icon="circle-flags:{lang}" color="white" width="24" />
-              {lang}
+              <Icon icon="circle-flags:{lang.split("-")[0]}" color="white" width="24" />
+              {lang.split("-")[0]}
             </div>
           </li>
         {/each}

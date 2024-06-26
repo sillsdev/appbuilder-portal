@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
 </script>
 
-<h1>{$_('org.settingsTitle')}</h1>
+<h1>{m.org_settingsTitle()}</h1>

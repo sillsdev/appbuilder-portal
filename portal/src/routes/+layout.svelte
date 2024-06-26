@@ -1,8 +1,12 @@
 <script>
+  import { ParaglideJS } from '@inlang/paraglide-sveltekit';
+  import { i18n } from '$lib/i18n';
+
   import '../app.css';
-  import { _ } from 'svelte-i18n';
 </script>
 
-<div class="h-screen w-full flex flex-col">
-  <slot />
-</div>
+<ParaglideJS {i18n}>
+  <div class="h-screen w-full flex flex-col">
+    <slot />
+  </div>
+</ParaglideJS>

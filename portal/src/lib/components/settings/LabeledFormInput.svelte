@@ -4,15 +4,16 @@
     
 -->
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
-  export let name: string;
+  import type { ValidI13nKey } from "$lib/i18n";
+  import * as m from "$lib/paraglide/messages";
+  export let name: ValidI13nKey;
 </script>
 
 <div>
   <label>
     <div class="label">
       <span class="label-text">
-        {$_(name)}
+        {m[name]()}
       </span>
     </div>
     <slot />

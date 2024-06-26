@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from "$lib/paraglide/messages";
 </script>
 
-<h1>{$_('sidebar.projectDirectory')}</h1>
+<h1>{m.sidebar_projectDirectory()}</h1>

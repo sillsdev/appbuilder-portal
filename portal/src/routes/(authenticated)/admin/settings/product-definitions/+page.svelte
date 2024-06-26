@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _ } from 'svelte-i18n';
+  import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { goto } from '$app/navigation';
@@ -28,7 +28,7 @@
 </script>
 
 <a href="product-definitions/new" class="btn btn-outline rounded-none m-4 mt-0">
-  {$_('admin.settings.productDefinitions.add')}
+  {m.admin_settings_productDefinitions_add()}
 </a>
 
 <div class="flex flex-col w-full">
@@ -39,23 +39,23 @@
       title={pD.Name}
       fields={[
         {
-          key: 'admin.settings.productDefinitions.type',
+          key: 'admin_settings_productDefinitions_type',
           value: pD.ApplicationTypes.Name
         },
         {
-          key: 'admin.settings.productDefinitions.workflow',
+          key: 'admin_settings_productDefinitions_workflow',
           value: pD.Workflow.Name
         },
         {
-          key: 'admin.settings.productDefinitions.rebuildWorkflow',
+          key: 'admin_settings_productDefinitions_rebuildWorkflow',
           value: pD.RebuildWorkflow?.Name
         },
         {
-          key: 'admin.settings.productDefinitions.republishWorkflow',
+          key: 'admin_settings_productDefinitions_republishWorkflow',
           value: pD.RepublishWorkflow?.Name
         },
         {
-          key: 'admin.settings.productDefinitions.description',
+          key: 'admin_settings_productDefinitions_description',
           value: pD.Description
         }
       ]}
