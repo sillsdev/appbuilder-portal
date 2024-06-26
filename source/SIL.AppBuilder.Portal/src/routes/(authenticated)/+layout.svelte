@@ -7,7 +7,8 @@
   import { signOut } from '@auth/sveltekit/client';
   import type { LayoutData } from './$types';
   import Icon from '@iconify/svelte';
-  import { dev } from '$app/environment';
+  import { browser, dev } from '$app/environment';
+  import { selectedOrganizationId } from '$lib/stores';
 
   export let data: LayoutData;
 
@@ -15,9 +16,8 @@
   function closeDrawer() {
     drawerToggle.click();
   }
-
-  $: organizationId = data.organizations[0].Id;
-  $: organization = data.organizations.find(v => v.Id === organizationId);
+  $: if (!$selectedOrganizationId) $selectedOrganizationId = data.organizations[0].Id;
+  $: organization = data.organizations.find((v) => v.Id === $selectedOrganizationId);
 
   let orgMenuOpen = false;
   // $: console.log($page.data);
@@ -28,7 +28,9 @@
 </script>
 
 <svelte:head>
-  <title>{$_('tabAppName', { values: { count: data.numberOfTasks }})}{dev ? ' - SvelteKit' : ''}</title>
+  <title
+    >{$_('tabAppName', { values: { count: data.numberOfTasks } })}{dev ? ' - SvelteKit' : ''}</title
+  >
 </svelte:head>
 
 <div class="shrink-0 navbar bg-[#1C3258]">
@@ -91,114 +93,120 @@
 
     <div class="h-full drawer-side shrink-0 z-10">
       <label for="primary-content-drawer" class="drawer-overlay" />
-      <div class="h-full overflow-hidden w-full rounded-r-xl lg:w-72 lg:border-r-2 min-[480px]:w-1/2 min-[720px]:w-1/3">
-
-      <ul
-        class="menu menu-lg mt-16 lg:mt-0 p-0 w-full bg-base-100 text-base-content h-full"
+      <div
+        class="h-full overflow-hidden w-full rounded-r-xl lg:w-72 lg:border-r-2 min-[480px]:w-1/2 min-[720px]:w-1/3"
       >
-        <li>
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/tasks')}
-            href="{base}/tasks"
-            on:click={closeDrawer}
-          >
-            {$_('sidebar.myTasks', { values: { count: data.numberOfTasks } })}
-          </a>
-        </li>
-        <li>
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/projects/own')}
-            href="{base}/projects/own"
-            on:click={closeDrawer}
-          >
-            {$_('sidebar.myProjects')}
-          </a>
-        </li>
-        <li>
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/projects/organization')}
-            href="{base}/projects/organization"
-            on:click={closeDrawer}
-          >
-            {$_('sidebar.organizationProjects')}
-          </a>
-        </li>
-        <li>
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/projects/active')}
-            href="{base}/projects/active"
-            on:click={closeDrawer}
-          >
-            {$_('sidebar.activeProjects')}
-          </a>
-        </li>
-        <li>
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/users')}
-            href="{base}/users"
-            on:click={closeDrawer}
-          >
-            {$_('sidebar.users')}
-          </a>
-        </li>
-        <li>
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/organizations/[id]/settings')}
-            href="{base}/organizations/{organization}/settings"
-            on:click={closeDrawer}
-          >
-            {$_('sidebar.organizationSettings')}
-          </a>
-        </li>
-        <li>
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/admin/settings')}
-            href="{base}/admin/settings/organizations"
-            on:click={closeDrawer}
-          >
-            {$_('sidebar.adminSettings')}
-          </a>
-        </li>
-        <li class="menu-item-divider-top menu-item-divider-bottom">
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/directory')}
-            href="{base}/directory"
-            on:click={closeDrawer}
-          >
-            {$_('sidebar.projectDirectory')}
-          </a>
-        </li>
-        <li>
-          <a
-            class="rounded-none"
-            class:active-menu-item={isActive($page.route.id, '/open-source')}
-            href="{base}/open-source"
-            on:click={closeDrawer}
-          >
-            {$_('opensource')}
-          </a>
-        </li>
+        <ul class="menu menu-lg mt-16 lg:mt-0 p-0 w-full bg-base-100 text-base-content h-full">
+          <li>
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/tasks')}
+              href="{base}/tasks"
+              on:click={closeDrawer}
+            >
+              {$_('sidebar.myTasks', { values: { count: data.numberOfTasks } })}
+            </a>
+          </li>
+          <li>
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/projects/own')}
+              href="{base}/projects/own"
+              on:click={closeDrawer}
+            >
+              {$_('sidebar.myProjects')}
+            </a>
+          </li>
+          <li>
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/projects/organization')}
+              href="{base}/projects/organization"
+              on:click={closeDrawer}
+            >
+              {$_('sidebar.organizationProjects')}
+            </a>
+          </li>
+          <li>
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/projects/active')}
+              href="{base}/projects/active"
+              on:click={closeDrawer}
+            >
+              {$_('sidebar.activeProjects')}
+            </a>
+          </li>
+          <li>
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/users')}
+              href="{base}/users"
+              on:click={closeDrawer}
+            >
+              {$_('sidebar.users')}
+            </a>
+          </li>
+          <li>
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/organizations/[id]/settings')}
+              href="{base}/organizations/{organization}/settings"
+              on:click={closeDrawer}
+            >
+              {$_('sidebar.organizationSettings')}
+            </a>
+          </li>
+          <li>
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/admin/settings')}
+              href="{base}/admin/settings/organizations"
+              on:click={closeDrawer}
+            >
+              {$_('sidebar.adminSettings')}
+            </a>
+          </li>
+          <li class="menu-item-divider-top menu-item-divider-bottom">
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/directory')}
+              href="{base}/directory"
+              on:click={closeDrawer}
+            >
+              {$_('sidebar.projectDirectory')}
+            </a>
+          </li>
+          <li>
+            <a
+              class="rounded-none"
+              class:active-menu-item={isActive($page.route.id, '/open-source')}
+              href="{base}/open-source"
+              on:click={closeDrawer}
+            >
+              {$_('opensource')}
+            </a>
+          </li>
         </ul>
         <ul
-        class="menu menu-lg mt-16 lg:mt-0 p-0 w-full lg:w-72 bg-base-100 text-base-content h-full"
-        style="transition: transform 0.15s; transform: translate(0, {orgMenuOpen ? '-100%' : '0'});"
+          class="menu menu-lg mt-16 lg:mt-0 p-0 w-full lg:w-72 bg-base-100 text-base-content h-full"
+          style="transition: transform 0.15s; transform: translate(0, {orgMenuOpen
+            ? '-100%'
+            : '0'});"
         >
           {#each data.organizations as org}
             <li>
-              <button class="rounded-none" on:click={() => {organizationId = org.Id; orgMenuOpen = false }}
-            class:active-menu-item={organizationId === org.Id}
-                >
+              <button
+                class="rounded-none"
+                on:click={() => {
+                  $selectedOrganizationId = org.Id;
+                  orgMenuOpen = false;
+                }}
+                class:active-menu-item={$selectedOrganizationId === org.Id}
+              >
                 <span class="w-8 h-8 bg-white mr-2 border-base-300">
                   {#if org?.LogoUrl}
-                    <img src="{org?.LogoUrl}" alt="{org?.Name} logo">
+                    <img src={org?.LogoUrl} alt="{org?.Name} logo" />
                   {:else}
                     &nbsp;
                   {/if}
@@ -211,10 +219,14 @@
         {#if data.organizations.length > 1}
           <div class="[height:70px] w-full absolute bottom-0 bg-base-300">
             <div class="h-full flex flex-row items-center">
-              <button tabindex="0" on:click={() => orgMenuOpen = !orgMenuOpen} class="flex items-center w-full p-4">
+              <button
+                tabindex="0"
+                on:click={() => (orgMenuOpen = !orgMenuOpen)}
+                class="flex items-center w-full p-4"
+              >
                 <span class="w-8 h-8 bg-white mr-2">
                   {#if organization?.LogoUrl}
-                    <img src="{organization?.LogoUrl}" alt="{organization?.Name} logo">
+                    <img src={organization?.LogoUrl} alt="{organization?.Name} logo" />
                   {:else}
                     &nbsp;
                   {/if}
@@ -222,11 +234,17 @@
                 <span class="">
                   {organization?.Name ?? 'No organization'}
                 </span>
-                <Icon icon="gridicons:dropdown" width="24" style="transition: transform 0.15s; transform: rotate({orgMenuOpen ? '180' : '0'}deg)"/>
+                <Icon
+                  icon="gridicons:dropdown"
+                  width="24"
+                  style="transition: transform 0.15s; transform: rotate({orgMenuOpen
+                    ? '180'
+                    : '0'}deg)"
+                />
               </button>
             </div>
           </div>
-          {/if}
+        {/if}
       </div>
     </div>
     <div class="drawer-content grow items-start justify-start">
