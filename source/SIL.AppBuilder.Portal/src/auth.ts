@@ -1,5 +1,5 @@
 // hooks.server.ts
-import prisma, { getOrCreateUser, getUserFromId } from '$lib/prisma';
+import prisma, { getOrCreateUser } from '$lib/prisma';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
