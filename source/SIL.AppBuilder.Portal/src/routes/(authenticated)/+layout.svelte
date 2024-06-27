@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as m from "$lib/paraglide/messages"
+  import * as m from '$lib/paraglide/messages';
   import { page } from '$app/stores';
   import { base } from '$app/paths';
   import { HamburgerIcon } from '$lib/icons';
@@ -8,7 +8,6 @@
   import type { LayoutData } from './$types';
   import Icon from '@iconify/svelte';
   import { browser, dev } from '$app/environment';
-  import { selectedOrganizationId } from '$lib/stores';
 
   export let data: LayoutData;
 
@@ -16,8 +15,6 @@
   function closeDrawer() {
     drawerToggle.click();
   }
-  $: if (!$selectedOrganizationId) $selectedOrganizationId = data.organizations[0].Id;
-  $: organization = data.organizations.find((v) => v.Id === $selectedOrganizationId);
 
   let orgMenuOpen = false;
   // $: console.log($page.data);
@@ -28,9 +25,10 @@
 </script>
 
 <svelte:head>
-  
   <title
-    >{data.numberOfTasks ? m.tabAppName_other({ count: data.numberOfTasks }) : m.tabAppName_zero()}{dev ? ' - SvelteKit' : ''}</title
+    >{data.numberOfTasks
+      ? m.tabAppName_other({ count: data.numberOfTasks })
+      : m.tabAppName_zero()}{dev ? ' - SvelteKit' : ''}</title
   >
 </svelte:head>
 
@@ -61,8 +59,7 @@
       <div class="dropdown-content w-36 z-10 bg-base-200 rounded-md overflow-y-auto">
         <ul class="menu menu-compact gap-1 p-2">
           <li>
-            <a href="/users/{$page.data.session?.user?.userId ?? ''}/edit"
-              >{m.header_myProfile()}</a
+            <a href="/users/{$page.data.session?.user?.userId ?? ''}/edit">{m.header_myProfile()}</a
             >
           </li>
           <li>
@@ -105,7 +102,9 @@
               href="{base}/tasks"
               on:click={closeDrawer}
             >
-              {data.numberOfTasks ? m.sidebar_myTasks_other({ count: data.numberOfTasks }) : m.sidebar_myTasks_zero()}
+              {data.numberOfTasks
+                ? m.sidebar_myTasks_other({ count: data.numberOfTasks })
+                : m.sidebar_myTasks_zero()}
             </a>
           </li>
           <li>
@@ -152,7 +151,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isActive($page.route.id, '/organizations/[id]/settings')}
-              href="{base}/organizations/{organization}/settings"
+              href="{base}/organizations/"
               on:click={closeDrawer}
             >
               {m.sidebar_organizationSettings()}
@@ -189,63 +188,6 @@
             </a>
           </li>
         </ul>
-        <ul
-          class="menu menu-lg mt-16 lg:mt-0 p-0 w-full lg:w-72 bg-base-100 text-base-content h-full"
-          style="transition: transform 0.15s; transform: translate(0, {orgMenuOpen
-            ? '-100%'
-            : '0'});"
-        >
-          {#each data.organizations as org}
-            <li>
-              <button
-                class="rounded-none"
-                on:click={() => {
-                  $selectedOrganizationId = org.Id;
-                  orgMenuOpen = false;
-                }}
-                class:active-menu-item={$selectedOrganizationId === org.Id}
-              >
-                <span class="w-8 h-8 bg-white mr-2 border-base-300">
-                  {#if org?.LogoUrl}
-                    <img src={org?.LogoUrl} alt="{org?.Name} logo" />
-                  {:else}
-                    &nbsp;
-                  {/if}
-                </span>
-                {org.Name}
-              </button>
-            </li>
-          {/each}
-        </ul>
-        {#if data.organizations.length > 1}
-          <div class="[height:70px] w-full absolute bottom-0 bg-base-300">
-            <div class="h-full flex flex-row items-center">
-              <button
-                tabindex="0"
-                on:click={() => (orgMenuOpen = !orgMenuOpen)}
-                class="flex items-center w-full p-4"
-              >
-                <span class="w-8 h-8 bg-white mr-2">
-                  {#if organization?.LogoUrl}
-                    <img src={organization?.LogoUrl} alt="{organization?.Name} logo" />
-                  {:else}
-                    &nbsp;
-                  {/if}
-                </span>
-                <span class="">
-                  {organization?.Name ?? 'No organization'}
-                </span>
-                <Icon
-                  icon="gridicons:dropdown"
-                  width="24"
-                  style="transition: transform 0.15s; transform: rotate({orgMenuOpen
-                    ? '180'
-                    : '0'}deg)"
-                />
-              </button>
-            </div>
-          </div>
-        {/if}
       </div>
     </div>
     <div class="drawer-content grow items-start justify-start">
