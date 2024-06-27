@@ -1,9 +1,7 @@
 // src/lib/prisma.ts
 
-import type { Auth0Profile } from '@auth/core/providers/auth0';
 import type { Profile } from '@auth/sveltekit';
-import { Prisma, PrismaClient } from '@prisma/client';
-import type { DefaultArgs } from '@prisma/client/runtime/library';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -33,6 +31,34 @@ export async function getOrCreateUser(profile: Profile) {
       IsLocked: false
     }
   });
+}
+
+export async function getOrganizationsForUser(userId: number) {
+  const user = await prisma.users.findUnique({
+    where: {
+      Id: userId
+    },
+    include: { UserRoles: true, Organizations: true }
+  });
+  const organizations = user?.UserRoles.find((roleDef) => roleDef.RoleId === RoleId.SuperAdmin)
+    ? await prisma.organizations.findMany({
+      include: {
+        Owner: true
+      }
+    })
+    : await prisma.organizations.findMany({
+      where: {
+        OrganizationMemberships: {
+          every: {
+            UserId: userId
+          }
+        }
+      },
+      include: {
+        Owner: true
+      }
+    });
+  return organizations;
 }
 
 export default prisma;
