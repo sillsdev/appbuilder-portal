@@ -1,9 +1,9 @@
 <script lang="ts">
-  import SuperDebug, { superForm } from 'sveltekit-superforms';
-  import * as m from "$lib/paraglide/messages";
-  import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import { superForm } from 'sveltekit-superforms';
+  import type { ActionData, PageData } from './$types';
 
   export let data: PageData;
   export let form: ActionData;
@@ -103,12 +103,14 @@
     </div>
     {#each $superFormData.stores as store}
       <div>
-        <input type="checkbox" bind:checked={store.enabled} />
-        <b>
-          {getStoreInfo(store)?.Name}
-        </b>
-        <br />
-        {getStoreInfo(store)?.Description}
+        <label>
+          <input type="checkbox" bind:checked={store.enabled} />
+          <b>
+            {getStoreInfo(store)?.Name}
+          </b>
+          <br />
+          {getStoreInfo(store)?.Description}
+        </label>
       </div>
     {/each}
   </div>
