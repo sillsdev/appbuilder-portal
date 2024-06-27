@@ -1,10 +1,10 @@
+import { base } from '$app/paths';
 import prisma from '$lib/prisma';
+import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { fail, redirect } from '@sveltejs/kit';
-import { base } from '$app/paths';
 
 const editSchema = v.object({
   id: v.pipe(v.number(), v.minValue(0), v.integer()),
@@ -27,7 +27,7 @@ export const load = (async ({ url }) => {
   if (isNaN(id)) {
     return redirect(302, base + '/admin/settings/organizations');
   }
-  const data = await prisma.organizations.findFirst({
+  const data = await prisma.organizations.findUnique({
     where: {
       Id: id
     }

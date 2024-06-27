@@ -1,13 +1,12 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
-  import { page } from '$app/stores';
+  import { dev } from '$app/environment';
   import { base } from '$app/paths';
-  import { HamburgerIcon } from '$lib/icons';
+  import { page } from '$app/stores';
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
+  import { HamburgerIcon } from '$lib/icons';
+  import * as m from '$lib/paraglide/messages';
   import { signOut } from '@auth/sveltekit/client';
   import type { LayoutData } from './$types';
-  import Icon from '@iconify/svelte';
-  import { browser, dev } from '$app/environment';
 
   export let data: LayoutData;
 
@@ -150,7 +149,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/organizations/[id]/settings')}
+              class:active-menu-item={isActive($page.route.id, '/organizations')}
               href="{base}/organizations/"
               on:click={closeDrawer}
             >
