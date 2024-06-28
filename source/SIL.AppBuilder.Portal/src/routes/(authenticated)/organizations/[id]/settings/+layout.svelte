@@ -18,7 +18,7 @@
 <TabbedMenu
   base="{base}/organizations/{$page.params.id}/settings"
   routeId="/(authenticated)/organizations/[id]/settings"
-  title={org_settingsTitle()}
+  title="{$page.data.organization.Name} {org_settingsTitle()}"
   menuItems={[
     {
       text: org_basicTitle(),
@@ -42,5 +42,11 @@
     }
   ]}
 >
+  <div slot="title" class="w-full">
+    <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
+      {org_settingsTitle()}
+    </h1>
+    <h2>{$page.data.organization.Name}</h2>
+  </div>
   <slot />
 </TabbedMenu>
