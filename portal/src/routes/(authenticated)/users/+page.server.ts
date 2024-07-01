@@ -42,6 +42,7 @@ export const load = (async (event) => {
 
   // Sacrificing perfect type safety for readibility
   let users;
+  let organizations;
 
   if (await isUserSuperAdmin(userId)) {
     // Get all users that are locked or are a member of at least one organization
@@ -63,6 +64,7 @@ export const load = (async (event) => {
         ]
       }
     });
+    organizations = await prisma.organizations.findMany({});
   } else {
     // For each OrganizationMembership of the current user where they are an organization admin, include all
     // users of that Organization. This creates duplicates for users that are in multiple of the same
@@ -124,16 +126,20 @@ export const load = (async (event) => {
         ).values()
       ]
     ];
-    const currentUserOrgAdmins = new Set(
-      (
-        await prisma.userRoles.findMany({
-          where: {
-            UserId: userId,
-            RoleId: RoleId.OrgAdmin
+    organizations = await prisma.organizations.findMany({
+      where: {
+        UserRoles: {
+          some: {
+            RoleId: RoleId.OrgAdmin,
+            UserId: userId
           }
-        })
-      ).map((r) => r.OrganizationId)
-    );
+        }
+      },
+      include: {
+        UserRoles: true
+      }
+    });
+    const currentUserOrgAdmins = new Set(organizations.map((org) => org.Id));
     users.forEach((user) => {
       user.OrganizationMemberships = user.OrganizationMemberships.filter((mem) => {
         return currentUserOrgAdmins.has(mem.OrganizationId);
@@ -150,7 +156,7 @@ export const load = (async (event) => {
     // The whole page is about 670 KB without this data.
     // Only superadmins would see this larger size, most users have organizations with much fewer users where it does not matter
 
-    // Could be improved by putting group and organization names into a referenced palette
+    // Could be improved by putting group names into a referenced palette
     // (minimal returns if most users are in different organizations and groups)
     // or by using smaller (or even minified) keys (eg N instead of Name, O instead of Organizations)
 
@@ -163,12 +169,16 @@ export const load = (async (event) => {
         Roles: user.UserRoles.filter((r) => r.OrganizationId === org.OrganizationId).map(
           (r) => r.RoleId
         ),
-        Name: org.Organization.Name!,
+        Id: org.OrganizationId,
         Groups: user.GroupMemberships.filter(
           (group) => group.Group.OwnerId === org.OrganizationId
         ).map((group) => group.Group.Name!)
       })),
       IsLocked: user.IsLocked
+    })),
+    organizations: organizations?.map((org) => ({
+      Name: org.Name,
+      Id: org.Id
     }))
   };
 }) satisfies PageServerLoad;
