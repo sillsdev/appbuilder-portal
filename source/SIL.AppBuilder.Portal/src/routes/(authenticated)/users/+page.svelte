@@ -23,7 +23,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.users.sort((a, b) => a.Id - b.Id) as user}
+        {#each data.users.sort((a, b) => a.FamilyName.localeCompare(b.FamilyName)) as user}
           <tr class="align-top">
             <td class="p-2">{user.Name}</td>
             <td class="py-2">
