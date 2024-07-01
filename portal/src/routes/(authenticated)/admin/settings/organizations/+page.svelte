@@ -1,9 +1,8 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import * as m from "$lib/paraglide/messages";
-  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
-  import Icon from '@iconify/svelte';
   import { goto } from '$app/navigation';
+  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 </script>
@@ -33,17 +32,6 @@
           value: organization.BuildEngineApiAccessToken
         }
       ]}
-    >
-      <button
-        class="absolute top-2 right-10"
-        title="Switch context"
-        on:click={() => {
-          alert('#TODO 😊');
-          window.location.href = 'https://youtu.be/dQw4w9WgXcQ';
-        }}
-      >
-        <Icon width="24" icon="mdi:sync" />
-      </button>
-    </DataDisplayBox>
+    />
   {/each}
 </div>
