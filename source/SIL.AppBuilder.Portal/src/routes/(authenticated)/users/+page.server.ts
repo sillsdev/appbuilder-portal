@@ -1,4 +1,4 @@
-import prisma, { isUserSuperAdmin } from '$lib/prisma';
+import prisma, { RoleId, isUserSuperAdmin } from '$lib/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -7,6 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
 type UserInfo = {
   Id: number;
   Name: string;
+  FamilyName: string;
   Organizations: {
     Roles: number[];
     Name: string;
@@ -43,25 +44,73 @@ export const load = (async (event) => {
   let users;
 
   if (await isUserSuperAdmin(userId)) {
+    // Get all users that are locked or are a member of at least one organization
+    // (Users that are not in an organization and are not locked are not interesting
+    // because they can't login and behave essentially as locked users or as users
+    // who have never logged in before)
     users = await prisma.users.findMany({
-      include
+      include,
+      where: {
+        OR: [
+          {
+            OrganizationMemberships: {
+              some: {}
+            }
+          },
+          {
+            IsLocked: true
+          }
+        ]
+      }
     });
   } else {
+    // For each OrganizationMembership of the current user where they are an organization admin, include all
+    // users of that Organization. This creates duplicates for users that are in multiple of the same
+    // organizations as the current user so we put them in a map by user id to prune duplicates. There may
+    // be a better way to handle this with prisma itself
+
+    // Initially this gives a structure of
+    /**
+     * user: {
+     *  OrganizationMemberships: [{
+     *    Organization: {
+     *      OrganizationMemberships: [{
+     *        User: {}
+     *      }]
+     *    }
+     *  }]
+     * }
+     */
+    // so we flatMap it into an array of all of the OrganizationMemberships Users, and pass it to the Map indexed by user.Id
+    // finally, filter the organizations we return by the organizations the current user is an organizational admin for
+
     users = [
-      ...new Map(
-        (await prisma.users.findUnique({
-          where: {
-            Id: userId
-          },
-          include: {
-            OrganizationMemberships: {
-              include: {
-                Organization: {
-                  include: {
-                    OrganizationMemberships: {
-                      include: {
-                        User: {
-                          include
+      ...[
+        ...new Map(
+          (await prisma.users.findUnique({
+            where: {
+              Id: userId
+            },
+            include: {
+              OrganizationMemberships: {
+                where: {
+                  Organization: {
+                    UserRoles: {
+                      some: {
+                        RoleId: RoleId.OrgAdmin,
+                        UserId: userId
+                      }
+                    }
+                  }
+                },
+                include: {
+                  Organization: {
+                    include: {
+                      OrganizationMemberships: {
+                        include: {
+                          User: {
+                            include
+                          }
                         }
                       }
                     }
@@ -69,18 +118,37 @@ export const load = (async (event) => {
                 }
               }
             }
-          }
-        }))!.OrganizationMemberships.flatMap((org) =>
-          org.Organization.OrganizationMemberships.flatMap((orgMem) => orgMem.User)
-        ).map((a) => [a.Id, a])
-      ).values()
+          }))!.OrganizationMemberships.flatMap((org) =>
+            org.Organization.OrganizationMemberships.flatMap((orgMem) => orgMem.User)
+          ).map((user) => [user.Id, user])
+        ).values()
+      ]
     ];
+    const currentUserOrgAdmins = new Set(
+      (
+        await prisma.userRoles.findMany({
+          where: {
+            UserId: userId,
+            RoleId: RoleId.OrgAdmin
+          }
+        })
+      ).map((r) => r.OrganizationId)
+    );
+    users.forEach((user) => {
+      user.OrganizationMemberships = user.OrganizationMemberships.filter((mem) => {
+        return currentUserOrgAdmins.has(mem.OrganizationId);
+      });
+      user.GroupMemberships = user.GroupMemberships.filter((mem) => {
+        return currentUserOrgAdmins.has(mem.Group.OwnerId);
+      });
+    });
   }
   return {
     // Only pass essential information to the client.
     // About 120 bytes per small user (with one organization and one group), and 240 for a larger user in several organizations.
     // On average about 175 bytes per user. If PROD has 200 active users, that's 35 KB of data to send all of them. 620 total users = 110 KB
     // The whole page is about 670 KB without this data.
+    // Only superadmins would see this larger size, most users have organizations with much fewer users where it does not matter
 
     // Could be improved by putting group and organization names into a referenced palette
     // (minimal returns if most users are in different organizations and groups)
@@ -90,6 +158,7 @@ export const load = (async (event) => {
     users: users.map((user) => ({
       Id: user.Id,
       Name: user.Name!,
+      FamilyName: user.FamilyName!,
       Organizations: user.OrganizationMemberships.map((org) => ({
         Roles: user.UserRoles.filter((r) => r.OrganizationId === org.OrganizationId).map(
           (r) => r.RoleId
