@@ -4,6 +4,7 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
+  let selectedOrg: number = 0;
 
   let forms: { [key: string]: any } = {};
 
@@ -11,7 +12,21 @@
 </script>
 
 <div class="w-full">
-  <h1>{m.users_title()}</h1>
+  <div class="flex flex-row place-content-between align-middle">
+    <h1>{m.users_title()}</h1>
+    {#if data.organizations.length > 1}
+      <!-- TODO i18n -->
+      <div class="content-center mr-4">
+        Filter organization:
+        <select class="select select-bordered" name="org" bind:value={selectedOrg}>
+          <option value={0}>Any organization</option>
+          {#each data.organizations as organization}
+            <option value={organization.Id}>{organization.Name}</option>
+          {/each}
+        </select>
+      </div>
+    {/if}
+  </div>
   <div class="m-4 relative mt-0">
     <table class="w-full">
       <thead>
@@ -23,7 +38,9 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.users.sort((a, b) => a.FamilyName.localeCompare(b.FamilyName)) as user}
+        {#each data.users
+          .filter((u) => u.Organizations.find((o) => o.Id === selectedOrg || selectedOrg === 0))
+          .sort((a, b) => a.FamilyName.localeCompare(b.FamilyName)) as user}
           <tr class="align-top">
             <td class="p-2">{user.Name}</td>
             <td class="py-2">
@@ -31,7 +48,7 @@
                 <div class="p-1">
                   <span>
                     <b>
-                      {org.Name}
+                      {data.organizations.find((o) => o.Id === org.Id)?.Name}
                     </b>
                   </span>
                   <br />
@@ -46,7 +63,7 @@
                 <div class="p-1">
                   <span>
                     <b>
-                      {org.Name}
+                      {data.organizations.find((o) => o.Id === org.Id)?.Name}
                     </b>
                   </span>
                   <br />
