@@ -33,6 +33,16 @@ export async function getOrCreateUser(profile: Profile) {
   });
 }
 
+export async function isUserSuperAdmin(userId: number) {
+  return !!(
+    await prisma.userRoles.findMany({
+      where: {
+        UserId: userId
+      }
+    })
+  ).find((v) => v.RoleId === RoleId.SuperAdmin);
+}
+
 export async function getOrganizationsForUser(userId: number) {
   const user = await prisma.users.findUnique({
     where: {
