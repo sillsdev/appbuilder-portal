@@ -31,7 +31,7 @@
         <span>{org_noteLogUrl()}</span>
       </LabeledFormInput>
     </div>
-    <div class="w-1/3 ml-2">
+    <div class="w-1/3 ml-4">
       <img src={$superFormData.logoUrl} alt="Logo" class="object-contain" />
     </div>
   </div>
