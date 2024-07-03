@@ -1,28 +1,12 @@
 <script lang="ts">
-  import * as m from "$lib/paraglide/messages";
-  import type { PageData } from './$types';
+  import { goto } from '$app/navigation';
+  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import * as m from '$lib/paraglide/messages';
   import { getRelativeTime } from '$lib/relativeTime';
   import Icon from '@iconify/svelte';
-  import { goto } from '$app/navigation';
+  import type { PageData } from './$types';
 
   export let data: PageData;
-  const iconMap = {
-    android: 'flat-color-icons:android-os',
-    html: 'mdi:web',
-    pwa: 'mdi:web',
-    package: 'mdi:archive',
-    none: 'mdi:error-outline'
-  };
-  // Not sure I like this, but it's implemented here as it was in S1.
-  // I would suggest having a productDefinition db field for what type this is
-  // TODO: icon colors?
-  function getIcon(task: (typeof data.tasks)[0]) {
-    return iconMap[
-      (Object.keys(iconMap).find((key) =>
-        task.Product.ProductDefinition.Name?.toLowerCase().includes(key)
-      ) as keyof typeof iconMap) ?? 'none'
-    ];
-  }
 </script>
 
 <div class="w-full">
@@ -40,14 +24,18 @@
         <tbody>
           {#each data.tasks as task}
             <tr
-              class="pointer"
+              class="cursor-pointer"
               on:click={() =>
                 goto(
                   `/flow/${task.Product.ProductDefinition.Workflow.WorkflowBusinessFlow}/${task.ProductId}`
                 )}
             >
               <td>
-                <Icon class="inline" icon={getIcon(task)} width="38" />
+                <Icon
+                  class="inline"
+                  icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
+                  width="38"
+                />
                 <span>
                   {task.Product.ProductDefinition.Name}
                 </span>
@@ -87,7 +75,7 @@
     padding: 0.5rem;
   }
   td a {
-    color: #33f;
+    color: #44f;
     text-decoration: underline;
   }
 </style>
