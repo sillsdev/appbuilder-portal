@@ -19,7 +19,7 @@
       <tbody>
         {#each data.organizations as org}
           <tr
-            class="h-16 border-y hover:bg-gray-100 hover:dark:bg-gray-800"
+            class="h-16 border-y hover:bg-gray-100 hover:dark:bg-gray-800 cursor-pointer"
             on:click={() => goto('/organizations/' + org.Id + '/settings/info')}
           >
             <td>
