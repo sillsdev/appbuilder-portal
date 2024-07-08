@@ -3,6 +3,7 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
+  import type { Prisma } from '@prisma/client';
 
   const textsForPaths = new Map([
     ['all', m.projects_switcher_dropdown_all()],
@@ -11,7 +12,19 @@
     ['active', m.projects_switcher_dropdown_activeProjects()],
     ['archived', m.projects_switcher_dropdown_archived()]
   ]);
-  export let projects;
+  let selectedProjects = [];
+  export let projects: Prisma.ProjectsGetPayload<{
+    include: {
+      Owner: true;
+      Organization: true;
+      Group: true;
+      Products: {
+        include: {
+          ProductDefinition: true;
+        };
+      };
+    };
+  }>[];
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -61,13 +74,16 @@
   </div>
   {#if projects.length > 0}
     <div class="w-full relative p-4">
-      <!-- TODO Mobile grid -->
-      <!-- TODO: typings for ProjectSelector and OrganizationSelector components -->
-      {#each projects.sort((a, b) => a.Name.localeCompare(b.Name)) as project}
+      {#each projects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '')) as project}
         <div class="rounded-md bg-base-300 border border-current my-4 overflow-hidden w-full">
           <div class="p-4 pb-2 w-full">
             <span class="flex flex-row">
-              <input type="checkbox" class="mr-2" />
+              <input
+                type="checkbox"
+                class="mr-2"
+                bind:group={selectedProjects}
+                value={project.Id}
+              />
               <a href="/projects/{project.Id}">
                 <b class="[color:#44f]">
                   {project.Name}
@@ -86,9 +102,8 @@
               </span>
               <Icon icon="charm:menu-kebab" height="20" class="inline float-right" />
             </span>
-            <!-- <div class="flex mt-2 flex-row justify-between inforow"> -->
-            <div class="flex flex-row justify-between">
-              <div>
+            <div class="flex flex-wrap projectinfo justify-between">
+              <div class="mr-2">
                 <span class="flex items-center" title={m.projectTable_columns_owner()}>
                   <Icon icon="mdi:user" width="20" class="mr-1 shrink-0" />
                   {project.Owner.Name}
@@ -102,18 +117,16 @@
                   title={m.projectTable_columns_group()}
                 >
                   <Icon icon="mdi:account-group" width="20" class="mr-1 shrink-0" />
-                  <span class="overflow-hidden">
+                  <span class=" text-nowrap">
                     {project.Group.Name}
                   </span>
                 </span>
               </div>
-              <div class="ml-4" />
-              <div class="grow" />
               <div>
                 <span class="flex items-center" title={m.projectTable_columns_updatedOn()}>
-                  <span class=" overflow-hidden text-center mr-2">
+                  <span class="text-nowrap overflow-hidden text-center mr-1">
                     {m.projectTable_columns_updatedOn()}:
-                  </span><span>
+                  </span><span class="w-36 text-center">
                     {project.DateUpdated?.toLocaleDateString()}
                     {project.DateUpdated?.toLocaleTimeString([], {
                       hour: 'numeric',
@@ -124,14 +137,11 @@
                 </span>
                 <!-- TODO line up timedates -->
                 <!-- TODO one list media query -->
-                <span
-                  class="max-w-40 flex items-center grow"
-                  title={m.projectTable_columns_activeSince()}
-                >
+                <span class="flex items-center" title={m.projectTable_columns_activeSince()}>
                   <!-- <Icon icon="mdi:play-circle-outline" width="20" class="mr-1 shrink-0" /> -->
-                  <span class="w-full text-nowrap mr-2">
+                  <span class="overflow-hidden text-nowrap mr-1">
                     {m.projectTable_columns_activeSince()}:
-                  </span><span class="text-nowrap">
+                  </span><span class="text-nowrap w-36 text-center">
                     {project.DateActive?.toLocaleDateString() ?? '-'}
                     {project.DateActive?.toLocaleTimeString([], {
                       hour: 'numeric',
@@ -200,10 +210,6 @@
   }
   .dropdown:focus-within .dropdown-icon {
     transform: rotate(180deg);
-  }
-  .inforow .flex-row > span:not(:last-child) {
-    /* min-width: 10rem; */
-    margin-right: 1rem;
   }
   tr:not(:last-child) {
     border-bottom: 1px solid gray;
