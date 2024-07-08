@@ -3,7 +3,7 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
-  import type { Prisma } from '@prisma/client';
+  import type { PrunedProject } from '../common';
 
   const textsForPaths = new Map([
     ['all', m.projects_switcher_dropdown_all()],
@@ -13,18 +13,7 @@
     ['archived', m.projects_switcher_dropdown_archived()]
   ]);
   let selectedProjects = [];
-  export let projects: Prisma.ProjectsGetPayload<{
-    include: {
-      Owner: true;
-      Organization: true;
-      Group: true;
-      Products: {
-        include: {
-          ProductDefinition: true;
-        };
-      };
-    };
-  }>[];
+  export let projects: PrunedProject[];
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -106,11 +95,11 @@
               <div class="mr-2">
                 <span class="flex items-center" title={m.projectTable_columns_owner()}>
                   <Icon icon="mdi:user" width="20" class="mr-1 shrink-0" />
-                  {project.Owner.Name}
+                  {project.OwnerName}
                 </span>
                 <span class="flex items-center" title={m.projectTable_columns_organization()}>
                   <Icon icon="clarity:organization-solid" width="20" class="mr-1 shrink-0" />
-                  {project.Organization.Name}
+                  {project.OrganizationName}
                 </span>
                 <span
                   class="flex items-center [margin-right:0]"
@@ -118,7 +107,7 @@
                 >
                   <Icon icon="mdi:account-group" width="20" class="mr-1 shrink-0" />
                   <span class=" text-nowrap">
-                    {project.Group.Name}
+                    {project.GroupName}
                   </span>
                 </span>
               </div>
@@ -135,10 +124,7 @@
                     }).replace(' ', '\xa0') ?? ''}
                   </span>
                 </span>
-                <!-- TODO line up timedates -->
-                <!-- TODO one list media query -->
                 <span class="flex items-center" title={m.projectTable_columns_activeSince()}>
-                  <!-- <Icon icon="mdi:play-circle-outline" width="20" class="mr-1 shrink-0" /> -->
                   <span class="overflow-hidden text-nowrap mr-1">
                     {m.projectTable_columns_activeSince()}:
                   </span><span class="text-nowrap w-36 text-center">
@@ -152,8 +138,6 @@
                 </span>
               </div>
             </div>
-            <!-- <div class="flex flex-row [max-width:30rem] grow place-content-end" /> -->
-            <!-- </div> -->
           </div>
           <div class="w-full bg-base-100 p-4 pt-2">
             {#if project.Products.length > 0}
@@ -171,10 +155,10 @@
                       <td class="p-2">
                         <Icon
                           class="inline"
-                          icon={getIcon(product.ProductDefinition.Name ?? '')}
+                          icon={getIcon(product.ProductDefinitionName ?? '')}
                           width="30"
                         />
-                        {product.ProductDefinition.Name}
+                        {product.ProductDefinitionName}
                       </td>
                       <td>
                         {product.VersionBuilt ?? '-'}
