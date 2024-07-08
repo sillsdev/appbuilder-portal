@@ -1,6 +1,11 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
   import { createEventDispatcher } from 'svelte';
-  export let organizations;
+  export let organizations: Prisma.OrganizationsGetPayload<{
+    include: {
+      Owner: true;
+    };
+  }>[];
   const dispatch = createEventDispatcher();
 </script>
 
