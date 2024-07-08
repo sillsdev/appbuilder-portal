@@ -61,64 +61,34 @@
   </div>
   {#if projects.length > 0}
     <div class="w-full relative p-4">
-      <div class="flex flex-row justify-between inforow p-4 border-b font-bold">
-        <div class="flex flex-row">
-          <span class="flex items-center ml-2" title={m.projectTable_columns_owner()}>
-            <Icon icon="mdi:user" width="20" class="mr-1 shrink-0" />
-            {m.projectTable_columns_owner()}
-          </span>
-          <span class="flex items-center ml-10" title={m.projectTable_columns_organization()}>
-            <Icon icon="clarity:organization-solid" width="20" class="mr-1 shrink-0" />
-            {m.projectTable_columns_organization()}
-          </span>
-        </div>
-        <div class="flex flex-row grow place-content-end [max-width:40rem]">
-          <span class="flex items-center" title={m.projectTable_columns_language()}>
-            <Icon icon="ph:globe" width="20" class="mr-1" />
-            <!-- <LanguageIcon color="lightgray" size="20" /> -->
-            <span class="w-18 overflow-hidden text-center">
-              {m.projectTable_columns_language()}
-            </span>
-          </span>
-          <span class="w-44 flex items-center" title={m.projectTable_columns_group()}>
-            <Icon icon="mdi:account-group" width="20" class="mr-1 shrink-0" />
-            <span class="overflow-hidden">
-              {m.projectTable_columns_group()}
-            </span>
-          </span>
-          <span class="flex items-center grow" title={m.projectTable_columns_updatedOn()}>
-            <Icon icon="mdi:update" width="20" class="mr-1 shrink-0" />
-            <span class="max-w-40 overflow-hidden text-center">
-              {m.projectTable_columns_updatedOn()}
-            </span>
-          </span>
-          <span
-            class="max-w-40 flex items-center grow"
-            title={m.projectTable_columns_activeSince()}
-          >
-            <Icon icon="mdi:play-circle-outline" width="20" class="mr-1 shrink-0" />
-            <span class="w-full overflow-hidden text-center">
-              {m.projectTable_columns_activeSince()}
-            </span>
-          </span>
-        </div>
-      </div>
+      <!-- TODO Mobile grid -->
       <!-- TODO: typings for ProjectSelector and OrganizationSelector components -->
       {#each projects.sort((a, b) => a.Name.localeCompare(b.Name)) as project}
         <div class="rounded-md bg-base-300 border border-current my-4 overflow-hidden w-full">
           <div class="p-4 pb-2 w-full">
-            <span>
+            <span class="flex flex-row">
               <input type="checkbox" class="mr-2" />
               <a href="/projects/{project.Id}">
                 <b class="[color:#44f]">
                   {project.Name}
                 </b>
               </a>
+              <div class="grow" />
+              <span
+                class="ml-8 flex items-center bg-primary [color:black] rounded-xl px-1 mb-2 mr-4"
+                title={m.projectTable_columns_language()}
+              >
+                <Icon icon="ph:globe" width="20" class="mr-1" />
+                <!-- <LanguageIcon color="lightgray" size="20" /> -->
+                <span class="w-6 overflow-hidden text-center">
+                  {project.Language}
+                </span>
+              </span>
               <Icon icon="charm:menu-kebab" height="20" class="inline float-right" />
             </span>
-            <!-- TODO try a one row table -->
-            <div class="flex mt-2 flex-row justify-between inforow">
-              <div class="flex flex-row">
+            <!-- <div class="flex mt-2 flex-row justify-between inforow"> -->
+            <div class="flex flex-row justify-between">
+              <div>
                 <span class="flex items-center" title={m.projectTable_columns_owner()}>
                   <Icon icon="mdi:user" width="20" class="mr-1 shrink-0" />
                   {project.Owner.Name}
@@ -127,24 +97,23 @@
                   <Icon icon="clarity:organization-solid" width="20" class="mr-1 shrink-0" />
                   {project.Organization.Name}
                 </span>
-              </div>
-              <div class="flex flex-row [max-width:38rem] grow place-content-end">
-                <span class="flex items-center" title={m.projectTable_columns_language()}>
-                  <Icon icon="ph:globe" width="20" class="mr-1" />
-                  <!-- <LanguageIcon color="lightgray" size="20" /> -->
-                  <span class="w-6 overflow-hidden text-center">
-                    {project.Language}
-                  </span>
-                </span>
-                <span class="w-44 flex items-center" title={m.projectTable_columns_group()}>
+                <span
+                  class="flex items-center [margin-right:0]"
+                  title={m.projectTable_columns_group()}
+                >
                   <Icon icon="mdi:account-group" width="20" class="mr-1 shrink-0" />
                   <span class="overflow-hidden">
                     {project.Group.Name}
                   </span>
                 </span>
+              </div>
+              <div class="ml-4" />
+              <div class="grow" />
+              <div>
                 <span class="flex items-center" title={m.projectTable_columns_updatedOn()}>
-                  <Icon icon="mdi:update" width="20" class="mr-1 shrink-0" />
-                  <span class="max-w-40 overflow-hidden text-center">
+                  <span class=" overflow-hidden text-center mr-2">
+                    {m.projectTable_columns_updatedOn()}:
+                  </span><span>
                     {project.DateUpdated?.toLocaleDateString()}
                     {project.DateUpdated?.toLocaleTimeString([], {
                       hour: 'numeric',
@@ -153,12 +122,16 @@
                     }).replace(' ', '\xa0') ?? ''}
                   </span>
                 </span>
+                <!-- TODO line up timedates -->
+                <!-- TODO one list media query -->
                 <span
                   class="max-w-40 flex items-center grow"
                   title={m.projectTable_columns_activeSince()}
                 >
-                  <Icon icon="mdi:play-circle-outline" width="20" class="mr-1 shrink-0" />
-                  <span class="w-full overflow-hidden text-center">
+                  <!-- <Icon icon="mdi:play-circle-outline" width="20" class="mr-1 shrink-0" /> -->
+                  <span class="w-full text-nowrap mr-2">
+                    {m.projectTable_columns_activeSince()}:
+                  </span><span class="text-nowrap">
                     {project.DateActive?.toLocaleDateString() ?? '-'}
                     {project.DateActive?.toLocaleTimeString([], {
                       hour: 'numeric',
@@ -169,6 +142,8 @@
                 </span>
               </div>
             </div>
+            <!-- <div class="flex flex-row [max-width:30rem] grow place-content-end" /> -->
+            <!-- </div> -->
           </div>
           <div class="w-full bg-base-100 p-4 pt-2">
             {#if project.Products.length > 0}
@@ -226,8 +201,11 @@
   .dropdown:focus-within .dropdown-icon {
     transform: rotate(180deg);
   }
-  .inforow .flex-row > span {
+  .inforow .flex-row > span:not(:last-child) {
     /* min-width: 10rem; */
     margin-right: 1rem;
+  }
+  tr:not(:last-child) {
+    border-bottom: 1px solid gray;
   }
 </style>
