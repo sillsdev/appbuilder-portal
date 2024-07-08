@@ -1,5 +1,6 @@
 import prisma from '$lib/prisma';
 import { redirect } from '@sveltejs/kit';
+import { pruneProjects } from '../../common';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ params, url }) => {
@@ -37,7 +38,6 @@ export const load = (async ({ params, url }) => {
       Organization: true
     }
   });
-  // TODO: send only required data for the sake of size
-  // Likely need to paginate
-  return { projects };
+  // TODO: Likely need to paginate
+  return { projects: pruneProjects(projects) };
 }) satisfies PageServerLoad;
