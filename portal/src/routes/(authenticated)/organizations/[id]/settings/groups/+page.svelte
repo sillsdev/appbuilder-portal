@@ -15,7 +15,7 @@
     <input type="hidden" name="id" value={group.Id} />
     <div class="border w-full flex flex-row p-2 rounded-md items-center place-content-between">
       <div>
-        <span class="p-1 bg-slate-700 rounded-md">{group.Abbreviation}</span>
+        <span class="p-1 badge badge-primary rounded-md">{group.Abbreviation}</span>
         <span class="p-1">{group.Name}</span>
       </div>
       <button type="submit">
