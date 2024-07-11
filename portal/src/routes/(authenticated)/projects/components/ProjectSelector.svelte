@@ -12,7 +12,7 @@
     ['active', m.projects_switcher_dropdown_activeProjects()],
     ['archived', m.projects_switcher_dropdown_archived()]
   ]);
-  let selectedProjects = [];
+  let selectedProjects: number[] = [];
   export let projects: PrunedProject[];
 </script>
 
@@ -51,10 +51,16 @@
       </div>
     </div>
   </div>
-  <div class="w-full flex flex-row place-content-between p-4 px-6 space-between-4">
+  <div class="w-full flex flex-row place-content-between p-4 pb-0 px-6 space-between-4">
     <div>
-      <button class="btn btn-outline mx-1">{m.common_archive()}</button>
-      <button class="btn btn-outline mx-1">{m.common_rebuild()}</button>
+      <button
+        class="btn btn-outline mx-1"
+        disabled={!selectedProjects.length}
+        on:click={() => alert(selectedProjects.join(', '))}>{m.common_archive()}</button
+      >
+      <button class="btn btn-outline mx-1" disabled={!selectedProjects.length}
+        >{m.common_rebuild()}</button
+      >
     </div>
     <div>
       <button class="btn btn-outline mx-1">{m.project_importProjects()}</button>
@@ -80,7 +86,7 @@
               </a>
               <div class="grow" />
               <span
-                class="ml-8 flex items-center bg-primary [color:black] rounded-xl px-1 mb-2 mr-4"
+                class="ml-8 badge badge-primary mb-2 mr-4"
                 title={m.projectTable_columns_language()}
               >
                 <Icon icon="ph:globe" width="20" class="mr-1" />

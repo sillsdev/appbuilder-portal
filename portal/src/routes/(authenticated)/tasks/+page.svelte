@@ -31,21 +31,27 @@
                 )}
             >
               <td>
-                <Icon
-                  class="inline"
-                  icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
-                  width="38"
-                />
-                <span>
-                  {task.Product.ProductDefinition.Name}
-                </span>
-                <br />
-                <span class="rounded-xl bg-slate-600 p-1 px-2 text-white ml-10">
+                <div>
+                  <div class="inline-block align-middle" style="width: 38px; height: 38px;">
+                    <Icon
+                      class="inline"
+                      icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
+                      width="38"
+                      height="38"
+                    />
+                  </div>
+                  <span>
+                    {task.Product.ProductDefinition.Name}
+                  </span>
+                </div>
+                <span
+                  class="rounded-xl badge badge-secondary uppercase font-bold ml-10 [top:-5px] relative"
+                >
                   {task.Status}
                 </span>
               </td>
               <td
-                ><a href="/projects/{task.Product.ProjectId}">
+                ><a on:click|stopPropagation href="/projects/{task.Product.ProjectId}">
                   {task.Product.Project.Name}
                 </a></td
               >
@@ -76,6 +82,8 @@
   }
   td a {
     color: #44f;
+  }
+  td a:hover {
     text-decoration: underline;
   }
 </style>

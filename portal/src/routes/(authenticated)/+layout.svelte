@@ -21,6 +21,9 @@
   function isActive(currentRoute: string | null, menuRoute: string) {
     return currentRoute?.startsWith(`${base}/(authenticated)${menuRoute}`);
   }
+  function isUrlActive(currentUrl: string | null, route: string) {
+    return currentUrl?.startsWith(`${base}${route}`);
+  }
 </script>
 
 <svelte:head>
@@ -31,7 +34,7 @@
   >
 </svelte:head>
 
-<div class="shrink-0 navbar bg-[#1C3258]">
+<div class="shrink-0 navbar bg-primary">
   <div class="navbar-start">
     <label
       for="primary-content-drawer"
@@ -109,7 +112,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/projects/own')}
+              class:active-menu-item={isUrlActive($page.url.pathname, '/projects/own')}
               href="{base}/projects/own"
               on:click={closeDrawer}
             >
@@ -119,7 +122,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/projects/organization')}
+              class:active-menu-item={isUrlActive($page.url.pathname, '/projects/organization')}
               href="{base}/projects/organization"
               on:click={closeDrawer}
             >
@@ -129,7 +132,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/projects/active')}
+              class:active-menu-item={isUrlActive($page.url.pathname, '/projects/active')}
               href="{base}/projects/active"
               on:click={closeDrawer}
             >

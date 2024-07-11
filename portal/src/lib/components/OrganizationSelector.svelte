@@ -20,7 +20,7 @@
     <tbody>
       {#each organizations as org}
         <tr
-          class="h-16 border-y hover:bg-gray-100 hover:dark:bg-gray-800 cursor-pointer"
+          class="h-16 border-y hover:bg-base-200 cursor-pointer"
           on:click={() => dispatch('select', { id: org.Id })}
         >
           <td>

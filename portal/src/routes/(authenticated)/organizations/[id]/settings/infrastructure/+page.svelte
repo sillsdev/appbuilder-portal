@@ -22,7 +22,7 @@
             </div>
             <input
               name="useDefaultBuildEngine"
-              class="toggle toggle-info"
+              class="toggle toggle-primary"
               type="checkbox"
               bind:checked={$superFormData.useDefaultBuildEngine}
             />
