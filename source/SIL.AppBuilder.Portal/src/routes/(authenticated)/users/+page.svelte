@@ -83,7 +83,7 @@
                 <input type="hidden" name="id" value={user.Id} />
                 <input
                   name="enabled"
-                  class="toggle toggle-info my-4"
+                  class="toggle toggle-primary my-4"
                   type="checkbox"
                   checked={!user.IsLocked}
                   on:click={() => {
