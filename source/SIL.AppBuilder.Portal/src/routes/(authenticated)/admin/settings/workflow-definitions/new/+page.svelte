@@ -1,9 +1,9 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from "$lib/paraglide/messages";
   import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
-  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { goto } from '$app/navigation';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -81,7 +81,7 @@
         </div>
         <input
           name="enabled"
-          class="toggle toggle-info"
+          class="toggle toggle-primary"
           type="checkbox"
           bind:checked={$form.enabled}
         />

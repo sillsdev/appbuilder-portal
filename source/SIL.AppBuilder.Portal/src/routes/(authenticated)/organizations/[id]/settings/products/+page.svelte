@@ -29,7 +29,7 @@
         </div>
         <input
           name="publicByDefault"
-          class="toggle toggle-info"
+          class="toggle toggle-primary"
           type="checkbox"
           bind:checked={$superFormData.publicByDefault}
         />
@@ -55,6 +55,5 @@
   </div>
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href="/admin/settings/organizations">Cancel</a>
   </div>
 </form>
