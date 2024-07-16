@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import { getRelativeTime } from '$lib/relativeTime';
-  import Icon from '@iconify/svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -32,14 +32,10 @@
             >
               <td>
                 <div>
-                  <div class="inline-block align-middle" style="width: 38px; height: 38px;">
-                    <Icon
-                      class="inline"
-                      icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
-                      width="38"
-                      height="38"
-                    />
-                  </div>
+                  <IconContainer
+                    icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
+                    width={38}
+                  />
                   <span>
                     {task.Product.ProductDefinition.Name}
                   </span>
