@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
@@ -89,7 +90,8 @@
                 class="ml-8 badge badge-primary mb-2 mr-4"
                 title={m.projectTable_columns_language()}
               >
-                <Icon icon="ph:globe" width="20" class="mr-1" />
+                <!-- TODO: place vertically middle -->
+                <IconContainer icon="ph:globe" width={20} classes="mr-1" />
                 <!-- <LanguageIcon color="lightgray" size="20" /> -->
                 <span class="w-6 overflow-hidden text-center">
                   {project.Language}
