@@ -1,5 +1,5 @@
 // hooks.server.ts
-import prisma, { getOrCreateUser } from '$lib/prisma';
+import { getOrCreateUser } from '$lib/prisma';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
@@ -24,7 +24,7 @@ const config: SvelteKitAuthConfig = {
     })
   ],
   secret: import.meta.env.VITE_AUTH0_SECRET,
-  debug: true,
+  // debug: true,
   session: {
     maxAge: 60 * 60 * 24 // 24 hours
   },

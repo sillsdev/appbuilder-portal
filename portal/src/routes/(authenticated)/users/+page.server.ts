@@ -186,7 +186,6 @@ export const load = (async (event) => {
 export const actions: Actions = {
   async lock(event) {
     const form = await event.request.formData();
-    console.log(form);
     const userId = parseInt(form.get('id') + '');
     const enabled = form.get('enabled');
     if (isNaN(userId)) return error(400);
@@ -198,7 +197,6 @@ export const actions: Actions = {
         IsLocked: !enabled
       }
     });
-    console.log('Done', userId, enabled);
     return { success: true };
   }
 };
