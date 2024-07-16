@@ -74,7 +74,7 @@
         </div>
         <input
           name="publicByDefault"
-          class="toggle toggle-primary"
+          class="toggle toggle-info"
           type="checkbox"
           bind:checked={$form.publicByDefault}
         />
