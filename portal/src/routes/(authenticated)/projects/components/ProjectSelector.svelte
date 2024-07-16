@@ -1,49 +1,19 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
   import type { PrunedProject } from '../common';
+  import ProjectFilterSelector from './ProjectFilterSelector.svelte';
 
-  const textsForPaths = new Map([
-    ['all', m.projects_switcher_dropdown_all()],
-    ['own', m.projects_switcher_dropdown_myProjects()],
-    ['organization', m.projects_switcher_dropdown_orgProjects()],
-    ['active', m.projects_switcher_dropdown_activeProjects()],
-    ['archived', m.projects_switcher_dropdown_archived()]
-  ]);
   let selectedProjects: number[] = [];
   export let projects: PrunedProject[];
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
   <div class="flex flex-row place-content-between w-full items-center">
-    <div class="dropdown dropdown-start">
-      <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
-      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-      <h1 tabindex="0" class="pl-4 py-2">
-        <div class="flex flex-row items-center">
-          {textsForPaths.get($page.params.filter)}
-          <div class="dropdown-icon">
-            <Icon width="24" class="dropdown-icon" icon="gridicons:dropdown" />
-          </div>
-        </div>
-      </h1>
-      <div class="dropdown-content z-10 overflow-y-auto left-2">
-        <div class="p-2 border m-2 rounded-md bg-base-200 px-4">
-          {#each textsForPaths as route}
-            <!-- Little hack. If the path is "own" or "all" we don't need an id and they happen to be 3 chars and the others aren't -->
-            <a
-              href="/projects/{route[0]}{route[0].length > 3 && $page.params.id
-                ? '/' + $page.params.id
-                : ''}"
-              class:font-extrabold={$page.params.filter === route[0]}
-              class="p-1 text-nowrap block">{route[1]}</a
-            >
-          {/each}
-        </div>
-      </div>
+    <div class="inline-block pt-3">
+      <ProjectFilterSelector />
     </div>
     <div class="w-1/3 p-4">
       <input type="text" class="input w-full input-bordered pr-9" placeholder={m.search()} />
@@ -76,7 +46,7 @@
             <span class="flex flex-row">
               <input
                 type="checkbox"
-                class="mr-2"
+                class="mr-2 checkbox"
                 bind:group={selectedProjects}
                 value={project.Id}
               />
@@ -87,11 +57,14 @@
               </a>
               <div class="grow" />
               <span
-                class="ml-8 badge badge-primary mb-2 mr-4"
+                class="ml-8 badge badge-primary mb-2 mr-4 [height:1.35rem]"
                 title={m.projectTable_columns_language()}
               >
-                <!-- TODO: place vertically middle -->
-                <IconContainer icon="ph:globe" width={20} classes="mr-1" />
+                <IconContainer
+                  icon="ph:globe"
+                  width={20}
+                  classes="mr-1 [transform:translate(0,-1px)]"
+                />
                 <!-- <LanguageIcon color="lightgray" size="20" /> -->
                 <span class="w-6 overflow-hidden text-center">
                   {project.Language}
@@ -196,13 +169,6 @@
 </div>
 
 <style>
-  .dropdown-icon {
-    transition: transform 0.15s;
-    transform: rotate(0deg);
-  }
-  .dropdown:focus-within .dropdown-icon {
-    transform: rotate(180deg);
-  }
   tr:not(:last-child) {
     border-bottom: 1px solid gray;
   }

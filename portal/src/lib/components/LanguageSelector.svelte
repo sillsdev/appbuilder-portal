@@ -1,11 +1,10 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte';
-  import { LanguageIcon } from '$lib/icons';
-  import * as m from "$lib/paraglide/messages";
-  import { languageTag, setLanguageTag, type AvailableLanguageTag } from '$lib/paraglide/runtime';
-  import { i18n } from '$lib/i18n';
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { i18n } from '$lib/i18n';
+  import { LanguageIcon } from '$lib/icons';
+  import { languageTag, type AvailableLanguageTag } from '$lib/paraglide/runtime';
+  import Icon from '@iconify/svelte';
 
   function switchToLanguage(newLanguage: AvailableLanguageTag) {
     const canonicalPath = i18n.route($page.url.pathname);
@@ -35,8 +34,8 @@
               role="button"
               tabindex="0"
             >
-              <Icon icon="circle-flags:{lang.split("-")[0]}" color="white" width="24" />
-              {lang.split("-")[0]}
+              <Icon icon="circle-flags:{lang.split('-')[0]}" color="white" width="24" />
+              {lang.split('-')[0]}
             </div>
           </li>
         {/each}
