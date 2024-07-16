@@ -34,7 +34,7 @@
   >
 </svelte:head>
 
-<div class="shrink-0 navbar bg-primary">
+<div class="shrink-0 navbar bg-[#1c3258]">
   <div class="navbar-start">
     <label
       for="primary-content-drawer"
