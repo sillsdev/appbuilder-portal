@@ -1,13 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
-  import type { PageData } from './$types';
   import * as m from '$lib/paraglide/messages';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 </script>
 
-<a href="workflow-definitions/new" class="btn btn-outline rounded-none m-4 mt-0">
+<a href="workflow-definitions/new" class="btn btn-outline  m-4 mt-0">
   {m.admin_settings_workflowDefinitions_add()}
 </a>
 

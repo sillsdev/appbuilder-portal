@@ -1,6 +1,6 @@
 <script lang="ts">
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import { org_addGroupButton } from '$lib/paraglide/messages';
-  import Icon from '@iconify/svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
 
@@ -19,7 +19,7 @@
         <span class="p-1">{group.Name}</span>
       </div>
       <button type="submit">
-        <Icon icon="mdi:close" class="" width="26" />
+        <IconContainer icon="mdi:close" class="" width={26} />
       </button>
     </div>
   </form>
