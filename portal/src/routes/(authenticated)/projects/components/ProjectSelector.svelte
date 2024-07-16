@@ -2,7 +2,6 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import Icon from '@iconify/svelte';
   import type { PrunedProject } from '../common';
   import ProjectFilterSelector from './ProjectFilterSelector.svelte';
 
@@ -18,7 +17,7 @@
     <div class="w-1/3 p-4">
       <input type="text" class="input w-full input-bordered pr-9" placeholder={m.search()} />
       <div class="absolute right-8 items-center align-middle h-full top-7">
-        <Icon icon="mdi:search" height="24" />
+        <IconContainer icon="mdi:search" width={24} />
       </div>
     </div>
   </div>
@@ -60,33 +59,34 @@
                 class="ml-8 badge badge-primary mb-2 mr-4 [height:1.35rem]"
                 title={m.projectTable_columns_language()}
               >
-                <IconContainer
-                  icon="ph:globe"
-                  width={20}
-                  classes="mr-1 [transform:translate(0,-1px)]"
-                />
-                <!-- <LanguageIcon color="lightgray" size="20" /> -->
+                <IconContainer icon="ph:globe" width={20} class="mr-1" />
+                <!-- <LanguageIconContainer color="lightgray" size="20" /> -->
                 <span class="w-6 overflow-hidden text-center">
                   {project.Language}
                 </span>
               </span>
-              <Icon icon="charm:menu-kebab" height="20" class="inline float-right" />
+
+              <IconContainer icon="charm:menu-kebab" width={20} class="inline float-right" />
             </span>
             <div class="flex flex-wrap projectinfo justify-between">
               <div class="mr-2">
                 <span class="flex items-center" title={m.projectTable_columns_owner()}>
-                  <Icon icon="mdi:user" width="20" class="mr-1 shrink-0" />
+                  <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
                   {project.OwnerName}
                 </span>
                 <span class="flex items-center" title={m.projectTable_columns_organization()}>
-                  <Icon icon="clarity:organization-solid" width="20" class="mr-1 shrink-0" />
+                  <IconContainer
+                    icon="clarity:organization-solid"
+                    width={20}
+                    class="mr-1 shrink-0"
+                  />
                   {project.OrganizationName}
                 </span>
                 <span
                   class="flex items-center [margin-right:0]"
                   title={m.projectTable_columns_group()}
                 >
-                  <Icon icon="mdi:account-group" width="20" class="mr-1 shrink-0" />
+                  <IconContainer icon="mdi:account-group" width={20} class="mr-1 shrink-0" />
                   <span class=" text-nowrap">
                     {project.GroupName}
                   </span>
@@ -96,7 +96,7 @@
                 <span class="flex items-center" title={m.projectTable_columns_updatedOn()}>
                   <span class="text-nowrap overflow-hidden text-center mr-1">
                     {m.projectTable_columns_updatedOn()}:
-                  </span><span class="w-36 text-center">
+                  </span><span class="w-40 text-center">
                     {project.DateUpdated?.toLocaleDateString()}
                     {project.DateUpdated?.toLocaleTimeString([], {
                       hour: 'numeric',
@@ -108,7 +108,7 @@
                 <span class="flex items-center" title={m.projectTable_columns_activeSince()}>
                   <span class="overflow-hidden text-nowrap mr-1">
                     {m.projectTable_columns_activeSince()}:
-                  </span><span class="text-nowrap w-36 text-center">
+                  </span><span class="text-nowrap w-40 text-center">
                     {project.DateActive?.toLocaleDateString() ?? '-'}
                     {project.DateActive?.toLocaleTimeString([], {
                       hour: 'numeric',
@@ -134,10 +134,9 @@
                   {#each project.Products as product}
                     <tr>
                       <td class="p-2">
-                        <Icon
-                          class="inline"
+                        <IconContainer
                           icon={getIcon(product.ProductDefinitionName ?? '')}
-                          width="30"
+                          width={30}
                         />
                         {product.ProductDefinitionName}
                       </td>

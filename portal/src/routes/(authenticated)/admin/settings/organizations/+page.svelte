@@ -7,7 +7,7 @@
   export let data: PageData;
 </script>
 
-<a href="organizations/new" class="btn btn-outline rounded-none m-4 mt-0">
+<a href="organizations/new" class="btn btn-outline  m-4 mt-0">
   {m.admin_settings_organizations_add()}
 </a>
 
