@@ -80,7 +80,7 @@
                 value={project.Id}
               />
               <a href="/projects/{project.Id}">
-                <b class="[color:#44f]">
+                <b class="[color:#55f]">
                   {project.Name}
                 </b>
               </a>
