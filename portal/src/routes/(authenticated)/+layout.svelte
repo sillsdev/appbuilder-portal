@@ -181,7 +181,7 @@
           </li>
           <li>
             <a
-              class="rounded-none"
+              class="rounded-none mt-10"
               class:active-menu-item={isActive($page.route.id, '/open-source')}
               href="{base}/open-source"
               on:click={closeDrawer}
