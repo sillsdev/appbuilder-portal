@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
@@ -7,6 +9,7 @@
 
   let selectedProjects: number[] = [];
   export let projects: PrunedProject[];
+  let selectedOrg = parseInt($page.params.id);
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -16,10 +19,23 @@
         <ProjectFilterSelector />
       </slot>
     </div>
-    <div class="w-1/3 p-4 relative">
-      <input type="text" class="input w-full input-bordered pr-9" placeholder={m.search()} />
-      <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
-        <IconContainer icon="mdi:search" width={24} />
+    <div class="flex flex-row place-content-end items-center">
+      {#if $page.params.id}
+        <select
+          class="select select-bordered"
+          bind:value={selectedOrg}
+          on:change={() => goto(selectedOrg + '')}
+        >
+          {#each $page.data.organizations as organization}
+            <option value={organization.Id}>{organization.Name}</option>
+          {/each}
+        </select>
+      {/if}
+      <div class="p-4 relative">
+        <input type="text" class="input w-full input-bordered pr-9" placeholder={m.search()} />
+        <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
+          <IconContainer icon="mdi:search" width={24} />
+        </div>
       </div>
     </div>
   </div>

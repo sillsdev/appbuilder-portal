@@ -26,11 +26,8 @@
   <div class="dropdown-content z-10 overflow-y-auto left-2">
     <div class="p-2 border m-2 rounded-md bg-base-200 px-4">
       {#each textsForPaths as route}
-        <!-- Little hack. If the path is "own" or "all" we don't need an id and they happen to be 3 chars and the others aren't -->
         <a
-          href="/projects/{route[0]}{route[0].length > 3 && $page.params.id
-            ? '/' + $page.params.id
-            : ''}"
+          href="/projects/{route[0]}{$page.params.id ? '/' + $page.params.id : ''}"
           class:font-extrabold={$page.params.filter === route[0]}
           class="p-1 text-nowrap block">{route[1]}</a
         >
