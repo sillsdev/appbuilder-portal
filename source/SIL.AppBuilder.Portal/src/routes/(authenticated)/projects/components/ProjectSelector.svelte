@@ -10,45 +10,51 @@
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
-  <div class="flex flex-row place-content-between w-full items-center">
-    <div class="inline-block pt-3">
-      <ProjectFilterSelector />
+  <div class="flex flex-row place-content-between w-full pt-4">
+    <div class="inline-block">
+      <slot name="header">
+        <ProjectFilterSelector />
+      </slot>
     </div>
-    <div class="w-1/3 p-4">
+    <div class="w-1/3 p-4 relative">
       <input type="text" class="input w-full input-bordered pr-9" placeholder={m.search()} />
-      <div class="absolute right-8 items-center align-middle h-full top-7">
+      <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
         <IconContainer icon="mdi:search" width={24} />
       </div>
     </div>
   </div>
-  <div class="w-full flex flex-row place-content-between p-4 pb-0 px-6 space-between-4">
-    <div>
-      <button
-        class="btn btn-outline mx-1"
-        disabled={!selectedProjects.length}
-        on:click={() => alert(selectedProjects.join(', '))}>{m.common_archive()}</button
-      >
-      <button class="btn btn-outline mx-1" disabled={!selectedProjects.length}
-        >{m.common_rebuild()}</button
-      >
+  <slot name="options">
+    <div class="w-full flex flex-row place-content-between p-4 pb-0 px-6 space-between-4">
+      <div>
+        <button
+          class="btn btn-outline mx-1"
+          disabled={!selectedProjects.length}
+          on:click={() => alert(selectedProjects.join(', '))}>{m.common_archive()}</button
+        >
+        <button class="btn btn-outline mx-1" disabled={!selectedProjects.length}
+          >{m.common_rebuild()}</button
+        >
+      </div>
+      <div>
+        <button class="btn btn-outline mx-1">{m.project_importProjects()}</button>
+        <button class="btn btn-outline mx-1">{m.sidebar_addProject()}</button>
+      </div>
     </div>
-    <div>
-      <button class="btn btn-outline mx-1">{m.project_importProjects()}</button>
-      <button class="btn btn-outline mx-1">{m.sidebar_addProject()}</button>
-    </div>
-  </div>
+  </slot>
   {#if projects.length > 0}
     <div class="w-full relative p-4">
       {#each projects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '')) as project}
         <div class="rounded-md bg-base-300 border border-current my-4 overflow-hidden w-full">
           <div class="p-4 pb-2 w-full">
             <span class="flex flex-row">
-              <input
-                type="checkbox"
-                class="mr-2 checkbox"
-                bind:group={selectedProjects}
-                value={project.Id}
-              />
+              {#if !$$slots.options}
+                <input
+                  type="checkbox"
+                  class="mr-2 checkbox"
+                  bind:group={selectedProjects}
+                  value={project.Id}
+                />
+              {/if}
               <a href="/projects/{project.Id}">
                 <b class="[color:#55f]">
                   {project.Name}
@@ -163,7 +169,7 @@
       {/each}
     </div>
   {:else}
-    <p class="m-4">{m.projectTable_empty()}</p>
+    <p class="m-8">{m.projectTable_empty()}</p>
   {/if}
 </div>
 
