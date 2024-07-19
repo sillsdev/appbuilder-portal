@@ -1,9 +1,12 @@
 <script lang="ts">
+  import langtags from '$lib/langtags.json';
   import * as m from '$lib/paraglide/messages';
   import ProjectSelector from '../projects/components/ProjectSelector.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
+  let langCodeSelected = false;
+  let langtagList = langtags;
 </script>
 
 <ProjectSelector projects={data.projects}>
@@ -12,11 +15,6 @@
     slot="options"
     class="w-full flex flex-row place-content-between p-4 pb-0 px-6 space-between-4"
   >
-    <input
-      type="text"
-      name="langCode"
-      class="input input-bordered"
-      placeholder={m.project_languageCode()}
-    />
+    <!-- <AutoComplete items={langtags} /> -->
   </div>
 </ProjectSelector>
