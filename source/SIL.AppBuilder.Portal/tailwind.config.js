@@ -6,6 +6,7 @@ export default {
   },
   plugins: [require('daisyui')],
   daisyui: {
+    // *-focus are entirely ignored... 🤷
     themes: [ {
       'scriptorialight': {
         'primary' : '#1c3258',
@@ -16,7 +17,7 @@ export default {
         'secondary-focus' : '#7c87a2',
         'secondary-content' : '#ffffff',
 
-        'accent' : '#6d5466',
+        'accent' : '#e0add2',
         'accent-focus' : '#987c90',
         'accent-content' : '#ffffff',
 
