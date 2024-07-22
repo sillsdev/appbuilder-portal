@@ -10,6 +10,18 @@
   let selectedProjects: number[] = [];
   export let projects: PrunedProject[];
   let selectedOrg = parseInt($page.params.id);
+  let searchTerm: string = '';
+
+  $: filteredProjects = projects.filter((project) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      project.Name?.toLowerCase().includes(searchTermLower.toLowerCase()) ||
+      project.Language?.toLowerCase().includes(searchTermLower) ||
+      project.OwnerName?.toLowerCase().includes(searchTermLower) ||
+      project.OrganizationName?.toLowerCase().includes(searchTermLower) ||
+      project.GroupName?.toLowerCase().includes(searchTermLower)
+    );
+  });
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -32,7 +44,12 @@
         </select>
       {/if}
       <div class="p-4 relative">
-        <input type="text" class="input w-full input-bordered pr-9" placeholder={m.search()} />
+        <input
+          type="text"
+          class="input w-full input-bordered pr-9"
+          placeholder={m.search()}
+          bind:value={searchTerm}
+        />
         <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
           <IconContainer icon="mdi:search" width={24} />
         </div>
@@ -59,7 +76,7 @@
   </slot>
   {#if projects.length > 0}
     <div class="w-full relative p-4">
-      {#each projects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '')) as project}
+      {#each filteredProjects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '')) as project}
         <div class="rounded-md bg-base-300 border border-current my-4 overflow-hidden w-full">
           <div class="p-4 pb-2 w-full">
             <span class="flex flex-row">
