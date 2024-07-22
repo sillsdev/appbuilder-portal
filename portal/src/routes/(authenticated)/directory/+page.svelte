@@ -69,6 +69,7 @@
   }
   let langCodeSelected = false;
   let langtagList = langtags;
+  let langCode: string;
 </script>
 
 <ProjectSelector projects={data.projects}>
@@ -80,10 +81,16 @@
     <TypeaheadInput
       props={{ placeholder: m.project_languageCode() }}
       getList={(search) => fuzzySearch.search(search).slice(0, 5)}
+      classes="pr-20"
+      bind:search={langCode}
+      on:itemClicked={(item) => (langCode = item.detail.item.tag)}
     >
+      <span class="absolute right-4 italic [line-height:3rem]" slot="custom"
+        >{langtagList.find((l) => l.tag === langCode)?.name ?? ''}</span
+      >
       <div
         slot="listElement"
-        class="w-96 p-2 m-1 rounded hover flex flex-row place-content-between bg-base-100"
+        class="w-96 p-2 border border-b-0 border-neutral listElement cursor-pointer flex flex-row place-content-between bg-base-100"
         let:item
       >
         <span class="mr-4">
@@ -116,5 +123,15 @@
 <style>
   :global(.highlight) {
     background-color: oklch(var(--a));
+  }
+  :global(li:first-child) .listElement {
+    border-radius: 0.375rem 0.375rem 0 0;
+  }
+  :global(li:last-child) .listElement {
+    border-radius: 0 0 0.375rem 0.375rem;
+    border-bottom-width: 1px;
+  }
+  :global(li[aria-selected='true']) .listElement {
+    background-color: oklch(var(--b2));
   }
 </style>
