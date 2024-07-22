@@ -24,7 +24,8 @@
     includeMatches: true,
     isCaseSensitive: false,
     threshold: 0.6,
-    ignoreLocation: true
+    ignoreLocation: true,
+    ignoreFieldNorm: true
     // minMatchCharLength: 2
   });
   type FilterForStrings<T> = {
@@ -67,16 +68,26 @@
     }
     return ret;
   }
-  let langCodeSelected = false;
   let langtagList = langtags;
   let langCode: string;
+  let productDefinitionFilter: string;
+  let organizationFilter: string;
 </script>
 
-<ProjectSelector projects={data.projects}>
+<ProjectSelector
+  projects={data.projects.filter((proj) => {
+    return (
+      (proj.Language ?? '').includes(langCode) &&
+      (!productDefinitionFilter ||
+        proj.Products.some((prod) => prod.ProductDefinitionName === productDefinitionFilter)) &&
+      (!organizationFilter || proj.OrganizationName === organizationFilter)
+    );
+  })}
+>
   <h1 slot="header" class="p-4 pl-6">{m.sidebar_projectDirectory()}</h1>
   <div
     slot="options"
-    class="w-full flex flex-row place-content-between p-4 pb-0 px-6 space-between-4"
+    class="w-full flex flex-row place-content-start space-x-2 p-4 pb-0 px-6 space-between-4"
   >
     <TypeaheadInput
       props={{ placeholder: m.project_languageCode() }}
@@ -93,6 +104,8 @@
         class="w-96 p-2 border border-b-0 border-neutral listElement cursor-pointer flex flex-row place-content-between bg-base-100"
         let:item
       >
+        <!-- Debug -->
+        <!-- <span class="absolute [right:-10rem] bg-black">{item.score}</span> -->
         <span class="mr-4">
           {#if item.item.localname}
             <b>
@@ -117,6 +130,20 @@
         </span>
       </div>
     </TypeaheadInput>
+    <select class="select select-bordered" bind:value={productDefinitionFilter}>
+      <!-- TODO: i18n -->
+      <option value="" selected>Any product definitions</option>
+      {#each data.productDefinitions as pD}
+        <option value={pD.Name}>{pD.Name}</option>
+      {/each}
+    </select>
+    <select class="select select-bordered" bind:value={organizationFilter}>
+      <option value="">All organizations</option>
+      {#each new Set(data.projects.map((p) => p.OrganizationName)).values() as org}
+        <option value={org}>{org}</option>
+      {/each}
+    </select>
+    <!-- TODO: Filter by update time -->
   </div>
 </ProjectSelector>
 

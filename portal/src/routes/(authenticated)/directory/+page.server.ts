@@ -1,4 +1,4 @@
-import prisma, { getOrganizationsForUser } from '$lib/prisma';
+import prisma from '$lib/prisma';
 import { error } from '@sveltejs/kit';
 import { pruneProjects } from '../projects/common';
 import type { PageServerLoad } from './$types';
@@ -6,12 +6,10 @@ import type { PageServerLoad } from './$types';
 export const load = (async ({ locals }) => {
   const userId = (await locals.auth())?.user.userId;
   if (!userId) return error(402);
-  const orgs = await getOrganizationsForUser(userId);
+  // const orgs = await getOrganizationsForUser(userId);
   const projects = await prisma.projects.findMany({
     where: {
-      OrganizationId: {
-        in: orgs.map((org) => org.Id)
-      }
+      IsPublic: true
     },
     include: {
       Products: {
@@ -24,6 +22,7 @@ export const load = (async ({ locals }) => {
       Organization: true
     }
   });
+  const productDefinitions = await prisma.productDefinitions.findMany();
   // TODO: Likely need to paginate
-  return { projects: pruneProjects(projects) };
+  return { projects: pruneProjects(projects), productDefinitions };
 }) satisfies PageServerLoad;
