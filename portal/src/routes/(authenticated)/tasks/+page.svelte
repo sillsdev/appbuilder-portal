@@ -3,7 +3,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { getRelativeTime } from '$lib/relativeTime';
+  import { getRelativeTime } from '$lib/timeUtils';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -46,16 +46,16 @@
                   {task.Status}
                 </span>
               </td>
-              <td
-                ><a class="link" on:click|stopPropagation href="/projects/{task.Product.ProjectId}">
+              <td>
+                <a class="link" on:click|stopPropagation href="/projects/{task.Product.ProjectId}">
                   {task.Product.Project.Name}
-                </a></td
-              >
-              <td
-                ><span>
+                </a>
+              </td>
+              <td>
+                <span>
                   {task.DateUpdated ? getRelativeTime(task.DateUpdated) : 'null'}
-                </span></td
-              >
+                </span>
+              </td>
             </tr>
           {/each}
         </tbody>

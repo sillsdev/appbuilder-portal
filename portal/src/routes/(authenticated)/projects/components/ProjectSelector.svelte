@@ -4,6 +4,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import { getTimeDateString } from '$lib/timeUtils';
   import type { PrunedProject } from '../common';
   import ProjectFilterSelector from './ProjectFilterSelector.svelte';
 
@@ -77,7 +78,7 @@
   {#if projects.length > 0}
     <div class="w-full relative p-4">
       {#each filteredProjects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '')) as project}
-        <div class="rounded-md bg-base-300 border border-current my-4 overflow-hidden w-full">
+        <div class="rounded-md bg-base-300 border border-slate-400 my-4 overflow-hidden w-full">
           <div class="p-4 pb-2 w-full">
             <span class="flex flex-row">
               {#if !$$slots.options}
@@ -107,7 +108,7 @@
 
               <IconContainer icon="charm:menu-kebab" width={20} class="inline float-right" />
             </span>
-            <div class="flex flex-wrap projectinfo justify-between">
+            <div class="flex flex-wrap justify-between">
               <div class="mr-2">
                 <span class="flex items-center" title={m.projectTable_columns_owner()}>
                   <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
@@ -136,24 +137,14 @@
                   <span class="text-nowrap overflow-hidden text-center mr-1">
                     {m.projectTable_columns_updatedOn()}:
                   </span><span class="w-40 text-center">
-                    {project.DateUpdated?.toLocaleDateString()}
-                    {project.DateUpdated?.toLocaleTimeString([], {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true
-                    }).replace(' ', '\xa0') ?? ''}
+                    {getTimeDateString(project.DateUpdated)}
                   </span>
                 </span>
                 <span class="flex items-center" title={m.projectTable_columns_activeSince()}>
                   <span class="overflow-hidden text-nowrap mr-1">
                     {m.projectTable_columns_activeSince()}:
                   </span><span class="text-nowrap w-40 text-center">
-                    {project.DateActive?.toLocaleDateString() ?? '-'}
-                    {project.DateActive?.toLocaleTimeString([], {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true
-                    }).replace(' ', '\xa0') ?? ''}
+                    {getTimeDateString(project.DateActive)}
                   </span>
                 </span>
               </div>
@@ -183,12 +174,7 @@
                         {product.VersionBuilt ?? '-'}
                       </td>
                       <td>
-                        {product.DateBuilt?.toLocaleDateString() ?? '-'}
-                        {product.DateBuilt?.toLocaleTimeString([], {
-                          hour: 'numeric',
-                          minute: '2-digit',
-                          hour12: true
-                        }).replace(' ', '\xa0') ?? ''}
+                        {getTimeDateString(product.DateBuilt)}
                       </td>
                     </tr>
                   {/each}
