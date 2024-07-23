@@ -27,7 +27,7 @@
     {/if}
     {#each fields as field}
       <p>
-        <b>{m[field.key]()}: </b>
+        <b>{m[field.key]()}:</b>
         {field.value ?? ''}
       </p>
     {/each}

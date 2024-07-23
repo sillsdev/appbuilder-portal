@@ -96,9 +96,9 @@
       bind:search={langCode}
       on:itemClicked={(item) => (langCode = item.detail.item.tag)}
     >
-      <span class="absolute right-4 italic [line-height:3rem]" slot="custom"
-        >{langtagList.find((l) => l.tag === langCode)?.name ?? ''}</span
-      >
+      <span class="absolute right-4 italic [line-height:3rem]" slot="custom">
+        {langtagList.find((l) => l.tag === langCode)?.name ?? ''}
+      </span>
       <div
         slot="listElement"
         class="w-96 p-2 border border-b-0 border-neutral listElement cursor-pointer flex flex-row place-content-between bg-base-100"

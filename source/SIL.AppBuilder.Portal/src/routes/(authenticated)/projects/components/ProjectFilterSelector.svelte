@@ -29,8 +29,10 @@
         <a
           href="/projects/{route[0]}{$page.params.id ? '/' + $page.params.id : ''}"
           class:font-extrabold={$page.params.filter === route[0]}
-          class="p-1 text-nowrap block">{route[1]}</a
+          class="p-1 text-nowrap block"
         >
+          {route[1]}
+        </a>
       {/each}
     </div>
   </div>
