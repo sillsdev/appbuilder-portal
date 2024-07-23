@@ -7,7 +7,7 @@
   export let data: PageData;
 </script>
 
-<a href="store-types/new" class="btn btn-outline  m-4 mt-0">
+<a href="store-types/new" class="btn btn-outline m-4 mt-0">
   {m.admin_settings_storeTypes_add()}
 </a>
 

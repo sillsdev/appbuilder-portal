@@ -27,11 +27,11 @@
 </script>
 
 <svelte:head>
-  <title
-    >{data.numberOfTasks
+  <title>
+    {data.numberOfTasks
       ? m.tabAppName_other({ count: data.numberOfTasks })
-      : m.tabAppName_zero()}{dev ? ' - SvelteKit' : ''}</title
-  >
+      : m.tabAppName_zero()}{dev ? ' - SvelteKit' : ''}
+  </title>
 </svelte:head>
 
 <div class="shrink-0 navbar bg-[#1c3258]">
@@ -61,18 +61,19 @@
       <div class="dropdown-content w-36 z-10 bg-base-200 rounded-md overflow-y-auto">
         <ul class="menu menu-compact gap-1 p-2">
           <li>
-            <a href="/users/{$page.data.session?.user?.userId ?? ''}/edit">{m.header_myProfile()}</a
-            >
+            <a href="/users/{$page.data.session?.user?.userId ?? ''}/edit">
+              {m.header_myProfile()}
+            </a>
           </li>
           <li>
-            <a target="_blank" href="https://community.scripture.software.sil.org/c/scriptoria/24"
-              >{m.header_community()}</a
-            >
+            <a target="_blank" href="https://community.scripture.software.sil.org/c/scriptoria/24">
+              {m.header_community()}
+            </a>
           </li>
           <li>
-            <a target="_blank" href="https://scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf"
-              >{m.header_help()}</a
-            >
+            <a target="_blank" href="https://scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf">
+              {m.header_help()}
+            </a>
           </li>
           <li>
             <button on:click={() => signOut({ callbackUrl: '/' })}>{m.header_signOut()}</button>

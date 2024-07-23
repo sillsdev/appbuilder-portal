@@ -52,22 +52,22 @@ export async function getOrganizationsForUser(userId: number) {
   });
   const organizations = user?.UserRoles.find((roleDef) => roleDef.RoleId === RoleId.SuperAdmin)
     ? await prisma.organizations.findMany({
-      include: {
-        Owner: true
-      }
-    })
-    : await prisma.organizations.findMany({
-      where: {
-        OrganizationMemberships: {
-          every: {
-            UserId: userId
-          }
+        include: {
+          Owner: true
         }
-      },
-      include: {
-        Owner: true
-      }
-    });
+      })
+    : await prisma.organizations.findMany({
+        where: {
+          OrganizationMemberships: {
+            every: {
+              UserId: userId
+            }
+          }
+        },
+        include: {
+          Owner: true
+        }
+      });
   return organizations;
 }
 

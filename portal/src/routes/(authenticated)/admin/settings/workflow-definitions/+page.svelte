@@ -7,7 +7,7 @@
   export let data: PageData;
 </script>
 
-<a href="workflow-definitions/new" class="btn btn-outline  m-4 mt-0">
+<a href="workflow-definitions/new" class="btn btn-outline m-4 mt-0">
   {m.admin_settings_workflowDefinitions_add()}
 </a>
 
