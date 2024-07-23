@@ -7,10 +7,10 @@
   <h2>{m.attributions_subtitle()}</h2>
   <ul>
     <li>
-      <a href="https://opensource.org/license/MIT"> MIT</a>
+      <a href="https://opensource.org/license/MIT" class="link"> MIT</a>
       <ul>
         <li>
-          <a href="https://svelte.dev/">SvelteJS</a>
+          <a href="https://svelte.dev/" class="link">SvelteJS</a>
         </li>
       </ul>
     </li>
@@ -21,9 +21,5 @@
   ul {
     list-style-type: circle;
     padding-left: 20px;
-  }
-  a {
-    color: #33f;
-    text-decoration: underline;
   }
 </style>
