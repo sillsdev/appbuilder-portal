@@ -42,7 +42,11 @@
           .filter((u) => u.Organizations.find((o) => o.Id === selectedOrg || selectedOrg === 0))
           .sort((a, b) => a.FamilyName.localeCompare(b.FamilyName)) as user}
           <tr class="align-top">
-            <td class="p-2">{user.Name}</td>
+            <td class="p-2">
+              <a href="/users/{user.Id}/settings" class="link">
+                {user.Name}
+              </a>
+            </td>
             <td class="py-2">
               {#each user.Organizations as org}
                 <div class="p-1">
