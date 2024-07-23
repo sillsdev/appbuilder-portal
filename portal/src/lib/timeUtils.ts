@@ -1,6 +1,7 @@
-import { languageTag } from "./paraglide/runtime";
+import { languageTag } from './paraglide/runtime';
 const relativeTimeFormatter = new Intl.RelativeTimeFormat(languageTag());
-export function getRelativeTime(date: Date) {
+export function getRelativeTime(date: Date | null) {
+  if (!date) return '-';
   // in miliseconds
   const units = {
     year: 24 * 60 * 60 * 1000 * 365,
@@ -16,7 +17,18 @@ export function getRelativeTime(date: Date) {
     if (Math.abs(elapsed) > units[u as keyof typeof units] || u == 'second')
       return relativeTimeFormatter.format(
         Math.round(elapsed / units[u as keyof typeof units]),
-          u as keyof typeof units
+        u as keyof typeof units
       );
   }
+}
+export function getTimeDateString(date: Date | null) {
+  return `${date?.toLocaleDateString() ?? '-'} ${
+    date
+      ?.toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      })
+      .replace(' ', '\xa0') ?? ''
+  }`;
 }
