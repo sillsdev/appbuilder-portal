@@ -28,8 +28,13 @@
   {org_addGroupButton()}
   <input type="hidden" name="id" value={data.organization.Id} />
   <div class="my-4 flex flex-row w-full space-x-2">
-    <input class="w-full p-2" type="text" name="name" placeholder="Group name" />
-    <input class="w-full p-2" type="text" name="abbreviation" placeholder="Group Abbreviation" />
+    <input class="w-full input input-bordered" type="text" name="name" placeholder="Group name" />
+    <input
+      class="w-full input input-bordered"
+      type="text"
+      name="abbreviation"
+      placeholder="Group Abbreviation"
+    />
     <input type="submit" class="btn btn-primary" value="Submit" />
   </div>
 </form>
