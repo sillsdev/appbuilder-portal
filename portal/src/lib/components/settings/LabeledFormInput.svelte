@@ -4,8 +4,8 @@
     
 -->
 <script lang="ts">
-  import type { ValidI13nKey } from "$lib/i18n";
-  import * as m from "$lib/paraglide/messages";
+  import type { ValidI13nKey } from '$lib/i18n';
+  import * as m from '$lib/paraglide/messages';
   export let name: ValidI13nKey;
 </script>
 

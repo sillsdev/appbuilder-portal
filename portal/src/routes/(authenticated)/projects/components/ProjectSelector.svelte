@@ -63,11 +63,13 @@
         <button
           class="btn btn-outline mx-1"
           disabled={!selectedProjects.length}
-          on:click={() => alert(selectedProjects.join(', '))}>{m.common_archive()}</button
+          on:click={() => alert(selectedProjects.join(', '))}
         >
-        <button class="btn btn-outline mx-1" disabled={!selectedProjects.length}
-          >{m.common_rebuild()}</button
-        >
+          {m.common_archive()}
+        </button>
+        <button class="btn btn-outline mx-1" disabled={!selectedProjects.length}>
+          {m.common_rebuild()}
+        </button>
       </div>
       <div>
         <button class="btn btn-outline mx-1">{m.project_importProjects()}</button>
@@ -136,14 +138,16 @@
                 <span class="flex items-center" title={m.projectTable_columns_updatedOn()}>
                   <span class="text-nowrap overflow-hidden text-center mr-1">
                     {m.projectTable_columns_updatedOn()}:
-                  </span><span class="w-40 text-center">
+                  </span>
+                  <span class="w-40 text-center">
                     {getTimeDateString(project.DateUpdated)}
                   </span>
                 </span>
                 <span class="flex items-center" title={m.projectTable_columns_activeSince()}>
                   <span class="overflow-hidden text-nowrap mr-1">
                     {m.projectTable_columns_activeSince()}:
-                  </span><span class="text-nowrap w-40 text-center">
+                  </span>
+                  <span class="text-nowrap w-40 text-center">
                     {getTimeDateString(project.DateActive)}
                   </span>
                 </span>

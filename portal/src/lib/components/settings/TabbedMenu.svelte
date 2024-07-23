@@ -28,8 +28,10 @@
               <a
                 class="rounded-none bg-base-200 p-3"
                 class:active={isActive(item.route)}
-                href="{base}/{item.route}">{item.text}</a
+                href="{base}/{item.route}"
               >
+                {item.text}
+              </a>
             </li>
           {/each}
         {/key}

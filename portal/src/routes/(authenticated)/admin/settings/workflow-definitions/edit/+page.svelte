@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import * as m from "$lib/paraglide/messages";
+  import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
 
