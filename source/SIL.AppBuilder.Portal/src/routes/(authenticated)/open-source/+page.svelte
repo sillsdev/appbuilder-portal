@@ -7,7 +7,7 @@
   <h2>{m.attributions_subtitle()}</h2>
   <ul>
     <li>
-      <a href="https://opensource.org/license/MIT" class="link"> MIT</a>
+      <a href="https://opensource.org/license/MIT" class="link">MIT</a>
       <ul>
         <li>
           <a href="https://svelte.dev/" class="link">SvelteJS</a>

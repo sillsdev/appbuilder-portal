@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SignIn } from '@auth/sveltekit/components';
-  import * as m from "$lib/paraglide/messages";
+  import * as m from '$lib/paraglide/messages';
 </script>
 
 <div class="w-full h-full flex flex-rc text-white">

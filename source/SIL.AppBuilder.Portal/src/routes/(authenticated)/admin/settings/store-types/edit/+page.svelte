@@ -1,6 +1,6 @@
 <script lang="ts">
   import SuperDebug, { superForm } from 'sveltekit-superforms';
-  import * as m from "$lib/paraglide/messages";
+  import * as m from '$lib/paraglide/messages';
   import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';

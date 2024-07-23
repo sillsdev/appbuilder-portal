@@ -7,7 +7,7 @@
   export let data: PageData;
 </script>
 
-<a href="stores/new" class="btn btn-outline  m-4 mt-0">
+<a href="stores/new" class="btn btn-outline m-4 mt-0">
   {m.models_add({ name: m.stores_name() })}
 </a>
 
