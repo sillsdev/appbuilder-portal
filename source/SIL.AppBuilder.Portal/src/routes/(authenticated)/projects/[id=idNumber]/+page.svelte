@@ -13,31 +13,88 @@
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm);
 </script>
 
-<div class="w-full max-w-6xl mx-auto">
-  <h1>{data.project?.Name}</h1>
-  <span class="ml-4 font-bold"
-    >{data.project?.IsPublic ? m.project_public() : m.project_private()}</span
-  >
+<div class="w-full max-w-6xl mx-auto relative">
+  <a href="/projects/{data.project?.Id}/edit" class="btn btn-primary absolute right-4 top-20">
+    {m.project_editProject()}
+  </a>
+  <h1 class="pl-6">{data.project?.Name}</h1>
+  <span class="ml-4 font-bold">
+    {data.project?.IsPublic ? m.project_public() : m.project_private()}
+  </span>
   <span>-</span>
   <span>
     {m.project_createdOn()}
     {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
   </span>
-  <div class="flex flex-row w-full p-4">
-    <div class="grow pr-3">
+  <div class="flex gap-x-2 gap-y-4 flex-row w-full p-4 flex-wrap">
+    <div class="grow min-w-0">
       <h2 class="pl-0">{m.project_details_title()}</h2>
       <div>
-        <div class="flex flex-row w-full mb-4">
-          <span class="grow">{m.project_details_language()}: {data.project?.Language}</span>
-          <span class="grow">
-            {m.project_details_type()}: {data.project?.ApplicationType.Description}
-          </span>
+        <div class="flex flex-row w-full mb-4 flex-wrap place-content-between">
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <span>
+                    {m.project_side_organization()}:
+                  </span>
+                </td>
+                <td>
+                  {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span>
+                    {m.project_side_projectOwner()}:
+                  </span>
+                </td>
+                <td>{data.project?.Owner.Name}</td>
+              </tr>
+              <tr>
+                <td>
+                  <span>
+                    {m.project_side_projectGroup()}:
+                  </span>
+                </td>
+                <td>{data.project?.Group.Name}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <span>
+                    {m.project_details_language()}:
+                  </span>
+                </td>
+                <td>
+                  {data.project?.Language}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  {m.project_details_type()}:
+                </td>
+                <td>
+                  {data.project?.ApplicationType.Description}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div>
-          <span>{m.project_projectDescription()}: </span>
+        <div class="my-4">
+          <span>{m.project_projectDescription()}:</span>
           <br />
           <p>{data.project?.Description}</p>
+        </div>
+        <div>
+          <span>{m.project_side_repositoryLocation()}:</span>
           <br />
+          <p class="rounded-md text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 mt-2">
+            {data.project?.WorkflowProjectUrl}
+          </p>
         </div>
       </div>
       <h2 class="pl-0">{m.project_products_title()}</h2>
@@ -45,13 +102,13 @@
         <div class="mb-2">
           <span class="italic">{m.products_definition()}</span>
         </div>
-        {#if !data.project?.Products}
+        {#if !data.project?.Products.length}
           {m.projectTable_noProducts()}
         {:else}
           {#each data.project.Products as product}
             <div class="rounded-md border border-slate-400 overflow-hidden w-full my-2">
               <div class="bg-base-300 p-2 flex flex-row">
-                <span class="grow">
+                <span class="grow min-w-0">
                   <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
                   {product.ProductDefinition.Name}
                 </span>
@@ -73,30 +130,8 @@
         {/if}
       </div>
     </div>
-    <div class="space-y-2">
-      <div class="card card-bordered border-slate-400 overflow-hidden rounded-md w-96">
-        <div class="p-2 bg-base-300">
-          <span>{m.project_side_repositoryLocation()}:</span>
-          <br />
-          <p class="text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 m-2">
-            {data.project?.WorkflowProjectUrl}
-          </p>
-        </div>
-        <div class="p-2 flex flex-col space-y-2">
-          <span>
-            {m.project_side_organization()}: {data.organizations.find(
-              (o) => data.project?.OrganizationId === o.Id
-            )?.Name}
-          </span>
-          <span>
-            {m.project_side_projectOwner()}: {data.project?.Owner.Name}
-          </span>
-          <span>
-            {m.project_side_projectGroup()}: {data.project?.Group.Name}
-          </span>
-        </div>
-      </div>
-      <div class="card card-bordered border-slate-400 overflow-hidden rounded-md w-96">
+    <div class="space-y-2 min-w-0 flex-auto">
+      <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
         <div class="bg-base-300">
           <h2>{m.project_side_authors_title()}</h2>
         </div>
@@ -114,7 +149,7 @@
           {/if}
         </div>
         <div class="bg-base-300 p-2">
-          <form action="?/addAuthor" use:authorEnhance>
+          <form action="?/addAuthor" method="post" use:authorEnhance>
             <div class="flex place-content-between space-x-2">
               <select class="grow select select-bordered" name="author">
                 {#each data.authorsToAdd.filter((author) => !data.project?.Authors.some((au) => au.Users.Id === author.Id)) as author}
@@ -130,7 +165,7 @@
           </form>
         </div>
       </div>
-      <div class="card card-bordered border-slate-400 overflow-hidden rounded-md w-96">
+      <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
         <div class="bg-base-300">
           <h2>{m.project_side_reviewers_title()}</h2>
         </div>
@@ -149,10 +184,22 @@
           {/if}
         </div>
         <div class="p-2 bg-base-300">
-          <form action="?/addReviewer" use:reviewerEnhance>
+          <form action="?/addReviewer" method="post" use:reviewerEnhance>
             <div class="flex flex-col place-content-between space-y-2">
-              <input type="text" name="name" placeholder="Name" class="input input-bordered" />
-              <input type="text" name="email" placeholder="Email" class="input input-bordered" />
+              <div class="flex flex-col gap-2 reviewerform">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  class="input input-bordered grow"
+                />
+                <input
+                  type="text"
+                  name="email"
+                  placeholder="Email"
+                  class="input input-bordered grow"
+                />
+              </div>
               <div class="flex flex-row space-x-2">
                 <select name="locale" class="grow select select-bordered">
                   {#each i18n.config.runtime.availableLanguageTags as tag}
@@ -170,3 +217,14 @@
     </div>
   </div>
 </div>
+
+<style>
+  tr td:first-child {
+    padding-right: 0.3em;
+  }
+  @container (width > 450px) {
+    .reviewerform {
+      flex-direction: row;
+    }
+  }
+</style>
