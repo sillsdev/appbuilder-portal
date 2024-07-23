@@ -47,7 +47,7 @@
                 </span>
               </td>
               <td
-                ><a on:click|stopPropagation href="/projects/{task.Product.ProjectId}">
+                ><a class="link" on:click|stopPropagation href="/projects/{task.Product.ProjectId}">
                   {task.Product.Project.Name}
                 </a></td
               >
@@ -75,9 +75,6 @@
   }
   tbody td {
     padding: 0.5rem;
-  }
-  td a {
-    color: #44f;
   }
   td a:hover {
     text-decoration: underline;

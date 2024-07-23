@@ -87,7 +87,7 @@
   <h1 slot="header" class="p-4 pl-6">{m.sidebar_projectDirectory()}</h1>
   <div
     slot="options"
-    class="w-full flex flex-row place-content-start space-x-2 p-4 pb-0 px-6 space-between-4"
+    class="w-full flex flex-row place-content-start p-4 pb-0 px-6 space-between-4 flex-wrap gap-1"
   >
     <TypeaheadInput
       props={{ placeholder: m.project_languageCode() }}
