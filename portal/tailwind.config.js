@@ -75,7 +75,7 @@ export default {
           info: '#176eb5',
           success: '#0cb66c',
           warning: '#f9a01a',
-          error: '#ba1a1a',
+          error: '#ca2a2a',
 
           '--rounded-box': '1rem',
           '--rounded-btn': '.5rem',

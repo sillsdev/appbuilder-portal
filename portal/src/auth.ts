@@ -1,5 +1,5 @@
 // hooks.server.ts
-import { getOrCreateUser } from '$lib/prisma';
+import prisma, { getOrCreateUser } from '$lib/prisma';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
@@ -8,6 +8,7 @@ declare module '@auth/sveltekit' {
   interface Session {
     user: {
       userId: number;
+      roles: [number, number][];
     } & DefaultSession['user'];
   }
 }
@@ -34,7 +35,13 @@ const config: SvelteKitAuthConfig = {
       await getOrCreateUser(profile);
       return true;
     },
-    async jwt({ profile, token }) {
+    async jwt({ profile, token, trigger }) {
+      // Called in two cases:
+      // a: client just logged in: profile is passed and token is not (trigger == 'signIn')
+      // b: subsequent calls, token is passed and profile is not (trigger == 'update')
+
+      // make sure to handle values that could change mid-session in both cases
+      // safest method is just handle such values in session below (see user.roles)
       if (!profile) return token;
       const dbUser = await getOrCreateUser(profile);
       token.userId = dbUser.Id;
@@ -42,8 +49,13 @@ const config: SvelteKitAuthConfig = {
     },
     async session({ session, token }) {
       // const dbUser = await getUserFromId(token.userId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (session.user as any).userId = token.userId;
+      session.user.userId = token.userId as number;
+      const userRoles = await prisma.userRoles.findMany({
+        where: {
+          UserId: token.userId as number
+        }
+      });
+      session.user.roles = userRoles.map((role) => [role.OrganizationId, role.RoleId]);
       return session;
     }
   }
