@@ -2,10 +2,10 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { org_noteLogUrl } from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
+  import type { PageData } from './$types';
 
   export let data: PageData;
-  export let form: ActionData;
+  // export let form: ActionData;
   const { form: superFormData, enhance, allErrors } = superForm(data.form, { resetForm: false });
 </script>
 

@@ -1,9 +1,9 @@
-import { superValidate } from 'sveltekit-superforms';
-import type { Actions, PageServerLoad } from './$types';
-import * as v from 'valibot';
-import { valibot } from 'sveltekit-superforms/adapters';
-import prisma from '$lib/prisma';
+import prisma, { idSchema } from '$lib/prisma';
 import { fail } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
+import type { Actions, PageServerLoad } from './$types';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),
@@ -13,7 +13,7 @@ const createSchema = v.object({
   logoURL: v.nullable(v.string()),
   useDefaultBuildEngine: v.boolean(),
   publicByDefault: v.boolean(),
-  owner: v.pipe(v.number(), v.minValue(0), v.integer())
+  owner: idSchema
 });
 
 export const load = (async ({ url }) => {
