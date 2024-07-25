@@ -1,11 +1,11 @@
-import prisma, { RoleId } from '$lib/prisma';
+import prisma, { RoleId, idSchema } from '$lib/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { PageServerLoad } from './$types';
 
 const addAuthorSchema = v.object({
-  author: v.pipe(v.number(), v.minValue(0), v.integer())
+  author: idSchema
 });
 const addReviewerSchema = v.object({
   name: v.string(),

@@ -7,6 +7,7 @@
   }>();
   export let props: HTMLInputAttributes = {};
   export let classes: string = '';
+  export let dropdownClasses: string = '';
   export let getList: (searchTerm: string) => T[];
   export let search: string = '';
   $: list = getList(search);
@@ -58,7 +59,7 @@
   <slot name="custom" />
   {#if list.length}
     <ul
-      class="bg-base-200 absolute z-10 rounded-lg p-2 shadow-xl"
+      class="bg-base-200 absolute z-10 rounded-lg p-2 shadow-xl {dropdownClasses}"
       class:hidden={!inputFocused}
       role="listbox"
     >
