@@ -3,6 +3,7 @@
   import { i18n } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import { RoleId } from '$lib/prisma';
   import { getRelativeTime } from '$lib/timeUtils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -13,6 +14,7 @@
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm);
 </script>
 
+<!-- TODO: add allow default and visibility details -->
 <div class="w-full max-w-6xl mx-auto relative">
   <a href="/projects/{data.project?.Id}/edit" class="btn btn-primary absolute right-4 top-20">
     {m.project_editProject()}
@@ -97,17 +99,22 @@
           </p>
         </div>
       </div>
-      <h2 class="pl-0">{m.project_products_title()}</h2>
-      <div>
-        <div class="mb-2">
-          <span class="italic">{m.products_definition()}</span>
+      <div class="flex flex-row place-content-between items-end">
+        <div>
+          <h2 class="pl-0">{m.project_products_title()}</h2>
+          <div class="mb-2">
+            <span class="italic">{m.products_definition()}</span>
+          </div>
         </div>
+        <button class="btn btn-outline">{m.project_products_add()}</button>
+      </div>
+      <div>
         {#if !data.project?.Products.length}
           {m.projectTable_noProducts()}
         {:else}
           {#each data.project.Products as product}
-            <div class="rounded-md border border-slate-400 overflow-hidden w-full my-2">
-              <div class="bg-base-300 p-2 flex flex-row">
+            <div class="rounded-md border border-slate-400 w-full my-2">
+              <div class="bg-base-300 p-2 flex flex-row rounded-t-md">
                 <span class="grow min-w-0">
                   <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
                   {product.ProductDefinition.Name}
@@ -122,12 +129,55 @@
                   <br />
                   {getRelativeTime(product.DatePublished)}
                 </span>
+                <span>
+                  <!-- TODO: also need any actions given by api -->
+                  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                  <div class="dropdown" tabindex="0">
+                    <div class="btn btn-ghost px-1">
+                      <IconContainer icon="charm:menu-kebab" width="20" />
+                    </div>
+                    <div
+                      class="dropdown-content bottom-12 right-0 p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
+                    >
+                      <ul class="menu menu-compact overflow-hidden rounded-md">
+                        <li class="w-full rounded-none">
+                          <span class="text-nowrap">
+                            {m.project_products_popup_details()}
+                          </span>
+                        </li>
+                        <li class="w-full rounded-none">
+                          <span class="text-nowrap">
+                            {m.project_productFiles()}
+                          </span>
+                        </li>
+                        {#if data.session?.user.roles.find((role) => role[0] === data.project?.OrganizationId && role[1] === RoleId.OrgAdmin)}
+                          <li class="w-full rounded-none">
+                            <span class="text-nowrap">
+                              {m.project_products_popup_properties()}
+                            </span>
+                          </li>
+                        {/if}
+                        <li class=" w-full rounded-none">
+                          <span class="text-nowrap text-error">
+                            {m.project_products_remove()}
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </span>
               </div>
               <!-- TODO -->
+              <!-- Need continue link if owned by current user -->
+              <!-- Need workflow link if superadmin -->
               <div class="p-2">Waiting!!!</div>
             </div>
           {/each}
         {/if}
+        <div class="flex flex-row space-x-2">
+          <!-- Use a hamburger menu option instead -->
+          <!-- <button class="btn btn-outline">{m.project_products_remove()}</button> -->
+        </div>
       </div>
     </div>
     <div class="space-y-2 min-w-0 flex-auto">
@@ -226,5 +276,15 @@
     .reviewerform {
       flex-direction: row;
     }
+  }
+  div.dropdown-content::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    transform: rotate(45deg);
+    position: absolute;
+    bottom: -5px;
+    right: 10px;
+    background-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-bg-opacity)));
   }
 </style>

@@ -1,5 +1,5 @@
 import { base } from '$app/paths';
-import prisma from '$lib/prisma';
+import prisma, { idSchema } from '$lib/prisma';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -7,9 +7,9 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 
 const editSchema = v.object({
-  id: v.pipe(v.number(), v.minValue(0), v.integer()),
+  id: idSchema,
   name: v.nullable(v.string()),
-  owner: v.pipe(v.number(), v.minValue(0), v.integer()),
+  owner: idSchema,
   websiteURL: v.nullable(v.string()),
   buildEngineURL: v.nullable(v.string()),
   buildEngineAccessToken: v.nullable(v.string()),
@@ -17,7 +17,7 @@ const editSchema = v.object({
   publicByDefault: v.boolean(),
   stores: v.array(
     v.object({
-      storeId: v.pipe(v.number(), v.minValue(0), v.integer()),
+      storeId: idSchema,
       enabled: v.boolean()
     })
   )

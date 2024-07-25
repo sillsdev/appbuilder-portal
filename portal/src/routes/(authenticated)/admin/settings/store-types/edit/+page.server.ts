@@ -1,13 +1,13 @@
-import prisma from '$lib/prisma';
+import { base } from '$app/paths';
+import prisma, { idSchema } from '$lib/prisma';
+import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { fail, redirect } from '@sveltejs/kit';
-import { base } from '$app/paths';
 
 const editSchema = v.object({
-  id: v.pipe(v.number(), v.minValue(0), v.integer()),
+  id: idSchema,
   name: v.nullable(v.string()),
   description: v.nullable(v.string())
 });

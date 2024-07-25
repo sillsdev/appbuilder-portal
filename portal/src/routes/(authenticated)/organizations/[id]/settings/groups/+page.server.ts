@@ -1,4 +1,4 @@
-import prisma from '$lib/prisma';
+import prisma, { idSchema } from '$lib/prisma';
 import { redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -6,12 +6,12 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 
 const addGroupSchema = v.object({
-  id: v.pipe(v.number(), v.minValue(0), v.integer()),
+  id: idSchema,
   name: v.nullable(v.string()),
   abbreviation: v.nullable(v.string())
 });
 const deleteGroupSchema = v.object({
-  id: v.pipe(v.number(), v.minValue(0), v.integer())
+  id: idSchema
 });
 
 export const load = (async (event) => {

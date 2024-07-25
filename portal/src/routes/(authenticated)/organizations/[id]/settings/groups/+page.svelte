@@ -2,10 +2,10 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { org_addGroupButton } from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
+  import type { PageData } from './$types';
 
   export let data: PageData;
-  export let form: ActionData;
+  // export let form: ActionData;
   const { form: addForm, enhance: addEnhance, allErrors } = superForm(data.addForm);
   const { form: deleteForm, enhance: deleteEnhance } = superForm(data.deleteForm);
 </script>

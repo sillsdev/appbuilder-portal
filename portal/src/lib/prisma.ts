@@ -2,6 +2,7 @@
 
 import type { Profile } from '@auth/sveltekit';
 import { PrismaClient } from '@prisma/client';
+import * as v from 'valibot';
 
 const prisma = new PrismaClient();
 
@@ -12,10 +13,15 @@ export enum RoleId {
   Author
 }
 
+export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
+
 export async function getOrCreateUser(profile: Profile) {
   const result = await prisma.users.findFirst({
     where: {
       ExternalId: profile.sub
+    },
+    include: {
+      UserRoles: true
     }
   });
   if (result) return result;
@@ -29,6 +35,9 @@ export async function getOrCreateUser(profile: Profile) {
       GivenName: profile.given_name,
       Name: profile.name,
       IsLocked: false
+    },
+    include: {
+      UserRoles: true
     }
   });
 }
@@ -52,22 +61,22 @@ export async function getOrganizationsForUser(userId: number) {
   });
   const organizations = user?.UserRoles.find((roleDef) => roleDef.RoleId === RoleId.SuperAdmin)
     ? await prisma.organizations.findMany({
-        include: {
-          Owner: true
-        }
-      })
+      include: {
+        Owner: true
+      }
+    })
     : await prisma.organizations.findMany({
-        where: {
-          OrganizationMemberships: {
-            every: {
-              UserId: userId
-            }
+      where: {
+        OrganizationMemberships: {
+          every: {
+            UserId: userId
           }
-        },
-        include: {
-          Owner: true
         }
-      });
+      },
+      include: {
+        Owner: true
+      }
+    });
   return organizations;
 }
 
