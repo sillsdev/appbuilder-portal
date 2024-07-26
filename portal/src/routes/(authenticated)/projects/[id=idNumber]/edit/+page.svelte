@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import * as m from '$lib/paraglide/messages';
@@ -6,7 +7,14 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-  const { form, enhance } = superForm(data.form);
+  const { form, enhance } = superForm(data.form, {
+    dataType: 'json',
+    onUpdated(event) {
+      if (event.form.valid) {
+        goto('/projects/' + $page.params.id);
+      }
+    }
+  });
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative p-2">
@@ -39,7 +47,7 @@
         <LanguageCodeTypeahead bind:langCode={$form.language} dropdownClasses="right-0" />
       </div>
     </div>
-    <div class="w-full flex place-content-between items-center mt-4">
+    <div class="flex place-content-between items-center mt-4">
       <label for="allowDownload" class="[width:max(50%,35rem)]">
         <div class="flex flex-col">
           <span class="">
@@ -57,7 +65,7 @@
         bind:checked={$form.allowDownload}
       />
     </div>
-    <div class="w-full flex place-content-between items-center mt-4">
+    <div class="flex place-content-between items-center mt-4">
       <label for="public" class="[width:max(50%,35rem)]">
         <div class="flex flex-col">
           <span class="">
