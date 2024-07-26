@@ -14,7 +14,6 @@
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm);
 </script>
 
-<!-- TODO: add allow default and visibility details -->
 <div class="w-full max-w-6xl mx-auto relative">
   <a href="/projects/{data.project?.Id}/edit" class="btn btn-primary absolute right-4 top-20">
     {m.project_editProject()}
@@ -32,59 +31,57 @@
     <div class="grow min-w-0">
       <h2 class="pl-0">{m.project_details_title()}</h2>
       <div>
-        <div class="flex flex-row w-full mb-4 flex-wrap place-content-between">
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <span>
-                    {m.project_side_organization()}:
-                  </span>
-                </td>
-                <td>
-                  {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span>
-                    {m.project_side_projectOwner()}:
-                  </span>
-                </td>
-                <td>{data.project?.Owner.Name}</td>
-              </tr>
-              <tr>
-                <td>
-                  <span>
-                    {m.project_side_projectGroup()}:
-                  </span>
-                </td>
-                <td>{data.project?.Group.Name}</td>
-              </tr>
-            </tbody>
-          </table>
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <span>
-                    {m.project_details_language()}:
-                  </span>
-                </td>
-                <td>
-                  {data.project?.Language}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  {m.project_details_type()}:
-                </td>
-                <td>
-                  {data.project?.ApplicationType.Description}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- TODO: I don't like how project visibility and allow downloads are shown. -->
+        <!-- Probably needs new i18n entries -->
+        <div class="gridcont grid gap-x-4 gap-y-2">
+          <div class="flex place-content-between">
+            <span>
+              <IconContainer icon="clarity:organization-solid" width="20" />
+              {m.project_side_organization()}:
+            </span>
+            <span>
+              {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
+            </span>
+          </div>
+          <div class="flex place-content-between">
+            <span>
+              <IconContainer icon="mdi:user" width="20" />
+              {m.project_side_projectOwner()}:
+            </span>
+            <span>{data.project?.Owner.Name}</span>
+          </div>
+          <div class="flex place-content-between">
+            <span>
+              <IconContainer icon="mdi:account-group" width={20} />
+              {m.project_side_projectGroup()}:
+            </span>
+            <span>{data.project?.Group.Name}</span>
+          </div>
+          <div class="flex place-content-between">
+            <span>
+              <IconContainer icon="ph:globe" width={20} />
+              {m.project_details_language()}:
+            </span>
+            <span>{data.project?.Language}</span>
+          </div>
+          <div class="place-content-between">
+            <p>
+              {data.project?.IsPublic
+                ? m.project_operations_isPublic_on()
+                : m.project_operations_isPublic_off()}
+            </p>
+          </div>
+          <div class="place-content-between">
+            <p>
+              {data.project?.AllowDownloads
+                ? m.project_operations_allowDownloads_on()
+                : m.project_operations_allowDownloads_off()}
+            </p>
+          </div>
+          <div class="flex place-content-between">
+            <span>{m.project_details_type()}:</span>
+            <span>{data.project?.ApplicationType.Description}</span>
+          </div>
         </div>
         <div class="my-4">
           <span>{m.project_projectDescription()}:</span>
@@ -269,9 +266,6 @@
 </div>
 
 <style>
-  tr td:first-child {
-    padding-right: 0.3em;
-  }
   @container (width > 450px) {
     .reviewerform {
       flex-direction: row;
@@ -286,5 +280,11 @@
     bottom: -5px;
     right: 10px;
     background-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-bg-opacity)));
+  }
+  .gridcont {
+    grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
+  }
+  .gridcont div span:first-child {
+    font-family: Montserrat, sans-serif;
   }
 </style>
