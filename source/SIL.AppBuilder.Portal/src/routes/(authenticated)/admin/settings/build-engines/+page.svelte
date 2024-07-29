@@ -2,7 +2,7 @@
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
-  import { getRelativeTime } from '$lib/relativeTime';
+  import { getRelativeTime } from '$lib/timeUtils';
 
   export let data: PageData;
 </script>

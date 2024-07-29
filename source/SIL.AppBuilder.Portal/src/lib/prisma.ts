@@ -13,6 +13,13 @@ export enum RoleId {
   Author
 }
 
+export enum ProductTransitionType {
+  Activity = 1,
+  StartWorkflow,
+  EndWorkflow,
+  CancelWorkflow,
+  ProjectAccess
+}
 export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 
 export async function getOrCreateUser(profile: Profile) {
