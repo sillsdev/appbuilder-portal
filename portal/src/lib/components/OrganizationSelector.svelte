@@ -13,8 +13,10 @@
   <table class="w-full">
     <thead>
       <tr class="text-left">
+        <!-- i18n -->
         <th>Organization</th>
         <th>Owner</th>
+        <!-- <th>Projects</th> -->
       </tr>
     </thead>
     <tbody>
@@ -38,6 +40,9 @@
           <td>
             {org.Owner.Name}
           </td>
+          <!-- <td>
+            {org.Projects.length}
+          </td> -->
         </tr>
       {/each}
     </tbody>

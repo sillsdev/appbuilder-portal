@@ -1,17 +1,65 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
+  import { page } from '$app/stores';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { i18n } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { RoleId } from '$lib/prisma';
-  import { getRelativeTime } from '$lib/timeUtils';
+  import { ProductTransitionType, RoleId } from '$lib/prisma';
+  import { getTimeDateString, getTimeLengthStr } from '$lib/timeUtils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
   export let data: PageData;
 
+  const workflowAdminUrl = `${
+    import.meta.env.VITE_DWKIT_URL
+  }/Account/Login/?ReturnUrl=/admin%3Fapanel%3Dworkflowinstances%26aid%3D`;
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
-  const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm);
+  const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
+    resetForm: true
+  });
+  const { form: authorDeleteForm, enhance: authorDeleteEnhance } = superForm(
+    data.deleteAuthorForm,
+    {
+      warnings: {
+        duplicateId: false
+      }
+    }
+  );
+  const { form: reviewerDeleteForm, enhance: reviewerDeleteEnhance } = superForm(
+    data.deleteReviewerForm,
+    {
+      warnings: {
+        duplicateId: false
+      }
+    }
+  );
+  function openModal(id: string) {
+    (window[('modal' + id) as any] as any).showModal();
+  }
+  function stateString(workflowTypeNum: number, transitionType: number) {
+    const workflowType = (
+      m[
+        ('admin_settings_workflowDefinitions_workflowTypes_' + workflowTypeNum) as keyof typeof m
+      ] as any
+    )();
+    switch (transitionType) {
+      case 2:
+        return m.project_products_transitions_transitionTypes_2({
+          workflowType
+        });
+      case 3:
+        return m.project_products_transitions_transitionTypes_3({
+          workflowType
+        });
+      case 4:
+        return m.project_products_transitions_transitionTypes_4({
+          workflowType
+        });
+    }
+    return '';
+  }
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -25,9 +73,9 @@
   <span>-</span>
   <span>
     {m.project_createdOn()}
-    {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+    {data.project?.DateCreated ? getTimeLengthStr(data.project?.DateCreated) : 'null'}
   </span>
-  <div class="flex gap-x-2 gap-y-4 flex-row w-full p-4 flex-wrap">
+  <div class="flex gap-x-2 gap-y-4 flex-row w-full p-4 pb-0 flex-wrap">
     <div class="grow min-w-0">
       <h2 class="pl-0">{m.project_details_title()}</h2>
       <div>
@@ -103,7 +151,9 @@
             <span class="italic">{m.products_definition()}</span>
           </div>
         </div>
-        <button class="btn btn-outline">{m.project_products_add()}</button>
+        <button class="btn btn-outline" on:click={() => alert('TODO api proxy')}>
+          {m.project_products_add()}
+        </button>
       </div>
       <div>
         {#if !data.project?.Products.length}
@@ -119,15 +169,15 @@
                 <span class="w-32 inline-block">
                   {m.project_products_updated()}
                   <br />
-                  {getRelativeTime(product.DateUpdated)}
+                  {getTimeLengthStr(product.DateUpdated)}
                 </span>
                 <span class="w-32 inline-block">
                   {m.project_products_published()}
                   <br />
-                  {getRelativeTime(product.DatePublished)}
+                  {getTimeLengthStr(product.DatePublished)}
                 </span>
                 <span>
-                  <!-- TODO: also need any actions given by api -->
+                  <!-- TODO: also need any actions given by api? -->
                   <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                   <div class="dropdown" tabindex="0">
                     <div class="btn btn-ghost px-1">
@@ -138,36 +188,143 @@
                     >
                       <ul class="menu menu-compact overflow-hidden rounded-md">
                         <li class="w-full rounded-none">
-                          <span class="text-nowrap">
+                          <button class="text-nowrap" on:click={() => openModal(product.Id)}>
                             {m.project_products_popup_details()}
-                          </span>
+                          </button>
                         </li>
                         <li class="w-full rounded-none">
-                          <span class="text-nowrap">
+                          <a href="/products/{product.Id}/files" class="text-nowrap">
                             {m.project_productFiles()}
-                          </span>
+                          </a>
                         </li>
                         {#if data.session?.user.roles.find((role) => role[0] === data.project?.OrganizationId && role[1] === RoleId.OrgAdmin)}
                           <li class="w-full rounded-none">
                             <span class="text-nowrap">
+                              <!-- TODO: what is this -->
                               {m.project_products_popup_properties()}
                             </span>
                           </li>
                         {/if}
+                        {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin)}
+                          <li class="w-full-rounded-none">
+                            <a href={workflowAdminUrl + product.Id}>{m.common_workflow()}</a>
+                          </li>
+                        {/if}
                         <li class=" w-full rounded-none">
-                          <span class="text-nowrap text-error">
-                            {m.project_products_remove()}
-                          </span>
+                          <!-- Might want a confirmation modal -->
+                          <form action="?/deleteProduct" method="post" use:enhance>
+                            <input type="hidden" name="id" value={product.Id} />
+                            <button type="submit" class="text-nowrap text-error">
+                              {m.project_products_remove()}
+                            </button>
+                          </form>
                         </li>
                       </ul>
                     </div>
                   </div>
                 </span>
               </div>
-              <!-- TODO -->
-              <!-- Need continue link if owned by current user -->
-              <!-- Need workflow link if superadmin -->
-              <div class="p-2">Waiting!!!</div>
+              <div class="p-2 flex place-content-between">
+                {m.tasks_waiting({
+                  // waiting since EITHER (the last task exists) -> that task's creation time
+                  // OR (there are no tasks for this product) -> the last completed transition's completion time
+                  waitTime: getTimeLengthStr(
+                    product.UserTasks.slice(-1)[0]?.DateCreated ??
+                      product.PreviousTransition?.DateTransition ??
+                      null
+                  )
+                })}
+                {m.tasks_forNames({
+                  allowedNames: product.ActiveTransition?.AllowedUserNames ?? 'Scriptoria',
+                  activityName: product.ActiveTransition?.InitialState ?? ''
+                })}
+                {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
+                  <a
+                    class="link mx-2"
+                    href="/flow/{product.ProductDefinition.Workflow
+                      .WorkflowBusinessFlow}/{product.Id}"
+                  >
+                    {m.common_continue()}
+                  </a>
+                {/if}
+              </div>
+              <dialog id="modal{product.Id}" class="modal">
+                <div class="modal-box w-11/12 max-w-6xl">
+                  <h2>{m.project_products_transitions_productDetails()}</h2>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>{m.project_products_transitions_storeName()}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          {product.Store?.Description}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>{m.project_products_transitions_state()}</th>
+                        <th>{m.project_products_transitions_user()}</th>
+                        <th>{m.project_products_transitions_command()}</th>
+                        <th>{m.project_products_transitions_comment()}</th>
+                        <th>{m.project_products_transitions_date()}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {#each product.Transitions as transition}
+                        <tr class:font-bold={[2, 3, 4].includes(transition.TransitionType)}>
+                          <td>
+                            {#if transition.TransitionType === ProductTransitionType.Activity}
+                              {transition.InitialState}
+                            {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
+                              * {transition.InitialState}
+                            {:else}
+                              {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
+                            {/if}
+                          </td>
+                          <td>
+                            <!-- Does not include WorkflowUserId mapping. Might be needed but didn't seem like it to me -->
+                            {#if ![2, 3, 4].includes(transition.TransitionType)}
+                              {transition.AllowedUserNames || m.appName()}
+                            {/if}
+                          </td>
+                          <td>{transition.Command ?? ''}</td>
+                          <td>
+                            {#if transition.Comment?.startsWith('system.')}
+                              {#if transition.Comment.startsWith('system.build-failed')}
+                                <span>
+                                  {m.system_buildFailed()}
+                                </span>
+                              {:else if transition.Comment.startsWith('system.publish-failed')}
+                                <span>
+                                  {m.system_publishFailed()}
+                                </span>
+                              {/if}
+                              <br />
+                              <a href={transition.Comment.replace('system.build-failed,', '')}>
+                                {m.project_products_publications_console()}
+                              </a>
+                            {:else}
+                              {transition.Comment ?? ''}
+                            {/if}
+                          </td>
+                          <td>
+                            {getTimeDateString(transition.DateTransition)}
+                          </td>
+                        </tr>
+                      {/each}
+                    </tbody>
+                  </table>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
             </div>
           {/each}
         {/if}
@@ -187,8 +344,12 @@
             {#each data.project?.Authors ?? [] as author}
               <div class="flex flex-row w-full place-content-between p-2">
                 <span>{author.Users.Name}</span>
-                <!-- TODO: remove author -->
-                <IconContainer icon="mdi:close" width="24" />
+                <form action="?/deleteAuthor" method="post" use:authorDeleteEnhance>
+                  <input type="hidden" name="id" value={author.Id} />
+                  <button type="submit">
+                    <IconContainer icon="mdi:close" width="24" />
+                  </button>
+                </form>
               </div>
             {/each}
           {:else}
@@ -198,7 +359,11 @@
         <div class="bg-base-300 p-2">
           <form action="?/addAuthor" method="post" use:authorEnhance>
             <div class="flex place-content-between space-x-2">
-              <select class="grow select select-bordered" name="author">
+              <select
+                class="grow select select-bordered"
+                name="author"
+                bind:value={$authorForm.author}
+              >
                 {#each data.authorsToAdd.filter((author) => !data.project?.Authors.some((au) => au.Users.Id === author.Id)) as author}
                   <option value={author.Id}>
                     {author.Name}
@@ -220,9 +385,13 @@
           {#if data.project?.Reviewers.length ?? 0 > 0}
             {#each data.project?.Reviewers ?? [] as reviewer}
               <div class="flex flex-row w-full place-content-between p-2">
-                <span>{reviewer.Name}</span>
-                <!-- TODO: remove author -->
-                <IconContainer icon="mdi:close" width="24" />
+                <span>{reviewer.Name} ({reviewer.Email})</span>
+                <form action="?/deleteReviewer" method="post" use:reviewerDeleteEnhance>
+                  <input type="hidden" name="id" value={reviewer.Id} />
+                  <button type="submit">
+                    <IconContainer icon="mdi:close" width="24" />
+                  </button>
+                </form>
               </div>
             {/each}
           {:else}
@@ -239,16 +408,22 @@
                   name="name"
                   placeholder="Name"
                   class="input input-bordered grow"
+                  bind:value={$reviewerForm.name}
                 />
                 <input
                   type="text"
                   name="email"
                   placeholder="Email"
                   class="input input-bordered grow"
+                  bind:value={$reviewerForm.email}
                 />
               </div>
               <div class="flex flex-row space-x-2">
-                <select name="locale" class="grow select select-bordered">
+                <select
+                  name="locale"
+                  class="grow select select-bordered"
+                  bind:value={$reviewerForm.language}
+                >
                   {#each i18n.config.runtime.availableLanguageTags as tag}
                     <option value={tag}>{tag.split('-')[0]}</option>
                   {/each}
@@ -286,5 +461,8 @@
   }
   .gridcont div span:first-child {
     font-family: Montserrat, sans-serif;
+  }
+  .gridcont div span:last-child {
+    text-align: right;
   }
 </style>
