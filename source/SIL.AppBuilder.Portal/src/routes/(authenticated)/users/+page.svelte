@@ -5,6 +5,7 @@
 
   export let data: PageData;
   let selectedOrg: number = 0;
+  let searchQuery = '';
 
   let forms: { [key: string]: any } = {};
 
@@ -16,14 +17,22 @@
     <h1>{m.users_title()}</h1>
     {#if data.organizations.length > 1}
       <!-- TODO i18n -->
-      <div class="content-center mr-4">
-        Filter organization:
-        <select class="select select-bordered" name="org" bind:value={selectedOrg}>
-          <option value={0}>Any organization</option>
-          {#each data.organizations as organization}
-            <option value={organization.Id}>{organization.Name}</option>
-          {/each}
-        </select>
+      <div class="content-center mr-4 space-x-2">
+        <span>
+          Filter organization:
+          <select class="select select-bordered" name="org" bind:value={selectedOrg}>
+            <option value={0}>Any organization</option>
+            {#each data.organizations as organization}
+              <option value={organization.Id}>{organization.Name}</option>
+            {/each}
+          </select>
+        </span>
+        <input
+          placeholder={m.search()}
+          type="text"
+          class="input input-bordered"
+          bind:value={searchQuery}
+        />
       </div>
     {/if}
   </div>
@@ -39,7 +48,7 @@
       </thead>
       <tbody>
         {#each data.users
-          .filter((u) => u.Organizations.find((o) => o.Id === selectedOrg || selectedOrg === 0))
+          .filter((u) => u.Name.includes(searchQuery) && u.Organizations.find((o) => o.Id === selectedOrg || selectedOrg === 0))
           .sort((a, b) => a.FamilyName.localeCompare(b.FamilyName)) as user}
           <tr class="align-top">
             <td class="p-2">
