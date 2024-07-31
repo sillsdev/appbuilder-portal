@@ -86,7 +86,7 @@
               {#if !$$slots.options}
                 <input
                   type="checkbox"
-                  class="mr-2 checkbox"
+                  class="mr-2 checkbox checkbox-info"
                   bind:group={selectedProjects}
                   value={project.Id}
                 />
