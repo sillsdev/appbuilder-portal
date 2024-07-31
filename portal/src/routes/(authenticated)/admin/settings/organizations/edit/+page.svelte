@@ -1,6 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
+  import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
@@ -91,29 +93,15 @@
     </label>
   </div>
 
-  <!-- <LabeledFormInput name="admin_settings_organizations_publicByDefault" /> -->
-  <div class="border border-opacity-15 border-gray-50 rounded-lg p-2">
-    <!-- OrganizationStores -->
-    <div>
-      <span>{m.org_storesTitle()}</span>
-      <br />
-      <span class="label-text">
-        {m.org_storeSelectTitle()}
-      </span>
-    </div>
+  <MultiselectBox header={m.org_storeSelectTitle()}>
     {#each $superFormData.stores as store}
-      <div>
-        <label>
-          <input type="checkbox" bind:checked={store.enabled} />
-          <b>
-            {getStoreInfo(store)?.Name}
-          </b>
-          <br />
-          {getStoreInfo(store)?.Description}
-        </label>
-      </div>
+      <MultiselectBoxElement
+        bind:checked={store.enabled}
+        title={getStoreInfo(store)?.Name ?? ''}
+        description={getStoreInfo(store)?.Description ?? ''}
+      />
     {/each}
-  </div>
+  </MultiselectBox>
   {#if $allErrors.length}
     <ul>
       {#each $allErrors as error}

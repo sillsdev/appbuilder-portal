@@ -1,4 +1,6 @@
 <script lang="ts">
+  import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
+  import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -16,23 +18,15 @@
 
 <h2>{m.org_storesTitle()}</h2>
 <form action="" class="m-4" method="post" use:enhance>
-  <div class="border border-opacity-15 border-gray-50 rounded-lg p-2">
-    <div>
-      <span>{m.org_storeSelectTitle()}</span>
-    </div>
+  <MultiselectBox header={m.org_storeSelectTitle()}>
     {#each $superFormData.stores as store}
-      <div class="my-2">
-        <label>
-          <input type="checkbox" bind:checked={store.enabled} />
-          <b>
-            {data.allStores.find((p) => p.Id === store.storeId)?.Name}
-          </b>
-          <br />
-          {data.allStores.find((p) => p.Id === store.storeId)?.Description}
-        </label>
-      </div>
+      <MultiselectBoxElement
+        title={data.allStores.find((p) => p.Id === store.storeId)?.Name ?? ''}
+        description={data.allStores.find((p) => p.Id === store.storeId)?.Description ?? ''}
+        bind:checked={store.enabled}
+      />
     {/each}
-  </div>
+  </MultiselectBox>
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
   </div>

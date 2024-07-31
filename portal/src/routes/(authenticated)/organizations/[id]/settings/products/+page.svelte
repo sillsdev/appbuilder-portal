@@ -1,4 +1,6 @@
 <script lang="ts">
+  import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
+  import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -36,23 +38,16 @@
       </div>
     </label>
   </div>
-  <div class="border border-opacity-15 border-gray-50 rounded-lg p-2">
-    <div>
-      <span>{m.org_productSelectTitle()}</span>
-    </div>
+  <MultiselectBox header={m.org_productSelectTitle()}>
     {#each $superFormData.products as productDef}
-      <div class="my-2">
-        <label>
-          <input type="checkbox" bind:checked={productDef.enabled} />
-          <b>
-            {data.allProductDefs.find((p) => p.Id === productDef.productId)?.Name}
-          </b>
-          <br />
-          {data.allProductDefs.find((p) => p.Id === productDef.productId)?.Description}
-        </label>
-      </div>
+      <MultiselectBoxElement
+        title={data.allProductDefs.find((p) => p.Id === productDef.productId)?.Name ?? ''}
+        description={data.allProductDefs.find((p) => p.Id === productDef.productId)?.Description ??
+          ''}
+        bind:checked={productDef.enabled}
+      />
     {/each}
-  </div>
+  </MultiselectBox>
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
   </div>
