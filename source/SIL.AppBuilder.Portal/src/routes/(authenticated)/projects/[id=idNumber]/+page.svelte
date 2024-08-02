@@ -4,11 +4,14 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { i18n } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import langtags from '$lib/langtags.json';
   import * as m from '$lib/paraglide/messages';
   import { ProductTransitionType, RoleId } from '$lib/prisma';
   import { getTimeDateString, getTimeLengthStr } from '$lib/timeUtils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+
+  const langtagmap = new Map(langtags.map((tag) => [tag.tag, /* tag.localname ?? */ tag.name]));
 
   export let data: PageData;
 
@@ -81,50 +84,13 @@
       <div>
         <!-- TODO: I don't like how project visibility and allow downloads are shown. -->
         <!-- Probably needs new i18n entries -->
-        <div class="gridcont grid gap-x-4 gap-y-2">
-          <div class="flex place-content-between">
-            <span>
-              <IconContainer icon="clarity:organization-solid" width="20" />
-              {m.project_side_organization()}:
-            </span>
-            <span>
-              {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
-            </span>
-          </div>
-          <div class="flex place-content-between">
-            <span>
-              <IconContainer icon="mdi:user" width="20" />
-              {m.project_side_projectOwner()}:
-            </span>
-            <span>{data.project?.Owner.Name}</span>
-          </div>
-          <div class="flex place-content-between">
-            <span>
-              <IconContainer icon="mdi:account-group" width={20} />
-              {m.project_side_projectGroup()}:
-            </span>
-            <span>{data.project?.Group.Name}</span>
-          </div>
+        <div class="gridcont grid gap-x-6 gap-y-2">
           <div class="flex place-content-between">
             <span>
               <IconContainer icon="ph:globe" width={20} />
               {m.project_details_language()}:
             </span>
-            <span>{data.project?.Language}</span>
-          </div>
-          <div class="place-content-between">
-            <p>
-              {data.project?.IsPublic
-                ? m.project_operations_isPublic_on()
-                : m.project_operations_isPublic_off()}
-            </p>
-          </div>
-          <div class="place-content-between">
-            <p>
-              {data.project?.AllowDownloads
-                ? m.project_operations_allowDownloads_on()
-                : m.project_operations_allowDownloads_off()}
-            </p>
+            <span>{data.project?.Language} ({langtagmap.get(data.project.Language ?? '')})</span>
           </div>
           <div class="flex place-content-between">
             <span>{m.project_details_type()}:</span>
@@ -333,8 +299,69 @@
           <!-- <button class="btn btn-outline">{m.project_products_remove()}</button> -->
         </div>
       </div>
+      <div class="">
+        <h2 class="pl-0">Settings</h2>
+        <div class="space-y-2">
+          <label for="public" class="flex place-content-between">
+            <div class="flex flex-col">
+              <span class="">
+                {m.project_settings_visibility_title()}
+              </span>
+              <span class="text-sm">
+                {m.project_settings_visibility_description()}
+              </span>
+            </div>
+            <input type="checkbox" id="public" class="toggle toggle-info ml-4" />
+          </label>
+          <label for="allowDownload" class="flex place-content-between">
+            <div class="flex flex-col">
+              <span class="">
+                {m.project_settings_organizationDownloads_title()}
+              </span>
+              <span class="text-sm">
+                {m.project_settings_organizationDownloads_description()}
+              </span>
+            </div>
+            <input type="checkbox" id="allowDownload" class="toggle toggle-info ml-4" />
+          </label>
+        </div>
+      </div>
     </div>
     <div class="space-y-2 min-w-0 flex-auto">
+      <div
+        class="bg-base-300 card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full"
+      >
+        <!-- TODO: i18n -->
+        <h2>Settings</h2>
+        <div class="flex flex-col py-4">
+          <div class="flex flex-col place-content-between px-4">
+            <span>
+              <IconContainer icon="clarity:organization-solid" width="20" />
+              {m.project_side_organization()}
+            </span>
+            <span class="text-right">
+              {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
+            </span>
+          </div>
+          <div class="divider my-2" />
+          <div class="flex flex-col place-content-between px-4">
+            <span>
+              <IconContainer icon="mdi:user" width="20" />
+              {m.project_side_projectOwner()}
+            </span>
+            <span class="text-right">{data.project?.Owner.Name}</span>
+          </div>
+          <div class="divider my-2" />
+          <div class="flex flex-col place-content-between px-4">
+            <span class="grow text-nowrap">
+              <IconContainer icon="mdi:account-group" width={20} />
+              {m.project_side_projectGroup()}
+            </span>
+            <span class="shrink text-right">{data.project?.Group.Name}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
         <div class="bg-base-300">
           <h2>{m.project_side_authors_title()}</h2>
@@ -436,6 +463,7 @@
           </form>
         </div>
       </div>
+      <div class="card card-bordered rounded-md" />
     </div>
   </div>
 </div>
