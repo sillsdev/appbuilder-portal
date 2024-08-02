@@ -108,7 +108,8 @@
                 </span>
               </span>
 
-              <IconContainer icon="charm:menu-kebab" width={20} class="inline float-right" />
+              <!-- Removed on request from Chris -->
+              <!-- <IconContainer icon="charm:menu-kebab" width={20} class="inline float-right" /> -->
             </span>
             <div class="flex flex-wrap justify-between">
               <div class="mr-2">

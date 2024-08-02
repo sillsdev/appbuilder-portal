@@ -8,6 +8,7 @@
   export let base: string;
   export let routeId: string;
   export let title: string = '';
+  export let allowTitleWrap = false;
 
   function isActive(menuRoute: string) {
     return $page.route.id?.replace(routeId, '').startsWith('/' + menuRoute);
@@ -17,9 +18,8 @@
 <div class="w-full max-w-6xl mx-auto">
   <div class="flex flex-row">
     <div class="p-4 sticky top-0 self-start">
-      <!-- No idea why tailwind text-nowrap won't work, but this does -->
       <slot name="title">
-        <h1 class="p-4 [text-wrap:nowrap]">{title}</h1>
+        <h1 class="p-4" class:text-nowrap={!allowTitleWrap}>{title}</h1>
       </slot>
       <ul class="menu p-0 rounded border border-slate-600">
         {#key $page.route.id}
