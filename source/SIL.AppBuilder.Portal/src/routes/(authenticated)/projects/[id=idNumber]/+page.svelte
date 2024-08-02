@@ -63,6 +63,8 @@
     }
     return '';
   }
+
+  // TODO: allow editing settings and project owner from this page
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -78,8 +80,8 @@
     {m.project_createdOn()}
     {data.project?.DateCreated ? getTimeLengthStr(data.project?.DateCreated) : 'null'}
   </span>
-  <div class="flex gap-x-2 gap-y-4 flex-row w-full p-4 pb-0 flex-wrap">
-    <div class="grow min-w-0">
+  <div class="grid maingrid w-full p-4 pb-0">
+    <div class="mainarea min-w-0">
       <h2 class="pl-0">{m.project_details_title()}</h2>
       <div>
         <!-- TODO: I don't like how project visibility and allow downloads are shown. -->
@@ -294,40 +296,37 @@
             </div>
           {/each}
         {/if}
-        <div class="flex flex-row space-x-2">
-          <!-- Use a hamburger menu option instead -->
-          <!-- <button class="btn btn-outline">{m.project_products_remove()}</button> -->
-        </div>
-      </div>
-      <div class="">
-        <h2 class="pl-0">Settings</h2>
-        <div class="space-y-2">
-          <label for="public" class="flex place-content-between">
-            <div class="flex flex-col">
-              <span class="">
-                {m.project_settings_visibility_title()}
-              </span>
-              <span class="text-sm">
-                {m.project_settings_visibility_description()}
-              </span>
-            </div>
-            <input type="checkbox" id="public" class="toggle toggle-info ml-4" />
-          </label>
-          <label for="allowDownload" class="flex place-content-between">
-            <div class="flex flex-col">
-              <span class="">
-                {m.project_settings_organizationDownloads_title()}
-              </span>
-              <span class="text-sm">
-                {m.project_settings_organizationDownloads_description()}
-              </span>
-            </div>
-            <input type="checkbox" id="allowDownload" class="toggle toggle-info ml-4" />
-          </label>
-        </div>
+        <div class="divider" />
       </div>
     </div>
-    <div class="space-y-2 min-w-0 flex-auto">
+    <div class="settingsarea my-4">
+      <h2 class="pl-0 pt-0">Settings</h2>
+      <div class="space-y-2">
+        <label for="public" class="flex place-content-between">
+          <div class="flex flex-col">
+            <span class="">
+              {m.project_settings_visibility_title()}
+            </span>
+            <span class="text-sm">
+              {m.project_settings_visibility_description()}
+            </span>
+          </div>
+          <input type="checkbox" id="public" class="toggle toggle-info ml-4" />
+        </label>
+        <label for="allowDownload" class="flex place-content-between">
+          <div class="flex flex-col">
+            <span class="">
+              {m.project_settings_organizationDownloads_title()}
+            </span>
+            <span class="text-sm">
+              {m.project_settings_organizationDownloads_description()}
+            </span>
+          </div>
+          <input type="checkbox" id="allowDownload" class="toggle toggle-info ml-4" />
+        </label>
+      </div>
+    </div>
+    <div class="space-y-2 min-w-0 flex-auto sidebararea">
       <div
         class="bg-base-300 card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full"
       >
@@ -463,7 +462,6 @@
           </form>
         </div>
       </div>
-      <div class="card card-bordered rounded-md" />
     </div>
   </div>
 </div>
@@ -492,5 +490,32 @@
   }
   .gridcont div span:last-child {
     text-align: right;
+  }
+  .mainarea {
+    grid-area: main;
+  }
+  .settingsarea {
+    grid-area: settings;
+  }
+  .sidebararea {
+    grid-area: sidebar;
+  }
+  @media (max-width: 700px) {
+    .maingrid {
+      grid-template-columns: 1fr !important;
+      grid-template-areas:
+        'main'
+        'sidebar'
+        'settings' !important;
+    }
+  }
+  .maingrid {
+    grid-template-areas:
+      'main sidebar'
+      'settings sidebar'
+      '. sidebar';
+    grid-template-columns: 2fr 1fr;
+    /* grid-template-rows: min-content min-content min-content; */
+    column-gap: 0.75rem;
   }
 </style>
