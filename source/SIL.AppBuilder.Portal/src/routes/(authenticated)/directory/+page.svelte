@@ -48,14 +48,14 @@
   :global(.highlight) {
     background-color: oklch(var(--a));
   }
-  :global(li:first-child) .listElement {
+  :global(li:first-child .listElement) {
     border-radius: 0.375rem 0.375rem 0 0;
   }
-  :global(li:last-child) .listElement {
+  :global(li:last-child .listElement) {
     border-radius: 0 0 0.375rem 0.375rem;
     border-bottom-width: 1px;
   }
-  :global(li[aria-selected='true']) .listElement {
+  :global(li[aria-selected='true'] .listElement) {
     background-color: oklch(var(--b2));
   }
 </style>
