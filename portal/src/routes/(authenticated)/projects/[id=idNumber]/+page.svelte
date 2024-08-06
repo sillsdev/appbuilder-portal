@@ -7,7 +7,7 @@
   import langtags from '$lib/langtags.json';
   import * as m from '$lib/paraglide/messages';
   import { ProductTransitionType, RoleId } from '$lib/prisma';
-  import { getTimeDateString, getTimeLengthStr } from '$lib/timeUtils';
+  import { getRelativeTime, getTimeDateString } from '$lib/timeUtils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -78,7 +78,7 @@
   <span>-</span>
   <span>
     {m.project_createdOn()}
-    {data.project?.DateCreated ? getTimeLengthStr(data.project?.DateCreated) : 'null'}
+    {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
   </span>
   <div class="grid maingrid w-full p-4 pb-0">
     <div class="mainarea min-w-0">
@@ -137,12 +137,12 @@
                 <span class="w-32 inline-block">
                   {m.project_products_updated()}
                   <br />
-                  {getTimeLengthStr(product.DateUpdated)}
+                  {getRelativeTime(product.DateUpdated)}
                 </span>
                 <span class="w-32 inline-block">
                   {m.project_products_published()}
                   <br />
-                  {getTimeLengthStr(product.DatePublished)}
+                  {getRelativeTime(product.DatePublished)}
                 </span>
                 <span>
                   <!-- TODO: also need any actions given by api? -->
@@ -196,7 +196,7 @@
                 {m.tasks_waiting({
                   // waiting since EITHER (the last task exists) -> that task's creation time
                   // OR (there are no tasks for this product) -> the last completed transition's completion time
-                  waitTime: getTimeLengthStr(
+                  waitTime: getRelativeTime(
                     product.UserTasks.slice(-1)[0]?.DateCreated ??
                       product.PreviousTransition?.DateTransition ??
                       null

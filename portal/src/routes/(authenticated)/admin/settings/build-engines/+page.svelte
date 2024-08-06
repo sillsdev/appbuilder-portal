@@ -1,8 +1,8 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
-  import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import * as m from '$lib/paraglide/messages';
   import { getRelativeTime } from '$lib/timeUtils';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 </script>
