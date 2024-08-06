@@ -3,7 +3,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { getTimeLengthStr } from '$lib/timeUtils';
+  import { getRelativeTime } from '$lib/timeUtils';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -53,7 +53,7 @@
               </td>
               <td>
                 <span>
-                  {task.DateUpdated ? getTimeLengthStr(task.DateUpdated) : 'null'}
+                  {task.DateUpdated ? getRelativeTime(task.DateUpdated) : 'null'}
                 </span>
               </td>
             </tr>
