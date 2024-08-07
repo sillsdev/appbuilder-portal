@@ -43,9 +43,13 @@ const config: SvelteKitAuthConfig = {
 
       // make sure to handle values that could change mid-session in both cases
       // safest method is just handle such values in session below (see user.roles)
+      // user.isSuperAdmin is a special case handled here to give the /admin/jobs route
+      // access to see if the user has permission to see the BullMQ bull-board queue
+      console.log('SVELTE @jwt', token);
       if (!profile) return token;
       const dbUser = await getOrCreateUser(profile);
       token.userId = dbUser.Id;
+      token.isSuperAdmin = await isUserSuperAdmin(dbUser.Id);
       return token;
     },
     async session({ session, token }) {
