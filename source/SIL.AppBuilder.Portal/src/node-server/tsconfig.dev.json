@@ -1,0 +1,9 @@
+{
+  "exclude": ["index.ts"],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "module": "ES6",
+    "moduleResolution": "node"
+  }
+}
