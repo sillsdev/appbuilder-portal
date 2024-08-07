@@ -104,12 +104,12 @@ services:
       VITE_AUTH0_DOMAIN: "sil-appbuilder.auth0.com"
       VITE_AUTH0_SECRET: "5dc954273eb65ac7ce140f3cb2c5f1d5c05f6a1dfd97ab4b8b2d48b4d63c4e31"
       VITE_AUTH0_CLIENT_SECRET: "5pE7RGmZdlFhAzJOQvGQf6oY1VcXN2PhWvjhY1ALUVxuAOVxyhRznvugcs6qwKS3"
-      # MUST be included and MUST NOT have a trailing slash
+      # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
       ORIGIN: "http://localhost:5173"
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
-    command: redis-server --appendonly yes --appendfilename appendonly.aof
+    command: redis-server --appendonly yes --appendfilename appendonly.aof --maxmemory-policy noeviction
     volumes:
       - redis-data:/data
