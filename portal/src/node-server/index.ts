@@ -7,6 +7,7 @@ import { Queue } from 'bullmq';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { ScriptoriaWorker } from './BullWorker.js';
 
 // Do not import any functional code from the sveltekit codebase
 // unless you are positive you know what you are doing
@@ -69,6 +70,11 @@ const jobQueue = new Queue('scriptoria', {
     host: 'redis'
   }
 });
+// Running on svelte process right now. Consider putting on new thread
+// Fine like this if majority of job time is waiting for network requests
+// If there is much processing it should be moved to another thread
+new ScriptoriaWorker();
+
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
 createBullBoard({
