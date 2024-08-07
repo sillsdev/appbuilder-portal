@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
-  import { RoleId } from '$lib/prisma';
+  import { RoleId } from '$lib/prismaTypes';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 

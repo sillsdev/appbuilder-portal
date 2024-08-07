@@ -1,6 +1,6 @@
 // src/routes/admin/settings/build-engines/+page.server.ts
 
-import prisma from '$lib/prisma';
+import prisma from '$lib/server/prisma';
 import type { PageServerLoad } from './$types';
 
 export const load = (async () => {

@@ -1,4 +1,4 @@
-import { getOrganizationsForUser } from '$lib/prisma';
+import { getOrganizationsForUser } from '$lib/server/prisma';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
