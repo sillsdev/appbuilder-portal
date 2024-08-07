@@ -1,9 +1,9 @@
-import { superValidate } from 'sveltekit-superforms';
-import type { Actions, PageServerLoad } from './$types';
-import * as v from 'valibot';
-import { valibot } from 'sveltekit-superforms/adapters';
-import prisma from '$lib/prisma';
+import prisma from '$lib/server/prisma';
 import { fail } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
+import type { Actions, PageServerLoad } from './$types';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),

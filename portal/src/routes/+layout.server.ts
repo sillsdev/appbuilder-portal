@@ -1,4 +1,3 @@
-import prisma from '$lib/prisma';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {

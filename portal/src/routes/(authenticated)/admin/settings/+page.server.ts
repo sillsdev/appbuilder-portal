@@ -1,4 +1,4 @@
-import { scriptoriaQueue } from '$lib/bullmq';
+import { scriptoriaQueue } from '$lib/server/bullmq';
 import type { Actions } from './$types';
 
 export const actions = {

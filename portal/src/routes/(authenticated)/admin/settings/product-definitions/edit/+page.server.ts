@@ -1,5 +1,5 @@
 import { base } from '$app/paths';
-import prisma, { idSchema } from '$lib/prisma';
+import prisma, { idSchema } from '$lib/server/prisma';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';

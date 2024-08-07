@@ -1,4 +1,5 @@
-import prisma, { RoleId, isUserSuperAdmin } from '$lib/prisma';
+import { RoleId } from '$lib/prismaTypes';
+import prisma, { isUserSuperAdmin } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 

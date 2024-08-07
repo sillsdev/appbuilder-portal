@@ -6,7 +6,7 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import langtags from '$lib/langtags.json';
   import * as m from '$lib/paraglide/messages';
-  import { ProductTransitionType, RoleId } from '$lib/prisma';
+  import { ProductTransitionType, RoleId } from '$lib/prismaTypes';
   import { getRelativeTime, getTimeDateString } from '$lib/timeUtils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';

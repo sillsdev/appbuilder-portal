@@ -1,25 +1,12 @@
 // src/lib/prisma.ts
 
+import { RoleId } from '$lib/prismaTypes';
 import type { Profile } from '@auth/sveltekit';
 import { PrismaClient } from '@prisma/client';
 import * as v from 'valibot';
 
 const prisma = new PrismaClient();
 
-export enum RoleId {
-  SuperAdmin = 1,
-  OrgAdmin,
-  AppBuilder,
-  Author
-}
-
-export enum ProductTransitionType {
-  Activity = 1,
-  StartWorkflow,
-  EndWorkflow,
-  CancelWorkflow,
-  ProjectAccess
-}
 export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 
 export async function getOrCreateUser(profile: Profile) {

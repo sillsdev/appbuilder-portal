@@ -1,10 +1,10 @@
-import { ExpressAuthConfig, getSession } from '@auth/express';
+import { getSession, type ExpressAuthConfig } from '@auth/express';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { createBullBoard } from '@bull-board/api';
 import { BullAdapter } from '@bull-board/api/bullAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
 import { Queue } from 'bullmq';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -35,6 +35,8 @@ const authConfig: ExpressAuthConfig = {
       // I really don't like this. I ought to be able to check the jwt without passing this information
       // to the client, but @auth/express doesn't seem to support it. Doesn't matter, it's like 20 bytes
       // and it's not sensitive information to pass to the client. It will always say yes or not pass
+      // Also, it is possible for a user who was once super admin to save the jwt and
+      // access this bull-board panel after their super admin role has been revoked
       // @ts-expect-error isSuperAdmin is not defined in source
       session.user.isSuperAdmin = token.isSuperAdmin;
       return session;

@@ -1,4 +1,4 @@
-import prisma, { getOrganizationsForUser } from '$lib/prisma';
+import prisma, { getOrganizationsForUser } from '$lib/server/prisma';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {

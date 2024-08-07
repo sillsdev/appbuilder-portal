@@ -1,4 +1,4 @@
-import prisma from '$lib/prisma';
+import prisma from '$lib/server/prisma';
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
