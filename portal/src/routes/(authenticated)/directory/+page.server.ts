@@ -1,4 +1,4 @@
-import prisma from '$lib/prisma';
+import prisma from '$lib/server/prisma';
 import { error } from '@sveltejs/kit';
 import { pruneProjects } from '../projects/common';
 import type { PageServerLoad } from './$types';

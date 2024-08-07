@@ -1,4 +1,5 @@
-import prisma, { RoleId, idSchema } from '$lib/prisma';
+import { RoleId } from '$lib/prismaTypes';
+import prisma, { idSchema } from '$lib/server/prisma';
 import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -143,7 +144,9 @@ export const actions = {
     });
     return { form, ok: true };
   },
-  async addProduct(event) {},
+  async addProduct(event) {
+    // TODO: api and bulltask
+  },
   async addAuthor(event) {
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });

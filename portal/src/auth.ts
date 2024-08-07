@@ -1,4 +1,4 @@
-import prisma, { getOrCreateUser, isUserSuperAdmin } from '$lib/prisma';
+import prisma, { getOrCreateUser, isUserSuperAdmin } from '$lib/server/prisma';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
@@ -35,7 +35,7 @@ const config: SvelteKitAuthConfig = {
       await getOrCreateUser(profile);
       return true;
     },
-    async jwt({ profile, token, trigger }) {
+    async jwt({ profile, token }) {
       // Called in two cases:
       // a: client just logged in: profile is passed and token is not (trigger == 'signIn')
       // b: subsequent calls, token is passed and profile is not (trigger == 'update')
@@ -44,7 +44,6 @@ const config: SvelteKitAuthConfig = {
       // safest method is just handle such values in session below (see user.roles)
       // user.isSuperAdmin is a special case handled here to give the /admin/jobs route
       // access to see if the user has permission to see the BullMQ bull-board queue
-      console.log('SVELTE @jwt', token);
       if (!profile) return token;
       const dbUser = await getOrCreateUser(profile);
       token.userId = dbUser.Id;
