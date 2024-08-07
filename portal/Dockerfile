@@ -17,23 +17,24 @@ RUN npx prisma generate
 COPY . /build/
 RUN npm run build
 
-# Workaround for prisma expecting CommonJS (__dirname and __filename polyfill)
-# https://github.com/prisma/prisma/issues/15614#issuecomment-2126271831
-RUN sed -i '/await server.init/i \
-globalThis.__filename = fileURLToPath(import.meta.url); \
-globalThis.__dirname = path.dirname(__filename);' build/handler.js
+# Now the output is in /build/out/build
+# Build the node-server code (output goes into /build/out as defined in tsconfig.json)
+RUN (cd /build/src/node-server/; npx tsc)
+
 
 # Real container that will run
 FROM node:20-alpine3.19
 
 WORKDIR /app
 
-# Bring in all build output files, and the project package.json
-COPY --from=builder /build/build /app/
+# Bring in package.json and install deps
 COPY --from=builder /build/package*.json /app/
 
 # Install production dependencies
 RUN npm ci --omit dev
+
+# Bring in source code
+COPY --from=builder /build/out /app
 
 # Copy prisma data (npm ci nukes node_modules, so this must be last)
 COPY --from=builder /build/node_modules/.prisma /app/node_modules/.prisma

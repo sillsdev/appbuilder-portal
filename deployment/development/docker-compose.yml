@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 # NOTE: that --project-directory ./source
 # must be passed to every docker-compose command
@@ -13,6 +13,7 @@ volumes:
   ui-node_modules:
   ui-yarn-cache:
   postgres-data:
+  redis-data:
   outdir:
 
 services:
@@ -92,11 +93,23 @@ services:
       - ui-node_modules:/app/node_modules
       - ui-yarn-cache:/.yarn-cache
   svelte-ui:
-    build: 
+    build:
       context: ./portal/
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "5173:3000"
     environment:
       VITE_DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
-      ORIGIN: "http://localhost:3000"
+      VITE_AUTH0_CLIENT_ID: "n8IAE2O17FBrlQ667x5mydhpqelCBUWG"
+      VITE_AUTH0_DOMAIN: "sil-appbuilder.auth0.com"
+      VITE_AUTH0_SECRET: "5dc954273eb65ac7ce140f3cb2c5f1d5c05f6a1dfd97ab4b8b2d48b4d63c4e31"
+      VITE_AUTH0_CLIENT_SECRET: "5pE7RGmZdlFhAzJOQvGQf6oY1VcXN2PhWvjhY1ALUVxuAOVxyhRznvugcs6qwKS3"
+      # MUST be included and MUST NOT have a trailing slash
+      ORIGIN: "http://localhost:5173"
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --appendfilename appendonly.aof
+    volumes:
+      - redis-data:/data

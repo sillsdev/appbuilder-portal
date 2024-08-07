@@ -2,7 +2,7 @@ import { languageTag } from './paraglide/runtime';
 
 let langtag = languageTag();
 let relativeTimeFormatter = new Intl.RelativeTimeFormat(langtag);
-export function getTimeLengthStr(date: Date | null) {
+export function getRelativeTime(date: Date | null) {
   if (!date) return '-';
   if (langtag !== languageTag()) {
     langtag = languageTag();

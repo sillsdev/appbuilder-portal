@@ -1,5 +1,4 @@
-// hooks.server.ts
-import prisma, { getOrCreateUser } from '$lib/prisma';
+import prisma, { getOrCreateUser, isUserSuperAdmin } from '$lib/prisma';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
@@ -14,6 +13,7 @@ declare module '@auth/sveltekit' {
 }
 
 const config: SvelteKitAuthConfig = {
+  trustHost: true,
   providers: [
     Auth0Provider({
       id: 'auth0',
@@ -42,9 +42,13 @@ const config: SvelteKitAuthConfig = {
 
       // make sure to handle values that could change mid-session in both cases
       // safest method is just handle such values in session below (see user.roles)
+      // user.isSuperAdmin is a special case handled here to give the /admin/jobs route
+      // access to see if the user has permission to see the BullMQ bull-board queue
+      console.log('SVELTE @jwt', token);
       if (!profile) return token;
       const dbUser = await getOrCreateUser(profile);
       token.userId = dbUser.Id;
+      token.isSuperAdmin = await isUserSuperAdmin(dbUser.Id);
       return token;
     },
     async session({ session, token }) {
@@ -65,9 +69,13 @@ export const { handle: authRouteHandle, signIn, signOut } = SvelteKitAuth(config
 
 // Locks down the authenticated routes by redirecting to /login
 export const localRouteHandle: Handle = async ({ event, resolve }) => {
-  if (!event.route.id?.startsWith('/(unauthenticated)') && event.route.id !== '/') {
+  if (
+    !event.route.id?.startsWith('/(unauthenticated)') &&
+    event.route.id !== '/' &&
+    event.route.id !== null
+  ) {
     const session = await event.locals.auth();
-    if (!session) return redirect(303, '/login');
+    if (!session) return redirect(302, '/login');
   }
   return resolve(event);
 };
