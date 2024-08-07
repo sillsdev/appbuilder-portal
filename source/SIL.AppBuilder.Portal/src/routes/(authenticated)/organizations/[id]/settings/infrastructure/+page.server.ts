@@ -1,4 +1,4 @@
-import prisma, { idSchema } from '$lib/prisma';
+import prisma, { idSchema } from '$lib/server/prisma';
 import { redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';

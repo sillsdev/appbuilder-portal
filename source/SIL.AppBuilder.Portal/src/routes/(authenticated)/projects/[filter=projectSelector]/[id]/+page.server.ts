@@ -1,4 +1,4 @@
-import prisma from '$lib/prisma';
+import prisma from '$lib/server/prisma';
 import type { Prisma } from '@prisma/client';
 import { redirect } from '@sveltejs/kit';
 import { pruneProjects } from '../../common';
