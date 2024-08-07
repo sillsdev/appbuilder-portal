@@ -20,6 +20,10 @@
   ];
 </script>
 
+<form action="/admin/settings" method="post">
+  <button type="submit" class="btn btn-primary">Add Test BullMQ task</button>
+</form>
+
 <TabbedMenu
   routeId="/(authenticated)/admin/settings"
   base="{base}/admin/settings"
