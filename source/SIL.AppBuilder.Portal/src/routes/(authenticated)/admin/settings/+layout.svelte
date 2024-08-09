@@ -14,13 +14,11 @@
     { text: m.admin_settings_navigation_productDefinitions(), route: 'product-definitions' },
     { text: m.admin_settings_navigation_stores(), route: 'stores' },
     { text: m.admin_settings_navigation_storeTypes(), route: 'store-types' },
-    { text: m.admin_settings_navigation_buildEngines(), route: 'build-engines' }
+    { text: m.admin_settings_navigation_buildEngines(), route: 'build-engines' },
+    // i18n
+    { text: 'BullMQ', route: 'bullmq' }
   ];
 </script>
-
-<form action="/admin/settings" method="post">
-  <button type="submit" class="btn btn-primary">Add Test BullMQ task</button>
-</form>
 
 <TabbedMenu
   routeId="/(authenticated)/admin/settings"

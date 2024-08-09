@@ -1,11 +1,10 @@
-import { RoleId } from '$lib/prismaTypes';
 import type { Profile } from '@auth/sveltekit';
 import { PrismaClient } from '@prisma/client';
-import * as v from 'valibot';
+import { RoleId } from './prismaTypes.js';
 
+if (!process.env.VITE_DATABASE_URL)
+  process.env.VITE_DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
 const prisma = new PrismaClient();
-
-export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 
 export async function getOrCreateUser(profile: Profile) {
   const result = await prisma.users.findFirst({
