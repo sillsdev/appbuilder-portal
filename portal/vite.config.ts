@@ -2,9 +2,15 @@ import { paraglide } from '@inlang/paraglide-sveltekit/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { spawn } from 'child_process';
 import { stat, writeFile } from 'fs/promises';
+import { searchForWorkspaceRoot } from 'vite';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  server: {
+    fs: {
+      allow: [searchForWorkspaceRoot(process.cwd()), '/common']
+    }
+  },
   plugins: [
     {
       name: 'fetch-langtags',
@@ -54,7 +60,6 @@ export default defineConfig({
           });
           compilingProcess.once('close', () => {
             const executingProcess = spawn('node dev.js', {
-              env: { NODE_ENV: 'development' },
               cwd: 'node-server',
               stdio: 'pipe',
               shell: true

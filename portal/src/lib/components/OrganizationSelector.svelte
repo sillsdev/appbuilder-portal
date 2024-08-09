@@ -6,7 +6,9 @@
       Owner: true;
     };
   }>[];
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{
+    select: { id: number };
+  }>();
 </script>
 
 <div class="w-full px-4">

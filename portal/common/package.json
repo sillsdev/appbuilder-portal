@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "author": "",
+  "type": "module",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.18.0",
