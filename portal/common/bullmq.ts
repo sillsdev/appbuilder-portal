@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq';
-import type { ScriptoriaJob } from './BullJobTypes';
+import type { ScriptoriaJob } from './BullJobTypes.js';
 
 export const scriptoriaQueue = new Queue<ScriptoriaJob>('scriptoria', {
   connection: {

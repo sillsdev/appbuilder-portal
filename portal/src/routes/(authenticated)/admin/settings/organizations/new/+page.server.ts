@@ -1,6 +1,6 @@
+import { idSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
-import { idSchema } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
