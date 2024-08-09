@@ -1,4 +1,4 @@
-import prisma from '$lib/server/prisma';
+import { prisma } from 'sil.appbuilder.portal.common';
 import type { LayoutServerLoad } from './$types';
 
 export const load = (async ({ params }) => {
