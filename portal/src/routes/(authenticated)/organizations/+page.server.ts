@@ -1,5 +1,5 @@
-import { getOrganizationsForUser } from '$lib/server/prisma';
 import { redirect } from '@sveltejs/kit';
+import { getOrganizationsForUser } from 'sil.appbuilder.portal.common/prisma';
 import type { PageServerLoad } from './$types';
 
 export const load = (async (event) => {

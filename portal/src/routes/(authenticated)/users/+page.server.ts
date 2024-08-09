@@ -1,6 +1,6 @@
 import { RoleId } from '$lib/prismaTypes';
-import prisma, { isUserSuperAdmin } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
 import type { Actions, PageServerLoad } from './$types';
 
 // Not used, just for reference
@@ -18,7 +18,8 @@ type UserInfo = {
 };
 
 export const load = (async (event) => {
-  const userId = (await event.locals.auth())?.user.userId;
+  const userInfo = (await event.locals.auth())?.user;
+  const userId = userInfo?.userId;
   if (!userId) return redirect(302, '/');
 
   // If we are a superadmin, collect all users, otherwise
@@ -45,7 +46,7 @@ export const load = (async (event) => {
   let users;
   let organizations;
 
-  if (await isUserSuperAdmin(userId)) {
+  if (userInfo.roles.find((r) => r[1] === RoleId.SuperAdmin)) {
     // Get all users that are locked or are a member of at least one organization
     // (Users that are not in an organization and are not locked are not interesting
     // because they can't login and behave essentially as locked users or as users

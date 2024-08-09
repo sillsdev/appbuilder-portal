@@ -1,4 +1,5 @@
-import prisma, { getOrganizationsForUser } from '$lib/server/prisma';
+import { prisma } from 'sil.appbuilder.portal.common';
+import { getOrganizationsForUser } from 'sil.appbuilder.portal.common/prisma';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
