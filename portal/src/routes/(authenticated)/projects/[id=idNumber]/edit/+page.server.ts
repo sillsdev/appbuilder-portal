@@ -1,5 +1,7 @@
-import prisma, { idSchema } from '$lib/server/prisma';
+import { updateProject } from '$lib/server/relationVerification/projects';
 import { error } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
+import { idSchema } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -56,20 +58,15 @@ export const actions: Actions = {
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (isNaN(parseInt(event.params.id))) return fail(400, { form, ok: false });
-    await prisma.projects.update({
-      where: {
-        Id: parseInt(event.params.id)
-      },
-      data: {
-        Name: form.data.name,
-        GroupId: form.data.group,
-        OwnerId: form.data.owner,
-        Language: form.data.language,
-        Description: form.data.description ?? '',
-        AllowDownloads: form.data.allowDownload,
-        IsPublic: form.data.public
-      }
+    const success = await updateProject(parseInt(event.params.id), {
+      Name: form.data.name,
+      GroupId: form.data.group,
+      OwnerId: form.data.owner,
+      Language: form.data.language,
+      Description: form.data.description ?? '',
+      AllowDownloads: form.data.allowDownload,
+      IsPublic: form.data.public
     });
-    return { form, ok: true };
+    return { form, ok: success };
   }
 };

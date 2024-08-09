@@ -48,13 +48,14 @@ export default defineConfig({
       configureServer(server) {
         if (server.config.mode === 'development') {
           const compilingProcess = spawn('npx tsc --project tsconfig.dev.json', {
-            cwd: 'src/node-server',
+            cwd: 'node-server',
             stdio: 'pipe',
             shell: true
           });
           compilingProcess.once('close', () => {
             const executingProcess = spawn('node dev.js', {
-              cwd: 'src/node-server',
+              env: { NODE_ENV: 'development' },
+              cwd: 'node-server',
               stdio: 'pipe',
               shell: true
             });

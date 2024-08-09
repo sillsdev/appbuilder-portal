@@ -1,5 +1,5 @@
-import prisma from '$lib/server/prisma';
 import { redirect } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
 import type { LayoutServerLoad } from './$types';
 
 export const load = (async (event) => {

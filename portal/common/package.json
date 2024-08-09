@@ -1,0 +1,15 @@
+{
+  "name": "sil.appbuilder.portal.common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "bullmq": "^5.12.2"
+  },
+  "devDependencies": {
+    "prisma": "^5.18.0"
+  }
+}

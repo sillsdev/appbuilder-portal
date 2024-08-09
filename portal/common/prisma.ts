@@ -1,5 +1,3 @@
-// src/lib/prisma.ts
-
 import { RoleId } from '$lib/prismaTypes';
 import type { Profile } from '@auth/sveltekit';
 import { PrismaClient } from '@prisma/client';
@@ -34,16 +32,6 @@ export async function getOrCreateUser(profile: Profile) {
       UserRoles: true
     }
   });
-}
-
-export async function isUserSuperAdmin(userId: number) {
-  return !!(
-    await prisma.userRoles.findMany({
-      where: {
-        UserId: userId
-      }
-    })
-  ).find((v) => v.RoleId === RoleId.SuperAdmin);
 }
 
 export async function getOrganizationsForUser(userId: number) {

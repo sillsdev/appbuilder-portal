@@ -1,7 +1,8 @@
-import prisma, { getOrCreateUser, isUserSuperAdmin } from '$lib/server/prisma';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
+import { getOrCreateUser } from 'sil.appbuilder.portal.common/prisma';
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -42,12 +43,9 @@ const config: SvelteKitAuthConfig = {
 
       // make sure to handle values that could change mid-session in both cases
       // safest method is just handle such values in session below (see user.roles)
-      // user.isSuperAdmin is a special case handled here to give the /admin/jobs route
-      // access to see if the user has permission to see the BullMQ bull-board queue
       if (!profile) return token;
       const dbUser = await getOrCreateUser(profile);
       token.userId = dbUser.Id;
-      token.isSuperAdmin = await isUserSuperAdmin(dbUser.Id);
       return token;
     },
     async session({ session, token }) {

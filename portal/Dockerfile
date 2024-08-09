@@ -19,7 +19,7 @@ RUN npm run build
 
 # Now the output is in /build/out/build
 # Build the node-server code (output goes into /build/out as defined in tsconfig.json)
-RUN (cd /build/src/node-server/; npx tsc)
+RUN (cd /build/node-server/; npx tsc)
 
 
 # Real container that will run

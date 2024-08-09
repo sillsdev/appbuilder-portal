@@ -1,5 +1,5 @@
-import prisma from '$lib/server/prisma';
 import { error } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
 import { pruneProjects } from '../projects/common';
 import type { PageServerLoad } from './$types';
 

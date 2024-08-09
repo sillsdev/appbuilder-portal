@@ -3,9 +3,9 @@ import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { createBullBoard } from '@bull-board/api';
 import { BullAdapter } from '@bull-board/api/bullAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
-import { Queue } from 'bullmq';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import path from 'path';
+import { prisma } from 'sil.appbuilder.portal.common';
 import { fileURLToPath } from 'url';
 import { ScriptoriaWorker } from './BullWorker.js';
 
@@ -33,13 +33,8 @@ const authConfig: ExpressAuthConfig = {
   ],
   callbacks: {
     async session({ session, token }) {
-      // I really don't like this. I ought to be able to check the jwt without passing this information
-      // to the client, but @auth/express doesn't seem to support it. Doesn't matter, it's like 20 bytes
-      // and it's not sensitive information to pass to the client. It will always say yes or not pass
-      // Also, it is possible for a user who was once super admin to save the jwt and
-      // access this bull-board panel after their super admin role has been revoked
-      // @ts-expect-error isSuperAdmin is not defined in source
-      session.user.isSuperAdmin = token.isSuperAdmin;
+      // @ts-expect-error userId is not defined in source
+      session.user.userId = token.userId;
       return session;
     }
   }
@@ -50,9 +45,21 @@ function verifyAuthenticated(requireAdmin: boolean) {
     const session = res.locals.session ?? (await getSession(req, authConfig));
     if (!session?.user) {
       res.redirect('/login');
-    } else if (requireAdmin && !session?.user?.isSuperAdmin) {
-      res.status(403);
-      res.end('You do not have permission to access this resource');
+    } else if (requireAdmin) {
+      const superAdminRoles = await prisma.userRoles.findMany({
+        where: {
+          UserId: session.user.userId,
+          // RoleId.SuperAdmin
+          RoleId: 1
+        }
+      });
+      if (superAdminRoles.length === 0) {
+        // Could redirect to /tasks
+        res.status(403);
+        res.end('You do not have permission to access this resource');
+      } else {
+        next();
+      }
     } else {
       next();
     }
@@ -65,11 +72,7 @@ app.get('/healthcheck', (req, res) => {
 });
 
 // BullMQ variables
-const jobQueue = new Queue('scriptoria', {
-  connection: {
-    host: 'redis'
-  }
-});
+import { scriptoriaQueue } from 'sil.appbuilder.portal.common';
 // Running on svelte process right now. Consider putting on new thread
 // Fine like this if majority of job time is waiting for network requests
 // If there is much processing it should be moved to another thread
@@ -78,7 +81,7 @@ new ScriptoriaWorker();
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
 createBullBoard({
-  queues: [new BullAdapter(jobQueue)],
+  queues: [new BullAdapter(scriptoriaQueue)],
   serverAdapter
 });
 

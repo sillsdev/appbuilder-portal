@@ -24,7 +24,6 @@
     "@inlang/paraglide-js": "1.11.0",
     "@inlang/paraglide-sveltekit": "^0.10.8",
     "@playwright/test": "^1.28.1",
-    "@prisma/client": "^5.4.2",
     "@sveltejs/adapter-node": "^5.0.1",
     "@sveltejs/kit": "^2.5.18",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
@@ -64,7 +63,7 @@
     "@auth/express": "^0.6.0",
     "@auth/sveltekit": "^1.4.2",
     "@bull-board/express": "^5.21.3",
-    "bullmq": "^5.12.0",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "sil.appbuilder.portal.common": "file:common"
   }
 }
