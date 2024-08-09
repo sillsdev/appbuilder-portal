@@ -1,6 +1,7 @@
 import { base } from '$app/paths';
-import prisma, { idSchema } from '$lib/server/prisma';
 import { fail, redirect } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
+import { idSchema } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
