@@ -18,32 +18,32 @@
       <!-- TODO i18n -->
       <div class="flex w-full">
         <div class="shrink space-y-2">
-          <div class="flex space-x-2 place-content-between">
-            <span>AppBuilder</span>
+          <div class="flex space-x-2">
             <input
               type="checkbox"
               class="toggle toggle-info"
               value={RoleId.AppBuilder}
               bind:group={org.roles}
             />
+            <span>AppBuilder</span>
           </div>
-          <div class="flex space-x-2 place-content-between">
-            <span>Author</span>
+          <div class="flex space-x-2">
             <input
               type="checkbox"
               class="toggle toggle-info"
               value={RoleId.Author}
               bind:group={org.roles}
             />
+            <span>Author</span>
           </div>
-          <div class="flex space-x-2 place-content-between">
-            <span>Organization Admin</span>
+          <div class="flex space-x-2">
             <input
               type="checkbox"
               class="toggle toggle-info"
               value={RoleId.OrgAdmin}
               bind:group={org.roles}
             />
+            <span>Organization Admin</span>
           </div>
         </div>
         <div class="grow" />
