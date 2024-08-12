@@ -18,7 +18,8 @@ const profileSchema = v.object({
   phone: v.pipe(v.string(), v.regex(/[\d-() ]+/)),
   timezone: v.string(), // ?
   notifications: v.boolean(),
-  visible: v.boolean()
+  visible: v.boolean(),
+  active: v.boolean()
 });
 
 function verifyAllowed(
@@ -65,7 +66,8 @@ export const load = (async ({ params, locals, parent }) => {
       phone: user.Phone ?? '',
       timezone: user.Timezone ?? '',
       notifications: user.EmailNotification ?? false,
-      visible: !!user.ProfileVisibility
+      visible: !!user.ProfileVisibility,
+      active: !user.IsLocked
     },
     valibot(profileSchema)
   );
@@ -111,7 +113,9 @@ export const actions = {
         // TODO: sync user data with dwkit
         Timezone: form.data.timezone,
         EmailNotification: form.data.notifications,
-        ProfileVisibility: form.data.visible ? 1 : 0
+        ProfileVisibility: form.data.visible ? 1 : 0,
+        // You cannot change lock state of yourself, and if you are editing someone else, you are either org admin or superadmin
+        IsLocked: form.data.id === auth!.user.userId ? undefined : !form.data.active
       }
     });
     return { form, ok: true };
