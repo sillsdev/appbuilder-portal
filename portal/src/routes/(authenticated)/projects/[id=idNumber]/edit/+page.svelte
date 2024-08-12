@@ -47,42 +47,6 @@
         <LanguageCodeTypeahead bind:langCode={$form.language} dropdownClasses="right-0" />
       </div>
     </div>
-    <div class="flex place-content-between items-center mt-4">
-      <label for="allowDownload" class="[width:max(50%,35rem)]">
-        <div class="flex flex-col">
-          <span class="">
-            {m.project_settings_organizationDownloads_title()}
-          </span>
-          <span class="text-sm">
-            {m.project_settings_organizationDownloads_description()}
-          </span>
-        </div>
-      </label>
-      <input
-        type="checkbox"
-        id="allowDownload"
-        class="toggle toggle-info ml-4"
-        bind:checked={$form.allowDownload}
-      />
-    </div>
-    <div class="flex place-content-between items-center mt-4">
-      <label for="public" class="[width:max(50%,35rem)]">
-        <div class="flex flex-col">
-          <span class="">
-            {m.project_settings_visibility_title()}
-          </span>
-          <span class="text-sm">
-            {m.project_settings_visibility_description()}
-          </span>
-        </div>
-      </label>
-      <input
-        type="checkbox"
-        id="public"
-        class="toggle toggle-info ml-4"
-        bind:checked={$form.public}
-      />
-    </div>
     <div class="mt-4">
       <label for="description">
         {m.project_projectDescription()}

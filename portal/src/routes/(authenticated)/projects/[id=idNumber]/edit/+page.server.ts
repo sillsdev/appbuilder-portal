@@ -5,6 +5,7 @@ import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
+import { verifyCanView } from '../common';
 import type { Actions, PageServerLoad } from './$types';
 
 const projectPropertyEditSchema = v.object({
@@ -12,12 +13,11 @@ const projectPropertyEditSchema = v.object({
   group: idSchema,
   owner: idSchema,
   language: v.string(),
-  description: v.nullable(v.string()),
-  allowDownload: v.boolean(),
-  public: v.boolean()
+  description: v.nullable(v.string())
 });
 
-export const load = (async ({ params }) => {
+export const load = (async ({ locals, params }) => {
+  if (!verifyCanView((await locals.auth())!, parseInt(params.id))) return error(403);
   const project = await prisma.projects.findUnique({
     where: {
       Id: parseInt(params.id)
@@ -44,9 +44,7 @@ export const load = (async ({ params }) => {
       group: project.GroupId,
       owner: project.OwnerId,
       language: project.Language!,
-      description: project.Description,
-      allowDownload: !!project.AllowDownloads,
-      public: !!project.IsPublic
+      description: project.Description
     },
     valibot(projectPropertyEditSchema)
   );
@@ -55,6 +53,7 @@ export const load = (async ({ params }) => {
 
 export const actions: Actions = {
   default: async function (event) {
+    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (isNaN(parseInt(event.params.id))) return fail(400, { form, ok: false });
@@ -63,9 +62,7 @@ export const actions: Actions = {
       GroupId: form.data.group,
       OwnerId: form.data.owner,
       Language: form.data.language,
-      Description: form.data.description ?? '',
-      AllowDownloads: form.data.allowDownload,
-      IsPublic: form.data.public
+      Description: form.data.description ?? ''
     });
     return { form, ok: success };
   }
