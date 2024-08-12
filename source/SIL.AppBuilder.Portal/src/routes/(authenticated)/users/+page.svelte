@@ -13,13 +13,13 @@
 </script>
 
 <div class="w-full">
-  <div class="flex flex-row place-content-between align-middle">
-    <h1>{m.users_title()}</h1>
-    {#if data.organizations.length > 1}
-      <!-- TODO i18n -->
-      <div class="content-center mr-4 space-x-2">
-        <span>
-          Filter organization:
+  <div class="flex flex-row place-content-between align-middle flex-wrap items-center">
+    <h1 class="pb-6">{m.users_title()}</h1>
+    <!-- TODO i18n -->
+    <div class="content-center m-4 space-x-2 flex flex-nowrap items-end">
+      {#if data.organizations.length > 1}
+        <span class="flex flex-wrap items-center gap-x-2">
+          <span>Filter organization:</span>
           <select class="select select-bordered" name="org" bind:value={selectedOrg}>
             <option value={0}>Any organization</option>
             {#each data.organizations as organization}
@@ -27,14 +27,14 @@
             {/each}
           </select>
         </span>
-        <input
-          placeholder={m.search()}
-          type="text"
-          class="input input-bordered"
-          bind:value={searchQuery}
-        />
-      </div>
-    {/if}
+      {/if}
+      <input
+        placeholder={m.search()}
+        type="text"
+        class="input input-bordered"
+        bind:value={searchQuery}
+      />
+    </div>
   </div>
   <div class="m-4 relative mt-0">
     <table class="w-full">

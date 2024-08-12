@@ -31,7 +31,7 @@
                 )}
             >
               <td>
-                <div>
+                <div class="flex items-center">
                   <IconContainer
                     icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
                     width={38}
@@ -41,7 +41,7 @@
                   </span>
                 </div>
                 <span
-                  class="rounded-xl badge badge-secondary uppercase font-bold ml-10 [top:-5px] relative"
+                  class="rounded-xl badge badge-secondary uppercase font-bold ml-10 [top:-5px] relative mt-2 text-center"
                 >
                   {task.Status}
                 </span>
