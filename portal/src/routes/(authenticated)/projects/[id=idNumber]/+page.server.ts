@@ -6,6 +6,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { verifyCanView } from './common';
 
 const deleteReviewerSchema = v.object({
   id: idSchema
@@ -23,7 +24,8 @@ const addReviewerSchema = v.object({
 });
 
 // Are we sending too much data?
-export const load = (async ({ params }) => {
+export const load = (async ({ locals, params }) => {
+  if (!verifyCanView((await locals.auth())!, parseInt(params.id))) return error(403);
   const project = await prisma.projects.findUnique({
     where: {
       Id: parseInt(params.id)
@@ -112,6 +114,7 @@ export const load = (async ({ params }) => {
 
 export const actions = {
   async deleteProduct(event) {
+    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(v.object({ id: v.string() })));
     if (!form.valid) return fail(400, { form, ok: false });
     await prisma.userTasks.deleteMany({
@@ -126,6 +129,7 @@ export const actions = {
     });
   },
   async deleteAuthor(event) {
+    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(deleteAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await prisma.authors.delete({
@@ -136,6 +140,7 @@ export const actions = {
     return { form, ok: true };
   },
   async deleteReviewer(event) {
+    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(deleteReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await prisma.reviewers.delete({
@@ -146,9 +151,11 @@ export const actions = {
     return { form, ok: true };
   },
   async addProduct(event) {
+    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     // TODO: api and bulltask
   },
   async addAuthor(event) {
+    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // Appears that CanUpdate is not used TODO
@@ -161,6 +168,7 @@ export const actions = {
     return { form, ok: true };
   },
   async addReviewer(event) {
+    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(addReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await prisma.reviewers.create({
@@ -169,6 +177,29 @@ export const actions = {
         Name: form.data.name,
         Locale: form.data.language,
         ProjectId: parseInt(event.params.id)
+      }
+    });
+    return { form, ok: true };
+  },
+  async editSettings(event) {
+    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    const form = await superValidate(
+      event.request,
+      valibot(
+        v.object({
+          isPublic: v.boolean(),
+          allowDownload: v.boolean()
+        })
+      )
+    );
+    if (!form.valid) return fail(400, { form, ok: false });
+    await prisma.projects.update({
+      where: {
+        Id: parseInt(event.params.id)
+      },
+      data: {
+        IsPublic: form.data.isPublic,
+        AllowDownloads: form.data.allowDownload
       }
     });
     return { form, ok: true };
