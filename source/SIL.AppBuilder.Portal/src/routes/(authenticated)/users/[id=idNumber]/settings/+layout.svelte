@@ -15,11 +15,17 @@
   // TODO: route must be permission protected
 </script>
 
-<TabbedMenu
-  routeId="/(authenticated)/users/[id=idNumber]/settings"
-  base="{base}/users/{$page.params.id}/settings"
-  title={m.users_settingsTitle() + ': ' + data.username}
-  menuItems={userSettingsLinks}
->
+<!-- TODO: not good enough; needs to check if org admin for one of the user's orgs -->
+{#if data.canEdit}
+  <TabbedMenu
+    routeId="/(authenticated)/users/[id=idNumber]/settings"
+    base="{base}/users/{$page.params.id}/settings"
+    title={m.users_settingsTitle() + ': ' + data.username}
+    menuItems={userSettingsLinks}
+  >
+    <slot />
+  </TabbedMenu>
+{:else}
+  <h1>{m.profile_title()}: {data.username}</h1>
   <slot />
-</TabbedMenu>
+{/if}

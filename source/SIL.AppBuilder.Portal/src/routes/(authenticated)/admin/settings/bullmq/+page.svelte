@@ -5,7 +5,7 @@
   export let data: PageData;
 </script>
 
-<div class="flex flex-col w-full">
+<div class="flex flex-col w-full px-4">
   <form action="" method="post">
     <label class="flex place-content-between items-center">
       <span>Choose how long the test task should take</span>

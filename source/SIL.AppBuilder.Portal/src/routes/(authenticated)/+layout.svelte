@@ -61,7 +61,7 @@
       <div class="dropdown-content w-36 z-10 bg-base-200 rounded-md overflow-y-auto">
         <ul class="menu menu-compact gap-1 p-2">
           <li>
-            <a href="/users/{$page.data.session?.user?.userId ?? ''}/edit">
+            <a href="/users/{$page.data.session?.user?.userId ?? ''}/settings/profile">
               {m.header_myProfile()}
             </a>
           </li>

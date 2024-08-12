@@ -65,6 +65,8 @@ const config: SvelteKitAuthConfig = {
 export const { handle: authRouteHandle, signIn, signOut } = SvelteKitAuth(config);
 
 // Locks down the authenticated routes by redirecting to /login
+// This guarantees a logged in user under (authenticated) but does not guarantee
+// authorization to the route. Each page must manually check in +page.server.ts or here
 export const localRouteHandle: Handle = async ({ event, resolve }) => {
   if (
     !event.route.id?.startsWith('/(unauthenticated)') &&
