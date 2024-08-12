@@ -18,7 +18,10 @@ const rolesSchema = v.object({
   )
 });
 
-export const load = (async ({ params }) => {
+export const load = (async ({ locals, params }) => {
+  const auth = (await locals.auth())?.user.roles;
+  const isSuperAdmin = auth?.find((r) => r[1] === RoleId.SuperAdmin);
+  const orgAdmins = auth?.filter((r) => r[1] === RoleId.OrgAdmin).map((r) => r[0]);
   const userRoles = (
     await prisma.users.findUnique({
       where: {
@@ -37,10 +40,14 @@ export const load = (async ({ params }) => {
   const mapping = new Map<number, [string, number[]]>();
   for (const role of userRoles) {
     if (!mapping.has(role.OrganizationId)) {
-      mapping.set(role.OrganizationId, [role.Organization.Name!, [role.RoleId]]);
+      if (isSuperAdmin || orgAdmins?.includes(role.OrganizationId))
+        mapping.set(role.OrganizationId, [role.Organization.Name!, [role.RoleId]]);
     } else {
       mapping.get(role.OrganizationId)![1].push(role.RoleId);
     }
+  }
+  if (mapping.size === 0) {
+    return error(403);
   }
   const form = await superValidate(
     {

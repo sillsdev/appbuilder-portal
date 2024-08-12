@@ -1,6 +1,8 @@
 import { idSchema } from '$lib/valibot';
+import type { Session } from '@auth/sveltekit';
 import { error } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prismaTypes';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -19,7 +21,34 @@ const profileSchema = v.object({
   visible: v.boolean()
 });
 
-export const load = (async ({ params }) => {
+function verifyAllowed(
+  currentUser: Session['user'],
+  subjectUserId: number,
+  subjectOrganizations: number[]
+) {
+  // If we are not editing ourselves and we are not an admin who can edit this user, block
+  return (
+    currentUser.userId === subjectUserId ||
+    !!currentUser.roles.find(
+      (role) =>
+        role[1] === RoleId.SuperAdmin ||
+        (subjectOrganizations.includes(role[0]) && role[1] === RoleId.OrgAdmin)
+    )
+  );
+}
+
+export const load = (async ({ params, locals, parent }) => {
+  const auth = (await locals.auth())?.user;
+  const { organizations } = await parent();
+  if (
+    !verifyAllowed(
+      auth!,
+      parseInt(params.id),
+      organizations.map((org) => org.Id)
+    )
+  ) {
+    return error(403);
+  }
   const user = await prisma.users.findUnique({
     where: {
       Id: parseInt(params.id)
@@ -47,6 +76,28 @@ export const actions = {
   async default(event) {
     const form = await superValidate(event, valibot(profileSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    const auth = await event.locals.auth();
+    if (form.data.id !== parseInt(event.params.id)) return fail(400);
+    if (
+      !verifyAllowed(
+        auth!.user,
+        form.data.id,
+        (
+          await prisma.organizationMemberships.findMany({
+            where: {
+              OrganizationId: {
+                in: auth!.user.roles
+                  .filter((role) => role[1] === RoleId.OrgAdmin)
+                  .map((role) => role[0])
+              },
+              UserId: form.data.id
+            }
+          })
+        ).map((mem) => mem.OrganizationId)
+      )
+    ) {
+      return fail(403);
+    }
     await prisma.users.update({
       where: {
         Id: form.data.id
