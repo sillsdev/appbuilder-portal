@@ -37,7 +37,7 @@
 </script>
 
 <form action="" method="post" use:enhance>
-  <div class="flex flex-col pr-4">
+  <div class="flex flex-col px-4">
     <LabeledFormInput name="profile_firstName">
       <input
         type="text"

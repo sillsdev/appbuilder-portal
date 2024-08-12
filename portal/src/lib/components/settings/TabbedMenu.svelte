@@ -17,7 +17,7 @@
 
 <div class="w-full max-w-6xl mx-auto">
   <div class="flex flex-row">
-    <div class="p-4 sticky top-0 self-start">
+    <div class="p-4 pr-0 sticky top-0 self-start">
       <slot name="title">
         <h1 class="p-4" class:text-nowrap={!allowTitleWrap}>{title}</h1>
       </slot>

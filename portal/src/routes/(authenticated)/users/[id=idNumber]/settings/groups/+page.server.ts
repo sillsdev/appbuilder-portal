@@ -19,14 +19,12 @@ const groupsSchema = v.object({
 });
 
 export const load = (async ({ params, locals }) => {
-  // TODO: filter for org based on current user
-
   const userData = (await locals.auth())?.user;
   const userId = userData?.userId;
   const isSuperAdmin = !!userData?.roles.find((r) => r[1] === RoleId.SuperAdmin);
   const subjectUserId = parseInt(params.id);
 
-  const allGroups = await prisma.groups.findMany({
+  const accessibleGroups = await prisma.groups.findMany({
     where: {
       Owner: {
         // Only send a list of groups for orgs that the subject user is in and the current user has access to
@@ -59,17 +57,19 @@ export const load = (async ({ params, locals }) => {
       Group: true
     }
   });
-  if (!allGroups || !groupMemberships) return error(404);
-  const mapping = new Map<number, [string, number[]]>();
-  for (const org of [...new Map(allGroups.map((g) => [g.OwnerId, g.Owner.Name!]))]) {
-    mapping.set(org[0], [org[1], []]);
+  // If there are no groups the current user has admin access to return Forbidden
+  if (accessibleGroups.length === 0) return error(403);
+  const organizationToGroupMapping = new Map<number, [string, number[]]>();
+  for (const org of [...new Map(accessibleGroups.map((g) => [g.OwnerId, g.Owner.Name!]))]) {
+    organizationToGroupMapping.set(org[0], [org[1], []]);
   }
   for (const group of groupMemberships) {
-    mapping.get(group.Group.OwnerId)![1].push(group.GroupId);
+    if (organizationToGroupMapping.has(group.Group.OwnerId))
+      organizationToGroupMapping.get(group.Group.OwnerId)![1].push(group.GroupId);
   }
   const form = await superValidate(
     {
-      organizations: [...mapping.entries()].map(([key, value]) => ({
+      organizations: [...organizationToGroupMapping.entries()].map(([key, value]) => ({
         name: value[0],
         id: key,
         groups: value[1]
@@ -79,7 +79,7 @@ export const load = (async ({ params, locals }) => {
   );
   return {
     form,
-    groups: allGroups.map((uG) => ({ id: uG.Id, name: uG.Name, orgId: uG.OwnerId }))
+    groups: accessibleGroups.map((uG) => ({ id: uG.Id, name: uG.Name, orgId: uG.OwnerId }))
   };
 }) satisfies PageServerLoad;
 
