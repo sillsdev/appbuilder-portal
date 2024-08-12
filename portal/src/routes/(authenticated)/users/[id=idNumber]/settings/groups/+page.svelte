@@ -11,7 +11,7 @@
 </script>
 
 <form action="" method="post" use:enhance>
-  <div class="flex flex-col pr-4">
+  <div class="flex flex-col px-4">
     {#each $form.organizations as org}
       <h3>{org.name}</h3>
       <!-- TODO i18n -->
