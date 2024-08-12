@@ -26,7 +26,7 @@
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
-  <div class="flex flex-row place-content-between w-full pt-4">
+  <div class="flex flex-row place-content-between w-full pt-4 flex-wrap">
     <div class="inline-block">
       <slot name="header">
         <ProjectFilterSelector />
@@ -35,7 +35,7 @@
     <div class="flex flex-row place-content-end items-center">
       {#if $page.params.id}
         <select
-          class="select select-bordered"
+          class="select select-bordered ml-2"
           bind:value={selectedOrg}
           on:change={() => goto(selectedOrg + '')}
         >
@@ -59,7 +59,7 @@
   </div>
   <slot name="options">
     <div class="w-full flex flex-row place-content-between p-4 pb-0 px-6 space-between-4">
-      <div>
+      <div class="space-y-2">
         <button
           class="btn btn-outline mx-1"
           disabled={!selectedProjects.length}
@@ -71,7 +71,7 @@
           {m.common_rebuild()}
         </button>
       </div>
-      <div>
+      <div class="text-right space-y-2">
         <button class="btn btn-outline mx-1">{m.project_importProjects()}</button>
         <button class="btn btn-outline mx-1">{m.sidebar_addProject()}</button>
       </div>
@@ -169,11 +169,13 @@
                   {#each project.Products as product}
                     <tr>
                       <td class="p-2">
-                        <IconContainer
-                          icon={getIcon(product.ProductDefinitionName ?? '')}
-                          width={30}
-                        />
-                        {product.ProductDefinitionName}
+                        <div class="flex items-center">
+                          <IconContainer
+                            icon={getIcon(product.ProductDefinitionName ?? '')}
+                            width={30}
+                          />
+                          {product.ProductDefinitionName}
+                        </div>
                       </td>
                       <td>
                         {product.VersionBuilt ?? '-'}
