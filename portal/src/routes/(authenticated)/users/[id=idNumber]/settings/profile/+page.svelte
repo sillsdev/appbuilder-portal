@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import * as m from '$lib/paraglide/messages';
@@ -109,7 +110,7 @@
       </label>
       <input
         type="checkbox"
-        id="public"
+        id="notifications"
         class="toggle toggle-info ml-4"
         bind:checked={$form.notifications}
       />
@@ -130,6 +131,22 @@
         id="public"
         class="toggle toggle-info ml-4"
         bind:checked={$form.visible}
+      />
+    </div>
+    <div class="flex place-content-between items-center mt-4">
+      <label for="public" class="w-full">
+        <div class="flex flex-col">
+          <span class="">
+            {m.users_table_columns_active()}
+          </span>
+        </div>
+      </label>
+      <input
+        type="checkbox"
+        id="active"
+        class="toggle toggle-info ml-4"
+        disabled={$page.data.session?.user.userId === data.form.data.id}
+        bind:checked={$form.active}
       />
     </div>
     <div class="flex my-2">
