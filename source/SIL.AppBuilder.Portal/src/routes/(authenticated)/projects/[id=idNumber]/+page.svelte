@@ -63,6 +63,16 @@
     }
     return '';
   }
+  let settingsFormTimeout: NodeJS.Timeout;
+  let settingsForm: HTMLFormElement;
+  function submitForm() {
+    if (settingsFormTimeout) {
+      clearTimeout(settingsFormTimeout);
+    }
+    settingsFormTimeout = setTimeout(() => {
+      settingsForm.requestSubmit();
+    }, 2000);
+  }
 
   // TODO: allow editing settings and project owner from this page
 </script>
@@ -301,30 +311,53 @@
     </div>
     <div class="settingsarea my-4">
       <h2 class="pl-0 pt-0">Settings</h2>
-      <div class="space-y-2">
-        <label for="public" class="flex place-content-between">
-          <div class="flex flex-col">
-            <span class="">
-              {m.project_settings_visibility_title()}
-            </span>
-            <span class="text-sm">
-              {m.project_settings_visibility_description()}
-            </span>
-          </div>
-          <input type="checkbox" id="public" class="toggle toggle-info ml-4" />
-        </label>
-        <label for="allowDownload" class="flex place-content-between">
-          <div class="flex flex-col">
-            <span class="">
-              {m.project_settings_organizationDownloads_title()}
-            </span>
-            <span class="text-sm">
-              {m.project_settings_organizationDownloads_description()}
-            </span>
-          </div>
-          <input type="checkbox" id="allowDownload" class="toggle toggle-info ml-4" />
-        </label>
-      </div>
+      <form
+        action="?/editSettings"
+        method="post"
+        bind:this={settingsForm}
+        use:enhance={() =>
+          ({ update }) =>
+            update({ reset: false })}
+      >
+        <div class="space-y-2">
+          <label for="public" class="flex place-content-between">
+            <div class="flex flex-col">
+              <span class="">
+                {m.project_settings_visibility_title()}
+              </span>
+              <span class="text-sm">
+                {m.project_settings_visibility_description()}
+              </span>
+            </div>
+            <input
+              type="checkbox"
+              id="public"
+              name="isPublic"
+              class="toggle toggle-info ml-4"
+              bind:checked={data.project.IsPublic}
+              on:click={submitForm}
+            />
+          </label>
+          <label for="allowDownload" class="flex place-content-between">
+            <div class="flex flex-col">
+              <span class="">
+                {m.project_settings_organizationDownloads_title()}
+              </span>
+              <span class="text-sm">
+                {m.project_settings_organizationDownloads_description()}
+              </span>
+            </div>
+            <input
+              type="checkbox"
+              id="allowDownload"
+              name="allowDownload"
+              class="toggle toggle-info ml-4"
+              bind:checked={data.project.AllowDownloads}
+              on:click={submitForm}
+            />
+          </label>
+        </div>
+      </form>
     </div>
     <div class="space-y-2 min-w-0 flex-auto sidebararea">
       <div
