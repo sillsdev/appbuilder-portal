@@ -7,10 +7,10 @@
 
 UI_PATH="source/SIL.AppBuilder.Portal.Frontend"
 API_PATH="source/OptimaJet.DWKit.StarterApplication"
-COMPOSE="docker-compose -f deployment/development/docker-compose.yml --project-directory . -p appbuilder-portal"
+COMPOSE="docker compose -f deployment/development/docker-compose.yml --project-directory . -p appbuilder-portal"
 COMPOSE_SERVICES="db adminer api ui"
 
-CI_COMPOSE="docker-compose -f deployment/ci/docker-compose.yml --project-directory . -p appbuilder-portal-ci"
+CI_COMPOSE="docker compose -f deployment/ci/docker-compose.yml --project-directory . -p appbuilder-portal-ci"
 
 PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER"
 
@@ -21,7 +21,7 @@ function runstuff {
   arguments=${@:2}
 
   case $given_command in
-    # docker-compose proxy
+    # docker compose proxy
     dc)       ${COMPOSE} $arguments;;
     up:build) ${COMPOSE} up --build $arguments ${COMPOSE_SERVICES} ;;
     up)       ${COMPOSE} up $arguments ${COMPOSE_SERVICES} ;;
@@ -41,7 +41,7 @@ function runstuff {
       echo "on the host environment (use .env.dev files to make this simpler)"
       echo ""
       echo "why?"
-      echo "because currently, docker-compose doesn't have a way to omit files / folders"
+      echo "because currently, docker compose doesn't have a way to omit files / folders"
       echo "from volume mounts, so whenever dotnet watch would do a rebuild inside the"
       echo "docker environment, it would blow away all the host-dependencies that the"
       echo "editor was using for intellisense..."
@@ -253,13 +253,13 @@ function print_help {
   echo ""
   echo "Available Commands:"
   echo ""
-  echo "dc             : short for docker-compose"
+  echo "dc             : short for docker compose"
   echo "up:build"
   echo "up"
   echo "up:local:start : starts non-essential services in docker, and the api and ui services natively on the host machine"
   echo ""
-  echo "bash           : drop into a bash shell in a temporary docker-compose service"
-  echo "restart        : restart a specific docker-compose service"
+  echo "bash           : drop into a bash shell in a temporary docker compose service"
+  echo "restart        : restart a specific docker compose service"
   echo ""
   echo "bootstrap      : runs initial scripts for project setup"
   echo "bootstrap:dwkit"

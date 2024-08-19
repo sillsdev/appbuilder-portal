@@ -42,7 +42,6 @@ jobs:
           echo
           echo Docker version
           docker --version
-          docker-compose --version
           echo
           echo Env
           env
