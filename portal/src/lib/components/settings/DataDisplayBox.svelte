@@ -26,7 +26,7 @@
       </button>
     {/if}
     {#each fields as field}
-      <p>
+      <p style="padding-left: 1rem; text-indent: -1rem">
         <b>{m[field.key]()}:</b>
         {field.value ?? ''}
       </p>
