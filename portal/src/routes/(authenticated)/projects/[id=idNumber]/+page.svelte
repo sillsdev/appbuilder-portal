@@ -156,8 +156,7 @@
                 </span>
                 <span>
                   <!-- TODO: also need any actions given by api? -->
-                  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                  <div class="dropdown" tabindex="0">
+                  <div role="button" class="dropdown" tabindex="0">
                     <div class="btn btn-ghost px-1">
                       <IconContainer icon="charm:menu-kebab" width="20" />
                     </div>

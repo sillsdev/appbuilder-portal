@@ -15,9 +15,8 @@
 
 {#key languageTag()}
   <div class="dropdown dropdown-end">
-    <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
-    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
     <div
+      role="button"
       class="btn btn-ghost m-2 p-2 rounded-xl items-middle justify-center flex-nowrap"
       tabindex="0"
     >

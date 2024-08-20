@@ -48,9 +48,7 @@
   <div class="navbar-end">
     <LanguageSelector />
     <div class="dropdown dropdown-end">
-      <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
-      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-      <div class="btn btn-ghost m-2 p-2 rounded-xl" tabindex="0">
+      <div role="button" class="btn btn-ghost m-2 p-2 rounded-xl" tabindex="0">
         <img
           src={$page.data.session?.user?.image}
           alt="User profile"
