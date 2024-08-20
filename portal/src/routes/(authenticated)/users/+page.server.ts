@@ -167,6 +167,7 @@ export const load = (async (event) => {
       Id: user.Id,
       Name: user.Name!,
       FamilyName: user.FamilyName!,
+      Email: user.Email,
       Organizations: user.OrganizationMemberships.map((org) => ({
         Roles: user.UserRoles.filter((r) => r.OrganizationId === org.OrganizationId).map(
           (r) => r.RoleId

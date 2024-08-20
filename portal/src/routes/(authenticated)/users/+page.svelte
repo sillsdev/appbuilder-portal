@@ -48,13 +48,18 @@
       </thead>
       <tbody>
         {#each data.users
-          .filter((u) => u.Name.includes(searchQuery) && u.Organizations.find((o) => o.Id === selectedOrg || selectedOrg === 0))
+          .filter((u) => (u.Name.toLowerCase().includes(searchQuery.toLowerCase()) || u.Email?.toLowerCase().includes(searchQuery.toLowerCase())) && u.Organizations.find((o) => o.Id === selectedOrg || selectedOrg === 0))
           .sort((a, b) => a.FamilyName.localeCompare(b.FamilyName)) as user}
           <tr class="align-top">
             <td class="p-2">
-              <a href="/users/{user.Id}/settings" class="link pb-2">
-                {user.Name}
-              </a>
+              <p>
+                <a href="/users/{user.Id}/settings" class="link pb-2">
+                  {user.Name}
+                </a>
+              </p>
+              <p class="text-sm overflow-hidden">
+                {user.Email?.replace('@', '\u200b@')}
+              </p>
             </td>
             <td class="py-2">
               {#each user.Organizations as org}
