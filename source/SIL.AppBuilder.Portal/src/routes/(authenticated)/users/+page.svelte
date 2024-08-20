@@ -15,7 +15,9 @@
   <div class="flex flex-row place-content-between align-middle flex-wrap items-center">
     <h1 class="pb-6">{m.users_title()}</h1>
     <!-- TODO i18n -->
-    <div class="content-center m-4 space-x-2 flex flex-nowrap items-end">
+    <div
+      class="content-center m-4 space-x-2 flex flex-nowrap items-end w-full place-content-between"
+    >
       {#if data.organizations.length > 1}
         <span class="flex flex-wrap items-center gap-x-2">
           <span>Filter organization:</span>
@@ -30,7 +32,7 @@
       <input
         placeholder={m.search()}
         type="text"
-        class="input input-bordered"
+        class="input input-bordered grow shrink [max-width:20rem]"
         bind:value={searchQuery}
       />
     </div>

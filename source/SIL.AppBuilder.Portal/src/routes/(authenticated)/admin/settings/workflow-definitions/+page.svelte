@@ -37,11 +37,11 @@
         },
         {
           key: 'admin_settings_workflowDefinitions_workflowScheme',
-          value: wd.WorkflowScheme
+          value: wd.WorkflowScheme?.replaceAll('_', '_\u200b')
         },
         {
           key: 'admin_settings_workflowDefinitions_workflowBusinessFlow',
-          value: wd.WorkflowBusinessFlow
+          value: wd.WorkflowBusinessFlow?.replaceAll('_', '_\u200b')
         }
       ]}
     />

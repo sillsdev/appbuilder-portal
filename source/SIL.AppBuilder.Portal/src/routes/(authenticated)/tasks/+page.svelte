@@ -41,7 +41,7 @@
                   </span>
                 </div>
                 <span
-                  class="rounded-xl badge badge-secondary uppercase font-bold ml-10 [top:-5px] relative mt-2 text-center"
+                  class="rounded-xl h-auto badge badge-secondary uppercase font-bold ml-10 [top:-5px] relative mt-2 text-center"
                 >
                   {task.Status}
                 </span>
