@@ -13,7 +13,7 @@
   $: list = getList(search);
   let selectedIndex = -1;
   let inputFocused = false;
-  let inputElement: HTMLInputElement;
+  export let inputElement: HTMLInputElement;
 
   function keypress(event: KeyboardEvent) {
     inputFocused = true;

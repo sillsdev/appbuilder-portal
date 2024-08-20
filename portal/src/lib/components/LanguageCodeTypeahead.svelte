@@ -68,6 +68,7 @@
     return ret;
   }
   let langtagList = langtags;
+  let typeaheadInput: HTMLInputElement;
   export let langCode: string;
   export let dropdownClasses: string = '';
 </script>
@@ -79,8 +80,16 @@
   bind:search={langCode}
   on:itemClicked={(item) => (langCode = item.detail.item.tag)}
   {dropdownClasses}
+  bind:inputElement={typeaheadInput}
 >
-  <span class="absolute right-4 italic [line-height:3rem]" slot="custom">
+  <!-- This is a convenience option and unnecessary for a11y -->
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <span
+    class="absolute right-4 italic [line-height:3rem]"
+    slot="custom"
+    on:click={() => typeaheadInput.focus()}
+  >
     {langtagList.find((l) => l.tag === langCode)?.name ?? ''}
   </span>
   <div
