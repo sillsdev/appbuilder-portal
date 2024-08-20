@@ -24,20 +24,21 @@
   <h1 slot="header" class="p-4 pl-6">{m.sidebar_projectDirectory()}</h1>
   <div
     slot="options"
-    class="w-full flex flex-row place-content-start p-4 pb-0 px-6 space-between-4 flex-wrap gap-1"
+    class="w-full flex flex-row place-content-start p-4 pb-0 space-between-4 flex-wrap gap-1"
   >
-    <LanguageCodeTypeahead bind:langCode />
-    <select class="select select-bordered" bind:value={productDefinitionFilter}>
-      <!-- TODO: i18n -->
-      <option value="" selected>Any product definitions</option>
-      {#each data.productDefinitions as pD}
-        <option value={pD.Name}>{pD.Name}</option>
-      {/each}
-    </select>
     <select class="select select-bordered" bind:value={organizationFilter}>
       <option value="">All organizations</option>
       {#each new Set(data.projects.map((p) => p.OrganizationName)).values() as org}
         <option value={org}>{org}</option>
+      {/each}
+    </select>
+
+    <LanguageCodeTypeahead bind:langCode />
+    <select class="select select-bordered max-w-full" bind:value={productDefinitionFilter}>
+      <!-- TODO: i18n -->
+      <option value="" selected>Any product definitions</option>
+      {#each data.productDefinitions as pD}
+        <option value={pD.Name}>{pD.Name}</option>
       {/each}
     </select>
     <!-- TODO: Filter by update time -->
