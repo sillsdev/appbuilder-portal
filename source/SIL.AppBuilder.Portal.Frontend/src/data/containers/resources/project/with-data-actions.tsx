@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withOrbit, useOrbit, attributesFor } from 'react-orbitjs';
-
 import {
   defaultOptions,
   ProjectResource,
@@ -11,7 +10,6 @@ import {
   StoreResource,
   relationshipFor,
 } from '@data';
-
 import { useCurrentUser } from '@data/containers/with-current-user';
 import { ProjectAttributes } from '@data/models/project';
 import { recordIdentityFromKeys } from '@data/store-helpers';

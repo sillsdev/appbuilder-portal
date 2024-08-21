@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
-
 import { attributesFor } from '@data';
-
 import { name } from '@data/models/user';
 
 import { IProps } from './types';

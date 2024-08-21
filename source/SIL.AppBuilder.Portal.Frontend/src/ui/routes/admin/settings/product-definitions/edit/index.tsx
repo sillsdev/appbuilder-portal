@@ -8,10 +8,6 @@ import {
   IProvidedProps as IProductDefinitionProps,
 } from '@data/containers/resources/product-definition/with-data-actions';
 import { withTranslations, i18nProps } from '@lib/i18n';
-
-import ProductDefinitionForm from '../common/form';
-import { listPathName } from '../index';
-
 import {
   query,
   withLoader,
@@ -20,6 +16,9 @@ import {
   ProductDefinitionResource,
   UserResource,
 } from '@data';
+
+import ProductDefinitionForm from '../common/form';
+import { listPathName } from '../index';
 
 interface IOwnProps {
   productDefinition: ProductDefinitionResource;

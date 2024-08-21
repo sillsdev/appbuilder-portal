@@ -2,9 +2,7 @@ import { describe, it, beforeEach } from '@bigtest/mocha';
 import { visit, location } from '@bigtest/react';
 import { expect } from 'chai';
 import Convergence from '@bigtest/convergence';
-
 import i18n from '@translations';
-
 import {
   setupApplicationTest,
   setupRequestInterceptor,

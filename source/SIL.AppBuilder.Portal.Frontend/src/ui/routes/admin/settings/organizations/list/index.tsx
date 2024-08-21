@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-
 import { query, buildOptions, withLoader, OrganizationResource, attributesFor } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { compareVia } from '@lib/collection';

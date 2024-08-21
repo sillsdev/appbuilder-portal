@@ -3,9 +3,7 @@ import { compose } from 'recompose';
 import md5 from 'md5-hash';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { UserAttributes } from '@data/models/user';
-
 import { attributesFor, USERS_TYPE } from '@data';
-
 import './show.scss';
 import { ResourceObject } from 'jsonapi-typescript';
 
@@ -57,7 +55,4 @@ class User extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withData,
-  withTranslations
-)(User);
+export default compose(withData, withTranslations)(User);

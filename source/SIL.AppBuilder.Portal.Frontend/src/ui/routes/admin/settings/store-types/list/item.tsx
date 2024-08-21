@@ -2,9 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import CreateIcon from '@material-ui/icons/Create';
 import { Link } from 'react-router-dom';
-
 import { attributesFor, StoreTypeResource, idFromRecordIdentity } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 interface IOwnProps {

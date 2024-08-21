@@ -133,7 +133,10 @@ describe('Acceptance | Project Edit | re-assigning the group', () => {
             data: [{ id: 1, type: 'organization-memberships' }],
           },
           ['group-memberships']: {
-            data: [{ id: 1, type: 'group-memberships' }, { id: 2, type: 'group-memberships' }],
+            data: [
+              { id: 1, type: 'group-memberships' },
+              { id: 2, type: 'group-memberships' },
+            ],
           },
           ['user-roles']: { data: [{ id: 1, type: 'user-roles' }] },
         },

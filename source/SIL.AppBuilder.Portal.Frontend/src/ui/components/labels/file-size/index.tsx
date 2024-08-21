@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { ICurrentUserProps, withCurrentUserContext } from '@data/containers/with-current-user';
-
 import { attributesFor } from '@data';
-
 import * as fileSizeFormatter from 'pretty-bytes';
 
 interface IOwnProps {

@@ -7,19 +7,16 @@ import { ResourceObject } from 'jsonapi-typescript';
 import { attributesFor } from '@data/helpers';
 import { ProjectAttributes, ProjectResource } from '@data/models/project';
 import { UserAttributes } from '@data/models/user';
-
 import { USERS_TYPE } from '@data';
-
 import {
   withDataActions,
   IProvidedProps,
 } from '@data/containers/resources/reviewer/with-data-actions';
 import { mutCreator, Mut } from 'react-state-helpers';
-
-import { withTranslations } from '~/lib/i18n';
-
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 import LocaleSelect from '@ui/components/inputs/locale-select';
+
+import { withTranslations } from '~/lib/i18n';
 
 interface Params {
   project: ProjectResource;
@@ -147,8 +144,4 @@ class AddReviewerForm extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withDataActions,
-  withCurrentUserContext
-)(AddReviewerForm);
+export default compose(withTranslations, withDataActions, withCurrentUserContext)(AddReviewerForm);

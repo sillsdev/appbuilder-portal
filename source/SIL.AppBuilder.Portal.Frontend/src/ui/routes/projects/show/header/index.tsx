@@ -4,9 +4,7 @@ import MoreVerticalIcon from '@material-ui/icons/MoreVert';
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { Link } from 'react-router-dom';
 import CreateIcon from '@material-ui/icons/Create';
-
 import { attributesFor, idFromRecordIdentity } from '@data';
-
 import { useOrbit } from 'react-orbitjs';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';

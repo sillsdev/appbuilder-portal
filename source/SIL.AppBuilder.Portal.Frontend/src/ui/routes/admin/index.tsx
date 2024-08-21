@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Switch } from 'react-router-dom';
-
-import { Route } from '~/lib/routing';
-
 import { withRole } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 
 import InviteOrganization from './invite-organization';
 import AdminSettingsRoute from './settings';
 import { paths } from './paths';
+
+import { Route } from '~/lib/routing';
 
 function AdminRoute() {
   return (

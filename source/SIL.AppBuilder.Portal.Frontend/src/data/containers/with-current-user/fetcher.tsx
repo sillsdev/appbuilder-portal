@@ -3,9 +3,7 @@ import { pushPayload, useOrbit } from 'react-orbitjs';
 import { TYPE_NAME } from '@data/models/user';
 import { getAuth0Id } from '@lib/auth0';
 import { tryParseJson } from '@lib/fetch';
-
 import { firstError } from '@data';
-
 import { deleteToken } from '@lib/auth0';
 import { ServerError } from '@data/errors/server-error';
 import { useFetch } from 'react-hooks-fetch';

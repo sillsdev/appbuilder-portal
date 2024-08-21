@@ -1,11 +1,7 @@
 import React from 'react';
-
 import { query } from '@data';
-
 import { useOrbit } from 'react-orbitjs';
-
 import { defaultSourceOptions, OrganizationResource, UserResource } from '@data';
-
 import { TYPE_NAME as USER } from '@data/models/user';
 import { useCurrentUser } from '@data/containers/with-current-user';
 import { retrieveRelation } from '@data/containers/with-relationship';

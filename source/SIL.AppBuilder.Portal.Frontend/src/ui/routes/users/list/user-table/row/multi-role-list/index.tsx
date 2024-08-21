@@ -1,8 +1,6 @@
 import { compose, mapProps } from 'recompose';
 import { withData as withOrbit, attributesFor } from 'react-orbitjs';
-
 import { OrganizationResource, UserResource, RoleResource, UserRoleResource } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 

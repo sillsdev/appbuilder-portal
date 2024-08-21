@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-
 import {
   GroupResource,
   UserResource,
@@ -8,7 +7,6 @@ import {
   attributesFor,
   isRelatedTo,
 } from '@data';
-
 import {
   withGroupMemberships,
   IProvidedProps as IUserGroupProps,

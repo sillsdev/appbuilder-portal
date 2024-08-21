@@ -3,9 +3,7 @@ import { titleize } from 'inflected';
 import Down from '@material-ui/icons/ArrowDropDown';
 import Up from '@material-ui/icons/ArrowDropUp';
 import ProductIcon from '@ui/components/product-icon';
-
 import { attributesFor } from '@data';
-
 import { useTranslations } from '@lib/i18n';
 
 import Actions from './actions';

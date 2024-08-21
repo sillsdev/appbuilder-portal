@@ -1,16 +1,12 @@
 import React, { useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { useOrbit } from 'react-orbitjs';
-
-import DataSocket from '~/sockets/data-socket';
-
 import Store from '@orbit/store';
-
-import DataSocketClient, { DataHub } from '~/sockets/clients/data';
-
 import { ConnectionStatus, HubConnection } from '@ssv/signalr-client';
 import { TransformOrOperations } from '@orbit/data';
 import { Observable, Subscription } from 'rxjs';
 
+import DataSocketClient, { DataHub } from '~/sockets/clients/data';
+import DataSocket from '~/sockets/data-socket';
 import { isTesting } from '~/env';
 
 interface ILiveDataContext {

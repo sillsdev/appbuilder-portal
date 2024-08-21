@@ -2,7 +2,6 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import * as toast from '@lib/toast';
-
 import {
   attributesFor,
   create,
@@ -13,7 +12,6 @@ import {
   RoleResource,
   UserRoleResource,
 } from '@data';
-
 import { IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 
 export interface IProvidedProps {

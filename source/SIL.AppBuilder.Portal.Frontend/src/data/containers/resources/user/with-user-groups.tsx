@@ -2,11 +2,8 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import * as toast from '@lib/toast';
-
 import { GroupResource, UserResource, GroupMembershipResource } from '@data';
-
 import { buildOptions, create } from '@data';
-
 import { attributesFor, isRelatedRecord } from '@data/helpers';
 import { IProvidedProps as ICurrentUserProps } from '@data/containers/with-current-user';
 

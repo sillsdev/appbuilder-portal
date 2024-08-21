@@ -2,7 +2,6 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { create, update } from '@data/store-helpers';
-
 import {
   defaultOptions,
   OrganizationResource,
@@ -13,7 +12,6 @@ import {
   UserResource,
   relationshipFor,
 } from '@data';
-
 import { OrganizationAttributes } from '@data/models/organization';
 
 export interface IProvidedProps {

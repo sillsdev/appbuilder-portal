@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { useOrbit, attributesFor } from 'react-orbitjs';
-
 import { ProjectResource } from '@data';
-
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import * as toast from '@lib/toast';
 import { useTranslations } from '@lib/i18n';

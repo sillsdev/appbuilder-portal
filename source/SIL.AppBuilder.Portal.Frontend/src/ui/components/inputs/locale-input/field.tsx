@@ -3,13 +3,12 @@ import { useMemo, memo } from 'react';
 import Autosuggest from 'react-autosuggest';
 import { assert } from '@orbit/utils';
 
-import { withTranslations, i18nProps, useLdml } from '~/lib/i18n';
-
-import { filterForValidAttributes } from '~/lib/dom';
-
 import { getSuggestions, findLanguageCode, sortComparer, findLanguageInfo } from './-utils/helpers';
 import { localizeTagData } from './-utils/localize';
 import { Suggestion } from './suggestion';
+
+import { filterForValidAttributes } from '~/lib/dom';
+import { withTranslations, i18nProps, useLdml } from '~/lib/i18n';
 
 export interface IProps {
   value: string; // tag

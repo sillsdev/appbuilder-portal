@@ -2,9 +2,7 @@ import * as React from 'react';
 import CreateIcon from '@material-ui/icons/Create';
 import { Link } from 'react-router-dom';
 import { idFromRecordIdentity, useOrbit, attributesFor } from 'react-orbitjs';
-
 import { StoreResource } from '@data';
-
 import { useTranslations } from '@lib/i18n';
 import { paths } from '@ui/routes/admin/paths';
 

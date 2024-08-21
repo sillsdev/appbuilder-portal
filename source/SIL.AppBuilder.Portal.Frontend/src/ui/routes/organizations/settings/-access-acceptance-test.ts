@@ -4,7 +4,6 @@ import { expect } from 'chai';
 import { setupApplicationTest, useFakeAuthentication, setupBrowser } from 'tests/helpers/index';
 import { userIsAppBuilderOf, userIsOrgAdminOf } from 'tests/helpers/factories/user';
 import app from 'tests/helpers/pages/app';
-
 import i18n from '@translations';
 
 describe('Acceptance | Accessing Organization Settings', () => {

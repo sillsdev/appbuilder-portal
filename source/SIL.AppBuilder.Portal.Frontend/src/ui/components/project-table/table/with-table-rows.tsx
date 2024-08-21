@@ -1,17 +1,15 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
-
 import { ProjectResource, idFromRecordIdentity } from '@data';
-
-import { rowSelectionsFor, allCheckboxStateFor } from '~/redux-store/data/selectors';
-
 import {
   setRowSelection as setRowSelectionData,
   setAllCheckboxState as setAllCheckboxStateData,
 } from '@store/data';
 
 import { ALL_CHECKBOX_STATE } from './all-checkbox-state';
+
+import { rowSelectionsFor, allCheckboxStateFor } from '~/redux-store/data/selectors';
 
 export interface IProvidedProps {
   selectedRows?: IRow[];
@@ -118,11 +116,6 @@ export function withTableRows(options: IOptions) {
       }
     }
 
-    return compose(
-      connect(
-        mapStateToProps,
-        mapDispatchToProps
-      )
-    )(WrapperComponent);
+    return compose(connect(mapStateToProps, mapDispatchToProps))(WrapperComponent);
   };
 }

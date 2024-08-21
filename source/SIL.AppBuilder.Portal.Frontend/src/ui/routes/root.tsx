@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { Switch, Redirect } from 'react-router-dom';
-
-import { Route } from '~/lib/routing';
-
 import { ToastContainer } from 'react-toastify';
-
-import { LoadCurrentUser } from '~/data/containers/with-current-user';
-
 import LoginRoute from '@ui/routes/login';
 import TasksRoute from '@ui/routes/tasks';
 import AdminRoute from '@ui/routes/admin';
@@ -22,12 +16,13 @@ import ErrorRootRoute from '@ui/routes/errors';
 import DownloadsRootRoute from '@ui/routes/downloads';
 import ProductsRoute from '@ui/routes/products';
 
-import AuthenticatedLayout from '~/ui/components/layout';
-
-import { VerifyAccess } from '~/ui/components/authorization/verify-access';
-
 import Workflow from './workflow';
 import * as paths from './paths';
+
+import AuthenticatedLayout from '~/ui/components/layout';
+import { VerifyAccess } from '~/ui/components/authorization/verify-access';
+import { LoadCurrentUser } from '~/data/containers/with-current-user';
+import { Route } from '~/lib/routing';
 
 export default function RootPage() {
   return (

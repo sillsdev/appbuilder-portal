@@ -1,8 +1,6 @@
 import { useCallback } from 'react';
 import { useOrbit } from 'react-orbitjs/dist';
-
 import { ProjectImportResource } from '@data';
-
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { TYPE_NAME as PROJECT_IMPORT, ProjectImportAttributes } from '@data/models/project-import';
 import { useCurrentOrganization } from '@data/containers/with-current-organization';

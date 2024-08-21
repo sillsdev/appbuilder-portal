@@ -26,7 +26,4 @@ function NewProjectRoute() {
   );
 }
 
-export default compose(
-  requireOrganizationToBeSelected,
-  withAccessRestriction
-)(NewProjectRoute);
+export default compose(requireOrganizationToBeSelected, withAccessRestriction)(NewProjectRoute);

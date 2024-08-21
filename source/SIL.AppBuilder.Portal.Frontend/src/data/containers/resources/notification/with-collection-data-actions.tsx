@@ -1,13 +1,10 @@
 import { NotificationResource } from '@data';
-
-import { useLiveData } from '~/data/live';
-
 import { useCallback } from 'react';
-
-import { recordsThatStillExist } from '~/data/store-helpers';
-
 import { attributesFor } from 'react-orbitjs';
 import { destroy } from '@lib/fetch';
+
+import { recordsThatStillExist } from '~/data/store-helpers';
+import { useLiveData } from '~/data/live';
 
 export function useCollectionDataActions(notifications: NotificationResource[]) {
   const { pushData, dataStore } = useLiveData();

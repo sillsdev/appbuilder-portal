@@ -2,9 +2,7 @@ import { useEffect } from 'react';
 import { useCurrentUser } from '@data/containers/with-current-user';
 
 import { useRouter } from '~/lib/hooks';
-
 import { isTesting } from '~/env';
-
 import { useAuth } from '~/data/containers/with-auth';
 
 export function RouteListener() {

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { ResourceObject } from 'jsonapi-typescript';
-
 import { attributesFor, relationshipFor } from '@data';
-
 import ProductIcon from '@ui/components/product-icon';
 import { i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';

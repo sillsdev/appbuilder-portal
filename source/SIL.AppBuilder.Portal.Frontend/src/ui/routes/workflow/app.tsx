@@ -13,16 +13,14 @@ import {
   API,
 } from '@assets/vendor/dwkit/optimajet-app.js';
 import * as toast from '@lib/toast';
-
 import '~/global-config';
-import { PageLoader } from '~/ui/components/loaders';
-
-import { useRouter } from '~/lib/hooks';
-
 import { HubConnectionState } from '@aspnet/signalr';
 
 import { initialState } from './initial-state';
 import { SignalRConnector } from './signalr';
+
+import { useRouter } from '~/lib/hooks';
+import { PageLoader } from '~/ui/components/loaders';
 
 // Nasty overrides that DWKit assumes have been polluted
 // on the global / window namespace

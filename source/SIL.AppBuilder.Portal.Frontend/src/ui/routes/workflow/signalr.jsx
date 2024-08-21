@@ -1,9 +1,8 @@
 import * as signalR from '@aspnet/signalr';
 import { Actions as appActions, Store as store } from '@assets/vendor/dwkit/optimajet-app.js';
+import { LogLevel, HttpTransportType } from '@aspnet/signalr';
 
 import { getToken } from '~/lib/auth0';
-
-import { LogLevel, HttpTransportType } from '@aspnet/signalr';
 
 let connection = null;
 

@@ -1,7 +1,6 @@
 import { visit, location } from '@bigtest/react';
 import Convergence, { when } from '@bigtest/convergence';
 import { expect, assert } from 'chai';
-
 import i18n from '@translations';
 
 import app from './pages/app';

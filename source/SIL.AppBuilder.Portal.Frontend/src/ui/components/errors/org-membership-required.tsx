@@ -22,7 +22,4 @@ class OrgMembershipRequired extends React.Component<IProps> {
   }
 }
 
-export default compose<IProps, {}>(
-  withTranslations,
-  withLogout
-)(OrgMembershipRequired);
+export default compose<IProps, {}>(withTranslations, withLogout)(OrgMembershipRequired);

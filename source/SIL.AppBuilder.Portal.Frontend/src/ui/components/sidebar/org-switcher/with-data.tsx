@@ -1,9 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useOrbit } from 'react-orbitjs';
 import useDebouncedCallback from 'use-debounce/lib/callback';
-
 import { defaultOptions, attributesFor } from '@data';
-
 import { TYPE_NAME as ORGANIZATION, OrganizationResource } from '@data/models/organization';
 import { useCurrentUser } from '@data/containers/with-current-user';
 

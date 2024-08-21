@@ -7,7 +7,6 @@
 import Auth0Lock from 'auth0-lock';
 import * as Auth0 from 'auth0-js';
 import * as jwtDecode from 'jwt-decode';
-
 import { auth0 as auth0Env } from '@env';
 
 const storageKey = 'userToken';

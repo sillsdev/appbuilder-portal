@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useOrbit } from 'react-orbitjs';
-
 import { ProductBuildResource, attributesFor } from '@data';
-
 import { compareVia } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
 import ResourceSelect from '@ui/components/inputs/resource-select';

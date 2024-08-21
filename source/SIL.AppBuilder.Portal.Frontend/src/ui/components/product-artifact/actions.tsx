@@ -5,22 +5,16 @@ import { Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useTranslations } from '@lib/i18n';
 import { useDebounce } from 'use-debounce';
-
-import { useLiveData } from '~/data/live';
-
-import { handleResponse } from '~/data/containers/with-current-user/fetcher';
-
 import TransitionDetails from '@ui/components/product-transitions/details';
 import ProductProperties from '@ui/components/product-properties';
-
-import { put, get } from '~/lib/fetch';
-
-import * as toast from '~/lib/toast';
-
-import { preventDefault } from '~/lib/dom';
-
 import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
+
+import { useLiveData } from '~/data/live';
+import { handleResponse } from '~/data/containers/with-current-user/fetcher';
+import { put, get } from '~/lib/fetch';
+import * as toast from '~/lib/toast';
+import { preventDefault } from '~/lib/dom';
 
 export default function ItemActions({ product }) {
   const { t } = useTranslations();

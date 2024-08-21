@@ -3,9 +3,7 @@ import AndroidIcon from '@material-ui/icons/Android';
 import WebIcon from '@material-ui/icons/Web';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import MissingIcon from '@material-ui/icons/ErrorOutline';
-
 import { attributesFor } from '@data';
-
 import { ProductDefinitionResource, ProductResource } from '@data';
 
 const colorStyles = {

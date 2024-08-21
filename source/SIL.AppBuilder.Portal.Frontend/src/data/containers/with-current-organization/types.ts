@@ -1,5 +1,4 @@
 import { WithDataProps } from 'react-orbitjs';
-
 import { OrganizationResource } from '@data';
 
 export interface IProvidedProps {

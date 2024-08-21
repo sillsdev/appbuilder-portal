@@ -7,10 +7,9 @@ import {
   setupRequestInterceptor,
   useFakeAuthentication,
 } from 'tests/helpers/index';
+import i18n from '@translations';
 
 import { ProductsInteractor } from '~/ui/routes/projects/show/overview/products/-page.ts';
-
-import i18n from '@translations';
 
 describe('Acceptance | Project View | Products Details', () => {
   useFakeAuthentication();

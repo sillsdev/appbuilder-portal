@@ -26,7 +26,4 @@ function ImportProjectsRoute() {
   );
 }
 
-export default compose(
-  requireOrganizationToBeSelected,
-  withAccessRestriction
-)(ImportProjectsRoute);
+export default compose(requireOrganizationToBeSelected, withAccessRestriction)(ImportProjectsRoute);

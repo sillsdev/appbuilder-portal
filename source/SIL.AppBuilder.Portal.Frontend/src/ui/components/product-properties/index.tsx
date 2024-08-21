@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Dropdown, Modal, Form } from 'semantic-ui-react';
-
-import { ProductResource, attributesFor } from '~/data';
-
-import { useTranslations } from '~/lib/i18n';
-
 import CloseIcon from '@material-ui/icons/Close';
 import { useDataActions } from '@data/containers/resources/product/with-data-action';
 import * as toast from '@lib/toast';
+
+import { useTranslations } from '~/lib/i18n';
+import { ProductResource, attributesFor } from '~/data';
 
 export interface IProps {
   product: ProductResource;

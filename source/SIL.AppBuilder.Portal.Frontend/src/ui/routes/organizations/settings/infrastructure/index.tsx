@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { match as Match } from 'react-router';
 import { OrganizationAttributes } from '@data/models/organization';
+import { ResourceObject } from 'jsonapi-typescript';
+import { ORGANIZATIONS_TYPE } from '@data';
 
 import Display from './display';
-
-import { ResourceObject } from 'jsonapi-typescript';
-
-import { ORGANIZATIONS_TYPE } from '@data';
 
 export const pathName = '/organizations/:orgId/settings/infrastructure';
 

@@ -2,14 +2,14 @@ import * as React from 'react';
 import { attributesFor } from 'react-orbitjs';
 import { Input } from 'semantic-ui-react';
 
-import { useTranslations } from '~/lib/i18n';
-
 import Details from './details';
 import Products from './products';
 import Owners from './owners';
 import Authors from './authors';
 import Reviewers from './reviewers';
 import Settings from './settings';
+
+import { useTranslations } from '~/lib/i18n';
 
 export default ({ project }) => {
   const { workflowProjectUrl } = attributesFor(project);

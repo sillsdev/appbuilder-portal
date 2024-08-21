@@ -4,7 +4,6 @@ import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 import * as toast from '@lib/toast';
 import { i18nProps } from '@lib/i18n';
-
 import {
   buildFindRelatedRecord,
   UserResource,
@@ -12,7 +11,6 @@ import {
   OrganizationResource,
   withLoader,
 } from '@data';
-
 import { withRelationships } from '@data/containers/with-relationship';
 
 interface INeededProps {

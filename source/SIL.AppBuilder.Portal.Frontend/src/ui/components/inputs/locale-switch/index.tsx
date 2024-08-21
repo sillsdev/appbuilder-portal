@@ -2,14 +2,11 @@ import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import { UserAttributes } from '@data/models/user';
 import { ResourceObject } from 'jsonapi-typescript';
-
 import { USERS_TYPE, update } from '@data';
+import { useOrbit, attributesFor } from 'react-orbitjs';
 
 import { useCurrentUser } from '~/data/containers/with-current-user';
-
 import { useTranslations } from '~/lib/i18n';
-
-import { useOrbit, attributesFor } from 'react-orbitjs';
 
 export interface IOwnProps {
   currentUser: ResourceObject<USERS_TYPE, UserAttributes>;

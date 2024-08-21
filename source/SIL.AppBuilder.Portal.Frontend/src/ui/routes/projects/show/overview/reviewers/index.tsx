@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
 import { ProjectResource, ReviewerResource } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { withReviewers } from './with-reviewers';
@@ -57,7 +55,4 @@ class Reviewers extends React.Component<IProps> {
   }
 }
 
-export default compose<IProps, INeededProps>(
-  withTranslations,
-  withReviewers
-)(Reviewers);
+export default compose<IProps, INeededProps>(withTranslations, withReviewers)(Reviewers);

@@ -1,8 +1,8 @@
-import { attributesFor } from '~/data';
-
 import { strict } from 'assert';
 
 import { string } from 'prop-types';
+
+import { attributesFor } from '~/data';
 
 type OptionalSelector<TOtherArgs extends any[]> = [string, ...TOtherArgs] | TOtherArgs;
 

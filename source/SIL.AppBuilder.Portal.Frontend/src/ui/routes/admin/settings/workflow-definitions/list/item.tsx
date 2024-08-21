@@ -2,14 +2,12 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import CreateIcon from '@material-ui/icons/Create';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import {
   attributesFor,
   idFromRecordIdentity,
   WorkflowDefinitionResource,
   StoreTypeResource,
 } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { Link } from 'react-router-dom';
 

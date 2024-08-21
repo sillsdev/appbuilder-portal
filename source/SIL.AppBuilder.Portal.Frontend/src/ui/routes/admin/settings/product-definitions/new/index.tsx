@@ -36,8 +36,4 @@ class NewProductDefinition extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withRouter,
-  withDataActions
-)(NewProductDefinition);
+export default compose(withTranslations, withRouter, withDataActions)(NewProductDefinition);

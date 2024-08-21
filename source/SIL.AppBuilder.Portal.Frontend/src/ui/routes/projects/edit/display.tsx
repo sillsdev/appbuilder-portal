@@ -1,19 +1,15 @@
 import React, { useState, useCallback } from 'react';
 import { Card, Form } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-
 import { ProjectResource, attributesFor, idFromRecordIdentity } from '@data';
-
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import { useTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
-
-import { useRouter } from '~/lib/hooks';
-
-import { withValue } from '~/lib/dom';
-
 import { isEmpty } from '@lib/collection';
 import LocaleInput from '@ui/components/inputs/locale-input';
+
+import { useRouter } from '~/lib/hooks';
+import { withValue } from '~/lib/dom';
 
 interface IProps {
   project: ProjectResource;

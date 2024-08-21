@@ -36,8 +36,4 @@ class NewOrganization extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withRouter,
-  withDataActions
-)(NewOrganization);
+export default compose(withTranslations, withRouter, withDataActions)(NewOrganization);

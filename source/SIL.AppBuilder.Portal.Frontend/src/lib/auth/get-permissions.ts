@@ -1,8 +1,6 @@
 import { useOrbit, attributesFor } from 'react-orbitjs';
 import Store from '@orbit/store';
-
 import { OrganizationResource, UserResource, UserRoleResource } from '@data';
-
 import { ROLE } from '@data/models/role';
 import { useCurrentUser } from '@data/containers/with-current-user';
 

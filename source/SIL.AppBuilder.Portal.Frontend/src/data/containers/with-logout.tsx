@@ -3,10 +3,9 @@ import { useDispatch } from 'react-redux';
 import { useOrbit } from 'react-orbitjs';
 import { deleteToken } from '@lib/auth0';
 
-import { APP_RESET } from '~/redux-store/reducers';
-
 import { useAuth } from './with-auth';
 
+import { APP_RESET } from '~/redux-store/reducers';
 import { useRouter } from '~/lib/hooks';
 
 export interface IProvidedProps {

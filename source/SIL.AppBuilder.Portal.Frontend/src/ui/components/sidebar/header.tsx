@@ -3,13 +3,9 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import CloseIcon from '@material-ui/icons/Close';
 import { ResourceObject } from 'jsonapi-typescript';
-
 import { idFromRecordIdentity } from '@data';
-
 import { OrganizationAttributes } from '@data/models/organization';
-
 import { ORGANIZATIONS_TYPE, attributesFor } from '@data';
-
 import { useCurrentOrganization } from '@data/containers/with-current-organization';
 import { useTranslations } from '@lib/i18n';
 

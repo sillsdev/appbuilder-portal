@@ -1,7 +1,5 @@
 import { compose, withProps } from 'recompose';
-
 import { idFromRecordIdentity } from '@data';
-
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 import { withSorting } from '@data/containers/api/sorting';
 import { withPagination } from '@data/containers/api/pagination';

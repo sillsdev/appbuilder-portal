@@ -2,7 +2,6 @@ import React from 'react';
 import { Popup } from 'semantic-ui-react';
 
 import { useTranslations } from '~/lib/i18n';
-
 import DebouncedSearch from '~/ui/components/inputs/debounced-search-field';
 
 export function HeaderSearch({ onSearch }) {

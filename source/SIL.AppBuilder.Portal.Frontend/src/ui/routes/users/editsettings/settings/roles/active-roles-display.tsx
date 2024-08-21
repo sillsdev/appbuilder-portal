@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { withProps, compose } from 'recompose';
 import { withUserRoles, IUserRoleProps } from '@data/containers/resources/user';
-
 import {
   UserRoleResource,
   RoleResource,
@@ -9,7 +8,6 @@ import {
   OrganizationResource,
   attributesFor,
 } from '@data';
-
 import { compareVia } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import { IOwnProps as IDataProps } from '@data/containers/resources/application-type/list';
-
 import { attributesFor } from '@data';
 
 interface IOwnProps {

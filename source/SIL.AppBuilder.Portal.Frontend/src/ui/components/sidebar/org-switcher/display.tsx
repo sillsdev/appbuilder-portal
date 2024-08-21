@@ -4,9 +4,7 @@ import { InjectedTranslateProps as i18nProps } from 'react-i18next';
 import SearchIcon from '@material-ui/icons/Search';
 import { WithDataProps } from 'react-orbitjs';
 import { uniqBy } from 'lodash';
-
 import { idFromRecordIdentity } from '@data';
-
 import { IProvidedProps as WithCurrentOrgProps } from '@data/containers/with-current-organization';
 
 import { IGivenProps } from './types';

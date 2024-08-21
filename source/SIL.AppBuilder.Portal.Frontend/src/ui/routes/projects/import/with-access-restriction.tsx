@@ -1,13 +1,10 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 import * as toast from '@lib/toast';
-
 import { hasRelationship } from '@data';
-
-import { useTranslations } from '~/lib/i18n';
-
 import { useCurrentOrganization } from '@data/containers/with-current-organization';
 
+import { useTranslations } from '~/lib/i18n';
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
 export function withAccessRestriction(WrappedComponent) {

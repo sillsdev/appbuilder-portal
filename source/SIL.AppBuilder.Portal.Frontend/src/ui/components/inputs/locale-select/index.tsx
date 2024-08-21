@@ -6,9 +6,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { attributesFor } from '@data/helpers';
 import { UserAttributes } from '@data/models/user';
 import { ResourceObject } from 'jsonapi-typescript';
-
 import { USERS_TYPE } from '@data';
-
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 
 export interface IOwnProps {
@@ -58,7 +56,4 @@ class LocaleSelect extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withCurrentUserContext
-)(LocaleSelect);
+export default compose(withTranslations, withCurrentUserContext)(LocaleSelect);

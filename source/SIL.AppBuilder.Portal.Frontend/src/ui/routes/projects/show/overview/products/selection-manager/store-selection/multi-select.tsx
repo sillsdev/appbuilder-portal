@@ -1,8 +1,5 @@
 import { compose, withProps } from 'recompose';
 import { attributesFor, withData as withOrbit } from 'react-orbitjs';
-
-import { compareVia } from '~/lib/collection';
-
 import {
   StoreResource,
   StoreTypeResource,
@@ -10,11 +7,12 @@ import {
   idFor,
   idsForRelationship,
 } from '@data';
-
 import { withTranslations } from '@lib/i18n';
 import { withNetwork as withOrganizationStores } from '@data/containers/resources/organization-store/list';
 import { withLoader } from '@data/containers/with-loader';
 import { MultiSelect } from '@ui/components/inputs/multi-select';
+
+import { compareVia } from '~/lib/collection';
 
 interface INeededProps {
   onChange: (store: StoreResource) => void;

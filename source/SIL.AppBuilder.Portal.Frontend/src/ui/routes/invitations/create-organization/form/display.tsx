@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { OrganizationAttributes } from '@data/models/organization';
 import ErrorHeader from '@ui/components/errors/header-message';
+import { Mut, mutCreator } from 'react-state-helpers';
 
 import { withTranslations, i18nProps } from '~/lib/i18n';
-
-import { Mut, mutCreator } from 'react-state-helpers';
 
 export interface IProps {
   token: string;

@@ -4,24 +4,18 @@ import { I18nextProvider } from 'react-i18next';
 import { APIProvider, strategies } from 'react-orbitjs';
 import { Provider as CurrentUserProvider } from '@data/containers/with-current-user';
 import { baseUrl } from '@data/store';
-
 import { ReduxProvider } from '@store';
-
-import { Sockets } from '~/sockets';
-
-import { AuthProvider } from '~/data/containers/with-auth';
-
-import { ScrollToTop } from '~/lib/routing';
-
-import i18n from '~/translations';
-
-import { L10nLoader } from '~/translations/fetch-l10n';
 
 import { RouteListener } from './components/routing/route-listener';
 import DebugInfo from './components/debug-info';
 import { CacheHydrater } from './components/cache-hydrater';
 import RootRoute from './routes/root';
 
+import { Sockets } from '~/sockets';
+import { AuthProvider } from '~/data/containers/with-auth';
+import { ScrollToTop } from '~/lib/routing';
+import i18n from '~/translations';
+import { L10nLoader } from '~/translations/fetch-l10n';
 import { schema, keyMap } from '~/data/schema';
 
 interface IProps {

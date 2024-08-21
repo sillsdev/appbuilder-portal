@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { Checkbox } from 'semantic-ui-react';
-
 import {
   UserResource,
   RoleResource,
@@ -9,7 +8,6 @@ import {
   UserRoleResource,
   attributesFor,
 } from '@data';
-
 import { ROLE } from '@data/models/role';
 import { withUserRoles, IUserRoleProps } from '@data/containers/resources/user';
 import { compareVia } from '@lib/collection';

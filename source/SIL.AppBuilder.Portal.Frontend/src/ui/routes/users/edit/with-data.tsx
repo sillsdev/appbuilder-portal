@@ -1,8 +1,6 @@
 import { compose } from 'recompose';
 import { match as Match } from 'react-router';
-
 import { query, defaultOptions, buildFindRecord, withLoader } from '@data';
-
 import { TYPE_NAME as USER } from '@data/models/user';
 
 export interface Params {

@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-
 import {
   OrganizationResource,
   ProductDefinitionResource,
   ProjectResource,
   ProductResource,
 } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withOrbit } from 'react-orbitjs';
 

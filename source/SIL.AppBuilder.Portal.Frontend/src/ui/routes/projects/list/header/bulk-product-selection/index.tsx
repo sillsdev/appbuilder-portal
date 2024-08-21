@@ -1,31 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-
-import { rowSelectionsFor } from '~/redux-store/data/selectors';
-
-import { ProjectResource } from '~/data';
-
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
-
-import { useTranslations } from '~/lib/i18n';
-
-import { post as authenticatedPost, tryParseJson } from '~/lib/fetch';
-
-import * as toast from '~/lib/toast';
-
-import './styles.scss';
 import { useAsyncFn } from 'react-use';
 
-import LoadingWrapper from '~/ui/components/loading-wrapper';
-
-import { ErrorMessage } from '~/ui/components/errors';
-
-import { GenericJsonApiError } from '~/data/errors/generic-jsonapi-error';
-
-import { toSentence } from '~/lib/collection';
-
 import { ProductSelection } from './product-selection';
+
+import { rowSelectionsFor } from '~/redux-store/data/selectors';
+import { ProjectResource } from '~/data';
+import { useTranslations } from '~/lib/i18n';
+import { post as authenticatedPost, tryParseJson } from '~/lib/fetch';
+import * as toast from '~/lib/toast';
+import './styles.scss';
+import LoadingWrapper from '~/ui/components/loading-wrapper';
+import { ErrorMessage } from '~/ui/components/errors';
+import { GenericJsonApiError } from '~/data/errors/generic-jsonapi-error';
+import { toSentence } from '~/lib/collection';
 
 export function BulkProductSelection({ disabled, tableName }) {
   const { t } = useTranslations();

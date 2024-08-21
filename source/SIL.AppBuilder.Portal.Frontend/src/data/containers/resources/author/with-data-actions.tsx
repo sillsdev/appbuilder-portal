@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
-
 import { defaultOptions, AUTHORS_TYPE } from '@data';
-
 import { AuthorAttributes } from '@data/models/author';
 
 export interface IProvidedProps {

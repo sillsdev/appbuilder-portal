@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { Checkbox } from 'semantic-ui-react';
-
 import { attributesFor, ProjectResource } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import { withSettings } from './with-settings';
@@ -86,7 +84,4 @@ class Settings extends React.Component<IProps> {
   }
 }
 
-export default compose<IProps, INeededProps>(
-  withTranslations,
-  withSettings
-)(Settings);
+export default compose<IProps, INeededProps>(withTranslations, withSettings)(Settings);

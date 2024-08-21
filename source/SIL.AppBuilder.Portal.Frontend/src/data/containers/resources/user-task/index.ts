@@ -1,9 +1,7 @@
 import { useOrbit, attributesFor, idFromRecordIdentity } from 'react-orbitjs';
 
 import { useRouter } from '~/lib/hooks';
-
 import { TaskResource } from '~/data';
-
 import { relationsFromPath } from '~/data/containers/with-relationship';
 
 export { withNetwork as withUserTaskList, IProvidedProps as IUserTaskListProps } from './list';

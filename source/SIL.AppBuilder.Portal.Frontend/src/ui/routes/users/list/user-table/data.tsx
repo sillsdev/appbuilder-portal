@@ -9,7 +9,6 @@ import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { PLURAL_NAME as GROUP_MEMBERSHIPS } from '@data/models/group-membership';
 import { PLURAL_NAME as ORGANIZATION_MEMBERSHIPS } from '@data/models/organization-membership';
 import { PLURAL_NAME as USER_ROLES } from '@data/models/user-role';
-
 import {
   withLoader,
   isRelatedTo,
@@ -18,7 +17,6 @@ import {
   OrganizationResource,
   OrganizationMembershipResource,
 } from '@data';
-
 import { withCurrentOrganization } from '@data/containers/with-current-organization';
 import { IProvidedProps as IActionProps } from '@data/containers/resources/user/with-data-actions';
 

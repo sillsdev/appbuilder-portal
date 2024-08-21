@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { compose, withProps } from 'recompose';
-
 import { GroupResource, UserResource, relationshipFor, idFor, recordsWithIdIn } from '@data';
-
 import { OrganizationResource } from '@data';
-
 import { withRelationships } from '@data/containers/with-relationship';
 import { withTranslations, i18nProps } from '@lib/i18n';
 

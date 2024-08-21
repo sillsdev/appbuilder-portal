@@ -2,12 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { withValue } from 'react-state-helpers';
 import { attributesFor, useOrbit, useQuery } from 'react-orbitjs';
 import { Dropdown } from 'semantic-ui-react';
-
-import { buildOptions } from '~/data';
-
 import { isEmpty, hasValues } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';
+
+import { buildOptions } from '~/data';
 
 function getStoreType(dataStore, store) {
   if (!store) return;

@@ -5,9 +5,9 @@ import { NavLink } from 'react-router-dom';
 import { ROLE } from '@data/models/role';
 import { RequireRole } from '@ui/components/authorization';
 
-import { useTranslations } from '~/lib/i18n';
-
 import { PROJECT_ROUTES } from './routes';
+
+import { useTranslations } from '~/lib/i18n';
 
 export function ProjectFilterDropdown({ filter }) {
   const { t } = useTranslations();

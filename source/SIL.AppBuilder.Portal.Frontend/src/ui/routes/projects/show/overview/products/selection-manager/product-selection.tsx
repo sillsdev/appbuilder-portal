@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
-
 import {
   OrganizationResource,
   ProductDefinitionResource,
@@ -9,7 +8,6 @@ import {
   ProductResource,
   relationshipFor,
 } from '@data';
-
 import { i18nProps } from '@lib/i18n';
 import { attributesFor, pushPayload, useOrbit, idFromRecordIdentity } from 'react-orbitjs';
 import { get as authenticatedGet } from '@lib/fetch';
@@ -17,7 +15,6 @@ import { get as authenticatedGet } from '@lib/fetch';
 import ProductDefinitionMultiSelect from './multi-select';
 
 import { useConditionalPoll } from '~/lib/hooks';
-
 import { isEmpty } from '~/lib/collection';
 
 interface IProps {

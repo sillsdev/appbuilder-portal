@@ -1,14 +1,6 @@
 import React, { Component } from 'react';
 import { useOrbit } from 'react-orbitjs';
 import { HubConnectionFactory, ConnectionState, ConnectionStatus } from '@ssv/signalr-client';
-
-import {
-  transformsToJSONAPIOperations,
-  JSONAPIOperationsPayload,
-} from '~/data/orbitjs-operations-support';
-
-import { isTesting } from '~/env';
-
 import { TransformOrOperations, Source } from '@orbit/data';
 import { Subscription } from 'rxjs';
 import JSONAPISource from '@orbit/jsonapi';
@@ -16,8 +8,12 @@ import Store from '@orbit/store';
 
 import { DataClient } from './clients';
 
+import { isTesting } from '~/env';
+import {
+  transformsToJSONAPIOperations,
+  JSONAPIOperationsPayload,
+} from '~/data/orbitjs-operations-support';
 import { dataToLocalCache } from '~/data/orbitjs-operations-support/serialize-from-api';
-
 import { useAuth } from '~/data/containers/with-auth';
 
 export default function LiveDataManger({ children }) {

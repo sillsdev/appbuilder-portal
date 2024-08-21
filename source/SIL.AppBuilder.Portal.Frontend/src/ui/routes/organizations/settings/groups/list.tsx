@@ -4,9 +4,7 @@ import { compose } from 'recompose';
 import CloseIcon from '@material-ui/icons/Close';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { IProvidedProps } from '@data/containers/resources/group/with-data-actions';
-
 import { GroupResource, attributesFor } from '@data';
-
 import { isEmpty } from '@lib/collection';
 
 interface IOwnProps {

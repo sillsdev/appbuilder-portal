@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import {
   ProjectResource,
   attributesFor,
@@ -9,7 +8,6 @@ import {
   UserResource,
   GroupResource,
 } from '@data';
-
 import { i18nProps, withTranslations } from '@lib/i18n';
 
 import Products from './products';

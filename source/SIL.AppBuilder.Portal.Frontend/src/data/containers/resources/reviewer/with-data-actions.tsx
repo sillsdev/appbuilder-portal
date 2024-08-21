@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { ResourceObject } from 'jsonapi-typescript';
-
 import { defaultOptions, REVIEWERS_TYPE } from '@data';
-
 import { ReviewerAttributes } from '@data/models/reviewer';
 
 export interface IProvidedProps {

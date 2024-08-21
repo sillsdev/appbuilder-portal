@@ -1,7 +1,5 @@
 import { compose, withProps } from 'recompose';
-
 import { StoreResource, attributesFor } from '@data';
-
 import { compareVia } from '@lib/collection';
 import { withTranslations } from '@lib/i18n';
 import { withNetwork as withStores } from '@data/containers/resources/store/list';

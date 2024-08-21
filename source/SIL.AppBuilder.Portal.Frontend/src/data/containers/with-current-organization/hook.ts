@@ -1,9 +1,4 @@
 import { useSelector, useDispatch } from 'react-redux';
-
-import { setCurrentOrganization } from '~/redux-store/data';
-
-import { useRouter } from '~/lib/hooks';
-
 import { useOrbit, localIdFromRecordIdentity, pushPayload } from 'react-orbitjs/dist';
 import _ from 'lodash';
 import Store from '@orbit/store';
@@ -12,6 +7,8 @@ import { useEffect, useMemo } from 'react';
 import { retrieveRelation } from '../with-relationship';
 import { useCurrentUser } from '../with-current-user';
 
+import { useRouter } from '~/lib/hooks';
+import { setCurrentOrganization } from '~/redux-store/data';
 import { optimistic, get, defaultHeaders } from '~/lib/fetch';
 
 export function useCurrentOrganization() {

@@ -3,7 +3,6 @@ import { match as Match, withRouter } from 'react-router';
 import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
-
 import {
   OrganizationResource,
   OrganizationStoreResource,
@@ -13,7 +12,6 @@ import {
   buildFindRecord,
   buildOptions,
 } from '@data';
-
 import * as toast from '@lib/toast';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import StoreMultiSelect from '@ui/components/inputs/store-multi-select';

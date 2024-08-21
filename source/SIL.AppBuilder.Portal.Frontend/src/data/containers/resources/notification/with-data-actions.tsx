@@ -1,5 +1,4 @@
 import { useOrbit } from 'react-orbitjs';
-
 import { defaultOptions, NotificationResource } from '@data';
 
 import * as toast from '~/lib/toast';

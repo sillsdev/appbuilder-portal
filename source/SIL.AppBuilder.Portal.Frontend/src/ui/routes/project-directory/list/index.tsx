@@ -23,10 +23,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default compose(
   withTranslations,
-  connect(
-    null,
-    mapDispatchToProps
-  ),
+  connect(null, mapDispatchToProps),
   withCurrentUserContext,
   withFiltering(() => ({
     requiredFilters: [

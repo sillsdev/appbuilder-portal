@@ -1,7 +1,5 @@
 import * as React from 'react';
-
 import { ProductResource, idFromRecordIdentity } from '@data';
-
 import LaunchIcon from '@material-ui/icons/Launch';
 
 interface IOwnProps {

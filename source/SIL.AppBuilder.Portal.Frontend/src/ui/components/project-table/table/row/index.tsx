@@ -5,7 +5,6 @@ import PrivateIcon from '@material-ui/icons/VisibilityOff';
 import { Link } from 'react-router-dom';
 import { withData as withOrbit } from 'react-orbitjs';
 import { Checkbox } from 'semantic-ui-react';
-
 import {
   attributesFor,
   ProjectResource,
@@ -14,7 +13,6 @@ import {
   UserResource,
   idFromRecordIdentity,
 } from '@data';
-
 import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
 
 import { IProvidedProps as ITableColumns } from '../with-table-columns';

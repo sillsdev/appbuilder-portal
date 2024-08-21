@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-
 import { defaultOptions, USERS_TYPE } from '@data';
-
 import { UserAttributes } from '@data/models/user';
 import { ResourceObject } from 'jsonapi-typescript';
 

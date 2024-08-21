@@ -7,12 +7,10 @@ import { isEmpty } from '@lib/collection';
 import ApplicationTypeSelect from '@ui/components/inputs/application-type-select';
 import GroupSelect from '@ui/components/inputs/group-select';
 import { useCurrentUser } from '@data/containers/with-current-user';
+import { useOrbit } from 'react-orbitjs/dist';
 
 import { useRouter } from '~/lib/hooks';
-
 import { withValue } from '~/lib/dom';
-
-import { useOrbit } from 'react-orbitjs/dist';
 
 export default function Display({ currentOrganizationId, currentOrganization, create }) {
   const { history } = useRouter();

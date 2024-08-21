@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslations } from '@lib/i18n';
 import { Link } from 'react-router-dom';
-
-import { useRouter } from '~/lib/hooks';
-
 import FileSize from '@ui/components/labels/file-size';
 
+import { useRouter } from '~/lib/hooks';
 import { RectLoader } from '~/ui/components/loaders';
 
 export const pathName = '/downloads/apk/:id/published';

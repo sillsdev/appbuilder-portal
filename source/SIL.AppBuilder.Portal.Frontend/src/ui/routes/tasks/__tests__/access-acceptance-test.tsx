@@ -6,7 +6,6 @@ import {
   setupRequestInterceptor,
   useFakeAuthentication,
 } from 'tests/helpers/index';
-
 import i18n from '@translations';
 
 import page from './-page';

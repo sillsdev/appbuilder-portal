@@ -1,5 +1,4 @@
 import { compose } from 'recompose';
-
 import { query, withLoader, buildOptions } from '@data';
 
 import Display from './display';

@@ -36,8 +36,4 @@ class NewWorkflowDefinition extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withRouter,
-  withDataActions,
-  withTranslations
-)(NewWorkflowDefinition);
+export default compose(withRouter, withDataActions, withTranslations)(NewWorkflowDefinition);

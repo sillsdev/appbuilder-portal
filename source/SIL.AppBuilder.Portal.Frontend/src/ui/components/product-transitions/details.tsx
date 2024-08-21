@@ -9,7 +9,6 @@ import moment from 'moment';
 import TransitionComment from './comment';
 
 import { StoreResource, ProductResource, idFromRecordIdentity } from '~/data';
-
 import { get } from '~/lib/fetch';
 
 export interface IProps {

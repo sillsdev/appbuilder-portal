@@ -6,7 +6,6 @@ import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
 import { ProductDefinitionAttributes } from '@data/models/product-definition';
 import { mutCreator, toggleCreator, Toggle, Mut } from 'react-state-helpers';
-
 import {
   query,
   buildOptions,

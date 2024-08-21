@@ -1,25 +1,17 @@
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { every } from 'lodash';
-
-import { useTranslations } from '~/lib/i18n';
-
-import { useRouter } from '~/lib/hooks';
-
-import * as toast from '~/lib/toast';
-
-import { PROJECT_ROUTES } from './routes';
-
-import { rowSelectionsFor } from '~/redux-store/data/selectors';
-
-import { withBulkActions } from '~/data/containers/resources/project/with-bulk-actions';
-
-import { BulkProductSelection } from './bulk-product-selection';
-
-import { canUserArchive } from '~/data/containers/resources/project/permissions';
-
 import { useOrbit } from 'react-orbitjs';
 
+import { PROJECT_ROUTES } from './routes';
+import { BulkProductSelection } from './bulk-product-selection';
+
+import { useTranslations } from '~/lib/i18n';
+import { useRouter } from '~/lib/hooks';
+import * as toast from '~/lib/toast';
+import { rowSelectionsFor } from '~/redux-store/data/selectors';
+import { withBulkActions } from '~/data/containers/resources/project/with-bulk-actions';
+import { canUserArchive } from '~/data/containers/resources/project/permissions';
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
 interface IExpectedProps {

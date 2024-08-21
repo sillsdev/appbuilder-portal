@@ -6,7 +6,6 @@ import { Switch, Route } from 'react-router-dom';
 import { withData as withOrbit, ILegacyProvidedProps } from 'react-orbitjs';
 import NotFound from '@ui/routes/errors/not-found';
 import pick from 'lodash/pick';
-
 import {
   query,
   GroupResource,
@@ -17,7 +16,6 @@ import {
   buildOptions,
   update,
 } from '@data';
-
 import { withRole, isUserASuperAdmin } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 import { withCurrentUserContext } from '@data/containers/with-current-user';

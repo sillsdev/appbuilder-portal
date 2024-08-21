@@ -1,8 +1,5 @@
 import * as React from 'react';
 import { Switch } from 'react-router-dom';
-
-import { Route } from '~/lib/routing';
-
 import { paths as adminPaths } from '@ui/routes/admin/paths';
 
 import { withAdminLayout } from './-components/layout';
@@ -12,6 +9,8 @@ import ProductDefinitionsRoute from './product-definitions';
 import StoreTypesRoute from './store-types';
 import StoreRoute from './stores';
 import BuildEnginesRoute from './build-engines';
+
+import { Route } from '~/lib/routing';
 
 const paths = adminPaths.settings;
 

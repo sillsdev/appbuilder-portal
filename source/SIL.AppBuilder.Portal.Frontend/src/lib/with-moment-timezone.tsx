@@ -31,8 +31,5 @@ export function withMomentTimezone(WrappedComponent) {
     }
   }
 
-  return compose<IProps, {}>(
-    withTranslations,
-    withCurrentUserContext
-  )(DataWrapper);
+  return compose<IProps, {}>(withTranslations, withCurrentUserContext)(DataWrapper);
 }

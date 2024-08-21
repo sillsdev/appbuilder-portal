@@ -1,5 +1,4 @@
 import { query, buildOptions } from '@data';
-
 import { buildFindRecord } from '@data/store-helpers';
 
 export function withPublicProject<T>(idGetter: (props: T) => string) {

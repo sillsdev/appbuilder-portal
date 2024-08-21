@@ -2,9 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { create, update } from '@data/store-helpers';
-
 import { defaultOptions, StoreTypeResource } from '@data';
-
 import { StoreTypeAttributes } from '@data/models/store-type';
 
 export interface IProvidedProps {

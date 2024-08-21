@@ -38,7 +38,10 @@ describe('Acceptance | User Groups', () => {
                 ],
               },
               'user-roles': {
-                data: [{ type: 'user-roles', id: 2 }, { type: 'user-roles', id: 3 }],
+                data: [
+                  { type: 'user-roles', id: 2 },
+                  { type: 'user-roles', id: 3 },
+                ],
               },
               'organization-memberships': {
                 data: [{ type: 'organization-memberships', id: 2 }],

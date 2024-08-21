@@ -1,8 +1,5 @@
 import * as React from 'react';
 import { Switch } from 'react-router-dom';
-
-import { Route } from '~/lib/routing';
-
 import { NotFound } from '@ui/routes/errors';
 
 import AllProjectsRoute, { pathName as allProjectPath } from './list/all';
@@ -16,6 +13,8 @@ import NewProjectRoute, { pathName as newProjectPath } from './new';
 import ImportProjectsRoute, { pathName as importProjectsPath } from './import';
 import ProjectDetailRoute, { pathName as projectDetailPath } from './show';
 import ProjectEditRoute, { pathName as projectEditPath } from './edit';
+
+import { Route } from '~/lib/routing';
 
 export default function ProjectsRoot() {
   return (

@@ -1,7 +1,5 @@
 import * as React from 'react';
-
 import { ProjectResource } from '@data';
-
 import { i18nProps } from '@lib/i18n';
 
 import { IExpectedPropsForRoute } from './types';

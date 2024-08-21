@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { attributesFor } from '@data';
 
 import ActiveGroupsDisplay from './active-groups-display';
