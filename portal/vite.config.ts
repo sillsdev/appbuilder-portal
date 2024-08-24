@@ -2,7 +2,7 @@ import { paraglide } from '@inlang/paraglide-sveltekit/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { spawn } from 'child_process';
 import { stat, writeFile } from 'fs/promises';
-import { searchForWorkspaceRoot } from 'vite';
+import { loadEnv, searchForWorkspaceRoot } from 'vite';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -53,17 +53,21 @@ export default defineConfig({
       name: 'Run BullMQ Worker',
       configureServer(server) {
         if (server.config.mode === 'development') {
-          const compilingProcess = spawn('npx tsc --project tsconfig.dev.json', {
+          const compilingProcess = spawn('npx', ['tsc', '--project', 'tsconfig.dev.json'], {
             cwd: 'node-server',
             stdio: 'pipe',
             shell: true
           });
           compilingProcess.once('close', () => {
-            const executingProcess = spawn('node dev.js', {
+            const env = Object.assign(loadEnv(server.config.mode, process.cwd()), process.env);
+            const executingProcess = spawn('node', ['dev.js'], {
               cwd: 'node-server',
               stdio: 'pipe',
-              shell: true
+              shell: true,
+              env
             });
+            executingProcess.stderr.on('data', (dat) => process.stderr.write(dat));
+            executingProcess.stdout.on('data', (dat) => process.stdout.write(dat));
             server.httpServer?.on('close', () => executingProcess.kill());
           });
         }
