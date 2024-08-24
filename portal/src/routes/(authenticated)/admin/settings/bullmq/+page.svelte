@@ -1,9 +1,6 @@
 <script lang="ts">
   import { dev } from '$app/environment';
-  import type { PageData } from './$types';
-
-  export let data: PageData;
-</script>
+  </script>
 
 <div class="flex flex-col w-full px-4">
   <form action="" method="post">
