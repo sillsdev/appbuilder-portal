@@ -1,19 +1,31 @@
 <script lang="ts">
+  import DateRangePicker from '$lib/components/DateRangePicker.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import * as m from '$lib/paraglide/messages';
+  import 'flatpickr/dist/flatpickr.css';
   import ProjectSelector from '../projects/components/ProjectSelector.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
 
+  // TODO: almost certainly this page needs to be paginated
+  // This means that the filtering here may need to be moved to the server
+  // The alternative is to send all the data to the client at once and show only a
+  // limited portion, which is a possibility depending on how much total data there is
+
   let langCode: string;
   let productDefinitionFilter: string;
   let organizationFilter: string;
+  let updateDates: [Date, Date] | null;
 </script>
 
 <ProjectSelector
   projects={data.projects.filter((proj) => {
     return (
+      (!updateDates ||
+        !updateDates[1] ||
+        !proj.DateUpdated ||
+        (proj.DateUpdated > updateDates[0] && proj.DateUpdated < updateDates[1])) &&
       (proj.Language ?? '').includes(langCode) &&
       (!productDefinitionFilter ||
         proj.Products.some((prod) => prod.ProductDefinitionName === productDefinitionFilter)) &&
@@ -41,7 +53,7 @@
         <option value={pD.Name}>{pD.Name}</option>
       {/each}
     </select>
-    <!-- TODO: Filter by update time -->
+    <DateRangePicker bind:chosenDates={updateDates} placeholder={m.directory_filters_dateRange()} />
   </div>
 </ProjectSelector>
 
