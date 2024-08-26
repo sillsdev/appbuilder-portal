@@ -26,7 +26,7 @@ function runstuff {
     up:build) ${COMPOSE} up --build $arguments ${COMPOSE_SERVICES} ;;
     up)       ${COMPOSE} up $arguments ${COMPOSE_SERVICES} ;;
     up:local:start)
-      runstuff dc up -d db adminer
+      runstuff dc up -d db adminer redis
 
       echo "db and adminer have been started. please make sure you have /etc/hosts entries"
       echo ""
