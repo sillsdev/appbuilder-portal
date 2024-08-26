@@ -16,10 +16,15 @@ export default defineConfig({
       name: 'fetch-langtags',
       async buildStart() {
         // Only update langtags if they are a day old
-        if (
-          Date.now() - (await stat('src/lib/langtags.json')).mtimeMs >
-          /* One day */ 1000 * 60 * 60 * 24
-        ) {
+        let needToRefresh = true;
+        try {
+          needToRefresh =
+            Date.now() - (await stat('src/lib/langtags.json')).mtimeMs >
+            /* One day */ 1000 * 60 * 60 * 24;
+        } catch {
+          /* empty */
+        }
+        if (needToRefresh) {
           const langtags: {
             tag: string;
             full: string;
