@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:10.17.0-buster
+FROM --platform=linux/amd64 node:12.22.12-bullseye
 
 ARG CHROME_VERSION="google-chrome-stable"
 
