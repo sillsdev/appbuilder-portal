@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useTranslations } from '@lib/i18n';
 import ProductArtifact from '@ui/components/product-artifact';
+import { ProductResource } from '@data';
 
 import { useRouter } from '~/lib/hooks';
-
-import { ProductResource } from '@data';
 
 import './styles.scss';
 

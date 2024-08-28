@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY__AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY__AWS_SECRET_ACCESS_KEY }}
@@ -24,10 +24,10 @@ jobs:
       AWS_ECR_ACCOUNT: ${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14"
+          node-version: 14
 
       - name: Get environment info
         run: |
@@ -63,7 +63,7 @@ jobs:
 
       - name: Configure AWS credentials (SIL)
         id: aws_sil
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.DEPLOY__AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DEPLOY__AWS_SECRET_ACCESS_KEY }}
@@ -71,7 +71,7 @@ jobs:
 
       - name: Login to AWS ECR (SIL)
         id: ecr_sil
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
         with:
           registries: ${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}
 

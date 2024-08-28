@@ -5,9 +5,7 @@ import StoreIcon from '@material-ui/icons/Shop';
 import SyncIcon from '@material-ui/icons/Sync';
 import { useOrbit } from 'react-orbitjs';
 import { useDispatch } from 'react-redux';
-
 import { attributesFor, idFromRecordIdentity, OrganizationResource } from '@data';
-
 import { useTranslations } from '@lib/i18n';
 import { Link } from 'react-router-dom';
 

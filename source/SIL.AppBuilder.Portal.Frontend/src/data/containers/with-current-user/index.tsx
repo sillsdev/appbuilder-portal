@@ -1,9 +1,7 @@
 import React, { Suspense } from 'react';
 import { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
-
 import { hasRelationship } from '@data';
-
 import PageLoader from '@ui/components/loaders/page';
 import { useOrbit } from 'react-orbitjs';
 

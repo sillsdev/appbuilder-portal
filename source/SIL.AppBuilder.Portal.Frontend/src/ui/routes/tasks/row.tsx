@@ -7,7 +7,6 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductIcon from '@ui/components/product-icon';
 import TransitionComment from '@ui/components/product-transitions/comment';
 import moment from 'moment';
-
 import {
   attributesFor,
   idFromRecordIdentity,

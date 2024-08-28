@@ -5,7 +5,6 @@ import useInterval from 'react-useinterval';
 import moment from 'moment-timezone';
 
 import { useTranslations } from '~/lib/i18n';
-
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
 export function useRouter<Params extends { [K in keyof Params]?: string } = {}>() {

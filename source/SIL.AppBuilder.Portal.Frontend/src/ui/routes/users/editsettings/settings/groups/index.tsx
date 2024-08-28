@@ -3,16 +3,7 @@ import { compose, withProps } from 'recompose';
 import { compareVia } from '@lib/collection';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { withRelationships } from '@data/containers/with-relationship';
-
-import { RequireRole } from '~/ui/components/authorization';
-
-import { ROLE } from '~/data/models/role';
-
 import { UserResource } from '@data/models/user';
-
-import ActiveGroupsDisplay from './active-groups-display';
-import GroupSelect from './group-select';
-
 import {
   GroupResource,
   OrganizationResource,
@@ -21,6 +12,12 @@ import {
   relationshipFor,
   recordsWithIdIn,
 } from '@data';
+
+import ActiveGroupsDisplay from './active-groups-display';
+import GroupSelect from './group-select';
+
+import { RequireRole } from '~/ui/components/authorization';
+import { ROLE } from '~/data/models/role';
 
 export const pathName = '/users/:userId/settings/groups';
 

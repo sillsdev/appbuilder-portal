@@ -8,10 +8,6 @@ import {
   IProvidedProps as IWorkflowDefinitionProps,
 } from '@data/containers/resources/workflow-definition/with-data-actions';
 import { withTranslations, i18nProps } from '@lib/i18n';
-
-import WorkflowDefinitionForm from '../common/form';
-import { listPathName } from '../index';
-
 import {
   query,
   withLoader,
@@ -20,6 +16,9 @@ import {
   WorkflowDefinitionResource,
   StoreTypeResource,
 } from '@data';
+
+import WorkflowDefinitionForm from '../common/form';
+import { listPathName } from '../index';
 
 interface IOwnProps {
   workflowDefinition: WorkflowDefinitionResource;

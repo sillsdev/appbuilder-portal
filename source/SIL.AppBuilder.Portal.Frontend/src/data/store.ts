@@ -1,7 +1,5 @@
 import { JSONAPISerializer } from '@orbit/jsonapi';
-
 import { api as apiEnv } from '@env';
-
 import { defaultHeaders } from '@lib/fetch';
 
 import { schema, keyMap } from './schema';

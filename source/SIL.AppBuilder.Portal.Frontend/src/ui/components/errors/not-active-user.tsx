@@ -22,7 +22,4 @@ class NotActiveUser extends React.Component<IProps> {
   }
 }
 
-export default compose<IProps, {}>(
-  withTranslations,
-  withLogout
-)(NotActiveUser);
+export default compose<IProps, {}>(withTranslations, withLogout)(NotActiveUser);

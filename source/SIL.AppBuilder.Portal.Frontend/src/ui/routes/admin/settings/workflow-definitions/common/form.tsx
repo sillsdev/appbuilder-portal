@@ -5,7 +5,6 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
 import { WorkflowDefinitionAttributes } from '@data/models/workflow-definition';
-
 import {
   query,
   buildOptions,
@@ -14,7 +13,6 @@ import {
   StoreTypeResource,
   WorkflowDefinitionResource,
 } from '@data';
-
 import { Mut, Toggle, mutCreator, toggleCreator } from 'react-state-helpers';
 
 interface IOwnProps {

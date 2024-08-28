@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import { titleize } from 'inflected';
 import { ResourceObject } from 'jsonapi-typescript';
-
 import { attributesFor } from '@data';
 
 interface IProps<T> {

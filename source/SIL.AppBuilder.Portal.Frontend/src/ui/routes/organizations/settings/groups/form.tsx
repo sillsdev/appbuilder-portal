@@ -4,9 +4,7 @@ import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { IProvidedProps as IDataActionsProps } from '@data/containers/resources/group/with-data-actions';
 import { isEmpty } from '@lib/collection';
-
 import { GroupResource, attributesFor } from '@data';
-
 import { Mut, mutCreator } from 'react-state-helpers';
 
 interface IOwnProps {

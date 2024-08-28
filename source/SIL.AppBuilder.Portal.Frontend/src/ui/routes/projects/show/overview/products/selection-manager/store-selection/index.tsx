@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Modal } from 'semantic-ui-react';
 import CloseIcon from '@material-ui/icons/Close';
-
 import {
   ProductDefinitionResource,
   StoreTypeResource,
@@ -9,7 +8,6 @@ import {
   attributesFor,
   OrganizationStoreResource,
 } from '@data';
-
 import { i18nProps, useTranslations } from '@lib/i18n';
 
 import StoreSelect from './multi-select';

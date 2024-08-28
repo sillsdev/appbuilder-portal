@@ -7,14 +7,11 @@ import {
   setupRequestInterceptor,
   useFakeAuthentication,
 } from 'tests/helpers/index';
+import i18n from '@translations';
 
 import { MultiSelectInteractor } from '~/ui/components/inputs/multi-select/-page';
-
 import { ProductsInteractor } from '~/ui/routes/projects/show/overview/products/-page.ts';
-
 import { ProductMultiSelectInteractor } from '~/ui/routes/projects/show/overview/products/-multi';
-
-import i18n from '@translations';
 
 describe('Acceptance | Project View | Products With Stores', () => {
   useFakeAuthentication();

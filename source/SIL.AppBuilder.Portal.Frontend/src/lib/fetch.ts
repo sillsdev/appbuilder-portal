@@ -1,7 +1,7 @@
+import { isTesting } from '@env';
+
 import { getToken } from './auth0';
 import { getCurrentOrganizationId } from './current-organization';
-
-import { isTesting } from '@env';
 
 export const tryParseJson = async (response) => {
   const text = await response.text();

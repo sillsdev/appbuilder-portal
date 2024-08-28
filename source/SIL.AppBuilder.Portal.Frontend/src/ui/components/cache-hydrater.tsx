@@ -1,13 +1,11 @@
-import { useCurrentUser } from '~/data/containers/with-current-user';
-
 import { useOrbit, pushPayload } from 'react-orbitjs';
 import { useEffect, useState } from 'react';
-
-import { defaultHeaders } from '~/lib/fetch';
+import React from 'react';
 
 import { PageLoader } from './loaders';
 
-import React from 'react';
+import { defaultHeaders } from '~/lib/fetch';
+import { useCurrentUser } from '~/data/containers/with-current-user';
 
 export function CacheHydrater({ children }) {
   const { dataStore } = useOrbit();

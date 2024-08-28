@@ -4,9 +4,7 @@ import { withData as withOrbit } from 'react-orbitjs';
 //import { titleize } from 'inflected';
 import { attributesFor } from '@data/helpers';
 import ProductIcon from '@ui/components/product-icon';
-
 import { ProductResource, ProductDefinitionResource } from '@data';
-
 import { withMomentTimezone, IProvidedProps as TimeProps } from '@lib/with-moment-timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { applyNumberOfTimes } from '@lib/collection';

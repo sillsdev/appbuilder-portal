@@ -4,9 +4,7 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
 import { StoreTypeAttributes } from '@data/models/store-type';
-
 import { attributesFor, StoreTypeResource } from '@data';
-
 import { mutCreator, toggleCreator, Mut, Toggle } from 'react-state-helpers';
 
 interface IOwnProps {

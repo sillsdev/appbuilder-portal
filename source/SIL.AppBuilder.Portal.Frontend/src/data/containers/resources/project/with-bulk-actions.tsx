@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
-
 import { ProjectResource, firstError, pushPayload, PUSH_PAYLOAD_OPERATION } from '@data';
-
 import { patch as authenticatedPatch, tryParseJson } from '@lib/fetch';
 import { idFromRecordIdentity } from '@data/store-helpers';
 import { ServerError } from '@data/errors/server-error';
@@ -113,9 +111,5 @@ export function withBulkActions<WrappedProps>(WrappedComponent) {
     }
   }
 
-  return compose(
-    withTranslations,
-    withOrbit({}),
-    withMomentTimezone
-  )(DataWrapper);
+  return compose(withTranslations, withOrbit({}), withMomentTimezone)(DataWrapper);
 }

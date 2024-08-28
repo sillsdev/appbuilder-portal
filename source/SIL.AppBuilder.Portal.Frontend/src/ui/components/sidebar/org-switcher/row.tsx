@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Menu } from 'semantic-ui-react';
-
 import { attributesFor } from '@data';
-
 import { OrganizationResource } from '@data/models/organization';
 
 export interface IProps {

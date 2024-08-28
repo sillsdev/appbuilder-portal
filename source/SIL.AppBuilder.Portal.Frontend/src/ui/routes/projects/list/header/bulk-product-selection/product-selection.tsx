@@ -1,27 +1,19 @@
 import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-
-import { rowSelectionsFor } from '~/redux-store/data/selectors';
-
-import { ProjectResource, ProductDefinitionResource } from '~/data';
-
 import { useOrbit, attributesFor, idFromRecordIdentity } from 'react-orbitjs';
 import Store from '@orbit/store';
 import { Checkbox } from 'semantic-ui-react';
 import ProductIcon from '@ui/components/product-icon';
 
-import { AsyncWaiter } from '~/data/async-waiter';
-
-import { post as authenticatedPost, tryParseJson } from '~/lib/fetch';
-
 import { useSelectionManager } from './selection-reducer';
 
+import { post as authenticatedPost, tryParseJson } from '~/lib/fetch';
+import { ProjectResource, ProductDefinitionResource } from '~/data';
+import { AsyncWaiter } from '~/data/async-waiter';
+import { rowSelectionsFor } from '~/redux-store/data/selectors';
 import { ErrorBoundary, ErrorMessage } from '~/ui/components/errors';
-
 import { GenericJsonApiError } from '~/data/errors/generic-jsonapi-error';
-
 import { useTranslations } from '~/lib/i18n';
-
 import { compareVia } from '~/lib/collection';
 
 interface Permissions {

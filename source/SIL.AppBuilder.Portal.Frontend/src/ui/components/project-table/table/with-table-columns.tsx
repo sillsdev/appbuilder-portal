@@ -114,11 +114,6 @@ export function withTableColumns(options: IOptions) {
       }
     }
 
-    return compose(
-      connect(
-        mapStateToProps,
-        mapDispatchToProps
-      )
-    )(WrapperComponent);
+    return compose(connect(mapStateToProps, mapDispatchToProps))(WrapperComponent);
   };
 }

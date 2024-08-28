@@ -4,9 +4,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import { withData, ILegacyProvidedProps } from 'react-orbitjs';
 import { compose } from 'recompose';
-
 import { defaultOptions } from '@data';
-
 import { getCurrentOrganizationId } from '@lib/current-organization';
 import { i18nProps, withTranslations } from '@lib/i18n';
 import * as toast from '@lib/toast';

@@ -3,27 +3,18 @@ import { useOrbit, useCache, attributesFor } from 'react-orbitjs';
 import Store from '@orbit/store';
 import { Link } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
-
-import { PageLoader } from '~/ui/components/loaders';
-
 import * as env from '@env';
-
-import { useTranslations } from '~/lib/i18n';
-
-import { useTimezoneFormatters } from '~/lib/hooks';
-
-import { ProductResource, idFromRecordIdentity } from '~/data';
-
-import { useCurrentUser } from '~/data/containers/with-current-user';
-
-import { useUserTaskHelpers } from '~/data/containers/resources/user-task';
-
 import { get as authenticatedGet } from '@lib/fetch';
-
-import { handleResponse } from '~/data/containers/with-current-user/fetcher';
 
 import { useCurrentUserTask } from './with-data';
 
+import { PageLoader } from '~/ui/components/loaders';
+import { useTranslations } from '~/lib/i18n';
+import { useTimezoneFormatters } from '~/lib/hooks';
+import { ProductResource, idFromRecordIdentity } from '~/data';
+import { useCurrentUser } from '~/data/containers/with-current-user';
+import { useUserTaskHelpers } from '~/data/containers/resources/user-task';
+import { handleResponse } from '~/data/containers/with-current-user/fetcher';
 import { useLiveData } from '~/data/live';
 
 interface IProps {

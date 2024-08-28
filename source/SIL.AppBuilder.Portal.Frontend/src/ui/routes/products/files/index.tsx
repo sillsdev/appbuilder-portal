@@ -7,8 +7,4 @@ import { withData } from './with-data';
 
 export const pathName = '/products/:id/files';
 
-export default compose(
-  withTranslations,
-  withCurrentUserContext,
-  withData
-)(Display);
+export default compose(withTranslations, withCurrentUserContext, withData)(Display);

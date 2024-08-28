@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { useOrbit, idFromRecordIdentity } from 'react-orbitjs';
 import { compareVia, isEmpty } from '@lib/collection';
-
 import { ProjectResource, ProductResource, OrganizationResource, attributesFor } from '@data';
-
 import { useTranslations } from '@lib/i18n';
 
 import ProductSelectionManager from './selection-manager';

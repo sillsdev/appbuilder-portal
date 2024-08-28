@@ -1,18 +1,13 @@
 import React from 'react';
-
 import { buildOptions, ProjectResource, query } from '@data';
-
 import { attributesFor, isRelatedRecord, relationshipFor } from '@data/helpers';
 import { useOrbit, useQuery } from 'react-orbitjs';
-
-import { PageLoader } from '~/ui/components/loaders';
-
-import { PageError } from '~/ui/components/errors';
-
 import { defaultSourceOptions, OrganizationResource } from '@data';
-
 import { TYPE_NAME as USER } from '@data/models/user';
 import { retrieveRelation } from '@data/containers/with-relationship';
+
+import { PageError } from '~/ui/components/errors';
+import { PageLoader } from '~/ui/components/loaders';
 
 interface IProps {
   project: ProjectResource;

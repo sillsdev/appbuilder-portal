@@ -7,7 +7,6 @@ import {
   IProvidedProps as IDataActionsProps,
 } from '@data/containers/resources/project/with-data-actions';
 import { withRelationships } from '@data/containers/with-relationship';
-
 import {
   ProductDefinitionResource,
   OrganizationResource,

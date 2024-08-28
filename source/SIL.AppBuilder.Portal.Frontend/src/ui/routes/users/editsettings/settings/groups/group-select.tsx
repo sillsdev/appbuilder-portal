@@ -2,9 +2,7 @@ import * as React from 'react';
 import { compose, withProps } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 import { compareVia } from '@lib/collection';
-
 import { GroupResource, attributesFor, OrganizationResource, UserResource } from '@data';
-
 import { Checkbox } from 'semantic-ui-react';
 import {
   withGroupMemberships,

@@ -1,7 +1,5 @@
 import { useOrbit, useQuery } from 'react-orbitjs';
-
 import { recordsWithIdIn, isRelatedTo, buildOptions } from '@data';
-
 import { OrganizationResource } from '@data/models/organization';
 import { GroupResource } from '@data/models/group';
 import { retrieveRelation } from '@data/containers/with-relationship';

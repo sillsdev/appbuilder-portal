@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { Route as ReactRouterRoute } from 'react-router-dom';
 
-import ErrorBoundary from '~/ui/components/errors/error-boundary';
-
 import { useRouter } from './hooks';
+
+import ErrorBoundary from '~/ui/components/errors/error-boundary';
 
 export function ScrollToTop({ children }) {
   const { location } = useRouter();

@@ -2,9 +2,7 @@ import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { titleize } from 'inflected';
-
 import { attributesFor, ProductDefinitionResource } from '@data';
-
 import { i18nProps } from '@lib/i18n';
 import { filterForValidAttributes } from '@lib/dom';
 

@@ -36,8 +36,4 @@ class NewStoreType extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withRouter,
-  withDataActions
-)(NewStoreType);
+export default compose(withTranslations, withRouter, withDataActions)(NewStoreType);

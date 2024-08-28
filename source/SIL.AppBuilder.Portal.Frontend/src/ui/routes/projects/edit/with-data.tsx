@@ -1,12 +1,9 @@
 import React from 'react';
 import { useQuery } from 'react-orbitjs';
-
 import { buildFindRecord, buildOptions } from '@data';
 
 import { PageLoader } from '~/ui/components/loaders';
-
 import { PageError } from '~/ui/components/errors';
-
 import { useRouter } from '~/lib/hooks';
 
 export function withData(WrappedComponent) {

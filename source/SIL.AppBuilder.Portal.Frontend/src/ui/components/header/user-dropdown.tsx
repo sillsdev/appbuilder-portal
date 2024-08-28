@@ -5,13 +5,9 @@ import { ResourceObject } from 'jsonapi-typescript';
 import { withRouter, RouteComponentProps, NavLink } from 'react-router-dom';
 import { getPictureUrl } from '@lib/auth0';
 import { UserAttributes } from '@data/models/user';
-
 import { USERS_TYPE, idFromRecordIdentity, withLoader } from '@data';
-
 import { withCurrentUserContext } from '@data/containers/with-current-user';
-
 import { withLogout, ILogoutProps } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 
 import './header.scss';

@@ -1,7 +1,5 @@
 import * as React from 'react';
-
 import { UserResource, RoleResource, attributesFor } from '@data';
-
 import { isEmpty, areResourceListsEqual, compareVia } from '@lib/collection';
 import { i18nProps } from '@lib/i18n';
 

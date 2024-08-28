@@ -1,18 +1,14 @@
 import React from 'react';
 import { useQuery } from 'react-orbitjs';
 import { paths } from '@ui/routes/admin/paths';
-
-import { useTranslations } from '~/lib/i18n';
-
 import * as toast from '@lib/toast';
 import { useDataActions } from '@data/containers/resources/store/use-data-actions';
 
-import { buildOptions, buildFindRecord } from '~/data';
-
 import Form from './-components/form';
 
+import { buildOptions, buildFindRecord } from '~/data';
+import { useTranslations } from '~/lib/i18n';
 import { useRouter } from '~/lib/hooks';
-
 import { RectLoader } from '~/ui/components/loaders';
 
 export default function EditForm() {

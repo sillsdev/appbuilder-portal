@@ -1,7 +1,5 @@
 import { compose } from 'recompose';
-
 import { withLoader, withError } from '@data';
-
 import { withUserTaskList } from '@data/containers/resources/user-task';
 
 import './tasks.scss';

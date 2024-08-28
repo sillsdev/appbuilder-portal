@@ -1,7 +1,5 @@
 import * as React from 'react';
-
 import { ProjectResource, attributesFor } from '@data';
-
 import { useTranslations } from '@lib/i18n';
 import TimezoneLabel from '@ui/components/labels/timezone';
 

@@ -1,6 +1,5 @@
 import { getToken } from '@lib/auth0';
 import { getCurrentOrganizationId } from '@lib/current-organization';
-
 import { api, isDevelopment } from '@env';
 
 // DWKit does not allow customization of their network requests.

@@ -1,9 +1,6 @@
 import { SingleResourceDoc } from 'jsonapi-typescript';
-
 import { UserResource } from '@data';
-
 import { USERS_TYPE } from '@data';
-
 import { UserAttributes } from '@data/models/user';
 
 export interface IFetchCurrentUserOptions {

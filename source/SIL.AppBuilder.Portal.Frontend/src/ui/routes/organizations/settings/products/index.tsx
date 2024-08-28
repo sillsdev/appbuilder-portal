@@ -4,14 +4,12 @@ import { Checkbox } from 'semantic-ui-react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
-
 import {
   OrganizationResource,
   OrganizationProductDefinitionResource,
   ProductDefinitionResource,
   attributesFor,
 } from '@data';
-
 import ProductDefinitionMultiSelect from '@ui/components/inputs/product-definition-multi-select';
 import { withTranslations, i18nProps } from '@lib/i18n';
 

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { useOrbit } from 'react-orbitjs';
-
 import { ProjectResource, attributesFor } from '@data';
-
 import { useTranslations } from '@lib/i18n';
 
 interface IProps {

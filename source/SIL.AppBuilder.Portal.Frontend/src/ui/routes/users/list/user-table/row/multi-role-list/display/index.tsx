@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { memo } from 'react';
 import { isEmpty } from '@lib/collection';
-
 import { OrganizationResource, UserResource, RoleResource } from '@data';
-
 import { i18nProps } from '@lib/i18n';
 
 import RoleListByOrganization from './role-list-by-organization';

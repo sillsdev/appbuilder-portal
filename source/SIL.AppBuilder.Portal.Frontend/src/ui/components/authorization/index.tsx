@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { ROLE } from '@data/models/role';
 import { withRole, IOptions } from '@data/containers/with-role';
+import { compose } from 'recompose';
 
 import {
   withCurrentOrganization,
   IProvidedProps as ICurrentOrgProps,
 } from '~/data/containers/with-current-organization';
-
-import { compose } from 'recompose';
 
 interface IRequireRoleProps {
   roleName: ROLE;

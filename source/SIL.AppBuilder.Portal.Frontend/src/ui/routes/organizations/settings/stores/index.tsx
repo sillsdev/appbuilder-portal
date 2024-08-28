@@ -3,9 +3,7 @@ import { match as Match } from 'react-router';
 import { compose, mapProps } from 'recompose';
 import { withOrbit } from 'react-orbitjs';
 import { OrganizationAttributes } from '@data/models/organization';
-
 import { OrganizationResource, OrganizationStoreResource, StoreResource } from '@data';
-
 import StoreMultiSelect from '@ui/components/inputs/store-multi-select';
 import { useTranslations } from '@lib/i18n';
 import { getPermissions } from '@lib/auth';

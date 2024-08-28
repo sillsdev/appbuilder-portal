@@ -8,10 +8,6 @@ import {
   IProvidedProps as IOrganizationProps,
 } from '@data/containers/resources/organization/with-data-actions';
 import { withTranslations, i18nProps } from '@lib/i18n';
-
-import OrganizationForm from '../common/form';
-import { listPathName } from '../index';
-
 import {
   query,
   withLoader,
@@ -20,6 +16,9 @@ import {
   OrganizationResource,
   UserResource,
 } from '@data';
+
+import OrganizationForm from '../common/form';
+import { listPathName } from '../index';
 
 interface IOwnProps {
   organization: OrganizationResource;

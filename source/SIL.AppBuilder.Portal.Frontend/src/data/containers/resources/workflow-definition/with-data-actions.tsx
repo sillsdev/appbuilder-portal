@@ -2,9 +2,7 @@ import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { create, update } from '@data/store-helpers';
-
 import { defaultOptions, WorkflowDefinitionResource, StoreTypeResource } from '@data';
-
 import { WorkflowDefinitionAttributes } from '@data/models/workflow-definition';
 
 export interface IProvidedProps {

@@ -36,8 +36,4 @@ class CreateOrganizationRoute extends React.Component<IProps & i18nProps> {
   }
 }
 
-export default compose(
-  requireAuth(),
-  withLayout,
-  withTranslations
-)(CreateOrganizationRoute);
+export default compose(requireAuth(), withLayout, withTranslations)(CreateOrganizationRoute);

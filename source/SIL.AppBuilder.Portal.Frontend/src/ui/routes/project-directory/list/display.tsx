@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Popup } from 'semantic-ui-react';
-
 import { OrganizationResource, GroupResource } from '@data';
-
 import { ISortProps } from '@data/containers/api/sorting';
 import { IPaginateProps } from '@data/containers/api/pagination';
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';

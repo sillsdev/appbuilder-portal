@@ -3,13 +3,9 @@ import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { withData as withOrbit, WithDataProps } from 'react-orbitjs';
 import { GroupAttributes, GroupResource } from '@data/models/group';
-
 import { defaultOptions } from '@data';
-
 import { requireProps } from '@lib/debug';
-
 import { OrganizationResource } from '@data';
-
 import { TransformBuilder } from '@orbit/data';
 
 export interface IProvidedProps {
@@ -83,8 +79,5 @@ export function withDataActions(InnerComponent) {
     }
   }
 
-  return compose(
-    withOrbit({}),
-    requireProps('organization')
-  )(DataActionWrapper);
+  return compose(withOrbit({}), requireProps('organization'))(DataActionWrapper);
 }

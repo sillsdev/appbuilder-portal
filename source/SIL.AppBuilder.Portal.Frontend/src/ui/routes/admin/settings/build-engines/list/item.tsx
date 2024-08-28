@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
 import { attributesFor, SystemStatusResource } from '@data';
-
 import TimezoneLabel from '@ui/components/labels/timezone';
 import { withTranslations, i18nProps } from '@lib/i18n';
 

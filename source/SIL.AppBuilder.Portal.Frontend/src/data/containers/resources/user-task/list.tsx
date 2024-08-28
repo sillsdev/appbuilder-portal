@@ -1,12 +1,10 @@
 import React from 'react';
-
 import { buildOptions, UserTaskResource } from '@data';
-
 import { useQuery, useCache } from 'react-orbitjs';
 
-import { useLiveData } from '~/data/live';
-
 import { useCurrentUser } from '../../with-current-user';
+
+import { useLiveData } from '~/data/live';
 
 interface IOptions {
   include?: string[];

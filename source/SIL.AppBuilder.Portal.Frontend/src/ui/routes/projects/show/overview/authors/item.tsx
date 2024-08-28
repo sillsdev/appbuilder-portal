@@ -3,9 +3,7 @@ import { compose } from 'recompose';
 import CloseIcon from '@material-ui/icons/Close';
 import { ResourceObject } from 'jsonapi-typescript';
 import { AuthorAttributes } from '@data/models/author';
-
 import { attributesFor, AUTHORS_TYPE } from '@data';
-
 import {
   withDataActions,
   IProvidedProps,
@@ -57,7 +55,4 @@ class AuthorItem extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withDataActions
-)(AuthorItem);
+export default compose(withTranslations, withDataActions)(AuthorItem);

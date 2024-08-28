@@ -6,7 +6,6 @@ import pick from 'lodash/pick';
 import { Link } from 'react-router-dom';
 import { Checkbox } from 'semantic-ui-react';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import {
   UserResource,
   GroupResource,
@@ -15,7 +14,6 @@ import {
   attributesFor,
   idFromRecordIdentity,
 } from '@data';
-
 import { withRole, isUserASuperAdmin } from '@data/containers/with-role';
 import { ROLE } from '@data/models/role';
 import {

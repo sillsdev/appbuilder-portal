@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { WithDataProps } from 'react-orbitjs';
-
 import { ProductDefinitionResource, StoreTypeResource, StoreResource } from '@data';
-
 import { IProvidedProps as IDataActionsProps } from '@data/containers/resources/project/with-data-actions';
 import * as toast from '@lib/toast';
 import { i18nProps } from '@lib/i18n';

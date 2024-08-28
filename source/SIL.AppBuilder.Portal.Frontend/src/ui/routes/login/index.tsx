@@ -5,13 +5,11 @@ import { useCurrentUser } from '@data/containers/with-current-user';
 import { retrievePath } from '@lib/auth';
 import { useTranslations } from '@lib/i18n';
 import { hasVerifiedEmail } from '@lib/auth0';
-
-import { useRouter } from '~/lib/hooks';
-
 import * as paths from '@ui/routes/paths';
 
 import AutoMountingLock from './auth0-lock-auto-mount';
 
+import { useRouter } from '~/lib/hooks';
 import { useAuth } from '~/data/containers/with-auth';
 
 export default function LoginRoute() {

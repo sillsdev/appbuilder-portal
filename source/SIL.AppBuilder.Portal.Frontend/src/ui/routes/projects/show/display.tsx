@@ -1,9 +1,7 @@
 import React from 'react';
 import { match as Match } from 'react-router';
 import { idFromRecordIdentity, useOrbit } from 'react-orbitjs';
-
 import { ProjectResource } from '@data';
-
 import { useCurrentUser } from '@data/containers/with-current-user';
 import { useDataActions } from '@data/containers/resources/project/with-data-actions';
 import { useTranslations } from '@lib/i18n';

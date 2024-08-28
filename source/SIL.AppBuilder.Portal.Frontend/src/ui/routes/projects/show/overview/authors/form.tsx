@@ -5,21 +5,16 @@ import { isEmpty } from '@lib/collection';
 import { ResourceObject } from 'jsonapi-typescript';
 import { ProjectResource } from '@data/models/project';
 import { UserAttributes } from '@data/models/user';
-
 import { USERS_TYPE } from '@data';
-
 import {
   withDataActions,
   IProvidedProps,
 } from '@data/containers/resources/author/with-data-actions';
-
-import { withTranslations } from '~/lib/i18n';
-
 import { withCurrentUserContext } from '@data/containers/with-current-user';
 import AuthorSelect from '@ui/components/inputs/author-select';
 
+import { withTranslations } from '~/lib/i18n';
 import { OrganizationResource } from '~/data/models/organization';
-
 import { GroupResource } from '~/data/models/group';
 
 interface Params {
@@ -113,8 +108,4 @@ class AddAuthorForm extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withDataActions,
-  withCurrentUserContext
-)(AddAuthorForm);
+export default compose(withTranslations, withDataActions, withCurrentUserContext)(AddAuthorForm);

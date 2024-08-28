@@ -6,7 +6,6 @@ import { withTranslations, i18nProps } from '@lib/i18n';
 import { isEmpty } from '@lib/collection';
 import * as toast from '@lib/toast';
 import { OrganizationAttributes } from '@data/models/organization';
-
 import {
   query,
   buildOptions,

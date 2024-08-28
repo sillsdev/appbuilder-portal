@@ -8,11 +8,10 @@ import {
   IProvidedProps,
 } from '@data/containers/resources/group/with-data-actions';
 import { Toggle, toggleCreator } from 'react-state-helpers';
+import { withLoader, GroupResource, attributesFor } from '@data';
 
 import Form from './form';
 import List from './list';
-
-import { withLoader, GroupResource, attributesFor } from '@data';
 
 export const pathName = '/organizations/:orgId/settings/groups';
 

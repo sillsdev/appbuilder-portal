@@ -2,9 +2,7 @@ import { RouteChildrenProps } from 'react-router';
 import { connect } from 'react-redux';
 import { compose, withProps, branch } from 'recompose';
 import { State } from '@store/reducers';
-
 import { withLoader, idFromRecordIdentity } from '@data';
-
 import { setCurrentOrganization } from '@store/data';
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 import { withRelationships } from '@data/containers/with-relationship';

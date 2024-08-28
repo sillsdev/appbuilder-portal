@@ -2,9 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 
 import { useRouter } from '~/lib/hooks';
-
 import { storePath } from '~/lib/auth';
-
 import { useAuth } from '~/data/containers/with-auth';
 
 export function VerifyAccess() {

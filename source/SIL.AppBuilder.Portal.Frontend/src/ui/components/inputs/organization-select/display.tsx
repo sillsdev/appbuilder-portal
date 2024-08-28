@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-
 import { OrganizationResource } from '@data';
-
 import { attributesFor } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { filterForValidAttributes } from '@lib/dom';
 

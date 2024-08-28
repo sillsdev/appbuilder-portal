@@ -22,7 +22,4 @@ class OrgMembershipChanged extends React.Component<IProps> {
   }
 }
 
-export default compose<IProps, {}>(
-  withTranslations,
-  withLogout
-)(OrgMembershipChanged);
+export default compose<IProps, {}>(withTranslations, withLogout)(OrgMembershipChanged);

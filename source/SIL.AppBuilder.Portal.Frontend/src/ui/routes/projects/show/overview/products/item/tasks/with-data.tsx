@@ -1,7 +1,6 @@
 import { useOrbit, useCache } from 'react-orbitjs';
 
 import { ProductResource, TaskResource } from '~/data';
-
 import { useCurrentUser } from '~/data/containers/with-current-user';
 
 interface IProvidedDataProps {

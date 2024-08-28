@@ -7,11 +7,10 @@ import {
   IProvidedProps as IStoreTypeProps,
 } from '@data/containers/resources/store-type/with-data-actions';
 import { withTranslations, i18nProps } from '@lib/i18n';
+import { query, withLoader, buildOptions, buildFindRecord, StoreTypeResource } from '@data';
 
 import StoreTypeForm from '../common/form';
 import { listPathName } from '../index';
-
-import { query, withLoader, buildOptions, buildFindRecord, StoreTypeResource } from '@data';
 
 interface IOwnProps {
   productDefinition: StoreTypeResource;

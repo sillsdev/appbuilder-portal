@@ -36,8 +36,5 @@ export function withSettings(WrappedComponent) {
     }
   }
 
-  return compose(
-    withDataActions,
-    withTranslations
-  )(DataWrapper);
+  return compose(withDataActions, withTranslations)(DataWrapper);
 }

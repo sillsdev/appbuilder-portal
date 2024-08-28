@@ -4,9 +4,7 @@ import { compose } from 'recompose';
 import { requireAuth } from '@lib/auth';
 import { patch, tryParseJson } from '@lib/fetch';
 import { pathName as notFoundPath } from '@ui/routes/errors/not-found';
-
 import { pushPayload, firstError } from '@data';
-
 import { withCurrentUserContext, ICurrentUserProps } from '@data/containers/with-current-user';
 import { RedeemOrganizationMembershipInviteError } from '@data/errors/redeem-organization-membership-invite-error';
 

@@ -1,5 +1,4 @@
 import { compose } from 'recompose';
-
 import { query, buildOptions, RoleResource } from '@data';
 
 export interface IProvidedProps {

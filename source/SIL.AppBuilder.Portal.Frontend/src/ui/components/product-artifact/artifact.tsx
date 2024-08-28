@@ -1,9 +1,7 @@
 import * as React from 'react';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
-
 import { ProductArtifactResource, attributesFor } from '@data';
-
 import FileSize from '@ui/components/labels/file-size';
 import TimezoneLabel from '@ui/components/labels/timezone';
 

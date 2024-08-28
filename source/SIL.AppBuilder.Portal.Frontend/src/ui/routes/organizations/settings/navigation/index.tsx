@@ -35,7 +35,4 @@ class Navigation extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withRouter,
-  withTranslations
-)(Navigation);
+export default compose(withRouter, withTranslations)(Navigation);

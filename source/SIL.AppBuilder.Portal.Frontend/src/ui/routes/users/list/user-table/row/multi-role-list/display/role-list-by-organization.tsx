@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { withOrbit, attributesFor } from 'react-orbitjs';
-
 import { UserResource, RoleResource, OrganizationResource, UserRoleResource } from '@data';
 
 import ActiveRolesDisplay from './active-roles-display';

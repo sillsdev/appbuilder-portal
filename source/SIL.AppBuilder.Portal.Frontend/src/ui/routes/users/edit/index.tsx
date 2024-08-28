@@ -3,9 +3,7 @@ import * as toast from '@lib/toast';
 import { compose } from 'recompose';
 import { WithDataProps } from 'react-orbitjs';
 import { withTranslations, i18nProps } from '@lib/i18n';
-
 import { UserResource, update } from '@data';
-
 import { ROLE } from '@data/models/role';
 import { withRole } from '@data/containers/with-role';
 import { UserAttributes } from '@data/models/user';

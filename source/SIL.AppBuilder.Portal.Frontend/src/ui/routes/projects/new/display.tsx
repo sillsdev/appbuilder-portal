@@ -7,12 +7,10 @@ import { isEmpty } from '@lib/collection';
 import ApplicationTypeSelect from '@ui/components/inputs/application-type-select';
 import GroupSelect from '@ui/components/inputs/group-select';
 import LocaleInput from '@ui/components/inputs/locale-input';
+import { idFromRecordIdentity, useOrbit } from 'react-orbitjs/dist';
 
 import { useRouter, useToggle } from '~/lib/hooks';
-
 import { withValue } from '~/lib/dom';
-
-import { idFromRecordIdentity, useOrbit } from 'react-orbitjs/dist';
 
 export default function Display({ currentOrganizationId, currentOrganization, create }) {
   const { history } = useRouter();

@@ -3,9 +3,7 @@ import { compose } from 'recompose';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import * as moment from 'moment';
 import debounce from 'lodash/debounce';
-
 import { OrganizationResource, idFromRecordIdentity } from '@data';
-
 import { TYPE_NAME as ORGANIZATION } from '@data/models/organization';
 import { IFilterProps } from '@data/containers/api/with-filtering';
 import {
@@ -165,7 +163,4 @@ class Filter extends React.Component<IProps, IState> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withCurrentOrganization
-)(Filter);
+export default compose(withTranslations, withCurrentOrganization)(Filter);

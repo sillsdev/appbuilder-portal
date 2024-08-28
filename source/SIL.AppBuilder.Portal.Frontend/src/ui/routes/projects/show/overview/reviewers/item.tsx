@@ -3,11 +3,8 @@ import { compose } from 'recompose';
 import CloseIcon from '@material-ui/icons/Close';
 import { ResourceObject } from 'jsonapi-typescript';
 import { ReviewerAttributes } from '@data/models/reviewer';
-
 import { attributesFor } from '@data';
-
 import { REVIEWERS_TYPE } from '@data';
-
 import {
   withDataActions,
   IProvidedProps,
@@ -54,7 +51,4 @@ class ReviewerItem extends React.Component<IProps> {
   }
 }
 
-export default compose(
-  withTranslations,
-  withDataActions
-)(ReviewerItem);
+export default compose(withTranslations, withDataActions)(ReviewerItem);

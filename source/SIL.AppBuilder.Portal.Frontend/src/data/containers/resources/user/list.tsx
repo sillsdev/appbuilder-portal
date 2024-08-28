@@ -1,5 +1,4 @@
 import { query, buildOptions, UserResource } from '@data';
-
 import { IProvidedProps as IFilterProps } from '@data/containers/api/with-filtering';
 import { IPaginateProps } from '@data/containers/api/pagination';
 import { ISortProps } from '@data/containers/api/sorting';

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { compose } from 'recompose';
-
 import { ProjectResource, AuthorResource } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { WithDataProps } from 'react-orbitjs';
 
@@ -60,7 +58,4 @@ class Authors extends React.Component<IProps> {
   }
 }
 
-export default compose<IProps, INeededProps>(
-  withTranslations,
-  withAuthors
-)(Authors);
+export default compose<IProps, INeededProps>(withTranslations, withAuthors)(Authors);

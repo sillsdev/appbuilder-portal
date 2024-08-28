@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { useOrbit } from 'react-orbitjs';
 import * as toast from '@lib/toast';
-
 import { defaultOptions } from '@data';
-
 import { OrganizationInviteAttributes, TYPE_NAME } from '@data/models/organization-invite';
 import { useQueryParams } from '@lib/query-string';
 import { useTranslations } from '@lib/i18n';

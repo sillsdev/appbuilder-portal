@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { useOrbit } from 'react-orbitjs';
-
 import { ProductResource, ProductDefinitionResource, attributesFor, TaskResource } from '@data';
-
 import StoreIcon from '@material-ui/icons/StoreTwoTone';
 import ProductIcon from '@ui/components/product-icon';
 import ProductLink from '@ui/components/product-link';
@@ -10,9 +8,9 @@ import TimezoneLabel from '@ui/components/labels/timezone';
 import { isEmpty } from '@lib/collection';
 import { useTranslations } from '@lib/i18n';
 
-import ItemActions from '~/ui/components/product-artifact/actions';
-
 import ProductTasksForCurrentUser from './tasks';
+
+import ItemActions from '~/ui/components/product-artifact/actions';
 
 interface IOwnProps {
   includeHeader?: boolean;

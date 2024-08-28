@@ -2,11 +2,10 @@ import React, { useCallback } from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import { useDispatch } from 'react-redux';
 import LocaleSwitch from '@ui/components/inputs/locale-switch';
+import { showSidebar as showSidebarInStore } from '@store/user-interface';
 
 import Notifications from './notifications';
 import UserDropdown from './user-dropdown';
-
-import { showSidebar as showSidebarInStore } from '@store/user-interface';
 
 import { useRouter } from '~/lib/hooks';
 

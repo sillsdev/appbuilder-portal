@@ -1,14 +1,13 @@
 import React from 'react';
 import { useEffect, useCallback } from 'react';
 import { attributesFor } from 'react-orbitjs/dist';
-
-import { OrganizationResource } from '~/data';
-
 import { compareVia } from '@lib/collection';
 import { RectLoader } from '@ui/components/loaders';
 
 import Display from './display';
 import { useScopeGroupData } from './with-data';
+
+import { OrganizationResource } from '~/data';
 
 interface INeededProps {
   scopeToCurrentUser?: boolean;

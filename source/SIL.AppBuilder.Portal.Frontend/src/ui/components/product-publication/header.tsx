@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { titleize } from 'inflected';
-
 import { attributesFor } from '@data';
-
 import { useTranslations } from '@lib/i18n';
 
 function humanReadableName(productDefinition) {

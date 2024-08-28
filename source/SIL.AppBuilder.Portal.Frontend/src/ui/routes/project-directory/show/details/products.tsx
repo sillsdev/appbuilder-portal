@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { compose } from 'recompose';
 import { withData as withOrbit } from 'react-orbitjs';
-
 import { ProjectResource, ProductResource } from '@data';
-
 import { withTranslations, i18nProps } from '@lib/i18n';
 import ProductArtifact from '@ui/components/product-artifact';
 

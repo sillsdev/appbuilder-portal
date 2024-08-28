@@ -2,17 +2,14 @@ import * as React from 'react';
 import { Checkbox } from 'semantic-ui-react';
 import { withTranslations, i18nProps } from '@lib/i18n';
 import { ISortProps } from '@data/containers/api/sorting';
+import { COLUMN_KEY, ALL_CHECKBOX_STATE } from '@ui/components/project-table';
+import { ProjectResource } from '@data';
 
 import { IProvidedProps as ITableRows } from '../with-table-rows';
+import { IProvidedProps, IColumn } from '../with-table-columns';
 
 import { UpArrow, DownArrow } from './sort-arrows';
 import ColumnSelector from './column-selector';
-
-import { IProvidedProps, IColumn } from '../with-table-columns';
-
-import { COLUMN_KEY, ALL_CHECKBOX_STATE } from '@ui/components/project-table';
-
-import { ProjectResource } from '@data';
 
 interface IOwnProps {
   projects: ProjectResource[];

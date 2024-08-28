@@ -21,7 +21,4 @@ class VerifyEmail extends React.Component<IProps> {
   }
 }
 
-export default compose<IProps, {}>(
-  withTranslations,
-  withLogout
-)(VerifyEmail);
+export default compose<IProps, {}>(withTranslations, withLogout)(VerifyEmail);
