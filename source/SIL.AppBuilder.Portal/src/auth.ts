@@ -2,6 +2,7 @@ import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@a
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -44,11 +45,10 @@ const config: SvelteKitAuthConfig = {
       // safest method is just handle such values in session below (see user.roles)
       // user.isSuperAdmin is a special case handled here to give the /admin/jobs route
       // access to see if the user has permission to see the BullMQ bull-board queue
-      console.log('SVELTE @jwt', token);
       if (!profile) return token;
       const dbUser = await DatabaseWrites.users.getOrCreateUser(profile);
       token.userId = dbUser.Id;
-      token.isSuperAdmin = await isUserSuperAdmin(dbUser.Id);
+      token.isSuperAdmin = !!dbUser.UserRoles.find((r) => r.RoleId === RoleId.SuperAdmin);
       return token;
     },
     async session({ session, token }) {
