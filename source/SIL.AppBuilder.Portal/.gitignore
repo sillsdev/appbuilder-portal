@@ -8,5 +8,5 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 src/lib/langtags.json
-node-server/*.js
-common/*.js
+node-server/**/*.js
+common/**/*.js

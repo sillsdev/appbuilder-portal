@@ -1,5 +1,5 @@
 import { prisma } from 'sil.appbuilder.portal.common';
-import { getOrganizationsForUser } from 'sil.appbuilder.portal.common/prisma';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
@@ -9,6 +9,29 @@ export const load: LayoutServerLoad = async (event) => {
       UserId: userId
     }
   });
-  const organizations = await getOrganizationsForUser(userId);
+  const user = await prisma.users.findUnique({
+    where: {
+      Id: userId
+    },
+    include: { UserRoles: true, Organizations: true }
+  });
+  const organizations = user?.UserRoles.find((roleDef) => roleDef.RoleId === RoleId.SuperAdmin)
+    ? await prisma.organizations.findMany({
+      include: {
+        Owner: true
+      }
+    })
+    : await prisma.organizations.findMany({
+      where: {
+        OrganizationMemberships: {
+          every: {
+            UserId: userId
+          }
+        }
+      },
+      include: {
+        Owner: true
+      }
+    });
   return { organizations, numberOfTasks };
 };
