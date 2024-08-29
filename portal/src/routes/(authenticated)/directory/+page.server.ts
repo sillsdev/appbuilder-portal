@@ -6,7 +6,6 @@ import type { PageServerLoad } from './$types';
 export const load = (async ({ locals }) => {
   const userId = (await locals.auth())?.user.userId;
   if (!userId) return error(400);
-  // const orgs = await getOrganizationsForUser(userId);
   const projects = await prisma.projects.findMany({
     where: {
       IsPublic: true

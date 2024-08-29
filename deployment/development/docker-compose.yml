@@ -16,6 +16,7 @@ volumes:
   redis-data:
   outdir:
 
+
 services:
   db:
     image: postgres:10
@@ -98,8 +99,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5173:3000"
-    env_file: .env
+    env_file: portal/.env
     environment:
+      VITE_DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
       # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
       ORIGIN: "http://localhost:5173"
   redis:

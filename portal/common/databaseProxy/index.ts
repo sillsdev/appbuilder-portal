@@ -28,6 +28,8 @@ const handlers = {
 const obj: DataType = {};
 for (const prop in Prisma.ModelName) {
   const uncapitalized = prop[0].toLowerCase() + prop.substring(1);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   obj[uncapitalized] = prisma[uncapitalized];
 }
 

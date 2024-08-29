@@ -1,7 +1,6 @@
-import { updateProject } from '$lib/server/relationVerification/projects';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -57,7 +56,7 @@ export const actions: Actions = {
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (isNaN(parseInt(event.params.id))) return fail(400, { form, ok: false });
-    const success = await updateProject(parseInt(event.params.id), {
+    const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
       Name: form.data.name,
       GroupId: form.data.group,
       OwnerId: form.data.owner,
