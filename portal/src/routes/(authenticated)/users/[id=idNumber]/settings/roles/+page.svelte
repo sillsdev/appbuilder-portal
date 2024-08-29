@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
-  import { RoleId } from 'sil.appbuilder.portal.common/prismaTypes';
+  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 

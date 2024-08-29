@@ -1,7 +1,7 @@
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prismaTypes';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -117,33 +117,21 @@ export const actions = {
     if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(v.object({ id: v.string() })));
     if (!form.valid) return fail(400, { form, ok: false });
-    await prisma.userTasks.deleteMany({
-      where: {
-        ProductId: form.data.id
-      }
-    });
-    await prisma.products.delete({
-      where: {
-        Id: form.data.id
-      }
-    });
+    // delete all tasks for this product id, then delete the product
+    await DatabaseWrites.products.delete(form.data.id);
   },
   async deleteAuthor(event) {
     if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(deleteAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await prisma.authors.delete({
-      where: {
-        Id: form.data.id
-      }
-    });
+    await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
     return { form, ok: true };
   },
   async deleteReviewer(event) {
     if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(deleteReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await prisma.reviewers.delete({
+    await DatabaseWrites.reviewers.delete({
       where: {
         Id: form.data.id
       }
@@ -159,7 +147,7 @@ export const actions = {
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // Appears that CanUpdate is not used TODO
-    await prisma.authors.create({
+    await DatabaseWrites.authors.create({
       data: {
         ProjectId: parseInt(event.params.id),
         UserId: form.data.author
@@ -171,7 +159,7 @@ export const actions = {
     if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(addReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await prisma.reviewers.create({
+    await DatabaseWrites.reviewers.create({
       data: {
         Email: form.data.email,
         Name: form.data.name,
@@ -193,14 +181,9 @@ export const actions = {
       )
     );
     if (!form.valid) return fail(400, { form, ok: false });
-    await prisma.projects.update({
-      where: {
-        Id: parseInt(event.params.id)
-      },
-      data: {
-        IsPublic: form.data.isPublic,
-        AllowDownloads: form.data.allowDownload
-      }
+    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+      IsPublic: form.data.isPublic,
+      AllowDownloads: form.data.allowDownload
     });
     return { form, ok: true };
   }

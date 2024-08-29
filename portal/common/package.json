@@ -2,7 +2,10 @@
   "name": "sil.appbuilder.portal.common",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./prisma": "./public/prisma.js"
+  },
   "author": "",
   "type": "module",
   "license": "ISC",

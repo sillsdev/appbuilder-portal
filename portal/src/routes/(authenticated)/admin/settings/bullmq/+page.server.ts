@@ -1,7 +1,6 @@
 import { error } from '@sveltejs/kit';
-import { scriptoriaQueue } from 'sil.appbuilder.portal.common';
-import { ScriptoriaJobType } from 'sil.appbuilder.portal.common/BullJobTypes';
-import { RoleId } from 'sil.appbuilder.portal.common/prismaTypes';
+import { BullMQ, scriptoriaQueue } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -19,7 +18,7 @@ export const actions = {
     const form = await superValidate(event.request, valibot(secondsSchema));
     if (!form.valid) return fail(400, { ok: false });
     await scriptoriaQueue.add('Admin Test Task (No-op)', {
-      type: ScriptoriaJobType.Test,
+      type: BullMQ.ScriptoriaJobType.Test,
       time: form.data.seconds
     });
     return { ok: true };

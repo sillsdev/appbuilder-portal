@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prismaTypes';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { Actions, PageServerLoad } from './$types';
 
 // Not used, just for reference

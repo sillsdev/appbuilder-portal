@@ -1,8 +1,7 @@
 import type { Prisma } from '@prisma/client';
-import { prisma, scriptoriaQueue } from 'sil.appbuilder.portal.common';
-import {
-  ScriptoriaJobType
-} from 'sil.appbuilder.portal.common/BullJobTypes';
+import { ScriptoriaJobType } from '../BullJobTypes.js';
+import { scriptoriaQueue } from '../bullmq.js';
+import prisma from '../prisma.js';
 
 /**
  * For a project to be valid:
@@ -16,9 +15,7 @@ import {
  *  - Owner.OrganizationMemberships[].OrganizationId includes OrganizationId
  */
 
-export async function createProject(
-  projectData: Prisma.ProjectsCreateArgs['data']
-): Promise<boolean> {
+export async function create(projectData: Prisma.ProjectsCreateArgs['data']): Promise<boolean> {
   if (
     !validateProjectBase(
       projectData.OrganizationId ?? projectData.Organization.connect!.Id!,
@@ -42,7 +39,7 @@ export async function createProject(
 
 // Errors if projectData uses create or connectOrCreate
 // instead of using connect or setting the id directly
-export async function updateProject(
+export async function update(
   id: number,
   projectData: Prisma.ProjectsUpdateArgs['data']
 ): Promise<boolean> {
@@ -83,6 +80,11 @@ export async function updateProject(
   }
   return true;
 }
+
+// async function deleteProject(id: number): Promise<never> {
+//   throw new Error('Should not be deleting a project, only archiving');
+// }
+// export { deleteProject as delete };
 
 async function validateProjectBase(orgId: number, groupId: number, ownerId: number) {
   // Each of the criteria for a valid project just needs to checked if
