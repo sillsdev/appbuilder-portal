@@ -1,8 +1,7 @@
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
-import { getOrCreateUser } from 'sil.appbuilder.portal.common/prisma';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -33,7 +32,7 @@ const config: SvelteKitAuthConfig = {
   callbacks: {
     async signIn({ profile }) {
       if (!profile) return false;
-      await getOrCreateUser(profile);
+      await DatabaseWrites.users.getOrCreateUser(profile);
       return true;
     },
     async jwt({ profile, token }) {
@@ -47,7 +46,7 @@ const config: SvelteKitAuthConfig = {
       // access to see if the user has permission to see the BullMQ bull-board queue
       console.log('SVELTE @jwt', token);
       if (!profile) return token;
-      const dbUser = await getOrCreateUser(profile);
+      const dbUser = await DatabaseWrites.users.getOrCreateUser(profile);
       token.userId = dbUser.Id;
       token.isSuperAdmin = await isUserSuperAdmin(dbUser.Id);
       return token;

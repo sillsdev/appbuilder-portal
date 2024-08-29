@@ -1,5 +1,5 @@
 import { prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prismaTypes';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { LayoutServerLoad } from './$types';
 
 export const load = (async ({ params, locals }) => {
