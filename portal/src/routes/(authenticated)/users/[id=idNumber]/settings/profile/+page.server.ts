@@ -2,7 +2,7 @@ import { idSchema } from '$lib/valibot';
 import type { Session } from '@auth/sveltekit';
 import { error } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prismaTypes';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';

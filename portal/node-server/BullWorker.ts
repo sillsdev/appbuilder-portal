@@ -1,6 +1,5 @@
 import { Job, Worker } from 'bullmq';
-import { prisma } from 'sil.appbuilder.portal.common';
-import { ScriptoriaJob, ScriptoriaJobType } from 'sil.appbuilder.portal.common/BullJobTypes.js';
+import { BullMQ, prisma } from 'sil.appbuilder.portal.common';
 
 export abstract class BullWorker<T, R> {
   public worker: Worker;
@@ -14,20 +13,20 @@ export abstract class BullWorker<T, R> {
   abstract run(job: Job<T, R>): Promise<R>;
 }
 
-export class ScriptoriaWorker extends BullWorker<ScriptoriaJob, number> {
+export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
   constructor() {
     super('scriptoria');
   }
-  async run(job: Job<ScriptoriaJob, number, string>): Promise<number> {
+  async run(job: Job<BullMQ.ScriptoriaJob, number, string>): Promise<number> {
     switch (job.data.type) {
-    case ScriptoriaJobType.Test: {
+    case BullMQ.ScriptoriaJobType.Test: {
       job.updateProgress(50);
       const time = job.data.time;
       await new Promise((r) => setTimeout(r, 1000 * time));
       job.updateProgress(100);
       return 0;
     }
-    case ScriptoriaJobType.ReassignUserTasks:
+    case BullMQ.ScriptoriaJobType.ReassignUserTasks:
       // TODO: Noop
       // Should
       // Clear preexecuteentries (product transition steps)
