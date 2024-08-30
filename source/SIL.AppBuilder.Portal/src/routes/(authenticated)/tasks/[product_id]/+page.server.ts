@@ -13,6 +13,20 @@ type Fields = {
   langCode?: string;
 }
 
+type File = {
+  buildId: number;
+  type: string;
+  size: string;
+  url: string;
+  id: number;
+};
+
+type User = {
+  id: number;
+  name: string;
+  email: string;
+};
+
 export const load = (async ({ params, url, locals }) => {
   return {
     actions: [],
@@ -22,7 +36,7 @@ export const load = (async ({ params, url, locals }) => {
       name: "Test Project",
       description: "a test project"
     } as Fields,
-    files: [],
-    reviewers: []
+    files: [] as File[],
+    reviewers: [] as User[]
   }
 }) satisfies PageServerLoad;

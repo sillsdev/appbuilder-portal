@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import Waiting from "./instructions/Waiting.svelte";
+  import { instructions } from './instructions';
 
   export let data: PageData;
 </script>
@@ -104,8 +104,8 @@
     {/if}
   </div>
   {#if data.instructions}
-  <div class="py-2">
-    <Waiting />
+  <div class="py-2" id="instructions">
+    <svelte:component this={instructions[data.instructions]} />
   </div>
   {/if}
   {#if data.files?.length > 0}
@@ -162,8 +162,18 @@
   {/if}
 </div>
 
-<style>
+<style lang=postcss>
   .label-text {
     font-weight: bold;
+  }
+  /*this VVV technique allows css rules to break svelte scoping downwards*/
+  #instructions :global(ul) {
+    @apply pl-10 list-disc;
+  }
+  #instructions :global(ol) {
+    @apply pl-10 list-decimal;
+  }
+  #instructions :global(h3) {
+    @apply text-info;
   }
 </style>
