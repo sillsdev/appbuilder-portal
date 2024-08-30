@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -40,7 +40,7 @@ export const actions = {
         description,
         properties
       } = form.data;
-      await prisma.productDefinitions.create({
+      await DatabaseWrites.productDefinitions.create({
         data: {
           Name: name,
           TypeId: applicationType,

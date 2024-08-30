@@ -1,9 +1,11 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 
 import prisma from '../prisma.js';
+import * as groupMemberships from './GroupMemberships.js';
+import * as groups from './Groups.js';
 import * as products from './Products.js';
 import * as projects from './Projects.js';
-import * as users from './Users.js';
+import * as utility from './utility.js';
 
 // type PrismaTables = Pick<InstanceType<typeof PrismaClient>, Uncapitalize<Prisma.ModelName>>;
 // export class DefaultProxy<T extends PrismaTables[keyof PrismaTables]> {
@@ -22,7 +24,9 @@ type DataType = {
 const handlers = {
   products,
   projects,
-  users
+  groups,
+  groupMemberships,
+  utility
 };
 // @ts-expect-error this is in fact immediately populated
 const obj: DataType = {};
