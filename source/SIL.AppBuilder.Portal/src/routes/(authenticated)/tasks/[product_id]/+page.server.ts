@@ -1,4 +1,5 @@
 import type { PageServerLoad } from './$types';
+import { prisma } from 'sil.appbuilder.portal.common';
 
 type Fields = {
   user?: string;
@@ -28,10 +29,16 @@ type User = {
 };
 
 export const load = (async ({ params, url, locals }) => {
+  const userInfo = (await locals.auth())?.user;
+  console.log(userInfo);
+
+  const products = await prisma.products.findMany();
+  console.log(products);
   return {
     actions: [],
     taskTitle: "Waiting",
     instructions: "waiting",
+    //filter fields based on task
     fields: {
       name: "Test Project",
       description: "a test project"
