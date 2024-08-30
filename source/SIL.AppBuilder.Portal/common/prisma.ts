@@ -11,7 +11,8 @@ import { ReadonlyClient } from './ReadonlyPrisma.js';
 // other packages, but we keep the writable client behind the abstraction layer.
 
 if (!process.env.VITE_DATABASE_URL)
-  // @ts-expect-error This is necessary for browser, where import.meta.env will in fact exist
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore This is necessary for browser, where import.meta.env will in fact exist
   process.env.VITE_DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
 
 const prisma = new PrismaClient();

@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -42,7 +42,7 @@ export const actions = {
         workflowScheme,
         workflowType
       } = form.data;
-      await prisma.workflowDefinitions.create({
+      await DatabaseWrites.workflowDefinitions.create({
         data: {
           Name: name,
           Description: description,
