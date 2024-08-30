@@ -1,7 +1,7 @@
 import { base } from '$app/paths';
 import { idSchema } from '$lib/valibot';
 import { fail, redirect } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -65,7 +65,7 @@ export const actions = {
         description,
         properties
       } = form.data;
-      await prisma.productDefinitions.update({
+      await DatabaseWrites.productDefinitions.update({
         where: {
           Id: id
         },

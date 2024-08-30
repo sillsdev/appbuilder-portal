@@ -32,7 +32,7 @@ const config: SvelteKitAuthConfig = {
   callbacks: {
     async signIn({ profile }) {
       if (!profile) return false;
-      await DatabaseWrites.users.getOrCreateUser(profile);
+      await DatabaseWrites.utility.getOrCreateUser(profile);
       return true;
     },
     async jwt({ profile, token }) {
@@ -43,7 +43,7 @@ const config: SvelteKitAuthConfig = {
       // make sure to handle values that could change mid-session in both cases
       // safest method is just handle such values in session below (see user.roles)
       if (!profile) return token;
-      const dbUser = await DatabaseWrites.users.getOrCreateUser(profile);
+      const dbUser = await DatabaseWrites.utility.getOrCreateUser(profile);
       token.userId = dbUser.Id;
       return token;
     },

@@ -1,7 +1,7 @@
 import { base } from '$app/paths';
 import { idSchema } from '$lib/valibot';
 import { redirect } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -53,7 +53,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
     try {
       const { id, publicByDefault, products } = form.data;
-      await prisma.organizations.update({
+      await DatabaseWrites.organizations.update({
         where: {
           Id: id
         },
