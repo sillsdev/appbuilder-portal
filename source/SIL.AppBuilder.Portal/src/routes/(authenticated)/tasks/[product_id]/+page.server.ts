@@ -14,17 +14,17 @@ type Fields = {
 }
 
 type File = {
-  buildId: number;
-  type: string;
-  size: string;
-  url: string;
-  id: number;
+  BuildId: number;
+  Type: string;
+  Size: string;
+  URL: string;
+  Id: number;
 };
 
 type User = {
-  id: number;
-  name: string;
-  email: string;
+  Id: number;
+  Name: string;
+  Email: string;
 };
 
 export const load = (async ({ params, url, locals }) => {

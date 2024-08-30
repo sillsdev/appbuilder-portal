@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { instructions } from './instructions';
+  import SortTable from "./components/SortTable.svelte";
 
   export let data: PageData;
 </script>
@@ -111,53 +112,13 @@
   {#if data.files?.length > 0}
   <div class="overflow-x-auto max-h-96">
     <h3>Files</h3>
-    <table class="table">
-      <!-- head -->
-      <thead>
-        <tr>
-          <th>BuildId</th>
-          <th>Type</th>
-          <th>Size</th>
-          <th>Link</th>
-          <th>FileId</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each data.files as file}
-        <tr>
-          <td>{file.buildId}</td>
-          <td>{file.type}</td>
-          <td>{file.size}</td>
-          <td>{file.url}</td>
-          <td>{file.id}</td>
-        </tr>
-        {/each}
-      </tbody>
-    </table>
+    <SortTable items={data.files} />
   </div>
   {/if}
   {#if data.reviewers?.length > 0}
   <div class="overflow-x-auto max-h-96">
     <h3>Reviewers</h3>
-    <table class="table">
-      <!-- head -->
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Name</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each data.reviewers as reviewer}
-        <tr>
-          <td>{reviewer.id}</td>
-          <td>{reviewer.name}</td>
-          <td>{reviewer.email}</td>
-        </tr>
-        {/each}
-      </tbody>
-    </table>
+    <SortTable items={data.reviewers} />
   </div>
   {/if}
 </div>
