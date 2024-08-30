@@ -1,6 +1,6 @@
 import { idSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -42,7 +42,7 @@ export const actions = {
         useDefaultBuildEngine,
         websiteURL
       } = form.data;
-      await prisma.organizations.create({
+      await DatabaseWrites.organizations.create({
         data: {
           Name: name,
           BuildEngineApiAccessToken: buildEngineAccessToken,
