@@ -111,3 +111,12 @@ services:
     command: redis-server --appendonly yes --appendfilename appendonly.aof --maxmemory-policy noeviction
     volumes:
       - redis-data:/data
+  stg-tunnel:
+    build:
+      context: ./deployment/development
+      dockerfile: Dockerfile.stg-tunnel
+    ports:
+      - "8443:8443"
+    command: bash -c "ssh -N -L \*:8443:localhost:\$(ssh aps-stg \"docker ps --format '{{.Names}} {{.Ports}}' | grep -E 'buildengine.*web' | awk -F '->' '{print \\$1}' | awk -F ':' '{print \\$2}'\") aps-stg"
+    volumes:
+      - ~/.ssh:/root/.ssh
