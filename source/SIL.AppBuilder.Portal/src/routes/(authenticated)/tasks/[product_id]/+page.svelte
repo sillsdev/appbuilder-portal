@@ -8,7 +8,7 @@
 
 <div class="p-5">
   <form>
-    {#if data.actions?.length > 0}
+    {#if data.actions?.length}
     <div class="flex flex-row gap-x-3">
       {#each data.actions as action}
       <input type="submit" class="btn" value={action}>
@@ -109,13 +109,13 @@
     <svelte:component this={instructions[data.instructions]} />
   </div>
   {/if}
-  {#if data.files?.length > 0}
+  {#if data?.files?.length}
   <div class="overflow-x-auto max-h-96">
     <h3>Files</h3>
     <SortTable items={data.files} />
   </div>
   {/if}
-  {#if data.reviewers?.length > 0}
+  {#if data?.reviewers?.length}
   <div class="overflow-x-auto max-h-96">
     <h3>Reviewers</h3>
     <SortTable items={data.reviewers} />
