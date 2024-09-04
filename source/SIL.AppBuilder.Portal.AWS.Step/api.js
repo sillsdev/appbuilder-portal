@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -12,15 +13,17 @@ const {
 } = require("@aws-sdk/client-sfn"); // CommonJS import
 
 const client = new SFNClient({
-  endpoint: `http://localhost:8083`,
-  region: 'dummy',
+  endpoint: `https://states.${process.env.AWS_DEFAULT_REGION}.amazonaws.com`,
+  region: process.env.AWS_DEFAULT_REGION,
   credentials: {
-    accessKeyId: 'dummy',
-    secretAccessKey: 'dummy'
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   }
 });
 
 const machines = {};
+
+const machineARN = `arn:aws:states:${process.env.AWS_DEFAULT_REGION}:${process.env.AWS_ACCOUNT_ID}:stateMachine:Scriptoria-v2-Test-02`;
 
 const app = express();
 
@@ -38,6 +41,7 @@ app.get('/', (req, res) => {
 
 app.post('/echo', (req, res) => {
   console.log(req.body);
+  res.send(req.body);
 });
 
 async function listMachines() {
@@ -80,26 +84,5 @@ app.get('/flow/start/:name', async (req, res) => {
 app.post('/token', (req, res) => {
   console.log(req.body);
 });
-
-const creation = setInterval(async () => {
-  const res = await listMachines();
-  if (!res.error) {
-    console.log("Creating State Machine");
-    fs.readFile("flow.asl.json", (err, data) => {
-      client.send(new CreateStateMachineCommand({
-        name: "workflow",
-        definition: data.toString('utf8'),
-        roleArn: "arn:aws:iam::128716708097:role/StepFunctionsLambdaRole"
-      })).then((r) => {
-        const key = r.stateMachineArn.split(":").pop();
-        machines[key] = r.stateMachineArn;
-        console.log(machines);
-      }).catch((e) => {
-        console.log(e);
-      })
-    });
-    clearInterval(creation);
-  }
-}, 5000);
 
 app.listen(port, () => console.log(`Hello world app listening on port ${port}!`));
