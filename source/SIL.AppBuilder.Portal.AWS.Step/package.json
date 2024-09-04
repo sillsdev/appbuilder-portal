@@ -1,0 +1,18 @@
+{
+  "name": "aws-step",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "concurrently -p [{name}] --kill-others npm:step npm:api",
+    "step": "docker run -p 8083:8083 --env-file .env amazon/aws-stepfunctions-local",
+    "api": "node api.js"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-sfn": "^3.642.0",
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
