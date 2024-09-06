@@ -20,6 +20,7 @@ export const load = (async ({ params, url, locals }) => {
       Id: params.product_id
     },
     select: {
+      WorkflowBuildId: true,
       Project: {
         select: {
           Name: true,
@@ -61,20 +62,26 @@ export const load = (async ({ params, url, locals }) => {
           }
         }
       },
-      // later: include only when workflow state needs it
-      // later: ProductArtifacts should be filtered based on Products.WorkflowBuildId = ProductArtifacts.ProductBuildId
-      // later: some forms don't need all artifacts, some just need aab
-      ProductArtifacts: {
-        select: {
-          ProductBuildId: true,
-          ContentType: true,
-          FileSize: true,
-          Url: true,
-          Id: true
-        }
-      }
     }
   });
+  
+  // later: include only when workflow state needs it
+  const artifacts = await prisma.productArtifacts.findMany({
+    where: {
+      ProductId: params.product_id,
+      ProductBuild: {
+        BuildId: product?.WorkflowBuildId
+      }
+      // later: some forms don't need all artifacts, some just need aab
+    },
+    select: {
+      ProductBuildId: true,
+      ContentType: true,
+      FileSize: true,
+      Url: true,
+      Id: true
+    }
+  })
 
   return {
     actions: [],
@@ -94,7 +101,7 @@ export const load = (async ({ params, url, locals }) => {
       appType: product?.ProductDefinition.ApplicationTypes.Description,
       projectLanguageCode: product?.Project.Language
     } as Fields,
-    files: product?.ProductArtifacts,
+    files: artifacts,
     reviewers: product?.Project.Reviewers
   }
 }) satisfies PageServerLoad;
