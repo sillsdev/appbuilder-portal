@@ -1,7 +1,7 @@
 import ArrowBackIcon from './ArrowBackIcon.svelte';
-import DownArrow from './DownArrow.svelte';
+import ArrowDownIcon from './ArrowDownIcon.svelte';
 import HamburgerIcon from './HamburgerIcon.svelte';
 import LanguageIcon from './LanguageIcon.svelte';
-import UpArrow from './UpArrow.svelte';
+import ArrowUpIcon from './ArrowUpIcon.svelte';
 
-export { ArrowBackIcon, DownArrow, HamburgerIcon, LanguageIcon, UpArrow };
+export { ArrowBackIcon, ArrowDownIcon, HamburgerIcon, LanguageIcon, ArrowUpIcon };

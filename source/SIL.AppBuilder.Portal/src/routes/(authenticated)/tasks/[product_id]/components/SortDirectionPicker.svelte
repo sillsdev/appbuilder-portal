@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { DownArrow, UpArrow } from "$lib/icons";
+  import { ArrowDownIcon, ArrowUpIcon } from "$lib/icons";
 
-  export let current: boolean;
-  export let desc: boolean;
+  export let active: boolean;
+  export let descending: boolean;
+
+  //later: selecting one of these causes the relative sizes of the table headers to change, which looks really janky. I've tried fixing this, but have been unsuccessful. For now, at least it functions correctly, even if it doesn't look quite right.
 </script>
 
 <div class="form-control">
   <label>
-    <span class="{current? "":"hidden"}">
-      {#if desc}
-      <!-- down arrow -->
-      <DownArrow />
+    <span class="{active? "":"hidden"}">
+      {#if descending}
+      <ArrowDownIcon />
       {:else}
-      <!-- up arrow -->
-      <UpArrow />
+      <ArrowUpIcon />
       {/if}
     </span>
     <span class="label-text"><slot></slot></span>

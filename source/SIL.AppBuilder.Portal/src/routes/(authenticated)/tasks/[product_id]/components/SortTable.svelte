@@ -2,48 +2,50 @@
   import SortDirectionPicker from "./SortDirectionPicker.svelte";
   export let items: {[key: string]: any}[];
 
-  let current = "";
-  let desc: {[key: string]: boolean} = {};
-  $: console.log(desc);
-  $: console.log(current);
+  let current = ""; //current field being sorted
+  let descending = false;
 
   const handleClick = (key: string) => {
     if (current !== key) {
-      desc[current] = false;
-      desc[key] = false;
+      // change current field
+      descending = false;
       current = key;
     }
     else {
-      if (desc[current]) {
+      if (descending) {
+        // reset to sort default field
         handleClick("");
         return; //don't sort twice
       }
       else {
-        desc[current] = true;
+        descending = true;
       }
     }
-    const sKey = current || Object.keys(items[0])[0];
-    items = (typeof items[0][sKey] === 'string')?
+    // sort based on current field
+    // if blank, sort first field
+    const field = current || Object.keys(items[0])[0];
+    items = (typeof items[0][field] === 'string')?
+      // sort strings
       items.sort((a, b) => {
-        return desc[sKey] ?
-          b[sKey].localeCompare(a[sKey]):
-          a[sKey].localeCompare(b[sKey]);
+        return descending ?
+          b[field].localeCompare(a[field]):
+          a[field].localeCompare(b[field]);
       }):
+      // sort non-strings (i.e. numbers)
       items.sort((a, b) => {
-        return desc[sKey]?
-          b[sKey] - a[sKey]:
-          a[sKey] - b[sKey];
+        return descending?
+          b[field] - a[field]:
+          a[field] - b[field];
       });
   }
 </script>
 
 <table class="table">
-  <!-- head -->
   <thead>
     <tr>
       {#each Object.keys(items[0]) as key}
-      <th on:click|capture|stopPropagation={() => handleClick(key)}>
-        <SortDirectionPicker current={current === key} bind:desc={desc[key]}>
+      <th on:click={() => handleClick(key)}>
+        <SortDirectionPicker active={current === key} bind:descending={descending}>
           {key}
         </SortDirectionPicker>
       </th>
