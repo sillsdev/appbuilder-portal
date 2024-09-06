@@ -61,6 +61,9 @@ export const load = (async ({ params, url, locals }) => {
           }
         }
       },
+      // later: include only when workflow state needs it
+      // later: ProductArtifacts should be filtered based on Products.WorkflowBuildId = ProductArtifacts.ProductBuildId
+      // later: some forms don't need all artifacts, some just need aab
       ProductArtifacts: {
         select: {
           ProductBuildId: true,
