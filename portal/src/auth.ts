@@ -2,6 +2,7 @@ import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@a
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
 declare module '@auth/sveltekit' {
   interface Session {
