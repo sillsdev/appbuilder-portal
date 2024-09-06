@@ -2,24 +2,17 @@ import type { PageServerLoad } from './$types';
 import { prisma } from 'sil.appbuilder.portal.common';
 
 type Fields = {
-  user?: string;            //Product.Project.Owner.Name
-  email?: string;           //Product.Project.Owner.Email
-  name: string;             //Product.Project.Name
-  description: string;      //Product.Project.Description
-  store?: string;           //Product.Store.Description
-  listingLanguage?: string; //Product.StoreLanguage.Name
-  projectURL?: string;      //Product.Project.WorkflowAppProjectURL
-  product?: string;         //Product.ProductDefinition.Description
-  appType?: string;         //Product.ProductDefinition.ApplicationTypes.Description
-  langCode?: string;        //Product.Project.Language
+  ownerName?: string;           //Product.Project.Owner.Name
+  ownerEmail?: string;          //Product.Project.Owner.Email
+  projectName: string;          //Product.Project.Name
+  projectDescription: string;   //Product.Project.Description
+  storeDescription?: string;    //Product.Store.Description
+  listingLanguageCode?: string; //Product.StoreLanguage.Name
+  projectURL?: string;          //Product.Project.WorkflowAppProjectURL
+  productDescription?: string;  //Product.ProductDefinition.Description
+  appType?: string;             //Product.ProductDefinition.ApplicationTypes.Description
+  projectLanguageCode?: string; //Product.Project.Language
 }
-
-//replace with Product.Project.Reviewers
-type User = {
-  Id: number;
-  Name: string;
-  Email: string;
-};
 
 export const load = (async ({ params, url, locals }) => {
   const product = await prisma.products.findUnique({
@@ -87,16 +80,16 @@ export const load = (async ({ params, url, locals }) => {
     //filter fields/files/reviewers based on task once workflows are implemented
     //possibly filter in the original query to increase database efficiency
     fields: {
-      user: product?.Project.Owner.Name,
-      email: product?.Project.Owner.Email,
-      name: product?.Project.Name,
-      description: product?.Project.Description,
-      store: product?.Store?.Description,
-      listingLanguage: product?.StoreLanguage?.Name,
+      ownerName: product?.Project.Owner.Name,
+      ownerEmail: product?.Project.Owner.Email,
+      projectName: product?.Project.Name,
+      projectDescription: product?.Project.Description,
+      storeDescription: product?.Store?.Description,
+      listingLanguageCode: product?.StoreLanguage?.Name,
       projectURL: product?.Project.WorkflowAppProjectUrl,
-      product: product?.ProductDefinition.Name,
+      productDescription: product?.ProductDefinition.Name,
       appType: product?.ProductDefinition.ApplicationTypes.Description,
-      langCode: product?.Project.Language
+      projectLanguageCode: product?.Project.Language
     } as Fields,
     files: product?.ProductArtifacts,
     reviewers: product?.Project.Reviewers

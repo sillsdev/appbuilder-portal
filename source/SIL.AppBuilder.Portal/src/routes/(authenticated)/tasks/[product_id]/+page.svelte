@@ -27,19 +27,19 @@
     {data.taskTitle}
   </h2>
   <div>
-    {#if data.fields.user && data.fields.email}
+    {#if data.fields.ownerName && data.fields.ownerEmail}
     <div class="flex flex-col gap-x-3 w-full md:flex-row">
       <label class="form-control w-full md:w-2/4">
         <div class="label">
           <span class="label-text">User Name</span>
         </div>
-        <input type="text" class="input input-bordered w-full" readonly value={data.fields.user} />
+        <input type="text" class="input input-bordered w-full" readonly value={data.fields.ownerName} />
       </label>
       <label class="form-control w-full md:w-2/4">
         <div class="label">
           <span class="label-text">Email</span>
         </div>
-        <input type="text" class="input input-bordered w-full" readonly value={data.fields.email} />
+        <input type="text" class="input input-bordered w-full" readonly value={data.fields.ownerEmail} />
       </label>
     </div>
     {/if}
@@ -48,29 +48,29 @@
         <div class="label">
           <span class="label-text">Project Name</span>
         </div>
-        <input type="text" class="input input-bordered w-full" readonly value={data.fields.name} />
+        <input type="text" class="input input-bordered w-full" readonly value={data.fields.projectName} />
       </label>
       <label class="form-control w-full md:w-2/4">
         <div class="label">
           <span class="label-text">Project Description</span>
         </div>
-        <input type="text" class="input input-bordered w-full" readonly value={data.fields.description} />
+        <input type="text" class="input input-bordered w-full" readonly value={data.fields.projectDescription} />
       </label>
     </div>
-    {#if data.fields.store}
+    {#if data.fields.storeDescription}
     <div class="flex flex-col gap-x-3 md:flex-row">
       <label class="form-control w-full md:w-2/4">
         <div class="label">
           <span class="label-text">Store</span>
         </div>
-        <input type="text" class="input input-bordered w-full" readonly value={data.fields.store} />
+        <input type="text" class="input input-bordered w-full" readonly value={data.fields.storeDescription} />
       </label>
-      {#if data.fields.listingLanguage}
+      {#if data.fields.listingLanguageCode}
       <label class="form-control w-full md:w-2/4">
         <div class="label">
           <span class="label-text">Store Listing Language</span>
         </div>
-        <input type="text" class="input input-bordered w-full" readonly value={data.fields.listingLanguage} />
+        <input type="text" class="input input-bordered w-full" readonly value={data.fields.listingLanguageCode} />
       </label>
       {/if}
     </div>
@@ -83,12 +83,12 @@
       <input type="text" class="input input-bordered w-full" readonly value={data.fields.projectURL} />
     </label>
     {/if}
-    {#if data.fields.product && data.fields.appType && data.fields.langCode}
+    {#if data.fields.productDescription && data.fields.appType && data.fields.projectLanguageCode}
     <label class="form-control w-full">
       <div class="label">
         <span class="label-text">Product</span>
       </div>
-      <input type="text" class="input input-bordered w-full" readonly value={data.fields.product} />
+      <input type="text" class="input input-bordered w-full" readonly value={data.fields.productDescription} />
     </label>
     <label class="form-control w-full">
       <div class="label">
@@ -100,7 +100,7 @@
       <div class="label">
         <span class="label-text">Language Code</span>
       </div>
-      <input type="text" class="input input-bordered w-full" readonly value={data.fields.langCode} />
+      <input type="text" class="input input-bordered w-full" readonly value={data.fields.projectLanguageCode} />
     </label>
     {/if}
   </div>
