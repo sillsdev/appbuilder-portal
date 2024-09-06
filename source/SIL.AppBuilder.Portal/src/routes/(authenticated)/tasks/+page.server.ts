@@ -3,10 +3,6 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
   const session = await event.locals.auth();
-  //----temporary, remove later-----
-  const products = await prisma.products.findMany({ select: { Id: true }});
-  console.log(products);
-  //--------------------------------
   const tasks = await prisma.userTasks.findMany({
     where: {
       UserId: session?.user.userId
