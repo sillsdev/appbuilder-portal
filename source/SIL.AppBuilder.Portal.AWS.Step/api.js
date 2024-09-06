@@ -9,7 +9,8 @@ const {
   CreateStateMachineCommand,
   DescribeStateMachineCommand,
   ListStateMachinesCommand,
-  StartExecutionCommand
+  StartExecutionCommand,
+  SendTaskSuccessCommand
 } = require("@aws-sdk/client-sfn"); // CommonJS import
 
 const client = new SFNClient({
@@ -21,9 +22,11 @@ const client = new SFNClient({
   }
 });
 
-const machines = {};
+const machine = 'Scriptoria-v2-Test-02';
 
-const machineARN = `arn:aws:states:${process.env.AWS_DEFAULT_REGION}:${process.env.AWS_ACCOUNT_ID}:stateMachine:Scriptoria-v2-Test-02`;
+const jobs = [];
+
+const machineARN = `arn:aws:states:${process.env.AWS_DEFAULT_REGION}:${process.env.AWS_ACCOUNT_ID}:stateMachine:${machine}`;
 
 const app = express();
 
@@ -44,45 +47,43 @@ app.post('/echo', (req, res) => {
   res.send(req.body);
 });
 
-async function listMachines() {
-  try {
-    return await client.send(new ListStateMachinesCommand());
-  }
-  catch (e) {
-    console.log(e);
-    return {error: e};
-  }  
-}
-
-app.get('/machines', async (req, res) => {
-  res.send(await listMachines());
+app.get('/machine', async (req, res) => {
+  res.send(await client.send(new DescribeStateMachineCommand({stateMachineArn: machineARN})));
 });
 
-app.get('/machines/:name', async (req, res) => {
-  const name = req.params.name;
-
-  if (machines[name]) {
-    res.send(await client.send(new DescribeStateMachineCommand({stateMachineArn: machines[name]})));
-    return;
-  }
-
-  // Sending 404 when not found something is a good practice
-  res.status(404).send('State Machine not found');
-});
-
-app.get('/flow/start/:name', async (req, res) => {
-  const name = req.params.name;
-
-  if (!machines[name]) {
-    res.status(404).send('State Machine not found');
-    return;
-  }
-
-  res.send(await client.send(new StartExecutionCommand({stateMachineArn: machines[name]})));
+app.get('/flow/start', async (req, res) => {
+  res.send(await client.send(new StartExecutionCommand({stateMachineArn: machineARN})));
 });
 
 app.post('/token', (req, res) => {
   console.log(req.body);
+
+  jobs.push(req.body);
+
+  res.status(200).send("token received");
 });
+
+app.get('/count', (req, res) => {
+  res.send({count: jobs.length});
+})
+
+app.get('/execute', async (req, res) => {
+  try {
+    if (jobs.length) {
+      const job = jobs.shift();
+
+      const stat = await client.send(new SendTaskSuccessCommand({
+        taskToken: job.token,
+        output: JSON.stringify(job.data)
+      }));
+
+      console.log(stat);
+      res.send(stat);
+    }
+  } catch(e) {
+    console.log(e);
+    res.send(e);
+  }
+})
 
 app.listen(port, () => console.log(`Hello world app listening on port ${port}!`));
