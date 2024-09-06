@@ -27,7 +27,7 @@
               class="cursor-pointer"
               on:click={() =>
                 goto(
-                  `/flow/${task.Product.ProductDefinition.Workflow.WorkflowBusinessFlow}/${task.ProductId}`
+                  `/tasks/${task.Id}`
                 )}
             >
               <td>
