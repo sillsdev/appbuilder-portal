@@ -8,8 +8,8 @@ import type { Actions, PageServerLoad } from './$types';
 
 const addGroupSchema = v.object({
   id: idSchema,
-  name: v.nullable(v.string()),
-  abbreviation: v.nullable(v.string())
+  name: v.string(),
+  abbreviation: v.string()
 });
 const deleteGroupSchema = v.object({
   id: idSchema
@@ -37,19 +37,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
     try {
       const { id, name, abbreviation } = form.data;
-      await DatabaseWrites.organizations.update({
-        where: {
-          Id: id
-        },
-        data: {
-          Groups: {
-            create: {
-              Name: name,
-              Abbreviation: abbreviation
-            }
-          }
-        }
-      });
+      await DatabaseWrites.groups.createGroup(name, abbreviation, id);
       return { form, ok: true };
     } catch (e) {
       if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
@@ -61,12 +49,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
     try {
       const { id } = form.data;
-      await DatabaseWrites.groups.delete({
-        where: {
-          Id: id
-        }
-      });
-      return { form, ok: true };
+      return { form, ok: await DatabaseWrites.groups.deleteGroup(id) };
     } catch (e) {
       if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
       throw e;

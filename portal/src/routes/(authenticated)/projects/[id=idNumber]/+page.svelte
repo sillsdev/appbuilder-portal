@@ -363,6 +363,7 @@
         class="bg-base-300 card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full"
       >
         <!-- TODO: i18n -->
+        <!-- TODO: allow editing project owner and group from this page -->
         <h2>Settings</h2>
         <div class="flex flex-col py-4">
           <div class="flex flex-col place-content-between px-4">

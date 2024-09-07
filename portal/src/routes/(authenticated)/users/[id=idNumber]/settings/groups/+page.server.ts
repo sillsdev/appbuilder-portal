@@ -1,6 +1,6 @@
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -110,31 +110,7 @@ export const actions = {
       .filter((org) => superAdmin || adminRoles.find((r) => r.OrganizationId === org.id))
       .flatMap((org) => org.groups.map((group) => group));
     const uId = parseInt(event.params.id);
-    const existingGroups = (
-      await prisma.groupMemberships.findMany({
-        where: {
-          UserId: uId
-        }
-      })
-    ).map((g) => g.GroupId);
-    const newGroups = newRelationEntries.filter((entry) => !existingGroups.includes(entry));
-    const deleteGroups = existingGroups.filter((entry) => !newRelationEntries.includes(entry));
-    await prisma.$transaction([
-      prisma.groupMemberships.deleteMany({
-        where: {
-          OR: deleteGroups.map((d) => ({
-            GroupId: d,
-            UserId: uId
-          }))
-        }
-      }),
-      prisma.groupMemberships.createMany({
-        data: newGroups.map((n) => ({
-          GroupId: n,
-          UserId: uId
-        }))
-      })
-    ]);
-    return { form, ok: true };
+    const success = await DatabaseWrites.groupMemberships.updateUserGroups(uId, newRelationEntries);
+    return { form, ok: success };
   }
 } satisfies Actions;

@@ -1,5 +1,9 @@
 import prisma from '../prisma.js';
 
+export type RequirePrimitive<T> = {
+  [K in keyof T]: Extract<T[K], string | number | boolean>;
+};
+
 export async function getOrCreateUser(profile: {
   sub?: string | null;
   email?: string | null;

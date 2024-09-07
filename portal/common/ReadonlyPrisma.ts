@@ -2,7 +2,7 @@
 
 import { Prisma } from '@prisma/client';
 
-const WRITE_METHODS = [
+export const WRITE_METHODS = [
   'create',
   'update',
   'upsert',

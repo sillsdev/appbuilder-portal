@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -192,7 +192,7 @@ export const actions: Actions = {
     const userId = parseInt(form.get('id') + '');
     const enabled = form.get('enabled');
     if (isNaN(userId)) return error(400);
-    await prisma.users.update({
+    await DatabaseWrites.users.update({
       where: {
         Id: userId
       },
