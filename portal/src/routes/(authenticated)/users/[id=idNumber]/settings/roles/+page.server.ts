@@ -79,38 +79,13 @@ export const actions = {
     const superAdmin = adminRoles.find((r) => r.RoleId === RoleId.SuperAdmin);
 
     // Filter for legal orgs to modify, then map to relevant table entries
-    const newRelationEntries = form.data.organizations
-      .filter((org) => superAdmin || adminRoles.find((r) => r.OrganizationId === org.id))
-      .flatMap((org) => org.roles.map((role) => ({ org: org.id, role })));
-    await DatabaseWrites.users.update({
-      where: {
-        Id: parseInt(event.params.id)
-      },
-      data: {
-        UserRoles: {
-          // Delete all existing role connections that the active user has permission to edit
-          // If superadmin, that's everything, otherwise, whatever orgs the active user is orgAdmin in
-          // Also, never delete superadmin roles
-          deleteMany: {
-            RoleId: {
-              not: RoleId.SuperAdmin
-            },
-            AND: superAdmin
-              ? undefined
-              : {
-                OrganizationId: {
-                  in: adminRoles.map((r) => r.OrganizationId)
-                }
-              }
-          },
-          // Finally, add the new entries. This must be filtered for orgs already
-          create: newRelationEntries.map((re) => ({
-            OrganizationId: re.org,
-            RoleId: re.role
-          }))
-        }
-      }
-    });
+    const newRelationEntries = form.data.organizations.filter(
+      (org) => superAdmin || adminRoles.find((r) => r.OrganizationId === org.id)
+    );
+    const subjectUserId = parseInt(event.params.id);
+    for (const org of newRelationEntries) {
+      await DatabaseWrites.userRoles.setUserRolesForOrganization(subjectUserId, org.id, org.roles);
+    }
     return { form, ok: true };
   }
 } satisfies Actions;
