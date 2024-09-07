@@ -51,25 +51,10 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
     try {
       const { id, stores } = form.data;
-      await DatabaseWrites.organizations.update({
-        where: {
-          Id: id
-        },
-        data: {
-          OrganizationStores: {
-            deleteMany: {},
-            create: stores
-              .filter((s) => s.enabled)
-              .map((s) => ({
-                Store: {
-                  connect: {
-                    Id: s.storeId
-                  }
-                }
-              }))
-          }
-        }
-      });
+      await DatabaseWrites.organizationStores.updateOrganizationStores(
+        id,
+        stores.filter((s) => s.enabled).map((s) => s.storeId)
+      );
       return { ok: true, form };
     } catch (e) {
       if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };

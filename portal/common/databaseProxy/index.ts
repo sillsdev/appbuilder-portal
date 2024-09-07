@@ -4,8 +4,11 @@ import { WRITE_METHODS } from '../ReadonlyPrisma.js';
 import prisma from '../prisma.js';
 import * as groupMemberships from './GroupMemberships.js';
 import * as groups from './Groups.js';
+import * as organizationProductDefinitions from './OrganizationProductDefinitions.js';
+import * as organizationStores from './OrganizationStores.js';
 import * as products from './Products.js';
 import * as projects from './Projects.js';
+import * as userRoles from './UserRoles.js';
 import * as utility from './utility.js';
 
 type RecurseRemove<T, V> = {
@@ -33,6 +36,9 @@ const handlers = {
   projects,
   groups,
   groupMemberships,
+  organizationStores,
+  organizationProductDefinitions,
+  userRoles,
   utility
 };
 // @ts-expect-error this is in fact immediately populated
