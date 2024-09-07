@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { ScriptoriaJobType } from '../BullJobTypes.js';
 import { scriptoriaQueue } from '../bullmq.js';
 import prisma from '../prisma.js';
+import type { RequirePrimitive } from './utility.js';
 
 /**
  * For a project to be valid:
@@ -15,14 +16,10 @@ import prisma from '../prisma.js';
  *  - Owner.OrganizationMemberships[].OrganizationId includes OrganizationId
  */
 
-export async function create(projectData: Prisma.ProjectsCreateArgs['data']): Promise<boolean> {
-  if (
-    !validateProjectBase(
-      projectData.OrganizationId ?? projectData.Organization.connect!.Id!,
-      projectData.GroupId ?? projectData.Group.connect!.Id!,
-      projectData.OwnerId ?? projectData.Owner.connect!.Id!
-    )
-  )
+export async function create(
+  projectData: RequirePrimitive<Prisma.ProjectsUncheckedCreateInput>
+): Promise<boolean> {
+  if (!validateProjectBase(projectData.OrganizationId, projectData.GroupId, projectData.OwnerId))
     return false;
 
   // No additional verification steps
@@ -37,11 +34,9 @@ export async function create(projectData: Prisma.ProjectsCreateArgs['data']): Pr
   return true;
 }
 
-// Errors if projectData uses create or connectOrCreate
-// instead of using connect or setting the id directly
 export async function update(
   id: number,
-  projectData: Prisma.ProjectsUpdateArgs['data']
+  projectData: RequirePrimitive<Prisma.ProjectsUncheckedUpdateInput>
 ): Promise<boolean> {
   // There are cases where a db lookup is not necessary to verify that it will
   // be a legal relation after the update, such as if none of the relevant
@@ -51,19 +46,9 @@ export async function update(
       Id: id
     }
   });
-  const orgId =
-    (projectData.OrganizationId as number) ??
-    projectData.Organization?.connect?.Id ??
-    existing?.OrganizationId;
-  const groupId =
-    (projectData.GroupId as number) ?? projectData.Group?.connect?.Id ?? existing?.GroupId;
-  const ownerId = (projectData.OwnerId as number) ?? projectData.Owner?.connect?.Id;
-  if (ownerId && ownerId !== existing?.OwnerId) {
-    scriptoriaQueue.add(ScriptoriaJobType.ReassignUserTasks, {
-      type: ScriptoriaJobType.ReassignUserTasks,
-      projectId: id
-    });
-  }
+  const orgId = projectData.OrganizationId ?? existing!.OrganizationId;
+  const groupId = projectData.GroupId ?? existing!.GroupId;
+  const ownerId = projectData.OwnerId ?? existing!.OwnerId;
   if (!validateProjectBase(orgId, groupId, ownerId)) return false;
 
   // No additional verification steps
@@ -75,6 +60,13 @@ export async function update(
       },
       data: projectData
     });
+    // If the owner has changed, we need to reassign all the user tasks related to this project
+    if (ownerId && ownerId !== existing?.OwnerId) {
+      scriptoriaQueue.add(ScriptoriaJobType.ReassignUserTasks, {
+        type: ScriptoriaJobType.ReassignUserTasks,
+        projectId: id
+      });
+    }
   } catch (e) {
     return false;
   }

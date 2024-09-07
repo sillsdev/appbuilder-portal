@@ -1,6 +1,6 @@
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -82,7 +82,7 @@ export const actions = {
     const newRelationEntries = form.data.organizations
       .filter((org) => superAdmin || adminRoles.find((r) => r.OrganizationId === org.id))
       .flatMap((org) => org.roles.map((role) => ({ org: org.id, role })));
-    await prisma.users.update({
+    await DatabaseWrites.users.update({
       where: {
         Id: parseInt(event.params.id)
       },
