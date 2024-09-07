@@ -53,24 +53,16 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
     try {
       const { id, publicByDefault, products } = form.data;
+      await DatabaseWrites.organizationProductDefinitions.updateOrganizationProductDefinitions(
+        id,
+        products.filter((p) => p.enabled).map((p) => p.productId)
+      );
       await DatabaseWrites.organizations.update({
         where: {
           Id: id
         },
         data: {
-          PublicByDefault: publicByDefault,
-          OrganizationProductDefinitions: {
-            deleteMany: {},
-            create: products
-              .filter((p) => p.enabled)
-              .map((p) => ({
-                ProductDefinition: {
-                  connect: {
-                    Id: p.productId
-                  }
-                }
-              }))
-          }
+          PublicByDefault: publicByDefault
         }
       });
       return { ok: true, form };

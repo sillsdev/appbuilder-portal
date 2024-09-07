@@ -94,19 +94,14 @@ export const actions = {
           LogoUrl: logoURL,
           OwnerId: owner,
           PublicByDefault: publicByDefault,
-          WebsiteUrl: websiteURL,
-          OrganizationStores: {
-            deleteMany: {},
-            create: stores
-              .filter((s) => s.enabled)
-              .map((s) => ({
-                Store: {
-                  connect: { Id: s.storeId }
-                }
-              }))
-          }
+          WebsiteUrl: websiteURL
         }
       });
+      await DatabaseWrites.organizationStores.updateOrganizationStores(
+        id,
+        stores.filter((s) => s.enabled).map((s) => s.storeId)
+      );
+
       return { ok: true, form };
     } catch (e) {
       if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
