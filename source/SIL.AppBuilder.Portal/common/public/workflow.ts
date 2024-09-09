@@ -2,7 +2,7 @@ import { createMachine } from "xstate";
 
 
 export const NoAdminS3 = createMachine({
-  initial: 'start',
+  initial: 'AppBuilderConfiguration',
   states: {
     AppBuilderConfiguration: {
       on: {
