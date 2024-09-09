@@ -11,7 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.18.0",
-    "bullmq": "^5.12.2"
+    "bullmq": "^5.12.2",
+    "xstate": "^5.18.1"
   },
   "devDependencies": {
     "prisma": "^5.18.0"
