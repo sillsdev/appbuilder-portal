@@ -23,13 +23,7 @@
         </thead>
         <tbody>
           {#each data.tasks as task}
-            <tr
-              class="cursor-pointer"
-              on:click={() =>
-                goto(
-                  `/tasks/${task.Id}`
-                )}
-            >
+            <tr class="cursor-pointer" on:click={() => goto(`/tasks/${task.ProductId}`)}>
               <td>
                 <div class="flex items-center">
                   <IconContainer
