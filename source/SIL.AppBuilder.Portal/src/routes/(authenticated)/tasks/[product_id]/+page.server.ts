@@ -1,5 +1,10 @@
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad, Actions } from './$types';
 import { prisma } from 'sil.appbuilder.portal.common';
+import { NoAdminS3 } from 'sil.appbuilder.portal.common/workflow';
+import { createActor } from 'xstate';
+import { redirect } from '@sveltejs/kit';
+
+const actor = createActor(NoAdminS3); //later: retrieve snapshot from database
 
 type Fields = {
   ownerName?: string;           //Product.Project.Owner.Name
@@ -84,8 +89,8 @@ export const load = (async ({ params, url, locals }) => {
   })
 
   return {
-    actions: [],
-    taskTitle: "Waiting",
+    actions: Object.keys(NoAdminS3.getStateNodeById(`(machine).${actor.getSnapshot().value}`).on),
+    taskTitle: actor.getSnapshot().value,
     instructions: "waiting",
     //filter fields/files/reviewers based on task once workflows are implemented
     //possibly filter in the original query to increase database efficiency
@@ -105,3 +110,14 @@ export const load = (async ({ params, url, locals }) => {
     reviewers: product?.Project.Reviewers
   }
 }) satisfies PageServerLoad;
+
+export const actions = {
+  default: async ({ request }) => {
+    const data = await request.formData();
+
+    console.log(data.get('action'));
+    console.log(data.get('comment'));
+
+    redirect(302, '/tasks');
+  }
+} satisfies Actions;
