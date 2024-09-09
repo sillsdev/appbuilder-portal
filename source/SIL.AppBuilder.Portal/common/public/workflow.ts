@@ -2,33 +2,33 @@ import { createMachine } from "xstate";
 
 
 export const NoAdminS3 = createMachine({
-  initial: 'AppBuilderConfiguration',
+  initial: 'App Builder Configuration',
   states: {
-    AppBuilderConfiguration: {
+    'App Builder Configuration': {
       on: {
         'Continue': {
-          target: 'ProductBuild'
+          target: 'Product Build'
         }
       }
     },
-    SynchronizeData: {
+    'Synchronize Data': {
       on: {
         'Continue': {
-          target: 'ProductBuild'
+          target: 'Product Build'
         }
       }
     },
-    ProductBuild: {
+    'Product Build': {
       on: {
-        'BuildSuccessful': {
-          target: 'VerifyAndPublish'
+        'Build Successful': {
+          target: 'Verify And Publish'
         }
       }
     },
-    VerifyAndPublish: {
+    'Verify And Publish': {
       on: {
         'Reject': {
-          target: 'SynchronizeData'
+          target: 'Synchronize Data'
         },
         'Approve': {
           target: 'Published'
