@@ -1,14 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `PublishAfterAutoRebuilds` on the `Projects` table. All the data in the column will be lost.
-  - You are about to drop the column `SoftwareUpdateRebuilds` on the `Projects` table. All the data in the column will be lost.
-
-*/
--- AlterTable
-ALTER TABLE "Projects" DROP COLUMN "PublishAfterAutoRebuilds",
-DROP COLUMN "SoftwareUpdateRebuilds";
-
 -- CreateTable
 CREATE TABLE "WorkflowInstances" (
     "Id" SERIAL NOT NULL,
