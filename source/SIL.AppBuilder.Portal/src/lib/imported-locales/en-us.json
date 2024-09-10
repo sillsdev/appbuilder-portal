@@ -569,6 +569,9 @@
         "status": "Status",
         "lastUpdated": "Last update"
       }
+    },
+    "workflowInstances": {
+      "title": "Workflow Instances"
     }
   },
   "organization-membership": {
