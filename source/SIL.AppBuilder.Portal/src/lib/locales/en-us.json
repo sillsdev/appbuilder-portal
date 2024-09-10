@@ -428,6 +428,7 @@
   "admin_settings_buildEngines_disconnected": "Disconnected",
   "admin_settings_buildEngines_status": "Status",
   "admin_settings_buildEngines_lastUpdated": "Last update",
+  "admin_workflowInstances_title": "Workflow Instances",
   "organizationMembership_invite_error_expired": "Invitation has expired",
   "organizationMembership_invite_error_redeemed": "Invitation has already been redeemed",
   "organizationMembership_invite_error_notFound": "Invitation was not found",
