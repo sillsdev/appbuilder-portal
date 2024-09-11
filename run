@@ -7,6 +7,7 @@
 
 UI_PATH="source/SIL.AppBuilder.Portal.Frontend"
 API_PATH="source/OptimaJet.DWKit.StarterApplication"
+SVELTE_PATH="source/SIL.AppBuilder.Portal"
 COMPOSE="docker compose -f deployment/development/docker-compose.yml --project-directory . -p appbuilder-portal"
 COMPOSE_SERVICES="db adminer api ui svelte-ui redis stg-tunnel"
 
@@ -66,7 +67,25 @@ function runstuff {
 
     bootstrap)
       set -e
+      runstuff bootstrap:stop-api
+      runstuff bootstrap:drop
+      runstuff bootstrap:svelte
+      runstuff bootstrap:dwkit-data
+      runstuff bootstrap:restart-api
+      runstuff bootstrap:data
+      runstuff bootstrap:workflow
+      runstuff bootstrap:sample
+      runstuff bootstrap:dev
+      runstuff bootstrap:ui-static
+      set +e
+    ;;
+
+    bootstrap:s1)
+      set -e
+      runstuff bootstrap:stop-api
+      runstuff bootstrap:drop
       runstuff bootstrap:dwkit
+      runstuff bootstrap:restart-api
       runstuff bootstrap:api
       runstuff bootstrap:sample
       runstuff bootstrap:dev
@@ -84,11 +103,12 @@ function runstuff {
       set +e
     ;;
 
-    bootstrap:dwkit)
+    bootstrap:stop-api)
       echo "api must not be running in order to run the initial db scripts ..."
       runstuff dc stop api
+    ;;
 
-
+    bootstrap:drop)
       # Setup Database
       ${COMPOSE} exec db bash -c "\
         ${PSQL} -d postgres -tc \
@@ -98,28 +118,47 @@ function runstuff {
         && ${PSQL} -d postgres -c \"DROP DATABASE \$POSTGRES_DB\""
 
       ${COMPOSE} exec db bash -c "${PSQL} -d postgres -c \"CREATE DATABASE \$POSTGRES_DB WITH ENCODING 'UTF8'\""
+    ;;
 
+    bootstrap:dwkit)
       echo "Setting up DWKit..."
-      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitScript.sql" \
-        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql" \
-        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitUpdate_2.6.sql" \
-        && echo "DB setup with DWKit Scripts"
+      runstuff bootstrap:dwkit-data
+      runstuff bootstrap:dwkit-migrate
+      echo "DB setup with DWKit Scripts"
+    ;;
+    bootstrap:dwkit-data)
+      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitScript.sql" 
+    ;;
+
+    bootstrap:dwkit-migrate)
+      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql"
+      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitUpdate_2.6.sql"
+    ;;
+
+    bootstrap:restart-api)
+      echo "api must be running in order to run the db migration scripts ..."
+      runstuff dc start api
     ;;
 
     bootstrap:api)
-      echo "api must be running in order to run the db migration scripts ..."
-      runstuff dc start api
-
       echo "Running migrations..."
+      runstuff db:update
+      runstuff bootstrap:data
+      runstuff bootstrap:workflow
+      echo "DB setup for json:api"
+    ;;
 
-      runstuff db:update \
-        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/bootstrap.sql" \
-        && ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_workflow.sql" \
-        && echo "DB setup for json:api"
+    bootstrap:data)
+      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/bootstrap.sql"
     ;;
 
     bootstrap:workflow)
-	${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_workflow.sql"
+	    ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_workflow.sql"
+    ;;
+
+    bootstrap:svelte)
+	    (cd $SVELTE_PATH \
+	      && npx prisma migrate dev --schema common/prisma/schema.prisma)
     ;;
 
     bootstrap:sample)
