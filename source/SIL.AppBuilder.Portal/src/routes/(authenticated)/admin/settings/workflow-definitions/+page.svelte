@@ -7,6 +7,10 @@
   export let data: PageData;
 </script>
 
+<a href="/admin/workflows" class="btn btn-outline m-4 mt-0">
+  {m.admin_workflowInstances_title()}
+</a>
+
 <a href="workflow-definitions/new" class="btn btn-outline m-4 mt-0">
   {m.admin_settings_workflowDefinitions_add()}
 </a>
