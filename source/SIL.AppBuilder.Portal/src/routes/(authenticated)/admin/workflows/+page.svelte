@@ -1,9 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import IconContainer from '$lib/components/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { getRelativeTime } from '$lib/timeUtils';
   import type { PageData } from './$types';
 
   export let data: PageData;
