@@ -287,6 +287,7 @@ model Products {
   StoreLanguage       StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
   Store               Stores?               @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
   UserTasks           UserTasks[]
+  WorkflowInstances   WorkflowInstances?
 
   @@index([ProductDefinitionId], map: "IX_Products_ProductDefinitionId")
   @@index([ProjectId], map: "IX_Products_ProjectId")
@@ -316,33 +317,33 @@ model ProjectImports {
 }
 
 model Projects {
-  Id                       Int              @id(map: "PK_Projects") @default(autoincrement())
-  Name                     String?
-  TypeId                   Int
-  Description              String?
-  OwnerId                  Int
-  GroupId                  Int
-  OrganizationId           Int
-  Language                 String?
-  IsPublic                 Boolean?         @default(true)
-  DateCreated              DateTime?        @db.Timestamp
-  DateUpdated              DateTime?        @db.Timestamp
-  DateArchived             DateTime?        @db.Timestamp
-  AllowDownloads           Boolean?         @default(true)
-  AutomaticBuilds          Boolean?         @default(true)
-  WorkflowProjectId        Int              @default(0)
-  WorkflowProjectUrl       String?
-  WorkflowAppProjectUrl    String?
-  DateActive               DateTime?        @db.Timestamp
-  ImportId                 Int?
-  Authors                  Authors[]
-  Products                 Products[]
-  ApplicationType          ApplicationTypes @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_Projects_ApplicationTypes_TypeId")
-  Group                    Groups           @relation(fields: [GroupId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Groups_GroupId")
-  Organization             Organizations    @relation(fields: [OrganizationId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Organizations_OrganizationId")
-  ProjectImport            ProjectImports?  @relation(fields: [ImportId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Projects_ProjectImports_ImportId")
-  Owner                    Users            @relation(fields: [OwnerId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
-  Reviewers                Reviewers[]
+  Id                    Int              @id(map: "PK_Projects") @default(autoincrement())
+  Name                  String?
+  TypeId                Int
+  Description           String?
+  OwnerId               Int
+  GroupId               Int
+  OrganizationId        Int
+  Language              String?
+  IsPublic              Boolean?         @default(true)
+  DateCreated           DateTime?        @db.Timestamp
+  DateUpdated           DateTime?        @db.Timestamp
+  DateArchived          DateTime?        @db.Timestamp
+  AllowDownloads        Boolean?         @default(true)
+  AutomaticBuilds       Boolean?         @default(true)
+  WorkflowProjectId     Int              @default(0)
+  WorkflowProjectUrl    String?
+  WorkflowAppProjectUrl String?
+  DateActive            DateTime?        @db.Timestamp
+  ImportId              Int?
+  Authors               Authors[]
+  Products              Products[]
+  ApplicationType       ApplicationTypes @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_Projects_ApplicationTypes_TypeId")
+  Group                 Groups           @relation(fields: [GroupId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Groups_GroupId")
+  Organization          Organizations    @relation(fields: [OrganizationId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Organizations_OrganizationId")
+  ProjectImport         ProjectImports?  @relation(fields: [ImportId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Projects_ProjectImports_ImportId")
+  Owner                 Users            @relation(fields: [OwnerId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
+  Reviewers             Reviewers[]
 
   @@index([GroupId], map: "IX_Projects_GroupId")
   @@index([ImportId], map: "IX_Projects_ImportId")
@@ -745,4 +746,11 @@ model dwUploadedFiles {
   UpdatedBy        String?   @db.VarChar(1024)
   UpdatedDate      DateTime? @db.Timestamp(6)
   Properties       String?
+}
+
+model WorkflowInstances {
+  Id        Int      @id(map: "PK_WorkflowInstances") @default(autoincrement())
+  Snapshot  String
+  ProductId String   @unique @db.Uuid
+  Product   Products @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
 }

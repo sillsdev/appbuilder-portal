@@ -17,7 +17,8 @@
     "prepare": "svelte-kit sync"
   },
   "prisma": {
-    "seed": "ts-node --esm prisma/seed.ts"
+    "seed": "ts-node --esm prisma/seed.ts",
+    "schema": "common/prisma/schema.prisma"
   },
   "devDependencies": {
     "@auth/core": "^0.32.0",
