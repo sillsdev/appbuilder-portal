@@ -8,20 +8,53 @@ export const NoAdminS3 = setup({
       includeFields: string[];
       includeReviewers: boolean;
       includeArtifacts: string | boolean;
+      start?: string;
+    },
+    input: {} as {
+      start?: string;
     }
   }
 }).createMachine({
-  initial: 'App Builder Configuration',
-  context: {
+  initial: 'Start',
+  context: ({ input }) => ({
     instructions: 'waiting',
     /** projectName and projectDescription are always included */
     includeFields: [],
     /** Reset to false on exit */
     includeReviewers: false,
     /** Reset to false on exit */
-    includeArtifacts: false
-  },
+    includeArtifacts: false,
+    start: input.start
+  }),
   states: {
+    Start: {
+      always: [
+        {
+          guard: ({context}) => context.start === 'Synchronize Data',
+          target: 'Synchronize Data'
+        },
+        {
+          guard: ({context}) => context.start === 'Product Build',
+          target: 'Product Build'
+        },
+        {
+          guard: ({context}) => context.start === 'Verify And Publish',
+          target: 'Verify And Publish'
+        },
+        {
+          guard: ({context}) => context.start === 'Published',
+          target: 'Published'
+        },
+        {
+          target: 'App Builder Configuration'
+        }
+      ],
+      on: {
+        Default: {
+          target: 'App Builder Configuration'
+        }
+      }
+    },
     'App Builder Configuration': {
       entry: assign({
         instructions: 'app_configuration',
@@ -94,6 +127,14 @@ export const NoAdminS3 = setup({
         ]
       }),
       type: 'final'
+    }
+  },
+  on: {
+    jump: {
+      actions: assign({
+        start: ({ event }) => event.target
+      }),
+      target: '.Start'
     }
   }
 });

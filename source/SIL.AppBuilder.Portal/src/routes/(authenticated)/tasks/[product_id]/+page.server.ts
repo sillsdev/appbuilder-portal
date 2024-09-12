@@ -5,7 +5,7 @@ import { createActor } from 'xstate';
 import { redirect } from '@sveltejs/kit';
 import { filterObject } from '$lib/filterObject';
 
-const actor = createActor(NoAdminS3); //later: retrieve snapshot from database
+const actor = createActor(NoAdminS3, { input: {}}); //later: retrieve snapshot from database
 
 type Fields = {
   ownerName?: string; //Product.Project.Owner.Name
