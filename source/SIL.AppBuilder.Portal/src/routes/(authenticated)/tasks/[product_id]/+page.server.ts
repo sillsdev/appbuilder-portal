@@ -5,7 +5,7 @@ import { createActor } from 'xstate';
 import { redirect } from '@sveltejs/kit';
 import { filterObject } from '$lib/filterObject';
 
-const actor = createActor(NoAdminS3, { input: {}}); //later: retrieve snapshot from database
+const actor = createActor(NoAdminS3, { input: {} }); //later: retrieve snapshot from database
 
 type Fields = {
   ownerName?: string; //Product.Project.Owner.Name
@@ -21,6 +21,7 @@ type Fields = {
 };
 
 export const load = (async ({ params, url, locals }) => {
+  // TODO: permission check
   const snap = actor.getSnapshot();
 
   const product = await prisma.products.findUnique({
@@ -42,13 +43,15 @@ export const load = (async ({ params, url, locals }) => {
             }
           },
           //conditionally include reviewers
-          Reviewers: (snap.context.includeReviewers) ? {
-            select: {
-              Id: true,
-              Name: true,
-              Email: true
+          Reviewers: snap.context.includeReviewers
+            ? {
+              select: {
+                Id: true,
+                Name: true,
+                Email: true
+              }
             }
-          } : undefined
+            : undefined
         }
       },
       Store: {
@@ -76,25 +79,25 @@ export const load = (async ({ params, url, locals }) => {
 
   const artifacts = snap.context.includeArtifacts
     ? await prisma.productArtifacts.findMany({
-        where: {
-          ProductId: params.product_id,
-          ProductBuild: {
-            BuildId: product?.WorkflowBuildId
-          },
-          //filter by artifact type
-          ArtifactType:
+      where: {
+        ProductId: params.product_id,
+        ProductBuild: {
+          BuildId: product?.WorkflowBuildId
+        },
+        //filter by artifact type
+        ArtifactType:
             typeof snap.context.includeArtifacts === 'string'
               ? snap.context.includeArtifacts
               : undefined //include all
-        },
-        select: {
-          ProductBuildId: true,
-          ContentType: true,
-          FileSize: true,
-          Url: true,
-          Id: true
-        }
-      })
+      },
+      select: {
+        ProductBuildId: true,
+        ContentType: true,
+        FileSize: true,
+        Url: true,
+        Id: true
+      }
+    })
     : [];
 
   const fields = snap.context.includeFields;
@@ -131,6 +134,7 @@ export const load = (async ({ params, url, locals }) => {
 
 export const actions = {
   default: async ({ request }) => {
+    // TODO: permission check
     const data = await request.formData();
 
     console.log(data.get('action'));

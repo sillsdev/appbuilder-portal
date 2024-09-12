@@ -14,6 +14,7 @@
         <thead>
           <tr class="border-b-2 text-left">
             <th>{m.tasks_product()}</th>
+            <!-- TODO: i18n -->
             <th>Last State</th>
             <th>Transition Date</th>
           </tr>
@@ -36,6 +37,7 @@
       </table>
     {:else}
       <div class="pl-4">
+        <!-- TODO: i18n -->
         <h3 class="p-0">There are no active workflow instances</h3>
         <span>Try creating a product</span>
       </div>
