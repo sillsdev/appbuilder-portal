@@ -7,7 +7,32 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
       ProductId: params.product_id
     },
     select: {
-      ProductId: true,
+      Product: {
+        select: {
+          Project: {
+            select: {
+              Name: true
+            }
+          },
+          ProductDefinition: {
+            select: {
+              Name: true
+            }
+          },
+          ProductTransitions: {
+            select: {
+              DateTransition: true,
+              InitialState: true
+            },
+            orderBy: [
+              {
+                DateTransition: 'desc'
+              }
+            ],
+            take: 1
+          }
+        }
+      },
       Snapshot: true
     }
   });
