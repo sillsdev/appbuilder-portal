@@ -115,7 +115,8 @@ export const load = (async ({ params, url, locals }) => {
   const fields = snap.context.includeFields;
 
   return {
-    actions: Object.keys(NoAdminS3.getStateNodeById(`(machine).${snap.value}`).on),
+    //later: filter available actions by user role
+    actions: Object.keys(NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${snap.value}`).on),
     taskTitle: snap.value,
     instructions: snap.context.instructions,
     //filter fields/files/reviewers based on task once workflows are implemented
