@@ -1,11 +1,9 @@
 import type { PageServerLoad, Actions } from './$types';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { NoAdminS3 } from 'sil.appbuilder.portal.common/workflow';
-import { createActor } from 'xstate';
+import { createActor, type Snapshot } from 'xstate';
 import { redirect } from '@sveltejs/kit';
 import { filterObject } from '$lib/filterObject';
-
-const actor = createActor(NoAdminS3, { input: {} }); //later: retrieve snapshot from database
 
 type Fields = {
   ownerName?: string; //Product.Project.Owner.Name
@@ -22,6 +20,20 @@ type Fields = {
 
 export const load = (async ({ params, url, locals }) => {
   // TODO: permission check
+  const actor = createActor(NoAdminS3, {
+    snapshot:
+      JSON.parse((
+        await prisma.workflowInstances.findUnique({
+          where: {
+            ProductId: params.product_id
+          },
+          select: {
+            Snapshot: true
+          }
+        })
+      )?.Snapshot || 'null') as Snapshot<unknown> ?? undefined,
+    input: {}
+  });
   const snap = actor.getSnapshot();
 
   const product = await prisma.products.findUnique({
@@ -45,12 +57,12 @@ export const load = (async ({ params, url, locals }) => {
           //conditionally include reviewers
           Reviewers: snap.context.includeReviewers
             ? {
-              select: {
-                Id: true,
-                Name: true,
-                Email: true
+                select: {
+                  Id: true,
+                  Name: true,
+                  Email: true
+                }
               }
-            }
             : undefined
         }
       },
@@ -79,25 +91,25 @@ export const load = (async ({ params, url, locals }) => {
 
   const artifacts = snap.context.includeArtifacts
     ? await prisma.productArtifacts.findMany({
-      where: {
-        ProductId: params.product_id,
-        ProductBuild: {
-          BuildId: product?.WorkflowBuildId
-        },
-        //filter by artifact type
-        ArtifactType:
+        where: {
+          ProductId: params.product_id,
+          ProductBuild: {
+            BuildId: product?.WorkflowBuildId
+          },
+          //filter by artifact type
+          ArtifactType:
             typeof snap.context.includeArtifacts === 'string'
               ? snap.context.includeArtifacts
               : undefined //include all
-      },
-      select: {
-        ProductBuildId: true,
-        ContentType: true,
-        FileSize: true,
-        Url: true,
-        Id: true
-      }
-    })
+        },
+        select: {
+          ProductBuildId: true,
+          ContentType: true,
+          FileSize: true,
+          Url: true,
+          Id: true
+        }
+      })
     : [];
 
   const fields = snap.context.includeFields;
