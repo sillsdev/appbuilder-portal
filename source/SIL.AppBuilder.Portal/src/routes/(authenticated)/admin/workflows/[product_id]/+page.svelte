@@ -10,7 +10,7 @@
 
   const { snapshot, send, actorRef } = useMachine(NoAdminS3, {
     snapshot: data.instance?.Snapshot
-      ? (JSON.parse(data.instance?.Snapshot || '') as Snapshot<unknown>)
+      ? (JSON.parse(data.instance?.Snapshot || 'null') as Snapshot<unknown>)
       : undefined,
     input: {}
   });
