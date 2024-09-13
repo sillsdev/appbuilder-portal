@@ -30,7 +30,6 @@
   type FilterForStrings<T> = {
     [K in keyof T]: T[K] extends string ? K : never;
   }[keyof T];
-  // TODO: Sanitize langtags
   function colorValueForKeyMatch<T extends object>(
     obj: T,
     key: FilterForStrings<T>,
@@ -41,7 +40,8 @@
     if (!matches) return value;
     const matchList = matches.filter((match) => match.key === key);
     if (matchList.length === 0) return value;
-    let ret = '';
+    // let ret = '';
+    let ret = document.createElement('div');
     let i = 0;
     // Are there any matches of more than 2 characters?
     const hasMultiCharMatch = matches.some((match) =>
@@ -53,19 +53,20 @@
       for (let index of match.indices) {
         // Only show short matches (1-2 chars) if there are no longer ones
         if (index[1] - index[0] + 1 < 3 && hasMultiCharMatch) {
-          ret += value.substring(i, index[1] + 1);
+          ret.appendChild(document.createTextNode(value.substring(i, index[1] + 1)));
           i = index[1] + 1;
           continue;
         }
-        ret += value.substring(i, index[0]);
-        ret += '<span class="highlight">';
-        ret += value.substring(index[0], index[1] + 1);
-        ret += '</span>';
+        ret.appendChild(document.createTextNode(value.substring(i, index[0])));
+        const spanElement = document.createElement('span');
+        spanElement.classList.add('highlight');
+        spanElement.innerText = value.substring(index[0], index[1] + 1);
+        ret.appendChild(spanElement);
         i = index[1] + 1;
       }
-      ret += value.substring(i);
+      ret.appendChild(document.createTextNode(value.substring(i)));
     }
-    return ret;
+    return ret.innerHTML;
   }
   let langtagList = langtags;
   let typeaheadInput: HTMLInputElement;
