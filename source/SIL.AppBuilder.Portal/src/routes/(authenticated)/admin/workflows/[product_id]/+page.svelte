@@ -9,6 +9,8 @@
   } from 'xstate';
   import { Node, Svelvet, Anchor } from 'svelvet';
   import { HamburgerIcon } from '$lib/icons/index.js';
+  import { Springy } from '$lib/springyGraph.js';
+  import { onMount } from 'svelte';
 
   export let data;
 
@@ -26,6 +28,8 @@
     label: string;
     connections: { id: number; target?: string; label?: string }[];
     inCount: number;
+    start: boolean;
+    final: boolean;
   };
 
   function targetStringFromEvent(
@@ -60,22 +64,53 @@
               // treat no target on transition as self target
               return { from: k, to: targetStringFromEvent(e, id) || k };
             });
-          }).reduce((p, c) => {
+          })
+          .reduce((p, c) => {
             return p.concat(c);
           }, [])
-          .filter((v) => k === v.to).length
+          .filter((v) => k === v.to).length,
+        start: k === 'Start',
+        final: v.type === 'final'
       };
     });
-    console.log(JSON.stringify(a, null, 4));
     return a;
   }
 
   function jumpState() {
-    console.log(selected);
-    console.log('old: ' + $snapshot.value);
     send({ type: 'jump', target: selected });
-    console.log('new: ' + $snapshot.value);
   }
+
+  let positions: { [key: string]: Springy.Physics.Vector } = {};
+
+  let ready = false;
+
+  onMount(() => {
+    const graph = new Springy.Graph();
+
+    const renderer = new Springy.Renderer(
+      new Springy.ForceDirected(graph, 400.0, 400.0, 0.5, 0.00001),
+      () => {}, // clear
+      () => {}, // drawEdge
+      (node: Springy.Node, position: Springy.Physics.Vector) => {
+        // drawNode
+        positions[node.id] = position;
+      },
+      () => {
+        // onRenderStop
+        ready = true;
+      },
+      () => {}, // onRenderStart
+      () => {} // onRenderFrame
+    );
+    graph.loadJSON({
+      nodes: Object.keys(NoAdminS3.toJSON().states),
+      edges: Object.entries(NoAdminS3.toJSON().states)
+        .map(([k, v]) => {
+          return Object.values(v.on).map((o) => [k, targetStringFromEvent(o, NoAdminS3.id)]);
+        })
+        .reduce((p, c) => p.concat(c), [])
+    });
+  });
 </script>
 
 <div id="menu" class="p-5">
@@ -107,19 +142,25 @@
     </details>
   </div>
 </div>
-<Svelvet minimap controls theme="dark" translation={{ x: -250, y: 0 }} endStyles={[null, 'arrow']}>
+{#if ready}
+<Svelvet minimap controls fitView theme="dark" translation={{ x: 0, y: 0 }} endStyles={[null, 'arrow']}>
   {#each transform(NoAdminS3.toJSON()) as state, i}
     <Node
       id={'N-' + state.id}
       dimensions={{ width: 200, height: 100 }}
-      position={{ x: 300 + 200 * (i % 5), y: 100 + 150 * i }}
+      position={positions[state.label].translateToScreenSpace(
+        new Springy.Physics.Vector(0, 0),
+        new Springy.Physics.Vector(150, 100)
+      )}
       dynamic={true}
       editable={false}
     >
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <svg
-        class="rect {$snapshot.value === state.label ? 'active' : ''}"
+        class="rect {$snapshot.value === state.label ? 'active' : ''} 
+          {state.start ? 'start' : ''} 
+          {state.final ? 'final' : ''}"
         on:click={() => {
           selected = state.label;
         }}
@@ -144,19 +185,28 @@
     </Node>
   {/each}
 </Svelvet>
+{:else}
+<span class="loading loading-spinner loading-lg"></span>
+{/if}
 
 <style lang="postcss">
   :global(.svelvet-node) {
     box-shadow: none !important;
   }
   .rect {
-    @apply fill-primary h-full w-full;
+    @apply fill-neutral h-full w-full;
     stroke-width: 3px;
   }
   .rect text {
-    @apply items-center fill-primary-content;
+    @apply items-center fill-neutral-content;
   }
   .active {
+    @apply fill-warning;
+  }
+  .start {
+    @apply fill-success;
+  }
+  .final {
     @apply fill-info;
   }
   .selected {
@@ -174,5 +224,11 @@
 
   details:not([open]) > summary strong {
     display: none;
+  }
+
+  .loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
   }
 </style>
