@@ -207,10 +207,18 @@ export const NoAdminS3 = setup({
         },
         'Email Reviewers.Owner': {
           //later: guard project has reviewers
-          //later: connect to backend to email reviewers
-          actions: () => {
-            console.log('Emailing Reviewers');
-          }
+          target: 'Email Reviewers'
+        }
+      }
+    },
+    'Email Reviewers': {
+      //later: connect to backend to email reviewers
+      entry: () => {
+        console.log('Emailing Reviewers');
+      },
+      on: {
+        'Default.Auto': {
+          target: 'Verify And Publish'
         }
       }
     },
