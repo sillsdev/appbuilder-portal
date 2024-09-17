@@ -1,4 +1,5 @@
 import { setup, assign } from 'xstate';
+import { DatabaseWrites }from '../index.js';
 
 //later: update snapshot on state exits (define a function to do it), store instance id in context
 //later: update UserTasks on entry?
@@ -11,9 +12,10 @@ export const NoAdminS3 = setup({
       includeReviewers: boolean;
       includeArtifacts: string | boolean;
       start?: string;
+      productId: string;
     },
     input: {} as {
-      start?: string;
+      productId?: string;
     }
   }
 }).createMachine({
@@ -26,10 +28,22 @@ export const NoAdminS3 = setup({
     includeReviewers: false,
     /** Reset to false on exit */
     includeArtifacts: false,
-    start: input.start
+    productId: input.productId
   }),
   states: {
     Start: {
+      entry: ({ context }) => {
+        DatabaseWrites.workflowInstances.upsert({
+          where: {
+            ProductId: context.productId
+          },
+          update: {},
+          create: {
+            Snapshot: '',
+            ProductId: context.productId
+          }
+        })
+      },
       always: [
         {
           guard: ({ context }) => context.start === 'App Builder Configuration',
