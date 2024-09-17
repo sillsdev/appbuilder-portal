@@ -6,7 +6,9 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { verifyCanViewAndEdit } from './common';
+import { verifyCanViewAndEdit  } from './common';
+import { NoAdminS3 } from 'sil.appbuilder.portal.common/workflow';
+import { createActor } from 'xstate';
 
 const deleteReviewerSchema = v.object({
   id: idSchema
@@ -25,6 +27,14 @@ const addReviewerSchema = v.object({
 const updateOwnerGroupSchema = v.object({
   owner: idSchema,
   group: idSchema
+});
+const addProductSchema = v.object({
+  productDefinitionId: idSchema,
+  storeId: idSchema,
+  storeLanguageId: idSchema,
+  workflowJobId: idSchema,
+  workflowBuildId: idSchema,
+  workflowPublishId: idSchema
 });
 
 // Are we sending too much data?
@@ -163,6 +173,29 @@ export const actions = {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
     // TODO: api and bulltask
+    const form = await superValidate(event.request, valibot(addProductSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+    // Appears that CanUpdate is not used TODO
+    const res = await DatabaseWrites.products.create({
+      ProjectId: parseInt(event.params.id),
+      ProductDefinitionId: form.data.productDefinitionId,
+      StoreId: form.data.storeId,
+      StoreLanguageId: form.data.storeLanguageId,
+      WorkflowJobId: form.data.workflowJobId,
+      WorkflowBuildId: form.data.workflowBuildId,
+      WorkflowPublishId: form.data.workflowPublishId
+    });
+
+    if (typeof res === 'string') {
+      const tmpActor = createActor(NoAdminS3, {
+        input: {
+          productId: res
+        }
+      });
+      tmpActor.start();
+    }
+
+    return { form, ok: true };
   },
   async addAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
