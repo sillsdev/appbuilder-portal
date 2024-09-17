@@ -216,11 +216,7 @@
                   activityName: product.ActiveTransition?.InitialState ?? ''
                 })}
                 {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
-                  <a
-                    class="link mx-2"
-                    href="/flow/{product.ProductDefinition.Workflow
-                      .WorkflowBusinessFlow}/{product.Id}"
-                  >
+                  <a class="link mx-2" href="/tasks/{product.Id}">
                     {m.common_continue()}
                   </a>
                 {/if}
