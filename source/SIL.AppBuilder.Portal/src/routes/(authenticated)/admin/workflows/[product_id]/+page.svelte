@@ -80,28 +80,19 @@
     send({ type: 'jump', target: selected });
   }
 
-  let positions: { [key: string]: Springy.Physics.Vector } = {};
+  let positions: { [key: string]: Springy.Physics.Vector } = Object.keys(NoAdminS3.toJSON().states)
+    .map((s) => {
+      return { key: s, value: new Springy.Physics.Vector(0.0, 0.0) };
+    })
+    .reduce((p, c) => {
+      p[c.key] = c.value;
+      return p;
+    }, {} as { [key: string]: Springy.Physics.Vector });
 
   let ready = false;
 
   onMount(() => {
     const graph = new Springy.Graph();
-
-    const renderer = new Springy.Renderer(
-      new Springy.ForceDirected(graph, 400.0, 400.0, 0.5, 0.00001),
-      () => {}, // clear
-      () => {}, // drawEdge
-      (node: Springy.Node, position: Springy.Physics.Vector) => {
-        // drawNode
-        positions[node.id] = position;
-      },
-      () => {
-        // onRenderStop
-        ready = true;
-      },
-      () => {}, // onRenderStart
-      () => {} // onRenderFrame
-    );
     graph.loadJSON({
       nodes: Object.keys(NoAdminS3.toJSON().states),
       edges: Object.entries(NoAdminS3.toJSON().states)
@@ -110,6 +101,37 @@
         })
         .reduce((p, c) => p.concat(c), [])
     });
+    const bounds = Math.ceil(Math.sqrt(graph.nodes.length));
+    graph.addNodeData('Start', {
+      label: 'Start',
+      static: new Springy.Physics.Vector(-bounds, -bounds)
+    });
+    graph.addNodeData('Published', {
+      label: 'Published',
+      static: new Springy.Physics.Vector(bounds, bounds)
+    });
+
+    const layout = new Springy.ForceDirected(graph, 400.0, 400.0, 0.5, 0.00001);
+
+    const renderer = new Springy.Renderer(
+      layout,
+      () => {}, // clear
+      () => {}, // drawEdge
+      (node: Springy.Node, position: Springy.Physics.Vector) => {
+        // drawNode
+        positions[node.id] = position;
+      },
+      () => {},
+      () => {}, // onRenderStart
+      () => {
+        // onRenderFrame
+        // begin showing earlier, still simulating, just less loading time
+        if (layout.totalEnergy() < 0.5) {
+          ready = true;
+        }
+      }
+    );
+    renderer.start();
   });
 </script>
 
@@ -143,50 +165,57 @@
   </div>
 </div>
 {#if ready}
-<Svelvet minimap controls fitView theme="dark" translation={{ x: 0, y: 0 }} endStyles={[null, 'arrow']}>
-  {#each transform(NoAdminS3.toJSON()) as state, i}
-    <Node
-      id={'N-' + state.id}
-      dimensions={{ width: 200, height: 100 }}
-      position={positions[state.label].translateToScreenSpace(
-        new Springy.Physics.Vector(0, 0),
-        new Springy.Physics.Vector(150, 100)
-      )}
-      dynamic={true}
-      editable={false}
-    >
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <svg
-        class="rect {$snapshot.value === state.label ? 'active' : ''} 
-          {state.start ? 'start' : ''} 
-          {state.final ? 'final' : ''}"
-        on:click={() => {
-          selected = state.label;
-        }}
+  <Svelvet
+    minimap
+    controls
+    fitView
+    theme="dark"
+    translation={{ x: 0, y: 0 }}
+    endStyles={[null, 'arrow']}
+  >
+    {#each transform(NoAdminS3.toJSON()) as state, i}
+      <Node
+        id={'N-' + state.id}
+        dimensions={{ width: 200, height: 100 }}
+        position={positions[state.label].translateToScreenSpace(
+          new Springy.Physics.Vector(0, 0),
+          new Springy.Physics.Vector(150, 100)
+        )}
+        dynamic={true}
+        editable={false}
       >
-        <rect
-          width="100%"
-          height="100%"
-          rx="10"
-          ry="10"
-          class={selected === state.label ? 'selected' : ''}
-        />
-        <text text-anchor="middle" font-size={15} x="50%" y="60%">
-          {state.label}
-        </text>
-      </svg>
-      {#each state.connections as conn}
-        <Anchor connections={[conn.id]} edgeLabel={conn.label} output invisible locked />
-      {/each}
-      {#each { length: state.inCount } as c}
-        <Anchor input invisible locked />
-      {/each}
-    </Node>
-  {/each}
-</Svelvet>
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <svg
+          class="rect {$snapshot.value === state.label ? 'active' : ''} 
+        {state.start ? 'start' : ''} 
+        {state.final ? 'final' : ''}"
+          on:click={() => {
+            selected = state.label;
+          }}
+        >
+          <rect
+            width="100%"
+            height="100%"
+            rx="10"
+            ry="10"
+            class={selected === state.label ? 'selected' : ''}
+          />
+          <text text-anchor="middle" font-size={15} x="50%" y="60%">
+            {state.label}
+          </text>
+        </svg>
+        {#each state.connections as conn}
+          <Anchor connections={[conn.id]} edgeLabel={conn.label} output invisible locked />
+        {/each}
+        {#each { length: state.inCount } as c}
+          <Anchor input invisible locked />
+        {/each}
+      </Node>
+    {/each}
+  </Svelvet>
 {:else}
-<span class="loading loading-spinner loading-lg"></span>
+  <span class="loading loading-spinner loading-lg" />
 {/if}
 
 <style lang="postcss">
