@@ -36,6 +36,7 @@ export namespace Springy {
   export type NodeData = {
     mass?: number;
     label?: string;
+    static?: Physics.Vector; // static position
   };
 
   export type Node = {
@@ -94,6 +95,10 @@ export namespace Springy {
         const node: Node = { id: name, data: { label: name } };
         this.addNode(node);
       }
+    }
+
+    addNodeData(id: string, data: NodeData) {
+      this.nodeSet[id].data = data;
     }
 
     addEdge(edge: Edge): Edge {
@@ -163,7 +168,7 @@ export namespace Springy {
      *
      * {
      *  "nodes": [
-     *    "center",
+     *      "center",
      *      "left",
      *      "right",
      *      "up",
@@ -177,17 +182,19 @@ export namespace Springy {
      *  }
      *
      **/
-    loadJSON(json: string | { nodes: string[], edges: string[][]}) {
-      const obj = typeof json === 'string'? JSON.parse(json) : json;
+    loadJSON(json: string | { nodes: string[]; edges: string[][] }) {
+      const obj = typeof json === 'string' ? JSON.parse(json) : json;
 
       if ('nodes' in obj || 'edges' in obj) {
         this.addNodes(obj.nodes);
-        this.addEdges(obj.edges.map((e: string[]) => {
-          return {
-            source: e[0],
-            target: e[1]
-          }
-        }));
+        this.addEdges(
+          obj.edges.map((e: string[]) => {
+            return {
+              source: e[0],
+              target: e[1]
+            };
+          })
+        );
       }
     }
 
@@ -351,8 +358,8 @@ export namespace Springy {
       }
 
       translateToScreenSpace(offset: Vector, scale: number | Vector) {
-        const sx = typeof scale === 'number'? scale: scale.x;
-        const sy = typeof scale === 'number'? scale: scale.y;
+        const sx = typeof scale === 'number' ? scale : scale.x;
+        const sy = typeof scale === 'number' ? scale : scale.y;
         return new Vector(offset.x + this.x * sx, offset.y + this.y * sy);
       }
     }
@@ -362,15 +369,18 @@ export namespace Springy {
       m: number; // mass
       v: Vector; // velocity
       a: Vector; // acceleration
+      fixed: boolean;
 
-      constructor(position: Vector, mass: number) {
+      constructor(position: Vector, mass: number, fixed: boolean = false) {
         this.p = position; // position
         this.m = mass; // mass
         this.v = new Vector(0, 0); // velocity
         this.a = new Vector(0, 0); // acceleration
+        this.fixed = fixed;
       }
 
       applyForce(force: Vector) {
+        if (this.fixed) return; // don't apply force if fixed
         this.a = this.a.add(force.divide(this.m));
       }
     }
@@ -420,7 +430,11 @@ export namespace Springy {
     point(node: Node) {
       if (!(node.id in this.nodePoints)) {
         var mass = node.data?.mass !== undefined ? node.data.mass : 1.0;
-        this.nodePoints[node.id] = new Physics.Point(Physics.Vector.random(), mass);
+        this.nodePoints[node.id] = new Physics.Point(
+          node.data?.static ? node.data.static : Physics.Vector.random(),
+          mass,
+          node.data?.static !== undefined
+        );
       }
 
       return this.nodePoints[node.id];
@@ -720,7 +734,9 @@ export namespace Springy {
       this.onRenderStart = onRenderStart;
       this.onRenderFrame = onRenderFrame;
 
-      this.layout.graph.subscribe((e) => { this.graphChanged(); });
+      this.layout.graph.subscribe((e) => {
+        this.graphChanged();
+      });
     }
 
     /**
