@@ -21,7 +21,7 @@
     input: {}
   });
 
-  let selected: string = actorRef.getSnapshot().value;
+  let selected: string | any = actorRef.getSnapshot().value;
 
   type StateNode = {
     id: number;
@@ -124,6 +124,8 @@
       () => {},
       () => {}, // onRenderStart
       () => {
+        
+        ready = true;
         // onRenderFrame
         // begin showing earlier, still simulating, just less loading time
         if (layout.totalEnergy() < 0.5) {
@@ -132,6 +134,14 @@
       }
     );
     renderer.start();
+    
+    const snapshotUnsub = snapshot.subscribe((s) => {
+      console.log(JSON.stringify(s, null, 4));
+    })
+
+    return () => {
+      snapshotUnsub();
+    }
   });
 </script>
 
@@ -169,6 +179,7 @@
     minimap
     controls
     fitView
+    edgeStyle="straight"
     theme="dark"
     translation={{ x: 0, y: 0 }}
     endStyles={[null, 'arrow']}
