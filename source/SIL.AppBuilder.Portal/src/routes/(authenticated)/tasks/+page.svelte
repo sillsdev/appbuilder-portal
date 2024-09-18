@@ -51,6 +51,11 @@
                 </span>
               </td>
             </tr>
+            {#if task.Comment}
+              <tr>
+                <div class="pl-7">{task.Comment}</div>
+              </tr>
+            {/if}
           {/each}
         </tbody>
       </table>
