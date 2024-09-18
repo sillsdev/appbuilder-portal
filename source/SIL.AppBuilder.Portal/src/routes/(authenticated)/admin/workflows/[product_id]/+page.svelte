@@ -1,12 +1,6 @@
 <script lang="ts">
-  import { NoAdminS3 } from 'sil.appbuilder.portal.common/workflow';
   import { useMachine } from '@xstate/svelte';
-  import type {
-    AnyEventObject,
-    Snapshot,
-    StateMachineDefinition,
-    TransitionDefinition
-  } from 'xstate';
+  import type { Snapshot } from 'xstate';
   import { Node, Svelvet, Anchor } from 'svelvet';
   import { HamburgerIcon } from '$lib/icons/index.js';
   import { Springy } from '$lib/springyGraph.js';
@@ -14,75 +8,12 @@
 
   export let data;
 
-  const { snapshot, send, actorRef } = useMachine(NoAdminS3, {
-    snapshot: data.instance?.Snapshot
-      ? (JSON.parse(data.instance?.Snapshot || 'null') as Snapshot<unknown>)
-      : undefined,
-    input: {}
-  });
+  let selected: string | any = data.snapshot.value;
+  let active = selected;
 
-  let selected: string | any = actorRef.getSnapshot().value;
-
-  type StateNode = {
-    id: number;
-    label: string;
-    connections: { id: number; target?: string; label?: string }[];
-    inCount: number;
-    start: boolean;
-    final: boolean;
-  };
-
-  function targetStringFromEvent(
-    e: TransitionDefinition<any, AnyEventObject>[],
-    machineId: string
-  ): string {
-    return (
-      e[0]
-        .toJSON()
-        .target?.at(0)
-        ?.replace('#' + machineId + '.', '') ?? ''
-    );
-  }
-
-  function transform(machine: StateMachineDefinition<any, AnyEventObject>): StateNode[] {
-    const id = machine.id;
-    const lookup = Object.keys(machine.states);
-    const a = Object.entries(machine.states).map(([k, v]) => {
-      return {
-        id: lookup.indexOf(k),
-        label: k,
-        connections: Object.values(v.on).map((o) => {
-          return {
-            id: lookup.indexOf(targetStringFromEvent(o, id)),
-            target: targetStringFromEvent(o, id),
-            label: o[0].eventType
-          };
-        }),
-        inCount: Object.entries(machine.states)
-          .map(([k, v]) => {
-            return Object.values(v.on).map((e) => {
-              // treat no target on transition as self target
-              return { from: k, to: targetStringFromEvent(e, id) || k };
-            });
-          })
-          .reduce((p, c) => {
-            return p.concat(c);
-          }, [])
-          .filter((v) => k === v.to).length,
-        start: k === 'Start',
-        final: v.type === 'final'
-      };
-    });
-    return a;
-  }
-
-  function jumpState() {
-    send({ type: 'jump', target: selected });
-  }
-
-  let positions: { [key: string]: Springy.Physics.Vector } = Object.keys(NoAdminS3.toJSON().states)
+  let positions: { [key: string]: Springy.Physics.Vector } = data.machine
     .map((s) => {
-      return { key: s, value: new Springy.Physics.Vector(0.0, 0.0) };
+      return { key: s.label, value: new Springy.Physics.Vector(0.0, 0.0) };
     })
     .reduce((p, c) => {
       p[c.key] = c.value;
@@ -94,10 +25,9 @@
   onMount(() => {
     const graph = new Springy.Graph();
     graph.loadJSON({
-      nodes: Object.keys(NoAdminS3.toJSON().states),
-      edges: Object.entries(NoAdminS3.toJSON().states)
-        .map(([k, v]) => {
-          return Object.values(v.on).map((o) => [k, targetStringFromEvent(o, NoAdminS3.id)]);
+      nodes: data.machine.map((s) => s.label),
+      edges: data.machine.map((s) => {
+          return s.connections.map((c) => [s.label, c.target]);
         })
         .reduce((p, c) => p.concat(c), [])
     });
@@ -134,14 +64,6 @@
       }
     );
     renderer.start();
-    
-    const snapshotUnsub = snapshot.subscribe((s) => {
-      console.log(JSON.stringify(s, null, 4));
-    })
-
-    return () => {
-      snapshotUnsub();
-    }
   });
 </script>
 
@@ -168,9 +90,16 @@
           Date: {data.instance?.Product.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
         </li>
       </ul>
-      <button class="btn" on:click={jumpState}>
-        Jump State to <em>{selected}</em>
-      </button>
+      <form method="POST" on:submit|preventDefault={(e) => {
+        active = selected;
+        fetch(e.currentTarget.action, {
+          method: "post",
+          body: new FormData(e.currentTarget)
+        })
+      }}>
+        <input type="hidden" name="state" value={selected}>
+        <input type="submit" class="btn" value="Jump State to {selected}">
+      </form>
     </details>
   </div>
 </div>
@@ -184,7 +113,7 @@
     translation={{ x: 0, y: 0 }}
     endStyles={[null, 'arrow']}
   >
-    {#each transform(NoAdminS3.toJSON()) as state, i}
+    {#each data.machine as state, i}
       <Node
         id={'N-' + state.id}
         dimensions={{ width: 200, height: 100 }}
@@ -198,7 +127,7 @@
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <svg
-          class="rect {$snapshot.value === state.label ? 'active' : ''} 
+          class="rect {active === state.label ? 'active' : ''} 
         {state.start ? 'start' : ''} 
         {state.final ? 'final' : ''}"
           on:click={() => {

@@ -7,7 +7,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { verifyCanViewAndEdit  } from './common';
-import { NoAdminS3 } from 'sil.appbuilder.portal.common/workflow';
+import { NoAdminS3 } from 'sil.appbuilder.portal.common';
 import { createActor } from 'xstate';
 
 const deleteReviewerSchema = v.object({
