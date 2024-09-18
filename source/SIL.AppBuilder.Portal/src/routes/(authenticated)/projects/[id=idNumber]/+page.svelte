@@ -63,18 +63,28 @@
     }
     return '';
   }
-  let settingsFormTimeout: NodeJS.Timeout;
-  let settingsForm: HTMLFormElement;
-  function submitForm() {
-    if (settingsFormTimeout) {
-      clearTimeout(settingsFormTimeout);
+  let simpleSettingsFormTimeout: NodeJS.Timeout;
+  let simpleSettingsForm: HTMLFormElement;
+  function submitSimpleSettingsForm() {
+    if (simpleSettingsFormTimeout) {
+      clearTimeout(simpleSettingsFormTimeout);
     }
-    settingsFormTimeout = setTimeout(() => {
-      settingsForm.requestSubmit();
+    simpleSettingsFormTimeout = setTimeout(() => {
+      simpleSettingsForm.requestSubmit();
     }, 2000);
   }
-
-  // TODO: allow editing settings and project owner from this page
+  let ownerSettingsFormTimeout: NodeJS.Timeout;
+  let ownerSettingsForm: HTMLFormElement;
+  let ownerField: HTMLInputElement;
+  let groupField: HTMLInputElement;
+  function submitOwnerSettingsForm() {
+    if (ownerSettingsFormTimeout) {
+      clearTimeout(ownerSettingsFormTimeout);
+    }
+    ownerSettingsFormTimeout = setTimeout(() => {
+      ownerSettingsForm.requestSubmit();
+    }, 2000);
+  }
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -309,7 +319,7 @@
       <form
         action="?/editSettings"
         method="post"
-        bind:this={settingsForm}
+        bind:this={simpleSettingsForm}
         use:enhance={() =>
           ({ update }) =>
             update({ reset: false })}
@@ -330,7 +340,7 @@
               name="isPublic"
               class="toggle toggle-info ml-4"
               bind:checked={data.project.IsPublic}
-              on:click={submitForm}
+              on:click={submitSimpleSettingsForm}
             />
           </label>
           <label for="allowDownload" class="flex place-content-between">
@@ -348,46 +358,136 @@
               name="allowDownload"
               class="toggle toggle-info ml-4"
               bind:checked={data.project.AllowDownloads}
-              on:click={submitForm}
+              on:click={submitSimpleSettingsForm}
             />
           </label>
         </div>
       </form>
     </div>
     <div class="space-y-2 min-w-0 flex-auto sidebararea">
-      <div
-        class="bg-base-300 card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full"
-      >
-        <!-- TODO: i18n -->
-        <!-- TODO: allow editing project owner and group from this page -->
-        <h2>Settings</h2>
-        <div class="flex flex-col py-4">
-          <div class="flex flex-col place-content-between px-4">
-            <span>
-              <IconContainer icon="clarity:organization-solid" width="20" />
-              {m.project_side_organization()}
-            </span>
-            <span class="text-right">
-              {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
-            </span>
+      <div class="bg-base-300 card card-bordered border-slate-400 rounded-md max-w-full">
+        <form
+          action="?/editOwnerGroup"
+          bind:this={ownerSettingsForm}
+          method="post"
+          use:enhance={() =>
+            ({ update }) =>
+              update({ reset: false })}
+        >
+          <!-- TODO: i18n -->
+          <h2>Settings</h2>
+          <div class="flex flex-col py-4">
+            <div class="flex flex-col place-content-between px-4">
+              <span class="items-center flex gap-x-1">
+                <IconContainer icon="clarity:organization-solid" width="20" />
+                {m.project_side_organization()}
+                <IconContainer
+                  icon="mdi:lock"
+                  width="16"
+                  class="text-slate-400"
+                  tooltip="Organization cannot be changed"
+                />
+              </span>
+              <span class="text-right">
+                {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
+              </span>
+            </div>
+            <div class="divider my-2" />
+            <div class="flex flex-col place-content-between px-4 pr-2">
+              <span>
+                <IconContainer icon="mdi:user" width="20" />
+                {m.project_side_projectOwner()}
+              </span>
+              <span class="text-right flex place-content-end">
+                <div class="dropdown" role="button" tabindex="0">
+                  <div
+                    class="btn btn-ghost p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
+                  >
+                    <span class="flex items-center pl-1">
+                      {data.project?.Owner.Name}
+                      <IconContainer icon="gridicons:dropdown" width="20" />
+                    </span>
+                  </div>
+                  <div
+                    role="button"
+                    tabindex="0"
+                    class="dropdown-content arrow-top menu drop-shadow-lg bg-base-200 z-20 min-w-[10rem] top-8 right-0 rounded-md"
+                  >
+                    <input
+                      type="hidden"
+                      name="owner"
+                      value={data.project.OwnerId}
+                      bind:this={ownerField}
+                    />
+                    <ul class="menu menu-compact overflow-hidden rounded-md">
+                      {#each data.possibleProjectOwners as owner}
+                        <li class="w-full rounded-none">
+                          <button
+                            class="text-nowrap"
+                            class:font-bold={owner.Id === data.project.OwnerId}
+                            on:click={() => {
+                              ownerField.value = owner.Id + '';
+                              submitOwnerSettingsForm();
+                            }}
+                          >
+                            {owner.Name}
+                          </button>
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+                </div>
+              </span>
+            </div>
+            <div class="divider my-2" />
+            <div class="flex flex-col place-content-between px-4 pr-2">
+              <span class="grow text-nowrap">
+                <IconContainer icon="mdi:account-group" width={20} />
+                {m.project_side_projectGroup()}
+              </span>
+              <span class="shrink text-right flex place-content-end items-center">
+                <div class="dropdown" role="button" tabindex="0">
+                  <div
+                    class="btn btn-ghost p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
+                  >
+                    <span class="flex items-center pl-1">
+                      {data.project?.Group.Abbreviation}
+                      <IconContainer icon="gridicons:dropdown" width="20" />
+                    </span>
+                  </div>
+                  <div
+                    role="button"
+                    tabindex="0"
+                    class="dropdown-content arrow-top menu drop-shadow-lg bg-base-200 z-20 min-w-[10rem] top-8 right-0 rounded-md"
+                  >
+                    <input
+                      type="hidden"
+                      name="group"
+                      value={data.project.GroupId}
+                      bind:this={groupField}
+                    />
+                    <ul class="menu menu-compact overflow-hidden rounded-md">
+                      {#each data.possibleGroups as group}
+                        <li class="w-full rounded-none">
+                          <button
+                            class="text-nowrap"
+                            class:font-bold={group.Id === data.project.GroupId}
+                            on:click={() => {
+                              groupField.value = group.Id + '';
+                              submitOwnerSettingsForm();
+                            }}
+                          >
+                            {group.Name}
+                          </button>
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+                </div>
+              </span>
+            </div>
           </div>
-          <div class="divider my-2" />
-          <div class="flex flex-col place-content-between px-4">
-            <span>
-              <IconContainer icon="mdi:user" width="20" />
-              {m.project_side_projectOwner()}
-            </span>
-            <span class="text-right">{data.project?.Owner.Name}</span>
-          </div>
-          <div class="divider my-2" />
-          <div class="flex flex-col place-content-between px-4">
-            <span class="grow text-nowrap">
-              <IconContainer icon="mdi:account-group" width={20} />
-              {m.project_side_projectGroup()}
-            </span>
-            <span class="shrink text-right">{data.project?.Group.Name}</span>
-          </div>
-        </div>
+        </form>
       </div>
 
       <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
@@ -510,6 +610,10 @@
     bottom: -5px;
     right: 10px;
     background-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-bg-opacity)));
+  }
+  div.dropdown-content.arrow-top::after {
+    bottom: auto;
+    top: -5px;
   }
   .gridcont {
     grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));

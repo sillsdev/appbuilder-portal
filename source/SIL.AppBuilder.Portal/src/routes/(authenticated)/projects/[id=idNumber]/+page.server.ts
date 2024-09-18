@@ -6,7 +6,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { verifyCanView } from './common';
+import { verifyCanViewAndEdit } from './common';
 
 const deleteReviewerSchema = v.object({
   id: idSchema
@@ -22,10 +22,14 @@ const addReviewerSchema = v.object({
   email: v.pipe(v.string(), v.email()),
   language: v.string()
 });
+const updateOwnerGroupSchema = v.object({
+  owner: idSchema,
+  group: idSchema
+});
 
 // Are we sending too much data?
 export const load = (async ({ locals, params }) => {
-  if (!verifyCanView((await locals.auth())!, parseInt(params.id))) return error(403);
+  if (!verifyCanViewAndEdit((await locals.auth())!, parseInt(params.id))) return error(403);
   const project = await prisma.projects.findUnique({
     where: {
       Id: parseInt(params.id)
@@ -104,6 +108,20 @@ export const load = (async ({ locals, params }) => {
         )?.[1]
       }))
     },
+    possibleProjectOwners: await prisma.users.findMany({
+      where: {
+        OrganizationMemberships: {
+          some: {
+            OrganizationId: project.OrganizationId
+          }
+        }
+      }
+    }),
+    possibleGroups: await prisma.groups.findMany({
+      where: {
+        OwnerId: project.OrganizationId
+      }
+    }),
     authorsToAdd,
     authorForm,
     reviewerForm,
@@ -114,21 +132,24 @@ export const load = (async ({ locals, params }) => {
 
 export const actions = {
   async deleteProduct(event) {
-    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
     const form = await superValidate(event.request, valibot(v.object({ id: v.string() })));
     if (!form.valid) return fail(400, { form, ok: false });
     // delete all tasks for this product id, then delete the product
     await DatabaseWrites.products.delete(form.data.id);
   },
   async deleteAuthor(event) {
-    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
     const form = await superValidate(event.request, valibot(deleteAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
     return { form, ok: true };
   },
   async deleteReviewer(event) {
-    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
     const form = await superValidate(event.request, valibot(deleteReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.reviewers.delete({
@@ -139,11 +160,13 @@ export const actions = {
     return { form, ok: true };
   },
   async addProduct(event) {
-    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
     // TODO: api and bulltask
   },
   async addAuthor(event) {
-    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // Appears that CanUpdate is not used TODO
@@ -156,7 +179,8 @@ export const actions = {
     return { form, ok: true };
   },
   async addReviewer(event) {
-    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
     const form = await superValidate(event.request, valibot(addReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.reviewers.create({
@@ -170,7 +194,8 @@ export const actions = {
     return { form, ok: true };
   },
   async editSettings(event) {
-    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
     const form = await superValidate(
       event.request,
       valibot(
@@ -186,5 +211,18 @@ export const actions = {
       AllowDownloads: form.data.allowDownload
     });
     return { form, ok: true };
+  },
+  async editOwnerGroup(event) {
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
+    const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
+    console.log(form);
+    if (!form.valid) return fail(400, { form, ok: false });
+    const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
+      GroupId: form.data.group,
+      OwnerId: form.data.owner
+    });
+    console.log(success);
+    return { form, ok: success };
   }
 } satisfies Actions;
