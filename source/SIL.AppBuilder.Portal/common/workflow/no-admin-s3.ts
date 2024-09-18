@@ -1,7 +1,7 @@
 import { setup, assign } from 'xstate';
 import DatabaseWrites from '../databaseProxy/index.js';
 import { WorkflowContext, WorkflowInput } from '../public/workflow.js';
-import { createSnapshot, updateUserTasks } from './db.js';
+import { createSnapshot, updateUserTasks, updateProductTransitions } from './db.js';
 import { RoleId } from '../public/prisma.js';
 
 //later: update snapshot on state exits (define a function to do it), store instance id in context
@@ -71,8 +71,8 @@ export const NoAdminS3 = setup({
           target: 'Verify and Publish'
         },
         {
-          guard: ({ context }) => context.start === 'Publish Product',
-          target: 'Publish Product'
+          guard: ({ context }) => context.start === 'Product Publish',
+          target: 'Product Publish'
         },
         {
           guard: ({ context }) => context.start === 'Published',
@@ -101,6 +101,17 @@ export const NoAdminS3 = setup({
       ],
       on: {
         'Product Created:Auto': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Product Creation',
+              'App Builder Configuration',
+              null,
+              event.comment
+            );
+          },
           target: 'App Builder Configuration'
         }
       }
@@ -113,16 +124,41 @@ export const NoAdminS3 = setup({
         }),
         ({ context, event }) => {
           createSnapshot('App Builder Configuration', context);
-          updateUserTasks(context.productId, [RoleId.AppBuilder], 'App Builder Configuration', event.comment);
+          updateUserTasks(
+            context.productId,
+            [RoleId.AppBuilder],
+            'App Builder Configuration',
+            event.comment
+          );
         }
       ],
       on: {
         'Continue:Owner': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'App Builder Configuration',
+              'Product Build',
+              'Continue',
+              event.comment
+            );
+          },
           target: 'Product Build'
         },
         'Transfer to Authors:Owner': {
-          actions: () => {
-            console.log('Transferring to Authors')
+          actions: ({ context, event }) => {
+            console.log('Transferring to Authors');
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'App Builder Configuration',
+              'Author Configuration',
+              'Transfer to Authors',
+              event.comment
+            );
           },
           //later: guard project has authors
           target: 'Author Configuration'
@@ -137,14 +173,41 @@ export const NoAdminS3 = setup({
         }),
         ({ context, event }) => {
           createSnapshot('Author Configuration', context);
-          updateUserTasks(context.productId, [RoleId.AppBuilder, RoleId.Author], 'Author Configuration', event.comment);
-        },
+          updateUserTasks(
+            context.productId,
+            [RoleId.AppBuilder, RoleId.Author],
+            'Author Configuration',
+            event.comment
+          );
+        }
       ],
       on: {
         'Continue:Author': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Author Configuration',
+              'App Builder Configuration',
+              'Continue',
+              event.comment
+            );
+          },
           target: 'App Builder Configuration'
         },
         'Take Back:Owner': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Author Configuration',
+              'App Builder Configuration',
+              'Take Back',
+              event.comment
+            );
+          },
           target: 'App Builder Configuration'
         }
       }
@@ -157,15 +220,42 @@ export const NoAdminS3 = setup({
         }),
         ({ context, event }) => {
           createSnapshot('Synchronize Data', context);
-          updateUserTasks(context.productId, [RoleId.AppBuilder], 'Synchronize Data', event.comment);
+          updateUserTasks(
+            context.productId,
+            [RoleId.AppBuilder],
+            'Synchronize Data',
+            event.comment
+          );
         }
       ],
       on: {
         'Continue:Owner': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Synchronize Data',
+              'Product Build',
+              'Continue',
+              event.comment
+            );
+          },
           target: 'Product Build'
         },
         'Transfer to Authors:Owner': {
           //later: guard project has authors
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Synchronize Data',
+              'Author Download',
+              'Transfer to Authors',
+              event.comment
+            );
+          },
           target: 'Author Download'
         }
       }
@@ -178,14 +268,41 @@ export const NoAdminS3 = setup({
         }),
         ({ context, event }) => {
           createSnapshot('Author Download', context);
-          updateUserTasks(context.productId, [RoleId.AppBuilder, RoleId.Author], 'Author Download', event.comment);
+          updateUserTasks(
+            context.productId,
+            [RoleId.AppBuilder, RoleId.Author],
+            'Author Download',
+            event.comment
+          );
         }
       ],
       on: {
         'Continue:Author': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Author Download',
+              'Author Upload',
+              'Continue',
+              event.comment
+            );
+          },
           target: 'Author Upload'
         },
         'Take Back:Owner': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Author Download',
+              'Synchronize Data',
+              'Take Back',
+              event.comment
+            );
+          },
           target: 'Synchronize Data'
         }
       }
@@ -198,14 +315,41 @@ export const NoAdminS3 = setup({
         }),
         ({ context, event }) => {
           createSnapshot('Author Upload', context);
-          updateUserTasks(context.productId, [RoleId.AppBuilder, RoleId.Author], 'Author Upload', event.comment);
+          updateUserTasks(
+            context.productId,
+            [RoleId.AppBuilder, RoleId.Author],
+            'Author Upload',
+            event.comment
+          );
         }
       ],
       on: {
         'Continue:Author': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Author Upload',
+              'Synchronize Data',
+              'Continue',
+              event.comment
+            );
+          },
           target: 'Synchronize Data'
         },
         'Take Back:Owner': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Author Upload',
+              'Synchronize Data',
+              'Take Back',
+              event.comment
+            );
+          },
           target: 'Synchronize Data'
         }
       }
@@ -226,9 +370,31 @@ export const NoAdminS3 = setup({
       ],
       on: {
         'Build Successful:Auto': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Product Build',
+              'Verify and Publish',
+              null,
+              event.comment
+            );
+          },
           target: 'Verify and Publish'
         },
         'Build Failed:Auto': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Product Build',
+              'Synchronize Data',
+              null,
+              event.comment
+            );
+          },
           target: 'Synchronize Data'
         }
       }
@@ -243,7 +409,12 @@ export const NoAdminS3 = setup({
         }),
         ({ context, event }) => {
           createSnapshot('Verify and Publish', context);
-          updateUserTasks(context.productId, [RoleId.AppBuilder], 'Verify and Publish', event.comment);
+          updateUserTasks(
+            context.productId,
+            [RoleId.AppBuilder],
+            'Verify and Publish',
+            event.comment
+          );
         }
       ],
       exit: assign({
@@ -251,14 +422,47 @@ export const NoAdminS3 = setup({
         includeArtifacts: false
       }),
       on: {
-        'Reject:Owner': {
-          target: 'Synchronize Data'
-        },
         'Approve:Owner': {
-          target: 'Publish Product'
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Verify and Publish',
+              'Publish Product',
+              'Approve',
+              event.comment
+            );
+          },
+          target: 'Product Publish'
+        },
+        'Reject:Owner': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Verify and Publish',
+              'Synchronize Data',
+              'Reject',
+              event.comment
+            );
+          },
+          target: 'Synchronize Data'
         },
         'Email Reviewers:Owner': {
           //later: guard project has reviewers
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Verify and Publish',
+              'Email Reviewers',
+              'Email Reviewers',
+              event.comment
+            );
+          },
           target: 'Email Reviewers'
         }
       }
@@ -276,11 +480,22 @@ export const NoAdminS3 = setup({
       ],
       on: {
         'Default:Auto': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Email Reviewers',
+              'Verify and Publish',
+              null,
+              event.comment
+            );
+          },
           target: 'Verify and Publish'
         }
       }
     },
-    'Publish Product': {
+    'Product Publish': {
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
@@ -293,9 +508,31 @@ export const NoAdminS3 = setup({
       ],
       on: {
         'Publish Completed:Auto': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Product Publish',
+              'Published',
+              null,
+              event.comment
+            );
+          },
           target: 'Published'
         },
         'Publish Failed:Auto': {
+          actions: ({ context, event }) => {
+            updateProductTransitions(
+              NoAdminS3,
+              context.productId,
+              event.userId,
+              'Product Publish',
+              'Synchronize Data',
+              null,
+              event.comment
+            );
+          },
           target: 'Synchronize Data'
         }
       }
@@ -319,7 +556,18 @@ export const NoAdminS3 = setup({
       actions: [
         assign({
           start: ({ event }) => event.target
-        })
+        }),
+        ({ context, event }) => {
+          updateProductTransitions(
+            NoAdminS3,
+            context.productId,
+            null,
+            event.previous,
+            event.target,
+            null,
+            event.comment
+          );
+        }
       ],
       target: '.Start'
     }
