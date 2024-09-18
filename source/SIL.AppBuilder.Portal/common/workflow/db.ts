@@ -1,8 +1,8 @@
 import DatabaseWrites from '../databaseProxy/index.js';
 import { prisma } from '../index.js';
-import { WorkflowContext } from '../public/workflow.js';
-import { AnyStateMachine } from 'xstate';
-import { RoleId } from '../public/prisma.js';
+import { WorkflowContext, targetStringFromEvent, stateName } from '../public/workflow.js';
+import { AnyStateMachine, StateNode } from 'xstate';
+import { RoleId, ProductTransitionType } from '../public/prisma.js';
 
 export type Snapshot = {
   value: string;
@@ -118,4 +118,116 @@ export async function updateUserTasks(
       DateUpdated: timestamp
     }))
   });
+}
+
+function transitionFromState(state: StateNode<any, any>, machineId: string, productId: string) {
+  console.log(state);
+  return {
+    ProductId: productId,
+    TransitionType: ProductTransitionType.Activity,
+    InitialState: stateName(state, machineId),
+    DestinationState: targetStringFromEvent(Object.values(state.on)[0], machineId),
+    Command:
+      Object.keys(state.on)[0].split(':')[1] !== 'Auto'
+        ? Object.keys(state.on)[0].split(':')[0]
+        : null
+  };
+}
+
+async function populateTransitions(machine: AnyStateMachine, productId: string) {
+  return DatabaseWrites.productTransitions.createManyAndReturn({
+    data: [
+      {
+        ProductId: productId,
+        DateTransition: new Date(),
+        TransitionType: ProductTransitionType.StartWorkflow
+      }
+    ].concat(
+      Object.entries(machine.states).reduce(
+        (p, [k, v], i) =>
+          p.concat(
+            i === 1 || (i > 1 && p[p.length - 1]?.DestinationState === k && v.type !== 'final')
+              ? [transitionFromState(v, machine.id, productId)]
+              : []
+          ),
+        []
+      )
+    )
+  });
+}
+
+/**
+ * Get all product transitions for a product.
+ * If there are none, create new ones based on main sequence (i.e. no Author steps)
+ * If sequence matching params exists, but no timestamp, update
+ * Otherwise, create.
+ */
+export async function updateProductTransitions(
+  machine: AnyStateMachine,
+  productId: string,
+  userId: number | null,
+  initialState: string,
+  destinationState: string,
+  command?: string,
+  comment?: string
+) {
+  const transitions = await prisma.productTransitions.count({
+    where: {
+      ProductId: productId
+    }
+  });
+  if (transitions <= 0) {
+    await populateTransitions(machine, productId);
+  }
+  const transition = await prisma.productTransitions.findFirst({
+    where: {
+      ProductId: productId,
+      InitialState: initialState,
+      DestinationState: destinationState,
+      DateTransition: null
+    },
+    select: {
+      Id: true
+    }
+  });
+
+  const user = userId
+    ? await prisma.users.findUnique({
+        where: {
+          Id: userId
+        },
+        select: {
+          Name: true,
+          WorkflowUserId: true
+        }
+      })
+    : null;
+
+  if (transition) {
+    DatabaseWrites.productTransitions.update({
+      where: {
+        Id: transition.Id
+      },
+      data: {
+        WorkflowUserId: user?.WorkflowUserId ?? null,
+        AllowedUserNames: user?.Name ?? null,
+        Command: command ?? null,
+        DateTransition: new Date(),
+        Comment: comment ?? null
+      }
+    });
+  } else {
+    await DatabaseWrites.productTransitions.create({
+      data: {
+        ProductId: productId,
+        WorkflowUserId: user?.WorkflowUserId ?? null,
+        AllowedUserNames: user?.Name ?? null,
+        InitialState: initialState,
+        DestinationState: destinationState,
+        Command: command ?? null,
+        DateTransition: new Date(),
+        Comment: comment ?? null
+      }
+    });
+  }
 }

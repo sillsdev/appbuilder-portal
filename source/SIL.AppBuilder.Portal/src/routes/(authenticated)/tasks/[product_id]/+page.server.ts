@@ -131,19 +131,23 @@ export const load = (async ({ params, url, locals }) => {
   const fields = snap.context.includeFields;
 
   return {
-    actions: Object.keys(NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${snap.value}`).on).filter((a) => {
-      if (session?.user.userId === undefined) return false;
-      switch(a.split(":")[1]) {
-        case 'Owner':
-          return session.user.userId === product?.Project.Owner.Id;
-        case 'Author':
-          return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
-        case 'Admin':
-          return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(session.user.userId);
-        default:
-          return false;
-      }
-    }).map((a) => a.split(":")),
+    actions: Object.keys(NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${snap.value}`).on)
+      .filter((a) => {
+        if (session?.user.userId === undefined) return false;
+        switch (a.split(':')[1]) {
+          case 'Owner':
+            return session.user.userId === product?.Project.Owner.Id;
+          case 'Author':
+            return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
+          case 'Admin':
+            return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
+              session.user.userId
+            );
+          default:
+            return false;
+        }
+      })
+      .map((a) => a.split(':')),
     taskTitle: snap.value,
     instructions: snap.context.instructions,
     //filter fields/files/reviewers based on task once workflows are implemented
@@ -173,8 +177,9 @@ export const load = (async ({ params, url, locals }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  default: async ({ request, params }) => {
+  default: async ({ request, params, locals }) => {
     // TODO: permission check
+    const session = await locals.auth();
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
@@ -189,8 +194,10 @@ export const actions = {
 
     //double check that state matches current snapshot
     if (form.data.state === actor.getSnapshot().value) {
-      const action = Object.keys(NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${actor.getSnapshot().value}`).on).filter((a) => a.split(":")[0] === form.data.action);
-      actor.send({ type: action[0], comment: form.data.comment });
+      const action = Object.keys(
+        NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${actor.getSnapshot().value}`).on
+      ).filter((a) => a.split(':')[0] === form.data.action);
+      actor.send({ type: action[0], comment: form.data.comment, userId: session?.user.userId });
     }
 
     redirect(302, '/tasks');

@@ -75,7 +75,7 @@ export const actions = {
 
     actor.start();
 
-    actor.send({ type: 'Jump To', target: form.data.state });
+    actor.send({ type: 'Jump To', target: form.data.state, previous: actor.getSnapshot().value });
 
     return { form, ok: true };
   }

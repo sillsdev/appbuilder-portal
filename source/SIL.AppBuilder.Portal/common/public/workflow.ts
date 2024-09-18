@@ -1,7 +1,8 @@
 import type {
   AnyEventObject,
   StateMachineDefinition,
-  TransitionDefinition
+  TransitionDefinition,
+  StateNode as XStateNode
 } from 'xstate';
 
 export type WorkflowContext = {
@@ -26,6 +27,10 @@ export type StateNode = {
   start: boolean;
   final: boolean;
 };
+
+export function stateName(s: XStateNode<any, any>, machineId: string) {
+  return s.id.replace(machineId + '.', '');
+}
 
 export function targetStringFromEvent(
   e: TransitionDefinition<any, AnyEventObject>[],
