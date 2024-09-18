@@ -7,7 +7,6 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
 const jumpStateSchema = v.object({
-  product: v.string(),
   state: v.string()
 });
 
@@ -62,12 +61,12 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 };
 
 export const actions = {
-  default: async ({ request }) => {
+  default: async ({ request, params }) => {
     // TODO: permission check
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const snap = await getSnapshot(form.data.product, NoAdminS3);
+    const snap = await getSnapshot(params.product_id, NoAdminS3);
 
     const actor = createActor(NoAdminS3, {
       snapshot: snap,
