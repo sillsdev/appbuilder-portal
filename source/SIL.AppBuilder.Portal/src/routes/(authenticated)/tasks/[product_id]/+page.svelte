@@ -11,7 +11,7 @@
     {#if data.actions?.length}
     <div class="flex flex-row gap-x-3">
       {#each data.actions as action}
-      <input type="submit" name="action" class="btn" value={action}>
+      <input type="submit" name="action" class="btn" value={action[0]}>
       {/each}
     </div>
     {/if}
@@ -21,6 +21,7 @@
       </div>
       <textarea class="textarea textarea-bordered h-24" name="comment"></textarea>
     </label>
+    <input type="hidden" name="state" value={data.taskTitle}>
   </form>
   <hr class="border-t-4 my-2">
   <h2>

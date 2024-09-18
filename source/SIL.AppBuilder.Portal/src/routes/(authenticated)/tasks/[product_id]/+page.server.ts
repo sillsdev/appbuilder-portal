@@ -4,6 +4,16 @@ import { NoAdminS3 } from 'sil.appbuilder.portal.common';
 import { createActor, type Snapshot } from 'xstate';
 import { redirect } from '@sveltejs/kit';
 import { filterObject } from '$lib/filterObject';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+
+const sendActionSchema = v.object({
+  state: v.string(),
+  action: v.string(),
+  comment: v.string()
+});
 
 type Fields = {
   ownerName?: string; //Product.Project.Owner.Name
@@ -19,6 +29,7 @@ type Fields = {
 };
 
 export const load = (async ({ params, url, locals }) => {
+  const session = await locals.auth();
   // TODO: permission check
   const actor = createActor(NoAdminS3, {
     snapshot: await getSnapshot(params.product_id, NoAdminS3),
@@ -40,6 +51,7 @@ export const load = (async ({ params, url, locals }) => {
           Language: true,
           Owner: {
             select: {
+              Id: true,
               Name: true,
               Email: true
             }
@@ -53,7 +65,21 @@ export const load = (async ({ params, url, locals }) => {
                   Email: true
                 }
               }
-            : undefined
+            : undefined,
+          Authors: {
+            select: {
+              UserId: true
+            }
+          },
+          Organization: {
+            select: {
+              UserRoles: {
+                where: {
+                  RoleId: RoleId.OrgAdmin
+                }
+              }
+            }
+          }
         }
       },
       Store: {
@@ -105,8 +131,19 @@ export const load = (async ({ params, url, locals }) => {
   const fields = snap.context.includeFields;
 
   return {
-    //later: filter available actions by user role
-    actions: Object.keys(NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${snap.value}`).on),
+    actions: Object.keys(NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${snap.value}`).on).filter((a) => {
+      if (session?.user.userId === undefined) return false;
+      switch(a.split(":")[1]) {
+        case 'Owner':
+          return session.user.userId === product?.Project.Owner.Id;
+        case 'Author':
+          return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
+        case 'Admin':
+          return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(session.user.userId);
+        default:
+          return false;
+      }
+    }).map((a) => a.split(":")),
     taskTitle: snap.value,
     instructions: snap.context.instructions,
     //filter fields/files/reviewers based on task once workflows are implemented
@@ -136,14 +173,25 @@ export const load = (async ({ params, url, locals }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  default: async ({ request }) => {
+  default: async ({ request, params }) => {
     // TODO: permission check
-    const data = await request.formData();
+    const form = await superValidate(request, valibot(sendActionSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+
+    const snap = await getSnapshot(params.product_id, NoAdminS3);
+
+    const actor = createActor(NoAdminS3, {
+      snapshot: snap,
+      input: {}
+    });
+
+    actor.start();
 
     //double check that state matches current snapshot
-
-    console.log(data.get('action'));
-    console.log(data.get('comment'));
+    if (form.data.state === actor.getSnapshot().value) {
+      const action = Object.keys(NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${actor.getSnapshot().value}`).on).filter((a) => a.split(":")[0] === form.data.action);
+      actor.send({ type: action[0], comment: form.data.comment });
+    }
 
     redirect(302, '/tasks');
   }
