@@ -1,22 +1,15 @@
 import { setup, assign } from 'xstate';
-import DatabaseWrites from './databaseProxy/index.js';
+import DatabaseWrites from '../databaseProxy/index.js';
+import { WorkflowContext, WorkflowInput } from '../public/workflow.js';
+import { createSnapshot } from './db.js';
+import { create } from 'domain';
 
 //later: update snapshot on state exits (define a function to do it), store instance id in context
 //later: update UserTasks on entry?
 export const NoAdminS3 = setup({
   types: {
-    context: {} as {
-      //later: narrow types if necessary
-      instructions: string;
-      includeFields: string[];
-      includeReviewers: boolean;
-      includeArtifacts: string | boolean;
-      start?: string;
-      productId: string;
-    },
-    input: {} as {
-      productId?: string;
-    }
+    context: {} as WorkflowContext,
+    input: {} as WorkflowInput
   }
 }).createMachine({
   initial: 'Start',
@@ -42,7 +35,7 @@ export const NoAdminS3 = setup({
             Snapshot: '',
             ProductId: context.productId
           }
-        })
+        });
       },
       always: [
         {
@@ -74,8 +67,8 @@ export const NoAdminS3 = setup({
           target: 'Product Build'
         },
         {
-          guard: ({ context }) => context.start === 'Verify And Publish',
-          target: 'Verify And Publish'
+          guard: ({ context }) => context.start === 'Verify and Publish',
+          target: 'Verify and Publish'
         },
         {
           guard: ({ context }) => context.start === 'Publish Product',
@@ -99,7 +92,8 @@ export const NoAdminS3 = setup({
     'Product Creation': {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
+        ({ context }) => {
+          createSnapshot('Product Creation', context);
           //later: hook into build engine
           console.log('Creating Product');
         }
@@ -111,10 +105,15 @@ export const NoAdminS3 = setup({
       }
     },
     'App Builder Configuration': {
-      entry: assign({
-        instructions: 'app_configuration',
-        includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
-      }),
+      entry: [
+        assign({
+          instructions: 'app_configuration',
+          includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
+        }),
+        ({ context }) => {
+          createSnapshot('App Builder Configuration', context);
+        }
+      ],
       on: {
         'Continue.Owner': {
           target: 'Product Build'
@@ -126,10 +125,15 @@ export const NoAdminS3 = setup({
       }
     },
     'Author Configuration': {
-      entry: assign({
-        instructions: 'app_configuration',
-        includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
-      }),
+      entry: [
+        assign({
+          instructions: 'app_configuration',
+          includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
+        }),
+        ({ context }) => {
+          createSnapshot('Author Configuration', context);
+        }
+      ],
       on: {
         'Continue.Author': {
           target: 'App Builder Configuration'
@@ -140,10 +144,15 @@ export const NoAdminS3 = setup({
       }
     },
     'Synchronize Data': {
-      entry: assign({
-        instructions: 'synchronize_data',
-        includeFields: ['storeDescription', 'listingLanguageCode']
-      }),
+      entry: [
+        assign({
+          instructions: 'synchronize_data',
+          includeFields: ['storeDescription', 'listingLanguageCode']
+        }),
+        ({ context }) => {
+          createSnapshot('Synchronize Data', context);
+        }
+      ],
       on: {
         'Continue.Owner': {
           target: 'Product Build'
@@ -155,10 +164,15 @@ export const NoAdminS3 = setup({
       }
     },
     'Author Download': {
-      entry: assign({
-        instructions: 'authors_download',
-        includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
-      }),
+      entry: [
+        assign({
+          instructions: 'authors_download',
+          includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
+        }),
+        ({ context }) => {
+          createSnapshot('Author Download', context);
+        }
+      ],
       on: {
         'Continue.Author': {
           target: 'Author Upload'
@@ -169,10 +183,15 @@ export const NoAdminS3 = setup({
       }
     },
     'Author Upload': {
-      entry: assign({
-        instructions: 'authors_upload',
-        includeFields: ['storeDescription', 'listingLanguageCode']
-      }),
+      entry: [
+        assign({
+          instructions: 'authors_upload',
+          includeFields: ['storeDescription', 'listingLanguageCode']
+        }),
+        ({ context }) => {
+          createSnapshot('Author Upload', context);
+        }
+      ],
       on: {
         'Continue.Author': {
           target: 'Synchronize Data'
@@ -188,26 +207,34 @@ export const NoAdminS3 = setup({
         assign({
           instructions: 'waiting'
         }),
+        ({ context }) => {
+          createSnapshot('Product Build', context);
+        },
         () => {
           console.log('Building Product');
         }
       ],
       on: {
         'Build Successful.Auto': {
-          target: 'Verify And Publish'
+          target: 'Verify and Publish'
         },
         'Build Failed.Auto': {
           target: 'Synchronize Data'
         }
       }
     },
-    'Verify And Publish': {
-      entry: assign({
-        instructions: 'verify_and_publish',
-        includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL'],
-        includeReviewers: true,
-        includeArtifacts: true
-      }),
+    'Verify and Publish': {
+      entry: [
+        assign({
+          instructions: 'verify_and_publish',
+          includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL'],
+          includeReviewers: true,
+          includeArtifacts: true
+        }),
+        ({ context }) => {
+          createSnapshot('Verify and Publish', context);
+        }
+      ],
       exit: assign({
         includeReviewers: false,
         includeArtifacts: false
@@ -227,18 +254,26 @@ export const NoAdminS3 = setup({
     },
     'Email Reviewers': {
       //later: connect to backend to email reviewers
-      entry: () => {
-        console.log('Emailing Reviewers');
-      },
+      entry: [
+        () => {
+          console.log('Emailing Reviewers');
+        },
+        ({ context }) => {
+          createSnapshot('Email Reviewers', context);
+        }
+      ],
       on: {
         'Default.Auto': {
-          target: 'Verify And Publish'
+          target: 'Verify and Publish'
         }
       }
     },
     'Publish Product': {
       entry: [
         assign({ instructions: 'waiting' }),
+        ({ context }) => {
+          createSnapshot('Publish Product', context);
+        },
         () => {
           console.log('Publishing Product');
         }
@@ -253,18 +288,25 @@ export const NoAdminS3 = setup({
       }
     },
     Published: {
-      entry: assign({
-        instructions: '',
-        includeFields: ['storeDescription', 'listingLanguageCode']
-      }),
+      entry: [
+        assign({
+          instructions: '',
+          includeFields: ['storeDescription', 'listingLanguageCode']
+        }),
+        ({ context }) => {
+          createSnapshot('Published', context);
+        }
+      ],
       type: 'final'
     }
   },
   on: {
-    jump: {
-      actions: assign({
-        start: ({ event }) => event.target
-      }),
+    'Jump To': {
+      actions: [
+        assign({
+          start: ({ event }) => event.target
+        })
+      ],
       target: '.Start'
     }
   }

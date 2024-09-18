@@ -98,6 +98,7 @@
         })
       }}>
         <input type="hidden" name="state" value={selected}>
+        <input type="hidden" name="product" value={data.instance?.Product.Id}>
         <input type="submit" class="btn" value="Jump State to {selected}">
       </form>
     </details>
