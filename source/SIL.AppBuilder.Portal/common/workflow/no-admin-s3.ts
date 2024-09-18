@@ -1,8 +1,8 @@
 import { setup, assign } from 'xstate';
 import DatabaseWrites from '../databaseProxy/index.js';
 import { WorkflowContext, WorkflowInput } from '../public/workflow.js';
-import { createSnapshot } from './db.js';
-import { create } from 'domain';
+import { createSnapshot, updateUserTasks } from './db.js';
+import { RoleId } from '../public/prisma.js';
 
 //later: update snapshot on state exits (define a function to do it), store instance id in context
 //later: update UserTasks on entry?
@@ -84,7 +84,7 @@ export const NoAdminS3 = setup({
       ],
       on: {
         // this is here just so the default start transition shows up in the visualizer
-        'Default.Auto': {
+        'Default:Auto': {
           target: 'Product Creation'
         }
       }
@@ -96,10 +96,11 @@ export const NoAdminS3 = setup({
           createSnapshot('Product Creation', context);
           //later: hook into build engine
           console.log('Creating Product');
+          updateUserTasks(context.productId, [], '');
         }
       ],
       on: {
-        'Product Created.Auto': {
+        'Product Created:Auto': {
           target: 'App Builder Configuration'
         }
       }
@@ -110,15 +111,19 @@ export const NoAdminS3 = setup({
           instructions: 'app_configuration',
           includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
         }),
-        ({ context }) => {
+        ({ context, event }) => {
           createSnapshot('App Builder Configuration', context);
+          updateUserTasks(context.productId, [RoleId.AppBuilder], 'App Builder Configuration', event.comment);
         }
       ],
       on: {
-        'Continue.Owner': {
+        'Continue:Owner': {
           target: 'Product Build'
         },
-        'Send to Authors.Owner': {
+        'Transfer to Authors:Owner': {
+          actions: () => {
+            console.log('Transferring to Authors')
+          },
           //later: guard project has authors
           target: 'Author Configuration'
         }
@@ -130,15 +135,16 @@ export const NoAdminS3 = setup({
           instructions: 'app_configuration',
           includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
         }),
-        ({ context }) => {
+        ({ context, event }) => {
           createSnapshot('Author Configuration', context);
-        }
+          updateUserTasks(context.productId, [RoleId.AppBuilder, RoleId.Author], 'Author Configuration', event.comment);
+        },
       ],
       on: {
-        'Continue.Author': {
+        'Continue:Author': {
           target: 'App Builder Configuration'
         },
-        'Take Back.Owner': {
+        'Take Back:Owner': {
           target: 'App Builder Configuration'
         }
       }
@@ -149,15 +155,16 @@ export const NoAdminS3 = setup({
           instructions: 'synchronize_data',
           includeFields: ['storeDescription', 'listingLanguageCode']
         }),
-        ({ context }) => {
+        ({ context, event }) => {
           createSnapshot('Synchronize Data', context);
+          updateUserTasks(context.productId, [RoleId.AppBuilder], 'Synchronize Data', event.comment);
         }
       ],
       on: {
-        'Continue.Owner': {
+        'Continue:Owner': {
           target: 'Product Build'
         },
-        'Transfer to Authors.Owner': {
+        'Transfer to Authors:Owner': {
           //later: guard project has authors
           target: 'Author Download'
         }
@@ -169,15 +176,16 @@ export const NoAdminS3 = setup({
           instructions: 'authors_download',
           includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
         }),
-        ({ context }) => {
+        ({ context, event }) => {
           createSnapshot('Author Download', context);
+          updateUserTasks(context.productId, [RoleId.AppBuilder, RoleId.Author], 'Author Download', event.comment);
         }
       ],
       on: {
-        'Continue.Author': {
+        'Continue:Author': {
           target: 'Author Upload'
         },
-        'Take Back.Owner': {
+        'Take Back:Owner': {
           target: 'Synchronize Data'
         }
       }
@@ -188,15 +196,16 @@ export const NoAdminS3 = setup({
           instructions: 'authors_upload',
           includeFields: ['storeDescription', 'listingLanguageCode']
         }),
-        ({ context }) => {
+        ({ context, event }) => {
           createSnapshot('Author Upload', context);
+          updateUserTasks(context.productId, [RoleId.AppBuilder, RoleId.Author], 'Author Upload', event.comment);
         }
       ],
       on: {
-        'Continue.Author': {
+        'Continue:Author': {
           target: 'Synchronize Data'
         },
-        'Take Back.Owner': {
+        'Take Back:Owner': {
           target: 'Synchronize Data'
         }
       }
@@ -209,16 +218,17 @@ export const NoAdminS3 = setup({
         }),
         ({ context }) => {
           createSnapshot('Product Build', context);
+          updateUserTasks(context.productId, [], '');
         },
         () => {
           console.log('Building Product');
         }
       ],
       on: {
-        'Build Successful.Auto': {
+        'Build Successful:Auto': {
           target: 'Verify and Publish'
         },
-        'Build Failed.Auto': {
+        'Build Failed:Auto': {
           target: 'Synchronize Data'
         }
       }
@@ -231,8 +241,9 @@ export const NoAdminS3 = setup({
           includeReviewers: true,
           includeArtifacts: true
         }),
-        ({ context }) => {
+        ({ context, event }) => {
           createSnapshot('Verify and Publish', context);
+          updateUserTasks(context.productId, [RoleId.AppBuilder], 'Verify and Publish', event.comment);
         }
       ],
       exit: assign({
@@ -240,13 +251,13 @@ export const NoAdminS3 = setup({
         includeArtifacts: false
       }),
       on: {
-        'Reject.Owner': {
+        'Reject:Owner': {
           target: 'Synchronize Data'
         },
-        'Approve.Owner': {
+        'Approve:Owner': {
           target: 'Publish Product'
         },
-        'Email Reviewers.Owner': {
+        'Email Reviewers:Owner': {
           //later: guard project has reviewers
           target: 'Email Reviewers'
         }
@@ -258,12 +269,13 @@ export const NoAdminS3 = setup({
         () => {
           console.log('Emailing Reviewers');
         },
-        ({ context }) => {
+        ({ context, event }) => {
           createSnapshot('Email Reviewers', context);
+          updateUserTasks(context.productId, [], '');
         }
       ],
       on: {
-        'Default.Auto': {
+        'Default:Auto': {
           target: 'Verify and Publish'
         }
       }
@@ -273,16 +285,17 @@ export const NoAdminS3 = setup({
         assign({ instructions: 'waiting' }),
         ({ context }) => {
           createSnapshot('Publish Product', context);
+          updateUserTasks(context.productId, [], '');
         },
         () => {
           console.log('Publishing Product');
         }
       ],
       on: {
-        'Publish Completed.Auto': {
+        'Publish Completed:Auto': {
           target: 'Published'
         },
-        'Publish Failed.Auto': {
+        'Publish Failed:Auto': {
           target: 'Synchronize Data'
         }
       }
@@ -295,6 +308,7 @@ export const NoAdminS3 = setup({
         }),
         ({ context }) => {
           createSnapshot('Published', context);
+          updateUserTasks(context.productId, [], '');
         }
       ],
       type: 'final'
