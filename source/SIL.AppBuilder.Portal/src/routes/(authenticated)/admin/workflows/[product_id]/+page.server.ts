@@ -1,23 +1,19 @@
-import { prisma, NoAdminS3 } from 'sil.appbuilder.portal.common';
+import { prisma, NoAdminS3, getSnapshot } from 'sil.appbuilder.portal.common';
 import { transform } from 'sil.appbuilder.portal.common/workflow';
 import { createActor, type Snapshot } from 'xstate';
 import type { PageServerLoad, Actions } from './$types';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
+
+const jumpStateSchema = v.object({
+  product: v.string(),
+  state: v.string()
+});
 
 export const load: PageServerLoad = async ({ params, url, locals }) => {
   const actor = createActor(NoAdminS3, {
-    snapshot:
-      (JSON.parse(
-        (
-          await prisma.workflowInstances.findUnique({
-            where: {
-              ProductId: params.product_id
-            },
-            select: {
-              Snapshot: true
-            }
-          })
-        )?.Snapshot || 'null'
-      ) as Snapshot<unknown>) ?? undefined,
+    snapshot: await getSnapshot(params.product_id, NoAdminS3),
     input: {}
   });
 
@@ -28,6 +24,7 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
     select: {
       Product: {
         select: {
+          Id: true,
           Project: {
             select: {
               Name: true
@@ -67,8 +64,20 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 export const actions = {
   default: async ({ request }) => {
     // TODO: permission check
-    const data = await request.formData();
+    const form = await superValidate(request, valibot(jumpStateSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
 
-    console.log(data.get('state'));
+    const snap = await getSnapshot(form.data.product, NoAdminS3);
+
+    const actor = createActor(NoAdminS3, {
+      snapshot: snap,
+      input: {}
+    });
+
+    actor.start();
+
+    actor.send({ type: 'Jump To', target: form.data.state });
+
+    return { form, ok: true };
   }
 } satisfies Actions;

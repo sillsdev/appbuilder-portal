@@ -4,6 +4,20 @@ import type {
   TransitionDefinition
 } from 'xstate';
 
+export type WorkflowContext = {
+  //later: narrow types if necessary
+  instructions: string;
+  includeFields: string[];
+  includeReviewers: boolean;
+  includeArtifacts: string | boolean;
+  start?: string;
+  productId: string;
+};
+
+export type WorkflowInput = {
+  productId?: string;
+};
+
 export type StateNode = {
   id: number;
   label: string;

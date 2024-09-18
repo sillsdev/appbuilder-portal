@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { getSnapshot, prisma } from 'sil.appbuilder.portal.common';
 import { NoAdminS3 } from 'sil.appbuilder.portal.common';
 import { createActor, type Snapshot } from 'xstate';
 import { redirect } from '@sveltejs/kit';
@@ -21,17 +21,7 @@ type Fields = {
 export const load = (async ({ params, url, locals }) => {
   // TODO: permission check
   const actor = createActor(NoAdminS3, {
-    snapshot:
-      JSON.parse((
-        await prisma.workflowInstances.findUnique({
-          where: {
-            ProductId: params.product_id
-          },
-          select: {
-            Snapshot: true
-          }
-        })
-      )?.Snapshot || 'null') as Snapshot<unknown> ?? undefined,
+    snapshot: await getSnapshot(params.product_id, NoAdminS3),
     input: {}
   });
   const snap = actor.getSnapshot();
