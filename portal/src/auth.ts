@@ -4,7 +4,7 @@ import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { verifyCanView } from './routes/(authenticated)/projects/[id=idNumber]/common';
+import { verifyCanViewAndEdit } from './routes/(authenticated)/projects/[id=idNumber]/common';
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -117,13 +117,13 @@ async function validateRouteForAuthenticatedUser(
         })
       )?.ProjectId;
       if (!projectId) return false;
-      return verifyCanView(session, projectId);
+      return verifyCanViewAndEdit(session, projectId);
     } else if (path[1] === 'projects') {
       if (path[2] === '[filter=projectSelector]') return true;
       // TODO: what are the conditions for viewing a project
       // I imagine either own it or be organization admin
       else if (path[2] === '[id=idNumber]') {
-        return await verifyCanView(session, parseInt(params.id!));
+        return await verifyCanViewAndEdit(session, parseInt(params.id!));
       }
       return true;
     } else if (path[1] === 'tasks') {

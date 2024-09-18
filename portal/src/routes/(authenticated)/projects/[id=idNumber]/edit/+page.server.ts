@@ -4,7 +4,7 @@ import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import { verifyCanView } from '../common';
+import { verifyCanViewAndEdit } from '../common';
 import type { Actions, PageServerLoad } from './$types';
 
 const projectPropertyEditSchema = v.object({
@@ -16,7 +16,7 @@ const projectPropertyEditSchema = v.object({
 });
 
 export const load = (async ({ locals, params }) => {
-  if (!verifyCanView((await locals.auth())!, parseInt(params.id))) return error(403);
+  if (!verifyCanViewAndEdit((await locals.auth())!, parseInt(params.id))) return error(403);
   const project = await prisma.projects.findUnique({
     where: {
       Id: parseInt(params.id)
@@ -52,7 +52,7 @@ export const load = (async ({ locals, params }) => {
 
 export const actions: Actions = {
   default: async function (event) {
-    if (!verifyCanView((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id))) return fail(403);
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (isNaN(parseInt(event.params.id))) return fail(400, { form, ok: false });
