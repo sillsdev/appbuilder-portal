@@ -8,6 +8,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { filterMeta, filterTransitions } from 'sil.appbuilder.portal.common/workflow';
 
 const sendActionSchema = v.object({
   state: v.string(),
@@ -131,15 +132,18 @@ export const load = (async ({ params, url, locals }) => {
   const fields = snap.context.includeFields;
 
   return {
-    actions: Object.keys(DefaultWorkflow.getStateNodeById(`${DefaultWorkflow.id}.${snap.value}`).on)
+    actions: filterTransitions(
+      DefaultWorkflow.getStateNodeById(`${DefaultWorkflow.id}.${snap.value}`).on,
+      snap.context
+    )
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
-        switch (a.split(':')[1]) {
-          case 'Owner':
+        switch (a[0].meta?.user) {
+          case RoleId.AppBuilder:
             return session.user.userId === product?.Project.Owner.Id;
-          case 'Author':
+          case RoleId.Author:
             return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
-          case 'Admin':
+          case RoleId.OrgAdmin:
             return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
               session.user.userId
             );
@@ -147,7 +151,7 @@ export const load = (async ({ params, url, locals }) => {
             return false;
         }
       })
-      .map((a) => a.split(':')),
+      .map((a) => a[0].eventType as string),
     taskTitle: snap.value,
     instructions: snap.context.instructions,
     //filter fields/files/reviewers based on task once workflows are implemented
@@ -194,10 +198,11 @@ export const actions = {
 
     //double check that state matches current snapshot
     if (form.data.state === actor.getSnapshot().value) {
-      const action = Object.keys(
-        DefaultWorkflow.getStateNodeById(`${DefaultWorkflow.id}.${actor.getSnapshot().value}`).on
-      ).filter((a) => a.split(':')[0] === form.data.action);
-      actor.send({ type: action[0], comment: form.data.comment, userId: session?.user.userId });
+      actor.send({
+        type: form.data.action,
+        comment: form.data.comment,
+        userId: session?.user.userId ?? null
+      });
     }
 
     redirect(302, '/tasks');
