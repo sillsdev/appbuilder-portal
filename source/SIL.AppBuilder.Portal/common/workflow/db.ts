@@ -7,7 +7,8 @@ import {
   WorkflowMachine,
   filterMeta,
   ActionType,
-  StateName
+  StateName,
+  filterTransitions
 } from '../public/workflow.js';
 import { StateNode } from 'xstate';
 import { RoleId, ProductTransitionType } from '../public/prisma.js';
@@ -129,13 +130,11 @@ export async function updateUserTasks(
 }
 
 function transitionFromState(
-  state: StateNode<any, any>,
+  state: StateNode<WorkflowContext, any>,
   machineId: string,
   context: WorkflowContext
 ) {
-  const t = Object.values(state.on)
-    .map((v) => v.filter((t) => filterMeta(t.meta, context)))
-    .filter((v) => v.length > 0 && filterMeta(v[0].meta, context))[0][0];
+  const t = filterTransitions(state.on, context)[0][0];
   return {
     ProductId: context.productId,
     TransitionType: ProductTransitionType.Activity,
