@@ -1,23 +1,127 @@
 import type {
   AnyEventObject,
   StateMachineDefinition,
+  StateMachine,
   TransitionDefinition,
   StateNode as XStateNode
 } from 'xstate';
+import type { RoleId } from './prisma.js';
+
+export enum ActionType {
+  Auto = 0,
+  User
+}
+
+export enum AdminLevel {
+  /** NoAdmin/OwnerAdmin */
+  None = 0,
+  /** LowAdmin */
+  Low,
+  /** Approval required */
+  High
+}
+
+export enum ProductType {
+  Android_GooglePlay = 0,
+  Android_S3,
+  AssetPackage,
+  Web
+}
+
+export type StateName =
+  | 'Readiness Check'
+  | 'Approval'
+  | 'Approval Pending'
+  | 'Terminated'
+  | 'App Builder Configuration'
+  | 'Author Configuration'
+  | 'Synchronize Data'
+  | 'Author Download'
+  | 'Author Upload'
+  | 'Product Build'
+  | 'Set Google Play Existing'
+  | 'App Store Preview'
+  | 'Create App Store Entry'
+  | 'Set Google Play Uploaded'
+  | 'Verify and Publish'
+  | 'Email Reviewers'
+  | 'Product Publish'
+  | 'Make It Live'
+  | 'Published'
+  | 'Product Creation';
 
 export type WorkflowContext = {
-  //later: narrow types if necessary
-  instructions: string;
-  includeFields: string[];
+  instructions:
+    | 'asset_package_verify_and_publish'
+    | 'app_configuration'
+    | 'create_app_entry'
+    | 'authors_download'
+    | 'googleplay_configuration'
+    | 'googleplay_verify_and_publish'
+    | 'make_it_live'
+    | 'approval_pending'
+    | 'readiness_check'
+    | 'synchronize_data'
+    | 'authors_upload'
+    | 'verify_and_publish'
+    | 'waiting'
+    | 'web_verify'
+    | null;
+  includeFields: (
+    | 'ownerName'
+    | 'ownerEmail'
+    | 'storeDescription'
+    | 'listingLanguageCode'
+    | 'projectURL'
+    | 'productDescription'
+    | 'appType'
+    | 'projectLanguageCode'
+  )[];
   includeReviewers: boolean;
-  includeArtifacts: string | boolean;
-  start?: string;
+  includeArtifacts: 'apk' | 'aab' | boolean;
+  start?: StateName;
   productId: string;
+  adminLevel: AdminLevel;
+  environment: { [key: string]: any };
+  productType: ProductType;
+  currentState?: StateName;
 };
 
 export type WorkflowInput = {
   productId?: string;
+  adminLevel?: AdminLevel;
+  environment?: { [key: string]: any };
+  productType?: ProductType;
 };
+
+export type WorkflowStateMeta = {
+  level?: AdminLevel | AdminLevel[];
+  product?: ProductType | ProductType[];
+};
+
+export type WorkflowTransitionMeta = {
+  type: ActionType;
+  user?: RoleId;
+  level?: AdminLevel | AdminLevel[];
+  product?: ProductType | ProductType[];
+};
+
+export type WorkflowMachine = StateMachine<
+  WorkflowContext,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  WorkflowInput,
+  any,
+  any,
+  WorkflowStateMeta | WorkflowTransitionMeta,
+  any
+>;
 
 export type StateNode = {
   id: number;
@@ -33,18 +137,41 @@ export function stateName(s: XStateNode<any, any>, machineId: string) {
 }
 
 export function targetStringFromEvent(
-  e: TransitionDefinition<any, AnyEventObject>[],
+  e: TransitionDefinition<any, AnyEventObject>,
   machineId: string
 ): string {
   return (
-    e[0]
+    e
       .toJSON()
       .target?.at(0)
-      ?.replace('#' + machineId + '.', '') ?? ''
+      ?.replace('#' + machineId + '.', '') || ''
   );
 }
 
-export function transform(machine: StateMachineDefinition<any, AnyEventObject>): StateNode[] {
+export function filterMachine(machine: WorkflowMachine) {}
+
+export function filterMeta(
+  meta: WorkflowStateMeta | WorkflowTransitionMeta | undefined,
+  ctx: WorkflowContext
+) {
+  return (
+    meta === undefined ||
+    ((meta.level
+      ? Array.isArray(meta.level)
+        ? meta.level.includes(ctx.adminLevel)
+        : meta.level === ctx.adminLevel
+      : true) &&
+      (meta.product
+        ? Array.isArray(meta.product)
+          ? meta.product.includes(ctx.productType)
+          : meta.product === ctx.productType
+        : true))
+  );
+}
+
+export function transform(
+  machine: StateMachineDefinition<WorkflowContext, AnyEventObject>
+): StateNode[] {
   const id = machine.id;
   const lookup = Object.keys(machine.states);
   const a = Object.entries(machine.states).map(([k, v]) => {
@@ -53,8 +180,9 @@ export function transform(machine: StateMachineDefinition<any, AnyEventObject>):
       label: k,
       connections: Object.values(v.on).map((o) => {
         return {
-          id: lookup.indexOf(targetStringFromEvent(o, id)),
-          target: targetStringFromEvent(o, id),
+          // treat no target on transition as self target
+          id: lookup.indexOf(targetStringFromEvent(o[0], id) || k),
+          target: targetStringFromEvent(o[0], id) || k,
           label: o[0].eventType
         };
       }),
@@ -62,7 +190,7 @@ export function transform(machine: StateMachineDefinition<any, AnyEventObject>):
         .map(([k, v]) => {
           return Object.values(v.on).map((e) => {
             // treat no target on transition as self target
-            return { from: k, to: targetStringFromEvent(e, id) || k };
+            return { from: k, to: targetStringFromEvent(e[0], id) || k };
           });
         })
         .reduce((p, c) => {

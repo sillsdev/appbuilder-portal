@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from './$types';
 import { getSnapshot, prisma } from 'sil.appbuilder.portal.common';
-import { NoAdminS3 } from 'sil.appbuilder.portal.common';
+import { DefaultWorkflow } from 'sil.appbuilder.portal.common';
 import { createActor, type Snapshot } from 'xstate';
 import { redirect } from '@sveltejs/kit';
 import { filterObject } from '$lib/filterObject';
@@ -31,8 +31,8 @@ type Fields = {
 export const load = (async ({ params, url, locals }) => {
   const session = await locals.auth();
   // TODO: permission check
-  const actor = createActor(NoAdminS3, {
-    snapshot: await getSnapshot(params.product_id, NoAdminS3),
+  const actor = createActor(DefaultWorkflow, {
+    snapshot: await getSnapshot(params.product_id, DefaultWorkflow),
     input: {}
   });
   const snap = actor.getSnapshot();
@@ -131,7 +131,7 @@ export const load = (async ({ params, url, locals }) => {
   const fields = snap.context.includeFields;
 
   return {
-    actions: Object.keys(NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${snap.value}`).on)
+    actions: Object.keys(DefaultWorkflow.getStateNodeById(`${DefaultWorkflow.id}.${snap.value}`).on)
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
         switch (a.split(':')[1]) {
@@ -183,9 +183,9 @@ export const actions = {
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const snap = await getSnapshot(params.product_id, NoAdminS3);
+    const snap = await getSnapshot(params.product_id, DefaultWorkflow);
 
-    const actor = createActor(NoAdminS3, {
+    const actor = createActor(DefaultWorkflow, {
       snapshot: snap,
       input: {}
     });
@@ -195,7 +195,7 @@ export const actions = {
     //double check that state matches current snapshot
     if (form.data.state === actor.getSnapshot().value) {
       const action = Object.keys(
-        NoAdminS3.getStateNodeById(`${NoAdminS3.id}.${actor.getSnapshot().value}`).on
+        DefaultWorkflow.getStateNodeById(`${DefaultWorkflow.id}.${actor.getSnapshot().value}`).on
       ).filter((a) => a.split(':')[0] === form.data.action);
       actor.send({ type: action[0], comment: form.data.comment, userId: session?.user.userId });
     }

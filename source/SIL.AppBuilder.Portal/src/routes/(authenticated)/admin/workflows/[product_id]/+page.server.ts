@@ -1,5 +1,5 @@
-import { prisma, NoAdminS3, getSnapshot } from 'sil.appbuilder.portal.common';
-import { transform } from 'sil.appbuilder.portal.common/workflow';
+import { prisma, DefaultWorkflow, getSnapshot } from 'sil.appbuilder.portal.common';
+import { transform, type StateName } from 'sil.appbuilder.portal.common/workflow';
 import { createActor, type Snapshot } from 'xstate';
 import type { PageServerLoad, Actions } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -11,8 +11,8 @@ const jumpStateSchema = v.object({
 });
 
 export const load: PageServerLoad = async ({ params, url, locals }) => {
-  const actor = createActor(NoAdminS3, {
-    snapshot: await getSnapshot(params.product_id, NoAdminS3),
+  const actor = createActor(DefaultWorkflow, {
+    snapshot: await getSnapshot(params.product_id, DefaultWorkflow),
     input: {}
   });
 
@@ -56,7 +56,7 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
   return {
     instance: instance,
     snapshot: { value: snap.value },
-    machine: transform(NoAdminS3.toJSON())
+    machine: transform(DefaultWorkflow.toJSON())
   };
 };
 
@@ -66,16 +66,20 @@ export const actions = {
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const snap = await getSnapshot(params.product_id, NoAdminS3);
+    const snap = await getSnapshot(params.product_id, DefaultWorkflow);
 
-    const actor = createActor(NoAdminS3, {
+    const actor = createActor(DefaultWorkflow, {
       snapshot: snap,
       input: {}
     });
 
     actor.start();
 
-    actor.send({ type: 'Jump To', target: form.data.state, previous: actor.getSnapshot().value });
+    actor.send({
+      type: 'Jump',
+      target: form.data.state as StateName,
+      userId: null
+    });
 
     return { form, ok: true };
   }
