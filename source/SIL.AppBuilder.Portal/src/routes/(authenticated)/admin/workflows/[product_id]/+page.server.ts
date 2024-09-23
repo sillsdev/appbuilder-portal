@@ -56,7 +56,7 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
   return {
     instance: instance,
     snapshot: { value: snap.value },
-    machine: transform(DefaultWorkflow.toJSON())
+    machine: transform(DefaultWorkflow.toJSON(), snap.context)
   };
 };
 

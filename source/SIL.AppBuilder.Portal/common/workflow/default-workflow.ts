@@ -594,25 +594,10 @@ export const DefaultWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              level: [AdminLevel.High, AdminLevel.Low],
               product: ProductType.Android_GooglePlay
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              context.adminLevel !== AdminLevel.None &&
-              !context.environment['google_play_existing'],
-            actions: { type: 'transit', params: { target: 'App Store Preview' } },
-            target: 'App Store Preview'
-          },
-          {
-            meta: {
-              type: ActionType.Auto,
-              level: AdminLevel.None,
-              product: ProductType.Android_GooglePlay
-            },
-            guard: ({ context }) =>
-              context.productType === ProductType.Android_GooglePlay &&
-              context.adminLevel === AdminLevel.None &&
               !context.environment['google_play_existing'],
             actions: { type: 'transit', params: { target: 'App Store Preview' } },
             target: 'App Store Preview'

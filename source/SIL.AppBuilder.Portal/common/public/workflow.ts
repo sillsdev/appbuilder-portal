@@ -3,6 +3,7 @@ import type {
   StateMachineDefinition,
   StateMachine,
   TransitionDefinition,
+  TransitionDefinitionMap,
   StateNode as XStateNode
 } from 'xstate';
 import type { RoleId } from './prisma.js';
@@ -148,20 +149,18 @@ export function targetStringFromEvent(
   );
 }
 
-export function filterMachine(machine: WorkflowMachine) {}
-
 export function filterMeta(
   meta: WorkflowStateMeta | WorkflowTransitionMeta | undefined,
   ctx: WorkflowContext
 ) {
   return (
     meta === undefined ||
-    ((meta.level
+    ((meta.level !== undefined
       ? Array.isArray(meta.level)
         ? meta.level.includes(ctx.adminLevel)
         : meta.level === ctx.adminLevel
       : true) &&
-      (meta.product
+      (meta.product !== undefined
         ? Array.isArray(meta.product)
           ? meta.product.includes(ctx.productType)
           : meta.product === ctx.productType
@@ -169,16 +168,27 @@ export function filterMeta(
   );
 }
 
+export function filterTransitions(
+  on: TransitionDefinitionMap<WorkflowContext, any>,
+  ctx: WorkflowContext
+) {
+  return Object.values(on)
+    .map((v) => v.filter((t) => filterMeta(t.meta, ctx)))
+    .filter((v) => v.length > 0 && filterMeta(v[0].meta, ctx));
+}
+
 export function transform(
-  machine: StateMachineDefinition<WorkflowContext, AnyEventObject>
+  machine: StateMachineDefinition<WorkflowContext, AnyEventObject>,
+  ctx: WorkflowContext
 ): StateNode[] {
   const id = machine.id;
-  const lookup = Object.keys(machine.states);
-  const a = Object.entries(machine.states).map(([k, v]) => {
+  const states = Object.entries(machine.states).filter(([k, v]) => filterMeta(v.meta, ctx));
+  const lookup = states.map((s) => s[0]);
+  const a = states.map(([k, v]) => {
     return {
       id: lookup.indexOf(k),
       label: k,
-      connections: Object.values(v.on).map((o) => {
+      connections: filterTransitions(v.on, ctx).map((o) => {
         return {
           // treat no target on transition as self target
           id: lookup.indexOf(targetStringFromEvent(o[0], id) || k),
@@ -186,9 +196,9 @@ export function transform(
           label: o[0].eventType
         };
       }),
-      inCount: Object.entries(machine.states)
+      inCount: states
         .map(([k, v]) => {
-          return Object.values(v.on).map((e) => {
+          return filterTransitions(v.on, ctx).map((e) => {
             // treat no target on transition as self target
             return { from: k, to: targetStringFromEvent(e[0], id) || k };
           });
