@@ -1,2 +1,2 @@
-export { NoAdminS3 } from './no-admin-s3.js';
+export { DefaultWorkflow } from './default-workflow.js';
 export { getSnapshot } from './db.js';
