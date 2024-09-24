@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { useMachine } from '@xstate/svelte';
-  import type { Snapshot } from 'xstate';
   import { Node, Svelvet, Anchor } from 'svelvet';
   import { HamburgerIcon } from '$lib/icons/index.js';
   import { Springy } from '$lib/springyGraph.js';
@@ -26,7 +24,8 @@
     const graph = new Springy.Graph();
     graph.loadJSON({
       nodes: data.machine.map((s) => s.label),
-      edges: data.machine.map((s) => {
+      edges: data.machine
+        .map((s) => {
           return s.connections.map((c) => [s.label, c.target]);
         })
         .reduce((p, c) => p.concat(c), [])
@@ -40,6 +39,16 @@
       label: 'Published',
       static: new Springy.Physics.Vector(bounds, bounds)
     });
+    if ('Terminated' in graph.nodeSet) {
+      graph.addNodeData('Terminated', {
+        label: 'Terminated',
+        static: new Springy.Physics.Vector(bounds, -bounds)
+      });
+    }
+    graph.addNodeData('Synchronize Data', {
+      label: 'Synchronize Data',
+      static: new Springy.Physics.Vector(-bounds, bounds)
+    });
 
     const layout = new Springy.ForceDirected(graph, 400.0, 400.0, 0.5, 0.00001);
 
@@ -51,10 +60,9 @@
         // drawNode
         positions[node.id] = position;
       },
-      () => {},
+      () => {}, // onRenderStop
       () => {}, // onRenderStart
       () => {
-        
         ready = true;
         // onRenderFrame
         // begin showing earlier, still simulating, just less loading time
@@ -90,15 +98,18 @@
           Date: {data.instance?.Product.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
         </li>
       </ul>
-      <form method="POST" on:submit|preventDefault={(e) => {
-        active = selected;
-        fetch(e.currentTarget.action, {
-          method: "post",
-          body: new FormData(e.currentTarget)
-        })
-      }}>
-        <input type="hidden" name="state" value={selected}>
-        <input type="submit" class="btn" value="Jump State to {selected}">
+      <form
+        method="POST"
+        on:submit|preventDefault={(e) => {
+          active = selected;
+          fetch(e.currentTarget.action, {
+            method: 'post',
+            body: new FormData(e.currentTarget)
+          });
+        }}
+      >
+        <input type="hidden" name="state" value={selected} />
+        <input type="submit" class="btn" value="Jump State to {selected}" />
       </form>
     </details>
   </div>
