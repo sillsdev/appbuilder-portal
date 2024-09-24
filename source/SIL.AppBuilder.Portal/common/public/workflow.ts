@@ -80,15 +80,21 @@ export type WorkflowContext = {
   start?: StateName;
   productId: string;
   adminLevel: AdminLevel;
-  environment: { [key: string]: any };
+  environment: BuildEnv;
   productType: ProductType;
   currentState?: StateName;
+};
+
+export type BuildEnv = {
+  googlePlayDraft?: boolean;
+  googlePlayExisting?: boolean;
+  googlePlayUploaded?: boolean;
 };
 
 export type WorkflowInput = {
   productId?: string;
   adminLevel?: AdminLevel;
-  environment?: { [key: string]: any };
+  environment?: BuildEnv;
   productType?: ProductType;
 };
 
