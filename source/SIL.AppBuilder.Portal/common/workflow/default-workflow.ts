@@ -178,13 +178,6 @@ export const DefaultWorkflow = setup({
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Set Google Play Existing', product: ProductType.Android_GooglePlay }
-          },
-          target: 'Set Google Play Existing'
-        },
-        {
-          guard: {
-            type: 'canJump',
             params: { target: 'App Store Preview', product: ProductType.Android_GooglePlay }
           },
           target: 'App Store Preview'
@@ -197,22 +190,8 @@ export const DefaultWorkflow = setup({
           target: 'Create App Store Entry'
         },
         {
-          guard: {
-            type: 'canJump',
-            params: { target: 'Set Google Play Uploaded', product: ProductType.Android_GooglePlay }
-          },
-          target: 'Set Google Play Uploaded'
-        },
-        {
           guard: { type: 'canJump', params: { target: 'Verify and Publish' } },
           target: 'Verify and Publish'
-        },
-        {
-          guard: and([
-            { type: 'canJump', params: { target: 'Email Reviewers' } },
-            { type: 'hasReviewers' }
-          ]),
-          target: 'Email Reviewers'
         },
         {
           guard: { type: 'canJump', params: { target: 'Product Publish' } },
@@ -430,8 +409,16 @@ export const DefaultWorkflow = setup({
             user: RoleId.AppBuilder,
             product: ProductType.Android_GooglePlay
           },
-          actions: { type: 'transit', params: { target: 'Set Google Play Existing' } },
-          target: 'Set Google Play Existing'
+          actions: [
+            { type: 'transit', params: { target: 'Product Build' } },
+            assign({
+              environment: ({ context }) => {
+                context.environment['google_play_existing'] = true;
+                return context.environment;
+              }
+            })
+          ],
+          target: 'Product Build'
         },
         'Transfer to Authors': {
           meta: {
@@ -441,34 +428,6 @@ export const DefaultWorkflow = setup({
           guard: { type: 'hasAuthors' },
           actions: { type: 'transit', params: { target: 'Author Configuration' } },
           target: 'Author Configuration'
-        }
-      }
-    },
-    'Set Google Play Existing': {
-      meta: {
-        product: ProductType.Android_GooglePlay
-      },
-      entry: [
-        assign({
-          environment: ({ context }) => {
-            context.environment['google_play_existing'] = true;
-            return context.environment;
-          },
-          currentState: 'Set Google Play Existing'
-        }),
-        { type: 'snapAndTasks' }
-      ],
-      always: [
-        {
-          actions: { type: 'transit', params: { target: 'Product Build' } },
-          target: 'Product Build'
-        }
-      ],
-      on: {
-        // this is here just so the default transition shows up in the visualization
-        Default: {
-          meta: { type: ActionType.Auto },
-          target: 'Product Build'
         }
       }
     },
@@ -736,8 +695,16 @@ export const DefaultWorkflow = setup({
               user: RoleId.OrgAdmin,
               level: [AdminLevel.High, AdminLevel.Low]
             },
-            actions: { type: 'transit', params: { target: 'Set Google Play Uploaded' } },
-            target: 'Set Google Play Uploaded'
+            actions: [
+              { type: 'transit', params: { target: 'Verify and Publish' } },
+              assign({
+                environment: ({ context }) => {
+                  context.environment['google_play_uploaded'] = true;
+                  return context.environment;
+                }
+              })
+            ],
+            target: 'Verify and Publish'
           },
           {
             meta: {
@@ -745,8 +712,16 @@ export const DefaultWorkflow = setup({
               user: RoleId.AppBuilder,
               level: AdminLevel.None
             },
-            actions: { type: 'transit', params: { target: 'Set Google Play Uploaded' } },
-            target: 'Set Google Play Uploaded'
+            actions: [
+              { type: 'transit', params: { target: 'Verify and Publish' } },
+              assign({
+                environment: ({ context }) => {
+                  context.environment['google_play_uploaded'] = true;
+                  return context.environment;
+                }
+              })
+            ],
+            target: 'Verify and Publish'
           }
         ],
         Reject: [
@@ -769,34 +744,6 @@ export const DefaultWorkflow = setup({
             target: 'Synchronize Data'
           }
         ]
-      }
-    },
-    'Set Google Play Uploaded': {
-      meta: {
-        product: ProductType.Android_GooglePlay
-      },
-      entry: [
-        assign({
-          environment: ({ context }) => {
-            context.environment['google_play_uploaded'] = true;
-            return context.environment;
-          },
-          currentState: 'Set Google Play Uploaded'
-        }),
-        { type: 'snapAndTasks' }
-      ],
-      always: [
-        {
-          actions: { type: 'transit', params: { target: 'Verify and Publish' } },
-          target: 'Verify and Publish'
-        }
-      ],
-      on: {
-        // this is here just so the default transition shows up in the visualization
-        Default: {
-          meta: { type: ActionType.Auto },
-          target: 'Verify and Publish'
-        }
       }
     },
     'Verify and Publish': {
@@ -860,27 +807,13 @@ export const DefaultWorkflow = setup({
             user: RoleId.AppBuilder
           },
           guard: { type: 'hasReviewers' },
-          actions: { type: 'transit', params: { target: 'Email Reviewers' } },
-          target: 'Email Reviewers'
-        }
-      }
-    },
-    'Email Reviewers': {
-      //later: connect to backend to email reviewers
-      entry: [
-        assign({
-          currentState: 'Email Reviewers'
-        }),
-        { type: 'snapAndTasks' },
-        () => {
-          console.log('Emailing Reviewers');
-        }
-      ],
-      on: {
-        Default: {
-          meta: { type: ActionType.Auto },
-          actions: { type: 'transit', params: { target: 'Verify and Publish' } },
-          target: 'Verify and Publish'
+          actions: [
+            { type: 'transit', params: { target: 'Verify and Publish' } },
+            () => {
+              //later: connect to backend to email reviewers
+              console.log('Emailing Reviewers');
+            }
+          ]
         }
       }
     },

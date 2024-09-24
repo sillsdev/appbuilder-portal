@@ -40,12 +40,9 @@ export type StateName =
   | 'Author Download'
   | 'Author Upload'
   | 'Product Build'
-  | 'Set Google Play Existing'
   | 'App Store Preview'
   | 'Create App Store Entry'
-  | 'Set Google Play Uploaded'
   | 'Verify and Publish'
-  | 'Email Reviewers'
   | 'Product Publish'
   | 'Make It Live'
   | 'Published'
@@ -129,8 +126,9 @@ export type StateNode = {
   label: string;
   connections: { id: number; target: string; label: string }[];
   inCount: number;
-  start: boolean;
-  final: boolean;
+  start?: boolean;
+  final?: boolean;
+  action?: boolean;
 };
 
 export function stateName(s: XStateNode<any, any>, machineId: string) {
@@ -181,15 +179,32 @@ export function transform(
   const id = machine.id;
   const states = Object.entries(machine.states).filter(([k, v]) => filterMeta(ctx, v.meta));
   const lookup = states.map((s) => s[0]);
-  const a = states.map(([k, v]) => {
+  const actions: StateNode[] = [];
+  const a: StateNode[] = states.map(([k, v]) => {
     return {
       id: lookup.indexOf(k),
       label: k,
       connections: filterTransitions(v.on, ctx).map((o) => {
+        let target = targetStringFromEvent(o[0], id);
+        if (!target) {
+          target = o[0].eventType;
+          lookup.push(target);
+          actions.push({
+            id: lookup.lastIndexOf(target),
+            label: target,
+            connections: [{
+              id: lookup.indexOf(k),
+              target: k,
+              label: ''
+            }],
+            inCount: 1,
+            action: true
+          })
+        }
         return {
           // treat no target on transition as self target
-          id: lookup.indexOf(targetStringFromEvent(o[0], id) || k),
-          target: targetStringFromEvent(o[0], id) || k,
+          id: lookup.lastIndexOf(target),
+          target: target,
           label: o[0].eventType
         };
       }),
@@ -208,5 +223,5 @@ export function transform(
       final: v.type === 'final'
     };
   });
-  return a;
+  return a.concat(actions);
 }
