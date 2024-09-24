@@ -11,11 +11,7 @@ import {
   StateName,
   WorkflowEvent
 } from '../public/workflow.js';
-import {
-  createSnapshot,
-  updateUserTasks,
-  updateProductTransitions,
-} from './db.js';
+import { createSnapshot, updateUserTasks, updateProductTransitions } from './db.js';
 import { RoleId } from '../public/prisma.js';
 
 /**
@@ -136,6 +132,10 @@ export const DefaultWorkflow = setup({
           target: 'Terminated'
         },
         {
+          guard: { type: 'canJump', params: { target: 'Project Creation' } },
+          target: 'Project Creation'
+        },
+        {
           guard: { type: 'canJump', params: { target: 'App Builder Configuration' } },
           target: 'App Builder Configuration'
         },
@@ -201,6 +201,10 @@ export const DefaultWorkflow = setup({
         {
           guard: { type: 'canJump', params: { target: 'Published' } },
           target: 'Published'
+        },
+        {
+          guard: ({ context }) => context.adminLevel === AdminLevel.High,
+          target: 'Readiness Check'
         },
         {
           target: 'Product Creation'
@@ -574,8 +578,10 @@ export const DefaultWorkflow = setup({
           },
           {
             meta: { type: ActionType.Auto },
-            guard: ({ context }) => context.productType !== ProductType.Android_GooglePlay || 
-              context.environment.googlePlayExisting || context.environment.googlePlayUploaded,
+            guard: ({ context }) =>
+              context.productType !== ProductType.Android_GooglePlay ||
+              context.environment.googlePlayExisting ||
+              context.environment.googlePlayUploaded,
             actions: { type: 'transit', params: { target: 'Verify and Publish' } },
             target: 'Verify and Publish'
           }
@@ -836,7 +842,8 @@ export const DefaultWorkflow = setup({
           },
           {
             meta: { type: ActionType.Auto },
-            guard: ({ context }) => context.productType !== ProductType.Android_GooglePlay ||
+            guard: ({ context }) =>
+              context.productType !== ProductType.Android_GooglePlay ||
               context.environment.googlePlayExisting,
             actions: { type: 'transit', params: { target: 'Published' } },
             target: 'Published'
