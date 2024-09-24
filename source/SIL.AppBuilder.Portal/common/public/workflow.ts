@@ -115,6 +115,13 @@ export type WorkflowTransitionMeta = MetaFilter & {
   user?: RoleId;
 };
 
+export type WorkflowEvent = {
+  type: any;
+  comment?: string;
+  target?: StateName;
+  userId: number | null;
+};
+
 export type WorkflowMachine = StateMachine<
   WorkflowContext,
   any,
