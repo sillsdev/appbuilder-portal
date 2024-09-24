@@ -156,7 +156,7 @@ async function populateTransitions(machine: WorkflowMachine, context: WorkflowCo
       Object.entries(machine.states).reduce(
         (p, [k, v], i) =>
           p.concat(
-            filterMeta(v.meta, context) &&
+            filterMeta(context, v.meta) &&
               (i === 1 || (i > 1 && p[p.length - 1]?.DestinationState === k && v.type !== 'final'))
               ? [transitionFromState(v, machine.id, context)]
               : []
@@ -241,4 +241,42 @@ export async function updateProductTransitions(
       }
     });
   }
+}
+
+export async function projectHasAuthors(ctx: WorkflowContext) {
+  return (await prisma.products.findUnique({
+    where: {
+      Id: ctx.productId
+    },
+    select: {
+      Project: {
+        select: {
+            Authors: {
+              select: {
+                Id: true
+              }
+            }
+          }
+      }
+    }
+  })).Project.Authors.length > 0;
+}
+
+export async function projectHasReviewers(ctx: WorkflowContext) {
+  return (await prisma.products.findUnique({
+    where: {
+      Id: ctx.productId
+    },
+    select: {
+      Project: {
+        select: {
+            Reviewers: {
+              select: {
+                Id: true
+              }
+            }
+          }
+      }
+    }
+  })).Project.Reviewers.length > 0;
 }
