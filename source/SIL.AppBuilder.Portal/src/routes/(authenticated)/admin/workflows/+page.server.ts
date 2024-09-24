@@ -8,6 +8,11 @@ export const load: PageServerLoad = async (event) => {
         select: {
           Id: true,
           ProductTransitions: {
+            where: {
+              DateTransition: {
+                not: null
+              }
+            },
             select: {
               DateTransition: true,
               InitialState: true
