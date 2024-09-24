@@ -1,6 +1,11 @@
-import { prisma, DefaultWorkflow, getSnapshot } from 'sil.appbuilder.portal.common';
+import {
+  prisma,
+  DefaultWorkflow,
+  getSnapshot,
+  resolveSnapshot
+} from 'sil.appbuilder.portal.common';
 import { transform, type StateName } from 'sil.appbuilder.portal.common/workflow';
-import { createActor, type Snapshot } from 'xstate';
+import { createActor } from 'xstate';
 import type { PageServerLoad, Actions } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -11,11 +16,6 @@ const jumpStateSchema = v.object({
 });
 
 export const load: PageServerLoad = async ({ params, url, locals }) => {
-  const actor = createActor(DefaultWorkflow, {
-    snapshot: await getSnapshot(params.product_id, DefaultWorkflow),
-    input: {}
-  });
-
   const instance = await prisma.workflowInstances.findUnique({
     where: {
       ProductId: params.product_id
@@ -56,12 +56,12 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
     }
   });
 
-  const snap = actor.getSnapshot();
+  const snap = await getSnapshot(params.product_id);
 
   return {
     instance: instance,
-    snapshot: { value: snap.value },
-    machine: transform(DefaultWorkflow.toJSON(), snap.context)
+    snapshot: { value: snap?.value ?? '' },
+    machine: snap ? transform(DefaultWorkflow.toJSON(), snap.context) : []
   };
 };
 
@@ -71,10 +71,8 @@ export const actions = {
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const snap = await getSnapshot(params.product_id, DefaultWorkflow);
-
     const actor = createActor(DefaultWorkflow, {
-      snapshot: snap,
+      snapshot: resolveSnapshot(DefaultWorkflow, await getSnapshot(params.product_id)),
       input: {}
     });
 

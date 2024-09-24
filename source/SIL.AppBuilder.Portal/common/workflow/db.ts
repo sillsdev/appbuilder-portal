@@ -29,8 +29,8 @@ export async function createSnapshot(state: StateName, context: WorkflowContext)
   });
 }
 
-export async function getSnapshot(productId: string, machine: WorkflowMachine) {
-  const snap = JSON.parse(
+export async function getSnapshot(productId: string) {
+  return JSON.parse(
     (
       await prisma.workflowInstances.findUnique({
         where: {
@@ -42,11 +42,10 @@ export async function getSnapshot(productId: string, machine: WorkflowMachine) {
       })
     )?.Snapshot || 'null'
   ) as Snapshot | undefined;
+}
 
-  if (snap) {
-    return machine.resolveState(snap);
-  }
-  return undefined;
+export function resolveSnapshot(machine: WorkflowMachine, snap?: Snapshot) {
+  return snap !== undefined ? machine.resolveState(snap) : undefined;
 }
 
 /**
@@ -246,39 +245,47 @@ export async function updateProductTransitions(
 }
 
 export async function projectHasAuthors(ctx: WorkflowContext) {
-  return (await prisma.products.findUnique({
-    where: {
-      Id: ctx.productId
-    },
-    select: {
-      Project: {
+  return (
+    (
+      await prisma.products.findUnique({
+        where: {
+          Id: ctx.productId
+        },
         select: {
-            Authors: {
-              select: {
-                Id: true
+          Project: {
+            select: {
+              Authors: {
+                select: {
+                  Id: true
+                }
               }
             }
           }
-      }
-    }
-  })).Project.Authors.length > 0;
+        }
+      })
+    ).Project.Authors.length > 0
+  );
 }
 
 export async function projectHasReviewers(ctx: WorkflowContext) {
-  return (await prisma.products.findUnique({
-    where: {
-      Id: ctx.productId
-    },
-    select: {
-      Project: {
+  return (
+    (
+      await prisma.products.findUnique({
+        where: {
+          Id: ctx.productId
+        },
         select: {
-            Reviewers: {
-              select: {
-                Id: true
+          Project: {
+            select: {
+              Reviewers: {
+                select: {
+                  Id: true
+                }
               }
             }
           }
-      }
-    }
-  })).Project.Reviewers.length > 0;
+        }
+      })
+    ).Project.Reviewers.length > 0
+  );
 }

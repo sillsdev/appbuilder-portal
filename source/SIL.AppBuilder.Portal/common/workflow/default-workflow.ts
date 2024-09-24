@@ -8,14 +8,13 @@ import {
   AdminLevel,
   ProductType,
   ActionType,
-  StateName
+  StateName,
+  WorkflowEvent
 } from '../public/workflow.js';
 import {
   createSnapshot,
   updateUserTasks,
   updateProductTransitions,
-  projectHasAuthors,
-  projectHasReviewers
 } from './db.js';
 import { RoleId } from '../public/prisma.js';
 
@@ -38,12 +37,7 @@ export const DefaultWorkflow = setup({
     context: {} as WorkflowContext,
     input: {} as WorkflowInput,
     meta: {} as WorkflowStateMeta | WorkflowTransitionMeta,
-    events: {} as {
-      type: any;
-      comment?: string;
-      target?: StateName;
-      userId: number | null;
-    }
+    events: {} as WorkflowEvent
   },
   actions: {
     snapAndTasks: (
@@ -74,7 +68,7 @@ export const DefaultWorkflow = setup({
   },
   guards: {
     canJump: (
-      { context, event: AnyEventObject },
+      { context },
       params: { target: StateName | string; product?: ProductType; level?: AdminLevel }
     ) => {
       return (
