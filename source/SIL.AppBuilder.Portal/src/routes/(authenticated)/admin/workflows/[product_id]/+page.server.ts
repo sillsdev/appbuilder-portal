@@ -35,6 +35,11 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
             }
           },
           ProductTransitions: {
+            where: {
+              DateTransition: {
+                not: null
+              }
+            },
             select: {
               DateTransition: true,
               InitialState: true
