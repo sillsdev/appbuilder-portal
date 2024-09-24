@@ -9,7 +9,9 @@ import type {
 import type { RoleId } from './prisma.js';
 
 export enum ActionType {
+  /** Automated Action */
   Auto = 0,
+  /** User-initiated Action */
   User
 }
 
@@ -85,6 +87,8 @@ export type WorkflowContext = {
   currentState?: StateName;
 };
 
+// These are all specific to the Google Play workflows
+// Not sure how these are used, but will figure out when integrating into backend
 export type BuildEnv = {
   googlePlayDraft?: boolean;
   googlePlayExisting?: boolean;
@@ -98,6 +102,7 @@ export type WorkflowInput = {
   productType?: ProductType;
 };
 
+/** Used for filtering based on AdminLevel and/or ProductType */
 export type MetaFilter = {
   level?: AdminLevel | AdminLevel[];
   product?: ProductType | ProductType[];
@@ -153,6 +158,14 @@ export function targetStringFromEvent(
   );
 }
 
+/** 
+ * Include state/transition if:
+ *  - no conditions are specified 
+ *  - OR
+ *    - One of the provided admin levels matches the context 
+ *    - AND
+ *    - One of the provided product types matches the context
+*/
 export function filterMeta(ctx: WorkflowContext, meta?: MetaFilter) {
   return (
     meta === undefined ||
@@ -169,6 +182,7 @@ export function filterMeta(ctx: WorkflowContext, meta?: MetaFilter) {
   );
 }
 
+/** Filter a states transitions based on provided context */
 export function filterTransitions(
   on: TransitionDefinitionMap<WorkflowContext, any>,
   ctx: WorkflowContext
@@ -178,6 +192,7 @@ export function filterTransitions(
     .filter((v) => v.length > 0 && filterMeta(ctx, v[0].meta));
 }
 
+/** Transform state machine definition into something more easily usable by the visualization algorithm */
 export function transform(
   machine: StateMachineDefinition<WorkflowContext, AnyEventObject>,
   ctx: WorkflowContext
@@ -186,7 +201,7 @@ export function transform(
   const states = Object.entries(machine.states).filter(([k, v]) => filterMeta(ctx, v.meta));
   const lookup = states.map((s) => s[0]);
   const actions: StateNode[] = [];
-  const a: StateNode[] = states.map(([k, v]) => {
+  return states.map(([k, v]) => {
     return {
       id: lookup.indexOf(k),
       label: k,
@@ -227,7 +242,6 @@ export function transform(
         .filter((v) => k === v.to).length,
       start: k === 'Start',
       final: v.type === 'final'
-    };
-  });
-  return a.concat(actions);
+    } as StateNode;
+  }).concat(actions);
 }

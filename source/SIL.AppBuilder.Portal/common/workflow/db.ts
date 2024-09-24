@@ -129,6 +129,7 @@ export async function updateUserTasks(
   });
 }
 
+/** Create ProductTransitions record object */
 function transitionFromState(
   state: StateNode<WorkflowContext, any>,
   machineId: string,
@@ -144,6 +145,7 @@ function transitionFromState(
   };
 }
 
+/** Create ProductTransitions entries for new product following the "happy" path */
 async function populateTransitions(machine: WorkflowMachine, context: WorkflowContext) {
   return DatabaseWrites.productTransitions.createManyAndReturn({
     data: [

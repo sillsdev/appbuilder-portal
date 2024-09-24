@@ -63,6 +63,9 @@
       () => {}, // onRenderStop
       () => {}, // onRenderStart
       () => {
+        // If we show it this early, there will be practically no loading spinner
+        // But there will also be much more movement when rendering
+        // This should probably be discussed.
         ready = true;
         // onRenderFrame
         // begin showing earlier, still simulating, just less loading time
@@ -211,6 +214,7 @@
     display: block; /* remove arrow */
   }
 
+  /* hide dropdown name when collapsed */
   details:not([open]) > summary strong {
     display: none;
   }
