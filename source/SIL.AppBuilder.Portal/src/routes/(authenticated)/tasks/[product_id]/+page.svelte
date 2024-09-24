@@ -11,7 +11,7 @@
     {#if data.actions?.length}
     <div class="flex flex-row gap-x-3">
       {#each data.actions as action}
-      <input type="submit" name="action" class="btn" value={action}>
+      <input type="submit" name="flowAction" class="btn" value={action}>
       {/each}
     </div>
     {/if}

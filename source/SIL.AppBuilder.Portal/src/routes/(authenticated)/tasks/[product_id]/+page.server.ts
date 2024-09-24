@@ -12,7 +12,7 @@ import { filterTransitions } from 'sil.appbuilder.portal.common/workflow';
 
 const sendActionSchema = v.object({
   state: v.string(),
-  action: v.string(),
+  flowAction: v.string(),
   comment: v.string()
 });
 
@@ -193,7 +193,7 @@ export const actions = {
     //double check that state matches current snapshot
     if (form.data.state === actor.getSnapshot().value) {
       actor.send({
-        type: form.data.action,
+        type: form.data.flowAction,
         comment: form.data.comment,
         userId: session?.user.userId ?? null
       });
