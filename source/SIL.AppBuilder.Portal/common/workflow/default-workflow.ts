@@ -413,7 +413,7 @@ export const DefaultWorkflow = setup({
             { type: 'transit', params: { target: 'Product Build' } },
             assign({
               environment: ({ context }) => {
-                context.environment['google_play_existing'] = true;
+                context.environment.googlePlayExisting = true;
                 return context.environment;
               }
             })
@@ -555,13 +555,13 @@ export const DefaultWorkflow = setup({
     },
     'Product Build': {
       entry: [
-        //later: connect to backend to build product
         assign({
           instructions: 'waiting',
           currentState: 'Product Build'
         }),
         { type: 'snapAndTasks' },
         () => {
+          //later: hook into build engine
           console.log('Building Product');
         }
       ],
@@ -574,13 +574,14 @@ export const DefaultWorkflow = setup({
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment['google_play_existing'],
+              !context.environment.googlePlayUploaded,
             actions: { type: 'transit', params: { target: 'App Store Preview' } },
             target: 'App Store Preview'
           },
           {
             meta: { type: ActionType.Auto },
-            guard: ({ context }) => context.productType !== ProductType.Android_GooglePlay, // || other conditions
+            guard: ({ context }) => context.productType !== ProductType.Android_GooglePlay || 
+              context.environment.googlePlayExisting || context.environment.googlePlayUploaded,
             actions: { type: 'transit', params: { target: 'Verify and Publish' } },
             target: 'Verify and Publish'
           }
@@ -673,7 +674,7 @@ export const DefaultWorkflow = setup({
           includeFields: ['storeDescription', 'listingLanguageCode'],
           includeArtifacts: true,
           environment: ({ context }) => {
-            context.environment['google_play_draft'] = true;
+            context.environment.googlePlayDraft = true;
             return context.environment;
           },
           currentState: 'Create App Store Entry'
@@ -699,7 +700,7 @@ export const DefaultWorkflow = setup({
               { type: 'transit', params: { target: 'Verify and Publish' } },
               assign({
                 environment: ({ context }) => {
-                  context.environment['google_play_uploaded'] = true;
+                  context.environment.googlePlayUploaded = true;
                   return context.environment;
                 }
               })
@@ -716,7 +717,7 @@ export const DefaultWorkflow = setup({
               { type: 'transit', params: { target: 'Verify and Publish' } },
               assign({
                 environment: ({ context }) => {
-                  context.environment['google_play_uploaded'] = true;
+                  context.environment.googlePlayUploaded = true;
                   return context.environment;
                 }
               })
@@ -822,6 +823,7 @@ export const DefaultWorkflow = setup({
         assign({ instructions: 'waiting', currentState: 'Product Publish' }),
         { type: 'snapAndTasks' },
         () => {
+          //later: hook into build engine
           console.log('Publishing Product');
         }
       ],
@@ -834,13 +836,14 @@ export const DefaultWorkflow = setup({
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment['google_play_existing'],
+              !context.environment.googlePlayExisting,
             actions: { type: 'transit', params: { target: 'Make It Live' } },
             target: 'Make It Live'
           },
           {
             meta: { type: ActionType.Auto },
-            guard: ({ context }) => context.productType !== ProductType.Android_GooglePlay, // || other conditions
+            guard: ({ context }) => context.productType !== ProductType.Android_GooglePlay ||
+              context.environment.googlePlayExisting,
             actions: { type: 'transit', params: { target: 'Published' } },
             target: 'Published'
           }
