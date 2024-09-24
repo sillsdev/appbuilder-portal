@@ -50,14 +50,13 @@ export const DefaultWorkflow = setup({
       );
     },
     transit: ({ context, event }, params?: { target?: StateName }) => {
-      const command = event.type.split(':');
       updateProductTransitions(
         DefaultWorkflow,
         context,
         event.userId,
         context.currentState,
         params?.target ?? event.target,
-        command[1] === 'Auto' ? null : command[0],
+        event.type, // This will always log the command. Not sure if this is desired.
         event.comment
       );
     }
