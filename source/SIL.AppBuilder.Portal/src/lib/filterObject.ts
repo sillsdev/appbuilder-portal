@@ -4,6 +4,7 @@ type Entry<T> = {
   [K in keyof T]: [K, T[K]]
 }[keyof T]
 
+/** Filter an object's properties based on filter function */
 export function filterObject<T extends object>(
   obj: T,
   fn: (entry: Entry<T>, i: number, arr: Entry<T>[]) => boolean
