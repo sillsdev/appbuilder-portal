@@ -140,9 +140,12 @@
         <svg
           class="rect {active === state.label ? 'active' : ''} 
         {state.start ? 'start' : ''} 
-        {state.final ? 'final' : ''}"
+        {state.final ? 'final' : ''}
+        {state.action? 'action' : ''}"
           on:click={() => {
-            selected = state.label;
+            if (!state.action) {
+              selected = state.label;
+            }
           }}
         >
           <rect
@@ -191,6 +194,12 @@
   }
   .selected {
     @apply stroke-white;
+  }
+  .action {
+    @apply fill-base-100 stroke-black opacity-75;
+  }
+  .action text {
+    @apply fill-base-content stroke-none;
   }
   #menu {
     position: absolute;
