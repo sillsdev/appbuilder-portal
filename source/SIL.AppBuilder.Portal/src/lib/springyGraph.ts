@@ -140,11 +140,11 @@ export namespace Springy {
         const e = args[i];
         const node1 = this.nodeSet[e.source];
         if (node1 == undefined) {
-          throw new TypeError('invalid node name: ' + e.source);
+          throw new TypeError('invalid node name: "' + e.source + '" (source)');
         }
         var node2 = this.nodeSet[e.target];
         if (node2 == undefined) {
-          throw new TypeError('invalid node name: ' + e.target);
+          throw new TypeError('invalid node name: "' + e.target + '" (target)');
         }
 
         this.newEdge(node1, node2, e.data);
