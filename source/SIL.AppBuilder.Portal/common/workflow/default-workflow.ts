@@ -1,4 +1,4 @@
-import { setup, assign } from 'xstate';
+import { setup, assign, and } from 'xstate';
 import DatabaseWrites from '../databaseProxy/index.js';
 import {
   WorkflowContext,
@@ -10,7 +10,13 @@ import {
   ActionType,
   StateName
 } from '../public/workflow.js';
-import { createSnapshot, updateUserTasks, updateProductTransitions } from './db.js';
+import {
+  createSnapshot,
+  updateUserTasks,
+  updateProductTransitions,
+  projectHasAuthors,
+  projectHasReviewers
+} from './db.js';
 import { RoleId } from '../public/prisma.js';
 
 /**
@@ -44,7 +50,7 @@ export const DefaultWorkflow = setup({
       { context, event },
       params?: { role?: RoleId | RoleId[] | ((context: WorkflowContext) => RoleId | RoleId[]) }
     ) => {
-      const roles = typeof params.role === 'function' ? params.role(context) : params.role;
+      const roles = typeof params?.role === 'function' ? params.role(context) : params?.role;
       createSnapshot(context.currentState, context);
       updateUserTasks(
         context.productId,
@@ -68,14 +74,21 @@ export const DefaultWorkflow = setup({
   },
   guards: {
     canJump: (
-      { context },
-      params: { target: StateName; product?: ProductType; level?: AdminLevel }
+      { context, event: AnyEventObject },
+      params: { target: StateName | string; product?: ProductType; level?: AdminLevel }
     ) => {
       return (
         context.start === params.target &&
         (params.product ? params.product === context.productType : true) &&
         (params.level ? params.level === context.adminLevel : true)
       );
+    },
+    // later: write actual guards. cannot be async, which means no checking DB
+    hasAuthors: ({ context }) => {
+      return true;
+    },
+    hasReviewers: ({ context }) => {
+      return true;
     }
   }
 }).createMachine({
@@ -133,8 +146,10 @@ export const DefaultWorkflow = setup({
           target: 'App Builder Configuration'
         },
         {
-          guard: { type: 'canJump', params: { target: 'Author Configuration' } },
-          //later: guard project has authors
+          guard: and([
+            { type: 'canJump', params: { target: 'Author Configuration' } },
+            { type: 'hasAuthors' }
+          ]),
           target: 'Author Configuration'
         },
         {
@@ -142,14 +157,18 @@ export const DefaultWorkflow = setup({
           target: 'Synchronize Data'
         },
         {
-          //later: guard project has authors
-          guard: { type: 'canJump', params: { target: 'Author Download' } },
+          guard: and([
+            { type: 'canJump', params: { target: 'Author Download' } },
+            { type: 'hasAuthors' }
+          ]),
           target: 'Author Download'
         },
         {
-          //later: guard project has authors
           //note: authors can upload at any time, this state is just to prompt an upload
-          guard: { type: 'canJump', params: { target: 'Author Upload' } },
+          guard: and([
+            { type: 'canJump', params: { target: 'Author Upload' } },
+            { type: 'hasAuthors' }
+          ]),
           target: 'Author Upload'
         },
         {
@@ -189,7 +208,10 @@ export const DefaultWorkflow = setup({
           target: 'Verify and Publish'
         },
         {
-          guard: { type: 'canJump', params: { target: 'Email Reviewers' } },
+          guard: and([
+            { type: 'canJump', params: { target: 'Email Reviewers' } },
+            { type: 'hasReviewers' }
+          ]),
           target: 'Email Reviewers'
         },
         {
@@ -416,13 +438,8 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          actions: [
-            { type: 'transit', params: { target: 'Author Configuration' } },
-            () => {
-              console.log('Transferring to Authors');
-            }
-          ],
-          //later: guard project has authors
+          guard: { type: 'hasAuthors' },
+          actions: { type: 'transit', params: { target: 'Author Configuration' } },
           target: 'Author Configuration'
         }
       }
@@ -509,7 +526,7 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          //later: guard project has authors
+          guard: { type: 'hasAuthors' },
           actions: { type: 'transit', params: { target: 'Author Download' } },
           target: 'Author Download'
         }
@@ -842,7 +859,7 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          //later: guard project has reviewers
+          guard: { type: 'hasReviewers' },
           actions: { type: 'transit', params: { target: 'Email Reviewers' } },
           target: 'Email Reviewers'
         }

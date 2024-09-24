@@ -95,16 +95,16 @@ export type WorkflowInput = {
   productType?: ProductType;
 };
 
-export type WorkflowStateMeta = {
+export type MetaFilter = {
   level?: AdminLevel | AdminLevel[];
   product?: ProductType | ProductType[];
 };
 
-export type WorkflowTransitionMeta = {
+export type WorkflowStateMeta = MetaFilter;
+
+export type WorkflowTransitionMeta = MetaFilter & {
   type: ActionType;
   user?: RoleId;
-  level?: AdminLevel | AdminLevel[];
-  product?: ProductType | ProductType[];
 };
 
 export type WorkflowMachine = StateMachine<
@@ -149,10 +149,7 @@ export function targetStringFromEvent(
   );
 }
 
-export function filterMeta(
-  meta: WorkflowStateMeta | WorkflowTransitionMeta | undefined,
-  ctx: WorkflowContext
-) {
+export function filterMeta(ctx: WorkflowContext, meta?: MetaFilter) {
   return (
     meta === undefined ||
     ((meta.level !== undefined
@@ -173,8 +170,8 @@ export function filterTransitions(
   ctx: WorkflowContext
 ) {
   return Object.values(on)
-    .map((v) => v.filter((t) => filterMeta(t.meta, ctx)))
-    .filter((v) => v.length > 0 && filterMeta(v[0].meta, ctx));
+    .map((v) => v.filter((t) => filterMeta(ctx, t.meta)))
+    .filter((v) => v.length > 0 && filterMeta(ctx, v[0].meta));
 }
 
 export function transform(
@@ -182,7 +179,7 @@ export function transform(
   ctx: WorkflowContext
 ): StateNode[] {
   const id = machine.id;
-  const states = Object.entries(machine.states).filter(([k, v]) => filterMeta(v.meta, ctx));
+  const states = Object.entries(machine.states).filter(([k, v]) => filterMeta(ctx, v.meta));
   const lookup = states.map((s) => s[0]);
   const a = states.map(([k, v]) => {
     return {
