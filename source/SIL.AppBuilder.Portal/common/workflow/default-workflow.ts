@@ -72,7 +72,7 @@ export const DefaultWorkflow = setup({
         (params.level ? params.level === context.adminLevel : true)
       );
     },
-    // later: write actual guards. cannot be async, which means no checking DB
+    // TODO: write actual guards. cannot be async, which means no checking DB
     hasAuthors: ({ context }) => {
       return true;
     },
@@ -354,7 +354,7 @@ export const DefaultWorkflow = setup({
         assign({ instructions: 'waiting', currentState: 'Product Creation' }),
         { type: 'snapAndTasks' },
         () => {
-          //later: hook into build engine
+          // TODO: hook into build engine
           console.log('Creating Product');
         }
       ],
@@ -558,7 +558,7 @@ export const DefaultWorkflow = setup({
         }),
         { type: 'snapAndTasks' },
         () => {
-          //later: hook into build engine
+          // TODO: hook into build engine
           console.log('Building Product');
         }
       ],
@@ -810,7 +810,7 @@ export const DefaultWorkflow = setup({
           actions: [
             { type: 'transit', params: { target: 'Verify and Publish' } },
             () => {
-              //later: connect to backend to email reviewers
+              // TODO: connect to backend to email reviewers
               console.log('Emailing Reviewers');
             }
           ]
@@ -822,7 +822,7 @@ export const DefaultWorkflow = setup({
         assign({ instructions: 'waiting', currentState: 'Product Publish' }),
         { type: 'snapAndTasks' },
         () => {
-          //later: hook into build engine
+          // TODO: hook into build engine
           console.log('Publishing Product');
         }
       ],

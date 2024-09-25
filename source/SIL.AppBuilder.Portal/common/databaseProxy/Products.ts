@@ -59,7 +59,7 @@ export async function update(
       },
       data: productData
     });
-    // later: Are there any other updates that need to be done?
+    // TODO: Are there any other updates that need to be done?
   } catch (e) {
     return false;
   }
