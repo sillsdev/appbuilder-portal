@@ -3,7 +3,6 @@ import { getSnapshot, prisma, resolveSnapshot } from 'sil.appbuilder.portal.comm
 import { DefaultWorkflow } from 'sil.appbuilder.portal.common';
 import { createActor } from 'xstate';
 import { redirect } from '@sveltejs/kit';
-import { filterObject } from '$lib/filterObject';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -44,13 +43,13 @@ export const load = (async ({ params, url, locals }) => {
         select: {
           Name: true,
           Description: true,
-          WorkflowAppProjectUrl: true,
-          Language: true,
+          WorkflowAppProjectUrl: snap?.context.includeFields.includes('projectURL'),
+          Language: snap?.context.includeFields.includes('projectLanguageCode'),
           Owner: {
             select: {
               Id: true,
-              Name: true,
-              Email: true
+              Name: snap?.context.includeFields.includes('ownerName'),
+              Email: snap?.context.includeFields.includes('ownerEmail')
             }
           },
           //conditionally include reviewers
@@ -79,24 +78,30 @@ export const load = (async ({ params, url, locals }) => {
           }
         }
       },
-      Store: {
-        select: {
-          Description: true
-        }
-      },
-      StoreLanguage: {
-        select: {
-          Name: true
-        }
-      },
-      ProductDefinition: {
-        select: {
-          Name: true,
-          ApplicationTypes: {
+      Store: snap?.context.includeFields.includes('storeDescription')
+        ? {
             select: {
               Description: true
             }
           }
+        : undefined,
+      StoreLanguage: snap?.context.includeFields.includes('listingLanguageCode')
+        ? {
+            select: {
+              Name: true
+            }
+          }
+        : undefined,
+      ProductDefinition: {
+        select: {
+          Name: snap?.context.includeFields.includes('productDescription'),
+          ApplicationTypes: snap?.context.includeFields.includes('appType')
+            ? {
+                select: {
+                  Description: true
+                }
+              }
+            : undefined
         }
       }
     }
@@ -150,26 +155,17 @@ export const load = (async ({ params, url, locals }) => {
       : [],
     taskTitle: snap?.value,
     instructions: snap?.context.instructions,
-    //filter fields/files/reviewers based on task once workflows are implemented
-    //possibly filter in the original query to increase database efficiency
     fields: {
-      ...filterObject(
-        {
-          ownerName: product?.Project.Owner.Name,
-          ownerEmail: product?.Project.Owner.Email,
-          storeDescription: product?.Store?.Description,
-          listingLanguageCode: product?.StoreLanguage?.Name,
-          projectURL: product?.Project.WorkflowAppProjectUrl,
-          productDescription: product?.ProductDefinition.Name,
-          appType: product?.ProductDefinition.ApplicationTypes.Description,
-          projectLanguageCode: product?.Project.Language
-        },
-        ([k, v]) => {
-          return snap?.context.includeFields.includes(k) ?? false;
-        }
-      ),
       projectName: product?.Project.Name,
-      projectDescription: product?.Project.Description
+      projectDescription: product?.Project.Description,
+      ownerName: product?.Project.Owner.Name,
+      ownerEmail: product?.Project.Owner.Email,
+      storeDescription: product?.Store?.Description,
+      listingLanguageCode: product?.StoreLanguage?.Name,
+      projectURL: product?.Project.WorkflowAppProjectUrl,
+      productDescription: product?.ProductDefinition.Name,
+      appType: product?.ProductDefinition.ApplicationTypes.Description,
+      projectLanguageCode: product?.Project.Language
     } as Fields,
     files: artifacts,
     reviewers: product?.Project.Reviewers
