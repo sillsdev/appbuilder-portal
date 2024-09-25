@@ -31,7 +31,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-
+// TODO: Using a physics simulation for our graph is overkill and slow. Redoing this would be optimal.
 export namespace Springy {
   export type NodeData = {
     mass?: number;
