@@ -131,8 +131,8 @@ export const DefaultWorkflow = setup({
           target: 'Terminated'
         },
         {
-          guard: { type: 'canJump', params: { target: 'Project Creation' } },
-          target: 'Project Creation'
+          guard: { type: 'canJump', params: { target: 'Product Creation' } },
+          target: 'Product Creation'
         },
         {
           guard: { type: 'canJump', params: { target: 'App Builder Configuration' } },
