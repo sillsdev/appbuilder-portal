@@ -200,7 +200,7 @@ export function filterTransitions(
 }
 
 /** Transform state machine definition into something more easily usable by the visualization algorithm */
-export function transform(
+export function serializeForVisualization(
   machine: StateMachineDefinition<WorkflowContext, AnyEventObject>,
   ctx: WorkflowContext
 ): StateNode[] {
