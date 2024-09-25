@@ -41,11 +41,11 @@ export async function getSnapshot(productId: string) {
         }
       })
     )?.Snapshot || 'null'
-  ) as Snapshot | undefined;
+  ) as Snapshot | null;
 }
 
-export function resolveSnapshot(machine: WorkflowMachine, snap?: Snapshot) {
-  return snap !== undefined ? machine.resolveState(snap) : undefined;
+export function resolveSnapshot(machine: WorkflowMachine, snap: Snapshot | null) {
+  return snap ? machine.resolveState(snap) : undefined;
 }
 
 /**
