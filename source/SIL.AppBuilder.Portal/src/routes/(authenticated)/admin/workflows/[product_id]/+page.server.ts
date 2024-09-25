@@ -4,7 +4,7 @@ import {
   getSnapshot,
   resolveSnapshot
 } from 'sil.appbuilder.portal.common';
-import { transform, type StateName } from 'sil.appbuilder.portal.common/workflow';
+import { serializeForVisualization, type StateName } from 'sil.appbuilder.portal.common/workflow';
 import { createActor } from 'xstate';
 import type { PageServerLoad, Actions } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -61,7 +61,7 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
   return {
     instance: instance,
     snapshot: { value: snap?.value ?? '' },
-    machine: snap ? transform(DefaultWorkflow.toJSON(), snap.context) : []
+    machine: snap ? serializeForVisualization(DefaultWorkflow.toJSON(), snap.context) : []
   };
 };
 
