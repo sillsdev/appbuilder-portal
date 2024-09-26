@@ -15,7 +15,7 @@ export enum ActionType {
   User
 }
 
-export enum AdminLevel {
+export enum WorkflowAdminLevel {
   /** NoAdmin/OwnerAdmin */
   None = 0,
   /** LowAdmin */
@@ -81,7 +81,7 @@ export type WorkflowContext = {
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: StateName;
   productId: string;
-  adminLevel: AdminLevel;
+  adminLevel: WorkflowAdminLevel;
   environment: BuildEnv;
   productType: ProductType;
   currentState?: StateName;
@@ -97,15 +97,15 @@ export type BuildEnv = {
 
 export type WorkflowInput = {
   productId?: string;
-  adminLevel?: AdminLevel;
+  adminLevel?: WorkflowAdminLevel;
   environment?: BuildEnv;
   productType?: ProductType;
 };
 
 /** Used for filtering based on AdminLevel and/or ProductType */
 export type MetaFilter = {
-  level?: AdminLevel | AdminLevel[];
-  product?: ProductType | ProductType[];
+  level?: WorkflowAdminLevel[];
+  product?: ProductType[];
 };
 
 export type WorkflowStateMeta = MetaFilter;
@@ -165,27 +165,19 @@ export function targetStringFromEvent(
   );
 }
 
-/** 
+/**
  * Include state/transition if:
- *  - no conditions are specified 
+ *  - no conditions are specified
  *  - OR
- *    - One of the provided admin levels matches the context 
+ *    - One of the provided admin levels matches the context
  *    - AND
  *    - One of the provided product types matches the context
-*/
+ */
 export function filterMeta(ctx: WorkflowContext, meta?: MetaFilter) {
   return (
     meta === undefined ||
-    ((meta.level !== undefined
-      ? Array.isArray(meta.level)
-        ? meta.level.includes(ctx.adminLevel)
-        : meta.level === ctx.adminLevel
-      : true) &&
-      (meta.product !== undefined
-        ? Array.isArray(meta.product)
-          ? meta.product.includes(ctx.productType)
-          : meta.product === ctx.productType
-        : true))
+    ((meta.level !== undefined ? meta.level.includes(ctx.adminLevel) : true) &&
+      (meta.product !== undefined ? meta.product.includes(ctx.productType) : true))
   );
 }
 
@@ -208,47 +200,51 @@ export function serializeForVisualization(
   const states = Object.entries(machine.states).filter(([k, v]) => filterMeta(ctx, v.meta));
   const lookup = states.map((s) => s[0]);
   const actions: StateNode[] = [];
-  return states.map(([k, v]) => {
-    return {
-      id: lookup.indexOf(k),
-      label: k,
-      connections: filterTransitions(v.on, ctx).map((o) => {
-        let target = targetStringFromEvent(o[0], id);
-        if (!target) {
-          target = o[0].eventType;
-          lookup.push(target);
-          actions.push({
-            id: lookup.lastIndexOf(target),
-            label: target,
-            connections: [{
-              id: lookup.indexOf(k),
-              target: k,
-              label: ''
-            }],
-            inCount: 1,
-            action: true
-          })
-        }
-        return {
-          // treat no target on transition as self target
-          id: lookup.lastIndexOf(target),
-          target: target,
-          label: o[0].eventType
-        };
-      }),
-      inCount: states
-        .map(([k, v]) => {
-          return filterTransitions(v.on, ctx).map((e) => {
+  return states
+    .map(([k, v]) => {
+      return {
+        id: lookup.indexOf(k),
+        label: k,
+        connections: filterTransitions(v.on, ctx).map((o) => {
+          let target = targetStringFromEvent(o[0], id);
+          if (!target) {
+            target = o[0].eventType;
+            lookup.push(target);
+            actions.push({
+              id: lookup.lastIndexOf(target),
+              label: target,
+              connections: [
+                {
+                  id: lookup.indexOf(k),
+                  target: k,
+                  label: ''
+                }
+              ],
+              inCount: 1,
+              action: true
+            });
+          }
+          return {
             // treat no target on transition as self target
-            return { from: k, to: targetStringFromEvent(e[0], id) || k };
-          });
-        })
-        .reduce((p, c) => {
-          return p.concat(c);
-        }, [])
-        .filter((v) => k === v.to).length,
-      start: k === 'Start',
-      final: v.type === 'final'
-    } as StateNode;
-  }).concat(actions);
+            id: lookup.lastIndexOf(target),
+            target: target,
+            label: o[0].eventType
+          };
+        }),
+        inCount: states
+          .map(([k, v]) => {
+            return filterTransitions(v.on, ctx).map((e) => {
+              // treat no target on transition as self target
+              return { from: k, to: targetStringFromEvent(e[0], id) || k };
+            });
+          })
+          .reduce((p, c) => {
+            return p.concat(c);
+          }, [])
+          .filter((v) => k === v.to).length,
+        start: k === 'Start',
+        final: v.type === 'final'
+      } as StateNode;
+    })
+    .concat(actions);
 }

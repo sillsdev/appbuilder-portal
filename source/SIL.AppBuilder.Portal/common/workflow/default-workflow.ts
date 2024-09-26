@@ -5,7 +5,7 @@ import {
   WorkflowInput,
   WorkflowStateMeta,
   WorkflowTransitionMeta,
-  AdminLevel,
+  WorkflowAdminLevel,
   ProductType,
   ActionType,
   StateName,
@@ -38,13 +38,12 @@ export const DefaultWorkflow = setup({
   actions: {
     snapAndTasks: (
       { context, event },
-      params?: { role?: RoleId | RoleId[] | ((context: WorkflowContext) => RoleId | RoleId[]) }
+      params?: { roles?: RoleId[] | ((context: WorkflowContext) => RoleId[]) }
     ) => {
-      const roles = typeof params?.role === 'function' ? params.role(context) : params?.role;
       createSnapshot(context.currentState, context);
       updateUserTasks(
         context.productId,
-        roles ? (Array.isArray(roles) ? roles : [roles]) : [],
+        typeof params?.roles === 'function' ? params.roles(context) : params?.roles,
         context.currentState,
         event.comment
       );
@@ -64,12 +63,12 @@ export const DefaultWorkflow = setup({
   guards: {
     canJump: (
       { context },
-      params: { target: StateName | string; product?: ProductType; level?: AdminLevel }
+      params: { target: StateName | string; products?: ProductType[]; levels?: WorkflowAdminLevel[] }
     ) => {
       return (
         context.start === params.target &&
-        (params.product ? params.product === context.productType : true) &&
-        (params.level ? params.level === context.adminLevel : true)
+        (params.products ? params.products.includes(context.productType) : true) &&
+        (params.levels ? params.levels.includes(context.adminLevel) : true)
       );
     },
     // TODO: write actual guards. cannot be async, which means no checking DB
@@ -92,7 +91,7 @@ export const DefaultWorkflow = setup({
     /** Reset to false on exit */
     includeArtifacts: false,
     productId: input.productId,
-    adminLevel: input.adminLevel ?? AdminLevel.None,
+    adminLevel: input.adminLevel ?? WorkflowAdminLevel.None,
     environment: input.environment ?? {},
     productType: input.productType ?? ProductType.Android_GooglePlay
   }),
@@ -112,22 +111,22 @@ export const DefaultWorkflow = setup({
       },
       always: [
         {
-          guard: { type: 'canJump', params: { target: 'Readiness Check', level: AdminLevel.High } },
+          guard: { type: 'canJump', params: { target: 'Readiness Check', levels: [WorkflowAdminLevel.High] } },
           target: 'Readiness Check'
         },
         {
-          guard: { type: 'canJump', params: { target: 'Approval', level: AdminLevel.High } },
+          guard: { type: 'canJump', params: { target: 'Approval', levels: [WorkflowAdminLevel.High] } },
           target: 'Approval'
         },
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Approval Pending', level: AdminLevel.High }
+            params: { target: 'Approval Pending', levels: [WorkflowAdminLevel.High] }
           },
           target: 'Approval Pending'
         },
         {
-          guard: { type: 'canJump', params: { target: 'Terminated', level: AdminLevel.High } },
+          guard: { type: 'canJump', params: { target: 'Terminated', levels: [WorkflowAdminLevel.High] } },
           target: 'Terminated'
         },
         {
@@ -171,14 +170,14 @@ export const DefaultWorkflow = setup({
         {
           guard: {
             type: 'canJump',
-            params: { target: 'App Store Preview', product: ProductType.Android_GooglePlay }
+            params: { target: 'App Store Preview', products: [ProductType.Android_GooglePlay] }
           },
           target: 'App Store Preview'
         },
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Create App Store Entry', product: ProductType.Android_GooglePlay }
+            params: { target: 'Create App Store Entry', products: [ProductType.Android_GooglePlay] }
           },
           target: 'Create App Store Entry'
         },
@@ -193,7 +192,7 @@ export const DefaultWorkflow = setup({
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Make It Live', product: ProductType.Android_GooglePlay }
+            params: { target: 'Make It Live', products: [ProductType.Android_GooglePlay] }
           },
           target: 'Make It Live'
         },
@@ -202,7 +201,7 @@ export const DefaultWorkflow = setup({
           target: 'Published'
         },
         {
-          guard: ({ context }) => context.adminLevel === AdminLevel.High,
+          guard: ({ context }) => context.adminLevel === WorkflowAdminLevel.High,
           target: 'Readiness Check'
         },
         {
@@ -216,7 +215,7 @@ export const DefaultWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              level: AdminLevel.High
+              level: [WorkflowAdminLevel.High]
             },
             target: 'Readiness Check'
           },
@@ -229,7 +228,7 @@ export const DefaultWorkflow = setup({
     },
     'Readiness Check': {
       meta: {
-        level: AdminLevel.High
+        level: [WorkflowAdminLevel.High]
       },
       entry: [
         assign({
@@ -237,7 +236,7 @@ export const DefaultWorkflow = setup({
           includeFields: ['storeDescription', 'listingLanguageCode'],
           currentState: 'Readiness Check'
         }),
-        { type: 'snapAndTasks', params: { role: RoleId.AppBuilder } }
+        { type: 'snapAndTasks', params: { roles: [RoleId.AppBuilder] } }
       ],
       on: {
         Continue: {
@@ -252,7 +251,7 @@ export const DefaultWorkflow = setup({
     },
     Approval: {
       meta: {
-        level: AdminLevel.High
+        level: [WorkflowAdminLevel.High]
       },
       entry: [
         assign({
@@ -268,7 +267,7 @@ export const DefaultWorkflow = setup({
           ],
           currentState: 'Approval'
         }),
-        { type: 'snapAndTasks', params: { role: RoleId.OrgAdmin } }
+        { type: 'snapAndTasks', params: { roles: [RoleId.OrgAdmin] } }
       ],
       on: {
         Approve: {
@@ -299,7 +298,7 @@ export const DefaultWorkflow = setup({
     },
     'Approval Pending': {
       meta: {
-        level: AdminLevel.High
+        level: [WorkflowAdminLevel.High]
       },
       entry: [
         assign({
@@ -307,7 +306,7 @@ export const DefaultWorkflow = setup({
           includeFields: ['storeDescription', 'listingLanguageCode'],
           currentState: 'Approval Pending'
         }),
-        { type: 'snapAndTasks', params: { role: RoleId.OrgAdmin } }
+        { type: 'snapAndTasks', params: { roles: [RoleId.OrgAdmin] } }
       ],
       on: {
         Reject: {
@@ -337,7 +336,7 @@ export const DefaultWorkflow = setup({
     },
     Terminated: {
       meta: {
-        level: AdminLevel.High
+        level: [WorkflowAdminLevel.High]
       },
       entry: [
         assign({
@@ -378,7 +377,7 @@ export const DefaultWorkflow = setup({
         }),
         {
           type: 'snapAndTasks',
-          params: { role: RoleId.AppBuilder }
+          params: { roles: [RoleId.AppBuilder] }
         }
       ],
       on: {
@@ -386,7 +385,7 @@ export const DefaultWorkflow = setup({
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder,
-            product: ProductType.Android_GooglePlay
+            product: [ProductType.Android_GooglePlay]
           },
           actions: { type: 'transit', params: { target: 'Product Build' } },
           target: 'Product Build'
@@ -404,7 +403,7 @@ export const DefaultWorkflow = setup({
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder,
-            product: ProductType.Android_GooglePlay
+            product: [ProductType.Android_GooglePlay]
           },
           actions: [
             { type: 'transit', params: { target: 'Product Build' } },
@@ -437,7 +436,7 @@ export const DefaultWorkflow = setup({
         }),
         {
           type: 'snapAndTasks',
-          params: { role: [RoleId.AppBuilder, RoleId.Author] }
+          params: { roles: [RoleId.AppBuilder, RoleId.Author] }
         }
       ],
       on: {
@@ -466,7 +465,7 @@ export const DefaultWorkflow = setup({
           includeFields: ['storeDescription', 'listingLanguageCode'],
           currentState: 'Synchronize Data'
         }),
-        { type: 'snapAndTasks', params: { role: RoleId.AppBuilder } }
+        { type: 'snapAndTasks', params: { roles: [RoleId.AppBuilder] } }
       ],
       on: {
         Continue: {
@@ -497,7 +496,7 @@ export const DefaultWorkflow = setup({
         }),
         {
           type: 'snapAndTasks',
-          params: { role: [RoleId.AppBuilder, RoleId.Author] }
+          params: { roles: [RoleId.AppBuilder, RoleId.Author] }
         }
       ],
       on: {
@@ -528,7 +527,7 @@ export const DefaultWorkflow = setup({
         }),
         {
           type: 'snapAndTasks',
-          params: { role: [RoleId.AppBuilder, RoleId.Author] }
+          params: { roles: [RoleId.AppBuilder, RoleId.Author] }
         }
       ],
       on: {
@@ -567,7 +566,7 @@ export const DefaultWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              product: ProductType.Android_GooglePlay
+              product: [ProductType.Android_GooglePlay]
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
@@ -594,7 +593,7 @@ export const DefaultWorkflow = setup({
     },
     'App Store Preview': {
       meta: {
-        product: ProductType.Android_GooglePlay
+        product: [ProductType.Android_GooglePlay]
       },
       entry: [
         assign({
@@ -614,8 +613,8 @@ export const DefaultWorkflow = setup({
         {
           type: 'snapAndTasks',
           params: {
-            role: (context) =>
-              context.adminLevel === AdminLevel.None ? RoleId.AppBuilder : RoleId.OrgAdmin
+            roles: (context) =>
+              [context.adminLevel === WorkflowAdminLevel.None ? RoleId.AppBuilder : RoleId.OrgAdmin]
           }
         }
       ],
@@ -626,7 +625,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [AdminLevel.High, AdminLevel.Low]
+              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
             },
             actions: { type: 'transit', params: { target: 'Create App Store Entry' } },
             target: 'Create App Store Entry'
@@ -635,7 +634,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: AdminLevel.None
+              level: [WorkflowAdminLevel.None]
             },
             actions: { type: 'transit', params: { target: 'Create App Store Entry' } },
             target: 'Create App Store Entry'
@@ -646,7 +645,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [AdminLevel.High, AdminLevel.Low]
+              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
             },
             actions: { type: 'transit', params: { target: 'Synchronize Data' } },
             target: 'Synchronize Data'
@@ -655,7 +654,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: AdminLevel.None
+              level: [WorkflowAdminLevel.None]
             },
             actions: { type: 'transit', params: { target: 'Synchronize Data' } },
             target: 'Synchronize Data'
@@ -665,7 +664,7 @@ export const DefaultWorkflow = setup({
     },
     'Create App Store Entry': {
       meta: {
-        product: ProductType.Android_GooglePlay
+        product: [ProductType.Android_GooglePlay]
       },
       entry: [
         assign({
@@ -681,8 +680,8 @@ export const DefaultWorkflow = setup({
         {
           type: 'snapAndTasks',
           params: {
-            role: (context) =>
-              context.adminLevel === AdminLevel.None ? RoleId.AppBuilder : RoleId.OrgAdmin
+            roles: (context) =>
+              [context.adminLevel === WorkflowAdminLevel.None ? RoleId.AppBuilder : RoleId.OrgAdmin]
           }
         }
       ],
@@ -693,7 +692,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [AdminLevel.High, AdminLevel.Low]
+              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
             },
             actions: [
               { type: 'transit', params: { target: 'Verify and Publish' } },
@@ -710,7 +709,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: AdminLevel.None
+              level: [WorkflowAdminLevel.None]
             },
             actions: [
               { type: 'transit', params: { target: 'Verify and Publish' } },
@@ -729,7 +728,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [AdminLevel.High, AdminLevel.Low]
+              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
             },
             actions: { type: 'transit', params: { target: 'Synchronize Data' } },
             target: 'Synchronize Data'
@@ -738,7 +737,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: AdminLevel.None
+              level: [WorkflowAdminLevel.None]
             },
             actions: { type: 'transit', params: { target: 'Synchronize Data' } },
             target: 'Synchronize Data'
@@ -777,7 +776,7 @@ export const DefaultWorkflow = setup({
         }),
         {
           type: 'snapAndTasks',
-          params: { role: RoleId.AppBuilder }
+          params: { roles: [RoleId.AppBuilder] }
         }
       ],
       exit: assign({
@@ -831,7 +830,7 @@ export const DefaultWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              product: ProductType.Android_GooglePlay
+              product: [ProductType.Android_GooglePlay]
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
@@ -857,7 +856,7 @@ export const DefaultWorkflow = setup({
     },
     'Make It Live': {
       meta: {
-        product: ProductType.Android_GooglePlay
+        product: [ProductType.Android_GooglePlay]
       },
       entry: [
         assign({
@@ -868,8 +867,8 @@ export const DefaultWorkflow = setup({
         {
           type: 'snapAndTasks',
           params: {
-            role: (context) =>
-              context.adminLevel === AdminLevel.None ? RoleId.AppBuilder : RoleId.OrgAdmin
+            roles: (context) =>
+              [context.adminLevel === WorkflowAdminLevel.None ? RoleId.AppBuilder : RoleId.OrgAdmin]
           }
         }
       ],
@@ -879,7 +878,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [AdminLevel.High, AdminLevel.Low]
+              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
             },
             actions: { type: 'transit', params: { target: 'Published' } },
             target: 'Published'
@@ -888,7 +887,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: AdminLevel.None
+              level: [WorkflowAdminLevel.None]
             },
             actions: { type: 'transit', params: { target: 'Published' } },
             target: 'Published'
@@ -899,7 +898,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [AdminLevel.High, AdminLevel.Low]
+              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
             },
             actions: { type: 'transit', params: { target: 'Synchronize Data' } },
             target: 'Synchronize Data'
@@ -908,7 +907,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: AdminLevel.None
+              level: [WorkflowAdminLevel.None]
             },
             actions: { type: 'transit', params: { target: 'Synchronize Data' } },
             target: 'Synchronize Data'
