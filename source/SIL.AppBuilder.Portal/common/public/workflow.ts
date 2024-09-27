@@ -1,11 +1,3 @@
-import type {
-  AnyEventObject,
-  StateMachineDefinition,
-  StateMachine,
-  TransitionDefinition,
-  TransitionDefinitionMap,
-  StateNode as XStateNode
-} from 'xstate';
 import type { RoleId } from './prisma.js';
 
 export enum ActionType {
@@ -80,11 +72,9 @@ export type WorkflowContext = {
   includeReviewers: boolean;
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: StateName;
-  productId: string;
   adminLevel: WorkflowAdminLevel;
   environment: BuildEnv;
   productType: ProductType;
-  currentState?: StateName;
 };
 
 // These are all specific to the Google Play workflows
@@ -96,10 +86,8 @@ export type BuildEnv = {
 };
 
 export type WorkflowInput = {
-  productId?: string;
-  adminLevel?: WorkflowAdminLevel;
-  environment?: BuildEnv;
-  productType?: ProductType;
+  adminLevel: WorkflowAdminLevel;
+  productType: ProductType;
 };
 
 /** Used for filtering based on AdminLevel and/or ProductType */
@@ -122,23 +110,6 @@ export type WorkflowEvent = {
   userId: number | null;
 };
 
-export type WorkflowMachine = StateMachine<
-  WorkflowContext,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  WorkflowInput,
-  any,
-  any,
-  WorkflowStateMeta | WorkflowTransitionMeta,
-  any
->;
-
 export type StateNode = {
   id: number;
   label: string;
@@ -148,103 +119,3 @@ export type StateNode = {
   final?: boolean;
   action?: boolean;
 };
-
-export function stateName(s: XStateNode<any, any>, machineId: string) {
-  return s.id.replace(machineId + '.', '');
-}
-
-export function targetStringFromEvent(
-  e: TransitionDefinition<any, AnyEventObject>,
-  machineId: string
-): string {
-  return (
-    e
-      .toJSON()
-      .target?.at(0)
-      ?.replace('#' + machineId + '.', '') || ''
-  );
-}
-
-/**
- * Include state/transition if:
- *  - no conditions are specified
- *  - OR
- *    - One of the provided admin levels matches the context
- *    - AND
- *    - One of the provided product types matches the context
- */
-export function filterMeta(ctx: WorkflowContext, meta?: MetaFilter) {
-  return (
-    meta === undefined ||
-    ((meta.level !== undefined ? meta.level.includes(ctx.adminLevel) : true) &&
-      (meta.product !== undefined ? meta.product.includes(ctx.productType) : true))
-  );
-}
-
-/** Filter a states transitions based on provided context */
-export function filterTransitions(
-  on: TransitionDefinitionMap<WorkflowContext, any>,
-  ctx: WorkflowContext
-) {
-  return Object.values(on)
-    .map((v) => v.filter((t) => filterMeta(ctx, t.meta)))
-    .filter((v) => v.length > 0 && filterMeta(ctx, v[0].meta));
-}
-
-/** Transform state machine definition into something more easily usable by the visualization algorithm */
-export function serializeForVisualization(
-  machine: StateMachineDefinition<WorkflowContext, AnyEventObject>,
-  ctx: WorkflowContext
-): StateNode[] {
-  const id = machine.id;
-  const states = Object.entries(machine.states).filter(([k, v]) => filterMeta(ctx, v.meta));
-  const lookup = states.map((s) => s[0]);
-  const actions: StateNode[] = [];
-  return states
-    .map(([k, v]) => {
-      return {
-        id: lookup.indexOf(k),
-        label: k,
-        connections: filterTransitions(v.on, ctx).map((o) => {
-          let target = targetStringFromEvent(o[0], id);
-          if (!target) {
-            target = o[0].eventType;
-            lookup.push(target);
-            actions.push({
-              id: lookup.lastIndexOf(target),
-              label: target,
-              connections: [
-                {
-                  id: lookup.indexOf(k),
-                  target: k,
-                  label: ''
-                }
-              ],
-              inCount: 1,
-              action: true
-            });
-          }
-          return {
-            // treat no target on transition as self target
-            id: lookup.lastIndexOf(target),
-            target: target,
-            label: o[0].eventType
-          };
-        }),
-        inCount: states
-          .map(([k, v]) => {
-            return filterTransitions(v.on, ctx).map((e) => {
-              // treat no target on transition as self target
-              return { from: k, to: targetStringFromEvent(e[0], id) || k };
-            });
-          })
-          .reduce((p, c) => {
-            return p.concat(c);
-          }, [])
-          .filter((v) => k === v.to).length,
-        start: k === 'Start',
-        final: v.type === 'final'
-      } as StateNode;
-    })
-    .concat(actions);
-}

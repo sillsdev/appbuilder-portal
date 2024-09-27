@@ -1,11 +1,5 @@
-import {
-  prisma,
-  DefaultWorkflow,
-  getSnapshot,
-  resolveSnapshot
-} from 'sil.appbuilder.portal.common';
-import { serializeForVisualization, type StateName } from 'sil.appbuilder.portal.common/workflow';
-import { createActor } from 'xstate';
+import { prisma, Workflow } from 'sil.appbuilder.portal.common';
+import { type StateName } from 'sil.appbuilder.portal.common/workflow';
 import type { PageServerLoad, Actions } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -56,12 +50,14 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
     }
   });
 
-  const snap = await getSnapshot(params.product_id);
+  const flow = new Workflow(params.product_id);
+
+  const snap = await flow.getSnapshot();
 
   return {
     instance: instance,
     snapshot: { value: snap?.value ?? '' },
-    machine: snap ? serializeForVisualization(DefaultWorkflow.toJSON(), snap.context) : []
+    machine: snap ? flow.serializeForVisualization() : []
   };
 };
 
@@ -71,14 +67,10 @@ export const actions = {
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const actor = createActor(DefaultWorkflow, {
-      snapshot: resolveSnapshot(DefaultWorkflow, await getSnapshot(params.product_id)),
-      input: {}
-    });
+    const flow = new Workflow(params.product_id);
+    await flow.restore();
 
-    actor.start();
-
-    actor.send({
+    flow.send({
       type: 'Jump',
       target: form.data.state as StateName,
       userId: null

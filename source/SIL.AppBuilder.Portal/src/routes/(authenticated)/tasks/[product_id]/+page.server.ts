@@ -1,13 +1,11 @@
 import type { PageServerLoad, Actions } from './$types';
-import { getSnapshot, prisma, resolveSnapshot } from 'sil.appbuilder.portal.common';
-import { DefaultWorkflow } from 'sil.appbuilder.portal.common';
+import { prisma, Workflow } from 'sil.appbuilder.portal.common';
 import { createActor } from 'xstate';
 import { redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { filterTransitions } from 'sil.appbuilder.portal.common/workflow';
 
 const sendActionSchema = v.object({
   state: v.string(),
@@ -31,7 +29,10 @@ type Fields = {
 export const load = (async ({ params, url, locals }) => {
   const session = await locals.auth();
   // TODO: permission check
-  const snap = await getSnapshot(params.product_id);
+  const flow = new Workflow(params.product_id);
+  await flow.restore();
+
+  const snap = await flow.getSnapshot();
 
   const product = await prisma.products.findUnique({
     where: {
@@ -131,28 +132,24 @@ export const load = (async ({ params, url, locals }) => {
     : [];
 
   return {
-    actions: snap
-      ? filterTransitions(
-          DefaultWorkflow.getStateNodeById(`${DefaultWorkflow.id}.${snap.value}`).on,
-          snap.context
-        )
-          .filter((a) => {
-            if (session?.user.userId === undefined) return false;
-            switch (a[0].meta?.user) {
-              case RoleId.AppBuilder:
-                return session.user.userId === product?.Project.Owner.Id;
-              case RoleId.Author:
-                return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
-              case RoleId.OrgAdmin:
-                return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
-                  session.user.userId
-                );
-              default:
-                return false;
-            }
-          })
-          .map((a) => a[0].eventType as string)
-      : [],
+    actions: flow
+      .availableTransitions()
+      .filter((a) => {
+        if (session?.user.userId === undefined) return false;
+        switch (a[0].meta?.user) {
+          case RoleId.AppBuilder:
+            return session.user.userId === product?.Project.Owner.Id;
+          case RoleId.Author:
+            return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
+          case RoleId.OrgAdmin:
+            return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
+              session.user.userId
+            );
+          default:
+            return false;
+        }
+      })
+      .map((a) => a[0].eventType as string),
     taskTitle: snap?.value,
     instructions: snap?.context.instructions,
     fields: {
@@ -179,16 +176,12 @@ export const actions = {
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const actor = createActor(DefaultWorkflow, {
-      snapshot: resolveSnapshot(DefaultWorkflow, await getSnapshot(params.product_id)),
-      input: {}
-    });
-
-    actor.start();
+    const flow = new Workflow(params.product_id);
+    await flow.restore();
 
     //double check that state matches current snapshot
-    if (form.data.state === actor.getSnapshot().value) {
-      actor.send({
+    if (form.data.state === flow.state()) {
+      flow.send({
         type: form.data.flowAction,
         comment: form.data.comment,
         userId: session?.user.userId ?? null
