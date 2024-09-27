@@ -764,14 +764,8 @@ export const DefaultWorkflow = setup({
     Jump: {
       actions: [
         assign({
-          start: ({ context, event }) => {
-            console.log(context.start + ' => ' + event.target);
-            return event.target;
-          }
-        }),
-        ({ event }) => {
-          console.log('Jumping to: ' + event.target);
-        }
+          start: ({ context, event }) => event.target
+        })
       ],
       target: '.Start'
     }
