@@ -96,6 +96,9 @@
         </li>
         <li>
           Last Transition: {data.instance?.Product.ProductTransitions[0].InitialState}
+          {data.instance?.Product.ProductTransitions[0].Command
+            ? `(${data.instance?.Product.ProductTransitions[0].Command})`
+            : ''}
         </li>
         <li>
           Date: {data.instance?.Product.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
@@ -144,7 +147,7 @@
           class="rect {active === state.label ? 'active' : ''} 
         {state.start ? 'start' : ''} 
         {state.final ? 'final' : ''}
-        {state.action? 'action' : ''}"
+        {state.action ? 'action' : ''}"
           on:click={() => {
             if (!state.action) {
               selected = state.label;
