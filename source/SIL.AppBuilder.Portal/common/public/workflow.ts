@@ -7,6 +7,17 @@ export enum ActionType {
   User
 }
 
+/**
+ * The administrative requirements of the workflow.
+ * Examples:
+ *  - If the flow has `WorkflowAdminLevel.High` it will include extra state to represent the organizational approval process
+ *  - If the flow has `WorkflowAdminLevel.Low` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
+ *  - If the flow has `WorkflowAdminLevel.None` none of the states or actions for the workflow instance will require an OrgAdmin.
+ * 
+ * Any state or transition can have a list of specified `WorkflowAdminLevel`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `WorkflowAdminLevel` is in the state's or transition's list.
+ * 
+ * If a state or transition does not specify any `WorkflowAdminLevel` it will be included (provided it passes other conditions not dependent on `WorkflowAdminLevel`).
+*/
 export enum WorkflowAdminLevel {
   /** NoAdmin/OwnerAdmin */
   None = 0,
@@ -118,4 +129,10 @@ export type StateNode = {
   start?: boolean;
   final?: boolean;
   action?: boolean;
+};
+
+export type Snapshot = {
+  value: string;
+  context: WorkflowContext;
+  input: WorkflowInput;
 };

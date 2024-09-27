@@ -17,17 +17,15 @@ import {
   StateNode,
   WorkflowEvent,
   MetaFilter,
-  WorkflowTransitionMeta
+  WorkflowTransitionMeta,
+  Snapshot
 } from '../public/workflow.js';
 import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType } from '../public/prisma.js';
 
-type Snapshot = {
-  value: string;
-  context: WorkflowContext;
-  input: WorkflowInput;
-};
-
+/**
+ * Wraps a workflow instance and provides methods to interact.
+ */
 export class Workflow {
   private flow: Actor<typeof DefaultWorkflow> | null;
   private productId: string;
@@ -42,7 +40,7 @@ export class Workflow {
   }
 
   /* PUBLIC METHODS */
-  /** Creat a new workflow instance */
+  /** Creat a new workflow instance and populate the database tables. */
   public async create(input: WorkflowInput, productId?: string): Promise<void> {
     this.flow?.stop();
     this.currentState = null;
@@ -70,7 +68,7 @@ export class Workflow {
 
     this.flow.start();
   }
-  /** Restore from a workflow instance */
+  /** Restore from a snapshot in the database. */
   public async restore(): Promise<void> {
     this.flow?.stop();
     this.currentState = null;
@@ -86,14 +84,21 @@ export class Workflow {
     this.flow.start();
   }
 
+  /** Send a transition event to the workflow. */
   public async send(event: WorkflowEvent): Promise<void> {
     this.flow?.send(event);
   }
 
+  /**
+   * Stops the current running workflow.
+   * 
+   * Note: This does not mean that the workflow is terminated.
+   */
   public stop(): void {
     this.flow?.stop();
   }
 
+  /** Retrieves the workflow's snapshot from the database and sets the `WorkflowAdminLevel` and `ProductType` */
   public async getSnapshot(): Promise<Snapshot> {
     const snap = JSON.parse(
       (
@@ -112,10 +117,12 @@ export class Workflow {
     return snap;
   }
 
+  /** Returns the name of the current state */
   public state() {
     return this.flow?.getSnapshot().value;
   }
 
+  /** Returns a list of valid transitions from the current state. */
   public availableTransitions(): TransitionDefinition<WorkflowContext, WorkflowEvent>[][] {
     return this.currentState !== null ? this.filterTransitions(this.currentState.on) : [];
   }
