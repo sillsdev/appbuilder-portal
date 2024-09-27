@@ -15,9 +15,6 @@
 
   export let data: PageData;
 
-  const workflowAdminUrl = `${
-    import.meta.env.VITE_DWKIT_URL
-  }/Account/Login/?ReturnUrl=/admin%3Fapanel%3Dworkflowinstances%26aid%3D`;
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
     resetForm: true
@@ -194,7 +191,7 @@
                         {/if}
                         {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin)}
                           <li class="w-full-rounded-none">
-                            <a href={workflowAdminUrl + product.Id}>{m.common_workflow()}</a>
+                            <a href="/admin/workflows/{product.Id}">{m.common_workflow()}</a>
                           </li>
                         {/if}
                         <li class=" w-full rounded-none">
