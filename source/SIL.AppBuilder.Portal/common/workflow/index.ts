@@ -40,7 +40,7 @@ export class Workflow {
   }
 
   /* PUBLIC METHODS */
-  /** Creat a new workflow instance and populate the database tables. */
+  /** Create a new workflow instance and populate the database tables. */
   public async create(input: WorkflowInput, productId?: string): Promise<void> {
     this.flow?.stop();
     this.currentState = null;
