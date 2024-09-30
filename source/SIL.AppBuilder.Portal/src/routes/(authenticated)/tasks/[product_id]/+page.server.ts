@@ -29,10 +29,8 @@ type Fields = {
 export const load = (async ({ params, url, locals }) => {
   const session = await locals.auth();
   // TODO: permission check
-  const flow = new Workflow(params.product_id);
-  await flow.restore();
-
-  const snap = await flow.getSnapshot();
+  const flow = await Workflow.restore(params.product_id);
+  const snap = await Workflow.getSnapshot(params.product_id);
 
   const product = await prisma.products.findUnique({
     where: {
@@ -176,8 +174,7 @@ export const actions = {
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const flow = new Workflow(params.product_id);
-    await flow.restore();
+    const flow = await Workflow.restore(params.product_id);
 
     //double check that state matches current snapshot
     if (form.data.state === flow.state()) {

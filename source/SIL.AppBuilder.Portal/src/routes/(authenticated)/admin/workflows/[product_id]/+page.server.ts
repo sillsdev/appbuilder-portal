@@ -51,9 +51,9 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
     }
   });
 
-  const flow = new Workflow(params.product_id);
+  const flow = await Workflow.restore(params.product_id);
 
-  const snap = await flow.getSnapshot();
+  const snap = await Workflow.getSnapshot(params.product_id);
 
   return {
     instance: instance,
@@ -68,8 +68,7 @@ export const actions = {
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const flow = new Workflow(params.product_id);
-    await flow.restore();
+    const flow = await Workflow.restore(params.product_id);
 
     flow.send({
       type: 'Jump',
