@@ -33,55 +33,54 @@ export class Workflow {
   private adminLevel: RequiredAdminLevel;
   private productType: ProductType;
 
-  constructor(productId: string) {
+  private constructor(productId: string, input: WorkflowInput) {
     this.productId = productId;
-    this.currentState = null;
-    this.flow = null;
+    this.adminLevel = input.adminLevel;
+    this.productType = input.productType;
   }
 
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
-  public async create(input: WorkflowInput, productId?: string): Promise<void> {
-    this.flow?.stop();
-    this.currentState = null;
-    this.productId = productId ?? this.productId;
-    this.adminLevel = input.adminLevel;
-    this.productType = input.productType;
-
+  public static async create(productId: string, input: WorkflowInput): Promise<Workflow> {
     DatabaseWrites.workflowInstances.upsert({
       where: {
-        ProductId: this.productId
+        ProductId: productId
       },
       update: {},
       create: {
         Snapshot: '',
-        ProductId: this.productId
+        ProductId: productId
       }
     });
 
-    this.flow = createActor(DefaultWorkflow, {
+    const flow = new Workflow(productId, input);
+
+    flow.flow = createActor(DefaultWorkflow, {
       inspect: (e) => {
-        if (e.type === '@xstate.snapshot') this.inspect(e);
+        if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
       input: input
     });
 
-    this.flow.start();
+    flow.flow.start();
+
+    return flow;
   }
   /** Restore from a snapshot in the database. */
-  public async restore(): Promise<void> {
-    this.flow?.stop();
-    this.currentState = null;
-    const snap = await this.getSnapshot();
-    this.flow = createActor(DefaultWorkflow, {
+  public static async restore(productId: string): Promise<Workflow> {
+    const snap = await Workflow.getSnapshot(productId);
+    const flow = new Workflow(productId, snap.input);
+    flow.flow = createActor(DefaultWorkflow, {
       snapshot: snap ? DefaultWorkflow.resolveState(snap) : undefined,
       inspect: (e) => {
-        if (e.type === '@xstate.snapshot') this.inspect(e);
+        if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
       input: snap.input
     });
 
-    this.flow.start();
+    flow.flow.start();
+
+    return flow;
   }
 
   /** Send a transition event to the workflow. */
@@ -98,13 +97,13 @@ export class Workflow {
     this.flow?.stop();
   }
 
-  /** Retrieves the workflow's snapshot from the database and sets the `WorkflowAdminLevel` and `ProductType` */
-  public async getSnapshot(): Promise<Snapshot> {
+  /** Retrieves the workflow's snapshot from the database */
+  public static async getSnapshot(productId: string): Promise<Snapshot> {
     const snap = JSON.parse(
       (
         await prisma.workflowInstances.findUnique({
           where: {
-            ProductId: this.productId
+            ProductId: productId
           },
           select: {
             Snapshot: true
@@ -112,8 +111,6 @@ export class Workflow {
         })
       )?.Snapshot || 'null'
     ) as Snapshot | null;
-    this.adminLevel = snap?.input.adminLevel;
-    this.productType = snap?.input.productType;
     return snap;
   }
 
