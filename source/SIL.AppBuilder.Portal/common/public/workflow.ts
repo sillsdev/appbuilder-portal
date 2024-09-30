@@ -10,15 +10,15 @@ export enum ActionType {
 /**
  * The administrative requirements of the workflow.
  * Examples:
- *  - If the flow has `WorkflowAdminLevel.High` it will include extra state to represent the organizational approval process
- *  - If the flow has `WorkflowAdminLevel.Low` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
- *  - If the flow has `WorkflowAdminLevel.None` none of the states or actions for the workflow instance will require an OrgAdmin.
+ *  - If the flow has `RequiredAdminLevel.High` it will include extra state to represent the organizational approval process
+ *  - If the flow has `RequiredAdminLevel.Low` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
+ *  - If the flow has `RequiredAdminLevel.None` none of the states or actions for the workflow instance will require an OrgAdmin.
  * 
- * Any state or transition can have a list of specified `WorkflowAdminLevel`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `WorkflowAdminLevel` is in the state's or transition's list.
+ * Any state or transition can have a list of specified `RequiredAdminLevel`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `RequiredAdminLevel` is in the state's or transition's list.
  * 
- * If a state or transition does not specify any `WorkflowAdminLevel` it will be included (provided it passes other conditions not dependent on `WorkflowAdminLevel`).
+ * If a state or transition does not specify any `RequiredAdminLevel` it will be included (provided it passes other conditions not dependent on `RequiredAdminLevel`).
 */
-export enum WorkflowAdminLevel {
+export enum RequiredAdminLevel {
   /** NoAdmin/OwnerAdmin */
   None = 0,
   /** LowAdmin */
@@ -83,7 +83,7 @@ export type WorkflowContext = {
   includeReviewers: boolean;
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: StateName;
-  adminLevel: WorkflowAdminLevel;
+  adminLevel: RequiredAdminLevel;
   environment: BuildEnv;
   productType: ProductType;
 };
@@ -97,13 +97,13 @@ export type BuildEnv = {
 };
 
 export type WorkflowInput = {
-  adminLevel: WorkflowAdminLevel;
+  adminLevel: RequiredAdminLevel;
   productType: ProductType;
 };
 
 /** Used for filtering based on AdminLevel and/or ProductType */
 export type MetaFilter = {
-  level?: WorkflowAdminLevel[];
+  level?: RequiredAdminLevel[];
   product?: ProductType[];
 };
 

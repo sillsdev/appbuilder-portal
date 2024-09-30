@@ -11,7 +11,7 @@ import DatabaseWrites from '../databaseProxy/index.js';
 import {
   WorkflowContext,
   WorkflowInput,
-  WorkflowAdminLevel,
+  RequiredAdminLevel,
   ProductType,
   ActionType,
   StateNode,
@@ -30,7 +30,7 @@ export class Workflow {
   private flow: Actor<typeof DefaultWorkflow> | null;
   private productId: string;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
-  private adminLevel: WorkflowAdminLevel;
+  private adminLevel: RequiredAdminLevel;
   private productType: ProductType;
 
   constructor(productId: string) {

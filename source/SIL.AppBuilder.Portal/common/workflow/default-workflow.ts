@@ -4,7 +4,7 @@ import {
   WorkflowInput,
   WorkflowStateMeta,
   WorkflowTransitionMeta,
-  WorkflowAdminLevel,
+  RequiredAdminLevel,
   ProductType,
   ActionType,
   StateName,
@@ -39,7 +39,7 @@ export const DefaultWorkflow = setup({
       params: {
         target: StateName | string;
         products?: ProductType[];
-        levels?: WorkflowAdminLevel[];
+        levels?: RequiredAdminLevel[];
       }
     ) => {
       return (
@@ -77,28 +77,28 @@ export const DefaultWorkflow = setup({
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Readiness Check', levels: [WorkflowAdminLevel.High] }
+            params: { target: 'Readiness Check', levels: [RequiredAdminLevel.High] }
           },
           target: 'Readiness Check'
         },
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Approval', levels: [WorkflowAdminLevel.High] }
+            params: { target: 'Approval', levels: [RequiredAdminLevel.High] }
           },
           target: 'Approval'
         },
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Approval Pending', levels: [WorkflowAdminLevel.High] }
+            params: { target: 'Approval Pending', levels: [RequiredAdminLevel.High] }
           },
           target: 'Approval Pending'
         },
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Terminated', levels: [WorkflowAdminLevel.High] }
+            params: { target: 'Terminated', levels: [RequiredAdminLevel.High] }
           },
           target: 'Terminated'
         },
@@ -174,7 +174,7 @@ export const DefaultWorkflow = setup({
           target: 'Published'
         },
         {
-          guard: ({ context }) => context.adminLevel === WorkflowAdminLevel.High,
+          guard: ({ context }) => context.adminLevel === RequiredAdminLevel.High,
           target: 'Readiness Check'
         },
         {
@@ -188,7 +188,7 @@ export const DefaultWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              level: [WorkflowAdminLevel.High]
+              level: [RequiredAdminLevel.High]
             },
             target: 'Readiness Check'
           },
@@ -201,7 +201,7 @@ export const DefaultWorkflow = setup({
     },
     'Readiness Check': {
       meta: {
-        level: [WorkflowAdminLevel.High]
+        level: [RequiredAdminLevel.High]
       },
       entry: assign({
         instructions: 'readiness_check',
@@ -219,7 +219,7 @@ export const DefaultWorkflow = setup({
     },
     Approval: {
       meta: {
-        level: [WorkflowAdminLevel.High]
+        level: [RequiredAdminLevel.High]
       },
       entry: assign({
         instructions: null,
@@ -259,7 +259,7 @@ export const DefaultWorkflow = setup({
     },
     'Approval Pending': {
       meta: {
-        level: [WorkflowAdminLevel.High]
+        level: [RequiredAdminLevel.High]
       },
       entry: [
         assign({
@@ -292,7 +292,7 @@ export const DefaultWorkflow = setup({
     },
     Terminated: {
       meta: {
-        level: [WorkflowAdminLevel.High]
+        level: [RequiredAdminLevel.High]
       },
       entry: assign({
         instructions: null,
@@ -514,7 +514,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
+              level: [RequiredAdminLevel.High, RequiredAdminLevel.Low]
             },
             target: 'Create App Store Entry'
           },
@@ -522,7 +522,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: [WorkflowAdminLevel.None]
+              level: [RequiredAdminLevel.None]
             },
             target: 'Create App Store Entry'
           }
@@ -532,7 +532,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
+              level: [RequiredAdminLevel.High, RequiredAdminLevel.Low]
             },
             target: 'Synchronize Data'
           },
@@ -540,7 +540,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: [WorkflowAdminLevel.None]
+              level: [RequiredAdminLevel.None]
             },
             target: 'Synchronize Data'
           }
@@ -567,7 +567,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
+              level: [RequiredAdminLevel.High, RequiredAdminLevel.Low]
             },
             actions: assign({
               environment: ({ context }) => {
@@ -581,7 +581,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: [WorkflowAdminLevel.None]
+              level: [RequiredAdminLevel.None]
             },
             actions: assign({
               environment: ({ context }) => {
@@ -597,7 +597,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
+              level: [RequiredAdminLevel.High, RequiredAdminLevel.Low]
             },
             target: 'Synchronize Data'
           },
@@ -605,7 +605,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: [WorkflowAdminLevel.None]
+              level: [RequiredAdminLevel.None]
             },
             target: 'Synchronize Data'
           }
@@ -719,7 +719,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
+              level: [RequiredAdminLevel.High, RequiredAdminLevel.Low]
             },
             target: 'Published'
           },
@@ -727,7 +727,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: [WorkflowAdminLevel.None]
+              level: [RequiredAdminLevel.None]
             },
             target: 'Published'
           }
@@ -737,7 +737,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              level: [WorkflowAdminLevel.High, WorkflowAdminLevel.Low]
+              level: [RequiredAdminLevel.High, RequiredAdminLevel.Low]
             },
             target: 'Synchronize Data'
           },
@@ -745,7 +745,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              level: [WorkflowAdminLevel.None]
+              level: [RequiredAdminLevel.None]
             },
             target: 'Synchronize Data'
           }
