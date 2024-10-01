@@ -13,4 +13,10 @@ export interface SyncUserTasksJob {
   projectId: number;
 }
 
-export type ScriptoriaJob = TestJob | SyncUserTasksJob;
+export type ScriptoriaJob = JobTypeMap[keyof JobTypeMap];
+
+export type JobTypeMap = {
+  [ScriptoriaJobType.Test]: TestJob;
+  [ScriptoriaJobType.ReassignUserTasks]: SyncUserTasksJob;
+  // Add more mappings here as needed
+};
