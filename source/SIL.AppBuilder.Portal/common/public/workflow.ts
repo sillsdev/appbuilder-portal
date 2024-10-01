@@ -13,11 +13,11 @@ export enum ActionType {
  *  - If the flow has `RequiredAdminLevel.High` it will include extra state to represent the organizational approval process
  *  - If the flow has `RequiredAdminLevel.Low` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
  *  - If the flow has `RequiredAdminLevel.None` none of the states or actions for the workflow instance will require an OrgAdmin.
- * 
+ *
  * Any state or transition can have a list of specified `RequiredAdminLevel`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `RequiredAdminLevel` is in the state's or transition's list.
- * 
+ *
  * If a state or transition does not specify any `RequiredAdminLevel` it will be included (provided it passes other conditions not dependent on `RequiredAdminLevel`).
-*/
+ */
 export enum RequiredAdminLevel {
   /** NoAdmin/OwnerAdmin */
   None = 0,
@@ -100,6 +100,54 @@ export type WorkflowInput = {
   adminLevel: RequiredAdminLevel;
   productType: ProductType;
 };
+
+// TODO: Just put this info directly in the database
+export function workflowInputFromDBProductType(workflowDefinitionId: number): WorkflowInput {
+  switch (workflowDefinitionId) {
+    case 1: // sil_android_google_play
+      return {
+        adminLevel: RequiredAdminLevel.High,
+        productType: ProductType.Android_GooglePlay
+      };
+    case 4: // sil_android_s3
+      return {
+        adminLevel: RequiredAdminLevel.High,
+        productType: ProductType.Android_S3
+      }; 
+    case 6: // la_android_google_play
+      return {
+        adminLevel: RequiredAdminLevel.Low,
+        productType: ProductType.Android_GooglePlay
+      };
+    case 7: // na_android_google_play
+      return {
+        adminLevel: RequiredAdminLevel.None,
+        productType: ProductType.Android_GooglePlay
+      };
+    case 8: // na_android_s3
+      return {
+        adminLevel: RequiredAdminLevel.None,
+        productType: ProductType.Android_S3
+      };
+    case 9: // pwa_cloud
+    case 11: // html_cloud
+      return {
+        adminLevel: RequiredAdminLevel.None,
+        productType: ProductType.Web
+      };
+    case 13: // asset_package
+      return {
+        adminLevel: RequiredAdminLevel.None,
+        productType: ProductType.AssetPackage
+      };
+    default: // would be some other workflow type presumably
+      console.log(`Unrecognized workflow definition: ${workflowDefinitionId}! Returning configuration for sil_android_google_play.`);
+      return {
+        adminLevel: RequiredAdminLevel.High,
+        productType: ProductType.Android_GooglePlay
+      };
+  }
+}
 
 /** Used for filtering based on AdminLevel and/or ProductType */
 export type MetaFilter = {

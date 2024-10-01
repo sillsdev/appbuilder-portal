@@ -15,6 +15,7 @@
     "bullmq": "^5.12.2"
   },
   "devDependencies": {
-    "prisma": "^5.18.0"
+    "prisma": "^5.18.0",
+    "xstate": "^5.18.2"
   }
 }
