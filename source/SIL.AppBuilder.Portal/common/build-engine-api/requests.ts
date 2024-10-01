@@ -24,11 +24,20 @@ export async function getURLandToken(organizationId: number) {
     },
     select: {
       BuildEngineUrl: true,
-      BuildEngineApiAccessToken: true
+      BuildEngineApiAccessToken: true,
+      UseDefaultBuildEngine: true
     }
   });
 
-  return { url: org.BuildEngineUrl, token: org.BuildEngineApiAccessToken };
+  return org.UseDefaultBuildEngine
+    ? {
+        url: process.env.DEFAULT_BUILDENGINE_URL,
+        token: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
+      }
+    : {
+        url: org.BuildEngineUrl,
+        token: org.BuildEngineApiAccessToken
+      };
 }
 
 export async function systemCheck(organizationId: number) {
@@ -40,20 +49,26 @@ export async function createProject(
   project: Types.ProjectConfig
 ): Promise<Types.ProjectResponse | Types.ErrorResponse> {
   const res = await request('project', organizationId, 'POST', project);
-  return res.ok ? ((await res.json()) as Types.ProjectResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.ProjectResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getProjects(
   organizationId: number
 ): Promise<Types.ProjectResponse[] | Types.ErrorResponse> {
   const res = await request('project', organizationId);
-  return res.ok ? ((await res.json()) as Types.ProjectResponse[]) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.ProjectResponse[])
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getProject(
   organizationId: number,
   projectId: number
 ): Promise<Types.ProjectResponse | Types.ErrorResponse> {
   const res = await request(`project/${projectId}`, organizationId);
-  return res.ok ? ((await res.json()) as Types.ProjectResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.ProjectResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function deleteProject(organizationId: number, projectId: number): Promise<number> {
   const res = await request(`project/${projectId}`, organizationId, 'DELETE');
@@ -66,7 +81,9 @@ export async function getProjectAccessToken(
   token: Types.TokenConfig
 ): Promise<Types.TokenResponse | Types.ErrorResponse> {
   const res = await request(`project/${projectId}/token`, organizationId, 'POST', token);
-  return res.ok ? ((await res.json()) as Types.TokenResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.TokenResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 
 export async function createJob(
@@ -74,18 +91,26 @@ export async function createJob(
   job: Types.JobConfig
 ): Promise<Types.JobResponse | Types.ErrorResponse> {
   const res = await request('job', organizationId, 'POST', job);
-  return res.ok ? ((await res.json()) as Types.JobResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.JobResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
-export async function getJobs(organizationId: number): Promise<Types.JobResponse[] | Types.ErrorResponse> {
+export async function getJobs(
+  organizationId: number
+): Promise<Types.JobResponse[] | Types.ErrorResponse> {
   const res = await request('job', organizationId);
-  return res.ok ? ((await res.json()) as Types.JobResponse[]) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.JobResponse[])
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getJob(
   organizationId: number,
   jobId: number
 ): Promise<Types.JobResponse | Types.ErrorResponse> {
   const res = await request(`job/${jobId}`, organizationId);
-  return res.ok ? ((await res.json()) as Types.JobResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.JobResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function deleteJob(organizationId: number, jobId: number): Promise<number> {
   const res = await request(`job/${jobId}`, organizationId, 'DELETE');
@@ -98,7 +123,9 @@ export async function createBuild(
   build: Types.BuildConfig
 ): Promise<Types.BuildResponse | Types.ErrorResponse> {
   const res = await request(`job/${jobId}/build`, organizationId, 'POST', build);
-  return res.ok ? ((await res.json()) as Types.BuildResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.BuildResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getBuild(
   organizationId: number,
@@ -106,14 +133,18 @@ export async function getBuild(
   buildId: number
 ): Promise<Types.BuildResponse | Types.ErrorResponse> {
   const res = await request(`job/${jobId}/build/${buildId}`, organizationId);
-  return res.ok ? ((await res.json()) as Types.BuildResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.BuildResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getBuilds(
   organizationId: number,
   jobId: number
 ): Promise<Types.BuildResponse[] | Types.ErrorResponse> {
   const res = await request(`job/${jobId}/build`, organizationId);
-  return res.ok ? ((await res.json()) as Types.BuildResponse[]) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.BuildResponse[])
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function deleteBuild(
   organizationId: number,
@@ -131,7 +162,9 @@ export async function createRelease(
   release: Types.ReleaseConfig
 ): Promise<Types.ReleaseResponse | Types.ErrorResponse> {
   const res = await request(`job/${jobId}/build/${buildId}`, organizationId, 'PUT', release);
-  return res.ok ? ((await res.json()) as Types.ReleaseResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.ReleaseResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getRelease(
   organizationId: number,
@@ -140,7 +173,9 @@ export async function getRelease(
   releaseId: number
 ): Promise<Types.ReleaseResponse | Types.ErrorResponse> {
   const res = await request(`job/${jobId}/build/${buildId}/release/${releaseId}`, organizationId);
-  return res.ok ? ((await res.json()) as Types.ReleaseResponse) : ((await res.json()) as Types.ErrorResponse);
+  return res.ok
+    ? ((await res.json()) as Types.ReleaseResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 export async function deleteRelease(
   organizationId: number,
