@@ -81,25 +81,23 @@ export type WorkflowContext = {
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: StateName;
   URFeatures: UserRoleFeature[];
-  environment: BuildEnv;
+  // Not sure how this is used, but will figure out when integrating into backend
+  environment: { [key: string]: any };
   productType: ProductType;
+  productId: string;
 };
 
-// These are all specific to the Google Play workflows
-// Not sure how these are used, but will figure out when integrating into backend
-export type BuildEnv = {
-  googlePlayDraft?: boolean;
-  googlePlayExisting?: boolean;
-  googlePlayUploaded?: boolean;
-};
-
-export type WorkflowInput = {
+export type WorkflowConfig = {
   URFeatures: UserRoleFeature[];
   productType: ProductType;
 };
 
+export type WorkflowInput = WorkflowConfig & {
+  productId: string;
+};
+
 // TODO: Just put this info directly in the database
-export function workflowInputFromDBProductType(workflowDefinitionId: number): WorkflowInput {
+export function workflowInputFromDBProductType(workflowDefinitionId: number): WorkflowConfig {
   switch (workflowDefinitionId) {
     case 1: // sil_android_google_play
       return {
@@ -187,5 +185,4 @@ export type StateNode = {
 export type Snapshot = {
   value: string;
   context: WorkflowContext;
-  input: WorkflowInput;
 };

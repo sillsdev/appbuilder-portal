@@ -31,10 +31,7 @@ const updateOwnerGroupSchema = v.object({
 const addProductSchema = v.object({
   productDefinitionId: idSchema,
   storeId: idSchema,
-  storeLanguageId: idSchema,
-  workflowJobId: idSchema,
-  workflowBuildId: idSchema,
-  workflowPublishId: idSchema
+  storeLanguageId: idSchema
 });
 
 // Are we sending too much data?
@@ -181,9 +178,9 @@ export const actions = {
       ProductDefinitionId: form.data.productDefinitionId,
       StoreId: form.data.storeId,
       StoreLanguageId: form.data.storeLanguageId,
-      WorkflowJobId: form.data.workflowJobId,
-      WorkflowBuildId: form.data.workflowBuildId,
-      WorkflowPublishId: form.data.workflowPublishId
+      WorkflowJobId: 0,
+      WorkflowBuildId: 0,
+      WorkflowPublishId: 0
     });
 
     if (typeof productId === 'string') {

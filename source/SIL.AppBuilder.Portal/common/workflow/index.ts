@@ -12,6 +12,7 @@ import {
   WorkflowContext,
   WorkflowInput,
   UserRoleFeature,
+  WorkflowConfig,
   ProductType,
   ActionType,
   StateNode,
@@ -33,22 +34,22 @@ export class Workflow {
   private URFeatures: UserRoleFeature[];
   private productType: ProductType;
 
-  private constructor(productId: string, input: WorkflowInput) {
-    this.productId = productId;
+  private constructor(input: WorkflowInput) {
+    this.productId = input.productId;
     this.URFeatures = input.URFeatures;
     this.productType = input.productType;
   }
 
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
-  public static async create(productId: string, input: WorkflowInput): Promise<Workflow> {
-    const flow = new Workflow(productId, input);
+  public static async create(productId: string, input: WorkflowConfig): Promise<Workflow> {
+    const flow = new Workflow({productId, ...input});
 
     flow.flow = createActor(DefaultWorkflow, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: input
+      input: {productId, ...input}
     });
 
     flow.flow.start();
@@ -60,13 +61,13 @@ export class Workflow {
   /** Restore from a snapshot in the database. */
   public static async restore(productId: string): Promise<Workflow> {
     const snap = await Workflow.getSnapshot(productId);
-    const flow = new Workflow(productId, snap.input);
+    const flow = new Workflow(snap.context);
     flow.flow = createActor(DefaultWorkflow, {
       snapshot: snap ? DefaultWorkflow.resolveState(snap) : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: snap.input
+      input: snap.context
     });
 
     flow.flow.start();
@@ -207,11 +208,7 @@ export class Workflow {
       update: {
         Snapshot: JSON.stringify({
           value: this.stateName(this.currentState),
-          context: context,
-          input: {
-            URFeatures: this.URFeatures,
-            productType: this.productType
-          }
+          context: context
         } as Snapshot)
       }
     });

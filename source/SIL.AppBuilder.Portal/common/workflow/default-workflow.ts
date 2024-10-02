@@ -11,6 +11,8 @@ import {
   WorkflowEvent
 } from '../public/workflow.js';
 import { RoleId } from '../public/prisma.js';
+import { scriptoriaQueue } from '../index.js';
+import { ScriptoriaJobType } from '../BullJobTypes.js';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -69,7 +71,8 @@ export const DefaultWorkflow = setup({
     includeArtifacts: false,
     environment: {},
     productType: input.productType,
-    URFeatures: input.URFeatures
+    URFeatures: input.URFeatures,
+    productId: input.productId
   }),
   states: {
     Start: {
@@ -303,9 +306,11 @@ export const DefaultWorkflow = setup({
     'Product Creation': {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Creating Product');
+        ({ context }) => {
+          scriptoriaQueue.add(`Create Product (${context.productId})`, {
+            type: ScriptoriaJobType.CreateProduct,
+            productId: context.productId
+          });
         }
       ],
       on: {
@@ -458,9 +463,13 @@ export const DefaultWorkflow = setup({
         assign({
           instructions: 'waiting'
         }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Building Product');
+        ({ context }) => {
+          scriptoriaQueue.add(`Build Product (${context.productId})`, {
+            type: ScriptoriaJobType.BuildProduct,
+            productId: context.productId,
+            // TODO: assign targets
+            environment: context.environment
+          });
         }
       ],
       on: {
@@ -664,9 +673,11 @@ export const DefaultWorkflow = setup({
             user: RoleId.AppBuilder
           },
           guard: { type: 'hasReviewers' },
-          actions: () => {
-            // TODO: connect to backend to email reviewers
-            console.log('Emailing Reviewers');
+          actions: ({ context }) => {
+            scriptoriaQueue.add(`Email Reviewers (Product: ${context.productId})`, {
+              type: ScriptoriaJobType.EmailReviewers,
+              productId: context.productId
+            });
           }
         }
       }
@@ -674,9 +685,15 @@ export const DefaultWorkflow = setup({
     'Product Publish': {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Publishing Product');
+        ({ context }) => {
+          scriptoriaQueue.add(`Publish Product (${context.productId})`, {
+            type: ScriptoriaJobType.PublishProduct,
+            productId: context.productId,
+            // TODO: How should these values be determined?
+            channel: 'alpha',
+            targets: 'google-play',
+            environment: context.environment
+          });
         }
       ],
       on: {
