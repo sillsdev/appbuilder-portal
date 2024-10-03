@@ -6,7 +6,9 @@ export enum ScriptoriaJobType {
   CreateProduct = 'CreateProduct',
   BuildProduct = 'BuildProduct',
   EmailReviewers = 'EmailReviewers',
-  PublishProduct = 'PublishProduct'
+  PublishProduct = 'PublishProduct',
+  CheckBuildProduct = 'CheckBuildProduct',
+  CheckPublishProduct = 'CheckPublishProduct'
 }
 
 export interface TestJob {
@@ -44,6 +46,23 @@ export interface PublishProductJob {
   environment: { [key: string]: any };
 }
 
+export interface CheckBuildProductJob {
+  type: ScriptoriaJobType.CheckBuildProduct;
+  organizationId: number;
+  productId: string;
+  jobId: number;
+  buildId: number;
+}
+
+export interface CheckPublishProductJob {
+  type: ScriptoriaJobType.CheckPublishProduct;
+  organizationId: number;
+  productId: string;
+  jobId: number;
+  buildId: number;
+  releaseId: number;
+}
+
 export type ScriptoriaJob = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
@@ -53,5 +72,7 @@ export type JobTypeMap = {
   [ScriptoriaJobType.BuildProduct]: BuildProductJob;
   [ScriptoriaJobType.EmailReviewers]: EmailReviewersJob;
   [ScriptoriaJobType.PublishProduct]: PublishProductJob;
+  [ScriptoriaJobType.CheckBuildProduct]: CheckBuildProductJob;
+  [ScriptoriaJobType.CheckPublishProduct]: CheckPublishProductJob;
   // Add more mappings here as needed
 };
