@@ -42,6 +42,14 @@ export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
         return new Executor.EmailReviewers().execute(
           job as Job<BullMQ.EmailReviewersJob, number, string>
         );
+      case BullMQ.ScriptoriaJobType.CheckBuildProduct:
+        return new Executor.CheckBuildProduct().execute(
+          job as Job<BullMQ.CheckBuildProductJob, number, string>
+        );
+      case BullMQ.ScriptoriaJobType.CheckPublishProduct:
+        return new Executor.CheckPublishProduct().execute(
+          job as Job<BullMQ.CheckPublishProductJob, number, string>
+        );
     }
   }
 }

@@ -251,6 +251,13 @@ export const StartupWorkflow = setup({
           scriptoriaQueue.add(`Create Product #${context.productId}`, {
             type: ScriptoriaJobType.CreateProduct,
             productId: context.productId
+          },
+          {
+            attempts: 5,
+            backoff: {
+              type: 'exponential',
+              delay: 5000 // 5 seconds
+            }
           });
         }
       ],
@@ -410,6 +417,13 @@ export const StartupWorkflow = setup({
             productId: context.productId,
             // TODO: assign targets
             environment: context.environment
+          },
+          {
+            attempts: 5,
+            backoff: {
+              type: 'exponential',
+              delay: 5000 // 5 seconds
+            }
           });
         }
       ],
@@ -646,6 +660,13 @@ export const StartupWorkflow = setup({
             channel: 'alpha',
             targets: 'google-play',
             environment: context.environment
+          },
+          {
+            attempts: 5,
+            backoff: {
+              type: 'exponential',
+              delay: 5000 // 5 seconds
+            }
           });
         }
       ],
@@ -740,7 +761,7 @@ export const StartupWorkflow = setup({
     [WorkflowAction.Jump]: {
       actions: [
         assign({
-          start: ({ context, event }) => event.target
+          start: ({ event }) => event.target
         })
       ],
       target: `.${WorkflowState.Start}`
