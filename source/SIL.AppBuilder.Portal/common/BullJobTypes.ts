@@ -8,7 +8,8 @@ export enum ScriptoriaJobType {
   EmailReviewers = 'EmailReviewers',
   PublishProduct = 'PublishProduct',
   CheckBuildProduct = 'CheckBuildProduct',
-  CheckPublishProduct = 'CheckPublishProduct'
+  CheckPublishProduct = 'CheckPublishProduct',
+  CheckSystemStatuses = 'CheckSystemStatuses'
 }
 
 export interface TestJob {
@@ -63,6 +64,10 @@ export interface CheckPublishProductJob {
   releaseId: number;
 }
 
+export interface CheckSystemStatusesJob {
+  type: ScriptoriaJobType.CheckSystemStatuses;
+}
+
 export type ScriptoriaJob = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
@@ -74,5 +79,6 @@ export type JobTypeMap = {
   [ScriptoriaJobType.PublishProduct]: PublishProductJob;
   [ScriptoriaJobType.CheckBuildProduct]: CheckBuildProductJob;
   [ScriptoriaJobType.CheckPublishProduct]: CheckPublishProductJob;
+  [ScriptoriaJobType.CheckSystemStatuses]: CheckSystemStatusesJob;
   // Add more mappings here as needed
 };

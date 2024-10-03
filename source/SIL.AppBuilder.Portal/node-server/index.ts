@@ -7,7 +7,7 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import path from 'path';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { fileURLToPath } from 'url';
-import { ScriptoriaWorker } from './BullWorker.js';
+import { ScriptoriaWorker, addDefaultRecurringJobs } from './BullWorker.js';
 
 // Do not import any functional code from the sveltekit codebase
 // unless you are positive you know what you are doing
@@ -72,7 +72,7 @@ app.get('/healthcheck', (req, res) => {
 });
 
 // BullMQ variables
-import { scriptoriaQueue } from 'sil.appbuilder.portal.common';
+import { BullMQ, scriptoriaQueue } from 'sil.appbuilder.portal.common';
 // Running on svelte process right now. Consider putting on new thread
 // Fine like this if majority of job time is waiting for network requests
 // If there is much processing it should be moved to another thread
@@ -96,3 +96,5 @@ const handler = await import('./build/handler.js');
 app.use(handler.handler);
 
 app.listen(3000, () => console.log('Server started!'));
+
+addDefaultRecurringJobs();

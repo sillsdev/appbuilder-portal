@@ -1,5 +1,5 @@
 import { Job, Worker } from 'bullmq';
-import { BullMQ } from 'sil.appbuilder.portal.common';
+import { BullMQ, scriptoriaQueue } from 'sil.appbuilder.portal.common';
 import * as Executor from './job-executors/index.js';
 
 export abstract class BullWorker<T, R> {
@@ -50,6 +50,26 @@ export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
         return new Executor.CheckPublishProduct().execute(
           job as Job<BullMQ.CheckPublishProductJob, number, string>
         );
+      case BullMQ.ScriptoriaJobType.CheckSystemStatuses:
+        return new Executor.CheckSystemStatuses().execute(
+          job as Job<BullMQ.CheckSystemStatusesJob, number, string>
+        );
     }
   }
+}
+
+export function addDefaultRecurringJobs() {
+  // Recurring job to check the availability of BuildEngine
+  scriptoriaQueue.add(
+    'Check System Statuses (Recurring)',
+    {
+      type: BullMQ.ScriptoriaJobType.CheckSystemStatuses
+    },
+    {
+      repeat: {
+        pattern: '*/5 * * * *', // every 5 minutes
+        key: 'defaultCheckSystemStatuses'
+      }
+    }
+  );
 }

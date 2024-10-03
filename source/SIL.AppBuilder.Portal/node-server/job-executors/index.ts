@@ -8,3 +8,4 @@ export {
   CheckBuildProduct,
   CheckPublishProduct
 } from './product.js';
+export { CheckSystemStatuses } from './systemStatus.js';
