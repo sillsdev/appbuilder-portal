@@ -175,7 +175,7 @@ async function validateProductBase(
     // 2. The project has a WorkflowProjectUrl
     // handled by query
     // 4. The language is allowed by the store
-    project.Organization.OrganizationStores[0].Store.StoreType.StoreLanguages.length > 0 &&
+    (storeLanguageId ?? project.Organization.OrganizationStores[0].Store.StoreType.StoreLanguages.length > 0) &&
     // 5. The product type is allowed by the organization
     project.Organization.OrganizationProductDefinitions.length > 0
   );
