@@ -70,7 +70,7 @@
       <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
         {m.project_importProjects()}
       </button>
-      <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
+      <button class="btn btn-outline mx-1" on:click={() => goto(`/projects/new/${selectedOrg}`)}>
         {m.sidebar_addProject()}
       </button>
     </div>
