@@ -30,21 +30,21 @@ type SuccessResponse = {
 };
 
 export type ProjectConfig = {
-  user_id: string;
-  group_id: string;
   app_id: string;
   project_name: string;
   language_code: string;
-  publishing_key: string;
   storage_type: string;
 };
 export type ProjectResponse = SuccessResponse &
   ProjectConfig & {
     responseType: 'project';
-    status: 'initialized' | 'accepted' | 'complete' | 'delete' | 'deleting';
+    status: 'initialized' | 'accepted' | 'completed' | 'delete' | 'deleting';
     result: 'SUCCESS' | 'FAILURE' | null;
     error: string | null;
     url: string;
+    publishing_key: string;
+    user_id: string;
+    group_id: string;
   };
 
 export type TokenConfig = {
@@ -86,7 +86,7 @@ export type BuildResponse = SuccessResponse &
     artifacts: { [key: string]: string };
   };
 
-export type Channels = 'production' | 'beta' | 'alpha'
+export type Channels = 'production' | 'beta' | 'alpha';
 
 type ReleaseCommon = {
   channel: Channels;
