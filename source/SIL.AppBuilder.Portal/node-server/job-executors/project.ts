@@ -10,6 +10,7 @@ import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
 
 // TODO: What would be a meaningful return?
+// TODO: Figure out why this causes errors in BuildEngine but S1 does not
 export class CreateProject extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.CreateProject> {
   async execute(job: Job<BullMQ.CreateProjectJob, number, string>): Promise<number> {
     const projectData = await prisma.projects.findUnique({
@@ -41,6 +42,8 @@ export class CreateProject extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobTyp
     } else {
       await DatabaseWrites.projects.update(job.data.projectId, {
         WorkflowProjectId: response.id,
+        WorkflowProjectUrl: response.url,
+        WorkflowAppProjectUrl: `${process.env.UI_URL ?? 'http://localhost:5173'}/projects/${job.data.projectId}`,
         DateUpdated: new Date().toString()
       });
       job.updateProgress(75);
@@ -79,6 +82,9 @@ export class CheckCreateProject extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJ
     } else {
       if (response.status === 'complete') {
         await scriptoriaQueue.removeRepeatableByKey(job.repeatJobKey);
+        if (response.error) {
+          job.log(response.error);
+        }
         job.updateProgress(100);
         return response.id;
       }

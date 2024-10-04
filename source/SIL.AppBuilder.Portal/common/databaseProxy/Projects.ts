@@ -18,20 +18,20 @@ import type { RequirePrimitive } from './utility.js';
 
 export async function create(
   projectData: RequirePrimitive<Prisma.ProjectsUncheckedCreateInput>
-): Promise<boolean> {
+): Promise<boolean | number> {
   if (!validateProjectBase(projectData.OrganizationId, projectData.GroupId, projectData.OwnerId))
     return false;
 
   // No additional verification steps
 
   try {
-    await prisma.projects.create({
+    const res = await prisma.projects.create({
       data: projectData
     });
+    return res.Id;
   } catch (e) {
     return false;
   }
-  return true;
 }
 
 export async function update(

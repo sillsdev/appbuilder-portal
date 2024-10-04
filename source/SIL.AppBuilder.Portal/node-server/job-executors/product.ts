@@ -135,6 +135,9 @@ export class CheckBuildProduct extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJo
       // TODO: what does the 'expired' status mean?
       if (response.status === 'completed' || response.status === 'expired') {
         await scriptoriaQueue.removeRepeatableByKey(job.repeatJobKey);
+        if (response.error) {
+          job.log(response.error);
+        }
         const flow = await Workflow.restore(job.data.productId);
         if (response.result === 'SUCCESS') {
           flow.send({ type: 'Build Successful', userId: null });
@@ -227,6 +230,9 @@ export class CheckPublishProduct extends ScriptoriaJobExecutor<BullMQ.Scriptoria
       // TODO: what does the 'expired' status mean?
       if (response.status === 'completed' || response.status === 'expired') {
         await scriptoriaQueue.removeRepeatableByKey(job.repeatJobKey);
+        if (response.error) {
+          job.log(response.error);
+        }
         const flow = await Workflow.restore(job.data.productId);
         if (response.result === 'SUCCESS') {
           flow.send({ type: 'Publish Successful', userId: null });
