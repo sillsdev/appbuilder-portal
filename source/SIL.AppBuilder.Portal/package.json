@@ -1,0 +1,72 @@
+{
+  "name": "sil.appbuilder.portal",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npm run test:integration && npm run test:unit",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "format": "prettier --plugin-search-dir . --write .",
+    "test:integration": "playwright test",
+    "test:unit": "vitest",
+    "flatten-locales": "ts-node --esm scripts/flatten.ts",
+    "prepare": "svelte-kit sync"
+  },
+  "prisma": {
+    "seed": "ts-node --esm prisma/seed.ts",
+    "schema": "common/prisma/schema.prisma"
+  },
+  "devDependencies": {
+    "@auth/core": "^0.32.0",
+    "@iconify/svelte": "^3.1.4",
+    "@inlang/paraglide-js": "1.11.0",
+    "@inlang/paraglide-sveltekit": "^0.10.8",
+    "@playwright/test": "^1.28.1",
+    "@sveltejs/adapter-node": "^5.0.1",
+    "@sveltejs/kit": "^2.5.18",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.8.6",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vvo/tzdb": "^6.142.0",
+    "autoprefixer": "^10.4.16",
+    "commander": "^11.1.0",
+    "daisyui": "^4.12.10",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-svelte": "^2.30.0",
+    "fuse.js": "^7.0.0",
+    "postcss": "^8.4.31",
+    "prettier": "^2.8.0",
+    "prettier-plugin-prisma": "^5.0.0",
+    "prettier-plugin-svelte": "^2.10.1",
+    "prisma": "^5.4.2",
+    "svelte": "^4.2.18",
+    "svelte-check": "^3.8.4",
+    "svelte-flatpickr": "^3.3.4",
+    "sveltekit-superforms": "^2.16.0",
+    "tailwindcss": "^3.4.4",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.1",
+    "typescript": "^5.0.0",
+    "valibot": "^0.36.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "type": "module",
+  "volta": {
+    "node": "18.16.1"
+  },
+  "dependencies": {
+    "@auth/express": "^0.6.0",
+    "@auth/sveltekit": "^1.4.2",
+    "@bull-board/express": "^5.21.3",
+    "express": "^4.19.2",
+    "sil.appbuilder.portal.common": "file:common"
+  }
+}

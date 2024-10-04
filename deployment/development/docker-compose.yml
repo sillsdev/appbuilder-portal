@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 # NOTE: that --project-directory ./source
 # must be passed to every docker-compose command
@@ -13,7 +13,9 @@ volumes:
   ui-node_modules:
   ui-yarn-cache:
   postgres-data:
+  redis-data:
   outdir:
+
 
 services:
   db:
@@ -91,3 +93,30 @@ services:
       - ui-dist:/app/dist
       - ui-node_modules:/app/node_modules
       - ui-yarn-cache:/.yarn-cache
+  svelte-ui:
+    build:
+      context: ./source/SIL.AppBuilder.Portal/
+      dockerfile: Dockerfile
+    ports:
+      - "5173:3000"
+    env_file: source/SIL.AppBuilder.Portal/.env
+    environment:
+      VITE_DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
+      # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
+      ORIGIN: "http://localhost:5173"
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --appendfilename appendonly.aof --maxmemory-policy noeviction
+    volumes:
+      - redis-data:/data
+  stg-tunnel:
+    build:
+      context: ./deployment/development
+      dockerfile: Dockerfile.stg-tunnel
+    ports:
+      - "8443:8443"
+    command: bash -c "ssh -N -L \*:8443:localhost:\$(ssh aps-stg \"docker ps --format '{{.Names}} {{.Ports}}' | grep -E 'buildengine.*web' | awk -F '->' '{print \\$1}' | awk -F ':' '{print \\$2}'\") aps-stg"
+    volumes:
+      - ~/.ssh:/root/.ssh
