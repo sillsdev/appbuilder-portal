@@ -41,6 +41,7 @@
     const matchList = matches.filter((match) => match.key === key);
     if (matchList.length === 0) return value;
     // let ret = '';
+    // TODO: This throws `ReferenceError: document is not defined`, at least in my environment
     let ret = document.createElement('div');
     let i = 0;
     // Are there any matches of more than 2 characters?

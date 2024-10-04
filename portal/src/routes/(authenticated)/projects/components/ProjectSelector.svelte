@@ -72,8 +72,12 @@
         </button>
       </div>
       <div class="text-right space-y-2">
-        <button class="btn btn-outline mx-1">{m.project_importProjects()}</button>
-        <button class="btn btn-outline mx-1">{m.sidebar_addProject()}</button>
+        <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
+          {m.project_importProjects()}
+        </button>
+        <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
+          {m.sidebar_addProject()}
+        </button>
       </div>
     </div>
   </slot>
