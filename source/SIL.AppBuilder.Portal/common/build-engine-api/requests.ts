@@ -12,7 +12,8 @@ export async function request(
     method: method,
     headers: {
       Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
+      Accept: 'application/json',
+      'Content-Type': body? 'application/json' : undefined
     },
     body: body ? JSON.stringify(body) : undefined
   });
