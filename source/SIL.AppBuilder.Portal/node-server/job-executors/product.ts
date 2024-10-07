@@ -50,7 +50,7 @@ export class CreateProduct extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobTyp
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
         WorkflowJobId: response.id,
-        DateUpdated: new Date().toString()
+        DateUpdated: new Date()
       });
       job.updateProgress(75);
       const flow = await Workflow.restore(job.data.productId);
@@ -97,7 +97,7 @@ export class BuildProduct extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
         WorkflowBuildId: response.id,
-        DateUpdated: new Date().toString()
+        DateUpdated: new Date()
       });
       job.updateProgress(75);
       
@@ -191,7 +191,7 @@ export class PublishProduct extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobTy
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
         WorkflowPublishId: response.id,
-        DateUpdated: new Date().toString()
+        DateUpdated: new Date()
       });
       job.updateProgress(75);
 

@@ -58,7 +58,7 @@ export const load = (async ({ locals, params }) => {
   const form = await superValidate(
     {
       group: organization?.Groups[0]?.Id ?? undefined,
-      type: types?.[0].Id ?? undefined,
+      type: types?.[0]?.Id ?? undefined,
       public: organization?.PublicByDefault ?? undefined
     },
     valibot(projectCreateSchema)
@@ -75,7 +75,7 @@ export const actions: Actions = {
     // TODO: Return/Display error messages
     if (!form.valid) return fail(400, { form, ok: false });
     if (isNaN(parseInt(event.params.id))) return fail(400, { form, ok: false });
-    const timestamp = (new Date()).toString();
+    const timestamp = new Date();
     const project = await DatabaseWrites.projects.create({
       OrganizationId: parseInt(event.params.id),
       Name: form.data.name,

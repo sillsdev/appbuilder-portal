@@ -44,7 +44,7 @@ export class CreateProject extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobTyp
         WorkflowProjectId: response.id,
         WorkflowProjectUrl: response.url,
         WorkflowAppProjectUrl: `${process.env.UI_URL ?? 'http://localhost:5173'}/projects/${job.data.projectId}`,
-        DateUpdated: new Date().toString()
+        DateUpdated: new Date()
       });
       job.updateProgress(75);
 
