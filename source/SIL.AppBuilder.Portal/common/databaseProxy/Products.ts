@@ -6,12 +6,12 @@ export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
 ): Promise<boolean | string> {
   if (
-    !validateProductBase(
+    !(await validateProductBase(
       productData.ProjectId,
       productData.ProductDefinitionId,
       productData.StoreId,
       productData.StoreLanguageId
-    )
+    ))
   )
     return false;
 
@@ -43,12 +43,12 @@ export async function update(
   const productDefinitionId = productData.ProductDefinitionId ?? existing!.ProductDefinitionId;
   const storeId = productData.StoreId ?? existing!.StoreId;
   const storeLanguageId = productData.StoreLanguageId ?? existing!.StoreLanguageId;
-  if (!validateProductBase(
+  if (!(await validateProductBase(
     projectId,
     productDefinitionId,
     storeId,
     storeLanguageId
-  )) return false;
+  ))) return false;
 
   // No additional verification steps
 
@@ -69,6 +69,11 @@ export async function update(
 function deleteProduct(productId: string) {
   // Delete all userTasks for this product, and delete the product
   return prisma.$transaction([
+    prisma.workflowInstances.delete({
+      where: {
+        ProductId: productId
+      }
+    }),
     prisma.userTasks.deleteMany({
       where: {
         ProductId: productId
@@ -80,6 +85,7 @@ function deleteProduct(productId: string) {
       }
     })
   ]);
+  // TODO: delete from BuildEngine
 }
 export { deleteProduct as delete };
 
@@ -94,7 +100,7 @@ async function validateProductBase(
   projectId: number,
   productDefinitionId: number,
   storeId: number,
-  storeLanguageId: number
+  storeLanguageId?: number
 ) {
   const productDefinition = await prisma.productDefinitions.findUnique({
     where: {
@@ -133,10 +139,14 @@ async function validateProductBase(
                     select: {
                       // Store type must match Workflow store type
                       Id: true,
-                      // StoreLanguage must be allowed by Store
-                      StoreLanguages: {
+                      // StoreLanguage must be allowed by Store, if the StoreLanguage is defined
+                      StoreLanguages: storeLanguageId === undefined || storeLanguageId === null ? 
+                        undefined : {
                         where: {
                           Id: storeLanguageId
+                        },
+                        select: {
+                          Id: true
                         }
                       }
                     }
