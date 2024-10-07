@@ -42,7 +42,6 @@ export class CreateProject extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobTyp
     } else {
       await DatabaseWrites.projects.update(job.data.projectId, {
         WorkflowProjectId: response.id,
-        WorkflowProjectUrl: response.url,
         WorkflowAppProjectUrl: `${process.env.UI_URL ?? 'http://localhost:5173'}/projects/${job.data.projectId}`,
         DateUpdated: new Date()
       });
@@ -53,7 +52,8 @@ export class CreateProject extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobTyp
         {
           type: BullMQ.ScriptoriaJobType.CheckCreateProject,
           workflowProjectId: response.id,
-          organizationId: projectData.OrganizationId
+          organizationId: projectData.OrganizationId,
+          projectId: job.data.projectId
         },
         {
           repeat: {
@@ -80,11 +80,18 @@ export class CheckCreateProject extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJ
       job.log(response.message);
       throw new Error(response.message);
     } else {
-      if (response.status === 'complete') {
+      if (response.status === 'completed') {
         await scriptoriaQueue.removeRepeatableByKey(job.repeatJobKey);
         if (response.error) {
           job.log(response.error);
         }
+        else {
+          await DatabaseWrites.projects.update(job.data.projectId, {
+            WorkflowProjectUrl: response.url,
+            DateUpdated: new Date()
+          });
+        }
+
         job.updateProgress(100);
         return response.id;
       }

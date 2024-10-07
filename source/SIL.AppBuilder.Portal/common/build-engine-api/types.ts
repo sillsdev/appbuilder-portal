@@ -38,7 +38,7 @@ export type ProjectConfig = {
 export type ProjectResponse = SuccessResponse &
   ProjectConfig & {
     responseType: 'project';
-    status: 'initialized' | 'accepted' | 'complete' | 'delete' | 'deleting';
+    status: 'initialized' | 'accepted' | 'completed' | 'delete' | 'deleting';
     result: 'SUCCESS' | 'FAILURE' | null;
     error: string | null;
     url: string;

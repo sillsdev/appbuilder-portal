@@ -79,6 +79,7 @@ export interface CheckCreateProjectJob {
   type: ScriptoriaJobType.CheckCreateProject;
   workflowProjectId: number;
   organizationId: number;
+  projectId: number;
 }
 
 export type ScriptoriaJob = JobTypeMap[keyof JobTypeMap];
