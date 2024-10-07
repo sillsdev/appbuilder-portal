@@ -29,6 +29,8 @@ type SuccessResponse = {
   };
 };
 
+type CommonStatus = 'initialized' | 'accepted' | 'completed';
+
 export type ProjectConfig = {
   user_id: string;
   group_id: string;
@@ -41,7 +43,7 @@ export type ProjectConfig = {
 export type ProjectResponse = SuccessResponse &
   ProjectConfig & {
     responseType: 'project';
-    status: 'initialized' | 'accepted' | 'complete' | 'delete' | 'deleting';
+    status: CommonStatus | 'delete' | 'deleting';
     result: 'SUCCESS' | 'FAILURE' | null;
     error: string | null;
     url: string;
@@ -70,6 +72,8 @@ export type JobResponse = SuccessResponse &
     responseType: 'job';
   };
 
+type BuildOrReleaseStatus = 'active' | 'expired' | 'postprocessing';
+
 type BuildCommon = {
   targets: string;
 };
@@ -80,7 +84,7 @@ export type BuildResponse = SuccessResponse &
   BuildCommon & {
     responseType: 'build';
     job_id: number;
-    status: 'initialized' | 'accepted' | 'active' | 'expired' | 'postprocessing' | 'completed';
+    status: CommonStatus | BuildOrReleaseStatus;
     result: 'SUCCESS' | 'FAILURE' | 'ABORTED' | null;
     error: string | null;
     artifacts: { [key: string]: string };
@@ -97,7 +101,7 @@ export type ReleaseResponse = SuccessResponse &
   ReleaseCommon & {
     responseType: 'release';
     buildId: number;
-    status: 'initialized' | 'accepted' | 'active' | 'expired' | 'completed' | 'postprocessing';
+    status: CommonStatus | BuildOrReleaseStatus;
     result: 'SUCCESS' | 'FAILURE' | 'EXCEPTION' | null;
     error: string | null;
     console_text: string;
