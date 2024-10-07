@@ -42,17 +42,6 @@ export class Workflow {
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
   public static async create(productId: string, input: WorkflowInput): Promise<Workflow> {
-    DatabaseWrites.workflowInstances.upsert({
-      where: {
-        ProductId: productId
-      },
-      update: {},
-      create: {
-        Snapshot: '',
-        ProductId: productId
-      }
-    });
-
     const flow = new Workflow(productId, input);
 
     flow.flow = createActor(DefaultWorkflow, {
@@ -63,6 +52,8 @@ export class Workflow {
     });
 
     flow.flow.start();
+    flow.populateTransitions();
+    flow.updateUserTasks();
 
     return flow;
   }
@@ -202,11 +193,18 @@ export class Workflow {
   }
 
   private async createSnapshot(context: WorkflowContext) {
-    return DatabaseWrites.workflowInstances.update({
+    return DatabaseWrites.workflowInstances.upsert({
       where: {
         ProductId: this.productId
       },
-      data: {
+      create: {
+        ProductId: this.productId,
+        Snapshot: JSON.stringify({
+          value: this.stateName(this.currentState),
+          context: context
+        } as Snapshot)
+      },
+      update: {
         Snapshot: JSON.stringify({
           value: this.stateName(this.currentState),
           context: context,
@@ -334,6 +332,7 @@ export class Workflow {
 
   /** Create ProductTransitions entries for new product following the "happy" path */
   private async populateTransitions() {
+    // TODO: AllowedUserNames
     return DatabaseWrites.productTransitions.createManyAndReturn({
       data: [
         {
@@ -370,14 +369,6 @@ export class Workflow {
     command?: string,
     comment?: string
   ) {
-    const transitions = await prisma.productTransitions.count({
-      where: {
-        ProductId: this.productId
-      }
-    });
-    if (transitions <= 0) {
-      await this.populateTransitions();
-    }
     const transition = await prisma.productTransitions.findFirst({
       where: {
         ProductId: this.productId,
