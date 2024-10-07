@@ -8,12 +8,12 @@ export async function request(
   body?: any
 ) {
   const { url, token } = await getURLandToken(organizationId);
-  console.log(`request: ${JSON.stringify(body)}`); // TODO: remove
   return await fetch(`${url}/${resource}`, {
     method: method,
     headers: {
       Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
+      Accept: 'application/json',
+      'Content-Type': body? 'application/json' : undefined
     },
     body: body ? JSON.stringify(body) : undefined
   });
@@ -91,10 +91,7 @@ export async function createJob(
   organizationId: number,
   job: Types.JobConfig
 ): Promise<Types.JobResponse | Types.ErrorResponse> {
-  console.log(`Requests.createJob job: ${JSON.stringify(job, null, 4)}`); // TODO: remove
   const res = await request('job', organizationId, 'POST', job);
-  console.log(`Requests.createJob res: ${res.status}: ${res.statusText}`); // TODO: remove
-  console.log(`Requests.createJob res: ${JSON.stringify(await res.json(), null, 4)}`); // TODO: remove
   return res.ok
     ? ((await res.json()) as Types.JobResponse)
     : ((await res.json()) as Types.ErrorResponse);
