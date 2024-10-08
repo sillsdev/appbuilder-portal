@@ -1,20 +1,36 @@
-import type { PageServerLoad } from './$types';
-import { prisma } from 'sil.appbuilder.portal.common';
+import type { PageServerLoad, Actions } from './$types';
+import { prisma, Workflow } from 'sil.appbuilder.portal.common';
+import { redirect } from '@sveltejs/kit';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+
+const sendActionSchema = v.object({
+  state: v.string(),
+  flowAction: v.string(),
+  comment: v.string()
+});
 
 type Fields = {
-  ownerName?: string;           //Product.Project.Owner.Name
-  ownerEmail?: string;          //Product.Project.Owner.Email
-  projectName: string;          //Product.Project.Name
-  projectDescription: string;   //Product.Project.Description
-  storeDescription?: string;    //Product.Store.Description
+  ownerName?: string; //Product.Project.Owner.Name
+  ownerEmail?: string; //Product.Project.Owner.Email
+  projectName: string; //Product.Project.Name
+  projectDescription: string; //Product.Project.Description
+  storeDescription?: string; //Product.Store.Description
   listingLanguageCode?: string; //Product.StoreLanguage.Name
-  projectURL?: string;          //Product.Project.WorkflowAppProjectURL
-  productDescription?: string;  //Product.ProductDefinition.Description
-  appType?: string;             //Product.ProductDefinition.ApplicationTypes.Description
+  projectURL?: string; //Product.Project.WorkflowAppProjectURL
+  productDescription?: string; //Product.ProductDefinition.Description
+  appType?: string; //Product.ProductDefinition.ApplicationTypes.Description
   projectLanguageCode?: string; //Product.Project.Language
-}
+};
 
 export const load = (async ({ params, url, locals }) => {
+  const session = await locals.auth();
+  // TODO: permission check
+  const flow = await Workflow.restore(params.product_id);
+  const snap = await Workflow.getSnapshot(params.product_id);
+
   const product = await prisma.products.findUnique({
     where: {
       Id: params.product_id
@@ -25,75 +41,119 @@ export const load = (async ({ params, url, locals }) => {
         select: {
           Name: true,
           Description: true,
-          WorkflowAppProjectUrl: true,
-          Language: true,
+          WorkflowAppProjectUrl: snap?.context.includeFields.includes('projectURL'),
+          Language: snap?.context.includeFields.includes('projectLanguageCode'),
           Owner: {
             select: {
-              Name: true,
-              Email: true
+              Id: true,
+              Name: snap?.context.includeFields.includes('ownerName'),
+              Email: snap?.context.includeFields.includes('ownerEmail')
             }
           },
-          Reviewers: {
+          //conditionally include reviewers
+          Reviewers: snap?.context.includeReviewers
+            ? {
+                select: {
+                  Id: true,
+                  Name: true,
+                  Email: true
+                }
+              }
+            : undefined,
+          Authors: {
             select: {
-              Id: true,
-              Name: true,
-              Email: true
+              UserId: true
+            }
+          },
+          Organization: {
+            select: {
+              UserRoles: {
+                where: {
+                  RoleId: RoleId.OrgAdmin
+                }
+              }
             }
           }
         }
       },
-      Store: {
-        select: {
-          Description: true
-        }
-      },
-      StoreLanguage: {
-        select: {
-          Name: true
-        }
-      },
-      ProductDefinition: {
-        select: {
-          Name: true,
-          ApplicationTypes: {
+      Store: snap?.context.includeFields.includes('storeDescription')
+        ? {
             select: {
               Description: true
             }
           }
+        : undefined,
+      StoreLanguage: snap?.context.includeFields.includes('listingLanguageCode')
+        ? {
+            select: {
+              Name: true
+            }
+          }
+        : undefined,
+      ProductDefinition: {
+        select: {
+          Name: snap?.context.includeFields.includes('productDescription'),
+          ApplicationTypes: snap?.context.includeFields.includes('appType')
+            ? {
+                select: {
+                  Description: true
+                }
+              }
+            : undefined
         }
-      },
+      }
     }
   });
-  
-  // later: include only when workflow state needs it
-  const artifacts = await prisma.productArtifacts.findMany({
-    where: {
-      ProductId: params.product_id,
-      ProductBuild: {
-        BuildId: product?.WorkflowBuildId
-      }
-      // later: some forms don't need all artifacts, some just need aab
-    },
-    select: {
-      ProductBuildId: true,
-      ContentType: true,
-      FileSize: true,
-      Url: true,
-      Id: true
-    }
-  })
+
+  const artifacts = snap?.context.includeArtifacts
+    ? await prisma.productArtifacts.findMany({
+        where: {
+          ProductId: params.product_id,
+          ProductBuild: {
+            BuildId: product?.WorkflowBuildId
+          },
+          //filter by artifact type
+          ArtifactType:
+            typeof snap.context.includeArtifacts === 'string'
+              ? snap.context.includeArtifacts
+              : undefined //include all
+        },
+        select: {
+          ProductBuildId: true,
+          ContentType: true,
+          FileSize: true,
+          Url: true,
+          Id: true
+        }
+      })
+    : [];
 
   return {
-    actions: [],
-    taskTitle: "Waiting",
-    instructions: "waiting",
-    //filter fields/files/reviewers based on task once workflows are implemented
-    //possibly filter in the original query to increase database efficiency
+    actions: flow
+      .availableTransitions()
+      .filter((a) => {
+        if (session?.user.userId === undefined) return false;
+        switch (a[0].meta?.user) {
+          case RoleId.AppBuilder:
+            return session.user.userId === product?.Project.Owner.Id;
+          case RoleId.Author:
+            return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
+          case RoleId.OrgAdmin:
+            return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
+              session.user.userId
+            );
+          default:
+            return false;
+        }
+      })
+      .map((a) => a[0].eventType as string),
+    taskTitle: snap?.value,
+    instructions: snap?.context.instructions,
     fields: {
-      ownerName: product?.Project.Owner.Name,
-      ownerEmail: product?.Project.Owner.Email,
       projectName: product?.Project.Name,
       projectDescription: product?.Project.Description,
+      ownerName: product?.Project.Owner.Name,
+      ownerEmail: product?.Project.Owner.Email,
       storeDescription: product?.Store?.Description,
       listingLanguageCode: product?.StoreLanguage?.Name,
       projectURL: product?.Project.WorkflowAppProjectUrl,
@@ -103,5 +163,27 @@ export const load = (async ({ params, url, locals }) => {
     } as Fields,
     files: artifacts,
     reviewers: product?.Project.Reviewers
-  }
+  };
 }) satisfies PageServerLoad;
+
+export const actions = {
+  default: async ({ request, params, locals }) => {
+    // TODO: permission check
+    const session = await locals.auth();
+    const form = await superValidate(request, valibot(sendActionSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+
+    const flow = await Workflow.restore(params.product_id);
+
+    //double check that state matches current snapshot
+    if (form.data.state === flow.state()) {
+      flow.send({
+        type: form.data.flowAction,
+        comment: form.data.comment,
+        userId: session?.user.userId ?? null
+      });
+    }
+
+    redirect(302, '/tasks');
+  }
+} satisfies Actions;

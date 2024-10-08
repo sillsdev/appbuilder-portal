@@ -7,11 +7,11 @@
 </script>
 
 <div class="p-5">
-  <form>
+  <form method="POST">
     {#if data.actions?.length}
     <div class="flex flex-row gap-x-3">
       {#each data.actions as action}
-      <input type="submit" class="btn" value={action}>
+      <input type="submit" name="flowAction" class="btn" value={action}>
       {/each}
     </div>
     {/if}
@@ -19,8 +19,9 @@
       <div class="label">
         <span class="label-text">Comment</span>
       </div>
-      <textarea class="textarea textarea-bordered h-24"></textarea>
+      <textarea class="textarea textarea-bordered h-24" name="comment"></textarea>
     </label>
+    <input type="hidden" name="state" value={data.taskTitle}>
   </form>
   <hr class="border-t-4 my-2">
   <h2>
