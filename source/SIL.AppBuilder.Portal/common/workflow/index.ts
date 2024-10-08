@@ -11,7 +11,7 @@ import DatabaseWrites from '../databaseProxy/index.js';
 import {
   WorkflowContext,
   WorkflowInput,
-  RequiredAdminLevel,
+  UserRoleFeature,
   ProductType,
   ActionType,
   StateNode,
@@ -30,12 +30,12 @@ export class Workflow {
   private flow: Actor<typeof DefaultWorkflow> | null;
   private productId: string;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
-  private adminLevel: RequiredAdminLevel;
+  private URFeatures: UserRoleFeature[];
   private productType: ProductType;
 
   private constructor(productId: string, input: WorkflowInput) {
     this.productId = productId;
-    this.adminLevel = input.adminLevel;
+    this.URFeatures = input.URFeatures;
     this.productType = input.productType;
   }
 
@@ -81,7 +81,7 @@ export class Workflow {
 
   /**
    * Stops the current running workflow.
-   * 
+   *
    * Note: This does not mean that the workflow is terminated.
    */
   public stop(): void {
@@ -209,7 +209,7 @@ export class Workflow {
           value: this.stateName(this.currentState),
           context: context,
           input: {
-            adminLevel: this.adminLevel,
+            URFeatures: this.URFeatures,
             productType: this.productType
           }
         } as Snapshot)
@@ -228,15 +228,17 @@ export class Workflow {
    * Include state/transition if:
    *  - no conditions are specified
    *  - OR
-   *    - One of the provided admin levels matches the context
+   *    - One of the provided user role features matches the context
    *    - AND
    *    - One of the provided product types matches the context
    */
   private filterMeta(meta?: MetaFilter) {
     return (
       meta === undefined ||
-      ((meta.level !== undefined ? meta.level.includes(this.adminLevel) : true) &&
-        (meta.product !== undefined ? meta.product.includes(this.productType) : true))
+      ((meta.URFeatures !== undefined
+        ? meta.URFeatures.filter((urf) => this.URFeatures.includes(urf)).length > 0
+        : true) &&
+        (meta.productTypes !== undefined ? meta.productTypes.includes(this.productType) : true))
     );
   }
 
