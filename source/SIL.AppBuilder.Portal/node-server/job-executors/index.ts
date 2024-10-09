@@ -1,5 +1,5 @@
 export { Test } from './test.js';
-export { ReassignUserTasks } from './reassignUserTasks.js';
+export { ModifyUserTasks } from './userTasks.js';
 export { EmailReviewers } from './reviewers.js';
 export {
   CreateProduct,

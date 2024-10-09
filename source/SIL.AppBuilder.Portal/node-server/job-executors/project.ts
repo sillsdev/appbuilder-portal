@@ -3,14 +3,12 @@ import {
   prisma,
   DatabaseWrites,
   BuildEngine,
-  Workflow,
   scriptoriaQueue
 } from 'sil.appbuilder.portal.common';
 import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
 
 // TODO: What would be a meaningful return?
-// TODO: Figure out why this causes errors in BuildEngine but S1 does not
 export class CreateProject extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.CreateProject> {
   async execute(job: Job<BullMQ.CreateProjectJob, number, string>): Promise<number> {
     const projectData = await prisma.projects.findUnique({

@@ -11,18 +11,19 @@ import DatabaseWrites from '../databaseProxy/index.js';
 import {
   WorkflowContext,
   WorkflowInput,
-  UserRoleFeature,
   WorkflowConfig,
-  ProductType,
   ActionType,
   StateNode,
   WorkflowEvent,
   MetaFilter,
-  WorkflowTransitionMeta,
   Snapshot
 } from '../public/workflow.js';
 import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType } from '../public/prisma.js';
+import { scriptoriaQueue } from '../bullmq.js';
+import { BullMQ } from '../index.js';
+import { allUsersByRole } from '../databaseProxy/utility.js';
+import { Prisma } from '@prisma/client';
 
 /**
  * Wraps a workflow instance and provides methods to interact.
@@ -31,37 +32,49 @@ export class Workflow {
   private flow: Actor<typeof DefaultWorkflow> | null;
   private productId: string;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
-  private URFeatures: UserRoleFeature[];
-  private productType: ProductType;
+  private config: WorkflowConfig;
 
-  private constructor(input: WorkflowInput) {
-    this.productId = input.productId;
-    this.URFeatures = input.URFeatures;
-    this.productType = input.productType;
+  private constructor(productId: string, config: WorkflowConfig) {
+    this.productId = productId;
+    this.config = config;
   }
 
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
   public static async create(productId: string, input: WorkflowConfig): Promise<Workflow> {
-    const flow = new Workflow({productId, ...input});
+    const flow = new Workflow(productId, input);
 
     flow.flow = createActor(DefaultWorkflow, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: {productId, ...input}
+      input: { productId, ...input }
     });
 
     flow.flow.start();
-    flow.populateTransitions();
-    flow.updateUserTasks();
+    DatabaseWrites.productTransitions.create({
+      data: {
+        ProductId: productId,
+        DateTransition: new Date(),
+        TransitionType: ProductTransitionType.StartWorkflow
+      }
+    });
+    scriptoriaQueue.add(`Create UserTasks for Product #${productId}`, {
+      type: BullMQ.ScriptoriaJobType.ModifyUserTasks,
+      scope: 'Product',
+      productId: productId,
+      operation: {
+        type: BullMQ.UserTaskOp.Create,
+        by: 'All'
+      }
+    });
 
     return flow;
   }
   /** Restore from a snapshot in the database. */
   public static async restore(productId: string): Promise<Workflow> {
     const snap = await Workflow.getSnapshot(productId);
-    const flow = new Workflow(snap.context);
+    const flow = new Workflow(snap.context.productId, snap.context);
     flow.flow = createActor(DefaultWorkflow, {
       snapshot: snap ? DefaultWorkflow.resolveState(snap) : undefined,
       inspect: (e) => {
@@ -113,13 +126,28 @@ export class Workflow {
 
   /** Returns a list of valid transitions from the current state. */
   public availableTransitions(): TransitionDefinition<WorkflowContext, WorkflowEvent>[][] {
-    return this.currentState !== null ? this.filterTransitions(this.currentState.on) : [];
+    return this.currentState !== null
+      ? Workflow.availableTransitionsFromNode(this.currentState, this.config)
+      : [];
+  }
+
+  public static availableTransitionsFromName(stateName: string, config: WorkflowConfig) {
+    return Workflow.availableTransitionsFromNode(
+      DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+      config
+    );
+  }
+
+  public static availableTransitionsFromNode(s: XStateNode<any, any>, config: WorkflowConfig) {
+    return Workflow.filterTransitions(s.on, config);
   }
 
   /** Transform state machine definition into something more easily usable by the visualization algorithm */
   public serializeForVisualization(): StateNode[] {
     const machine = DefaultWorkflow;
-    const states = Object.entries(machine.states).filter(([k, v]) => this.filterMeta(v.meta));
+    const states = Object.entries(machine.states).filter(([k, v]) =>
+      Workflow.filterMeta(this.config, v.meta)
+    );
     const lookup = states.map((s) => s[0]);
     const actions: StateNode[] = [];
     return states
@@ -127,8 +155,8 @@ export class Workflow {
         return {
           id: lookup.indexOf(k),
           label: k,
-          connections: this.filterTransitions(v.on).map((o) => {
-            let target = this.targetStringFromEvent(o[0]);
+          connections: Workflow.filterTransitions(v.on, this.config).map((o) => {
+            let target = Workflow.targetStringFromEvent(o[0]);
             if (!target) {
               target = o[0].eventType;
               lookup.push(target);
@@ -155,9 +183,9 @@ export class Workflow {
           }),
           inCount: states
             .map(([k, v]) => {
-              return this.filterTransitions(v.on).map((e) => {
+              return Workflow.filterTransitions(v.on, this.config).map((e) => {
                 // treat no target on transition as self target
-                return { from: k, to: this.targetStringFromEvent(e[0]) || k };
+                return { from: k, to: Workflow.targetStringFromEvent(e[0]) || k };
               });
             })
             .reduce((p, c) => {
@@ -177,19 +205,34 @@ export class Workflow {
     const snap = this.flow.getSnapshot();
     this.currentState = DefaultWorkflow.getStateNodeById(`#${DefaultWorkflow.id}.${snap.value}`);
 
-    if (old && this.stateName(old) !== snap.value) {
+    if (old && Workflow.stateName(old) !== snap.value) {
       await this.updateProductTransitions(
         event.event.userId,
-        this.stateName(old),
-        this.stateName(this.currentState),
+        Workflow.stateName(old),
+        Workflow.stateName(this.currentState),
         event.event.type,
         event.event.comment || undefined
       );
     }
 
     await this.createSnapshot(snap.context);
-    if (old && this.stateName(old) !== snap.value) {
-      await this.updateUserTasks(event.event.comment || undefined);
+    if (old && Workflow.stateName(old) !== snap.value) {
+      // delete user tasks immediately
+      await DatabaseWrites.userTasks.deleteMany({
+        where: {
+          ProductId: this.productId
+        }
+      });
+      scriptoriaQueue.add(`Update UserTasks for Product #${this.productId}`, {
+        type: BullMQ.ScriptoriaJobType.ModifyUserTasks,
+        scope: 'Product',
+        productId: this.productId,
+        comment: event.event.comment || undefined,
+        operation: {
+          type: BullMQ.UserTaskOp.Update,
+          by: 'All'
+        }
+      });
     }
   }
 
@@ -201,13 +244,13 @@ export class Workflow {
       create: {
         ProductId: this.productId,
         Snapshot: JSON.stringify({
-          value: this.stateName(this.currentState),
+          value: Workflow.stateName(this.currentState),
           context: context
         } as Snapshot)
       },
       update: {
         Snapshot: JSON.stringify({
-          value: this.stateName(this.currentState),
+          value: Workflow.stateName(this.currentState),
           context: context
         } as Snapshot)
       }
@@ -215,10 +258,13 @@ export class Workflow {
   }
 
   /** Filter a states transitions based on provided context */
-  private filterTransitions(on: TransitionDefinitionMap<WorkflowContext, WorkflowEvent>) {
+  public static filterTransitions(
+    on: TransitionDefinitionMap<WorkflowContext, WorkflowEvent>,
+    config: WorkflowConfig
+  ) {
     return Object.values(on)
-      .map((v) => v.filter((t) => this.filterMeta(t.meta)))
-      .filter((v) => v.length > 0 && this.filterMeta(v[0].meta));
+      .map((v) => v.filter((t) => Workflow.filterMeta(config, t.meta)))
+      .filter((v) => v.length > 0 && Workflow.filterMeta(config, v[0].meta));
   }
 
   /**
@@ -229,130 +275,97 @@ export class Workflow {
    *    - AND
    *    - One of the provided product types matches the context
    */
-  private filterMeta(meta?: MetaFilter) {
+  public static filterMeta(filter: WorkflowConfig, meta?: MetaFilter) {
     return (
       meta === undefined ||
       ((meta.URFeatures !== undefined
-        ? meta.URFeatures.filter((urf) => this.URFeatures.includes(urf)).length > 0
+        ? meta.URFeatures.filter((urf) => filter.URFeatures.includes(urf)).length > 0
         : true) &&
-        (meta.productTypes !== undefined ? meta.productTypes.includes(this.productType) : true))
+        (meta.productTypes !== undefined ? meta.productTypes.includes(filter.productType) : true))
     );
   }
 
-  /**
-   * Delete all tasks for a product.
-   * Then create new tasks based on the provided user roles:
-   * - OrgAdmin for administrative tasks (Product.Project.Organization.UserRoles.User where Role === OrgAdmin)
-   * - AppBuilder for project owner tasks (Product.Project.Owner)
-   * - Author for author tasks (Product.Project.Authors)
-   */
-  private async updateUserTasks(comment?: string) {
-    // Delete all tasks for a product
-    await DatabaseWrites.userTasks.deleteMany({
-      where: {
-        ProductId: this.productId
-      }
-    });
-
-    const product = await prisma.products.findUnique({
-      where: {
-        Id: this.productId
-      },
-      select: {
-        Project: {
-          select: {
-            Organization: {
-              select: {
-                UserRoles: {
-                  where: {
-                    RoleId: RoleId.OrgAdmin
-                  },
-                  select: {
-                    UserId: true
-                  }
-                }
-              }
-            },
-            OwnerId: true,
-            Authors: {
-              select: {
-                UserId: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    const uids = this.availableTransitions()
-      .map((t) => (t[0].meta as WorkflowTransitionMeta)?.user)
-      .filter((u) => u !== undefined)
-      .map((r) => {
-        switch (r) {
-          case RoleId.OrgAdmin:
-            return product.Project.Organization.UserRoles.map((u) => u.UserId);
-          case RoleId.AppBuilder:
-            return [product.Project.OwnerId];
-          case RoleId.Author:
-            return product.Project.Authors.map((a) => a.UserId);
-          default:
-            return [];
-        }
-      })
-      .reduce((p, c) => p.concat(c), [])
-      .filter((u, i, a) => a.indexOf(u) === i);
-
-    const timestamp = new Date();
-
-    return DatabaseWrites.userTasks.createMany({
-      data: uids.map((u) => ({
-        UserId: u,
-        ProductId: this.productId,
-        ActivityName: this.stateName(this.currentState),
-        Status: this.stateName(this.currentState),
-        Comment: comment ?? null,
-        DateCreated: timestamp,
-        DateUpdated: timestamp
-      }))
-    });
-  }
-
   /** Create ProductTransitions record object */
-  private transitionFromState(state: XStateNode<WorkflowContext, any>) {
-    const t = this.filterTransitions(state.on)[0][0];
+  private static transitionFromState(
+    state: XStateNode<WorkflowContext, any>,
+    input: WorkflowInput,
+    users: Map<RoleId, string[]>
+  ): Prisma.ProductTransitionsCreateManyInput {
+    const t = Workflow.filterTransitions(state.on, input)[0][0];
+
     return {
-      ProductId: this.productId,
+      ProductId: input.productId,
+      AllowedUserNames:
+        t.meta.type === ActionType.User
+          ? Array.from(
+              new Set(
+                Array.from(users.entries())
+                  .filter(([role, users]) => t.meta.user === role)
+                  .map(([role, users]) => users)
+                  .reduce((p, c) => p.concat(c), [])
+              )
+            ).join()
+          : null,
       TransitionType: ProductTransitionType.Activity,
-      InitialState: this.stateName(state),
-      DestinationState: this.targetStringFromEvent(t),
+      InitialState: Workflow.stateName(state),
+      DestinationState: Workflow.targetStringFromEvent(t),
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null
     };
   }
 
-  /** Create ProductTransitions entries for new product following the "happy" path */
-  private async populateTransitions() {
-    // TODO: AllowedUserNames
-    return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: [
-        {
-          ProductId: this.productId,
-          DateTransition: new Date(),
-          TransitionType: ProductTransitionType.StartWorkflow
+  public static async transitionEntriesFromState(
+    stateName: string,
+    input: WorkflowInput
+  ): Promise<Prisma.ProductTransitionsCreateManyInput[]> {
+    const projectId = (
+      await prisma.products.findUnique({
+        where: {
+          Id: input.productId
+        },
+        select: {
+          ProjectId: true
         }
-      ].concat(
-        Object.entries(DefaultWorkflow.states).reduce(
-          (p, [k, v], i) =>
-            p.concat(
-              this.filterMeta(v.meta) &&
-                (i === 1 ||
-                  (i > 1 && p[p.length - 1]?.DestinationState === k && v.type !== 'final'))
-                ? [this.transitionFromState(v)]
-                : []
-            ),
-          []
-        )
+      })
+    ).ProjectId;
+    const start =
+      stateName === 'Start'
+        ? 1
+        : Object.entries(DefaultWorkflow.states).findIndex(
+            ([k, v]) => v.id === Workflow.stateIdFromName(stateName)
+          );
+    const uidsByRole = await allUsersByRole(projectId);
+    const users = new Map<RoleId, string[]>();
+    (
+      await Promise.all(
+        Array.from(uidsByRole.entries()).map(async ([role, uids]) => ({
+          role: role,
+          users: await prisma.users.findMany({
+            where: {
+              Id: { in: uids }
+            },
+            select: {
+              Name: true
+            }
+          })
+        }))
       )
+    ).forEach((r) => {
+      users.set(
+        r.role,
+        r.users.map((u) => u.Name)
+      );
     });
+    return Object.entries(DefaultWorkflow.states).reduce(
+      (p, [k, v], i) =>
+        p.concat(
+          Workflow.filterMeta(input, v.meta) &&
+            (i === start ||
+              (i > start && p[p.length - 1]?.DestinationState === k && v.type !== 'final'))
+            ? [Workflow.transitionFromState(v, input, users)]
+            : []
+        ),
+      []
+    );
   }
 
   /**
@@ -421,11 +434,15 @@ export class Workflow {
     }
   }
 
-  private stateName(s: XStateNode<any, any>): string {
+  private static stateName(s: XStateNode<any, any>): string {
     return s.id.replace(DefaultWorkflow.id + '.', '');
   }
 
-  private targetStringFromEvent(e: TransitionDefinition<any, any>): string {
+  private static stateIdFromName(name: string): string {
+    return DefaultWorkflow.id + '.' + name;
+  }
+
+  private static targetStringFromEvent(e: TransitionDefinition<any, any>): string {
     return (
       e
         .toJSON()

@@ -307,7 +307,7 @@ export const DefaultWorkflow = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          scriptoriaQueue.add(`Create Product (${context.productId})`, {
+          scriptoriaQueue.add(`Create Product #${context.productId}`, {
             type: ScriptoriaJobType.CreateProduct,
             productId: context.productId
           },
@@ -471,7 +471,7 @@ export const DefaultWorkflow = setup({
           instructions: 'waiting'
         }),
         ({ context }) => {
-          scriptoriaQueue.add(`Build Product (${context.productId})`, {
+          scriptoriaQueue.add(`Build Product #${context.productId}`, {
             type: ScriptoriaJobType.BuildProduct,
             productId: context.productId,
             // TODO: assign targets
@@ -700,7 +700,7 @@ export const DefaultWorkflow = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          scriptoriaQueue.add(`Publish Product (${context.productId})`, {
+          scriptoriaQueue.add(`Publish Product #${context.productId}`, {
             type: ScriptoriaJobType.PublishProduct,
             productId: context.productId,
             // TODO: How should these values be determined?

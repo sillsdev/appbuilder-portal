@@ -296,7 +296,7 @@ export const actions = {
         select: {
           Workflow: {
             select: {
-              // TODO: RequiredAdminLevel and ProductType should be directly in the database instead of calling a helper function
+              // TODO: UserRoleFeatures and ProductType should be directly in the database instead of calling a helper function
               Id: true,
               Type: true
             }
