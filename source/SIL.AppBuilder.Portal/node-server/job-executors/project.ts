@@ -3,7 +3,7 @@ import {
   prisma,
   DatabaseWrites,
   BuildEngine,
-  scriptoriaQueue
+  queues
 } from 'sil.appbuilder.portal.common';
 import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
@@ -47,7 +47,7 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Proje
       });
       job.updateProgress(75);
 
-      await scriptoriaQueue.add(
+      await queues.scriptoria.add(
         `Check status of Project #${response.id}`,
         {
           type: BullMQ.ScriptoriaJobType.Project_Check,
@@ -81,7 +81,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Projec
       throw new Error(response.message);
     } else {
       if (response.status === 'completed') {
-        await scriptoriaQueue.removeRepeatableByKey(job.repeatJobKey);
+        await queues.scriptoria.removeRepeatableByKey(job.repeatJobKey);
         if (response.error) {
           job.log(response.error);
         } else {

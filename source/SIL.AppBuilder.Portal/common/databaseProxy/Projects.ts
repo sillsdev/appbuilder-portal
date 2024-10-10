@@ -3,7 +3,7 @@ import {
   ScriptoriaJobType,
   UserTasks
 } from '../BullJobTypes.js';
-import { scriptoriaQueue } from '../bullmq.js';
+import { scriptoria } from '../bullmq.js';
 import prisma from '../prisma.js';
 import type { RequirePrimitive } from './utility.js';
 
@@ -71,7 +71,7 @@ export async function update(
     });
     // If the owner has changed, we need to reassign all the user tasks related to this project
     if (ownerId && ownerId !== existing?.OwnerId) {
-      scriptoriaQueue.add(`Reassign tasks for Project #${id} (New Owner)`, {
+      scriptoria.add(`Reassign tasks for Project #${id} (New Owner)`, {
         type: ScriptoriaJobType.UserTasks_Modify,
         scope: 'Project',
         projectId: id,
