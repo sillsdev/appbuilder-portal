@@ -1,10 +1,11 @@
 import type { PageServerLoad, Actions } from './$types';
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
-import { redirect } from '@sveltejs/kit';
+import { redirect, error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import type { Session } from '@auth/sveltekit';
 
 const sendActionSchema = v.object({
   state: v.string(),
@@ -27,7 +28,7 @@ type Fields = {
 
 export const load = (async ({ params, url, locals }) => {
   const session = await locals.auth();
-  // TODO: permission check
+  if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
   const flow = await Workflow.restore(params.product_id);
   const snap = await Workflow.getSnapshot(params.product_id);
 
@@ -168,8 +169,8 @@ export const load = (async ({ params, url, locals }) => {
 
 export const actions = {
   default: async ({ request, params, locals }) => {
-    // TODO: permission check
     const session = await locals.auth();
+    if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
@@ -187,3 +188,18 @@ export const actions = {
     redirect(302, '/tasks');
   }
 } satisfies Actions;
+
+// allowed if SuperAdmin, or the user has a UserTask for the Product
+async function verifyCanViewTask(session: Session, productId: string): Promise<boolean> {
+  if (!!session.user.roles.find(([org, role]) => role === RoleId.SuperAdmin)) return true;
+
+  return !!(await prisma.userTasks.findFirst({
+    where: {
+      ProductId: productId,
+      UserId: session.user.userId
+    },
+    select: {
+      Id: true
+    }
+  }));
+}
