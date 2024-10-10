@@ -77,7 +77,7 @@ export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserT
       job.updateProgress(90);
     } else {
       job.updateProgress(25);
-      const allUsers = await DatabaseWrites.utility.allUsersByRole(projectId);
+      const allUsers = await DatabaseWrites.userRoles.allUsersByRole(projectId);
       job.updateProgress(30);
       if (job.data.operation.type !== BullMQ.UserTasks.OpType.Create) {
         // Clear existing UserTasks

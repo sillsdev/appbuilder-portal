@@ -22,7 +22,7 @@ import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType } from '../public/prisma.js';
 import { scriptoria } from '../bullmq.js';
 import { BullMQ } from '../index.js';
-import { allUsersByRole } from '../databaseProxy/utility.js';
+import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { Prisma } from '@prisma/client';
 
 /**
