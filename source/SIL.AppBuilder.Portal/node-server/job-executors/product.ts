@@ -8,7 +8,6 @@ import {
 import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
 
-// TODO: What would be a meaningful return?
 export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Product_Create> {
   async execute(job: Job<BullMQ.Product.Create, number, string>): Promise<number> {
     const productData = await prisma.products.findUnique({
@@ -43,7 +42,6 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Produ
     });
     job.updateProgress(50);
     if (response.responseType === 'error') {
-      // TODO: What do I do here? Wait some period of time and retry?
       job.log(response.message);
       throw new Error(response.message);
     } else {
@@ -57,6 +55,23 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Produ
       flow.send({ type: 'Product Created', userId: null });
       job.updateProgress(100);
       return response.id;
+    }
+  }
+}
+
+export class Delete extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Product_Delete> {
+  async execute(job: Job<BullMQ.Product.Delete, number, string>): Promise<number> {
+    const response = await BuildEngine.Requests.deleteJob(
+      job.data.organizationId,
+      job.data.workflowJobId
+    );
+    job.updateProgress(50);
+    if (response.responseType === 'error') {
+      job.log(response.message);
+      throw new Error(response.message);
+    } else {
+      job.updateProgress(100);
+      return response.status;
     }
   }
 }

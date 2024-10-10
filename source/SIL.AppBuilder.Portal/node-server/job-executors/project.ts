@@ -8,7 +8,6 @@ import {
 import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
 
-// TODO: What would be a meaningful return?
 export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Project_Create> {
   async execute(job: Job<BullMQ.Project.Create, number, string>): Promise<number> {
     const projectData = await prisma.projects.findUnique({
