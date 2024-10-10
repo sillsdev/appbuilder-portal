@@ -48,12 +48,11 @@ export const DefaultWorkflow = setup({
         (params.URFeatures ? context.URFeatures.filter((urf) => params.URFeatures.includes(urf)).length > 0 : true)
       );
     },
-    // TODO: write actual guards. cannot be async, which means no checking DB
     hasAuthors: ({ context }) => {
-      return true;
+      return context.hasAuthors;
     },
     hasReviewers: ({ context }) => {
-      return true;
+      return context.hasReviewers;
     }
   }
 }).createMachine({
@@ -69,7 +68,10 @@ export const DefaultWorkflow = setup({
     includeArtifacts: false,
     environment: {},
     productType: input.productType,
-    URFeatures: input.URFeatures
+    URFeatures: input.URFeatures,
+    productId: input.productId,
+    hasAuthors: input.hasAuthors,
+    hasReviewers: input.hasReviewers
   }),
   states: {
     Start: {
