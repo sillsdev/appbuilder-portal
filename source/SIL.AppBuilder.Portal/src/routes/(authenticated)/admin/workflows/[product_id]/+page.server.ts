@@ -1,9 +1,11 @@
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
 import { type StateName } from 'sil.appbuilder.portal.common/workflow';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { PageServerLoad, Actions } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
+import { error } from '@sveltejs/kit';
 
 const jumpStateSchema = v.object({
   state: v.string()
@@ -63,8 +65,11 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 };
 
 export const actions = {
-  default: async ({ request, params }) => {
-    // TODO: permission check
+  default: async ({ request, params, locals }) => {
+    if (!(await locals.auth())?.user.roles.find((r) => r[1] === RoleId.SuperAdmin)) {
+      return error(403);
+    }
+
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
