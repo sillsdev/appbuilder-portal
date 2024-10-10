@@ -11,7 +11,7 @@ import {
   WorkflowEvent
 } from '../public/workflow.js';
 import { RoleId } from '../public/prisma.js';
-import { scriptoriaQueue } from '../index.js';
+import { queues } from '../index.js';
 import { ScriptoriaJobType } from '../BullJobTypes.js';
 
 /**
@@ -308,7 +308,7 @@ export const DefaultWorkflow = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          scriptoriaQueue.add(`Create Product #${context.productId}`, {
+          queues.scriptoria.add(`Create Product #${context.productId}`, {
             type: ScriptoriaJobType.Product_Create,
             productId: context.productId
           },
@@ -472,7 +472,7 @@ export const DefaultWorkflow = setup({
           instructions: 'waiting'
         }),
         ({ context }) => {
-          scriptoriaQueue.add(`Build Product #${context.productId}`, {
+          queues.scriptoria.add(`Build Product #${context.productId}`, {
             type: ScriptoriaJobType.Build_Product,
             productId: context.productId,
             // TODO: assign targets
@@ -689,7 +689,7 @@ export const DefaultWorkflow = setup({
           },
           guard: { type: 'hasReviewers' },
           actions: ({ context }) => {
-            scriptoriaQueue.add(`Email Reviewers (Product: ${context.productId})`, {
+            queues.scriptoria.add(`Email Reviewers (Product: ${context.productId})`, {
               type: ScriptoriaJobType.Notify_Reviewers,
               productId: context.productId
             });
@@ -701,7 +701,7 @@ export const DefaultWorkflow = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          scriptoriaQueue.add(`Publish Product #${context.productId}`, {
+          queues.scriptoria.add(`Publish Product #${context.productId}`, {
             type: ScriptoriaJobType.Publish_Product,
             productId: context.productId,
             // TODO: How should these values be determined?
