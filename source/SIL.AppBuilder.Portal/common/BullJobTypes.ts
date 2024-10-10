@@ -9,6 +9,7 @@ export enum ScriptoriaJobType {
   Notify_Reviewers = 'Notify Reviewers',
   // Product Tasks
   Product_Create = 'Create Product',
+  Product_Delete = 'Delete Product',
   // Project Tasks
   Project_Create = 'Create Project',
   Project_Check = 'Check Project Creation',
@@ -51,6 +52,11 @@ export namespace Product {
   export interface Create {
     type: ScriptoriaJobType.Product_Create;
     productId: string;
+  }
+  export interface Delete {
+    type: ScriptoriaJobType.Product_Delete;
+    organizationId: number;
+    workflowJobId: number;
   }
 }
 
@@ -147,6 +153,7 @@ export type JobTypeMap = {
   [ScriptoriaJobType.Build_Check]: Build.Check;
   [ScriptoriaJobType.Notify_Reviewers]: Notify.Reviewers;
   [ScriptoriaJobType.Product_Create]: Product.Create;
+  [ScriptoriaJobType.Product_Delete]: Product.Delete;
   [ScriptoriaJobType.Project_Create]: Project.Create;
   [ScriptoriaJobType.Project_Check]: Project.Check;
   [ScriptoriaJobType.Publish_Product]: Publish.Product;

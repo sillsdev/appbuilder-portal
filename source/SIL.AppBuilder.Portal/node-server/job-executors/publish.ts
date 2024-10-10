@@ -9,7 +9,6 @@ import {
 import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
 
-// TODO: What would be a meaningful return?
 export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publish_Product> {
   async execute(job: Job<BullMQ.Publish.Product, number, string>): Promise<number> {
     const productData = await prisma.products.findUnique({
@@ -40,7 +39,7 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publ
     job.updateProgress(50);
     if (response.responseType === 'error') {
       const flow = await Workflow.restore(job.data.productId);
-      // TODO: How best to notify of failure?
+      // TODO: Match DWKit failure output
       flow.send({ type: 'Publish Failed', userId: null, comment: response.message });
       job.updateProgress(100);
       return 0;
