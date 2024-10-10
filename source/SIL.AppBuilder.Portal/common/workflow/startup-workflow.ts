@@ -249,7 +249,7 @@ export const StartupWorkflow = setup({
         assign({ instructions: 'waiting' }),
         ({ context }) => {
           scriptoriaQueue.add(`Create Product #${context.productId}`, {
-            type: ScriptoriaJobType.CreateProduct,
+            type: ScriptoriaJobType.Product_Create,
             productId: context.productId
           },
           {
@@ -413,7 +413,7 @@ export const StartupWorkflow = setup({
         }),
         ({ context }) => {
           scriptoriaQueue.add(`Build Product #${context.productId}`, {
-            type: ScriptoriaJobType.BuildProduct,
+            type: ScriptoriaJobType.Build_Product,
             productId: context.productId,
             // TODO: assign targets
             environment: context.environment
@@ -642,7 +642,7 @@ export const StartupWorkflow = setup({
           guard: { type: 'hasReviewers' },
           actions: ({ context }) => {
             scriptoriaQueue.add(`Email Reviewers (Product: ${context.productId})`, {
-              type: ScriptoriaJobType.EmailReviewers,
+              type: ScriptoriaJobType.Notify_Reviewers,
               productId: context.productId
             });
           }
@@ -654,7 +654,7 @@ export const StartupWorkflow = setup({
         assign({ instructions: 'waiting' }),
         ({ context }) => {
           scriptoriaQueue.add(`Publish Product #${context.productId}`, {
-            type: ScriptoriaJobType.PublishProduct,
+            type: ScriptoriaJobType.Publish_Product,
             productId: context.productId,
             // TODO: How should these values be determined?
             channel: 'alpha',

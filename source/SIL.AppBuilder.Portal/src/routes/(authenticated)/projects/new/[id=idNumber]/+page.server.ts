@@ -7,7 +7,7 @@ import * as v from 'valibot';
 import type { Session } from '@auth/sveltekit';
 import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { scriptoriaQueue, BullMQ } from 'sil.appbuilder.portal.common';
+import { queues, BullMQ } from 'sil.appbuilder.portal.common';
 import { time } from 'console';
 
 const projectCreateSchema = v.object({
@@ -90,8 +90,8 @@ export const actions: Actions = {
     });
 
     if (project !== false) {
-      scriptoriaQueue.add(`Create Project #${project}`, {
-        type: BullMQ.ScriptoriaJobType.CreateProject,
+      queues.scriptoria.add(`Create Project #${project}`, {
+        type: BullMQ.ScriptoriaJobType.Project_Create,
         projectId: project as number
       });
     }
