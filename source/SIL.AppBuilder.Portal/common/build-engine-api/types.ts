@@ -14,6 +14,11 @@ export type ErrorResponse = {
   type: string;
 };
 
+export type DeleteResponse = {
+  responseType: 'delete';
+  status: number;
+};
+
 type SuccessResponse = {
   responseType: 'project' | 'token' | 'job' | 'build' | 'release';
   id: number;
