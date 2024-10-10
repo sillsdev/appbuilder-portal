@@ -1,6 +1,9 @@
 import type { Prisma } from '@prisma/client';
-import { ScriptoriaJobType } from '../BullJobTypes.js';
-import { scriptoriaQueue } from '../bullmq.js';
+import {
+  ScriptoriaJobType,
+  UserTasks
+} from '../BullJobTypes.js';
+import { scriptoria } from '../bullmq.js';
 import prisma from '../prisma.js';
 import type { RequirePrimitive } from './utility.js';
 
@@ -18,20 +21,26 @@ import type { RequirePrimitive } from './utility.js';
 
 export async function create(
   projectData: RequirePrimitive<Prisma.ProjectsUncheckedCreateInput>
-): Promise<boolean> {
-  if (!validateProjectBase(projectData.OrganizationId, projectData.GroupId, projectData.OwnerId))
+): Promise<boolean | number> {
+  if (
+    !(await validateProjectBase(
+      projectData.OrganizationId,
+      projectData.GroupId,
+      projectData.OwnerId
+    ))
+  )
     return false;
 
   // No additional verification steps
 
   try {
-    await prisma.projects.create({
+    const res = await prisma.projects.create({
       data: projectData
     });
+    return res.Id;
   } catch (e) {
     return false;
   }
-  return true;
 }
 
 export async function update(
@@ -49,7 +58,7 @@ export async function update(
   const orgId = projectData.OrganizationId ?? existing!.OrganizationId;
   const groupId = projectData.GroupId ?? existing!.GroupId;
   const ownerId = projectData.OwnerId ?? existing!.OwnerId;
-  if (!validateProjectBase(orgId, groupId, ownerId)) return false;
+  if (!(await validateProjectBase(orgId, groupId, ownerId))) return false;
 
   // No additional verification steps
 
@@ -62,9 +71,16 @@ export async function update(
     });
     // If the owner has changed, we need to reassign all the user tasks related to this project
     if (ownerId && ownerId !== existing?.OwnerId) {
-      scriptoriaQueue.add(ScriptoriaJobType.ReassignUserTasks, {
-        type: ScriptoriaJobType.ReassignUserTasks,
-        projectId: id
+      scriptoria.add(`Reassign tasks for Project #${id} (New Owner)`, {
+        type: ScriptoriaJobType.UserTasks_Modify,
+        scope: 'Project',
+        projectId: id,
+        operation: {
+          type: UserTasks.OpType.Reassign,
+          userMapping: [
+            { from: existing.OwnerId, to: ownerId }
+          ]
+        }
       });
     }
   } catch (e) {
