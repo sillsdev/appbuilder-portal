@@ -4,7 +4,7 @@ import {
   DatabaseWrites,
   BuildEngine,
   Workflow,
-  scriptoriaQueue
+  queues
 } from 'sil.appbuilder.portal.common';
 import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
@@ -49,7 +49,7 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Buil
       });
       job.updateProgress(75);
 
-      await scriptoriaQueue.add(
+      await queues.scriptoria.add(
         `Check status of Build #${response.id}`,
         {
           type: BullMQ.ScriptoriaJobType.Build_Check,
@@ -85,7 +85,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
     } else {
       // TODO: what does the 'expired' status mean?
       if (response.status === 'completed' || response.status === 'expired') {
-        await scriptoriaQueue.removeRepeatableByKey(job.repeatJobKey);
+        await queues.scriptoria.removeRepeatableByKey(job.repeatJobKey);
         if (response.error) {
           job.log(response.error);
         }

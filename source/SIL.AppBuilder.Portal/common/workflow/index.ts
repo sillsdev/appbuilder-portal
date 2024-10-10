@@ -23,7 +23,7 @@ import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType, WorkflowType } from '../public/prisma.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { Prisma } from '@prisma/client';
-import { scriptoriaQueue } from '../bullmq.js';
+import { scriptoria } from '../bullmq.js';
 import { BullMQ } from '../index.js';
 
 /**
@@ -67,7 +67,7 @@ export class Workflow {
         TransitionType: ProductTransitionType.StartWorkflow
       }
     });
-    scriptoriaQueue.add(`Create UserTasks for Product #${productId}`, {
+    scriptoria.add(`Create UserTasks for Product #${productId}`, {
       type: BullMQ.ScriptoriaJobType.UserTasks_Modify,
       scope: 'Product',
       productId: productId,
@@ -244,8 +244,7 @@ export class Workflow {
           ProductId: this.productId
         }
       });
-
-      scriptoriaQueue.add(`Update UserTasks for Product #${this.productId}`, {
+      scriptoria.add(`Update UserTasks for Product #${this.productId}`, {
         type: BullMQ.ScriptoriaJobType.UserTasks_Modify,
         scope: 'Product',
         productId: this.productId,
