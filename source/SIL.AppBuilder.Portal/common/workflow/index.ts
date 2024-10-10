@@ -44,11 +44,18 @@ export class Workflow {
   public static async create(productId: string, input: WorkflowConfig): Promise<Workflow> {
     const flow = new Workflow(productId, input);
 
+    const check = await flow.checkAuthorsAndReviewers();
+
     flow.flow = createActor(DefaultWorkflow, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: { productId, ...input }
+      input: {
+        productId,
+        hasAuthors: check._count.Authors > 0,
+        hasReviewers: check._count.Authors > 0,
+        ...input
+      }
     });
 
     flow.flow.start();
@@ -75,12 +82,18 @@ export class Workflow {
   public static async restore(productId: string): Promise<Workflow> {
     const snap = await Workflow.getSnapshot(productId);
     const flow = new Workflow(snap.context.productId, snap.context);
+    const check = await flow.checkAuthorsAndReviewers();
     flow.flow = createActor(DefaultWorkflow, {
       snapshot: snap ? DefaultWorkflow.resolveState(snap) : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: snap.context
+      input: {
+        ...snap.context,
+        productId: productId,
+        hasAuthors: check._count.Authors > 0,
+        hasReviewers: check._count.Authors > 0
+      }
     });
 
     flow.flow.start();
@@ -449,5 +462,27 @@ export class Workflow {
         .target?.at(0)
         ?.replace('#' + DefaultWorkflow.id + '.', '') || ''
     );
+  }
+
+  private async checkAuthorsAndReviewers() {
+    return (
+      await prisma.projects.findMany({
+        where: {
+          Products: {
+            some: {
+              Id: this.productId
+            }
+          }
+        },
+        select: {
+          _count: {
+            select: {
+              Authors: true,
+              Reviewers: true
+            }
+          }
+        }
+      })
+    )[0];
   }
 }

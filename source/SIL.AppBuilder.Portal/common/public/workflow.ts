@@ -85,6 +85,8 @@ export type WorkflowContext = {
   environment: { [key: string]: any };
   productType: ProductType;
   productId: string;
+  hasAuthors: boolean;
+  hasReviewers: boolean;
 };
 
 export type WorkflowConfig = {
@@ -94,6 +96,8 @@ export type WorkflowConfig = {
 
 export type WorkflowInput = WorkflowConfig & {
   productId: string;
+  hasAuthors: boolean;
+  hasReviewers: boolean;
 };
 
 // TODO: Just put this info directly in the database
