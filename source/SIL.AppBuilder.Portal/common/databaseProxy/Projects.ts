@@ -1,7 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import {
   ScriptoriaJobType,
-  UserTaskOp
+  UserTasks
 } from '../BullJobTypes.js';
 import { scriptoriaQueue } from '../bullmq.js';
 import prisma from '../prisma.js';
@@ -72,11 +72,11 @@ export async function update(
     // If the owner has changed, we need to reassign all the user tasks related to this project
     if (ownerId && ownerId !== existing?.OwnerId) {
       scriptoriaQueue.add(`Reassign tasks for Project #${id} (New Owner)`, {
-        type: ScriptoriaJobType.ModifyUserTasks,
+        type: ScriptoriaJobType.UserTasks_Modify,
         scope: 'Project',
         projectId: id,
         operation: {
-          type: UserTaskOp.Reassign,
+          type: UserTasks.OpType.Reassign,
           userMapping: [
             { from: existing.OwnerId, to: ownerId }
           ]
