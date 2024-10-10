@@ -11,6 +11,7 @@ import DatabaseWrites from '../databaseProxy/index.js';
 import {
   WorkflowContext,
   WorkflowInput,
+  WorkflowConfig,
   UserRoleFeature,
   ProductType,
   ActionType,
@@ -33,22 +34,29 @@ export class Workflow {
   private URFeatures: UserRoleFeature[];
   private productType: ProductType;
 
-  private constructor(productId: string, input: WorkflowInput) {
+  private constructor(productId: string, config: WorkflowConfig) {
     this.productId = productId;
-    this.URFeatures = input.URFeatures;
-    this.productType = input.productType;
+    this.URFeatures = config.URFeatures;
+    this.productType = config.productType;
   }
 
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
-  public static async create(productId: string, input: WorkflowInput): Promise<Workflow> {
-    const flow = new Workflow(productId, input);
+  public static async create(productId: string, config: WorkflowConfig): Promise<Workflow> {
+    const flow = new Workflow(productId, config);
+
+    const check = await flow.checkAuthorsAndReviewers();
 
     flow.flow = createActor(DefaultWorkflow, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: input
+      input: {
+        productId,
+        hasAuthors: check._count.Authors > 0,
+        hasReviewers: check._count.Authors > 0,
+        ...config
+      }
     });
 
     flow.flow.start();
@@ -60,13 +68,19 @@ export class Workflow {
   /** Restore from a snapshot in the database. */
   public static async restore(productId: string): Promise<Workflow> {
     const snap = await Workflow.getSnapshot(productId);
-    const flow = new Workflow(productId, snap.input);
+    const flow = new Workflow(snap.context.productId, snap.context);
+    const check = await flow.checkAuthorsAndReviewers();
     flow.flow = createActor(DefaultWorkflow, {
       snapshot: snap ? DefaultWorkflow.resolveState(snap) : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: snap.input
+      input: {
+        ...snap.context,
+        productId: productId,
+        hasAuthors: check._count.Authors > 0,
+        hasReviewers: check._count.Authors > 0
+      }
     });
 
     flow.flow.start();
@@ -435,5 +449,27 @@ export class Workflow {
         .target?.at(0)
         ?.replace('#' + DefaultWorkflow.id + '.', '') || ''
     );
+  }
+
+  private async checkAuthorsAndReviewers() {
+    return (
+      await prisma.projects.findMany({
+        where: {
+          Products: {
+            some: {
+              Id: this.productId
+            }
+          }
+        },
+        select: {
+          _count: {
+            select: {
+              Authors: true,
+              Reviewers: true
+            }
+          }
+        }
+      })
+    )[0];
   }
 }
