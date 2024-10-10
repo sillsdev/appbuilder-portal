@@ -5,8 +5,8 @@ import { ScriptoriaJobExecutor } from './base.js';
 import { Prisma } from '@prisma/client';
 import { ActionType } from 'sil.appbuilder.portal.common/workflow';
 
-export class ModifyUserTasks extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.ModifyUserTasks> {
-  async execute(job: Job<BullMQ.ModifyUserTasksJob, number, string>): Promise<number> {
+export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserTasks_Modify> {
+  async execute(job: Job<BullMQ.UserTasks.Modify, number, string>): Promise<number> {
     const products = await prisma.products.findMany({
       where: {
         Id: job.data.scope === 'Product' ? job.data.productId : undefined,
@@ -36,7 +36,7 @@ export class ModifyUserTasks extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobT
 
     job.updateProgress(20);
 
-    if (job.data.operation.type === BullMQ.UserTaskOp.Reassign) {
+    if (job.data.operation.type === BullMQ.UserTasks.OpType.Reassign) {
       const from = job.data.operation.userMapping.map((u) => u.from);
       const to = job.data.operation.userMapping.map((u) => u.to);
 
@@ -79,14 +79,14 @@ export class ModifyUserTasks extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobT
       job.updateProgress(25);
       const allUsers = await DatabaseWrites.userRoles.allUsersByRole(projectId);
       job.updateProgress(30);
-      if (job.data.operation.type !== BullMQ.UserTaskOp.Create) {
+      if (job.data.operation.type !== BullMQ.UserTasks.OpType.Create) {
         // Clear existing UserTasks
         await DatabaseWrites.userTasks.deleteMany({
           where: {
             ProductId: { in: productIds },
             UserId:
               job.data.operation.by === 'All' ||
-              job.data.operation.type === BullMQ.UserTaskOp.Update
+              job.data.operation.type === BullMQ.UserTasks.OpType.Update
                 ? undefined
                 : {
                     in:
@@ -107,13 +107,13 @@ export class ModifyUserTasks extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobT
                   }
           }
         });
-        if (job.data.operation.type === BullMQ.UserTaskOp.Delete) {
+        if (job.data.operation.type === BullMQ.UserTasks.OpType.Delete) {
           job.updateProgress(90);
         } else {
           job.updateProgress(40);
         }
       }
-      if (job.data.operation.type !== BullMQ.UserTaskOp.Delete) {
+      if (job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
         for (let i = 0; i < products.length; i++) {
           const product = products[i];
           // Create tasks for all users that could perform this activity

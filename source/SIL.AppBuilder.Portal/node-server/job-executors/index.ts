@@ -1,12 +1,8 @@
 export { Test } from './test.js';
-export { ModifyUserTasks } from './userTasks.js';
-export { EmailReviewers } from './reviewers.js';
-export {
-  CreateProduct,
-  BuildProduct,
-  PublishProduct,
-  CheckBuildProduct,
-  CheckPublishProduct
-} from './product.js';
-export { CheckSystemStatuses } from './systemStatus.js';
-export { CreateProject, CheckCreateProject } from './project.js';
+export * as UserTasks from './userTasks.js';
+export * as Notify from './notify.js';
+export * as Product from './product.js';
+export * as Build from './build.js';
+export * as Publish from './publish.js';
+export * as System from './system.js';
+export * as Project from './project.js';
