@@ -30,6 +30,8 @@ export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
         return new Executor.Notify.Reviewers().execute(job as JobCast<BullMQ.Notify.Reviewers>);
       case BullMQ.ScriptoriaJobType.Product_Create:
         return new Executor.Product.Create().execute(job as JobCast<BullMQ.Product.Create>);
+      case BullMQ.ScriptoriaJobType.Product_Delete:
+        return new Executor.Product.Delete().execute(job as JobCast<BullMQ.Product.Delete>);
       case BullMQ.ScriptoriaJobType.Project_Create:
         return new Executor.Project.Create().execute(job as JobCast<BullMQ.Project.Create>);
       case BullMQ.ScriptoriaJobType.Project_Check:

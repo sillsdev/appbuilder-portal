@@ -10,7 +10,6 @@ import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
 import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
 
-// TODO: What would be a meaningful return?
 export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_Product> {
   async execute(job: Job<BullMQ.Build.Product, number, string>): Promise<number> {
     const productData = await prisma.products.findUnique({
