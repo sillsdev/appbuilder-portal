@@ -101,8 +101,10 @@ export const actions: Actions = {
 };
 
 async function verifyCanCreateProject(user: Session, orgId: number) {
-  // Creating a project is allowed if the user is an OrgAdmin, AppBuilder, or SuperAdmin for the organization
-  const roles = user.user.roles.filter(([org, role]) => org === orgId).map(([org, role]) => role);
+  // Creating a project is allowed if the user is an OrgAdmin or AppBuilder for the organization or a SuperAdmin
+  const roles = user.user.roles
+    .filter(([org, role]) => org === orgId || role === RoleId.SuperAdmin)
+    .map(([org, role]) => role);
   return (
     roles.includes(RoleId.AppBuilder) ||
     roles.includes(RoleId.OrgAdmin) ||
