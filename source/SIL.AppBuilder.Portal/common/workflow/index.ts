@@ -60,11 +60,11 @@ export class Workflow {
       }
     });
     scriptoriaQueue.add(`Create UserTasks for Product #${productId}`, {
-      type: BullMQ.ScriptoriaJobType.ModifyUserTasks,
+      type: BullMQ.ScriptoriaJobType.UserTasks_Modify,
       scope: 'Product',
       productId: productId,
       operation: {
-        type: BullMQ.UserTaskOp.Create,
+        type: BullMQ.UserTasks.OpType.Create,
         by: 'All'
       }
     });
@@ -224,12 +224,12 @@ export class Workflow {
         }
       });
       scriptoriaQueue.add(`Update UserTasks for Product #${this.productId}`, {
-        type: BullMQ.ScriptoriaJobType.ModifyUserTasks,
+        type: BullMQ.ScriptoriaJobType.UserTasks_Modify,
         scope: 'Product',
         productId: this.productId,
         comment: event.event.comment || undefined,
         operation: {
-          type: BullMQ.UserTaskOp.Update,
+          type: BullMQ.UserTasks.OpType.Update,
           by: 'All'
         }
       });
