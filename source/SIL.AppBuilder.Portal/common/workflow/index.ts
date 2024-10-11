@@ -12,8 +12,6 @@ import {
   WorkflowContext,
   WorkflowInput,
   WorkflowConfig,
-  UserRoleFeature,
-  ProductType,
   ActionType,
   StateNode,
   WorkflowEvent,
@@ -23,6 +21,8 @@ import {
 } from '../public/workflow.js';
 import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType } from '../public/prisma.js';
+import { allUsersByRole } from '../databaseProxy/UserRoles.js';
+import { Prisma } from '@prisma/client';
 
 /**
  * Wraps a workflow instance and provides methods to interact.
@@ -31,13 +31,11 @@ export class Workflow {
   private flow: Actor<typeof DefaultWorkflow> | null;
   private productId: string;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
-  private URFeatures: UserRoleFeature[];
-  private productType: ProductType;
+  private config: WorkflowConfig;
 
   private constructor(productId: string, config: WorkflowConfig) {
     this.productId = productId;
-    this.URFeatures = config.URFeatures;
-    this.productType = config.productType;
+    this.config = config;
   }
 
   /* PUBLIC METHODS */
@@ -124,15 +122,24 @@ export class Workflow {
     return this.flow?.getSnapshot().value;
   }
 
-  /** Returns a list of valid transitions from the current state. */
-  public availableTransitions(): TransitionDefinition<WorkflowContext, WorkflowEvent>[][] {
-    return this.currentState !== null ? this.filterTransitions(this.currentState.on) : [];
+  /** Returns a list of valid transitions from the provided state. */
+  public static availableTransitionsFromName(stateName: string, config: WorkflowConfig) {
+    return Workflow.availableTransitionsFromNode(
+      DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+      config
+    );
+  }
+
+  public static availableTransitionsFromNode(s: XStateNode<any, any>, config: WorkflowConfig) {
+    return Workflow.filterTransitions(s.on, config);
   }
 
   /** Transform state machine definition into something more easily usable by the visualization algorithm */
   public serializeForVisualization(): StateNode[] {
     const machine = DefaultWorkflow;
-    const states = Object.entries(machine.states).filter(([k, v]) => this.filterMeta(v.meta));
+    const states = Object.entries(machine.states).filter(([k, v]) =>
+      Workflow.filterMeta(this.config, v.meta)
+    );
     const lookup = states.map((s) => s[0]);
     const actions: StateNode[] = [];
     return states
@@ -140,8 +147,8 @@ export class Workflow {
         return {
           id: lookup.indexOf(k),
           label: k,
-          connections: this.filterTransitions(v.on).map((o) => {
-            let target = this.targetStringFromEvent(o[0]);
+          connections: Workflow.filterTransitions(v.on, this.config).map((o) => {
+            let target = Workflow.targetStringFromEvent(o[0]);
             if (!target) {
               target = o[0].eventType;
               lookup.push(target);
@@ -168,9 +175,9 @@ export class Workflow {
           }),
           inCount: states
             .map(([k, v]) => {
-              return this.filterTransitions(v.on).map((e) => {
+              return Workflow.filterTransitions(v.on, this.config).map((e) => {
                 // treat no target on transition as self target
-                return { from: k, to: this.targetStringFromEvent(e[0]) || k };
+                return { from: k, to: Workflow.targetStringFromEvent(e[0]) || k };
               });
             })
             .reduce((p, c) => {
@@ -190,18 +197,18 @@ export class Workflow {
     const snap = this.flow.getSnapshot();
     this.currentState = DefaultWorkflow.getStateNodeById(`#${DefaultWorkflow.id}.${snap.value}`);
 
-    if (old && this.stateName(old) !== snap.value) {
+    if (old && Workflow.stateName(old) !== snap.value) {
       await this.updateProductTransitions(
         event.event.userId,
-        this.stateName(old),
-        this.stateName(this.currentState),
+        Workflow.stateName(old),
+        Workflow.stateName(this.currentState),
         event.event.type,
         event.event.comment || undefined
       );
     }
 
     await this.createSnapshot(snap.context);
-    if (old && this.stateName(old) !== snap.value) {
+    if (old && Workflow.stateName(old) !== snap.value) {
       await this.updateUserTasks(event.event.comment || undefined);
     }
   }
@@ -214,28 +221,27 @@ export class Workflow {
       create: {
         ProductId: this.productId,
         Snapshot: JSON.stringify({
-          value: this.stateName(this.currentState),
+          value: Workflow.stateName(this.currentState),
           context: context
         } as Snapshot)
       },
       update: {
         Snapshot: JSON.stringify({
-          value: this.stateName(this.currentState),
-          context: context,
-          input: {
-            URFeatures: this.URFeatures,
-            productType: this.productType
-          }
+          value: Workflow.stateName(this.currentState),
+          context: context
         } as Snapshot)
       }
     });
   }
 
   /** Filter a states transitions based on provided context */
-  private filterTransitions(on: TransitionDefinitionMap<WorkflowContext, WorkflowEvent>) {
+  private static filterTransitions(
+    on: TransitionDefinitionMap<WorkflowContext, WorkflowEvent>,
+    filter: WorkflowConfig
+  ) {
     return Object.values(on)
-      .map((v) => v.filter((t) => this.filterMeta(t.meta)))
-      .filter((v) => v.length > 0 && this.filterMeta(v[0].meta));
+      .map((v) => v.filter((t) => Workflow.filterMeta(filter, t.meta)))
+      .filter((v) => v.length > 0 && Workflow.filterMeta(filter, v[0].meta));
   }
 
   /**
@@ -246,13 +252,13 @@ export class Workflow {
    *    - AND
    *    - One of the provided product types matches the context
    */
-  private filterMeta(meta?: MetaFilter) {
+  public static filterMeta(filter: WorkflowConfig, meta?: MetaFilter) {
     return (
       meta === undefined ||
       ((meta.URFeatures !== undefined
-        ? meta.URFeatures.filter((urf) => this.URFeatures.includes(urf)).length > 0
+        ? meta.URFeatures.filter((urf) => filter.URFeatures.includes(urf)).length > 0
         : true) &&
-        (meta.productTypes !== undefined ? meta.productTypes.includes(this.productType) : true))
+        (meta.productTypes !== undefined ? meta.productTypes.includes(filter.productType) : true))
     );
   }
 
@@ -301,7 +307,7 @@ export class Workflow {
       }
     });
 
-    const uids = this.availableTransitions()
+    const uids = Workflow.availableTransitionsFromNode(this.currentState, this.config)
       .map((t) => (t[0].meta as WorkflowTransitionMeta)?.user)
       .filter((u) => u !== undefined)
       .map((r) => {
@@ -325,8 +331,8 @@ export class Workflow {
       data: uids.map((u) => ({
         UserId: u,
         ProductId: this.productId,
-        ActivityName: this.stateName(this.currentState),
-        Status: this.stateName(this.currentState),
+        ActivityName: Workflow.stateName(this.currentState),
+        Status: Workflow.stateName(this.currentState),
         Comment: comment ?? null,
         DateCreated: timestamp,
         DateUpdated: timestamp
@@ -335,13 +341,29 @@ export class Workflow {
   }
 
   /** Create ProductTransitions record object */
-  private transitionFromState(state: XStateNode<WorkflowContext, any>) {
-    const t = this.filterTransitions(state.on)[0][0];
+  private static transitionFromState(
+    state: XStateNode<WorkflowContext, any>,
+    input: WorkflowInput,
+    users: Map<RoleId, string[]>
+  ): Prisma.ProductTransitionsCreateManyInput {
+    const t = Workflow.filterTransitions(state.on, input)[0][0];
+
     return {
-      ProductId: this.productId,
+      ProductId: input.productId,
+      AllowedUserNames:
+        t.meta.type === ActionType.User
+          ? Array.from(
+              new Set(
+                Array.from(users.entries())
+                  .filter(([role, users]) => t.meta.user === role)
+                  .map(([role, users]) => users)
+                  .reduce((p, c) => p.concat(c), [])
+              )
+            ).join()
+          : null,
       TransitionType: ProductTransitionType.Activity,
-      InitialState: this.stateName(state),
-      DestinationState: this.targetStringFromEvent(t),
+      InitialState: Workflow.stateName(state),
+      DestinationState: Workflow.targetStringFromEvent(t),
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null
     };
   }
@@ -350,26 +372,68 @@ export class Workflow {
   private async populateTransitions() {
     // TODO: AllowedUserNames
     return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: [
-        {
-          ProductId: this.productId,
-          DateTransition: new Date(),
-          TransitionType: ProductTransitionType.StartWorkflow
-        }
-      ].concat(
-        Object.entries(DefaultWorkflow.states).reduce(
-          (p, [k, v], i) =>
-            p.concat(
-              this.filterMeta(v.meta) &&
-                (i === 1 ||
-                  (i > 1 && p[p.length - 1]?.DestinationState === k && v.type !== 'final'))
-                ? [this.transitionFromState(v)]
-                : []
-            ),
-          []
-        )
-      )
+      data: await Workflow.transitionEntriesFromState('Start', {
+        productId: this.productId,
+        hasAuthors: false,
+        hasReviewers: false,
+        ...this.config
+      })
     });
+  }
+
+  public static async transitionEntriesFromState(
+    stateName: string,
+    input: WorkflowInput
+  ): Promise<Prisma.ProductTransitionsCreateManyInput[]> {
+    const projectId = (
+      await prisma.products.findUnique({
+        where: {
+          Id: input.productId
+        },
+        select: {
+          ProjectId: true
+        }
+      })
+    ).ProjectId;
+    const start =
+      stateName === 'Start'
+        ? 1
+        : Object.entries(DefaultWorkflow.states).findIndex(
+            ([k, v]) => v.id === Workflow.stateIdFromName(stateName)
+          );
+    const uidsByRole = await allUsersByRole(projectId);
+    const users = new Map<RoleId, string[]>();
+    (
+      await Promise.all(
+        Array.from(uidsByRole.entries()).map(async ([role, uids]) => ({
+          role: role,
+          users: await prisma.users.findMany({
+            where: {
+              Id: { in: uids }
+            },
+            select: {
+              Name: true
+            }
+          })
+        }))
+      )
+    ).forEach((r) => {
+      users.set(
+        r.role,
+        r.users.map((u) => u.Name)
+      );
+    });
+    return Object.entries(DefaultWorkflow.states).reduce(
+      (p, [k, v], i) =>
+        p.concat(
+          Workflow.filterMeta(input, v.meta) &&
+            (i === start ||
+              (i > start && p[p.length - 1]?.DestinationState === k && v.type !== 'final'))
+            ? [Workflow.transitionFromState(v, input, users)]
+            : []
+        ),
+      []
+    );
   }
 
   /**
@@ -410,7 +474,7 @@ export class Workflow {
       : null;
 
     if (transition) {
-      DatabaseWrites.productTransitions.update({
+      await DatabaseWrites.productTransitions.update({
         where: {
           Id: transition.Id
         },
@@ -438,11 +502,15 @@ export class Workflow {
     }
   }
 
-  private stateName(s: XStateNode<any, any>): string {
+  private static stateName(s: XStateNode<any, any>): string {
     return s.id.replace(DefaultWorkflow.id + '.', '');
   }
 
-  private targetStringFromEvent(e: TransitionDefinition<any, any>): string {
+  private static stateIdFromName(s: string): string {
+    return DefaultWorkflow.id + '.' + s;
+  }
+
+  private static targetStringFromEvent(e: TransitionDefinition<any, any>): string {
     return (
       e
         .toJSON()

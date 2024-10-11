@@ -29,7 +29,6 @@ type Fields = {
 export const load = (async ({ params, url, locals }) => {
   const session = await locals.auth();
   if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
-  const flow = await Workflow.restore(params.product_id);
   const snap = await Workflow.getSnapshot(params.product_id);
 
   const product = await prisma.products.findUnique({
@@ -130,8 +129,8 @@ export const load = (async ({ params, url, locals }) => {
     : [];
 
   return {
-    actions: flow
-      .availableTransitions()
+    actions: Workflow
+      .availableTransitionsFromName(snap.value, snap.context)
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
         switch (a[0].meta?.user) {
