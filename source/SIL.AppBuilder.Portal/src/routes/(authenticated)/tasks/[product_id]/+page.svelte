@@ -4,6 +4,8 @@
   import { superForm } from 'sveltekit-superforms';
   import { writable } from 'svelte/store';
   import { createTable, Subscribe, Render } from 'svelte-headless-table';
+  import { addSortBy } from 'svelte-headless-table/plugins';
+  import SortDirectionPicker from '$lib/components/SortDirectionPicker.svelte';
   import * as m from '$lib/paraglide/messages';
 
   export let data: PageData;
@@ -18,19 +20,21 @@
 
   const fileData = writable(data.files);
 
-  const fileTable = createTable(fileData);
+  const fileTable = createTable(fileData, {
+    sort: addSortBy()
+  });
   // TODO: i18n
   const fileColumns = fileTable.createColumns([
     fileTable.column({
-      header: 'ProductBuildId',
+      header: 'Build Id',
       accessor: (f) => f.ProductBuildId
     }),
     fileTable.column({
-      header: 'ContentType',
+      header: 'Content Type',
       accessor: (f) => f.ContentType
     }),
     fileTable.column({
-      header: 'FileSize',
+      header: 'File Size',
       accessor: (f) => f.FileSize
     }),
     fileTable.column({
@@ -238,15 +242,20 @@
   {#if data?.files?.length}
     <div class="overflow-x-auto">
       <h3>{m.products_files_title()}</h3>
-      <table class="w-full" {...$fileTableAttrs}>
+      <table class="w-full table" {...$fileTableAttrs}>
         <thead>
           {#each $fileHeaderRows as headerRow (headerRow.id)}
             <Subscribe fileRowAttrs={headerRow.attrs()} let:fileRowAttrs>
               <tr class="border-b-2 text-left" {...fileRowAttrs}>
                 {#each headerRow.cells as cell (cell.id)}
-                  <Subscribe attrs={cell.attrs()} let:attrs>
-                    <th {...attrs}>
-                      <Render of={cell.render()} />
+                  <Subscribe 
+                    attrs={cell.attrs()} let:attrs
+                    props={cell.props()} let:props  
+                  >
+                    <th {...attrs} on:click={props.sort.toggle}>
+                      <SortDirectionPicker order={props.sort.order}>
+                        <Render of={cell.render()} />
+                      </SortDirectionPicker>
                     </th>
                   </Subscribe>
                 {/each}
@@ -275,15 +284,20 @@
   {#if data?.reviewers?.length}
     <div class="overflow-x-auto">
       <h3>{m.project_side_reviewers_title()}</h3>
-      <table class="w-full" {...$reviewerTableAttrs}>
+      <table class="w-full table" {...$reviewerTableAttrs}>
         <thead>
           {#each $reviewerHeaderRows as headerRow (headerRow.id)}
             <Subscribe reviewerRowAttrs={headerRow.attrs()} let:reviewerRowAttrs>
               <tr class="border-b-2 text-left" {...reviewerRowAttrs}>
                 {#each headerRow.cells as cell (cell.id)}
-                  <Subscribe attrs={cell.attrs()} let:attrs>
-                    <th {...attrs}>
-                      <Render of={cell.render()} />
+                  <Subscribe 
+                    attrs={cell.attrs()} let:attrs
+                    props={cell.props()} let:props
+                  >
+                    <th {...attrs} on:click={props.sort.toggle}>
+                      <SortDirectionPicker order={props.sort.order}>
+                        <Render of={cell.render()} />
+                      </SortDirectionPicker>
                     </th>
                   </Subscribe>
                 {/each}
@@ -324,5 +338,15 @@
   }
   #instructions :global(h3) {
     @apply text-info;
+  }
+  #instructions :global(a) {
+    @apply link;
+  }
+  th {
+    @apply cursor-pointer select-none;
+  }
+  /* this helps prevent the vertical jankiness */
+  thead {
+    line-height: inherit;
   }
 </style>
