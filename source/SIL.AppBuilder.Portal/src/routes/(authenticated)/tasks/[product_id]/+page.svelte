@@ -1,10 +1,13 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { instructions } from './instructions';
-  import SortTable from './components/SortTable.svelte';
   import { superForm } from 'sveltekit-superforms';
+  import { writable } from 'svelte/store';
+  import { createTable, Subscribe, Render } from 'svelte-headless-table';
+  import * as m from '$lib/paraglide/messages';
 
   export let data: PageData;
+
   const { form, enhance, submit } = superForm(data.taskForm, {
     onChange: ({ paths }) => {
       if (paths.includes('flowAction')) {
@@ -12,6 +15,61 @@
       }
     }
   });
+
+  const fileData = writable(data.files);
+
+  const fileTable = createTable(fileData);
+  // TODO: i18n
+  const fileColumns = fileTable.createColumns([
+    fileTable.column({
+      header: 'ProductBuildId',
+      accessor: (f) => f.ProductBuildId
+    }),
+    fileTable.column({
+      header: 'ContentType',
+      accessor: (f) => f.ContentType
+    }),
+    fileTable.column({
+      header: 'FileSize',
+      accessor: (f) => f.FileSize
+    }),
+    fileTable.column({
+      header: 'Url',
+      accessor: (f) => f.Url
+    })
+  ]);
+
+  const {
+    headerRows: fileHeaderRows,
+    rows: fileRows,
+    tableAttrs: fileTableAttrs,
+    tableBodyAttrs: fileTableBodyAttrs
+  } = fileTable.createViewModel(fileColumns);
+
+  const reviewerData = writable(data.reviewers);
+  const reviewerTable = createTable(reviewerData);
+
+  const reviewerColumns = reviewerTable.createColumns([
+    reviewerTable.column({
+      header: 'Id',
+      accessor: (r) => r.Id
+    }),
+    reviewerTable.column({
+      header: m.common_name(),
+      accessor: (r) => r.Name
+    }),
+    reviewerTable.column({
+      header: m.profile_email(),
+      accessor: (r) => r.Email
+    })
+  ]);
+
+  const {
+    headerRows: reviewerHeaderRows,
+    rows: reviewerRows,
+    tableAttrs: reviewerTableAttrs,
+    tableBodyAttrs: reviewerTableBodyAttrs
+  } = reviewerTable.createViewModel(reviewerColumns);
 </script>
 
 <div class="p-5">
@@ -34,7 +92,7 @@
     {/if}
     <label class="form-control">
       <div class="label">
-        <span class="label-text">Comment</span>
+        <span class="label-text">{m.project_products_transitions_comment()}</span>
       </div>
       <textarea class="textarea textarea-bordered h-24" name="comment" bind:value={$form.comment} />
     </label>
@@ -178,15 +236,77 @@
     </div>
   {/if}
   {#if data?.files?.length}
-    <div class="overflow-x-auto max-h-96">
-      <h3>Files</h3>
-      <SortTable items={data.files} />
+    <div class="overflow-x-auto">
+      <h3>{m.products_files_title()}</h3>
+      <table class="w-full" {...$fileTableAttrs}>
+        <thead>
+          {#each $fileHeaderRows as headerRow (headerRow.id)}
+            <Subscribe fileRowAttrs={headerRow.attrs()} let:fileRowAttrs>
+              <tr class="border-b-2 text-left" {...fileRowAttrs}>
+                {#each headerRow.cells as cell (cell.id)}
+                  <Subscribe attrs={cell.attrs()} let:attrs>
+                    <th {...attrs}>
+                      <Render of={cell.render()} />
+                    </th>
+                  </Subscribe>
+                {/each}
+              </tr>
+            </Subscribe>
+          {/each}
+        </thead>
+        <tbody {...$fileTableBodyAttrs}>
+          {#each $fileRows as row (row.id)}
+            <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+              <tr {...rowAttrs}>
+                {#each row.cells as cell (cell.id)}
+                  <Subscribe attrs={cell.attrs()} let:attrs>
+                    <td {...attrs}>
+                      <Render of={cell.render()} />
+                    </td>
+                  </Subscribe>
+                {/each}
+              </tr>
+            </Subscribe>
+          {/each}
+        </tbody>
+      </table>
     </div>
   {/if}
   {#if data?.reviewers?.length}
-    <div class="overflow-x-auto max-h-96">
-      <h3>Reviewers</h3>
-      <SortTable items={data.reviewers} />
+    <div class="overflow-x-auto">
+      <h3>{m.project_side_reviewers_title()}</h3>
+      <table class="w-full" {...$reviewerTableAttrs}>
+        <thead>
+          {#each $reviewerHeaderRows as headerRow (headerRow.id)}
+            <Subscribe reviewerRowAttrs={headerRow.attrs()} let:reviewerRowAttrs>
+              <tr class="border-b-2 text-left" {...reviewerRowAttrs}>
+                {#each headerRow.cells as cell (cell.id)}
+                  <Subscribe attrs={cell.attrs()} let:attrs>
+                    <th {...attrs}>
+                      <Render of={cell.render()} />
+                    </th>
+                  </Subscribe>
+                {/each}
+              </tr>
+            </Subscribe>
+          {/each}
+        </thead>
+        <tbody {...$reviewerTableBodyAttrs}>
+          {#each $reviewerRows as row (row.id)}
+            <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+              <tr {...rowAttrs}>
+                {#each row.cells as cell (cell.id)}
+                  <Subscribe attrs={cell.attrs()} let:attrs>
+                    <td {...attrs}>
+                      <Render of={cell.render()} />
+                    </td>
+                  </Subscribe>
+                {/each}
+              </tr>
+            </Subscribe>
+          {/each}
+        </tbody>
+      </table>
     </div>
   {/if}
 </div>
