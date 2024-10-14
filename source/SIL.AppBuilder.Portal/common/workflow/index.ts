@@ -480,7 +480,7 @@ export class Workflow {
         },
         data: {
           WorkflowUserId: user?.WorkflowUserId ?? null,
-          AllowedUserNames: user?.Name ?? null,
+          AllowedUserNames: user?.Name ?? '',
           Command: command ?? null,
           DateTransition: new Date(),
           Comment: comment ?? null
@@ -491,7 +491,7 @@ export class Workflow {
         data: {
           ProductId: this.productId,
           WorkflowUserId: user?.WorkflowUserId ?? null,
-          AllowedUserNames: user?.Name ?? null,
+          AllowedUserNames: user?.Name ?? '',
           InitialState: initialState,
           DestinationState: destinationState,
           Command: command ?? null,
