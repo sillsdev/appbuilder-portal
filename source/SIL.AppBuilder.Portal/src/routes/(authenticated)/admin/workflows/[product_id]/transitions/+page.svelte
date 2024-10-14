@@ -3,9 +3,12 @@
   import { writable } from 'svelte/store';
   import type { PageData, ActionData } from './$types';
   import { createTable, Subscribe, Render } from 'svelte-headless-table';
+  import type { DataColumnInitBase, DataColumnInitFnAndId } from 'svelte-headless-table';
   import { addSortBy, addPagination } from 'svelte-headless-table/plugins';
   import SortDirectionPicker from '$lib/components/SortDirectionPicker.svelte';
   import { superForm, type FormResult } from 'sveltekit-superforms';
+  import { onDestroy } from 'svelte';
+  import SearchIcon from '$lib/icons/SearchIcon.svelte';
 
   export let data: PageData;
 
@@ -16,8 +19,7 @@
     dataType: 'json',
     resetForm: false,
     onChange(event) {
-      //console.log(event);
-      if (event.paths.includes('page')) {
+      if (!(event.paths.includes('size') || event.paths.includes('search.text'))) {
         submit();
       }
     },
@@ -32,36 +34,45 @@
   });
 
   const table = createTable(tableData, {
-    sort: addSortBy(),
+    sort: addSortBy({
+      serverSide: true
+    }),
     page: addPagination({
       serverSide: true,
       serverItemCount: count
     })
   });
 
-  const columns = table.createColumns([
-    table.column({
+  type Item = (typeof data.transitions)[0];
+  type Value = any;
+  type Extra = { searchable?: boolean };
+
+  const columns: (DataColumnInitBase<Item, typeof table.plugins, Value> &
+    DataColumnInitFnAndId<Item, string, Value> &
+    Extra)[] = [
+    {
       id: 'InitialState',
       header: 'State',
       accessor: (t) => t.InitialState
-    }),
-    table.column({
+    },
+    {
       id: 'AllowedUserNames',
       header: 'User',
-      accessor: (t) => t.AllowedUserNames ?? 'Scriptoria'
-    }),
-    table.column({
+      accessor: (t) => t.AllowedUserNames || 'Scriptoria'
+    },
+    {
       id: 'Command',
       header: 'Command',
       accessor: (t) => t.Command ?? ''
-    }),
-    table.column({
-      id: 'Date',
+    },
+    {
+      id: 'DateTransition',
       header: 'Date',
+      searchable: false,
       accessor: (t) => t.DateTransition,
       cell: (c) => c.value?.toLocaleString() ?? ''
-    })
-  ]);
+    }
+  ];
 
   const {
     headerRows,
@@ -69,7 +80,7 @@
     tableAttrs,
     tableBodyAttrs,
     pluginStates
-  } = table.createViewModel(columns);
+  } = table.createViewModel(table.createColumns(columns.map((c) => table.column(c))));
 
   const { pageIndex, pageCount, pageSize, hasNextPage, hasPreviousPage } = pluginStates.page;
 
@@ -78,21 +89,57 @@
   $: pageSize.set($form.size);
   $: pageIndex.set($form.page);
   $: collapse = $pageCount > 6;
-  //$: console.log($sortKeys);
 
   function index(i: number, page: number): number {
     if (page <= 3) return i + 2;
     else if (page > $pageCount - 5) return $pageCount + i - 5;
     else return page + i - 1;
   }
+
+  const sortUnsub = sortKeys.subscribe((keys) => {
+    console.log(keys);
+    form.update((data) => ({
+      ...data,
+      sort: keys.map((k) => ({ field: k.id, direction: k.order }))
+    }));
+  });
+
+  onDestroy(() => {
+    sortUnsub();
+  });
 </script>
 
 <div class="w-full">
   <h1>{m.admin_workflowInstances_title()}</h1>
   <div class="m-4 relative mt-0">
     {#if data.transitions.length > 0}
-      <form method="POST" action="?/page" use:enhance>
-        <input class="input input-bordered" type="number" name="size" bind:value={$form.size} />
+      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+      <form
+        method="POST"
+        action="?/page"
+        use:enhance
+        class="flex flex-row gap-2 flex-wrap"
+        on:keydown={(event) => {
+          if (event.key === 'Enter') submit();
+        }}
+      >
+        <!-- TODO: Use full-text search in Prisma once it's stable? -->
+        <select bind:value={$form.search.field} class="select select-bordered w-full max-w-xs">
+          <option value={null} selected>Anywhere</option>
+          {#each columns as col}
+            {#if col.searchable !== false}
+              <option value={col.id}>{col.header}</option>
+            {/if}
+          {/each}
+        </select>
+        <span class="input input-bordered flex items-center gap-2 max-w-xs">
+          <input type="text" name="search.text" bind:value={$form.search.text} />
+          <SearchIcon />
+        </span>
+        <span class="input input-bordered flex items-center gap-2 max-w-xs">
+          Show: <!-- TODO: i18n -->
+          <input type="number" name="size" bind:value={$form.size} />
+        </span>
         {#if $pageCount > 1}
           <div class="join">
             <label

@@ -3,3 +3,4 @@ export { scriptoriaQueue } from './bullmq.js';
 export { default as DatabaseWrites } from './databaseProxy/index.js';
 export { readonlyPrisma as prisma } from './prisma.js';
 export { Workflow } from './workflow/index.js';
+export { type Prisma } from '@prisma/client';
