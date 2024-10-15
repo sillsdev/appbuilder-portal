@@ -1,11 +1,12 @@
 import type { PageServerLoad, Actions } from './$types';
-import { prisma, Workflow } from 'sil.appbuilder.portal.common';
+import { prisma, Workflow, type Prisma } from 'sil.appbuilder.portal.common';
 import { redirect, error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { Session } from '@auth/sveltekit';
+import { tableSchema } from '$lib/table';
 
 const sendActionSchema = v.object({
   state: v.string(),
@@ -39,6 +40,7 @@ export const load = (async ({ params, url, locals }) => {
       WorkflowBuildId: true,
       Project: {
         select: {
+          Id: true,
           Name: true,
           Description: true,
           WorkflowAppProjectUrl: snap?.context.includeFields.includes('projectURL'),
@@ -127,6 +129,21 @@ export const load = (async ({ params, url, locals }) => {
         }
       })
     : [];
+  const artifactCount = snap?.context.includeArtifacts
+    ? await prisma.productArtifacts.count({
+        where: {
+          ProductId: params.product_id,
+          ProductBuild: {
+            BuildId: product?.WorkflowBuildId
+          },
+          //filter by artifact type
+          ArtifactType:
+            typeof snap.context.includeArtifacts === 'string'
+              ? snap.context.includeArtifacts
+              : undefined //include all
+        }
+      })
+    : 0;
 
   return {
     actions: Workflow.availableTransitionsFromName(snap.value, snap.context)
@@ -161,7 +178,23 @@ export const load = (async ({ params, url, locals }) => {
       projectLanguageCode: product?.Project.Language
     } as Fields,
     files: artifacts,
+    fileCount: artifactCount,
+    fileForm: await superValidate(
+      {
+        page: 0,
+        size: 10
+      },
+      valibot(tableSchema)
+    ),
     reviewers: product?.Project.Reviewers,
+    reviewerCount: await prisma.reviewers.count({ where: { ProjectId: product?.Project.Id } }),
+    reviewerForm: await superValidate(
+      {
+        page: 0,
+        size: 10
+      },
+      valibot(tableSchema)
+    ),
     taskForm: await superValidate(
       {
         state: snap?.value
@@ -172,7 +205,7 @@ export const load = (async ({ params, url, locals }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  default: async ({ request, params, locals }) => {
+  task: async ({ request, params, locals }) => {
     const session = await locals.auth();
     if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
     const form = await superValidate(request, valibot(sendActionSchema));
@@ -190,6 +223,144 @@ export const actions = {
     }
 
     redirect(302, '/tasks');
+  },
+  files: async ({ request, params, locals }) => {
+    const session = await locals.auth();
+    if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
+    const form = await superValidate(request, valibot(tableSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+
+    const product = await prisma.products.findUnique({
+      where: { Id: params.product_id },
+      select: { WorkflowBuildId: true }
+    });
+
+    if (!product) return error(404);
+
+    const snap = await Workflow.getSnapshot(params.product_id);
+
+    const where: Prisma.ProductArtifactsWhereInput = {
+      ProductId: params.product_id,
+      ProductBuild: {
+        BuildId: product.WorkflowBuildId
+      },
+      //filter by artifact type
+      ArtifactType:
+      typeof snap.context.includeArtifacts === 'string'
+        ? snap.context.includeArtifacts
+        : undefined, //include all
+      OR:
+        form.data.search.field === null && form.data.search.text
+          ? [
+              {
+                ContentType: {
+                  contains: form.data.search.text,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                Url: {
+                  contains: form.data.search.text,
+                  mode: 'insensitive'
+                }
+              }
+            ]
+          : undefined,
+      [form.data.search.field!]:
+        form.data.search.field && form.data.search.text
+          ? {
+              contains: form.data.search.text,
+              mode: 'insensitive'
+            }
+          : undefined
+    };
+
+    const files = await prisma.productArtifacts.findMany({
+      orderBy: form.data.sort
+        ? form.data.sort.map((s) => ({
+            [s.field]: s.direction
+          }))
+        : undefined,
+      where: where,
+      select: {
+        ProductBuildId: true,
+        ContentType: true,
+        FileSize: true,
+        Url: true,
+        Id: true
+      },
+      skip: form.data.size * form.data.page,
+      take: form.data.size
+    });
+
+    const count = await prisma.productArtifacts.count({
+      where: where
+    });
+
+    return { form, ok: true, query: { data: files, count } };
+  },
+  reviewers: async ({ request, params, locals }) => {
+    const session = await locals.auth();
+    if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
+    const form = await superValidate(request, valibot(tableSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+
+    const product = await prisma.products.findUnique({
+      where: { Id: params.product_id },
+      select: { ProjectId: true }
+    });
+
+    if (!product) return error(404);
+
+    const where: Prisma.ReviewersWhereInput = {
+      ProjectId: product.ProjectId,
+      OR:
+        form.data.search.field === null && form.data.search.text
+          ? [
+              {
+                Name: {
+                  contains: form.data.search.text,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                Email: {
+                  contains: form.data.search.text,
+                  mode: 'insensitive'
+                }
+              }
+            ]
+          : undefined,
+      [form.data.search.field!]:
+        form.data.search.field && form.data.search.text
+          ? {
+              contains: form.data.search.text,
+              mode: 'insensitive'
+            }
+          : undefined
+    };
+
+    const reviewers = await prisma.reviewers.findMany({
+      orderBy: form.data.sort
+        ? form.data.sort.map((s) => ({
+            [s.field]: s.direction
+          }))
+        : undefined,
+      where: where,
+      select: {
+        Id: true,
+        Name: true,
+        Email: true
+      },
+      skip: form.data.size * form.data.page,
+      take: form.data.size
+    });
+
+    const count = await prisma.reviewers.count({
+      where: where
+    });
+
+    return { form, ok: true, query: { data: reviewers, count } };
   }
 } satisfies Actions;
 
