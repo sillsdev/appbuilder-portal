@@ -1,7 +1,7 @@
 import { verifyCanViewAndEdit } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { DatabaseWrites, prisma, Workflow } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, prisma, Queues, Workflow } from 'sil.appbuilder.portal.common';
 import { RoleId, WorkflowType } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -155,6 +155,20 @@ export const actions = {
       return fail(403);
     const form = await superValidate(event.request, valibot(deleteAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    // TODO: Will this result in the desired behavior if a user has multiple roles?
+    // What if, for some unfathomable reason, a user is both a project owner
+    // and an Author on the same project? As of right now, all tasks for that user 
+    // in that project will be deleted, regardless of role. Should a user be prevented from having more than one role for a project?
+    await Queues.UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
+      type: BullMQ.JobType.UserTasks_Modify,
+      scope: 'Project',
+      projectId: parseInt(event.params.id),
+      operation: {
+        type: BullMQ.UserTasks.OpType.Delete,
+        by: 'UserId',
+        users: [form.data.id]
+      }
+    });
     await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
     return { form, ok: true };
   },
