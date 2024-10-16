@@ -6,7 +6,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { SuperValidated, Infer, FormResult } from 'sveltekit-superforms';
   import { onDestroy } from 'svelte';
-  import SearchIcon from '$lib/icons/SearchIcon.svelte';
+  import IconContainer from './IconContainer.svelte';
   import type { TableSchema } from '$lib/table';
   import ArrowDownIcon from '$lib/icons/ArrowDownIcon.svelte';
   import ArrowUpIcon from '$lib/icons/ArrowUpIcon.svelte';
@@ -107,7 +107,7 @@
     </select>
     <span class="input input-bordered flex items-center gap-2 max-w-xs">
       <input type="text" name="search.text" bind:value={$form.search.text} />
-      <SearchIcon />
+      <IconContainer icon="mdi:search" width={24} />
     </span>
     <Pagination bind:size={$form.page.size} total={$count} bind:page={$form.page.page} />
   </form>
