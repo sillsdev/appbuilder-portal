@@ -11,7 +11,8 @@ const jumpStateSchema = v.object({
   state: v.string()
 });
 
-export const load: PageServerLoad = async ({ params, url, locals }) => {
+export const load: PageServerLoad = async ({ params }) => {
+  // route already protected by hooks.server.ts
   const instance = await prisma.workflowInstances.findUnique({
     where: {
       ProductId: params.product_id
@@ -60,7 +61,13 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
   return {
     instance: instance,
     snapshot: { value: snap?.value ?? '' },
-    machine: snap ? flow.serializeForVisualization() : []
+    machine: snap ? flow.serializeForVisualization() : [],
+    form: await superValidate(
+      {
+        state: snap?.value
+      },
+      valibot(jumpStateSchema)
+    )
   };
 };
 
