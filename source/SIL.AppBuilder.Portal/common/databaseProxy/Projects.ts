@@ -1,5 +1,8 @@
 import type { Prisma } from '@prisma/client';
-import { ScriptoriaJobType } from '../BullJobTypes.js';
+import {
+  ScriptoriaJobType,
+  UserTaskOp
+} from '../BullJobTypes.js';
 import { scriptoriaQueue } from '../bullmq.js';
 import prisma from '../prisma.js';
 import type { RequirePrimitive } from './utility.js';
@@ -19,7 +22,13 @@ import type { RequirePrimitive } from './utility.js';
 export async function create(
   projectData: RequirePrimitive<Prisma.ProjectsUncheckedCreateInput>
 ): Promise<boolean | number> {
-  if (!(await validateProjectBase(projectData.OrganizationId, projectData.GroupId, projectData.OwnerId)))
+  if (
+    !(await validateProjectBase(
+      projectData.OrganizationId,
+      projectData.GroupId,
+      projectData.OwnerId
+    ))
+  )
     return false;
 
   // No additional verification steps
@@ -61,11 +70,17 @@ export async function update(
       data: projectData
     });
     // If the owner has changed, we need to reassign all the user tasks related to this project
-    // TODO: But we don't need to change *every* user task, just the tasks associated with the owner.
     if (ownerId && ownerId !== existing?.OwnerId) {
-      scriptoriaQueue.add(ScriptoriaJobType.ReassignUserTasks, {
-        type: ScriptoriaJobType.ReassignUserTasks,
-        projectId: id
+      scriptoriaQueue.add(`Reassign tasks for Project #${id} (New Owner)`, {
+        type: ScriptoriaJobType.ModifyUserTasks,
+        scope: 'Project',
+        projectId: id,
+        operation: {
+          type: UserTaskOp.Reassign,
+          userMapping: [
+            { from: existing.OwnerId, to: ownerId }
+          ]
+        }
       });
     }
   } catch (e) {

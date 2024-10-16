@@ -22,9 +22,9 @@ export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
     switch (job.data.type) {
       case BullMQ.ScriptoriaJobType.Test:
         return new Executor.Test().execute(job as Job<BullMQ.TestJob, number, string>);
-      case BullMQ.ScriptoriaJobType.ReassignUserTasks:
-        return new Executor.ReassignUserTasks().execute(
-          job as Job<BullMQ.SyncUserTasksJob, number, string>
+      case BullMQ.ScriptoriaJobType.ModifyUserTasks:
+        return new Executor.ModifyUserTasks().execute(
+          job as Job<BullMQ.ModifyUserTasksJob, number, string>
         );
       case BullMQ.ScriptoriaJobType.CreateProduct:
         return new Executor.CreateProduct().execute(

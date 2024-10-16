@@ -23,6 +23,8 @@ import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType, WorkflowType } from '../public/prisma.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { Prisma } from '@prisma/client';
+import { scriptoriaQueue } from '../bullmq.js';
+import { BullMQ } from '../index.js';
 
 /**
  * Wraps a workflow instance and provides methods to interact.
@@ -58,8 +60,22 @@ export class Workflow {
     });
 
     flow.flow.start();
-    flow.populateTransitions();
-    flow.updateUserTasks();
+    DatabaseWrites.productTransitions.create({
+      data: {
+        ProductId: productId,
+        DateTransition: new Date(),
+        TransitionType: ProductTransitionType.StartWorkflow
+      }
+    });
+    scriptoriaQueue.add(`Create UserTasks for Product #${productId}`, {
+      type: BullMQ.ScriptoriaJobType.ModifyUserTasks,
+      scope: 'Product',
+      productId: productId,
+      operation: {
+        type: BullMQ.UserTaskOp.Create,
+        by: 'All'
+      }
+    });
 
     return flow;
   }
@@ -223,7 +239,22 @@ export class Workflow {
 
     await this.createSnapshot(snap.context);
     if (old && Workflow.stateName(old) !== snap.value) {
-      await this.updateUserTasks(event.event.comment || undefined);
+      await DatabaseWrites.userTasks.deleteMany({
+        where: {
+          ProductId: this.productId
+        }
+      });
+
+      scriptoriaQueue.add(`Update UserTasks for Product #${this.productId}`, {
+        type: BullMQ.ScriptoriaJobType.ModifyUserTasks,
+        scope: 'Product',
+        productId: this.productId,
+        comment: event.event.comment || undefined,
+        operation: {
+          type: BullMQ.UserTaskOp.Update,
+          by: 'All'
+        }
+      });
     }
   }
 
@@ -288,80 +319,6 @@ export class Workflow {
     );
   }
 
-  /**
-   * Delete all tasks for a product.
-   * Then create new tasks based on the provided user roles:
-   * - OrgAdmin for administrative tasks (Product.Project.Organization.UserRoles.User where Role === OrgAdmin)
-   * - AppBuilder for project owner tasks (Product.Project.Owner)
-   * - Author for author tasks (Product.Project.Authors)
-   */
-  private async updateUserTasks(comment?: string) {
-    // Delete all tasks for a product
-    await DatabaseWrites.userTasks.deleteMany({
-      where: {
-        ProductId: this.productId
-      }
-    });
-
-    const product = await prisma.products.findUnique({
-      where: {
-        Id: this.productId
-      },
-      select: {
-        Project: {
-          select: {
-            Organization: {
-              select: {
-                UserRoles: {
-                  where: {
-                    RoleId: RoleId.OrgAdmin
-                  },
-                  select: {
-                    UserId: true
-                  }
-                }
-              }
-            },
-            OwnerId: true,
-            Authors: {
-              select: {
-                UserId: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    const uids = Workflow.availableTransitionsFromNode(this.currentState, this.config)
-      .map((t) => (t[0].meta as WorkflowTransitionMeta)?.user)
-      .filter((u) => u !== undefined)
-      .map((r) => {
-        switch (r) {
-          case RoleId.OrgAdmin:
-            return product.Project.Organization.UserRoles.map((u) => u.UserId);
-          case RoleId.AppBuilder:
-            return [product.Project.OwnerId];
-          case RoleId.Author:
-            return product.Project.Authors.map((a) => a.UserId);
-          default:
-            return [];
-        }
-      })
-      .reduce((p, c) => p.concat(c), [])
-      .filter((u, i, a) => a.indexOf(u) === i);
-
-    return DatabaseWrites.userTasks.createMany({
-      data: uids.map((u) => ({
-        UserId: u,
-        ProductId: this.productId,
-        ActivityName: Workflow.stateName(this.currentState),
-        Status: Workflow.stateName(this.currentState),
-        Comment: comment ?? null
-      }))
-    });
-  }
-
   /** Create ProductTransitions record object */
   private static transitionFromState(
     state: XStateNode<WorkflowContext, any>,
@@ -390,14 +347,6 @@ export class Workflow {
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
       WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
     };
-  }
-
-  /** Create ProductTransitions entries for new product following the "happy" path */
-  private async populateTransitions() {
-    // TODO: AllowedUserNames
-    return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: await Workflow.transitionEntriesFromState(WorkflowState.Start, this.productId, this.config)
-    });
   }
 
   public static async transitionEntriesFromState(
@@ -461,10 +410,7 @@ export class Workflow {
   }
 
   /**
-   * Get all product transitions for a product.
-   * If there are none, create new ones based on main sequence (i.e. no Author steps)
-   * If sequence matching params exists, but no timestamp, update
-   * Otherwise, create.
+   * Update or create product transition
    */
   private async updateProductTransitions(
     userId: number | null,
