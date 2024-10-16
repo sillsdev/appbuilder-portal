@@ -4,7 +4,7 @@
   export let active: boolean;
   export let descending: boolean;
 
-  //later: selecting one of these causes the relative sizes of the table headers to change, which looks really janky. I've tried fixing this, but have been unsuccessful. For now, at least it functions correctly, even if it doesn't look quite right.
+  // TODO: selecting one of these causes the relative sizes of the table headers to change, which looks really janky. I've tried fixing this, but have been unsuccessful. For now, at least it functions correctly, even if it doesn't look quite right.
 </script>
 
 <div class="form-control">
