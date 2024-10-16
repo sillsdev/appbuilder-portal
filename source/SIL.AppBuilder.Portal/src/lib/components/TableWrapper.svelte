@@ -10,6 +10,7 @@
   import type { TableSchema } from '$lib/table';
   import ArrowDownIcon from '$lib/icons/ArrowDownIcon.svelte';
   import ArrowUpIcon from '$lib/icons/ArrowUpIcon.svelte';
+  import Pagination from './forms/Pagination.svelte';
 
   export let data: any[];
   export let initialCount: number;
@@ -64,19 +65,12 @@
     pluginStates
   } = table.createViewModel(table.createColumns(columns.map((c) => table.column(c))));
 
-  const { pageIndex, pageCount, pageSize, hasNextPage, hasPreviousPage } = pluginStates.page;
+  const { pageIndex, pageSize } = pluginStates.page;
 
   const { sortKeys } = pluginStates.sort;
 
   $: pageSize.set($form.size);
   $: pageIndex.set($form.page);
-  $: collapse = $pageCount > 6;
-
-  function index(i: number, page: number): number {
-    if (page <= 3) return i + 2;
-    else if (page > $pageCount - 5) return $pageCount + i - 5;
-    else return page + i - 1;
-  }
 
   const sortUnsub = sortKeys.subscribe((keys) => {
     form.update((data) => ({
@@ -115,118 +109,7 @@
       <input type="text" name="search.text" bind:value={$form.search.text} />
       <SearchIcon />
     </span>
-    <span class="input input-bordered flex items-center gap-2 max-w-xs">
-      Show: <!-- TODO: i18n -->
-      <input type="number" name="size" bind:value={$form.size} />
-      / {$count}
-    </span>
-    {#if $pageCount > 1}
-      <div class="join">
-        <label
-          class="join-item btn btn-square form-control {$hasPreviousPage ? '' : 'btn-disabled'}"
-        >
-          <span>«</span>
-          <input
-            class="hidden"
-            type="radio"
-            bind:group={$form.page}
-            name="page"
-            value={$form.page - 1}
-          />
-        </label>
-        <label class="join-item btn btn-square form-control {$form.page === 0 ? 'bg-primary' : ''}">
-          <span>{1}</span>
-          <input class="hidden" type="radio" bind:group={$form.page} name="page" value={0} />
-        </label>
-        {#if collapse}
-          {#if $form.page > 3}
-            <button class="join-item btn btn-disabled">...</button>
-          {:else}
-            <label
-              class="join-item btn btn-square form-control {$form.page === 1 ? 'bg-primary' : ''}"
-            >
-              <span>{2}</span>
-              <input class="hidden" type="radio" bind:group={$form.page} name="page" value={1} />
-            </label>
-          {/if}
-          {#each Array.from({ length: 3 }) as _, i}
-            <label
-              class="join-item btn btn-square form-control {$form.page === index(i, $form.page)
-                ? 'bg-primary'
-                : ''}"
-            >
-              <span>{index(i, $form.page) + 1}</span>
-              <input
-                class="hidden"
-                type="radio"
-                bind:group={$form.page}
-                name="page"
-                value={index(i, $form.page)}
-              />
-            </label>
-          {/each}
-          {#if $form.page < $pageCount - 4}
-            <button class="join-item btn btn-disabled">...</button>
-          {:else}
-            <label
-              class="join-item btn btn-square form-control {$form.page === $pageCount - 2
-                ? 'bg-primary'
-                : ''}"
-            >
-              <span>{$pageCount - 1}</span>
-              <input
-                class="hidden"
-                type="radio"
-                bind:group={$form.page}
-                name="page"
-                value={$pageCount - 2}
-              />
-            </label>
-          {/if}
-        {:else}
-          {#each Array.from({ length: $pageCount - 2 }) as _, i}
-            <label
-              class="join-item btn btn-square form-control {$form.page === i + 1
-                ? 'bg-primary'
-                : ''}"
-            >
-              <span>{i + 2}</span>
-              <input
-                class="hidden"
-                type="radio"
-                bind:group={$form.page}
-                name="page"
-                value={i + 1}
-              />
-            </label>
-          {/each}
-        {/if}
-        <label
-          class="join-item btn btn-square form-control {$form.page === $pageCount - 1
-            ? 'bg-primary'
-            : ''}"
-        >
-          <span>{$pageCount}</span>
-          <input
-            class="hidden"
-            type="radio"
-            bind:group={$form.page}
-            name="page"
-            value={$pageCount - 1}
-          />
-        </label>
-        <label class="join-item btn btn-square form-control {$hasNextPage ? '' : 'btn-disabled'}">
-          <span>»</span>
-          <input
-            class="hidden"
-            type="radio"
-            bind:group={$form.page}
-            name="page"
-            value={$form.page + 1}
-          />
-        </label>
-      </div>
-    {/if}
+    <Pagination bind:size={$form.size} total={$count} bind:page={$form.page} />
   </form>
   <table class="w-full" {...$tableAttrs}>
     <thead>
