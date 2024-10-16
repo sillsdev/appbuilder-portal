@@ -81,19 +81,12 @@ export type WorkflowContext = {
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: StateName;
   URFeatures: UserRoleFeature[];
-  environment: BuildEnv;
+  // Not sure how this is used, but will figure out when integrating into backend
+  environment: { [key: string]: any };
   productType: ProductType;
   productId: string;
   hasAuthors: boolean;
   hasReviewers: boolean;
-};
-
-// These are all specific to the Google Play workflows
-// Not sure how these are used, but will figure out when integrating into backend
-export type BuildEnv = {
-  googlePlayDraft?: boolean;
-  googlePlayExisting?: boolean;
-  googlePlayUploaded?: boolean;
 };
 
 export type WorkflowConfig = {
@@ -196,5 +189,4 @@ export type StateNode = {
 export type Snapshot = {
   value: string;
   context: WorkflowContext;
-  input: WorkflowInput;
 };
