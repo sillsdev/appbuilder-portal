@@ -25,7 +25,7 @@
     dataType: 'json',
     resetForm: false,
     onChange(event) {
-      if (!(event.paths.includes('size') || event.paths.includes('search.text'))) {
+      if (!(event.paths.includes('page.size') || event.paths.includes('search.text'))) {
         submit();
       }
     },
@@ -69,8 +69,8 @@
 
   const { sortKeys } = pluginStates.sort;
 
-  $: pageSize.set($form.size);
-  $: pageIndex.set($form.page);
+  $: pageSize.set($form.page.size);
+  $: pageIndex.set($form.page.page);
 
   const sortUnsub = sortKeys.subscribe((keys) => {
     form.update((data) => ({
@@ -109,7 +109,7 @@
       <input type="text" name="search.text" bind:value={$form.search.text} />
       <SearchIcon />
     </span>
-    <Pagination bind:size={$form.size} total={$count} bind:page={$form.page} />
+    <Pagination bind:size={$form.page.size} total={$count} bind:page={$form.page.page} />
   </form>
   <table class="w-full" {...$tableAttrs}>
     <thead>

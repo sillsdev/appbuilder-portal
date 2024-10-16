@@ -41,8 +41,10 @@ export const load: PageServerLoad = async (event) => {
     count,
     form: await superValidate(
       {
-        page: 0,
-        size: 20
+        page: {
+          page: 0,
+          size: 20
+        }
       },
       valibot(tableSchema)
     )
@@ -153,8 +155,8 @@ export const actions: Actions = {
       ok: true,
       query: {
         data: instances.slice(
-          form.data.page * form.data.size,
-          (form.data.page + 1) * form.data.size
+          form.data.page.page * form.data.page.size,
+          (form.data.page.page + 1) * form.data.page.size
         ),
         count
       }

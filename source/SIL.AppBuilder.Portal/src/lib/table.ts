@@ -1,12 +1,20 @@
 import * as v from 'valibot';
 
-export const tableSchema = v.object({
+export const paginateSchema = v.object({
   page: v.number(),
-  size: v.number(),
-  sort: v.nullable(v.array(v.object({
-    field: v.string(),
-    direction: v.picklist(['asc', 'desc'])
-  }))),
+  size: v.number()
+});
+
+export const tableSchema = v.object({
+  page: paginateSchema,
+  sort: v.nullable(
+    v.array(
+      v.object({
+        field: v.string(),
+        direction: v.picklist(['asc', 'desc'])
+      })
+    )
+  ),
   search: v.object({
     field: v.nullable(v.string()),
     text: v.nullable(v.string())
