@@ -203,6 +203,7 @@ model ProductBuilds {
   @@index([ProductId], map: "IX_ProductBuilds_ProductId")
 }
 
+// TODO: Can we please rework/consolidate the ProductDefinitions and WorkflowDefinitions tables and add some useful information for S2? I can make it work for now, but we should eventually consider how to rework some of the tables as we move away from DWKit and its associated idiosyncracies.
 model ProductDefinitions {
   Id                             Int                              @id(map: "PK_ProductDefinitions") @default(autoincrement())
   Name                           String?
