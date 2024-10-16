@@ -30,13 +30,13 @@ export async function create(
   // No additional verification steps
 
   try {
-    await prisma.projects.create({
+    const res = await prisma.projects.create({
       data: projectData
     });
+    return res.Id;
   } catch (e) {
     return false;
   }
-  return true;
 }
 
 export async function update(
