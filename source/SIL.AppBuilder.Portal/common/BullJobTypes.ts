@@ -1,8 +1,9 @@
 import { Channels } from './build-engine-api/types.js';
+import { RoleId } from './public/prisma.js';
 
 export enum ScriptoriaJobType {
   Test = 'Test',
-  ReassignUserTasks = 'ReassignUserTasks',
+  ModifyUserTasks = 'ModifyUserTasks',
   CreateProduct = 'CreateProduct',
   BuildProduct = 'BuildProduct',
   EmailReviewers = 'EmailReviewers',
@@ -19,10 +20,46 @@ export interface TestJob {
   time: number;
 }
 
-export interface SyncUserTasksJob {
-  type: ScriptoriaJobType.ReassignUserTasks;
-  projectId: number;
+export enum UserTaskOp {
+  Delete = 'Delete',
+  Update = 'Update',
+  Create = 'Create',
+  Reassign = 'Reassign'
 }
+
+type UserTaskOpConfig = (
+  | ({
+      type: UserTaskOp.Delete | UserTaskOp.Create | UserTaskOp.Update;
+    } & (
+      | { by: 'All' }
+      | { by: 'Role'; roles: RoleId[] }
+      | {
+          by: 'UserId';
+          users: number[];
+        }
+    ))
+  | {
+      type: UserTaskOp.Reassign;
+      by?: 'UserIdMapping' // <- This is literally just so TS doesn't complain
+      userMapping: { from: number; to: number }[];
+    }
+);
+
+// Using type here instead of interface for easier composition
+export type ModifyUserTasksJob = (
+  | {
+      scope: 'Project';
+      projectId: number;
+    }
+  | {
+      scope: 'Product';
+      productId: string;
+    }
+) & {
+  type: ScriptoriaJobType.ModifyUserTasks;
+  comment?: string; // just ignore comment for Delete and Reassign
+  operation: UserTaskOpConfig;
+};
 
 export interface CreateProductJob {
   type: ScriptoriaJobType.CreateProduct;
@@ -86,7 +123,7 @@ export type ScriptoriaJob = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
   [ScriptoriaJobType.Test]: TestJob;
-  [ScriptoriaJobType.ReassignUserTasks]: SyncUserTasksJob;
+  [ScriptoriaJobType.ModifyUserTasks]: ModifyUserTasksJob;
   [ScriptoriaJobType.CreateProduct]: CreateProductJob;
   [ScriptoriaJobType.BuildProduct]: BuildProductJob;
   [ScriptoriaJobType.EmailReviewers]: EmailReviewersJob;
