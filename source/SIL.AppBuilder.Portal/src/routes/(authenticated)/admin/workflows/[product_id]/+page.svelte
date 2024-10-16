@@ -3,11 +3,20 @@
   import { HamburgerIcon } from '$lib/icons/index.js';
   import { Springy } from '$lib/springyGraph.js';
   import { onMount } from 'svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import * as m from '$lib/paraglide/messages';
 
   export let data;
 
-  let selected: string | any = data.snapshot.value;
-  let active = selected;
+  let active = data.form.data.state;
+
+  const { form, enhance } = superForm(data.form, {
+    onUpdate: () => {
+      active = $form.state;
+    },
+    invalidateAll: false,
+    resetForm: false
+  });
 
   let positions: { [key: string]: Springy.Physics.Vector } = data.machine
     .map((s) => {
@@ -84,15 +93,16 @@
       <summary class="select-none cursor-pointer">
         <span class="flex flex-row">
           <HamburgerIcon color="white" />
+          <!-- TODO: i18n -->
           <strong>Information</strong>
         </span>
       </summary>
       <ul>
         <li>
-          Project: {data.instance?.Product.Project.Name}
+          {m.project_title()}: {data.instance?.Product.Project.Name}
         </li>
         <li>
-          Product: {data.instance?.Product.ProductDefinition.Name}
+          {m.project_products_title()}: {data.instance?.Product.ProductDefinition.Name}
         </li>
         <li>
           Last Transition: {data.instance?.Product.ProductTransitions[0].InitialState}
@@ -101,21 +111,12 @@
             : ''}
         </li>
         <li>
-          Date: {data.instance?.Product.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
+          {m.project_products_transitions_date()}: {data.instance?.Product.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
         </li>
       </ul>
-      <form
-        method="POST"
-        on:submit|preventDefault={(e) => {
-          active = selected;
-          fetch(e.currentTarget.action, {
-            method: 'post',
-            body: new FormData(e.currentTarget)
-          });
-        }}
-      >
-        <input type="hidden" name="state" value={selected} />
-        <input type="submit" class="btn" value="Jump State to {selected}" />
+      <form method="POST" use:enhance>
+        <input type="hidden" name="state" bind:value={$form.state} />
+        <input type="submit" class="btn" value="Jump State to {$form.state}" />
       </form>
     </details>
   </div>
@@ -149,9 +150,7 @@
         {state.final ? 'final' : ''}
         {state.action ? 'action' : ''}"
           on:click={() => {
-            if (!state.action) {
-              selected = state.label;
-            }
+            $form.state = state.label;
           }}
         >
           <rect
@@ -159,7 +158,7 @@
             height="100%"
             rx="10"
             ry="10"
-            class={selected === state.label ? 'selected' : ''}
+            class={$form.state === state.label ? 'selected' : ''}
           />
           <text text-anchor="middle" font-size={15} x="50%" y="60%">
             {state.label}

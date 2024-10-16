@@ -129,8 +129,7 @@ export const load = (async ({ params, url, locals }) => {
     : [];
 
   return {
-    actions: Workflow
-      .availableTransitionsFromName(snap.value, snap.context)
+    actions: Workflow.availableTransitionsFromName(snap.value, snap.context)
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
         switch (a[0].meta?.user) {
@@ -162,7 +161,13 @@ export const load = (async ({ params, url, locals }) => {
       projectLanguageCode: product?.Project.Language
     } as Fields,
     files: artifacts,
-    reviewers: product?.Project.Reviewers
+    reviewers: product?.Project.Reviewers,
+    taskForm: await superValidate(
+      {
+        state: snap?.value
+      },
+      valibot(sendActionSchema)
+    )
   };
 }) satisfies PageServerLoad;
 
