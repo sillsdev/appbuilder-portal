@@ -181,8 +181,7 @@ export const load = (async ({ params, url, locals }) => {
     fileCount: artifactCount,
     fileForm: await superValidate(
       {
-        page: 0,
-        size: 10
+        page: { page: 0, size: 10 }
       },
       valibot(tableSchema)
     ),
@@ -190,8 +189,7 @@ export const load = (async ({ params, url, locals }) => {
     reviewerCount: await prisma.reviewers.count({ where: { ProjectId: product?.Project.Id } }),
     reviewerForm: await superValidate(
       {
-        page: 0,
-        size: 10
+        page: { page: 0, size: 10 }
       },
       valibot(tableSchema)
     ),
@@ -246,9 +244,9 @@ export const actions = {
       },
       //filter by artifact type
       ArtifactType:
-      typeof snap.context.includeArtifacts === 'string'
-        ? snap.context.includeArtifacts
-        : undefined, //include all
+        typeof snap.context.includeArtifacts === 'string'
+          ? snap.context.includeArtifacts
+          : undefined, //include all
       OR:
         form.data.search.field === null && form.data.search.text
           ? [
@@ -289,8 +287,8 @@ export const actions = {
         Url: true,
         Id: true
       },
-      skip: form.data.size * form.data.page,
-      take: form.data.size
+      skip: form.data.page.size * form.data.page.page,
+      take: form.data.page.size
     });
 
     const count = await prisma.productArtifacts.count({
@@ -352,8 +350,8 @@ export const actions = {
         Name: true,
         Email: true
       },
-      skip: form.data.size * form.data.page,
-      take: form.data.size
+      skip: form.data.page.size * form.data.page.page,
+      take: form.data.page.size
     });
 
     const count = await prisma.reviewers.count({
