@@ -76,7 +76,8 @@ import { BullMQ, queues } from 'sil.appbuilder.portal.common';
 // Running on svelte process right now. Consider putting on new thread
 // Fine like this if majority of job time is waiting for network requests
 // If there is much processing it should be moved to another thread
-new ScriptoriaWorker();
+new ScriptoriaWorker('scriptoria');
+new ScriptoriaWorker('default recurring');
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
