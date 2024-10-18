@@ -17,8 +17,8 @@ export abstract class BullWorker<T, R> {
 type JobCast<T extends BullMQ.ScriptoriaJob> = Job<T, number, string>;
 
 export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
-  constructor() {
-    super('scriptoria');
+  constructor(queue: queues.QueueName) {
+    super(queue);
   }
   async run(job: Job<BullMQ.ScriptoriaJob, number, string>): Promise<number> {
     switch (job.data.type) {

@@ -20,4 +20,5 @@ app.listen(3000, () => console.log('Dev server started'));
 
 addDefaultRecurringJobs();
 
-new ScriptoriaWorker();
+new ScriptoriaWorker('scriptoria');
+new ScriptoriaWorker('default recurring');
