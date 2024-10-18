@@ -179,8 +179,8 @@ model ProductArtifacts {
   Url            String?
   FileSize       BigInt?
   ContentType    String?
-  DateCreated    DateTime?     @db.Timestamp
-  DateUpdated    DateTime?     @db.Timestamp
+  DateCreated    DateTime?     @db.Timestamp // TODO: Can we add `@default(now())` to all instances?
+  DateUpdated    DateTime?     @db.Timestamp // TODO: Can we add `@updatedAt` to all instances?
   ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_ProductBuilds_ProductBuildId")
   Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_Products_ProductId")
 

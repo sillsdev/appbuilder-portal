@@ -38,6 +38,7 @@ export namespace Build {
     productId: string;
     jobId: number;
     buildId: number;
+    productBuildId: number;
   }
 }
 
