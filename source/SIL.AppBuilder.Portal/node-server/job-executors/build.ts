@@ -49,7 +49,19 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Buil
         WorkflowBuildId: response.id,
         DateUpdated: new Date()
       });
-      job.updateProgress(75);
+      job.updateProgress(65);
+
+      const timestamp = new Date();
+      const productBuild = await DatabaseWrites.productBuilds.create({
+        data: {
+          ProductId: job.data.productId,
+          BuildId: response.id,
+          DateCreated: timestamp,
+          DateUpdated: timestamp
+        }
+      });
+
+      job.updateProgress(85);
 
       await queues.scriptoria.add(
         `Check status of Build #${response.id}`,
@@ -58,7 +70,8 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Buil
           productId: job.data.productId,
           organizationId: productData.Project.OrganizationId,
           jobId: productData.WorkflowJobId,
-          buildId: response.id
+          buildId: response.id,
+          productBuildId: productBuild.Id
         },
         {
           repeat: {
@@ -91,6 +104,39 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
         if (response.error) {
           job.log(response.error);
         }
+        await DatabaseWrites.productArtifacts.createMany({
+          data: await Promise.all(
+            Object.entries(response.artifacts).map(async ([type, url]) => {
+              const res = await fetch(url, { method: 'HEAD' });
+              const timestamp = new Date();
+              return {
+                ProductId: job.data.productId,
+                ProductBuildId: job.data.productBuildId,
+                ArtifactType: type,
+                Url: url,
+                ContentType: res.headers.get('Content-Type'),
+                LastModified: new Date(res.headers.get('Last-Modified')),
+                FileSize:
+                  res.headers.get('Content-Type') !== 'text/html'
+                    ? parseInt(res.headers.get('Content-Length'))
+                    : undefined,
+                DateCreated: timestamp,
+                DateUpdated: timestamp
+              };
+            })
+          )
+        });
+        job.updateProgress(80);
+        await DatabaseWrites.productBuilds.update({
+          where: {
+            Id: job.data.productBuildId
+          },
+          data: {
+            DateUpdated: new Date(),
+            Success: response.result === 'SUCCESS'
+          }
+        });
+        job.updateProgress(90);
         const flow = await Workflow.restore(job.data.productId);
         if (response.result === 'SUCCESS') {
           flow.send({ type: WorkflowAction.Build_Successful, userId: null });
