@@ -124,6 +124,7 @@ export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserT
               .map((t) => t[0].meta.user) as RoleId[]
           ).filter((r) => job.data.operation.by !== 'Role' || job.data.operation.roles.includes(r));
           job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
+          const timestamp = new Date();
           createdTasks = Array.from(
             new Set(
               Array.from(allUsers.entries())
@@ -140,7 +141,9 @@ export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserT
               ProductId: product.Id,
               ActivityName: snap.value,
               Status: snap.value,
-              Comment: job.data.comment
+              Comment: job.data.comment,
+              DateCreated: timestamp,
+              DateUpdated: timestamp
             }));
           await DatabaseWrites.userTasks.createMany({
             data: createdTasks
