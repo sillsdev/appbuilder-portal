@@ -114,6 +114,53 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
               if (lastModified > latestArtifactDate) {
                 latestArtifactDate = lastModified;
               }
+
+              // On version.json, update the ProductBuild.Version
+              if (type === 'version' && res.headers.get('Content-Type') === 'application/json') {
+                const version = JSON.parse(await fetch(url).then((r) => r.text()));
+                if (version['version']) {
+                  await DatabaseWrites.productBuilds.update({
+                    where: {
+                      Id: job.data.productBuildId
+                    },
+                    data: {
+                      Version: version['version'],
+                      DateUpdated: new Date()
+                    }
+                  });
+                  if (response.result === 'SUCCESS') {
+                    await DatabaseWrites.products.update(job.data.productId, {
+                      VersionBuilt: version['version'],
+                      DateUpdated: new Date()
+                    });
+                  }
+                }
+              }
+
+              // On play-listing-manifest.json, update the Project.DefaultLanguage
+              if (
+                type == 'play-listing-manifest' &&
+                res.headers.get('Content-Type') === 'application/json'
+              ) {
+                const manifest = JSON.parse(await fetch(url).then((r) => r.text()));
+                if (manifest['default-language']) {
+                  const lang = await prisma.storeLanguages.findFirst({
+                    where: {
+                      Name: manifest['default-language']
+                    },
+                    select: {
+                      Id: true
+                    }
+                  });
+                  if (lang !== null) {
+                    await DatabaseWrites.products.update(job.data.productId, {
+                      StoreLanguageId: lang.Id,
+                      DateUpdated: new Date()
+                    });
+                  }
+                }
+              }
+
               return {
                 ProductId: job.data.productId,
                 ProductBuildId: job.data.productBuildId,
@@ -132,7 +179,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
         });
         await DatabaseWrites.products.update(job.data.productId, {
           DateBuilt: latestArtifactDate
-        })
+        });
         job.updateProgress(80);
         await DatabaseWrites.productBuilds.update({
           where: {
