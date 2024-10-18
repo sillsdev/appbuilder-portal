@@ -96,7 +96,11 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publis
         if (response.result === 'SUCCESS') {
           flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
         } else {
-          flow.send({ type: WorkflowAction.Publish_Failed, userId: null, comment: response.error });
+          flow.send({
+            type: WorkflowAction.Publish_Failed,
+            userId: null,
+            comment: `system.publish-failed,${response.artifacts['consoleText'] ?? ''}`
+          });
         }
         job.updateProgress(100);
         return response.id;
