@@ -1,10 +1,4 @@
-import {
-  BullMQ,
-  prisma,
-  DatabaseWrites,
-  BuildEngine,
-  queues
-} from 'sil.appbuilder.portal.common';
+import { BullMQ, prisma, DatabaseWrites, BuildEngine, queues } from 'sil.appbuilder.portal.common';
 import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
 
@@ -26,12 +20,15 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Proje
       }
     });
     job.updateProgress(25);
-    const response = await BuildEngine.Requests.createProject(projectData.OrganizationId, {
-      app_id: projectData.ApplicationType.Name,
-      project_name: projectData.Name,
-      language_code: projectData.Language,
-      storage_type: 's3'
-    });
+    const response = await BuildEngine.Requests.createProject(
+      { type: 'query', organizationId: projectData.OrganizationId },
+      {
+        app_id: projectData.ApplicationType.Name,
+        project_name: projectData.Name,
+        language_code: projectData.Language,
+        storage_type: 's3'
+      }
+    );
     job.updateProgress(50);
     if (response.responseType === 'error') {
       job.log(response.message);
@@ -39,7 +36,9 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Proje
     } else {
       await DatabaseWrites.projects.update(job.data.projectId, {
         WorkflowProjectId: response.id,
-        WorkflowAppProjectUrl: `${process.env.UI_URL ?? 'http://localhost:5173'}/projects/${job.data.projectId}`,
+        WorkflowAppProjectUrl: `${process.env.UI_URL ?? 'http://localhost:5173'}/projects/${
+          job.data.projectId
+        }`,
         DateUpdated: new Date()
       });
       job.updateProgress(75);
@@ -69,7 +68,7 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Proje
 export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Project_Check> {
   async execute(job: Job<BullMQ.Project.Check, number, string>): Promise<number> {
     const response = await BuildEngine.Requests.getProject(
-      job.data.organizationId,
+      { type: 'query', organizationId: job.data.organizationId},
       job.data.workflowProjectId
     );
     job.updateProgress(50);

@@ -35,12 +35,15 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Produ
       }
     });
     job.updateProgress(25);
-    const response = await BuildEngine.Requests.createJob(productData.Project.OrganizationId, {
-      request_id: job.data.productId,
-      git_url: productData.Project.WorkflowProjectUrl,
-      app_id: productData.Project.ApplicationType.Name,
-      publisher_id: productData.Store.Name
-    });
+    const response = await BuildEngine.Requests.createJob(
+      { type: 'query', organizationId: productData.Project.OrganizationId },
+      {
+        request_id: job.data.productId,
+        git_url: productData.Project.WorkflowProjectUrl,
+        app_id: productData.Project.ApplicationType.Name,
+        publisher_id: productData.Store.Name
+      }
+    );
     job.updateProgress(50);
     if (response.responseType === 'error') {
       job.log(response.message);
@@ -63,7 +66,7 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Produ
 export class Delete extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Product_Delete> {
   async execute(job: Job<BullMQ.Product.Delete, number, string>): Promise<number> {
     const response = await BuildEngine.Requests.deleteJob(
-      job.data.organizationId,
+      { type: 'query', organizationId: job.data.organizationId },
       job.data.workflowJobId
     );
     job.updateProgress(50);

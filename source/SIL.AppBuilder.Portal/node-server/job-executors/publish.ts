@@ -28,7 +28,7 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publ
     });
     job.updateProgress(25);
     const response = await BuildEngine.Requests.createRelease(
-      productData.Project.OrganizationId,
+      { type: 'query', organizationId: productData.Project.OrganizationId },
       productData.WorkflowJobId,
       productData.WorkflowBuildId,
       {
@@ -92,7 +92,7 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publ
 export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publish_Check> {
   async execute(job: Job<BullMQ.Publish.Check, number, string>): Promise<number> {
     const response = await BuildEngine.Requests.getRelease(
-      job.data.organizationId,
+      { type: 'query', organizationId: job.data.organizationId },
       job.data.jobId,
       job.data.buildId,
       job.data.releaseId

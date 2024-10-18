@@ -30,7 +30,7 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Buil
     }
     job.updateProgress(25);
     const response = await BuildEngine.Requests.createBuild(
-      productData.Project.OrganizationId,
+      { type: 'query', organizationId: productData.Project.OrganizationId },
       productData.WorkflowJobId,
       {
         targets: job.data.targets ?? 'apk play-listing',
@@ -90,7 +90,7 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Buil
 export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_Check> {
   async execute(job: Job<BullMQ.Build.Check, number, string>): Promise<number> {
     const response = await BuildEngine.Requests.getBuild(
-      job.data.organizationId,
+      { type: 'query', organizationId: job.data.organizationId },
       job.data.jobId,
       job.data.buildId
     );
