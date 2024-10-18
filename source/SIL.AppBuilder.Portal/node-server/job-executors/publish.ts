@@ -39,7 +39,6 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publ
     job.updateProgress(50);
     if (response.responseType === 'error') {
       const flow = await Workflow.restore(job.data.productId);
-      // TODO: Match DWKit failure output
       flow.send({ type: 'Publish Failed', userId: null, comment: response.message });
       job.updateProgress(100);
       return 0;
@@ -50,19 +49,22 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publ
       });
       job.updateProgress(75);
 
-      await queues.scriptoria.add(`Check status of Publish #${response.id}`, {
-        type: BullMQ.ScriptoriaJobType.Publish_Check,
-        productId: job.data.productId,
-        organizationId: productData.Project.OrganizationId,
-        jobId: productData.WorkflowJobId,
-        buildId: productData.WorkflowBuildId,
-        releaseId: response.id
-      },
-      {
-        repeat: {
-          pattern: '*/1 * * * *' // every minute
+      await queues.scriptoria.add(
+        `Check status of Publish #${response.id}`,
+        {
+          type: BullMQ.ScriptoriaJobType.Publish_Check,
+          productId: job.data.productId,
+          organizationId: productData.Project.OrganizationId,
+          jobId: productData.WorkflowJobId,
+          buildId: productData.WorkflowBuildId,
+          releaseId: response.id
+        },
+        {
+          repeat: {
+            pattern: '*/1 * * * *' // every minute
+          }
         }
-      });
+      );
       job.updateProgress(100);
 
       return response.id;
@@ -92,7 +94,11 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publis
         if (response.result === 'SUCCESS') {
           flow.send({ type: 'Publish Successful', userId: null });
         } else {
-          flow.send({ type: 'Publish Failed', userId: null, comment: response.error });
+          flow.send({
+            type: 'Publish Failed',
+            userId: null,
+            comment: `system.publish-failed,${response.artifacts['consoleText'] ?? ''}`
+          });
         }
         job.updateProgress(100);
         return response.id;

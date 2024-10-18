@@ -213,7 +213,7 @@
             <input type="hidden" name="storeLanguageId" value={null} />
           </form>
           <form method="dialog" class="modal-backdrop">
-            <button on:click={() => selectingStore = false}>close</button>
+            <button on:click={() => (selectingStore = false)}>close</button>
           </form>
         </dialog>
       </div>
@@ -364,7 +364,13 @@
                                 </span>
                               {/if}
                               <br />
-                              <a href={transition.Comment.replace('system.build-failed,', '')}>
+                              <a
+                                class="link"
+                                href={transition.Comment.replace(
+                                  /system\.(build|publish)-failed,/,
+                                  ''
+                                )}
+                              >
                                 {m.project_products_publications_console()}
                               </a>
                             {:else}

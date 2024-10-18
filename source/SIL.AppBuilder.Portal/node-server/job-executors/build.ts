@@ -24,6 +24,9 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Buil
         WorkflowJobId: true
       }
     });
+    if (!productData) {
+      throw new Error(`Product #${job.data.productId} does not exist!`);
+    }
     job.updateProgress(25);
     const response = await BuildEngine.Requests.createBuild(
       productData.Project.OrganizationId,
@@ -36,7 +39,6 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Buil
     job.updateProgress(50);
     if (response.responseType === 'error') {
       const flow = await Workflow.restore(job.data.productId);
-      // TODO: Match DWKit failure output
       flow.send({ type: 'Build Failed', userId: null, comment: response.message });
       job.updateProgress(100);
       return 0;
@@ -83,7 +85,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
     } else {
       // TODO: what does the 'expired' status mean?
       if (response.status === 'completed' || response.status === 'expired') {
-        await queues.scriptoria.removeRepeatableByKey(job.repeatJobKey);
+        await queues.scriptoria.removeRepeatableByKey(job.repeatJobKey!);
         if (response.error) {
           job.log(response.error);
         }
@@ -91,7 +93,11 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
         if (response.result === 'SUCCESS') {
           flow.send({ type: 'Build Successful', userId: null });
         } else {
-          flow.send({ type: 'Build Failed', userId: null, comment: response.error });
+          flow.send({
+            type: 'Build Failed',
+            userId: null,
+            comment: `system.build-failed,${response.artifacts['consoleText'] ?? ''}`
+          });
         }
         job.updateProgress(100);
         return response.id;
