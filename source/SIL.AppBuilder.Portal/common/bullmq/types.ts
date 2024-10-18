@@ -100,6 +100,7 @@ export namespace Publish {
     jobId: number;
     buildId: number;
     releaseId: number;
+    publicationId: number;
   }
 }
 
