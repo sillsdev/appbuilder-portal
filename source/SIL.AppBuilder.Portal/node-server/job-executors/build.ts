@@ -104,18 +104,22 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
         if (response.error) {
           job.log(response.error);
         }
+        let latestArtifactDate = new Date(0);
         await DatabaseWrites.productArtifacts.createMany({
           data: await Promise.all(
             Object.entries(response.artifacts).map(async ([type, url]) => {
               const res = await fetch(url, { method: 'HEAD' });
               const timestamp = new Date();
+              const lastModified = new Date(res.headers.get('Last-Modified'));
+              if (lastModified > latestArtifactDate) {
+                latestArtifactDate = lastModified;
+              }
               return {
                 ProductId: job.data.productId,
                 ProductBuildId: job.data.productBuildId,
                 ArtifactType: type,
                 Url: url,
                 ContentType: res.headers.get('Content-Type'),
-                LastModified: new Date(res.headers.get('Last-Modified')),
                 FileSize:
                   res.headers.get('Content-Type') !== 'text/html'
                     ? parseInt(res.headers.get('Content-Length'))
@@ -126,6 +130,9 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
             })
           )
         });
+        await DatabaseWrites.products.update(job.data.productId, {
+          DateBuilt: latestArtifactDate
+        })
         job.updateProgress(80);
         await DatabaseWrites.productBuilds.update({
           where: {
