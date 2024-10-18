@@ -8,14 +8,15 @@ process.env.NODE_ENV = 'development';
 
 const app = express();
 
-import { scriptoriaQueue } from 'sil.appbuilder.portal.common';
+import { queues } from 'sil.appbuilder.portal.common';
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/');
 createBullBoard({
-  queues: [new BullAdapter(scriptoriaQueue)],
+  queues: [new BullAdapter(queues.scriptoria), new BullAdapter(queues.default_recurring)],
   serverAdapter
 });
 app.use(serverAdapter.getRouter());
 app.listen(3000, () => console.log('Dev server started'));
 
-new ScriptoriaWorker();
+new ScriptoriaWorker('scriptoria');
+new ScriptoriaWorker('default recurring');
