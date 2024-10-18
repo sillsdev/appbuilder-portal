@@ -49,7 +49,21 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publ
         WorkflowPublishId: response.id,
         DateUpdated: new Date()
       });
-      job.updateProgress(75);
+      job.updateProgress(65);
+
+      const timestamp = new Date();
+      const pub = await DatabaseWrites.productPublications.create({
+        data: {
+          ProductId: job.data.productId,
+          ProductBuildId: productData.WorkflowBuildId,
+          ReleaseId: response.id,
+          Channel: job.data.channel,
+          DateCreated: timestamp,
+          DateUpdated: timestamp
+        }
+      });
+
+      job.updateProgress(85);
 
       await queues.scriptoria.add(
         `Check status of Publish #${response.id}`,
@@ -59,7 +73,8 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publ
           organizationId: productData.Project.OrganizationId,
           jobId: productData.WorkflowJobId,
           buildId: productData.WorkflowBuildId,
-          releaseId: response.id
+          releaseId: response.id,
+          publicationId: pub.Id
         },
         {
           repeat: {
@@ -92,9 +107,43 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publis
         if (response.error) {
           job.log(response.error);
         }
+        let packageName: string | undefined = undefined;
         const flow = await Workflow.restore(job.data.productId);
         if (response.result === 'SUCCESS') {
+          const publishUrlFile = response.artifacts['publishUrl'];
+          await DatabaseWrites.products.update(job.data.productId, {
+            DatePublished: new Date(),
+            PublishLink: publishUrlFile
+              ? (await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined
+              : undefined,
+            DateUpdated: new Date()
+          });
           flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
+          const packageFile = await prisma.productPublications.findUnique({
+            where: {
+              Id: job.data.publicationId
+            },
+            select: {
+              ProductBuild: {
+                select: {
+                  ProductArtifacts: {
+                    where: {
+                      ArtifactType: 'package_name'
+                    },
+                    select: {
+                      Url: true
+                    },
+                    take: 1
+                  }
+                }
+              }
+            }
+          });
+          if (packageFile?.ProductBuild.ProductArtifacts[0]) {
+            packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url).then((r) =>
+              r.text()
+            );
+          }
         } else {
           flow.send({
             type: WorkflowAction.Publish_Failed,
@@ -102,6 +151,18 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publis
             comment: `system.publish-failed,${response.artifacts['consoleText'] ?? ''}`
           });
         }
+        job.updateProgress(80);
+        await DatabaseWrites.productPublications.update({
+          where: {
+            Id: job.data.publicationId
+          },
+          data: {
+            Success: response.result === 'SUCCESS',
+            LogUrl: response.console_text,
+            Package: packageName?.trim(),
+            DateUpdated: new Date()
+          }
+        });
         job.updateProgress(100);
         return response.id;
       }
