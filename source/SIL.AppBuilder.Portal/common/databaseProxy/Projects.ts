@@ -18,8 +18,8 @@ import type { RequirePrimitive } from './utility.js';
 
 export async function create(
   projectData: RequirePrimitive<Prisma.ProjectsUncheckedCreateInput>
-): Promise<boolean> {
-  if (!validateProjectBase(projectData.OrganizationId, projectData.GroupId, projectData.OwnerId))
+): Promise<boolean | number> {
+  if (!(await validateProjectBase(projectData.OrganizationId, projectData.GroupId, projectData.OwnerId)))
     return false;
 
   // No additional verification steps
@@ -49,7 +49,7 @@ export async function update(
   const orgId = projectData.OrganizationId ?? existing!.OrganizationId;
   const groupId = projectData.GroupId ?? existing!.GroupId;
   const ownerId = projectData.OwnerId ?? existing!.OwnerId;
-  if (!validateProjectBase(orgId, groupId, ownerId)) return false;
+  if (!(await validateProjectBase(orgId, groupId, ownerId))) return false;
 
   // No additional verification steps
 
@@ -61,6 +61,7 @@ export async function update(
       data: projectData
     });
     // If the owner has changed, we need to reassign all the user tasks related to this project
+    // TODO: But we don't need to change *every* user task, just the tasks associated with the owner.
     if (ownerId && ownerId !== existing?.OwnerId) {
       scriptoriaQueue.add(ScriptoriaJobType.ReassignUserTasks, {
         type: ScriptoriaJobType.ReassignUserTasks,

@@ -12,3 +12,9 @@ export enum ProductTransitionType {
   CancelWorkflow,
   ProjectAccess
 }
+
+export enum WorkflowType {
+  Default = 1,
+  Rebuild,
+  Republish
+}
