@@ -100,6 +100,50 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
             if (lastModified > latestArtifactDate) {
               latestArtifactDate = lastModified;
             }
+
+            // On version.json, update the ProductBuild.Version
+            if (type === 'version' && res.headers.get('Content-Type') === 'application/json') {
+              const version = JSON.parse(await fetch(url).then((r) => r.text()));
+              if (version['version']) {
+                await DatabaseWrites.productBuilds.update({
+                  where: {
+                    Id: job.data.productBuildId
+                  },
+                  data: {
+                    Version: version['version']
+                  }
+                });
+                if (response.result === 'SUCCESS') {
+                  await DatabaseWrites.products.update(job.data.productId, {
+                    VersionBuilt: version['version']
+                  });
+                }
+              }
+            }
+
+            // On play-listing-manifest.json, update the Project.DefaultLanguage
+            if (
+              type == 'play-listing-manifest' &&
+              res.headers.get('Content-Type') === 'application/json'
+            ) {
+              const manifest = JSON.parse(await fetch(url).then((r) => r.text()));
+              if (manifest['default-language']) {
+                const lang = await prisma.storeLanguages.findFirst({
+                  where: {
+                    Name: manifest['default-language']
+                  },
+                  select: {
+                    Id: true
+                  }
+                });
+                if (lang !== null) {
+                  await DatabaseWrites.products.update(job.data.productId, {
+                    StoreLanguageId: lang.Id
+                  });
+                }
+              }
+            }
+
             return {
               ProductId: job.data.productId,
               ProductBuildId: job.data.productBuildId,
