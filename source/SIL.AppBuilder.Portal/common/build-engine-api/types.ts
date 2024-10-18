@@ -1,3 +1,12 @@
+export type Auth = {
+  type: 'query';
+  organizationId: number;
+} | {
+  type: 'provided';
+  url: string;
+  token: string;
+}
+
 export type Response =
   | ErrorResponse
   | ProjectResponse
