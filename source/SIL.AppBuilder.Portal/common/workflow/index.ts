@@ -20,7 +20,7 @@ import {
   Snapshot
 } from '../public/workflow.js';
 import prisma from '../prisma.js';
-import { RoleId, ProductTransitionType } from '../public/prisma.js';
+import { RoleId, ProductTransitionType, WorkflowType } from '../public/prisma.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { Prisma } from '@prisma/client';
 
@@ -364,7 +364,8 @@ export class Workflow {
       TransitionType: ProductTransitionType.Activity,
       InitialState: Workflow.stateName(state),
       DestinationState: Workflow.targetStringFromEvent(t),
-      Command: t.meta.type !== ActionType.Auto ? t.eventType : null
+      Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
+      WorkflowType: WorkflowType.Default // TODO: Change this once we support more workflow types
     };
   }
 
