@@ -7,16 +7,33 @@ export async function request(
   method: string = 'GET',
   body?: any
 ) {
-  const { url, token } = auth.type === 'query'? await getURLandToken(auth.organizationId) : auth;
-  return await fetch(`${url}/${resource}`, {
-    method: method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-      'Content-Type': body ? 'application/json' : undefined
-    },
-    body: body ? JSON.stringify(body) : undefined
-  });
+  try {
+    const { url, token } = auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
+    return await fetch(`${url}/${resource}`, {
+      method: method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': body ? 'application/json' : undefined
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+  } catch (e) {
+    return new Response(
+      JSON.stringify({
+        responseType: 'error',
+        name: '',
+        status: 500,
+        code: 500,
+        message: typeof e === 'string' ? e.toUpperCase() : e instanceof Error ? e.message : e,
+        type: ''
+      } as Types.ErrorResponse),
+      {
+        status: 500,
+        statusText: 'Internal Server Error'
+      }
+    );
+  }
 }
 export async function getURLandToken(organizationId: number) {
   const org = await prisma.organizations.findUnique({
@@ -42,7 +59,10 @@ export async function getURLandToken(organizationId: number) {
 }
 
 export async function systemCheck(auth: Types.Auth) {
-  return (await request('system/check', auth)).status;
+  const res = await request('system/check', auth);
+  return res.ok
+    ? ({ status: res.status} as Types.StatusResponse)
+    : ((await res.json()) as Types.ErrorResponse);
 }
 
 export async function createProject(
@@ -196,11 +216,7 @@ export async function deleteRelease(
   buildId: number,
   releaseId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
-  const res = await request(
-    `job/${jobId}/build/${buildId}/release/${releaseId}`,
-    auth,
-    'DELETE'
-  );
+  const res = await request(`job/${jobId}/build/${buildId}/release/${releaseId}`, auth, 'DELETE');
   return res.ok
     ? { responseType: 'delete', status: res.status }
     : ((await res.json()) as Types.ErrorResponse);
