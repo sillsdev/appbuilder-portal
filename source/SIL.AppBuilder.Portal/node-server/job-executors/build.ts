@@ -23,6 +23,9 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       WorkflowJobId: true
     }
   });
+  if (!productData) {
+    throw new Error(`Product #${job.data.productId} does not exist!`);
+  }
   job.updateProgress(25);
   const response = await BuildEngine.Requests.createBuild(
     { type: 'query', organizationId: productData.Project.OrganizationId },
@@ -82,7 +85,11 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
       if (response.result === 'SUCCESS') {
         flow.send({ type: WorkflowAction.Build_Successful, userId: null });
       } else {
-        flow.send({ type: WorkflowAction.Build_Failed, userId: null, comment: response.error });
+        flow.send({
+          type: WorkflowAction.Build_Failed,
+          userId: null,
+          comment: `system.build-failed,${response.artifacts['consoleText'] ?? ''}`
+        });
       }
     }
     job.updateProgress(100);
