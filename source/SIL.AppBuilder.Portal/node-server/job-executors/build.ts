@@ -46,7 +46,16 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     await DatabaseWrites.products.update(job.data.productId, {
       WorkflowBuildId: response.id
     });
-    job.updateProgress(75);
+    job.updateProgress(65);
+
+    const productBuild = await DatabaseWrites.productBuilds.create({
+      data: {
+        ProductId: job.data.productId,
+        BuildId: response.id
+      }
+    });
+
+    job.updateProgress(85);
 
     await Queues.RemotePolling.add(
       `Check status of Build #${response.id}`,
@@ -55,7 +64,8 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
         productId: job.data.productId,
         organizationId: productData.Project.OrganizationId,
         jobId: productData.WorkflowJobId,
-        buildId: response.id
+        buildId: response.id,
+        productBuildId: productBuild.Id
       },
       BullMQ.RepeatEveryMinute
     );
@@ -81,6 +91,35 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
       if (response.error) {
         job.log(response.error);
       }
+      await DatabaseWrites.productArtifacts.createMany({
+        data: await Promise.all(
+          Object.entries(response.artifacts).map(async ([type, url]) => {
+            const res = await fetch(url, { method: 'HEAD' });
+            return {
+              ProductId: job.data.productId,
+              ProductBuildId: job.data.productBuildId,
+              ArtifactType: type,
+              Url: url,
+              ContentType: res.headers.get('Content-Type'),
+              LastModified: new Date(res.headers.get('Last-Modified')),
+              FileSize:
+                  res.headers.get('Content-Type') !== 'text/html'
+                    ? parseInt(res.headers.get('Content-Length'))
+                    : undefined
+            };
+          })
+        )
+      });
+      job.updateProgress(80);
+      await DatabaseWrites.productBuilds.update({
+        where: {
+          Id: job.data.productBuildId
+        },
+        data: {
+          Success: response.result === 'SUCCESS'
+        }
+      });
+      job.updateProgress(90);
       const flow = await Workflow.restore(job.data.productId);
       if (response.result === 'SUCCESS') {
         flow.send({ type: WorkflowAction.Build_Successful, userId: null });
