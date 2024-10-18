@@ -12,7 +12,8 @@ export type Response =
   | ProjectResponse
   | TokenResponse
   | BuildResponse
-  | ReleaseResponse;
+  | ReleaseResponse
+  | StatusResponse;
 
 export type ErrorResponse = {
   responseType: 'error';
@@ -22,6 +23,11 @@ export type ErrorResponse = {
   status: number;
   type: string;
 };
+
+export type StatusResponse = {
+  responseType: 'status';
+  status: number;
+}
 
 export type DeleteResponse = {
   responseType: 'delete';
