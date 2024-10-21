@@ -14,7 +14,6 @@
   <div class="flex flex-col px-4">
     {#each $form.organizations as org}
       <h3>{org.name}</h3>
-      <!-- TODO i18n -->
       <div class="flex w-full">
         <div class="shrink space-y-2">
           {#each data.groups.filter((g) => g.orgId === org.id) as group}

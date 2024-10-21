@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
+  import IconContainer from '$lib/components/IconContainer.svelte';
 
   export let data: PageData;
   let selectedOrg: number = 0;
@@ -12,29 +13,30 @@
 </script>
 
 <div class="w-full">
-  <div class="flex flex-row place-content-between align-middle flex-wrap items-center">
-    <h1 class="pb-6">{m.users_title()}</h1>
-    <!-- TODO i18n -->
-    <div
-      class="content-center m-4 space-x-2 flex flex-nowrap items-end w-full place-content-between"
-    >
+  <div class="flex flex-row place-content-between w-full pt-4 flex-wrap">
+    <div class="inline-block">
+      <h1 class="p-4 pl-6">{m.users_title()}</h1>
+    </div>
+    <div class="flex flex-row place-content-end items-center">
       {#if data.organizations.length > 1}
-        <span class="flex flex-wrap items-center gap-x-2">
-          <span>Filter organization:</span>
-          <select class="select select-bordered" name="org" bind:value={selectedOrg}>
-            <option value={0}>Any organization</option>
-            {#each data.organizations as organization}
-              <option value={organization.Id}>{organization.Name}</option>
-            {/each}
-          </select>
-        </span>
+        <select class="select select-bordered" name="org" bind:value={selectedOrg}>
+          <option value={0}>{m.org_allOrganizations()}</option>
+          {#each data.organizations as organization}
+            <option value={organization.Id}>{organization.Name}</option>
+          {/each}
+        </select>
       {/if}
-      <input
-        placeholder={m.search()}
-        type="text"
-        class="input input-bordered grow shrink [max-width:20rem]"
-        bind:value={searchQuery}
-      />
+      <div class="p-4 relative">
+        <input
+          type="text"
+          class="input grow shrink [max-width:20rem] input-bordered pr-9"
+          placeholder={m.search()}
+          bind:value={searchQuery}
+        />
+        <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
+          <IconContainer icon="mdi:search" width={24} />
+        </div>
+      </div>
     </div>
   </div>
   <div class="m-4 relative mt-0">
@@ -70,7 +72,7 @@
                     </b>
                   </span>
                   <br />
-                  {org.Roles.map(
+                  {org.Roles.map(// TODO: i18n (these will need to be added to locale JSON)
                     (r) => ['', 'Super Admin', 'Organization Admin', 'App Builder', 'Author'][r]
                   ).join(', ') || m.users_noRoles()}
                 </div>

@@ -371,8 +371,7 @@
             ({ update }) =>
               update({ reset: false })}
         >
-          <!-- TODO: i18n -->
-          <h2>Settings</h2>
+          <h2>{m.project_settings_title()}</h2>
           <div class="flex flex-col py-4">
             <div class="flex flex-col place-content-between px-4">
               <span class="items-center flex gap-x-1">
@@ -547,7 +546,7 @@
               </div>
             {/each}
           {:else}
-            <!-- TODO i18n -->
+            <!-- TODO i18n (will need to add to locale JSON) -->
             <p class="p-2">No reviewers</p>
           {/if}
         </div>

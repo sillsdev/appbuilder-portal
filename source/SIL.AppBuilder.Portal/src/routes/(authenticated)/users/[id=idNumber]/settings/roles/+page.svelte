@@ -15,7 +15,7 @@
   <div class="flex flex-col px-4">
     {#each $form.organizations as org}
       <h3>{org.name}</h3>
-      <!-- TODO i18n -->
+      <!-- TODO i18n (needs to add to locale JSON) -->
       <div class="flex w-full">
         <div class="shrink space-y-2">
           <div class="flex space-x-2">
