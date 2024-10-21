@@ -15,23 +15,26 @@ export const load: LayoutServerLoad = async (event) => {
     },
     include: { UserRoles: true, Organizations: true }
   });
-  const organizations = user?.UserRoles.find((roleDef) => roleDef.RoleId === RoleId.SuperAdmin)
-    ? await prisma.organizations.findMany({
-      include: {
-        Owner: true
-      }
-    })
-    : await prisma.organizations.findMany({
-      where: {
-        OrganizationMemberships: {
-          every: {
-            UserId: userId
+  const organizations = await prisma.organizations.findMany({
+    where: user?.UserRoles.find((roleDef) => roleDef.RoleId === RoleId.SuperAdmin)
+      ? undefined
+      : {
+          OrganizationMemberships: {
+            every: {
+              UserId: userId
+            }
           }
+        },
+    select: {
+      Id: true,
+      Name: true,
+      LogoUrl: true,
+      Owner: {
+        select: {
+          Name: true
         }
-      },
-      include: {
-        Owner: true
       }
-    });
+    }
+  });
   return { organizations, numberOfTasks };
 };
