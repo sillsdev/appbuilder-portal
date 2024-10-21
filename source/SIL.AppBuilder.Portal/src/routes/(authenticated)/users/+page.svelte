@@ -17,14 +17,18 @@
     <div class="inline-block">
       <h1 class="p-4 pl-6">{m.users_title()}</h1>
     </div>
-    <div class="flex flex-row place-content-end items-center">
+    <div class="flex flex-row place-content-end items-center ml-4">
       {#if data.organizations.length > 1}
-        <select class="select select-bordered" name="org" bind:value={selectedOrg}>
-          <option value={0}>{m.org_allOrganizations()}</option>
-          {#each data.organizations as organization}
-            <option value={organization.Id}>{organization.Name}</option>
-          {/each}
-        </select>
+        <label class="flex flex-wrap items-center gap-x-2">
+          <!-- TODO: i18n (add to locale JSON) -->
+          <span class="label-text">Filter organization:</span>
+          <select class="select select-bordered" name="org" bind:value={selectedOrg}>
+            <option value={0}>{m.org_allOrganizations()}</option>
+            {#each data.organizations as organization}
+              <option value={organization.Id}>{organization.Name}</option>
+            {/each}
+          </select>
+        </label>
       {/if}
       <div class="p-4 relative">
         <input
@@ -72,7 +76,8 @@
                     </b>
                   </span>
                   <br />
-                  {org.Roles.map(// TODO: i18n (these will need to be added to locale JSON)
+                  {org.Roles.map(
+                    // TODO: i18n (these will need to be added to locale JSON)
                     (r) => ['', 'Super Admin', 'Organization Admin', 'App Builder', 'Author'][r]
                   ).join(', ') || m.users_noRoles()}
                 </div>
