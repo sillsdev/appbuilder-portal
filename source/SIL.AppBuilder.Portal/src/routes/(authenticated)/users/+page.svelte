@@ -14,18 +14,18 @@
 </script>
 
 <div class="w-full">
-  <div class="flex flex-row place-content-between align-middle flex-wrap items-center">
-    <h1 class="pb-6">{m.users_title()}</h1>
-    <div
-      class="content-center m-4 gap-2 flex flex-wrap items-end w-full place-content-between"
-    >
-      {#if data.organizations.length > 1}
+  <div class="flex flex-row place-content-between w-full pt-4 flex-wrap">
+    <div class="inline-block">
+      <h1 class="p-4 pl-6">{m.users_title()}</h1>
+    </div>
+    <div class="flex flex-row place-content-end items-center ml-4">
+      {#if data.organizationCount > 1}
         <label class="flex flex-wrap items-center gap-x-2">
-          <span>{m.users_organization_filter()}:</span>
+          <span class="label-text">{m.users_organization_filter()}:</span>
           <select class="select select-bordered" name="org" bind:value={selectedOrg}>
             <option value={0}>{m.org_allOrganizations()}</option>
-            {#each data.organizations as organization}
-              <option value={organization.Id}>{organization.Name}</option>
+            {#each Object.entries(data.organizations) as [Id, Name]}
+              <option value={Id}>{Name}</option>
             {/each}
           </select>
         </label>
@@ -43,30 +43,28 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.users
-          .filter((u) => (u.Name.toLowerCase().includes(searchQuery.toLowerCase()) || u.Email?.toLowerCase().includes(searchQuery.toLowerCase())) && u.Organizations.find((o) => o.Id === selectedOrg || selectedOrg === 0))
-          .sort((a, b) => a.FamilyName.localeCompare(b.FamilyName, languageTag())) as user}
+        {#each data.users as user}
           <tr class="align-top">
             <td class="p-2">
               <p>
-                <a href="/users/{user.Id}/settings" class="link pb-2">
-                  {user.Name}
+                <a href="/users/{user.I}/settings" class="link pb-2">
+                  {user.N}
                 </a>
               </p>
               <p class="text-sm overflow-hidden">
-                {user.Email?.replace('@', '\u200b@')}
+                {user.E?.replace('@', '\u200b@')}
               </p>
             </td>
             <td class="py-2">
-              {#each user.Organizations as org}
+              {#each user.O as org}
                 <div class="p-1">
                   <span>
                     <b>
-                      {data.organizations.find((o) => o.Id === org.Id)?.Name}
+                      {data.organizations[org.I]}
                     </b>
                   </span>
                   <br />
-                  {org.Roles.map(
+                  {org.R.map(
                     (r) =>
                       [
                         '',
@@ -80,15 +78,15 @@
               {/each}
             </td>
             <td class="py-2">
-              {#each user.Organizations as org}
+              {#each user.O as org}
                 <div class="p-1">
                   <span>
                     <b>
-                      {data.organizations.find((o) => o.Id === org.Id)?.Name}
+                      {data.organizations[org.I]}
                     </b>
                   </span>
                   <br />
-                  {org.Groups.join(', ') || m.common_none()}
+                  {org.G.map((g) => data.groups[g]).join(', ') || m.common_none()}
                 </div>
               {/each}
             </td>

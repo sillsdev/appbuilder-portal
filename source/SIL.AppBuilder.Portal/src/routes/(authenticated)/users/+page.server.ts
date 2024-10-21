@@ -66,7 +66,12 @@ export const load = (async (event) => {
         ]
       }
     });
-    organizations = await prisma.organizations.findMany({});
+    organizations = await prisma.organizations.findMany({
+      select: {
+        Id: true,
+        Name: true
+      }
+    });
   } else {
     // For each OrganizationMembership of the current user where they are an organization admin, include all
     // users of that Organization. This creates duplicates for users that are in multiple of the same
@@ -137,7 +142,9 @@ export const load = (async (event) => {
           }
         }
       },
-      include: {
+      select: {
+        Id: true,
+        Name: true,
         UserRoles: true
       }
     });
@@ -160,29 +167,52 @@ export const load = (async (event) => {
 
     // Could be improved by putting group names into a referenced palette
     // (minimal returns if most users are in different organizations and groups)
+    // I went ahead and did this too. My assumption is that there will generally be multiple users in each organization and group, so I think this should be a justifiable change. - Aidan
+
     // or by using smaller (or even minified) keys (eg N instead of Name, O instead of Organizations)
+    // Done - Aidan
 
     // More significantly, could paginate results to around 50 users/page = 10 KB
     users: users.map((user) => ({
-      Id: user.Id,
-      Name: user.Name!,
-      FamilyName: user.FamilyName!,
-      Email: user.Email,
-      Organizations: user.OrganizationMemberships.map((org) => ({
-        Roles: user.UserRoles.filter((r) => r.OrganizationId === org.OrganizationId).map(
+      /** User Id */
+      I: user.Id,
+      /** User Name */
+      N: user.Name!,
+      /** User FamilyName */
+      F: user.FamilyName!,
+      /** User Email */
+      E: user.Email,
+      /** User OrganizationMemberships */
+      O: user.OrganizationMemberships.map((org) => ({
+        /** Roles */
+        R: user.UserRoles.filter((r) => r.OrganizationId === org.OrganizationId).map(
           (r) => r.RoleId
         ),
-        Id: org.OrganizationId,
-        Groups: user.GroupMemberships.filter(
-          (group) => group.Group.OwnerId === org.OrganizationId
-        ).map((group) => group.Group.Name!)
+        /** Organization Id */
+        I: org.OrganizationId,
+        /** Group Ids */
+        G: user.GroupMemberships.filter((group) => group.Group.OwnerId === org.OrganizationId).map(
+          (group) => group.Group.Id
+        )
       })),
-      IsLocked: user.IsLocked
+      /** User IsLocked */
+      L: user.IsLocked
     })),
-    organizations: organizations?.map((org) => ({
-      Name: org.Name,
-      Id: org.Id
-    }))
+    groups: Object.fromEntries(
+      (await prisma.groups.findMany({
+        where: {
+          OwnerId: { in: organizations.map((o) => o.Id)},
+          GroupMemberships: {
+            some: {}
+          }
+        }
+      })).map((g) => ([g.Id, g.Name]))
+    ),
+    organizations: Object.fromEntries(organizations?.map((org) => ([
+      org.Id,
+      org.Name
+    ]))),
+    organizationCount: organizations.length
   };
 }) satisfies PageServerLoad;
 
