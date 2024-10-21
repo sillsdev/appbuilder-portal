@@ -12,10 +12,10 @@
   ];
 
   export let data: LayoutData;
-  // TODO: route must be permission protected
+  // route permissions are handled for individual subroutes
 </script>
 
-<!-- TODO: not good enough; needs to check if org admin for one of the user's orgs -->
+<!-- permissions handled in server -->
 {#if data.canEdit}
   <TabbedMenu
     routeId="/(authenticated)/users/[id=idNumber]/settings"
