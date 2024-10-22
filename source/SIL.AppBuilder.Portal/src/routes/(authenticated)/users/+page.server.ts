@@ -2,6 +2,15 @@ import { error, redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { Actions, PageServerLoad } from './$types';
+import * as v from 'valibot';
+import { idSchema } from '$lib/valibot';
+import { superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+
+const lockSchema = v.object({
+  user: idSchema,
+  active: v.boolean()
+});
 
 // Not used, just for reference
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -196,40 +205,40 @@ export const load = (async (event) => {
         )
       })),
       /** User IsLocked */
-      L: user.IsLocked
+      A: !user.IsLocked
     })),
     groups: Object.fromEntries(
-      (await prisma.groups.findMany({
-        where: {
-          OwnerId: { in: organizations.map((o) => o.Id)},
-          GroupMemberships: {
-            some: {}
+      (
+        await prisma.groups.findMany({
+          where: {
+            OwnerId: { in: organizations.map((o) => o.Id) },
+            GroupMemberships: {
+              some: {}
+            }
           }
-        }
-      })).map((g) => ([g.Id, g.Name]))
+        })
+      ).map((g) => [g.Id, g.Name])
     ),
-    organizations: Object.fromEntries(organizations?.map((org) => ([
-      org.Id,
-      org.Name
-    ]))),
+    organizations: Object.fromEntries(organizations?.map((org) => [org.Id, org.Name])),
     organizationCount: organizations.length
   };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
   async lock(event) {
-    const form = await event.request.formData();
-    const userId = parseInt(form.get('id') + '');
-    const enabled = form.get('enabled');
-    if (isNaN(userId)) return error(400);
+    const session = await event.locals.auth();
+    if (!session) return error(403);
+    const form = await superValidate(event, valibot(lockSchema));
+    if (!form.valid || session.user.userId === form.data.user) return { form, ok: false };
     await DatabaseWrites.users.update({
       where: {
-        Id: userId
+        Id: form.data.user
       },
       data: {
-        IsLocked: !enabled
+        // TODO: Are we actually doing anything meaningful with this?
+        IsLocked: !form.data.active
       }
     });
-    return { success: true };
+    return { form, ok: true };
   }
 };
