@@ -2,14 +2,11 @@
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import { enhance } from '$app/forms';
 
   export let data: PageData;
   let selectedOrg: number = 0;
   let searchQuery = '';
-
-  let forms: { [key: string]: any } = {};
-
-  const timeouts = new Map<number, any>();
 </script>
 
 <div class="w-full">
@@ -50,6 +47,7 @@
           <th>{m.users_table_columns_name()}</th>
           <th>{m.users_table_columns_role()}</th>
           <th>{m.users_table_columns_groups()}</th>
+          <th>{m.users_table_columns_active()}</th>
         </tr>
       </thead>
       <tbody>
@@ -93,6 +91,34 @@
                   {org.G.map((g) => data.groups[g]).join(', ') || m.common_none()}
                 </div>
               {/each}
+            </td>
+            <td class="py-2">
+              <form
+                method="POST"
+                action="?/lock"
+                class="form-control"
+                use:enhance={() => {
+                  return async ({ update }) => {
+                    await update({ reset: false, invalidateAll: false });
+                  };
+                }}
+              >
+                <input class="hidden" type="hidden" name="user" value={user.I} />
+                <input
+                  class="toggle"
+                  disabled={data.session?.user.userId === user.I}
+                  type="checkbox"
+                  name="active"
+                  bind:checked={user.A}
+                  on:change={(e) => {
+                    if (data.session?.user.userId !== user.I) {
+                      //@ts-ignore
+                      e.currentTarget.parentElement?.requestSubmit();
+                      // Apparently full TS is not supported in this instance, otherwise I would just cast to HTMLFormElement
+                    }
+                  }}
+                />
+              </form>
             </td>
           </tr>
         {/each}
