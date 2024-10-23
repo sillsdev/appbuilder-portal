@@ -1,7 +1,9 @@
 import type { Prisma } from '@prisma/client';
+import { Workflow } from 'sil.appbuilder.portal.common';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
-import type { RequirePrimitive } from './utility.js';
+import { WorkflowType } from '../public/prisma.js';
+import { RequirePrimitive } from './utility.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -11,7 +13,7 @@ export async function create(
       productData.ProjectId,
       productData.ProductDefinitionId,
       productData.StoreId,
-      productData.StoreLanguageId
+      productData.StoreLanguageId ?? undefined
     ))
   )
     return false;
@@ -22,6 +24,34 @@ export async function create(
     const res = await prisma.products.create({
       data: productData
     });
+
+    if (res) {
+      const flow = (
+        await prisma.productDefinitions.findUnique({
+          where: {
+            Id: productData.ProductDefinitionId
+          },
+          select: {
+            Workflow: {
+              select: {
+                Id: true,
+                Type: true,
+                ProductType: true,
+                WorkflowOptions: true
+              }
+            }
+          }
+        })
+      )?.Workflow;
+
+      if (flow?.Type === WorkflowType.Startup) {
+        await Workflow.create(res.Id, {
+          productType: flow.ProductType,
+          options: new Set(flow.WorkflowOptions)
+        });
+      }
+    }
+
     return res.Id;
   } catch (e) {
     return false;
@@ -162,7 +192,7 @@ async function validateProductBase(
                       Id: true,
                       // StoreLanguage must be allowed by Store, if the StoreLanguage is defined
                       StoreLanguages:
-                        storeLanguageId === undefined || storeLanguageId === null
+                        storeLanguageId === undefined
                           ? undefined
                           : {
                             where: {
@@ -188,7 +218,6 @@ async function validateProductBase(
       }
     }
   });
-
   // 3. The store is allowed by the organization
   return (
     (project?.Organization.OrganizationStores.length ?? 0) > 0 &&

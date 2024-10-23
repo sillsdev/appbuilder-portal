@@ -1,8 +1,8 @@
 import { verifyCanViewAndEdit } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, prisma, Queues, Workflow } from 'sil.appbuilder.portal.common';
-import { RoleId, WorkflowType } from 'sil.appbuilder.portal.common/prisma';
+import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -286,7 +286,6 @@ export const actions = {
       return fail(403);
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    console.log(JSON.stringify(form, null, 4));
     // Appears that CanUpdate is not used TODO
     const productId = await DatabaseWrites.products.create({
       ProjectId: parseInt(event.params.id),
@@ -298,34 +297,7 @@ export const actions = {
       WorkflowPublishId: 0
     });
 
-    if (typeof productId === 'string') {
-      const flow = (
-        await prisma.productDefinitions.findUnique({
-          where: {
-            Id: form.data.productDefinitionId
-          },
-          select: {
-            Workflow: {
-              select: {
-                Id: true,
-                Type: true,
-                ProductType: true,
-                WorkflowOptions: true
-              }
-            }
-          }
-        })
-      )?.Workflow;
-
-      if (flow?.Type === WorkflowType.Startup) {
-        Workflow.create(productId, {
-          productType: flow.ProductType,
-          options: new Set(flow.WorkflowOptions)
-        });
-      }
-    }
-
-    return { form, ok: true };
+    return { form, ok: !!productId };
   },
   async addAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
