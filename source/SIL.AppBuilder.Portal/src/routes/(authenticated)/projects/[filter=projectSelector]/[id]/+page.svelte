@@ -81,11 +81,15 @@
       <button
         class="action btn btn-outline"
         disabled={!selectedProjects.length}
-        on:click={() => alert(selectedProjects.join(', '))}
+        on:click={() => alert('TODO: ' + selectedProjects.join(', '))}
       >
         {m.common_archive()}
       </button>
-      <button class="action btn btn-outline" disabled={!selectedProjects.length}>
+      <button
+        class="action btn btn-outline"
+        disabled={!selectedProjects.length}
+        on:click={() => alert('TODO api proxy')}
+      >
         {m.common_rebuild()}
       </button>
     </div>
