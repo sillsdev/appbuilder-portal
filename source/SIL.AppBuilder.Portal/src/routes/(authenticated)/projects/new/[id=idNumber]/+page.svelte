@@ -23,7 +23,7 @@
     <div class="grid gap-2 gap-x-8 gridcont">
       <div class="w-full flex place-content-between">
         <label for="name">{m.project_projectName()}:</label>
-        <input type="text" id="name" class="input input-bordered" bind:value={$form.name} />
+        <input type="text" id="name" class="input input-bordered" bind:value={$form.Name} />
       </div>
       <div class="w-full flex place-content-between">
         <label for="group">{m.project_projectGroup()}:</label>
@@ -36,7 +36,7 @@
       <div class="w-full flex place-content-between">
         <label for="language">{m.project_languageCode()}:</label>
         <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
-        <LanguageCodeTypeahead bind:langCode={$form.language} dropdownClasses="right-0" />
+        <LanguageCodeTypeahead bind:langCode={$form.Language} dropdownClasses="right-0" />
       </div>
       <div class="w-full flex place-content-between">
         <label for="type">{m.project_type()}:</label>
@@ -53,14 +53,14 @@
             name="description"
             id="description"
             class="textarea textarea-bordered w-full"
-            bind:value={$form.description}
+            bind:value={$form.Description}
           />
         </label>
       </div>
       <div class="w-full flex flex-col">
         <div class="form-control">
           <label for="public" class="label">{m.project_public()}:
-            <input type="checkbox" name="public" id="public" class="toggle" bind:checked={$form.public} />
+            <input type="checkbox" name="public" id="public" class="toggle" bind:checked={$form.IsPublic} />
           </label>
         </div>
         <p>{m.project_visibilityDescription()}</p>
