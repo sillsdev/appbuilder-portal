@@ -60,7 +60,7 @@ export class Workflow {
     });
 
     flow.flow.start();
-    DatabaseWrites.productTransitions.create({
+    await DatabaseWrites.productTransitions.create({
       data: {
         ProductId: productId,
         DateTransition: new Date(),
