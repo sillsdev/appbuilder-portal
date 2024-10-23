@@ -2,11 +2,35 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
-  import { enhance } from '$app/forms';
+  import { enhance as svk_enhance } from '$app/forms';
+  import { writable } from 'svelte/store';
+  import Pagination from '$lib/components/Pagination.svelte';
+  import { superForm, type FormResult } from 'sveltekit-superforms';
+  import type { MinifiedUser } from './proxy+page.server';
 
   export let data: PageData;
-  let selectedOrg: number = 0;
-  let searchQuery = '';
+
+  const users = writable(data.users);
+  const count = writable(data.userCount);
+
+  const { form, enhance, submit } = superForm(data.form, {
+    dataType: 'json',
+    resetForm: false,
+    onChange(event) {
+      if (!(event.paths.includes('page.size') || event.paths.includes('search'))) {
+        submit();
+      }
+    },
+    onUpdate(event) {
+      const data = event.result.data as FormResult<{
+        query: { data: MinifiedUser[]; count: number };
+      }>;
+      if (event.form.valid && data.query) {
+        users.set(data.query.data);
+        count.set(data.query.count);
+      }
+    }
+  });
 </script>
 
 <div class="w-full">
@@ -14,20 +38,25 @@
     <div class="inline-block">
       <h1 class="p-4 pl-6">{m.users_title()}</h1>
     </div>
-    <div class="flex flex-row place-content-end items-center ml-4">
+    <form
+      method="POST"
+      action="?/page"
+      use:enhance
+      class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
+    >
       {#if data.organizationCount > 1}
-        <label class="flex flex-wrap items-center gap-x-2">
+        <label class="flex flex-wrap items-center gap-x-2 w-full max-w-xs md:w-auto md:max-w-none">
           <span class="label-text">{m.users_organization_filter()}:</span>
-          <select class="select select-bordered" name="org" bind:value={selectedOrg}>
-            <option value={0}>{m.org_allOrganizations()}</option>
+          <select class="select select-bordered grow" name="org" bind:value={$form.organizationId}>
+            <option value={null}>{m.org_allOrganizations()}</option>
             {#each Object.entries(data.organizations) as [Id, Name]}
               <option value={Id}>{Name}</option>
             {/each}
           </select>
         </label>
       {/if}
-      <SearchBar bind:value={searchQuery} className="w-full max-w-xs md:w-auto md:max-w-none" />
-    </div>
+      <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" />
+      </form>
   </div>
   <div class="m-4 relative mt-0">
     <table class="w-full">
@@ -40,7 +69,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.users as user}
+        {#each $users as user}
           <tr class="align-top">
             <td class="p-2">
               <p>
@@ -92,7 +121,7 @@
                 method="POST"
                 action="?/lock"
                 class="form-control"
-                use:enhance={() => {
+                use:svk_enhance={() => {
                   return async ({ update }) => {
                     await update({ reset: false, invalidateAll: false });
                   };
@@ -120,6 +149,14 @@
       </tbody>
     </table>
   </div>
+  <form
+    method="POST"
+    action="?/page"
+    use:enhance
+    class="m-4 pb-4 flex flex-row flex-wrap gap-2 place-content-center"
+  >
+    <Pagination bind:size={$form.page.size} total={$count} bind:page={$form.page.page} />
+  </form>
 </div>
 
 <style>
