@@ -2,6 +2,9 @@ import type { Prisma } from '@prisma/client';
 import prisma from '../prisma.js';
 import { RequirePrimitive } from './utility.js';
 import { BullMQ, queues } from '../index.js';
+import { Workflow } from 'sil.appbuilder.portal.common';
+import { workflowInputFromDBProductType } from '../public/workflow.js';
+import { WorkflowType } from '../public/prisma.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -22,6 +25,30 @@ export async function create(
     const res = await prisma.products.create({
       data: productData
     });
+
+    if (res) {
+      const flow = (await prisma.productDefinitions.findUnique({
+        where: {
+          Id: productData.ProductDefinitionId
+        },
+        select: {
+          Workflow: {
+            select: {
+              // TODO: UserRoleFeatures and ProductType should be directly in the database instead of calling a helper function
+              Id: true,
+              Type: true
+            }
+          }
+        }
+      }))?.Workflow;
+
+      console.log(flow);
+
+      if (flow?.Type === WorkflowType.Default) {
+        Workflow.create(res.Id, workflowInputFromDBProductType(flow.Id));
+      }
+    }
+
     return res.Id;
   } catch (e) {
     return false;

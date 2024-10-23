@@ -41,7 +41,7 @@ export class Workflow {
   }
 
   /* PUBLIC METHODS */
-  /** Create a new workflow instance and populate the database tables. */
+  /** Create a new workflow instance and populate the database tables. Does not start the workflow. */
   public static async create(productId: string, config: WorkflowConfig): Promise<Workflow> {
     const flow = new Workflow(productId, config);
 
@@ -59,8 +59,7 @@ export class Workflow {
       }
     });
 
-    flow.flow.start();
-    DatabaseWrites.productTransitions.create({
+    await DatabaseWrites.productTransitions.create({
       data: {
         ProductId: productId,
         DateTransition: new Date(),
