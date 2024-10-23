@@ -2,11 +2,35 @@
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import { enhance } from '$app/forms';
+  import { enhance as svk_enhance } from '$app/forms';
+  import { writable } from 'svelte/store';
+  import Pagination from '$lib/components/forms/Pagination.svelte';
+  import { superForm, type FormResult } from 'sveltekit-superforms';
+  import type { MinifiedUser } from './proxy+page.server';
 
   export let data: PageData;
-  let selectedOrg: number = 0;
-  let searchQuery = '';
+
+  const users = writable(data.users);
+  const count = writable(data.userCount);
+
+  const { form, enhance, submit } = superForm(data.form, {
+    dataType: 'json',
+    resetForm: false,
+    onChange(event) {
+      if (!(event.paths.includes('page.size') || event.paths.includes('search'))) {
+        submit();
+      }
+    },
+    onUpdate(event) {
+      const data = event.result.data as FormResult<{
+        query: { data: MinifiedUser[]; count: number };
+      }>;
+      if (event.form.valid && data.query) {
+        users.set(data.query.data);
+        count.set(data.query.count);
+      }
+    }
+  });
 </script>
 
 <div class="w-full">
@@ -14,13 +38,18 @@
     <div class="inline-block">
       <h1 class="p-4 pl-6">{m.users_title()}</h1>
     </div>
-    <div class="flex flex-row place-content-end items-center ml-4">
+    <form
+      method="POST"
+      action="?/page"
+      use:enhance
+      class="flex flex-row place-content-end items-center ml-4"
+    >
       {#if data.organizationCount > 1}
         <label class="flex flex-wrap items-center gap-x-2">
           <!-- TODO: i18n (add to locale JSON) -->
           <span class="label-text">Filter organization:</span>
-          <select class="select select-bordered" name="org" bind:value={selectedOrg}>
-            <option value={0}>{m.org_allOrganizations()}</option>
+          <select class="select select-bordered" name="org" bind:value={$form.organizationId}>
+            <option value={null}>{m.org_allOrganizations()}</option>
             {#each Object.entries(data.organizations) as [Id, Name]}
               <option value={Id}>{Name}</option>
             {/each}
@@ -32,13 +61,13 @@
           type="text"
           class="input grow shrink [max-width:20rem] input-bordered pr-9"
           placeholder={m.search()}
-          bind:value={searchQuery}
+          bind:value={$form.search}
         />
         <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
           <IconContainer icon="mdi:search" width={24} />
         </div>
       </div>
-    </div>
+    </form>
   </div>
   <div class="m-4 relative mt-0">
     <table class="w-full">
@@ -51,7 +80,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.users as user}
+        {#each $users as user}
           <tr class="align-top">
             <td class="p-2">
               <p>
@@ -97,7 +126,7 @@
                 method="POST"
                 action="?/lock"
                 class="form-control"
-                use:enhance={() => {
+                use:svk_enhance={() => {
                   return async ({ update }) => {
                     await update({ reset: false, invalidateAll: false });
                   };
@@ -125,6 +154,14 @@
       </tbody>
     </table>
   </div>
+  <form
+    method="POST"
+    action="?/page"
+    use:enhance
+    class="m-4 pb-4 flex flex-row flex-wrap gap-2 place-content-center"
+  >
+    <Pagination bind:size={$form.page.size} total={$count} bind:page={$form.page.page} />
+  </form>
 </div>
 
 <style>
