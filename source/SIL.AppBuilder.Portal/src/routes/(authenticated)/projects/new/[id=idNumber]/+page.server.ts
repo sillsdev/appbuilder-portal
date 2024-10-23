@@ -1,22 +1,10 @@
-import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import * as v from 'valibot';
-import type { Session } from '@auth/sveltekit';
 import type { Actions, PageServerLoad } from './$types';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { queues, BullMQ } from 'sil.appbuilder.portal.common';
-
-const projectCreateSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(1)),
-  group: idSchema,
-  language: v.pipe(v.string(), v.minLength(1)),
-  type: idSchema,
-  description: v.nullable(v.string()),
-  public: v.boolean()
-});
+import { verifyCanCreateProject, projectCreateSchema } from '$lib/projects/common.server';
 
 export const load = (async ({ locals, params }) => {
   if (!verifyCanCreateProject((await locals.auth())!, parseInt(params.id))) return error(403);
@@ -58,7 +46,7 @@ export const load = (async ({ locals, params }) => {
     {
       group: organization?.Groups[0]?.Id ?? undefined,
       type: types?.[0].Id ?? undefined,
-      public: organization?.PublicByDefault ?? undefined
+      IsPublic: organization?.PublicByDefault ?? undefined
     },
     valibot(projectCreateSchema)
   );
@@ -77,14 +65,15 @@ export const actions: Actions = {
     const timestamp = (new Date()).toString();
     const project = await DatabaseWrites.projects.create({
       OrganizationId: parseInt(event.params.id),
-      Name: form.data.name,
+      Name: form.data.Name,
       GroupId: form.data.group,
       OwnerId: session.user.userId,
-      Language: form.data.language,
+      Language: form.data.Language,
       TypeId: form.data.type,
-      Description: form.data.description ?? '',
+      Description: form.data.Description ?? '',
       DateCreated: timestamp,
-      DateUpdated: timestamp
+      DateUpdated: timestamp,
+      IsPublic: form.data.IsPublic
       // TODO: DateActive?
     });
 
@@ -98,15 +87,3 @@ export const actions: Actions = {
     return { form, ok: project !== false };
   }
 };
-
-async function verifyCanCreateProject(user: Session, orgId: number) {
-  // Creating a project is allowed if the user is an OrgAdmin or AppBuilder for the organization or a SuperAdmin
-  const roles = user.user.roles
-    .filter(([org, role]) => org === orgId || role === RoleId.SuperAdmin)
-    .map(([org, role]) => role);
-  return (
-    roles.includes(RoleId.AppBuilder) ||
-    roles.includes(RoleId.OrgAdmin) ||
-    roles.includes(RoleId.SuperAdmin)
-  );
-}
