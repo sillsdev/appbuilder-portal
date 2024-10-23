@@ -58,11 +58,15 @@
       <button
         class="btn btn-outline mx-1"
         disabled={!selectedProjects.length}
-        on:click={() => alert(selectedProjects.join(', '))}
+        on:click={() => alert('TODO: ' + selectedProjects.join(', '))}
       >
         {m.common_archive()}
       </button>
-      <button class="btn btn-outline mx-1" disabled={!selectedProjects.length}>
+      <button
+        class="btn btn-outline mx-1"
+        disabled={!selectedProjects.length}
+        on:click={() => alert('TODO api proxy')}
+      >
         {m.common_rebuild()}
       </button>
     </div>
