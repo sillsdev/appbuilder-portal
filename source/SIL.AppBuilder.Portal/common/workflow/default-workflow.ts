@@ -11,7 +11,7 @@ import {
   WorkflowEvent
 } from '../public/workflow.js';
 import { RoleId } from '../public/prisma.js';
-import { queues } from '../index.js';
+import { BullMQ, queues } from '../index.js';
 import { ScriptoriaJobType } from '../BullJobTypes.js';
 
 /**
@@ -312,13 +312,7 @@ export const DefaultWorkflow = setup({
             type: ScriptoriaJobType.Product_Create,
             productId: context.productId
           },
-          {
-            attempts: 5,
-            backoff: {
-              type: 'exponential',
-              delay: 5000 // 5 seconds
-            }
-          });
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -478,13 +472,7 @@ export const DefaultWorkflow = setup({
             // TODO: assign targets
             environment: context.environment
           },
-          {
-            attempts: 5,
-            backoff: {
-              type: 'exponential',
-              delay: 5000 // 5 seconds
-            }
-          });
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -709,13 +697,7 @@ export const DefaultWorkflow = setup({
             targets: 'google-play',
             environment: context.environment
           },
-          {
-            attempts: 5,
-            backoff: {
-              type: 'exponential',
-              delay: 5000 // 5 seconds
-            }
-          });
+          BullMQ.Retry5e5);
         }
       ],
       on: {
