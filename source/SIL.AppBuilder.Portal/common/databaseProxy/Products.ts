@@ -112,13 +112,7 @@ async function deleteProduct(productId: string) {
       organizationId: product.Project.OrganizationId,
       workflowJobId: product.WorkflowJobId
     },
-    {
-      attempts: 5,
-      backoff: {
-        type: 'exponential',
-        delay: 5000 // 5 seconds
-      }
-    }
+    BullMQ.Retry5e5
   );
   return prisma.$transaction([
     prisma.workflowInstances.delete({
