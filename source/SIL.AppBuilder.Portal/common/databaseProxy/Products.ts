@@ -1,6 +1,10 @@
 import type { Prisma } from '@prisma/client';
 import prisma from '../prisma.js';
 import { RequirePrimitive } from './utility.js';
+import { BullMQ, queues } from '../index.js';
+import { Workflow } from 'sil.appbuilder.portal.common';
+import { workflowInputFromDBProductType } from '../public/workflow.js';
+import { WorkflowType } from '../public/prisma.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -21,6 +25,30 @@ export async function create(
     const res = await prisma.products.create({
       data: productData
     });
+
+    if (res) {
+      const flow = (await prisma.productDefinitions.findUnique({
+        where: {
+          Id: productData.ProductDefinitionId
+        },
+        select: {
+          Workflow: {
+            select: {
+              // TODO: UserRoleFeatures and ProductType should be directly in the database instead of calling a helper function
+              Id: true,
+              Type: true
+            }
+          }
+        }
+      }))?.Workflow;
+
+      console.log(flow);
+
+      if (flow?.Type === WorkflowType.Default) {
+        Workflow.create(res.Id, workflowInputFromDBProductType(flow.Id));
+      }
+    }
+
     return res.Id;
   } catch (e) {
     return false;
@@ -43,12 +71,8 @@ export async function update(
   const productDefinitionId = productData.ProductDefinitionId ?? existing!.ProductDefinitionId;
   const storeId = productData.StoreId ?? existing!.StoreId;
   const storeLanguageId = productData.StoreLanguageId ?? existing!.StoreLanguageId;
-  if (!(await validateProductBase(
-    projectId,
-    productDefinitionId,
-    storeId,
-    storeLanguageId
-  ))) return false;
+  if (!(await validateProductBase(projectId, productDefinitionId, storeId, storeLanguageId)))
+    return false;
 
   // No additional verification steps
 
@@ -66,8 +90,30 @@ export async function update(
   return true;
 }
 
-function deleteProduct(productId: string) {
+async function deleteProduct(productId: string) {
   // Delete all userTasks for this product, and delete the product
+  const product = await prisma.products.findUnique({
+    where: {
+      Id: productId
+    },
+    select: {
+      Project: {
+        select: {
+          OrganizationId: true
+        }
+      },
+      WorkflowJobId: true
+    }
+  });
+  queues.scriptoria.add(
+    `Delete Product #${productId} from BuildEngine`,
+    {
+      type: BullMQ.ScriptoriaJobType.Product_Delete,
+      organizationId: product.Project.OrganizationId,
+      workflowJobId: product.WorkflowJobId
+    },
+    BullMQ.Retry5e5
+  );
   return prisma.$transaction([
     prisma.workflowInstances.delete({
       where: {
@@ -85,7 +131,6 @@ function deleteProduct(productId: string) {
       }
     })
   ]);
-  // TODO: delete from BuildEngine
 }
 export { deleteProduct as delete };
 
@@ -140,15 +185,17 @@ async function validateProductBase(
                       // Store type must match Workflow store type
                       Id: true,
                       // StoreLanguage must be allowed by Store, if the StoreLanguage is defined
-                      StoreLanguages: storeLanguageId === undefined || storeLanguageId === null ? 
-                        undefined : {
-                        where: {
-                          Id: storeLanguageId
-                        },
-                        select: {
-                          Id: true
-                        }
-                      }
+                      StoreLanguages:
+                        storeLanguageId === undefined || storeLanguageId === null
+                          ? undefined
+                          : {
+                              where: {
+                                Id: storeLanguageId
+                              },
+                              select: {
+                                Id: true
+                              }
+                            }
                     }
                   }
                 }
@@ -175,7 +222,8 @@ async function validateProductBase(
     // 2. The project has a WorkflowProjectUrl
     // handled by query
     // 4. The language is allowed by the store
-    (storeLanguageId ?? project.Organization.OrganizationStores[0].Store.StoreType.StoreLanguages.length > 0) &&
+    (storeLanguageId ??
+      project.Organization.OrganizationStores[0].Store.StoreType.StoreLanguages.length > 0) &&
     // 5. The product type is allowed by the organization
     project.Organization.OrganizationProductDefinitions.length > 0
   );

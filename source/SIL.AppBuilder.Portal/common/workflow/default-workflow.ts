@@ -11,6 +11,8 @@ import {
   WorkflowEvent
 } from '../public/workflow.js';
 import { RoleId } from '../public/prisma.js';
+import { BullMQ, queues } from '../index.js';
+import { ScriptoriaJobType } from '../BullJobTypes.js';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -305,9 +307,12 @@ export const DefaultWorkflow = setup({
     'Product Creation': {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Creating Product');
+        ({ context }) => {
+          queues.scriptoria.add(`Create Product #${context.productId}`, {
+            type: ScriptoriaJobType.Product_Create,
+            productId: context.productId
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -460,9 +465,14 @@ export const DefaultWorkflow = setup({
         assign({
           instructions: 'waiting'
         }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Building Product');
+        ({ context }) => {
+          queues.scriptoria.add(`Build Product #${context.productId}`, {
+            type: ScriptoriaJobType.Build_Product,
+            productId: context.productId,
+            // TODO: assign targets
+            environment: context.environment
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -666,9 +676,11 @@ export const DefaultWorkflow = setup({
             user: RoleId.AppBuilder
           },
           guard: { type: 'hasReviewers' },
-          actions: () => {
-            // TODO: connect to backend to email reviewers
-            console.log('Emailing Reviewers');
+          actions: ({ context }) => {
+            queues.scriptoria.add(`Email Reviewers (Product: ${context.productId})`, {
+              type: ScriptoriaJobType.Notify_Reviewers,
+              productId: context.productId
+            });
           }
         }
       }
@@ -676,9 +688,16 @@ export const DefaultWorkflow = setup({
     'Product Publish': {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Publishing Product');
+        ({ context }) => {
+          queues.scriptoria.add(`Publish Product #${context.productId}`, {
+            type: ScriptoriaJobType.Publish_Product,
+            productId: context.productId,
+            // TODO: How should these values be determined?
+            channel: 'alpha',
+            targets: 'google-play',
+            environment: context.environment
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -766,7 +785,7 @@ export const DefaultWorkflow = setup({
     Jump: {
       actions: [
         assign({
-          start: ({ context, event }) => event.target
+          start: ({ event }) => event.target
         })
       ],
       target: '.Start'

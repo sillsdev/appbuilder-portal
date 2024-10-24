@@ -63,11 +63,15 @@
         <button
           class="btn btn-outline mx-1"
           disabled={!selectedProjects.length}
-          on:click={() => alert(selectedProjects.join(', '))}
+          on:click={() => alert('TODO: '+selectedProjects.join(', '))}
         >
           {m.common_archive()}
         </button>
-        <button class="btn btn-outline mx-1" disabled={!selectedProjects.length}>
+        <button
+          class="btn btn-outline mx-1"
+          disabled={!selectedProjects.length}
+          on:click={() => alert('TODO api proxy')}
+        >
           {m.common_rebuild()}
         </button>
       </div>
@@ -75,7 +79,7 @@
         <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
           {m.project_importProjects()}
         </button>
-        <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
+        <button class="btn btn-outline mx-1" on:click={() => goto(`/projects/new/${selectedOrg}`)}>
           {m.sidebar_addProject()}
         </button>
       </div>

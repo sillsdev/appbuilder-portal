@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq';
-import { BullMQ, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { BullMQ, queues } from 'sil.appbuilder.portal.common';
+import * as Executor from './job-executors/index.js';
 
 export abstract class BullWorker<T, R> {
   public worker: Worker;
@@ -14,111 +14,56 @@ export abstract class BullWorker<T, R> {
   abstract run(job: Job<T, R>): Promise<R>;
 }
 
+type JobCast<T extends BullMQ.ScriptoriaJob> = Job<T, number, string>;
+
 export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
-  constructor() {
-    super('scriptoria');
+  constructor(queue: queues.QueueName) {
+    super(queue);
   }
   async run(job: Job<BullMQ.ScriptoriaJob, number, string>): Promise<number> {
     switch (job.data.type) {
-    case BullMQ.ScriptoriaJobType.Test: {
-      job.updateProgress(50);
-      const time = job.data.time;
-      await new Promise((r) => setTimeout(r, 1000 * time));
-      job.updateProgress(100);
-      return 0;
-    }
-    case BullMQ.ScriptoriaJobType.ReassignUserTasks: {
-      // TODO: Noop
-      // Should
-      // Clear preexecuteentries (product transition steps)
-      // Remove relevant user tasks
-      // Create new user tasks (send notifications)
-      // Recreate preexecute entries
-      const products = await prisma.products.findMany({
-        where: {
-          ProjectId: job.data.projectId
-        },
-        include: {
-          ProductTransitions: true
-        }
-      });
-      for (const product of products) {
-        // Clear PreExecuteEntries
-        await DatabaseWrites.productTransitions.deleteMany({
-          where: {
-            WorkflowUserId: null,
-            ProductId: product.Id,
-            DateTransition: null
-          }
-        });
-        // Clear existing UserTasks
-        await DatabaseWrites.userTasks.deleteMany({
-          where: {
-            ProductId: product.Id
-          }
-        });
-        // Create tasks for all users that could perform this activity
-        // TODO: this comes from dwkit GetAllActorsFor(Direct|Reverse)CommandTransitions
-        const organizationId = (
-          await prisma.projects.findUnique({
-            where: {
-              Id: job.data.projectId
-            },
-            include: {
-              Organization: true
-            }
-          })
-        ).OrganizationId;
-          // All users that own the project or are org admins
-        const allUsersWithAction = await prisma.users.findMany({
-          where: {
-            OR: [
-              {
-                UserRoles: {
-                  some: {
-                    OrganizationId: organizationId,
-                    RoleId: RoleId.OrgAdmin
-                  }
-                }
-              },
-              {
-                Projects: {
-                  some: {
-                    Id: job.data.projectId
-                  }
-                }
-              }
-            ]
-          }
-        });
-          // TODO: DWKit: Need ActivityName and Status from dwkit implementation
-        const createdTasks = allUsersWithAction.map((user) => ({
-          UserId: user.Id,
-          ProductId: product.Id,
-          ActivityName: null,
-          Status: null
-        }));
-        await DatabaseWrites.userTasks.createMany({
-          data: createdTasks
-        });
-        for (const task of createdTasks) {
-          // Send notification for the new task
-          // TODO
-          // sendNotification(task);
-        }
-        // TODO: DWKit: CreatePreExecuteEntries
-      }
-
-      return (
-        await prisma.userTasks.findMany({
-          where: {
-            Product: {
-              ProjectId: job.data.projectId
-            }
-          }
-        })
-      ).length;
-    }
+      case BullMQ.ScriptoriaJobType.Build_Product:
+        return new Executor.Build.Product().execute(job as JobCast<BullMQ.Build.Product>);
+      case BullMQ.ScriptoriaJobType.Build_Check:
+        return new Executor.Build.Check().execute(job as JobCast<BullMQ.Build.Check>);
+      case BullMQ.ScriptoriaJobType.Notify_Reviewers:
+        return new Executor.Notify.Reviewers().execute(job as JobCast<BullMQ.Notify.Reviewers>);
+      case BullMQ.ScriptoriaJobType.Product_Create:
+        return new Executor.Product.Create().execute(job as JobCast<BullMQ.Product.Create>);
+      case BullMQ.ScriptoriaJobType.Product_Delete:
+        return new Executor.Product.Delete().execute(job as JobCast<BullMQ.Product.Delete>);
+      case BullMQ.ScriptoriaJobType.Project_Create:
+        return new Executor.Project.Create().execute(job as JobCast<BullMQ.Project.Create>);
+      case BullMQ.ScriptoriaJobType.Project_Check:
+        return new Executor.Project.Check().execute(job as JobCast<BullMQ.Project.Check>);
+      case BullMQ.ScriptoriaJobType.Publish_Product:
+        return new Executor.Publish.Product().execute(job as JobCast<BullMQ.Publish.Product>);
+      case BullMQ.ScriptoriaJobType.Publish_Check:
+        return new Executor.Publish.Check().execute(job as JobCast<BullMQ.Publish.Check>);
+      case BullMQ.ScriptoriaJobType.System_CheckStatuses:
+        return new Executor.System.CheckStatuses().execute(
+          job as JobCast<BullMQ.System.CheckStatuses>
+        );
+      case BullMQ.ScriptoriaJobType.Test:
+        return new Executor.Test().execute(job as JobCast<BullMQ.Test>);
+      case BullMQ.ScriptoriaJobType.UserTasks_Modify:
+        return new Executor.UserTasks.Modify().execute(job as JobCast<BullMQ.UserTasks.Modify>);
     }
   }
+}
+
+export function addDefaultRecurringJobs() {
+  // Recurring job to check the availability of BuildEngine
+  queues.default_recurring.add(
+    'Check System Statuses (Recurring)',
+    {
+      type: BullMQ.ScriptoriaJobType.System_CheckStatuses
+    },
+    {
+      repeat: {
+        pattern: '*/5 * * * *', // every 5 minutes
+        key: 'defaultCheckSystemStatuses'
+      }
+    }
+  );
 }

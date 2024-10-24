@@ -53,7 +53,28 @@
             </tr>
             {#if task.Comment}
               <tr>
-                <div class="pl-7">{task.Comment}</div>
+                <div class="pl-7">
+                  {#if task.Comment.startsWith('system.')}
+                    {#if task.Comment.startsWith('system.build-failed')}
+                      <span>
+                        {m.system_buildFailed()}
+                      </span>
+                    {:else if task.Comment.startsWith('system.publish-failed')}
+                      <span>
+                        {m.system_publishFailed()}
+                      </span>
+                    {/if}
+                    <br />
+                    <a
+                      class="link"
+                      href={task.Comment.replace(/system\.(build|publish)-failed,/, '')}
+                    >
+                      {m.project_products_publications_console()}
+                    </a>
+                  {:else}
+                    {task.Comment}
+                  {/if}
+                </div>
               </tr>
             {/if}
           {/each}
