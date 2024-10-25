@@ -5,6 +5,7 @@ import { BullMQ, queues } from '../index.js';
 import { Workflow } from 'sil.appbuilder.portal.common';
 import { workflowInputFromDBProductType } from '../public/workflow.js';
 import { WorkflowType } from '../public/prisma.js';
+import { update as projectUpdate } from './Projects.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -46,6 +47,7 @@ export async function create(
 
       if (flow?.Type === WorkflowType.Startup) {
         await Workflow.create(res.Id, workflowInputFromDBProductType(flow.Id));
+        updateProjectDateActive(productData.ProjectId);
       }
     }
 
@@ -71,7 +73,14 @@ export async function update(
   const productDefinitionId = productData.ProductDefinitionId ?? existing!.ProductDefinitionId;
   const storeId = productData.StoreId ?? existing!.StoreId;
   const storeLanguageId = productData.StoreLanguageId ?? existing!.StoreLanguageId;
-  if (!(await validateProductBase(projectId, productDefinitionId, storeId, storeLanguageId ?? undefined)))
+  if (
+    !(await validateProductBase(
+      projectId,
+      productDefinitionId,
+      storeId,
+      storeLanguageId ?? undefined
+    ))
+  )
     return false;
 
   // No additional verification steps
@@ -99,6 +108,7 @@ async function deleteProduct(productId: string) {
     select: {
       Project: {
         select: {
+          Id: true,
           OrganizationId: true
         }
       },
@@ -114,7 +124,7 @@ async function deleteProduct(productId: string) {
     },
     BullMQ.Retry5e5
   );
-  return prisma.$transaction([
+  const res = await prisma.$transaction([
     prisma.workflowInstances.delete({
       where: {
         ProductId: productId
@@ -129,8 +139,10 @@ async function deleteProduct(productId: string) {
       where: {
         Id: productId
       }
-    })
+    }),
   ]);
+  updateProjectDateActive(product.Project.Id);
+  return res;
 }
 export { deleteProduct as delete };
 
@@ -227,4 +239,48 @@ async function validateProductBase(
     // 5. The product type is allowed by the organization
     project.Organization.OrganizationProductDefinitions.length > 0
   );
+}
+
+async function updateProjectDateActive(projectId: number) {
+  const project = await prisma.projects.findUnique({
+    where: {
+      Id: projectId
+    },
+    select: {
+      DateActive: true,
+      Products: {
+        select: {
+          DateUpdated: true,
+          WorkflowInstance: {
+            select: {
+              Id: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  let projectDateActive = project.DateActive;
+
+  let dateActive = new Date(0);
+  project.Products.forEach((product) => {
+    if (product.WorkflowInstance != null) {
+      if (product.DateUpdated > dateActive) {
+        dateActive = product.DateUpdated;
+      }
+    }
+  });
+
+  if (dateActive > new Date(0)) {
+    project.DateActive = dateActive;
+  } else {
+    project.DateActive = null;
+  }
+
+  if (project.DateActive != projectDateActive) {
+    await projectUpdate(projectId, {
+      DateActive: project.DateActive
+    });
+  }
 }

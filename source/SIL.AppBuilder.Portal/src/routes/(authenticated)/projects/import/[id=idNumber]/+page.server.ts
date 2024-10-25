@@ -188,7 +188,6 @@ export const actions: Actions = {
             DateUpdated: timestamp,
             IsPublic: pj.IsPublic,
             ImportId: imp.Id
-            // TODO: DateActive?
           };
         })
       );

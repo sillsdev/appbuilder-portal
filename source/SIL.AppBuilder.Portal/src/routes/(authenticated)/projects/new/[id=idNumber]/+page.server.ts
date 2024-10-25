@@ -75,7 +75,6 @@ export const actions: Actions = {
       DateCreated: timestamp,
       DateUpdated: timestamp,
       IsPublic: form.data.IsPublic
-      // TODO: DateActive?
     });
 
     if (project !== false) {
