@@ -256,7 +256,7 @@ export class Workflow {
     return (
       meta === undefined ||
       ((meta.URFeatures !== undefined
-        ? meta.URFeatures.filter((urf) => filter.URFeatures.includes(urf)).length > 0
+        ? meta.URFeatures.filter((urf) => filter.adminRequirements.includes(urf)).length > 0
         : true) &&
         (meta.productTypes !== undefined ? meta.productTypes.includes(filter.productType) : true))
     );

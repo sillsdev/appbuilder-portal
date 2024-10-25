@@ -4,7 +4,7 @@ import {
   WorkflowInput,
   WorkflowStateMeta,
   WorkflowTransitionMeta,
-  UserRoleFeature,
+  WorkflowAdminRequirements,
   ProductType,
   ActionType,
   StateName,
@@ -39,13 +39,13 @@ export const DefaultWorkflow = setup({
       params: {
         target: StateName | string;
         products?: ProductType[];
-        URFeatures?: UserRoleFeature[];
+        URFeatures?: WorkflowAdminRequirements[];
       }
     ) => {
       return (
         context.start === params.target &&
         (params.products ? params.products.includes(context.productType) : true) &&
-        (params.URFeatures ? context.URFeatures.filter((urf) => params.URFeatures.includes(urf)).length > 0 : true)
+        (params.URFeatures ? context.adminRequirements.filter((urf) => params.URFeatures.includes(urf)).length > 0 : true)
       );
     },
     hasAuthors: ({ context }) => {
@@ -68,7 +68,7 @@ export const DefaultWorkflow = setup({
     includeArtifacts: false,
     environment: {},
     productType: input.productType,
-    URFeatures: input.URFeatures,
+    adminRequirements: input.adminRequirements,
     productId: input.productId,
     hasAuthors: input.hasAuthors,
     hasReviewers: input.hasReviewers
@@ -79,28 +79,28 @@ export const DefaultWorkflow = setup({
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Readiness Check', URFeatures: [UserRoleFeature.RequireApprovalProcess] }
+            params: { target: 'Readiness Check', URFeatures: [WorkflowAdminRequirements.ApprovalProcess] }
           },
           target: 'Readiness Check'
         },
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Approval', URFeatures: [UserRoleFeature.RequireApprovalProcess] }
+            params: { target: 'Approval', URFeatures: [WorkflowAdminRequirements.ApprovalProcess] }
           },
           target: 'Approval'
         },
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Approval Pending', URFeatures: [UserRoleFeature.RequireApprovalProcess] }
+            params: { target: 'Approval Pending', URFeatures: [WorkflowAdminRequirements.ApprovalProcess] }
           },
           target: 'Approval Pending'
         },
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Terminated', URFeatures: [UserRoleFeature.RequireApprovalProcess] }
+            params: { target: 'Terminated', URFeatures: [WorkflowAdminRequirements.ApprovalProcess] }
           },
           target: 'Terminated'
         },
@@ -176,7 +176,7 @@ export const DefaultWorkflow = setup({
           target: 'Published'
         },
         {
-          guard: ({ context }) => context.URFeatures.includes(UserRoleFeature.RequireApprovalProcess),
+          guard: ({ context }) => context.adminRequirements.includes(WorkflowAdminRequirements.ApprovalProcess),
           target: 'Readiness Check'
         },
         {
@@ -190,7 +190,7 @@ export const DefaultWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              URFeatures: [UserRoleFeature.RequireApprovalProcess]
+              URFeatures: [WorkflowAdminRequirements.ApprovalProcess]
             },
             target: 'Readiness Check'
           },
@@ -203,7 +203,7 @@ export const DefaultWorkflow = setup({
     },
     'Readiness Check': {
       meta: {
-        URFeatures: [UserRoleFeature.RequireApprovalProcess]
+        URFeatures: [WorkflowAdminRequirements.ApprovalProcess]
       },
       entry: assign({
         instructions: 'readiness_check',
@@ -221,7 +221,7 @@ export const DefaultWorkflow = setup({
     },
     Approval: {
       meta: {
-        URFeatures: [UserRoleFeature.RequireApprovalProcess]
+        URFeatures: [WorkflowAdminRequirements.ApprovalProcess]
       },
       entry: assign({
         instructions: null,
@@ -261,7 +261,7 @@ export const DefaultWorkflow = setup({
     },
     'Approval Pending': {
       meta: {
-        URFeatures: [UserRoleFeature.RequireApprovalProcess]
+        URFeatures: [WorkflowAdminRequirements.ApprovalProcess]
       },
       entry: [
         assign({
@@ -294,7 +294,7 @@ export const DefaultWorkflow = setup({
     },
     Terminated: {
       meta: {
-        URFeatures: [UserRoleFeature.RequireApprovalProcess]
+        URFeatures: [WorkflowAdminRequirements.ApprovalProcess]
       },
       entry: assign({
         instructions: null,
@@ -516,7 +516,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              URFeatures: [UserRoleFeature.RequireApprovalProcess, UserRoleFeature.RequireAdminConfiguration]
+              URFeatures: [WorkflowAdminRequirements.ApprovalProcess, WorkflowAdminRequirements.StoreAccess]
             },
             target: 'Create App Store Entry'
           },
@@ -524,7 +524,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              URFeatures: [UserRoleFeature.None]
+              URFeatures: [WorkflowAdminRequirements.None]
             },
             target: 'Create App Store Entry'
           }
@@ -534,7 +534,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              URFeatures: [UserRoleFeature.RequireApprovalProcess, UserRoleFeature.RequireAdminConfiguration]
+              URFeatures: [WorkflowAdminRequirements.ApprovalProcess, WorkflowAdminRequirements.StoreAccess]
             },
             target: 'Synchronize Data'
           },
@@ -542,7 +542,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              URFeatures: [UserRoleFeature.None]
+              URFeatures: [WorkflowAdminRequirements.None]
             },
             target: 'Synchronize Data'
           }
@@ -569,7 +569,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              URFeatures: [UserRoleFeature.RequireApprovalProcess, UserRoleFeature.RequireAdminConfiguration]
+              URFeatures: [WorkflowAdminRequirements.ApprovalProcess, WorkflowAdminRequirements.StoreAccess]
             },
             actions: assign({
               environment: ({ context }) => {
@@ -583,7 +583,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              URFeatures: [UserRoleFeature.None]
+              URFeatures: [WorkflowAdminRequirements.None]
             },
             actions: assign({
               environment: ({ context }) => {
@@ -599,7 +599,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              URFeatures: [UserRoleFeature.RequireApprovalProcess, UserRoleFeature.RequireAdminConfiguration]
+              URFeatures: [WorkflowAdminRequirements.ApprovalProcess, WorkflowAdminRequirements.StoreAccess]
             },
             target: 'Synchronize Data'
           },
@@ -607,7 +607,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              URFeatures: [UserRoleFeature.None]
+              URFeatures: [WorkflowAdminRequirements.None]
             },
             target: 'Synchronize Data'
           }
@@ -721,7 +721,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              URFeatures: [UserRoleFeature.RequireApprovalProcess, UserRoleFeature.RequireAdminConfiguration]
+              URFeatures: [WorkflowAdminRequirements.ApprovalProcess, WorkflowAdminRequirements.StoreAccess]
             },
             target: 'Published'
           },
@@ -729,7 +729,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              URFeatures: [UserRoleFeature.None]
+              URFeatures: [WorkflowAdminRequirements.None]
             },
             target: 'Published'
           }
@@ -739,7 +739,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              URFeatures: [UserRoleFeature.RequireApprovalProcess, UserRoleFeature.RequireAdminConfiguration]
+              URFeatures: [WorkflowAdminRequirements.ApprovalProcess, WorkflowAdminRequirements.StoreAccess]
             },
             target: 'Synchronize Data'
           },
@@ -747,7 +747,7 @@ export const DefaultWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              URFeatures: [UserRoleFeature.None]
+              URFeatures: [WorkflowAdminRequirements.None]
             },
             target: 'Synchronize Data'
           }

@@ -10,18 +10,18 @@ export enum ActionType {
 /**
  * The administrative requirements of the workflow.
  * Examples:
- *  - If the flow has `UserRoleFeature.RequireApprovalProcess` it will include extra state to represent the organizational approval process
- *  - If the flow has `UserRoleFeature.RequireAdminConfiguration` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
- *  - If the flow has `UserRoleFeature.None` none of the states or actions for the workflow instance will require an OrgAdmin.
+ *  - If the flow has `WorkflowAdminRequirements.ApprovalProcess` it will include extra state to represent the organizational approval process
+ *  - If the flow has `WorkflowAdminRequirements.StoreAccess` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
+ *  - If the flow has `WorkflowAdminRequirements.None` none of the states or actions for the workflow instance will require an OrgAdmin.
  *
- * Any state or transition can have a list of specified `UserRoleFeature`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `UserRoleFeature` is in the state's or transition's list.
+ * Any state or transition can have a list of specified `WorkflowAdminRequirements`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `WorkflowAdminRequirements` is in the state's or transition's list.
  *
- * If a state or transition does not specify any `UserRoleFeature` it will be included (provided it passes other conditions not dependent on `UserRoleFeature`).
+ * If a state or transition does not specify any `WorkflowAdminRequirements` it will be included (provided it passes other conditions not dependent on `WorkflowAdminRequirements`).
  */
-export enum UserRoleFeature {
+export enum WorkflowAdminRequirements {
   None = 0,
-  RequireAdminConfiguration,
-  RequireApprovalProcess
+  StoreAccess,
+  ApprovalProcess
 }
 
 export enum ProductType {
@@ -80,7 +80,7 @@ export type WorkflowContext = {
   includeReviewers: boolean;
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: StateName;
-  URFeatures: UserRoleFeature[];
+  adminRequirements: WorkflowAdminRequirements[];
   // Not sure how this is used, but will figure out when integrating into backend
   environment: { [key: string]: any };
   productType: ProductType;
@@ -90,7 +90,7 @@ export type WorkflowContext = {
 };
 
 export type WorkflowConfig = {
-  URFeatures: UserRoleFeature[];
+  adminRequirements: WorkflowAdminRequirements[];
   productType: ProductType;
 };
 
@@ -105,41 +105,41 @@ export function workflowInputFromDBProductType(workflowDefinitionId: number): Wo
   switch (workflowDefinitionId) {
     case 1: // sil_android_google_play
       return {
-        URFeatures: [
-          UserRoleFeature.RequireApprovalProcess,
-          UserRoleFeature.RequireAdminConfiguration
+        adminRequirements: [
+          WorkflowAdminRequirements.ApprovalProcess,
+          WorkflowAdminRequirements.StoreAccess
         ],
         productType: ProductType.Android_GooglePlay
       };
     case 4: // sil_android_s3
       return {
-        URFeatures: [UserRoleFeature.RequireApprovalProcess],
+        adminRequirements: [WorkflowAdminRequirements.ApprovalProcess],
         productType: ProductType.Android_S3
       };
     case 6: // la_android_google_play
       return {
-        URFeatures: [UserRoleFeature.RequireAdminConfiguration],
+        adminRequirements: [WorkflowAdminRequirements.StoreAccess],
         productType: ProductType.Android_GooglePlay
       };
     case 7: // na_android_google_play
       return {
-        URFeatures: [UserRoleFeature.None],
+        adminRequirements: [WorkflowAdminRequirements.None],
         productType: ProductType.Android_GooglePlay
       };
     case 8: // na_android_s3
       return {
-        URFeatures: [UserRoleFeature.None],
+        adminRequirements: [WorkflowAdminRequirements.None],
         productType: ProductType.Android_S3
       };
     case 9: // pwa_cloud
     case 11: // html_cloud
       return {
-        URFeatures: [UserRoleFeature.None],
+        adminRequirements: [WorkflowAdminRequirements.None],
         productType: ProductType.Web
       };
     case 13: // asset_package
       return {
-        URFeatures: [UserRoleFeature.None],
+        adminRequirements: [WorkflowAdminRequirements.None],
         productType: ProductType.AssetPackage
       };
     default: // would be some other workflow type presumably
@@ -147,9 +147,9 @@ export function workflowInputFromDBProductType(workflowDefinitionId: number): Wo
         `Unrecognized workflow definition: ${workflowDefinitionId}! Returning configuration for sil_android_google_play.`
       );
       return {
-        URFeatures: [
-          UserRoleFeature.RequireApprovalProcess,
-          UserRoleFeature.RequireAdminConfiguration
+        adminRequirements: [
+          WorkflowAdminRequirements.ApprovalProcess,
+          WorkflowAdminRequirements.StoreAccess
         ],
         productType: ProductType.Android_GooglePlay
       };
@@ -158,7 +158,7 @@ export function workflowInputFromDBProductType(workflowDefinitionId: number): Wo
 
 /** Used for filtering based on AdminLevel and/or ProductType */
 export type MetaFilter = {
-  URFeatures?: UserRoleFeature[];
+  URFeatures?: WorkflowAdminRequirements[];
   productTypes?: ProductType[];
 };
 
