@@ -158,7 +158,7 @@ export function workflowInputFromDBProductType(workflowDefinitionId: number): Wo
 
 /** Used for filtering based on AdminLevel and/or ProductType */
 export type MetaFilter = {
-  URFeatures?: WorkflowAdminRequirements[];
+  adminRequirements?: WorkflowAdminRequirements[];
   productTypes?: ProductType[];
 };
 

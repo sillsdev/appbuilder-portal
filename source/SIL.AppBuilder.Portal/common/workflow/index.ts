@@ -255,8 +255,8 @@ export class Workflow {
   public static filterMeta(filter: WorkflowConfig, meta?: MetaFilter) {
     return (
       meta === undefined ||
-      ((meta.URFeatures !== undefined
-        ? meta.URFeatures.filter((urf) => filter.adminRequirements.includes(urf)).length > 0
+      ((meta.adminRequirements !== undefined
+        ? meta.adminRequirements.filter((urf) => filter.adminRequirements.includes(urf)).length > 0
         : true) &&
         (meta.productTypes !== undefined ? meta.productTypes.includes(filter.productType) : true))
     );
