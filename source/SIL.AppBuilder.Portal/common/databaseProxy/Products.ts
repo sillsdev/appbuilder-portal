@@ -3,6 +3,7 @@ import { Workflow } from 'sil.appbuilder.portal.common';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { WorkflowType } from '../public/prisma.js';
+import { update as projectUpdate } from './Projects.js';
 import { RequirePrimitive } from './utility.js';
 
 export async function create(
@@ -49,6 +50,7 @@ export async function create(
           productType: flow.ProductType,
           options: new Set(flow.WorkflowOptions)
         });
+        updateProjectDateActive(productData.ProjectId);
       }
     }
 
@@ -102,6 +104,7 @@ async function deleteProduct(productId: string) {
     select: {
       Project: {
         select: {
+          Id: true,
           OrganizationId: true
         }
       },
@@ -117,7 +120,7 @@ async function deleteProduct(productId: string) {
     },
     BullMQ.Retry5e5
   );
-  return prisma.$transaction([
+  const res = prisma.$transaction([
     prisma.workflowInstances.deleteMany({
       where: {
         ProductId: productId
@@ -134,6 +137,8 @@ async function deleteProduct(productId: string) {
       }
     })
   ]);
+  updateProjectDateActive(product.Project.Id);
+  return res;
 }
 export { deleteProduct as delete };
 
@@ -233,4 +238,44 @@ async function validateProductBase(
     // 5. The product type is allowed by the organization
     (project?.Organization.OrganizationProductDefinitions.length ?? 0) > 0
   );
+}
+
+async function updateProjectDateActive(projectId: number) {
+  const project = await prisma.projects.findUnique({
+    where: {
+      Id: projectId
+    },
+    select: {
+      DateActive: true,
+      Products: {
+        where: {
+          WorkflowInstance: { isNot: null }
+        },
+        select: {
+          DateUpdated: true
+        }
+      }
+    }
+  });
+
+  const projectDateActive = project.DateActive;
+
+  let dateActive = new Date(0);
+  project.Products.forEach((product) => {
+    if (product.DateUpdated > dateActive) {
+      dateActive = product.DateUpdated;
+    }
+  });
+
+  if (dateActive > new Date(0)) {
+    project.DateActive = dateActive;
+  } else {
+    project.DateActive = null;
+  }
+
+  if (project.DateActive != projectDateActive) {
+    await projectUpdate(projectId, {
+      DateActive: project.DateActive
+    });
+  }
 }
