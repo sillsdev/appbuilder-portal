@@ -46,7 +46,8 @@ export const DefaultWorkflow = setup({
         context.start === params.target &&
         (params.products ? params.products.includes(context.productType) : true) &&
         (params.adminRequirements
-          ? context.adminRequirements.filter((urf) => params.adminRequirements.includes(urf)).length > 0
+          ? context.adminRequirements.filter((urf) => params.adminRequirements.includes(urf))
+              .length > 0
           : true)
       );
     },
@@ -91,7 +92,10 @@ export const DefaultWorkflow = setup({
         {
           guard: {
             type: 'canJump',
-            params: { target: 'Approval', adminRequirements: [WorkflowAdminRequirements.ApprovalProcess] }
+            params: {
+              target: 'Approval',
+              adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+            }
           },
           target: 'Approval'
         },
