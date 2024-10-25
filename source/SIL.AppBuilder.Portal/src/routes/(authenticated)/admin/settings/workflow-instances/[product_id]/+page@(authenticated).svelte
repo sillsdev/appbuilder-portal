@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Node, Svelvet, Anchor } from 'svelvet';
-  import { HamburgerIcon } from '$lib/icons/index.js';
+  import HamburgerIcon from '$lib/icons/HamburgerIcon.svelte';
+  import ArrowBackIcon from '$lib/icons/ArrowBackIcon.svelte';
   import { Springy } from '$lib/springyGraph.js';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
@@ -87,6 +88,9 @@
   });
 </script>
 
+<div id="back-arrow" class="p-5">
+  <a href="/admin/settings/workflow-instances"><ArrowBackIcon color="lightgray" /></a>
+</div>
 <div id="menu" class="p-5">
   <div class="bg-primary border-2 border-primary-content p-2 rounded text-primary-content">
     <details>
@@ -208,8 +212,12 @@
   }
   #menu {
     position: absolute;
-    z-index: 5; /* position above canvas, but below drawer */
     right: 0;
+    z-index: 5; /* position above canvas, but below drawer */
+  }
+  #back-arrow {
+    position: fixed;
+    z-index: 4;
   }
 
   details > summary {

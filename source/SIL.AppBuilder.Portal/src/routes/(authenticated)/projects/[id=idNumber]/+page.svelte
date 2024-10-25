@@ -191,7 +191,7 @@
                         {/if}
                         {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin)}
                           <li class="w-full-rounded-none">
-                            <a href="/admin/workflows/{product.Id}">{m.common_workflow()}</a>
+                            <a href="/admin/settings/workflow-instances/{product.Id}">{m.common_workflow()}</a>
                           </li>
                         {/if}
                         <li class=" w-full rounded-none">

@@ -7,7 +7,7 @@
 </script>
 
 <div class="w-full">
-  <h1>{m.admin_workflowInstances_title()}</h1>
+  <h2>{m.admin_workflowInstances_title()}</h2>
   <div class="m-4 relative mt-0">
     {#if data.instances.length > 0}
       <table class="w-full">
@@ -21,7 +21,10 @@
         </thead>
         <tbody>
           {#each data.instances as i}
-            <tr class="cursor-pointer" on:click={() => goto(`/admin/workflows/${i.Product.Id}`)}>
+            <tr
+              class="cursor-pointer"
+              on:click={() => goto(`/admin/settings/workflow-instances/${i.Product.Id}`)}
+            >
               <td>
                 {i.Product.Id}
               </td>
