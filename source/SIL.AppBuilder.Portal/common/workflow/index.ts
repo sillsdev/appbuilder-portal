@@ -325,17 +325,13 @@ export class Workflow {
       .reduce((p, c) => p.concat(c), [])
       .filter((u, i, a) => a.indexOf(u) === i);
 
-    const timestamp = new Date();
-
     return DatabaseWrites.userTasks.createMany({
       data: uids.map((u) => ({
         UserId: u,
         ProductId: this.productId,
         ActivityName: Workflow.stateName(this.currentState),
         Status: Workflow.stateName(this.currentState),
-        Comment: comment ?? null,
-        DateCreated: timestamp,
-        DateUpdated: timestamp
+        Comment: comment ?? null
       }))
     });
   }
