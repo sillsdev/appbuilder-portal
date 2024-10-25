@@ -24,8 +24,6 @@ export async function getOrCreateUser(profile: {
     data: {
       ExternalId: profile.sub,
       Email: profile.email,
-      DateCreated: new Date(),
-      DateUpdated: new Date(),
       FamilyName: profile.family_name,
       GivenName: profile.given_name,
       Name: profile.name,
