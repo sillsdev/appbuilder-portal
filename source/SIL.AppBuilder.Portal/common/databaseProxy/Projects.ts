@@ -1,8 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import {
-  ScriptoriaJobType,
-  UserTasks
-} from '../BullJobTypes.js';
+import { ScriptoriaJobType, UserTasks } from '../BullJobTypes.js';
 import { scriptoria } from '../bullmq.js';
 import prisma from '../prisma.js';
 import type { RequirePrimitive } from './utility.js';
@@ -77,9 +74,7 @@ export async function update(
         projectId: id,
         operation: {
           type: UserTasks.OpType.Reassign,
-          userMapping: [
-            { from: existing.OwnerId, to: ownerId }
-          ]
+          userMapping: [{ from: existing.OwnerId, to: ownerId }]
         }
       });
     }
@@ -87,6 +82,26 @@ export async function update(
     return false;
   }
   return true;
+}
+
+export async function createMany(projectData: RequirePrimitive<Prisma.ProjectsCreateManyInput>[]) {
+  const valid = (
+    await Promise.all(
+      projectData.map((pd) => validateProjectBase(pd.OrganizationId, pd.GroupId, pd.OwnerId))
+    )
+  ).reduce((p, c) => p && c, true);
+
+  try {
+    if (valid) {
+      return (
+        await prisma.projects.createManyAndReturn({ data: projectData, select: { Id: true } })
+      ).map((p) => p.Id);
+    }
+  } catch (e) {
+    return false;
+  }
+
+  return false;
 }
 
 // async function deleteProject(id: number): Promise<never> {
@@ -100,10 +115,8 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   // and the data was valid already, or PostgreSQL will catch it
   return (
     orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId &&
-    (
-      await prisma.organizationMemberships.findMany({
-        where: { UserId: ownerId, OrganizationId: orgId }
-      })
-    ).length > 0
+    !!(await prisma.organizationMemberships.findFirst({
+      where: { UserId: ownerId, OrganizationId: orgId }
+    }))
   );
 }
