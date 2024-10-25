@@ -1,24 +1,22 @@
 import type { Session } from '@auth/sveltekit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { verifyCanArchive } from './common';
 
 export async function verifyCanViewAndEdit(user: Session, projectId: number) {
   // Editing is allowed if the user owns the project, or if the user is an organization
   // admin for the project's organization, or if the user is a super admin
-  const orgId = await prisma.projects.findUnique({
+  const org = await prisma.projects.findUnique({
     where: {
       Id: projectId
+    },
+    select: {
+      Id: true,
+      OwnerId: true
     }
   });
-  if (orgId?.OwnerId === user.user.userId) return true;
-  if (
-    user.user.roles.find(
-      (r) =>
-        r[1] === RoleId.SuperAdmin || (r[1] === RoleId.OrgAdmin && r[0] === orgId?.OrganizationId)
-    )
-  )
-    return true;
-  return false;
+  if (!org) return false;
+  return verifyCanArchive(user, org.OwnerId, org.Id);
 }
 
 export async function verifyCanCreateProject(user: Session, orgId: number) {

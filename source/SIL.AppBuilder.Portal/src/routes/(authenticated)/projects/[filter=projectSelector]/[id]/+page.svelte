@@ -6,10 +6,11 @@
   import * as m from '$lib/paraglide/messages';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
+  import { verifyCanArchive } from '$lib/projects/common';
 
   export let data: PageData;
 
-  let selectedProjects: number[] = [];
+  let selectedProjects: { Id: number; OwnerId: number; Archived: boolean }[] = [];
   let selectedOrg = parseInt($page.params.id);
   let searchTerm: string = '';
 
@@ -23,6 +24,21 @@
       project.GroupName?.toLowerCase().includes(searchTermLower)
     );
   });
+
+  $: canArchive = selectedProjects.reduce(
+    (p, c) =>
+      p &&
+      !c.Archived &&
+      verifyCanArchive($page.data.session!, c.OwnerId, parseInt($page.params.id)),
+    true
+  );
+  $: canReactivate = selectedProjects.reduce(
+    (p, c) =>
+      p &&
+      c.Archived &&
+      verifyCanArchive($page.data.session!, c.OwnerId, parseInt($page.params.id)),
+    true
+  );
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -55,13 +71,24 @@
   </div>
   <div class="w-full flex flex-row place-content-between p-4 pb-0 px-6 space-between-4">
     <div class="space-y-2">
-      <button
-        class="btn btn-outline mx-1"
-        disabled={!selectedProjects.length}
-        on:click={() => alert('TODO: ' + selectedProjects.join(', '))}
-      >
-        {m.common_archive()}
-      </button>
+      {#if !selectedProjects.length || canArchive}
+        <button
+          class="btn btn-outline mx-1"
+          disabled={!selectedProjects.length}
+          on:click={() => alert('TODO: ' + selectedProjects.join(', '))}
+        >
+          {m.common_archive()}
+        </button>
+      {/if}
+      {#if !selectedProjects.length || canReactivate}
+        <button
+          class="btn btn-outline mx-1"
+          disabled={!selectedProjects.length}
+          on:click={() => alert('TODO: ' + selectedProjects.join(', '))}
+        >
+          {m.common_reactivate()}
+        </button>
+      {/if}
       <button
         class="btn btn-outline mx-1"
         disabled={!selectedProjects.length}
@@ -88,7 +115,7 @@
               type="checkbox"
               class="mr-2 checkbox checkbox-info"
               bind:group={selectedProjects}
-              value={project.Id}
+              value={{ Id: project.Id, Owner: project.OwnerId, Archived: !!project.DateArchived }}
             />
           </span>
         </ProjectCard>
