@@ -4,7 +4,8 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { queues, BullMQ } from 'sil.appbuilder.portal.common';
-import { verifyCanCreateProject, projectCreateSchema } from '$lib/projects/common.server';
+import { verifyCanCreateProject } from '$lib/projects/common.server';
+import { projectCreateSchema } from '$lib/projects/common';
 
 export const load = (async ({ locals, params }) => {
   if (!verifyCanCreateProject((await locals.auth())!, parseInt(params.id))) return error(403);

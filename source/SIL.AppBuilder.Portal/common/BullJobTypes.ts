@@ -82,7 +82,6 @@ export namespace Project {
     type: ScriptoriaJobType.Project_Create;
     projectId: number;
   }
-  
   export interface Check {
     type: ScriptoriaJobType.Project_Check;
     workflowProjectId: number;

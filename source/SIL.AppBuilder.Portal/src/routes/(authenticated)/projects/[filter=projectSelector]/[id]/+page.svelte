@@ -71,7 +71,7 @@
       </button>
     </div>
     <div class="text-right space-y-2">
-      <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
+      <button class="btn btn-outline mx-1" on:click={() => goto(`/projects/import/${selectedOrg}`)}>
         {m.project_importProjects()}
       </button>
       <button class="btn btn-outline mx-1" on:click={() => goto(`/projects/new/${selectedOrg}`)}>

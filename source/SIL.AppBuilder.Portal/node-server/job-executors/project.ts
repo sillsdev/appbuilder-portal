@@ -68,7 +68,7 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Proje
 export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Project_Check> {
   async execute(job: Job<BullMQ.Project.Check, number, string>): Promise<number> {
     const response = await BuildEngine.Requests.getProject(
-      { type: 'query', organizationId: job.data.organizationId},
+      { type: 'query', organizationId: job.data.organizationId },
       job.data.workflowProjectId
     );
     job.updateProgress(50);
@@ -85,6 +85,67 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Projec
             WorkflowProjectUrl: response.url,
             DateUpdated: new Date()
           });
+        }
+        const projectImport = (
+          await prisma.projects.findUnique({
+            where: {
+              Id: job.data.projectId
+            },
+            select: {
+              ProjectImport: true
+            }
+          })
+        )?.ProjectImport;
+        if (projectImport) {
+          job.updateProgress(75);
+          const productsToCreate: { Name: string; Store: string }[] = JSON.parse(projectImport.ImportData).Products;
+          await Promise.all(
+            productsToCreate.map(async (p) => {
+              const timestamp = new Date();
+              const res = await DatabaseWrites.products.create({
+                ProjectId: job.data.projectId,
+                ProductDefinitionId: (
+                  await prisma.productDefinitions.findFirst({
+                    where: {
+                      Name: p.Name,
+                      OrganizationProductDefinitions: {
+                        some: {
+                          OrganizationId: job.data.organizationId
+                        }
+                      }
+                    },
+                    select: {
+                      Id: true
+                    }
+                  })
+                )?.Id,
+                StoreId: (
+                  await prisma.stores.findFirst({
+                    where: {
+                      Name: p.Store,
+                      OrganizationStores: {
+                        some: {
+                          OrganizationId: job.data.organizationId
+                        }
+                      }
+                    },
+                    select: {
+                      Id: true
+                    }
+                  })
+                )?.Id,
+                // TODO: StoreLanguage?
+                WorkflowJobId: 0,
+                WorkflowBuildId: 0,
+                WorkflowPublishId: 0,
+                DateCreated: timestamp,
+                DateUpdated: timestamp
+              });
+              job.log(JSON.stringify({ ...p, result: res }, null, 4));
+            })
+          );
+          job.updateProgress(100);
+          return productsToCreate.length;
         }
 
         job.updateProgress(100);
