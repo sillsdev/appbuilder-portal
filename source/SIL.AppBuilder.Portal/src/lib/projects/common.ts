@@ -1,6 +1,8 @@
 import { paginateSchema } from '$lib/table';
 import { idSchema } from '$lib/valibot';
+import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import * as v from 'valibot';
 
 export function pruneProjects(
@@ -22,21 +24,24 @@ export function pruneProjects(
       Name,
       Id,
       Language,
-      Owner: { Name: OwnerName },
+      Owner: { Name: OwnerName, Id: OwnerId },
       Organization: { Name: OrganizationName },
       Group: { Name: GroupName },
       DateActive,
       DateUpdated,
+      DateArchived,
       Products
     }) => ({
       Name,
       Id,
       Language,
+      OwnerId,
       OwnerName,
       OrganizationName,
       GroupName,
       DateUpdated,
       DateActive,
+      DateArchived,
       Products: Products.map(
         ({ ProductDefinition: { Name: ProductDefinitionName }, VersionBuilt, DateBuilt }) => ({
           ProductDefinitionName,
@@ -93,3 +98,13 @@ export const importJSONSchema = v.object({
     v.minLength(1)
   )
 });
+export function verifyCanArchive(user: Session, projectOwnerId: number, organizationId: number) {
+  if (projectOwnerId === user.user.userId) return true;
+  if (
+    user.user.roles.find(
+      (r) => r[1] === RoleId.SuperAdmin || (r[1] === RoleId.OrgAdmin && r[0] === organizationId)
+    )
+  )
+    return true;
+  return false;
+}

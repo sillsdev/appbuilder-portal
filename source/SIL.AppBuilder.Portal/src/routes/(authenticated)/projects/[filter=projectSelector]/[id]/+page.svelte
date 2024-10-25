@@ -1,9 +1,11 @@
 <script lang="ts">
   import { afterNavigate, goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import type { PrunedProject } from '$lib/projects/common';
+  import { verifyCanArchive } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import { writable } from 'svelte/store';
@@ -13,7 +15,7 @@
 
   export let data: PageData;
 
-  let selectedProjects: number[] = [];
+  let selectedProjects: { Id: number; OwnerId: number; Archived: boolean }[] = [];
 
   const projects = writable(data.projects);
   const count = writable(data.count);
@@ -42,6 +44,21 @@
     count.set(data.count);
     $form.organizationId = data.form.data.organizationId;
   });
+
+  $: canArchive = selectedProjects.reduce(
+    (p, c) =>
+      p &&
+      !c.Archived &&
+      verifyCanArchive($page.data.session!, c.OwnerId, parseInt($page.params.id)),
+    true
+  );
+  $: canReactivate = selectedProjects.reduce(
+    (p, c) =>
+      p &&
+      c.Archived &&
+      verifyCanArchive($page.data.session!, c.OwnerId, parseInt($page.params.id)),
+    true
+  );
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -78,13 +95,24 @@
   </form>
   <div class="w-full flex flex-row flex-wrap place-content-between gap-1 mt-4">
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
-      <button
-        class="action btn btn-outline"
-        disabled={!selectedProjects.length}
-        on:click={() => alert('TODO: ' + selectedProjects.join(', '))}
-      >
-        {m.common_archive()}
-      </button>
+      {#if !selectedProjects.length || canArchive}
+        <button
+          class="action btn btn-outline"
+          disabled={!selectedProjects.length}
+          on:click={() => alert('TODO: ' + selectedProjects.join(', '))}
+        >
+          {m.common_archive()}
+        </button>
+      {/if}
+      {#if !selectedProjects.length || canReactivate}
+        <button
+          class="action btn btn-outline"
+          disabled={!selectedProjects.length}
+          on:click={() => alert('TODO: ' + selectedProjects.join(', '))}
+        >
+          {m.common_reactivate()}
+        </button>
+      {/if}
       <button
         class="action btn btn-outline"
         disabled={!selectedProjects.length}
@@ -111,7 +139,7 @@
               type="checkbox"
               class="mr-2 checkbox checkbox-info"
               bind:group={selectedProjects}
-              value={project.Id}
+              value={{ Id: project.Id, Owner: project.OwnerId, Archived: !!project.DateArchived }}
             />
           </span>
         </ProjectCard>

@@ -1,11 +1,11 @@
-import type { Prisma } from '@prisma/client';
-import { redirect, error, type Actions } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
 import { projectSearchSchema, pruneProjects } from '$lib/projects/common';
 import { projectFilter } from '$lib/projects/common.server';
-import type { PageServerLoad } from './$types';
-import { superValidate, fail } from 'sveltekit-superforms';
+import type { Prisma } from '@prisma/client';
+import { error, redirect, type Actions } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
+import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
+import type { PageServerLoad } from './$types';
 
 function whereStatements(
   filter: string,
@@ -14,36 +14,36 @@ function whereStatements(
 ): Prisma.ProjectsWhereInput {
   const selector = filter as 'organization' | 'active' | 'archived' | 'all' | 'own';
   switch (selector) {
-    case 'organization':
-      return {
-        OrganizationId: orgId,
-        DateArchived: null
-      };
-    case 'active':
-      return {
-        OrganizationId: orgId,
-        DateActive: {
-          not: null
-        },
-        DateArchived: null
-      };
-    case 'archived':
-      return {
-        OrganizationId: orgId,
-        DateArchived: {
-          not: null
-        }
-      };
-    case 'all':
-      return {
-        OrganizationId: orgId
-      };
-    case 'own':
-      return {
-        OrganizationId: orgId,
-        OwnerId: userId,
-        DateArchived: null
-      };
+  case 'organization':
+    return {
+      OrganizationId: orgId,
+      DateArchived: null
+    };
+  case 'active':
+    return {
+      OrganizationId: orgId,
+      DateActive: {
+        not: null
+      },
+      DateArchived: null
+    };
+  case 'archived':
+    return {
+      OrganizationId: orgId,
+      DateArchived: {
+        not: null
+      }
+    };
+  case 'all':
+    return {
+      OrganizationId: orgId
+    };
+  case 'own':
+    return {
+      OrganizationId: orgId,
+      OwnerId: userId,
+      DateArchived: null
+    };
   }
 }
 
