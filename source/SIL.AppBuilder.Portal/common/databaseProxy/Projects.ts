@@ -73,9 +73,7 @@ export async function update(
         projectId: id,
         operation: {
           type: BullMQ.UserTasks.OpType.Reassign,
-          userMapping: [
-            { from: existing!.OwnerId, to: ownerId }
-          ]
+          userMapping: [{ from: existing!.OwnerId, to: ownerId }]
         }
       });
     }
@@ -83,6 +81,26 @@ export async function update(
     return false;
   }
   return true;
+}
+
+export async function createMany(projectData: RequirePrimitive<Prisma.ProjectsCreateManyInput>[]) {
+  const valid = (
+    await Promise.all(
+      projectData.map((pd) => validateProjectBase(pd.OrganizationId, pd.GroupId, pd.OwnerId))
+    )
+  ).reduce((p, c) => p && c, true);
+
+  try {
+    if (valid) {
+      return (
+        await prisma.projects.createManyAndReturn({ data: projectData, select: { Id: true } })
+      ).map((p) => p.Id);
+    }
+  } catch (e) {
+    return false;
+  }
+
+  return false;
 }
 
 // async function deleteProject(id: number): Promise<never> {
@@ -94,13 +112,13 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   // Each of the criteria for a valid project just needs to checked if
   // the relevant data is supplied. If it isn't, then this is an update
   // and the data was valid already, or PostgreSQL will catch it
-  return (
+  return !!(
     orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId &&
-    (await prisma.groupMemberships.findMany({ where: { UserId: ownerId, GroupId: groupId } })) &&
-    (
-      await prisma.organizationMemberships.findMany({
-        where: { UserId: ownerId, OrganizationId: orgId }
-      })
-    ).length > 0
+    (await prisma.groupMemberships.findFirst({
+      where: { UserId: ownerId, GroupId: groupId }
+    })) &&
+    (await prisma.organizationMemberships.findFirst({
+      where: { UserId: ownerId, OrganizationId: orgId }
+    }))
   );
 }
