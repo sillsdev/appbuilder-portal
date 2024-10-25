@@ -88,7 +88,7 @@
 </script>
 
 <div id="menu" class="p-5">
-  <div class="bg-primary border-2 border-primary-content p-2 rounded">
+  <div class="bg-primary border-2 border-primary-content p-2 rounded text-primary-content">
     <details>
       <summary class="select-none cursor-pointer">
         <span class="flex flex-row">
