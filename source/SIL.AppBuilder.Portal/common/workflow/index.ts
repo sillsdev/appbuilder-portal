@@ -69,15 +69,16 @@ export class Workflow {
     const flow = new Workflow(snap.context.productId, snap.context);
     const check = await flow.checkAuthorsAndReviewers();
     flow.flow = createActor(DefaultWorkflow, {
-      snapshot: snap ? DefaultWorkflow.resolveState(snap) : undefined,
+      snapshot: snap ? DefaultWorkflow.resolveState({
+        ...snap,
+        context: {
+          ...snap.context,
+          productId: productId,
+          hasAuthors: check._count.Authors > 0,
+          hasReviewers: check._count.Authors > 0
+        }}) : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
-      },
-      input: {
-        ...snap.context,
-        productId: productId,
-        hasAuthors: check._count.Authors > 0,
-        hasReviewers: check._count.Authors > 0
       }
     });
 
