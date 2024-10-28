@@ -66,7 +66,7 @@ export class Workflow {
   /** Restore from a snapshot in the database. */
   public static async restore(productId: string): Promise<Workflow> {
     const snap = await Workflow.getSnapshot(productId);
-    const flow = new Workflow(snap.context.productId, snap.context);
+    const flow = new Workflow(productId, snap.context);
     const check = await flow.checkAuthorsAndReviewers();
     flow.flow = createActor(DefaultWorkflow, {
       snapshot: snap
