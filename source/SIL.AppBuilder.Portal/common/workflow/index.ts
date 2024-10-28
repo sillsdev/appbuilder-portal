@@ -10,7 +10,6 @@ import type {
 import DatabaseWrites from '../databaseProxy/index.js';
 import {
   WorkflowContext,
-  StaticWorkflowInput,
   WorkflowConfig,
   ActionType,
   StateNode,
@@ -218,10 +217,7 @@ export class Workflow {
         }
       });
       await DatabaseWrites.productTransitions.createMany({
-        data: await Workflow.transitionEntriesFromState(snap.value, {
-          productId: this.productId,
-          ...this.config
-        })
+        data: await Workflow.transitionEntriesFromState(snap.value, this.productId, this.config)
       });
     }
 
@@ -369,13 +365,14 @@ export class Workflow {
   /** Create ProductTransitions record object */
   private static transitionFromState(
     state: XStateNode<WorkflowContext, any>,
-    input: StaticWorkflowInput,
+    productId: string,
+    config: WorkflowConfig,
     users: Map<RoleId, string[]>
   ): Prisma.ProductTransitionsCreateManyInput {
-    const t = Workflow.filterTransitions(state.on, input)[0][0];
+    const t = Workflow.filterTransitions(state.on, config)[0][0];
 
     return {
-      ProductId: input.productId,
+      ProductId: productId,
       AllowedUserNames:
         t.meta.type === ActionType.User
           ? Array.from(
@@ -399,21 +396,19 @@ export class Workflow {
   private async populateTransitions() {
     // TODO: AllowedUserNames
     return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: await Workflow.transitionEntriesFromState(WorkflowState.Start, {
-        productId: this.productId,
-        ...this.config
-      })
+      data: await Workflow.transitionEntriesFromState(WorkflowState.Start, this.productId, this.config)
     });
   }
 
   public static async transitionEntriesFromState(
     stateName: string,
-    input: StaticWorkflowInput
+    productId: string,
+    config: WorkflowConfig
   ): Promise<Prisma.ProductTransitionsCreateManyInput[]> {
     const projectId = (
       await prisma.products.findUnique({
         where: {
-          Id: input.productId
+          Id: productId
         },
         select: {
           ProjectId: true
@@ -445,9 +440,10 @@ export class Workflow {
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
-          ? Workflow.availableTransitionsFromName(WorkflowState.Start, input)[0][0].target[0]
+          ? Workflow.availableTransitionsFromName(WorkflowState.Start, config)[0][0].target[0]
           : DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
-        input,
+        productId,
+        config,
         users
       )
     ];
@@ -455,7 +451,8 @@ export class Workflow {
       ret.push(
         Workflow.transitionFromState(
           Workflow.nodeFromName(ret.at(-1).DestinationState),
-          input,
+          productId,
+          config,
           users
         )
       );
