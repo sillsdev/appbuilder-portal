@@ -17,7 +17,8 @@ import {
   WorkflowEvent,
   MetaFilter,
   WorkflowTransitionMeta,
-  Snapshot
+  Snapshot,
+  StateName
 } from '../public/workflow.js';
 import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType, WorkflowType } from '../public/prisma.js';
@@ -209,6 +210,22 @@ export class Workflow {
         event.event.type,
         event.event.comment || undefined
       );
+      await DatabaseWrites.productTransitions.deleteMany({
+        where: {
+          ProductId: this.productId,
+          DateTransition: null,
+          WorkflowUserId: null
+        }
+      });
+      await DatabaseWrites.productTransitions.createMany({
+        data: await Workflow.transitionEntriesFromState(snap.value, {
+          productId: this.productId,
+          ...this.config,
+          // Don't actually care about these values for this particular purpose
+          hasAuthors: false,
+          hasReviewers: false
+        })
+      });
     }
 
     await this.createSnapshot(snap.context);
@@ -408,12 +425,6 @@ export class Workflow {
         }
       })
     ).ProjectId;
-    const start =
-      stateName === 'Start'
-        ? 1
-        : Object.entries(DefaultWorkflow.states).findIndex(
-            ([k, v]) => v.id === Workflow.stateIdFromName(stateName)
-          );
     const uidsByRole = await allUsersByRole(projectId);
     const users = new Map<RoleId, string[]>();
     (
@@ -436,17 +447,25 @@ export class Workflow {
         r.users.map((u) => u.Name)
       );
     });
-    return Object.entries(DefaultWorkflow.states).reduce(
-      (p, [k, v], i) =>
-        p.concat(
-          Workflow.filterMeta(input, v.meta) &&
-            (i === start ||
-              (i > start && p[p.length - 1]?.DestinationState === k && v.type !== 'final'))
-            ? [Workflow.transitionFromState(v, input, users)]
-            : []
-        ),
-      []
-    );
+    const ret: Prisma.ProductTransitionsCreateManyInput[] = [
+      Workflow.transitionFromState(
+        stateName === 'Start'
+          ? Workflow.availableTransitionsFromName('Start', input)[0][0].target[0]
+          : DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+        input,
+        users
+      )
+    ];
+    while (ret.at(-1).DestinationState !== StateName.Published) {
+      ret.push(
+        Workflow.transitionFromState(
+          Workflow.nodeFromName(ret.at(-1).DestinationState),
+          input,
+          users
+        )
+      );
+    }
+    return ret;
   }
 
   /**
@@ -521,6 +540,10 @@ export class Workflow {
 
   private static stateIdFromName(s: string): string {
     return DefaultWorkflow.id + '.' + s;
+  }
+
+  private static nodeFromName(s: string): XStateNode<WorkflowContext, WorkflowEvent> {
+    return DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(s));
   }
 
   private static targetStringFromEvent(e: TransitionDefinition<any, any>): string {
