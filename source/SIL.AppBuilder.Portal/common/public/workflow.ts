@@ -188,5 +188,5 @@ export type StateNode = {
 
 export type Snapshot = {
   value: string;
-  context: WorkflowContext;
+  context: Omit<WorkflowContext, 'productId' | 'hasAuthors' | 'hasReviewers'>;
 };

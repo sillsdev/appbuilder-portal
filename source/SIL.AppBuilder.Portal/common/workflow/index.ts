@@ -226,13 +226,25 @@ export class Workflow {
         ProductId: this.productId,
         Snapshot: JSON.stringify({
           value: Workflow.stateName(this.currentState),
-          context: context
+          context: {
+            ...context,
+            // don't write these values
+            productId: undefined,
+            hasAuthors: undefined,
+            hasReviewers: undefined
+          }
         } as Snapshot)
       },
       update: {
         Snapshot: JSON.stringify({
           value: Workflow.stateName(this.currentState),
-          context: context
+          context: {
+            ...context,
+            // don't write these values
+            productId: undefined,
+            hasAuthors: undefined,
+            hasReviewers: undefined
+          }
         } as Snapshot)
       }
     });
