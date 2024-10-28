@@ -1,4 +1,4 @@
-import { setup, assign, and } from 'xstate';
+import { setup, assign } from 'xstate';
 import {
   WorkflowContext,
   WorkflowInput,
@@ -8,7 +8,9 @@ import {
   ProductType,
   ActionType,
   StateName,
-  WorkflowEvent
+  WorkflowEvent,
+  JumpParams,
+  jump
 } from '../public/workflow.js';
 import { RoleId } from '../public/prisma.js';
 
@@ -34,14 +36,7 @@ export const DefaultWorkflow = setup({
     events: {} as WorkflowEvent
   },
   guards: {
-    canJump: (
-      { context },
-      params: {
-        target: StateName | string;
-        products?: ProductType[];
-        adminRequirements?: WorkflowAdminRequirements[];
-      }
-    ) => {
+    canJump: ({ context }, params: JumpParams) => {
       return (
         context.start === params.target &&
         (params.products ? params.products.includes(context.productType) : true) &&
@@ -79,117 +74,45 @@ export const DefaultWorkflow = setup({
   states: {
     Start: {
       always: [
-        {
-          guard: {
-            type: 'canJump',
-            params: {
-              target: StateName.Readiness_Check,
-              adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
-            }
-          },
-          target: StateName.Readiness_Check
-        },
-        {
-          guard: {
-            type: 'canJump',
-            params: {
-              target: StateName.Approval,
-              adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
-            }
-          },
-          target: StateName.Approval
-        },
-        {
-          guard: {
-            type: 'canJump',
-            params: {
-              target: StateName.Approval_Pending,
-              adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
-            }
-          },
-          target: StateName.Approval_Pending
-        },
-        {
-          guard: {
-            type: 'canJump',
-            params: {
-              target: StateName.Terminated,
-              adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
-            }
-          },
-          target: StateName.Terminated
-        },
-        {
-          guard: { type: 'canJump', params: { target: StateName.Product_Creation } },
-          target: StateName.Product_Creation
-        },
-        {
-          guard: { type: 'canJump', params: { target: StateName.App_Builder_Configuration } },
-          target: StateName.App_Builder_Configuration
-        },
-        {
-          guard: and([
-            { type: 'canJump', params: { target: StateName.Author_Configuration } },
-            { type: 'hasAuthors' }
-          ]),
-          target: StateName.Author_Configuration
-        },
-        {
-          guard: { type: 'canJump', params: { target: StateName.Synchronize_Data } },
-          target: StateName.Synchronize_Data
-        },
-        {
-          guard: and([
-            { type: 'canJump', params: { target: StateName.Author_Download } },
-            { type: 'hasAuthors' }
-          ]),
-          target: StateName.Author_Download
-        },
-        {
-          //note: authors can upload at any time, this state is just to prompt an upload
-          guard: and([
-            { type: 'canJump', params: { target: StateName.Author_Upload } },
-            { type: 'hasAuthors' }
-          ]),
-          target: StateName.Author_Upload
-        },
-        {
-          guard: { type: 'canJump', params: { target: StateName.Product_Build } },
-          target: StateName.Product_Build
-        },
-        {
-          guard: {
-            type: 'canJump',
-            params: { target: StateName.App_Store_Preview, products: [ProductType.Android_GooglePlay] }
-          },
-          target: StateName.App_Store_Preview
-        },
-        {
-          guard: {
-            type: 'canJump',
-            params: { target: StateName.Create_App_Store_Entry, products: [ProductType.Android_GooglePlay] }
-          },
-          target: StateName.Create_App_Store_Entry
-        },
-        {
-          guard: { type: 'canJump', params: { target: StateName.Verify_and_Publish } },
-          target: StateName.Verify_and_Publish
-        },
-        {
-          guard: { type: 'canJump', params: { target: StateName.Product_Publish } },
-          target: StateName.Product_Publish
-        },
-        {
-          guard: {
-            type: 'canJump',
-            params: { target: StateName.Make_It_Live, products: [ProductType.Android_GooglePlay] }
-          },
-          target: StateName.Make_It_Live
-        },
-        {
-          guard: { type: 'canJump', params: { target: StateName.Published } },
-          target: StateName.Published
-        },
+        jump({
+          target: StateName.Readiness_Check,
+          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        }),
+        jump({
+          target: StateName.Approval,
+          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        }),
+        jump({
+          target: StateName.Approval_Pending,
+          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        }),
+        jump({
+          target: StateName.Terminated,
+          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        }),
+        jump({ target: StateName.Product_Creation }),
+        jump({ target: StateName.App_Builder_Configuration }),
+        //@ts-expect-error I couldn't figure out the TS magic to prevent this from complaining. It should work fine though.
+        jump({ target: StateName.Author_Configuration }, [{ type: 'hasAuthors' }]),
+        jump({ target: StateName.Synchronize_Data }),
+        //@ts-expect-error
+        jump({ target: StateName.Author_Download }, [{ type: 'hasAuthors' }]),
+        //note: authors can upload at any time, this state is just to prompt an upload
+        //@ts-expect-error
+        jump({ target: StateName.Author_Upload }, [{ type: 'hasAuthors' }]),
+        jump({ target: StateName.Product_Build }),
+        jump({
+          target: StateName.App_Store_Preview,
+          products: [ProductType.Android_GooglePlay]
+        }),
+        jump({
+          target: StateName.Create_App_Store_Entry,
+          products: [ProductType.Android_GooglePlay]
+        }),
+        jump({ target: StateName.Verify_and_Publish }),
+        jump({ target: StateName.Product_Publish }),
+        jump({ target: StateName.Make_It_Live, products: [ProductType.Android_GooglePlay] }),
+        jump({ target: StateName.Published }),
         {
           guard: ({ context }) =>
             context.adminRequirements.includes(WorkflowAdminRequirements.ApprovalProcess),

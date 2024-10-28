@@ -1,4 +1,6 @@
 import type { RoleId } from './prisma.js';
+import { and, type TransitionConfig } from 'xstate';
+import type { GuardPredicate } from 'xstate/guards';
 
 export enum ActionType {
   /** Automated Action */
@@ -176,6 +178,42 @@ export type WorkflowEvent = {
   target?: StateName;
   userId: number | null;
 };
+
+export type JumpParams = {
+  target: StateName | string;
+  products?: ProductType[];
+  adminRequirements?: WorkflowAdminRequirements[];
+};
+
+/**
+ * @param params expected params of `canJump` guard from DefaultWorkflow
+ * @param optionalGuards other guards that can optionally be added.
+ * @returns A properly configured object for the `always` array of the `Start` state for jumping to an arbitrary state.
+ */
+export function jump(
+  params: JumpParams,
+  optionalGuards?: GuardPredicate<WorkflowContext, WorkflowEvent, unknown, any>[]
+): TransitionConfig<
+  WorkflowContext,
+  WorkflowEvent,
+  WorkflowEvent,
+  never,
+  never,
+  any,
+  never,
+  WorkflowEvent,
+  MetaFilter | WorkflowTransitionMeta
+> {
+  const j = {
+    type: 'canJump',
+    params: params
+  };
+  return {
+    //@ts-expect-error
+    guard: optionalGuards ? and(optionalGuards.concat([j])) : j,
+    target: params.target
+  };
+}
 
 export type StateNode = {
   id: number;
