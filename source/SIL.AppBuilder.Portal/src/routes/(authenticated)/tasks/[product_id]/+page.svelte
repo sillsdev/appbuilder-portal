@@ -3,6 +3,7 @@
   import { instructions } from './instructions';
   import SortTable from './components/SortTable.svelte';
   import { superForm } from 'sveltekit-superforms';
+  import * as m from '$lib/paraglide/messages';
 
   export let data: PageData;
   const { form, enhance, submit } = superForm(data.taskForm, {
@@ -20,7 +21,7 @@
       <div class="flex flex-row gap-x-3">
         {#each data.actions as action}
           <label class="btn">
-            {action}
+            {action}<!-- TODO: i18n? -->
             <input
               type="radio"
               name="flowAction"
@@ -34,7 +35,7 @@
     {/if}
     <label class="form-control">
       <div class="label">
-        <span class="label-text">Comment</span>
+        <span class="label-text">{m.project_products_transitions_comment()}</span>
       </div>
       <textarea class="textarea textarea-bordered h-24" name="comment" bind:value={$form.comment} />
     </label>
@@ -49,7 +50,7 @@
       <div class="flex flex-col gap-x-3 w-full md:flex-row">
         <label class="form-control w-full md:w-2/4">
           <div class="label">
-            <span class="label-text">User Name</span>
+            <span class="label-text">{m.projectTable_columns_owner()}</span>
           </div>
           <input
             type="text"
@@ -60,7 +61,7 @@
         </label>
         <label class="form-control w-full md:w-2/4">
           <div class="label">
-            <span class="label-text">Email</span>
+            <span class="label-text">{m.profile_email()}</span>
           </div>
           <input
             type="text"
@@ -74,7 +75,7 @@
     <div class="flex flex-col gap-x-3 w-full md:flex-row">
       <label class="form-control w-full md:w-2/4">
         <div class="label">
-          <span class="label-text">Project Name</span>
+          <span class="label-text">{m.project_projectName()}</span>
         </div>
         <input
           type="text"
@@ -85,7 +86,7 @@
       </label>
       <label class="form-control w-full md:w-2/4">
         <div class="label">
-          <span class="label-text">Project Description</span>
+          <span class="label-text">{m.project_projectDescription()}</span>
         </div>
         <input
           type="text"
@@ -99,7 +100,7 @@
       <div class="flex flex-col gap-x-3 md:flex-row">
         <label class="form-control w-full md:w-2/4">
           <div class="label">
-            <span class="label-text">Store</span>
+            <span class="label-text">{m.stores_name()}</span>
           </div>
           <input
             type="text"
@@ -111,6 +112,7 @@
         {#if data.fields.listingLanguageCode}
           <label class="form-control w-full md:w-2/4">
             <div class="label">
+              <!-- TODO: i18n (add to locale json)-->
               <span class="label-text">Store Listing Language</span>
             </div>
             <input
@@ -126,6 +128,7 @@
     {#if data.fields.projectURL}
       <label class="form-control w-full">
         <div class="label">
+          <!-- TODO: i18n (add to locale json)-->
           <span class="label-text">App Project URL</span>
         </div>
         <input
@@ -139,7 +142,7 @@
     {#if data.fields.productDescription && data.fields.appType && data.fields.projectLanguageCode}
       <label class="form-control w-full">
         <div class="label">
-          <span class="label-text">Product</span>
+          <span class="label-text">{m.tasks_product()}</span>
         </div>
         <input
           type="text"
@@ -150,7 +153,7 @@
       </label>
       <label class="form-control w-full">
         <div class="label">
-          <span class="label-text">Application Type</span>
+          <span class="label-text">{m.admin_settings_productDefinitions_type()}</span>
         </div>
         <input
           type="text"
@@ -161,7 +164,7 @@
       </label>
       <label class="form-control w-full">
         <div class="label">
-          <span class="label-text">Language Code</span>
+          <span class="label-text">{m.project_languageCode()}</span>
         </div>
         <input
           type="text"
