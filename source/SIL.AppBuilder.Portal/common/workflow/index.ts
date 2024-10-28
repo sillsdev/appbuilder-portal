@@ -10,7 +10,7 @@ import type {
 import DatabaseWrites from '../databaseProxy/index.js';
 import {
   WorkflowContext,
-  WorkflowInput,
+  StaticWorkflowInput,
   WorkflowConfig,
   ActionType,
   StateNode,
@@ -220,10 +220,7 @@ export class Workflow {
       await DatabaseWrites.productTransitions.createMany({
         data: await Workflow.transitionEntriesFromState(snap.value, {
           productId: this.productId,
-          ...this.config,
-          // Don't actually care about these values for this particular purpose
-          hasAuthors: false,
-          hasReviewers: false
+          ...this.config
         })
       });
     }
@@ -372,7 +369,7 @@ export class Workflow {
   /** Create ProductTransitions record object */
   private static transitionFromState(
     state: XStateNode<WorkflowContext, any>,
-    input: WorkflowInput,
+    input: StaticWorkflowInput,
     users: Map<RoleId, string[]>
   ): Prisma.ProductTransitionsCreateManyInput {
     const t = Workflow.filterTransitions(state.on, input)[0][0];
@@ -404,8 +401,6 @@ export class Workflow {
     return DatabaseWrites.productTransitions.createManyAndReturn({
       data: await Workflow.transitionEntriesFromState(WorkflowState.Start, {
         productId: this.productId,
-        hasAuthors: false,
-        hasReviewers: false,
         ...this.config
       })
     });
@@ -413,7 +408,7 @@ export class Workflow {
 
   public static async transitionEntriesFromState(
     stateName: string,
-    input: WorkflowInput
+    input: StaticWorkflowInput
   ): Promise<Prisma.ProductTransitionsCreateManyInput[]> {
     const projectId = (
       await prisma.products.findUnique({

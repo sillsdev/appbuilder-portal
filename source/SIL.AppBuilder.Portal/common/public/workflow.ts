@@ -123,6 +123,8 @@ export type WorkflowInput = WorkflowConfig & {
   hasReviewers: boolean;
 };
 
+export type StaticWorkflowInput = Omit<WorkflowInput, 'hasAuthors' | 'hasReviewers'>;
+
 // TODO: Just put this info directly in the database
 export function workflowInputFromDBProductType(workflowDefinitionId: number): WorkflowConfig {
   switch (workflowDefinitionId) {
