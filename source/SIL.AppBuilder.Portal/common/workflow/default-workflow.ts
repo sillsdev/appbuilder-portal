@@ -55,7 +55,7 @@ export const DefaultWorkflow = setup({
   }
 }).createMachine({
   id: 'DefaultWorkflow',
-  initial: 'Start',
+  initial: StateName.Start,
   context: ({ input }) => ({
     instructions: null,
     /** projectName and projectDescription are always included */
@@ -72,7 +72,7 @@ export const DefaultWorkflow = setup({
     hasReviewers: input.hasReviewers
   }),
   states: {
-    Start: {
+    [StateName.Start]: {
       always: [
         jump({
           target: StateName.Readiness_Check,
@@ -726,7 +726,7 @@ export const DefaultWorkflow = setup({
           start: ({ context, event }) => event.target
         })
       ],
-      target: '.Start'
+      target: `.${StateName.Start}`
     }
   }
 });

@@ -189,7 +189,7 @@ export class Workflow {
               return p.concat(c);
             }, [])
             .filter((v) => k === v.to).length,
-          start: k === 'Start',
+          start: k === StateName.Start,
           final: v.type === 'final'
         } as StateNode;
       })
@@ -402,7 +402,7 @@ export class Workflow {
   private async populateTransitions() {
     // TODO: AllowedUserNames
     return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: await Workflow.transitionEntriesFromState('Start', {
+      data: await Workflow.transitionEntriesFromState(StateName.Start, {
         productId: this.productId,
         hasAuthors: false,
         hasReviewers: false,
@@ -449,8 +449,8 @@ export class Workflow {
     });
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
-        stateName === 'Start'
-          ? Workflow.availableTransitionsFromName('Start', input)[0][0].target[0]
+        stateName === StateName.Start
+          ? Workflow.availableTransitionsFromName(StateName.Start, input)[0][0].target[0]
           : DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
         input,
         users

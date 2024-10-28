@@ -34,6 +34,7 @@ export enum ProductType {
 }
 
 export enum StateName {
+  Start = 'Start',
   Readiness_Check = 'Readiness Check',
   Approval = 'Approval',
   Approval_Pending = 'Approval Pending',
