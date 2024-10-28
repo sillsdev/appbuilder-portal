@@ -8,6 +8,7 @@ import {
   ProductType,
   ActionType,
   StateName,
+  WorkflowAction,
   WorkflowEvent,
   JumpParams,
   jump
@@ -125,7 +126,7 @@ export const DefaultWorkflow = setup({
       on: {
         // this is here just so the default start transition shows up in the visualization
         // don't actually use this transition
-        Default: [
+        [WorkflowAction.Default]: [
           {
             meta: {
               type: ActionType.Auto,
@@ -149,7 +150,7 @@ export const DefaultWorkflow = setup({
         includeFields: ['storeDescription', 'listingLanguageCode']
       }),
       on: {
-        Continue: {
+        [WorkflowAction.Continue]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
@@ -175,21 +176,21 @@ export const DefaultWorkflow = setup({
         ]
       }),
       on: {
-        Approve: {
+        [WorkflowAction.Approve]: {
           meta: {
             type: ActionType.User,
             user: RoleId.OrgAdmin
           },
           target: StateName.Product_Creation
         },
-        Hold: {
+        [WorkflowAction.Hold]: {
           meta: {
             type: ActionType.User,
             user: RoleId.OrgAdmin
           },
           target: StateName.Approval_Pending
         },
-        Reject: {
+        [WorkflowAction.Reject]: {
           meta: {
             type: ActionType.User,
             user: RoleId.OrgAdmin
@@ -209,20 +210,20 @@ export const DefaultWorkflow = setup({
         })
       ],
       on: {
-        Reject: {
+        [WorkflowAction.Reject]: {
           meta: {
             type: ActionType.User,
             user: RoleId.OrgAdmin
           },
           target: StateName.Terminated
         },
-        Hold: {
+        [WorkflowAction.Hold]: {
           meta: {
             type: ActionType.User,
             user: RoleId.OrgAdmin
           }
         },
-        Approve: {
+        [WorkflowAction.Approve]: {
           meta: {
             type: ActionType.User,
             user: RoleId.OrgAdmin
@@ -250,7 +251,7 @@ export const DefaultWorkflow = setup({
         }
       ],
       on: {
-        'Product Created': {
+        [WorkflowAction.Product_Created]: {
           meta: { type: ActionType.Auto },
           target: StateName.App_Builder_Configuration
         }
@@ -265,7 +266,7 @@ export const DefaultWorkflow = setup({
         includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
       }),
       on: {
-        'New App': {
+        [WorkflowAction.New_App]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder,
@@ -273,7 +274,7 @@ export const DefaultWorkflow = setup({
           },
           target: StateName.Product_Build
         },
-        Continue: {
+        [WorkflowAction.Continue]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder,
@@ -281,7 +282,7 @@ export const DefaultWorkflow = setup({
           },
           target: StateName.Product_Build
         },
-        'Existing App': {
+        [WorkflowAction.Existing_App]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder,
@@ -295,7 +296,7 @@ export const DefaultWorkflow = setup({
           }),
           target: StateName.Product_Build
         },
-        'Transfer to Authors': {
+        [WorkflowAction.Transfer_to_Authors]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
@@ -311,14 +312,14 @@ export const DefaultWorkflow = setup({
         includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
       }),
       on: {
-        Continue: {
+        [WorkflowAction.Continue]: {
           meta: {
             type: ActionType.User,
             user: RoleId.Author
           },
           target: StateName.App_Builder_Configuration
         },
-        'Take Back': {
+        [WorkflowAction.Take_Back]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
@@ -333,14 +334,14 @@ export const DefaultWorkflow = setup({
         includeFields: ['storeDescription', 'listingLanguageCode']
       }),
       on: {
-        Continue: {
+        [WorkflowAction.Continue]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
           target: StateName.Product_Build
         },
-        'Transfer to Authors': {
+        [WorkflowAction.Transfer_to_Authors]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
@@ -356,14 +357,14 @@ export const DefaultWorkflow = setup({
         includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
       }),
       on: {
-        Continue: {
+        [WorkflowAction.Continue]: {
           meta: {
             type: ActionType.User,
             user: RoleId.Author
           },
           target: StateName.Author_Upload
         },
-        'Take Back': {
+        [WorkflowAction.Take_Back]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
@@ -378,14 +379,14 @@ export const DefaultWorkflow = setup({
         includeFields: ['storeDescription', 'listingLanguageCode']
       }),
       on: {
-        Continue: {
+        [WorkflowAction.Continue]: {
           meta: {
             type: ActionType.User,
             user: RoleId.Author
           },
           target: StateName.Synchronize_Data
         },
-        'Take Back': {
+        [WorkflowAction.Take_Back]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
@@ -405,7 +406,7 @@ export const DefaultWorkflow = setup({
         }
       ],
       on: {
-        'Build Successful': [
+        [WorkflowAction.Build_Successful]: [
           {
             meta: {
               type: ActionType.Auto,
@@ -425,7 +426,7 @@ export const DefaultWorkflow = setup({
             target: StateName.Verify_and_Publish
           }
         ],
-        'Build Failed': {
+        [WorkflowAction.Build_Failed]: {
           meta: { type: ActionType.Auto },
           target: StateName.Synchronize_Data
         }
@@ -450,7 +451,7 @@ export const DefaultWorkflow = setup({
       }),
       exit: assign({ includeArtifacts: false }),
       on: {
-        Approve: [
+        [WorkflowAction.Approve]: [
           {
             meta: {
               type: ActionType.User,
@@ -471,7 +472,7 @@ export const DefaultWorkflow = setup({
             target: StateName.Create_App_Store_Entry
           }
         ],
-        Reject: [
+        [WorkflowAction.Reject]: [
           {
             meta: {
               type: ActionType.User,
@@ -509,7 +510,7 @@ export const DefaultWorkflow = setup({
       }),
       exit: assign({ includeArtifacts: false }),
       on: {
-        Continue: [
+        [WorkflowAction.Continue]: [
           {
             meta: {
               type: ActionType.User,
@@ -542,7 +543,7 @@ export const DefaultWorkflow = setup({
             target: StateName.Verify_and_Publish
           }
         ],
-        Reject: [
+        [WorkflowAction.Reject]: [
           {
             meta: {
               type: ActionType.User,
@@ -597,21 +598,21 @@ export const DefaultWorkflow = setup({
         includeArtifacts: false
       }),
       on: {
-        Approve: {
+        [WorkflowAction.Approve]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
           target: StateName.Product_Publish
         },
-        Reject: {
+        [WorkflowAction.Reject]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
           target: StateName.Synchronize_Data
         },
-        'Email Reviewers': {
+        [WorkflowAction.Email_Reviewers]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
@@ -633,7 +634,7 @@ export const DefaultWorkflow = setup({
         }
       ],
       on: {
-        'Publish Completed': [
+        [WorkflowAction.Publish_Completed]: [
           {
             meta: {
               type: ActionType.Auto,
@@ -652,7 +653,7 @@ export const DefaultWorkflow = setup({
             target: StateName.Published
           }
         ],
-        'Publish Failed': {
+        [WorkflowAction.Publish_Failed]: {
           meta: { type: ActionType.Auto },
           target: StateName.Synchronize_Data
         }
@@ -667,7 +668,7 @@ export const DefaultWorkflow = setup({
         includeFields: ['storeDescription', 'listingLanguageCode']
       }),
       on: {
-        Continue: [
+        [WorkflowAction.Continue]: [
           {
             meta: {
               type: ActionType.User,
@@ -688,7 +689,7 @@ export const DefaultWorkflow = setup({
             target: StateName.Published
           }
         ],
-        Reject: [
+        [WorkflowAction.Reject]: [
           {
             meta: {
               type: ActionType.User,
@@ -720,7 +721,7 @@ export const DefaultWorkflow = setup({
     }
   },
   on: {
-    Jump: {
+    [WorkflowAction.Jump]: {
       actions: [
         assign({
           start: ({ context, event }) => event.target

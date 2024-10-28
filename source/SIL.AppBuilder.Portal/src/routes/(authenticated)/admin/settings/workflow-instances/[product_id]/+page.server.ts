@@ -1,5 +1,5 @@
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
-import { type StateName } from 'sil.appbuilder.portal.common/workflow';
+import { WorkflowAction, type StateName } from 'sil.appbuilder.portal.common/workflow';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { PageServerLoad, Actions } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -83,7 +83,7 @@ export const actions = {
     const flow = await Workflow.restore(params.product_id);
 
     flow.send({
-      type: 'Jump',
+      type: WorkflowAction.Jump,
       target: form.data.state as StateName,
       userId: null
     });

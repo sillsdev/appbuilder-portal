@@ -6,11 +6,11 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { Session } from '@auth/sveltekit';
-import { StateName } from 'sil.appbuilder.portal.common/workflow';
+import { WorkflowAction, StateName } from 'sil.appbuilder.portal.common/workflow';
 
 const sendActionSchema = v.object({
   state: v.enum(StateName),
-  flowAction: v.string(),
+  flowAction: v.enum(WorkflowAction),
   comment: v.string()
 });
 
@@ -147,7 +147,7 @@ export const load = (async ({ params, url, locals }) => {
             return false;
         }
       })
-      .map((a) => a[0].eventType as string),
+      .map((a) => a[0].eventType as WorkflowAction),
     taskTitle: snap?.value,
     instructions: snap?.context.instructions,
     projectId: product?.Project.Id,

@@ -39,6 +39,7 @@ export enum StateName {
   Approval = 'Approval',
   Approval_Pending = 'Approval Pending',
   Terminated = 'Terminated',
+  Product_Creation = 'Product Creation',
   App_Builder_Configuration = 'App Builder Configuration',
   Author_Configuration = 'Author Configuration',
   Synchronize_Data = 'Synchronize Data',
@@ -50,8 +51,26 @@ export enum StateName {
   Verify_and_Publish = 'Verify and Publish',
   Product_Publish = 'Product Publish',
   Make_It_Live = 'Make It Live',
-  Published = 'Published',
-  Product_Creation = 'Product Creation'
+  Published = 'Published'
+}
+
+export enum WorkflowAction {
+  Default = 'Default',
+  Continue = 'Continue',
+  Approve = 'Approve',
+  Hold = 'Hold',
+  Reject = 'Reject',
+  Jump = 'Jump',
+  Product_Created = 'Product Created',
+  New_App = 'New App',
+  Existing_App = 'Existing App',
+  Transfer_to_Authors = 'Transfer to Authors',
+  Take_Back = 'Take Back',
+  Build_Successful = 'Build Successful',
+  Build_Failed = 'Build Failed',
+  Email_Reviewers = 'Email Reviewers',
+  Publish_Completed = 'Publish Completed',
+  Publish_Failed = 'Publish Failed'
 }
 
 export type WorkflowContext = {
@@ -174,7 +193,7 @@ export type WorkflowTransitionMeta = MetaFilter & {
 };
 
 export type WorkflowEvent = {
-  type: any; // This might need to be narrowed in the future
+  type: WorkflowAction;
   comment?: string;
   target?: StateName;
   userId: number | null;
