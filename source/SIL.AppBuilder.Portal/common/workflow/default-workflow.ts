@@ -7,7 +7,7 @@ import {
   WorkflowAdminRequirements,
   ProductType,
   ActionType,
-  StateName,
+  WorkflowState,
   WorkflowAction,
   WorkflowEvent,
   JumpParams,
@@ -56,7 +56,7 @@ export const DefaultWorkflow = setup({
   }
 }).createMachine({
   id: 'DefaultWorkflow',
-  initial: StateName.Start,
+  initial: WorkflowState.Start,
   context: ({ input }) => ({
     instructions: null,
     /** projectName and projectDescription are always included */
@@ -73,54 +73,54 @@ export const DefaultWorkflow = setup({
     hasReviewers: input.hasReviewers
   }),
   states: {
-    [StateName.Start]: {
+    [WorkflowState.Start]: {
       always: [
         jump({
-          target: StateName.Readiness_Check,
+          target: WorkflowState.Readiness_Check,
           adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
         }),
         jump({
-          target: StateName.Approval,
+          target: WorkflowState.Approval,
           adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
         }),
         jump({
-          target: StateName.Approval_Pending,
+          target: WorkflowState.Approval_Pending,
           adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
         }),
         jump({
-          target: StateName.Terminated,
+          target: WorkflowState.Terminated,
           adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
         }),
-        jump({ target: StateName.Product_Creation }),
-        jump({ target: StateName.App_Builder_Configuration }),
+        jump({ target: WorkflowState.Product_Creation }),
+        jump({ target: WorkflowState.App_Builder_Configuration }),
         //@ts-expect-error I couldn't figure out the TS magic to prevent this from complaining. It should work fine though.
-        jump({ target: StateName.Author_Configuration }, [{ type: 'hasAuthors' }]),
-        jump({ target: StateName.Synchronize_Data }),
+        jump({ target: WorkflowState.Author_Configuration }, [{ type: 'hasAuthors' }]),
+        jump({ target: WorkflowState.Synchronize_Data }),
         //@ts-expect-error
-        jump({ target: StateName.Author_Download }, [{ type: 'hasAuthors' }]),
+        jump({ target: WorkflowState.Author_Download }, [{ type: 'hasAuthors' }]),
         //note: authors can upload at any time, this state is just to prompt an upload
         //@ts-expect-error
-        jump({ target: StateName.Author_Upload }, [{ type: 'hasAuthors' }]),
-        jump({ target: StateName.Product_Build }),
+        jump({ target: WorkflowState.Author_Upload }, [{ type: 'hasAuthors' }]),
+        jump({ target: WorkflowState.Product_Build }),
         jump({
-          target: StateName.App_Store_Preview,
+          target: WorkflowState.App_Store_Preview,
           products: [ProductType.Android_GooglePlay]
         }),
         jump({
-          target: StateName.Create_App_Store_Entry,
+          target: WorkflowState.Create_App_Store_Entry,
           products: [ProductType.Android_GooglePlay]
         }),
-        jump({ target: StateName.Verify_and_Publish }),
-        jump({ target: StateName.Product_Publish }),
-        jump({ target: StateName.Make_It_Live, products: [ProductType.Android_GooglePlay] }),
-        jump({ target: StateName.Published }),
+        jump({ target: WorkflowState.Verify_and_Publish }),
+        jump({ target: WorkflowState.Product_Publish }),
+        jump({ target: WorkflowState.Make_It_Live, products: [ProductType.Android_GooglePlay] }),
+        jump({ target: WorkflowState.Published }),
         {
           guard: ({ context }) =>
             context.adminRequirements.includes(WorkflowAdminRequirements.ApprovalProcess),
-          target: StateName.Readiness_Check
+          target: WorkflowState.Readiness_Check
         },
         {
-          target: StateName.Product_Creation
+          target: WorkflowState.Product_Creation
         }
       ],
       on: {
@@ -132,16 +132,16 @@ export const DefaultWorkflow = setup({
               type: ActionType.Auto,
               adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
             },
-            target: StateName.Readiness_Check
+            target: WorkflowState.Readiness_Check
           },
           {
             meta: { type: ActionType.Auto },
-            target: StateName.Product_Creation
+            target: WorkflowState.Product_Creation
           }
         ]
       }
     },
-    [StateName.Readiness_Check]: {
+    [WorkflowState.Readiness_Check]: {
       meta: {
         adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
       },
@@ -155,11 +155,11 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          target: StateName.Approval
+          target: WorkflowState.Approval
         }
       }
     },
-    [StateName.Approval]: {
+    [WorkflowState.Approval]: {
       meta: {
         adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
       },
@@ -181,25 +181,25 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.OrgAdmin
           },
-          target: StateName.Product_Creation
+          target: WorkflowState.Product_Creation
         },
         [WorkflowAction.Hold]: {
           meta: {
             type: ActionType.User,
             user: RoleId.OrgAdmin
           },
-          target: StateName.Approval_Pending
+          target: WorkflowState.Approval_Pending
         },
         [WorkflowAction.Reject]: {
           meta: {
             type: ActionType.User,
             user: RoleId.OrgAdmin
           },
-          target: StateName.Terminated
+          target: WorkflowState.Terminated
         }
       }
     },
-    [StateName.Approval_Pending]: {
+    [WorkflowState.Approval_Pending]: {
       meta: {
         adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
       },
@@ -215,7 +215,7 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.OrgAdmin
           },
-          target: StateName.Terminated
+          target: WorkflowState.Terminated
         },
         [WorkflowAction.Hold]: {
           meta: {
@@ -228,11 +228,11 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.OrgAdmin
           },
-          target: StateName.Product_Creation
+          target: WorkflowState.Product_Creation
         }
       }
     },
-    [StateName.Terminated]: {
+    [WorkflowState.Terminated]: {
       meta: {
         adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
       },
@@ -242,7 +242,7 @@ export const DefaultWorkflow = setup({
       }),
       type: 'final'
     },
-    [StateName.Product_Creation]: {
+    [WorkflowState.Product_Creation]: {
       entry: [
         assign({ instructions: 'waiting' }),
         () => {
@@ -253,11 +253,11 @@ export const DefaultWorkflow = setup({
       on: {
         [WorkflowAction.Product_Created]: {
           meta: { type: ActionType.Auto },
-          target: StateName.App_Builder_Configuration
+          target: WorkflowState.App_Builder_Configuration
         }
       }
     },
-    [StateName.App_Builder_Configuration]: {
+    [WorkflowState.App_Builder_Configuration]: {
       entry: assign({
         instructions: ({ context }) =>
           context.productType === ProductType.Android_GooglePlay
@@ -272,7 +272,7 @@ export const DefaultWorkflow = setup({
             user: RoleId.AppBuilder,
             productTypes: [ProductType.Android_GooglePlay]
           },
-          target: StateName.Product_Build
+          target: WorkflowState.Product_Build
         },
         [WorkflowAction.Continue]: {
           meta: {
@@ -280,7 +280,7 @@ export const DefaultWorkflow = setup({
             user: RoleId.AppBuilder,
             productTypes: [ProductType.Android_S3, ProductType.AssetPackage, ProductType.Web]
           },
-          target: StateName.Product_Build
+          target: WorkflowState.Product_Build
         },
         [WorkflowAction.Existing_App]: {
           meta: {
@@ -294,7 +294,7 @@ export const DefaultWorkflow = setup({
               return context.environment;
             }
           }),
-          target: StateName.Product_Build
+          target: WorkflowState.Product_Build
         },
         [WorkflowAction.Transfer_to_Authors]: {
           meta: {
@@ -302,11 +302,11 @@ export const DefaultWorkflow = setup({
             user: RoleId.AppBuilder
           },
           guard: { type: 'hasAuthors' },
-          target: StateName.Author_Configuration
+          target: WorkflowState.Author_Configuration
         }
       }
     },
-    [StateName.Author_Configuration]: {
+    [WorkflowState.Author_Configuration]: {
       entry: assign({
         instructions: 'app_configuration',
         includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
@@ -317,18 +317,18 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.Author
           },
-          target: StateName.App_Builder_Configuration
+          target: WorkflowState.App_Builder_Configuration
         },
         [WorkflowAction.Take_Back]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          target: StateName.App_Builder_Configuration
+          target: WorkflowState.App_Builder_Configuration
         }
       }
     },
-    [StateName.Synchronize_Data]: {
+    [WorkflowState.Synchronize_Data]: {
       entry: assign({
         instructions: 'synchronize_data',
         includeFields: ['storeDescription', 'listingLanguageCode']
@@ -339,7 +339,7 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          target: StateName.Product_Build
+          target: WorkflowState.Product_Build
         },
         [WorkflowAction.Transfer_to_Authors]: {
           meta: {
@@ -347,11 +347,11 @@ export const DefaultWorkflow = setup({
             user: RoleId.AppBuilder
           },
           guard: { type: 'hasAuthors' },
-          target: StateName.Author_Download
+          target: WorkflowState.Author_Download
         }
       }
     },
-    [StateName.Author_Download]: {
+    [WorkflowState.Author_Download]: {
       entry: assign({
         instructions: 'authors_download',
         includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
@@ -362,18 +362,18 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.Author
           },
-          target: StateName.Author_Upload
+          target: WorkflowState.Author_Upload
         },
         [WorkflowAction.Take_Back]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          target: StateName.Synchronize_Data
+          target: WorkflowState.Synchronize_Data
         }
       }
     },
-    [StateName.Author_Upload]: {
+    [WorkflowState.Author_Upload]: {
       entry: assign({
         instructions: 'authors_upload',
         includeFields: ['storeDescription', 'listingLanguageCode']
@@ -384,18 +384,18 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.Author
           },
-          target: StateName.Synchronize_Data
+          target: WorkflowState.Synchronize_Data
         },
         [WorkflowAction.Take_Back]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          target: StateName.Synchronize_Data
+          target: WorkflowState.Synchronize_Data
         }
       }
     },
-    [StateName.Product_Build]: {
+    [WorkflowState.Product_Build]: {
       entry: [
         assign({
           instructions: 'waiting'
@@ -415,7 +415,7 @@ export const DefaultWorkflow = setup({
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
               !context.environment.googlePlayUploaded,
-            target: StateName.App_Store_Preview
+            target: WorkflowState.App_Store_Preview
           },
           {
             meta: { type: ActionType.Auto },
@@ -423,16 +423,16 @@ export const DefaultWorkflow = setup({
               context.productType !== ProductType.Android_GooglePlay ||
               context.environment.googlePlayExisting ||
               context.environment.googlePlayUploaded,
-            target: StateName.Verify_and_Publish
+            target: WorkflowState.Verify_and_Publish
           }
         ],
         [WorkflowAction.Build_Failed]: {
           meta: { type: ActionType.Auto },
-          target: StateName.Synchronize_Data
+          target: WorkflowState.Synchronize_Data
         }
       }
     },
-    [StateName.App_Store_Preview]: {
+    [WorkflowState.App_Store_Preview]: {
       meta: {
         productTypes: [ProductType.Android_GooglePlay]
       },
@@ -461,7 +461,7 @@ export const DefaultWorkflow = setup({
                 WorkflowAdminRequirements.StoreAccess
               ]
             },
-            target: StateName.Create_App_Store_Entry
+            target: WorkflowState.Create_App_Store_Entry
           },
           {
             meta: {
@@ -469,7 +469,7 @@ export const DefaultWorkflow = setup({
               user: RoleId.AppBuilder,
               adminRequirements: [WorkflowAdminRequirements.None]
             },
-            target: StateName.Create_App_Store_Entry
+            target: WorkflowState.Create_App_Store_Entry
           }
         ],
         [WorkflowAction.Reject]: [
@@ -482,7 +482,7 @@ export const DefaultWorkflow = setup({
                 WorkflowAdminRequirements.StoreAccess
               ]
             },
-            target: StateName.Synchronize_Data
+            target: WorkflowState.Synchronize_Data
           },
           {
             meta: {
@@ -490,12 +490,12 @@ export const DefaultWorkflow = setup({
               user: RoleId.AppBuilder,
               adminRequirements: [WorkflowAdminRequirements.None]
             },
-            target: StateName.Synchronize_Data
+            target: WorkflowState.Synchronize_Data
           }
         ]
       }
     },
-    [StateName.Create_App_Store_Entry]: {
+    [WorkflowState.Create_App_Store_Entry]: {
       meta: {
         productTypes: [ProductType.Android_GooglePlay]
       },
@@ -526,7 +526,7 @@ export const DefaultWorkflow = setup({
                 return context.environment;
               }
             }),
-            target: StateName.Verify_and_Publish
+            target: WorkflowState.Verify_and_Publish
           },
           {
             meta: {
@@ -540,7 +540,7 @@ export const DefaultWorkflow = setup({
                 return context.environment;
               }
             }),
-            target: StateName.Verify_and_Publish
+            target: WorkflowState.Verify_and_Publish
           }
         ],
         [WorkflowAction.Reject]: [
@@ -553,7 +553,7 @@ export const DefaultWorkflow = setup({
                 WorkflowAdminRequirements.StoreAccess
               ]
             },
-            target: StateName.Synchronize_Data
+            target: WorkflowState.Synchronize_Data
           },
           {
             meta: {
@@ -561,12 +561,12 @@ export const DefaultWorkflow = setup({
               user: RoleId.AppBuilder,
               adminRequirements: [WorkflowAdminRequirements.None]
             },
-            target: StateName.Synchronize_Data
+            target: WorkflowState.Synchronize_Data
           }
         ]
       }
     },
-    [StateName.Verify_and_Publish]: {
+    [WorkflowState.Verify_and_Publish]: {
       entry: assign({
         instructions: ({ context }) => {
           switch (context.productType) {
@@ -603,14 +603,14 @@ export const DefaultWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          target: StateName.Product_Publish
+          target: WorkflowState.Product_Publish
         },
         [WorkflowAction.Reject]: {
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          target: StateName.Synchronize_Data
+          target: WorkflowState.Synchronize_Data
         },
         [WorkflowAction.Email_Reviewers]: {
           meta: {
@@ -625,7 +625,7 @@ export const DefaultWorkflow = setup({
         }
       }
     },
-    [StateName.Product_Publish]: {
+    [WorkflowState.Product_Publish]: {
       entry: [
         assign({ instructions: 'waiting' }),
         () => {
@@ -643,23 +643,23 @@ export const DefaultWorkflow = setup({
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
               !context.environment.googlePlayExisting,
-            target: StateName.Make_It_Live
+            target: WorkflowState.Make_It_Live
           },
           {
             meta: { type: ActionType.Auto },
             guard: ({ context }) =>
               context.productType !== ProductType.Android_GooglePlay ||
               context.environment.googlePlayExisting,
-            target: StateName.Published
+            target: WorkflowState.Published
           }
         ],
         [WorkflowAction.Publish_Failed]: {
           meta: { type: ActionType.Auto },
-          target: StateName.Synchronize_Data
+          target: WorkflowState.Synchronize_Data
         }
       }
     },
-    [StateName.Make_It_Live]: {
+    [WorkflowState.Make_It_Live]: {
       meta: {
         productTypes: [ProductType.Android_GooglePlay]
       },
@@ -678,7 +678,7 @@ export const DefaultWorkflow = setup({
                 WorkflowAdminRequirements.StoreAccess
               ]
             },
-            target: StateName.Published
+            target: WorkflowState.Published
           },
           {
             meta: {
@@ -686,7 +686,7 @@ export const DefaultWorkflow = setup({
               user: RoleId.AppBuilder,
               adminRequirements: [WorkflowAdminRequirements.None]
             },
-            target: StateName.Published
+            target: WorkflowState.Published
           }
         ],
         [WorkflowAction.Reject]: [
@@ -699,7 +699,7 @@ export const DefaultWorkflow = setup({
                 WorkflowAdminRequirements.StoreAccess
               ]
             },
-            target: StateName.Synchronize_Data
+            target: WorkflowState.Synchronize_Data
           },
           {
             meta: {
@@ -707,12 +707,12 @@ export const DefaultWorkflow = setup({
               user: RoleId.AppBuilder,
               adminRequirements: [WorkflowAdminRequirements.None]
             },
-            target: StateName.Synchronize_Data
+            target: WorkflowState.Synchronize_Data
           }
         ]
       }
     },
-    [StateName.Published]: {
+    [WorkflowState.Published]: {
       entry: assign({
         instructions: null,
         includeFields: ['storeDescription', 'listingLanguageCode']
@@ -727,7 +727,7 @@ export const DefaultWorkflow = setup({
           start: ({ context, event }) => event.target
         })
       ],
-      target: `.${StateName.Start}`
+      target: `.${WorkflowState.Start}`
     }
   }
 });

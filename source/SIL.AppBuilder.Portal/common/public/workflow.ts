@@ -33,7 +33,7 @@ export enum ProductType {
   Web
 }
 
-export enum StateName {
+export enum WorkflowState {
   Start = 'Start',
   Readiness_Check = 'Readiness Check',
   Approval = 'Approval',
@@ -102,7 +102,7 @@ export type WorkflowContext = {
   )[];
   includeReviewers: boolean;
   includeArtifacts: 'apk' | 'aab' | boolean;
-  start?: StateName;
+  start?: WorkflowState;
   adminRequirements: WorkflowAdminRequirements[];
   // Not sure how this is used, but will figure out when integrating into backend
   environment: { [key: string]: any };
@@ -195,12 +195,12 @@ export type WorkflowTransitionMeta = MetaFilter & {
 export type WorkflowEvent = {
   type: WorkflowAction;
   comment?: string;
-  target?: StateName;
+  target?: WorkflowState;
   userId: number | null;
 };
 
 export type JumpParams = {
-  target: StateName | string;
+  target: WorkflowState | string;
   products?: ProductType[];
   adminRequirements?: WorkflowAdminRequirements[];
 };

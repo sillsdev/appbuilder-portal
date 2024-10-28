@@ -18,7 +18,7 @@ import {
   MetaFilter,
   WorkflowTransitionMeta,
   Snapshot,
-  StateName
+  WorkflowState
 } from '../public/workflow.js';
 import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType, WorkflowType } from '../public/prisma.js';
@@ -189,7 +189,7 @@ export class Workflow {
               return p.concat(c);
             }, [])
             .filter((v) => k === v.to).length,
-          start: k === StateName.Start,
+          start: k === WorkflowState.Start,
           final: v.type === 'final'
         } as StateNode;
       })
@@ -402,7 +402,7 @@ export class Workflow {
   private async populateTransitions() {
     // TODO: AllowedUserNames
     return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: await Workflow.transitionEntriesFromState(StateName.Start, {
+      data: await Workflow.transitionEntriesFromState(WorkflowState.Start, {
         productId: this.productId,
         hasAuthors: false,
         hasReviewers: false,
@@ -449,14 +449,14 @@ export class Workflow {
     });
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
-        stateName === StateName.Start
-          ? Workflow.availableTransitionsFromName(StateName.Start, input)[0][0].target[0]
+        stateName === WorkflowState.Start
+          ? Workflow.availableTransitionsFromName(WorkflowState.Start, input)[0][0].target[0]
           : DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
         input,
         users
       )
     ];
-    while (ret.at(-1).DestinationState !== StateName.Published) {
+    while (ret.at(-1).DestinationState !== WorkflowState.Published) {
       ret.push(
         Workflow.transitionFromState(
           Workflow.nodeFromName(ret.at(-1).DestinationState),

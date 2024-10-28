@@ -6,10 +6,10 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { Session } from '@auth/sveltekit';
-import { WorkflowAction, StateName } from 'sil.appbuilder.portal.common/workflow';
+import { WorkflowAction, WorkflowState } from 'sil.appbuilder.portal.common/workflow';
 
 const sendActionSchema = v.object({
-  state: v.enum(StateName),
+  state: v.enum(WorkflowState),
   flowAction: v.enum(WorkflowAction),
   comment: v.string()
 });
@@ -168,7 +168,7 @@ export const load = (async ({ params, url, locals }) => {
     reviewers: product?.Project.Reviewers,
     taskForm: await superValidate(
       {
-        state: snap?.value as StateName
+        state: snap?.value as WorkflowState
       },
       valibot(sendActionSchema)
     )
