@@ -38,8 +38,7 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Proje
         WorkflowProjectId: response.id,
         WorkflowAppProjectUrl: `${process.env.UI_URL ?? 'http://localhost:5173'}/projects/${
           job.data.projectId
-        }`,
-        DateUpdated: new Date()
+        }`
       });
       job.updateProgress(75);
 
@@ -82,8 +81,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Projec
           job.log(response.error);
         } else {
           await DatabaseWrites.projects.update(job.data.projectId, {
-            WorkflowProjectUrl: response.url,
-            DateUpdated: new Date()
+            WorkflowProjectUrl: response.url
           });
         }
         const projectImport = (
@@ -101,7 +99,6 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Projec
           const productsToCreate: { Name: string; Store: string }[] = JSON.parse(projectImport.ImportData).Products;
           await Promise.all(
             productsToCreate.map(async (p) => {
-              const timestamp = new Date();
               const res = await DatabaseWrites.products.create({
                 ProjectId: job.data.projectId,
                 ProductDefinitionId: (
@@ -137,9 +134,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Projec
                 // TODO: StoreLanguage?
                 WorkflowJobId: 0,
                 WorkflowBuildId: 0,
-                WorkflowPublishId: 0,
-                DateCreated: timestamp,
-                DateUpdated: timestamp
+                WorkflowPublishId: 0
               });
               job.log(JSON.stringify({ ...p, result: res }, null, 4));
             })

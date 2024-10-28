@@ -40,7 +40,7 @@ export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserT
       const from = job.data.operation.userMapping.map((u) => u.from);
       const to = job.data.operation.userMapping.map((u) => u.to);
 
-      const timestamp = new Date();
+      const timeOfReassignment = new Date();
 
       await Promise.all(
         from.map((u, i) =>
@@ -49,8 +49,7 @@ export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserT
               UserId: u
             },
             data: {
-              UserId: to[i],
-              DateUpdated: timestamp
+              UserId: to[i]
             }
           })
         )
@@ -70,7 +69,7 @@ export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserT
         where: {
           UserId: { in: to },
           DateUpdated: {
-            gte: timestamp
+            gte: timeOfReassignment
           }
         }
       });
@@ -124,7 +123,6 @@ export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserT
               .map((t) => t[0].meta.user) as RoleId[]
           ).filter((r) => job.data.operation.by !== 'Role' || job.data.operation.roles.includes(r));
           job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
-          const timestamp = new Date();
           createdTasks = Array.from(
             new Set(
               Array.from(allUsers.entries())
@@ -141,9 +139,7 @@ export class Modify extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserT
               ProductId: product.Id,
               ActivityName: snap.value,
               Status: snap.value,
-              Comment: job.data.comment,
-              DateCreated: timestamp,
-              DateUpdated: timestamp
+              Comment: job.data.comment
             }));
           await DatabaseWrites.userTasks.createMany({
             data: createdTasks

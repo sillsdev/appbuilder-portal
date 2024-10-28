@@ -50,8 +50,7 @@ export class Create extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Produ
       throw new Error(response.message);
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
-        WorkflowJobId: response.id,
-        DateUpdated: new Date().toString()
+        WorkflowJobId: response.id
       });
       job.updateProgress(75);
       const flow = await Workflow.restore(job.data.productId);

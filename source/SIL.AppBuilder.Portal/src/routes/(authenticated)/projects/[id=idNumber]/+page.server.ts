@@ -288,7 +288,6 @@ export const actions = {
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // Appears that CanUpdate is not used TODO
-    const timestamp = new Date();
     const productId = await DatabaseWrites.products.create({
       ProjectId: parseInt(event.params.id),
       ProductDefinitionId: form.data.productDefinitionId,
@@ -296,9 +295,7 @@ export const actions = {
       StoreLanguageId: form.data.storeLanguageId ?? undefined,
       WorkflowJobId: 0,
       WorkflowBuildId: 0,
-      WorkflowPublishId: 0,
-      DateCreated: timestamp,
-      DateUpdated: timestamp
+      WorkflowPublishId: 0
     });
 
     return { form, ok: !!productId };

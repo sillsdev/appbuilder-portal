@@ -46,18 +46,14 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Buil
       return 0;
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
-        WorkflowBuildId: response.id,
-        DateUpdated: new Date()
+        WorkflowBuildId: response.id
       });
       job.updateProgress(65);
 
-      const timestamp = new Date();
       const productBuild = await DatabaseWrites.productBuilds.create({
         data: {
           ProductId: job.data.productId,
-          BuildId: response.id,
-          DateCreated: timestamp,
-          DateUpdated: timestamp
+          BuildId: response.id
         }
       });
 
@@ -109,7 +105,6 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
           data: await Promise.all(
             Object.entries(response.artifacts).map(async ([type, url]) => {
               const res = await fetch(url, { method: 'HEAD' });
-              const timestamp = new Date();
               const lastModified = new Date(res.headers.get('Last-Modified'));
               if (lastModified > latestArtifactDate) {
                 latestArtifactDate = lastModified;
@@ -124,14 +119,12 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
                       Id: job.data.productBuildId
                     },
                     data: {
-                      Version: version['version'],
-                      DateUpdated: new Date()
+                      Version: version['version']
                     }
                   });
                   if (response.result === 'SUCCESS') {
                     await DatabaseWrites.products.update(job.data.productId, {
-                      VersionBuilt: version['version'],
-                      DateUpdated: new Date()
+                      VersionBuilt: version['version']
                     });
                   }
                 }
@@ -154,8 +147,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
                   });
                   if (lang !== null) {
                     await DatabaseWrites.products.update(job.data.productId, {
-                      StoreLanguageId: lang.Id,
-                      DateUpdated: new Date()
+                      StoreLanguageId: lang.Id
                     });
                   }
                 }
@@ -170,9 +162,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
                 FileSize:
                   res.headers.get('Content-Type') !== 'text/html'
                     ? parseInt(res.headers.get('Content-Length'))
-                    : undefined,
-                DateCreated: timestamp,
-                DateUpdated: timestamp
+                    : undefined
               };
             })
           )
@@ -186,7 +176,6 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Build_
             Id: job.data.productBuildId
           },
           data: {
-            DateUpdated: new Date(),
             Success: response.result === 'SUCCESS'
           }
         });

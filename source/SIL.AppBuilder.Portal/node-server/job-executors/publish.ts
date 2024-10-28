@@ -46,20 +46,16 @@ export class Product extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publ
       return 0;
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
-        WorkflowPublishId: response.id,
-        DateUpdated: new Date()
+        WorkflowPublishId: response.id
       });
       job.updateProgress(65);
 
-      const timestamp = new Date();
       const pub = await DatabaseWrites.productPublications.create({
         data: {
           ProductId: job.data.productId,
           ProductBuildId: productData.WorkflowBuildId,
           ReleaseId: response.id,
-          Channel: job.data.channel,
-          DateCreated: timestamp,
-          DateUpdated: timestamp
+          Channel: job.data.channel
         }
       });
 
@@ -115,8 +111,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publis
             DatePublished: new Date(),
             PublishLink: publishUrlFile
               ? (await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined
-              : undefined,
-            DateUpdated: new Date()
+              : undefined
           });
           flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
           const packageFile = await prisma.productPublications.findUnique({
@@ -159,8 +154,7 @@ export class Check extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.Publis
           data: {
             Success: response.result === 'SUCCESS',
             LogUrl: response.console_text,
-            Package: packageName?.trim(),
-            DateUpdated: new Date()
+            Package: packageName?.trim()
           }
         });
         job.updateProgress(100);

@@ -158,16 +158,13 @@ export const actions: Actions = {
     console.log(JSON.stringify(products, null, 4));
 
     if (!errors.length) {
-      const timestamp = new Date();
       const imp = await DatabaseWrites.projectImports.create({
         data: {
           ImportData: JSON.stringify(form.data.json),
           TypeId: form.data.type,
           OwnerId: session.user.userId,
           GroupId: form.data.group,
-          OrganizationId: organization.Id,
-          DateCreated: timestamp,
-          DateUpdated: timestamp
+          OrganizationId: organization.Id
         },
         select: {
           Id: true
@@ -175,7 +172,6 @@ export const actions: Actions = {
       });
       const projects = await DatabaseWrites.projects.createMany(
         form.data.json.Projects.map((pj) => {
-          const timestamp = new Date();
           return {
             OrganizationId: organization.Id,
             Name: pj.Name,
@@ -184,8 +180,6 @@ export const actions: Actions = {
             Language: pj.Language, // TODO: validate language code?
             TypeId: form.data.type,
             Description: pj.Description ?? '',
-            DateCreated: timestamp,
-            DateUpdated: timestamp,
             IsPublic: pj.IsPublic,
             ImportId: imp.Id
           };

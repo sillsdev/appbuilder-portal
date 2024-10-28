@@ -56,7 +56,7 @@ export class CheckStatuses extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobTyp
     );
     job.updateProgress(30);
     await DatabaseWrites.systemStatuses.createMany({
-      data: filteredOrgs.map((o) => ({ ...o, SystemAvailable: false, DateCreated: new Date() }))
+      data: filteredOrgs.map((o) => ({ ...o, SystemAvailable: false }))
     });
     job.updateProgress(50);
     await Promise.all(
@@ -73,8 +73,7 @@ export class CheckStatuses extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobTyp
             Id: s.Id
           },
           data: {
-            SystemAvailable: res.status === 200,
-            DateUpdated: new Date()
+            SystemAvailable: res.status === 200
           }
         })
       })
