@@ -20,7 +20,7 @@
   const projects = writable(data.projects);
   const count = writable(data.count);
 
-  const { form, enhance, submit } = superForm(data.form, {
+  const { form, enhance, submit } = superForm(data.pageForm, {
     dataType: 'json',
     resetForm: false,
     onChange(event) {
@@ -42,7 +42,7 @@
   afterNavigate((navigation) => {
     projects.set(data.projects);
     count.set(data.count);
-    $form.organizationId = data.form.data.organizationId;
+    $form.organizationId = data.pageForm.data.organizationId;
   });
 
   $: canArchive = selectedProjects.reduce(

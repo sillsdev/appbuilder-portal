@@ -1,11 +1,18 @@
 import { projectSearchSchema, pruneProjects } from '$lib/projects/common';
 import { projectFilter } from '$lib/projects/common.server';
+import { idSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
 import type { PageServerLoad } from './$types';
+
+const bulkProjectOperationSchema = v.object({
+  operation: v.picklist(['archive', 'reactivate', 'rebuild/republish']),
+  projects: v.array(v.object({ Id: idSchema, OwnerId: idSchema, Archived: v.boolean() }))
+});
 
 function whereStatements(
   filter: string,
@@ -70,7 +77,7 @@ export const load = (async ({ params, url, locals }) => {
   });
   return {
     projects: pruneProjects(projects),
-    form: await superValidate(
+    pageForm: await superValidate(
       {
         page: {
           page: 0,
@@ -81,7 +88,13 @@ export const load = (async ({ params, url, locals }) => {
       valibot(projectSearchSchema)
     ),
     count: await prisma.projects.count({ where: whereStatements(params.filter, orgId, userId) }),
-    productDefinitions: await prisma.productDefinitions.findMany()
+    productDefinitions: await prisma.productDefinitions.findMany(),
+    actionForm: superValidate(
+      {
+        operation: 'rebuild/republish'
+      },
+      valibot(bulkProjectOperationSchema)
+    )
   };
 }) satisfies PageServerLoad;
 
