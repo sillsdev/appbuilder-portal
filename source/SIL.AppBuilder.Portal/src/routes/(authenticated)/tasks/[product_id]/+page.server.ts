@@ -6,9 +6,10 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { Session } from '@auth/sveltekit';
+import { StateName } from 'sil.appbuilder.portal.common/workflow';
 
 const sendActionSchema = v.object({
-  state: v.string(),
+  state: v.enum(StateName),
   flowAction: v.string(),
   comment: v.string()
 });
@@ -164,7 +165,7 @@ export const load = (async ({ params, url, locals }) => {
     reviewers: product?.Project.Reviewers,
     taskForm: await superValidate(
       {
-        state: snap?.value
+        state: snap?.value as StateName
       },
       valibot(sendActionSchema)
     )
@@ -189,7 +190,8 @@ export const actions = {
       });
     }
 
-    redirect(302, '/tasks');
+    redirect(302, '/tasks'); // keep the redirect for now. It takes a bit to update the db.
+    //TODO: maybe switch to just a page reload to show the new instructions once we use sockets? As it is right now, the `waiting` instructions will never be shown because of this redirect.
   }
 } satisfies Actions;
 

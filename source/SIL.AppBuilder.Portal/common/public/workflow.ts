@@ -31,24 +31,25 @@ export enum ProductType {
   Web
 }
 
-export type StateName =
-  | 'Readiness Check'
-  | 'Approval'
-  | 'Approval Pending'
-  | 'Terminated'
-  | 'App Builder Configuration'
-  | 'Author Configuration'
-  | 'Synchronize Data'
-  | 'Author Download'
-  | 'Author Upload'
-  | 'Product Build'
-  | 'App Store Preview'
-  | 'Create App Store Entry'
-  | 'Verify and Publish'
-  | 'Product Publish'
-  | 'Make It Live'
-  | 'Published'
-  | 'Product Creation';
+export enum StateName {
+  Readiness_Check = 'Readiness Check',
+  Approval = 'Approval',
+  Approval_Pending = 'Approval Pending',
+  Terminated = 'Terminated',
+  App_Builder_Configuration = 'App Builder Configuration',
+  Author_Configuration = 'Author Configuration',
+  Synchronize_Data = 'Synchronize Data',
+  Author_Download = 'Author Download',
+  Author_Upload = 'Author Upload',
+  Product_Build = 'Product Build',
+  App_Store_Preview = 'App Store Preview',
+  Create_App_Store_Entry = 'Create App Store Entry',
+  Verify_and_Publish = 'Verify and Publish',
+  Product_Publish = 'Product Publish',
+  Make_It_Live = 'Make It Live',
+  Published = 'Published',
+  Product_Creation = 'Product Creation'
+}
 
 export type WorkflowContext = {
   instructions:
@@ -170,7 +171,7 @@ export type WorkflowTransitionMeta = MetaFilter & {
 };
 
 export type WorkflowEvent = {
-  type: any;
+  type: any; // This might need to be narrowed in the future
   comment?: string;
   target?: StateName;
   userId: number | null;
@@ -178,7 +179,7 @@ export type WorkflowEvent = {
 
 export type StateNode = {
   id: number;
-  label: string;
+  label: string; // TODO: i18n?
   connections: { id: number; target: string; label: string }[];
   inCount: number;
   start?: boolean;
