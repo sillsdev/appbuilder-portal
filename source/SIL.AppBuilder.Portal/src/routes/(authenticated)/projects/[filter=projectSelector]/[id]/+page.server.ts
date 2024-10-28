@@ -3,6 +3,15 @@ import { redirect } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { pruneProjects } from '$lib/projects/common';
 import type { PageServerLoad } from './$types';
+import { superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
+import { idSchema } from '$lib/valibot';
+
+const bulkProjectOperationSchema = v.object({
+  operation: v.picklist(['archive', 'reactivate', 'rebuild/republish']),
+  projects: v.array(v.object({ Id: idSchema, OwnerId: idSchema, Archived: v.boolean() }))
+});
 
 export const load = (async ({ params, url, locals }) => {
   const userId = (await locals.auth())?.user.userId;
@@ -53,5 +62,7 @@ export const load = (async ({ params, url, locals }) => {
     }
   });
   // TODO: Likely need to paginate
-  return { projects: pruneProjects(projects) };
+  return { projects: pruneProjects(projects), form: superValidate({
+    operation: 'rebuild/republish'
+  }, valibot(bulkProjectOperationSchema)) };
 }) satisfies PageServerLoad;
