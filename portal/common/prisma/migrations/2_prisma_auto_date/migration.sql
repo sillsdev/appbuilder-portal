@@ -1,0 +1,35 @@
+-- AlterTable
+ALTER TABLE "Notifications" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "OrganizationInviteRequests" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "OrganizationMembershipInvites" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "ProductArtifacts" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "ProductBuilds" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "ProductPublications" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "Products" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "ProjectImports" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "Projects" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "SystemStatuses" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "UserTasks" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "Users" ALTER COLUMN "DateCreated" SET DEFAULT CURRENT_TIMESTAMP;
