@@ -22,7 +22,7 @@ type Fields = {
   storeDescription?: string; //Product.Store.Description
   listingLanguageCode?: string; //Product.StoreLanguage.Name
   projectURL?: string; //Product.Project.WorkflowAppProjectURL
-  productDescription?: string; //Product.ProductDefinition.Description
+  displayProductDescription: boolean; //Product.ProductDefinition.Description
   appType?: string; //Product.ProductDefinition.ApplicationTypes.Description
   projectLanguageCode?: string; //Product.Project.Language
 };
@@ -40,6 +40,7 @@ export const load = (async ({ params, url, locals }) => {
       WorkflowBuildId: true,
       Project: {
         select: {
+          Id: true,
           Name: true,
           Description: true,
           WorkflowAppProjectUrl: snap?.context.includeFields.includes('projectURL'),
@@ -93,7 +94,7 @@ export const load = (async ({ params, url, locals }) => {
         : undefined,
       ProductDefinition: {
         select: {
-          Name: snap?.context.includeFields.includes('productDescription'),
+          Name: true,
           ApplicationTypes: snap?.context.includeFields.includes('appType')
             ? {
                 select: {
@@ -149,6 +150,8 @@ export const load = (async ({ params, url, locals }) => {
       .map((a) => a[0].eventType as string),
     taskTitle: snap?.value,
     instructions: snap?.context.instructions,
+    projectId: product?.Project.Id,
+    productDescription: product?.ProductDefinition.Name,
     fields: {
       projectName: product?.Project.Name,
       projectDescription: product?.Project.Description,
@@ -157,7 +160,7 @@ export const load = (async ({ params, url, locals }) => {
       storeDescription: product?.Store?.Description,
       listingLanguageCode: product?.StoreLanguage?.Name,
       projectURL: product?.Project.WorkflowAppProjectUrl,
-      productDescription: product?.ProductDefinition.Name,
+      displayProductDescription: snap?.context.includeFields.includes('productDescription'),
       appType: product?.ProductDefinition.ApplicationTypes.Description,
       projectLanguageCode: product?.Project.Language
     } as Fields,

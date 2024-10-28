@@ -16,6 +16,16 @@
 </script>
 
 <div class="p-5">
+  <div class="flex flex-row gap-x-3 p-2 flex-wrap">
+    <!-- Breadcrumbs was added here so it lines up -->
+    <div class="breadcrumbs"><a class="link" href="/tasks">{m.sidebar_myTasks_zero()}</a></div>
+    <div class="breadcrumbs">
+      <ul>
+        <li><a class="link" href="/projects/{data.projectId}">{data.fields.projectName}</a></li>
+        <li>{data.productDescription}</li>
+      </ul>
+    </div>
+  </div>
   <form method="POST" use:enhance>
     {#if data.actions?.length}
       <div class="flex flex-row gap-x-3">
@@ -139,7 +149,7 @@
         />
       </label>
     {/if}
-    {#if data.fields.productDescription && data.fields.appType && data.fields.projectLanguageCode}
+    {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
       <label class="form-control w-full">
         <div class="label">
           <span class="label-text">{m.tasks_product()}</span>
@@ -148,7 +158,7 @@
           type="text"
           class="input input-bordered w-full"
           readonly
-          value={data.fields.productDescription}
+          value={data.productDescription}
         />
       </label>
       <label class="form-control w-full">
