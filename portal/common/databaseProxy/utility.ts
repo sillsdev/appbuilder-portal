@@ -1,7 +1,7 @@
 import prisma from '../prisma.js';
 
 export type RequirePrimitive<T> = {
-  [K in keyof T]: Extract<T[K], string | number | boolean>;
+  [K in keyof T]: Extract<T[K], string | number | boolean | Date>;
 };
 
 export async function getOrCreateUser(profile: {

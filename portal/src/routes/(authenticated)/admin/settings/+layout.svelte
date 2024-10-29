@@ -16,7 +16,8 @@
     { text: m.admin_settings_navigation_storeTypes(), route: 'store-types' },
     { text: m.admin_settings_navigation_buildEngines(), route: 'build-engines' },
     // i18n
-    { text: 'BullMQ', route: 'bullmq' }
+    { text: 'BullMQ', route: 'bullmq' },
+    { text: m.admin_workflowInstances_title(), route: 'workflow-instances'}
   ];
 </script>
 

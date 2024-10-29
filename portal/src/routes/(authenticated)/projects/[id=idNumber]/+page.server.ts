@@ -1,12 +1,14 @@
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { RoleId, WorkflowType } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { verifyCanViewAndEdit } from './common';
+import { verifyCanViewAndEdit  } from './common';
+import { Workflow } from 'sil.appbuilder.portal.common';
+import { workflowInputFromDBProductType } from 'sil.appbuilder.portal.common/workflow';
 
 const deleteReviewerSchema = v.object({
   id: idSchema
@@ -25,6 +27,14 @@ const addReviewerSchema = v.object({
 const updateOwnerGroupSchema = v.object({
   owner: idSchema,
   group: idSchema
+});
+const addProductSchema = v.object({
+  productDefinitionId: idSchema,
+  storeId: idSchema,
+  storeLanguageId: idSchema,
+  workflowJobId: idSchema,
+  workflowBuildId: idSchema,
+  workflowPublishId: idSchema
 });
 
 // Are we sending too much data?
@@ -163,6 +173,41 @@ export const actions = {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
     // TODO: api and bulltask
+    const form = await superValidate(event.request, valibot(addProductSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+    // Appears that CanUpdate is not used TODO
+    const productId = await DatabaseWrites.products.create({
+      ProjectId: parseInt(event.params.id),
+      ProductDefinitionId: form.data.productDefinitionId,
+      StoreId: form.data.storeId,
+      StoreLanguageId: form.data.storeLanguageId,
+      WorkflowJobId: form.data.workflowJobId,
+      WorkflowBuildId: form.data.workflowBuildId,
+      WorkflowPublishId: form.data.workflowPublishId
+    });
+
+    if (typeof productId === 'string') {
+      const flow = (await prisma.productDefinitions.findUnique({
+        where: {
+          Id: form.data.productDefinitionId
+        },
+        select: {
+          Workflow: {
+            select: {
+              // TODO: RequiredAdminLevel and ProductType should be directly in the database instead of calling a helper function
+              Id: true,
+              Type: true
+            }
+          }
+        }
+      }))?.Workflow;
+
+      if (flow?.Type === WorkflowType.Startup) {
+        Workflow.create(productId, workflowInputFromDBProductType(flow.Id));
+      }
+    }
+
+    return { form, ok: true };
   },
   async addAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
