@@ -35,3 +35,44 @@ export async function setUserRolesForOrganization(
     })
   ]);
 }
+
+export async function allUsersByRole(projectId: number) {
+  const project = await prisma.projects.findUnique({
+    where: {
+      Id: projectId
+    },
+    select: {
+      Organization: {
+        select: {
+          UserRoles: {
+            where: {
+              RoleId: RoleId.OrgAdmin
+            },
+            select: {
+              UserId: true
+            }
+          }
+        }
+      },
+      OwnerId: true,
+      Authors: {
+        select: {
+          UserId: true
+        }
+      }
+    }
+  });
+
+  const map = new Map<RoleId, number[]>();
+
+  map.set(
+    RoleId.OrgAdmin,
+    project.Organization.UserRoles.map((u) => u.UserId)
+  );
+  map.set(RoleId.AppBuilder, [project.OwnerId]);
+  map.set(
+    RoleId.Author,
+    project.Authors.map((a) => a.UserId)
+  );
+  return map;
+}
