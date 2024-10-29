@@ -23,5 +23,14 @@ export const load = (async ({ locals }) => {
   });
   const productDefinitions = await prisma.productDefinitions.findMany();
   // TODO: Likely need to paginate
-  return { projects: pruneProjects(projects), productDefinitions };
+  return {
+    projects: pruneProjects(projects),
+    productDefinitions,
+    organizations: await prisma.organizations.findMany({
+      select: {
+        Id: true,
+        Name: true
+      }
+    })
+  };
 }) satisfies PageServerLoad;
