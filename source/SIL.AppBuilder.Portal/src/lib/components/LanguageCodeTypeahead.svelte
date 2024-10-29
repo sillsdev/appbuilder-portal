@@ -6,6 +6,7 @@
   import * as m from '$lib/paraglide/messages';
   import type { FuseResultMatch } from 'fuse.js';
   import TypeaheadInput from './TypeaheadInput.svelte';
+  import { createEventDispatcher } from 'svelte';
 
   // https://www.fusejs.io/api/options.html
   // Search the tag, name and localname. Give tag a double weighting
@@ -74,6 +75,10 @@
   export let langCode: string;
   export let dropdownClasses: string = '';
   export let inputClasses: string = '';
+
+  const dispatch = createEventDispatcher<{
+    langCodeSelected: string;
+  }>();
 </script>
 
 <TypeaheadInput
@@ -81,7 +86,10 @@
   getList={(search) => fuzzySearch.search(search).slice(0, 5)}
   classes="pr-20 {inputClasses}"
   bind:search={langCode}
-  on:itemClicked={(item) => (langCode = item.detail.item.tag)}
+  on:itemClicked={(item) => {
+    langCode = item.detail.item.tag;
+    dispatch('langCodeSelected', langCode);
+  }}
   {dropdownClasses}
   bind:inputElement={typeaheadInput}
 >
