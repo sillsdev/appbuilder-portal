@@ -29,7 +29,7 @@ import { RoleId } from '../public/prisma.js';
  *    - The `meta` may also specify filtering criteria like in a state meta
  *  - The first transition in a state will be the "happy" path, assuming the state is in the "happy" path
  */
-export const DefaultWorkflow = setup({
+export const StartupWorkflow = setup({
   types: {
     context: {} as WorkflowContext,
     input: {} as WorkflowInput,
@@ -55,7 +55,7 @@ export const DefaultWorkflow = setup({
     }
   }
 }).createMachine({
-  id: 'DefaultWorkflow',
+  id: 'StartupWorkflow',
   initial: WorkflowState.Start,
   context: ({ input }) => ({
     instructions: null,

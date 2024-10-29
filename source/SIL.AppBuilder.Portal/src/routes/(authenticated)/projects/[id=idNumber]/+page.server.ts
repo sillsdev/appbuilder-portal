@@ -202,7 +202,7 @@ export const actions = {
         }
       }))?.Workflow;
 
-      if (flow?.Type === WorkflowType.Default) {
+      if (flow?.Type === WorkflowType.Startup) {
         Workflow.create(productId, workflowInputFromDBProductType(flow.Id));
       }
     }

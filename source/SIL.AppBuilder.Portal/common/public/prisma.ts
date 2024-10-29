@@ -14,7 +14,7 @@ export enum ProductTransitionType {
 }
 
 export enum WorkflowType {
-  Default = 1,
+  Startup = 1,
   Rebuild,
   Republish
 }

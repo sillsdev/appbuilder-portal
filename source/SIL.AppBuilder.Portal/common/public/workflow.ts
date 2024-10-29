@@ -206,7 +206,7 @@ export type JumpParams = {
 };
 
 /**
- * @param params expected params of `canJump` guard from DefaultWorkflow
+ * @param params expected params of `canJump` guard from StartupWorkflow
  * @param optionalGuards other guards that can optionally be added.
  * @returns A properly configured object for the `always` array of the `Start` state for jumping to an arbitrary state.
  */

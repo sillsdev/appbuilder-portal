@@ -1,4 +1,4 @@
-import { DefaultWorkflow } from './default-workflow.js';
+import { StartupWorkflow } from './startup-workflow.js';
 import { createActor } from 'xstate';
 import type {
   Actor,
@@ -28,7 +28,7 @@ import { Prisma } from '@prisma/client';
  * Wraps a workflow instance and provides methods to interact.
  */
 export class Workflow {
-  private flow: Actor<typeof DefaultWorkflow> | null;
+  private flow: Actor<typeof StartupWorkflow> | null;
   private productId: string;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
   private config: WorkflowConfig;
@@ -45,7 +45,7 @@ export class Workflow {
 
     const check = await flow.checkAuthorsAndReviewers();
 
-    flow.flow = createActor(DefaultWorkflow, {
+    flow.flow = createActor(StartupWorkflow, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
@@ -68,9 +68,9 @@ export class Workflow {
     const snap = await Workflow.getSnapshot(productId);
     const flow = new Workflow(productId, snap.context);
     const check = await flow.checkAuthorsAndReviewers();
-    flow.flow = createActor(DefaultWorkflow, {
+    flow.flow = createActor(StartupWorkflow, {
       snapshot: snap
-        ? DefaultWorkflow.resolveState({
+        ? StartupWorkflow.resolveState({
             ...snap,
             context: {
               ...snap.context,
@@ -129,7 +129,7 @@ export class Workflow {
   /** Returns a list of valid transitions from the provided state. */
   public static availableTransitionsFromName(stateName: string, config: WorkflowConfig) {
     return Workflow.availableTransitionsFromNode(
-      DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+      StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
       config
     );
   }
@@ -140,7 +140,7 @@ export class Workflow {
 
   /** Transform state machine definition into something more easily usable by the visualization algorithm */
   public serializeForVisualization(): StateNode[] {
-    const machine = DefaultWorkflow;
+    const machine = StartupWorkflow;
     const states = Object.entries(machine.states).filter(([k, v]) =>
       Workflow.filterMeta(this.config, v.meta)
     );
@@ -199,7 +199,7 @@ export class Workflow {
   private async inspect(event: InspectedSnapshotEvent): Promise<void> {
     const old = this.currentState;
     const snap = this.flow.getSnapshot();
-    this.currentState = DefaultWorkflow.getStateNodeById(`#${DefaultWorkflow.id}.${snap.value}`);
+    this.currentState = StartupWorkflow.getStateNodeById(`#${StartupWorkflow.id}.${snap.value}`);
 
     if (old && Workflow.stateName(old) !== snap.value) {
       await this.updateProductTransitions(
@@ -388,7 +388,7 @@ export class Workflow {
       InitialState: Workflow.stateName(state),
       DestinationState: Workflow.targetStringFromEvent(t),
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
-      WorkflowType: WorkflowType.Default // TODO: Change this once we support more workflow types
+      WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
     };
   }
 
@@ -441,7 +441,7 @@ export class Workflow {
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
           ? Workflow.availableTransitionsFromName(WorkflowState.Start, config)[0][0].target[0]
-          : DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+          : StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
         productId,
         config,
         users
@@ -527,15 +527,15 @@ export class Workflow {
   }
 
   private static stateName(s: XStateNode<any, any>): string {
-    return s.id.replace(DefaultWorkflow.id + '.', '');
+    return s.id.replace(StartupWorkflow.id + '.', '');
   }
 
   private static stateIdFromName(s: string): string {
-    return DefaultWorkflow.id + '.' + s;
+    return StartupWorkflow.id + '.' + s;
   }
 
   private static nodeFromName(s: string): XStateNode<WorkflowContext, WorkflowEvent> {
-    return DefaultWorkflow.getStateNodeById(Workflow.stateIdFromName(s));
+    return StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(s));
   }
 
   private static targetStringFromEvent(e: TransitionDefinition<any, any>): string {
@@ -543,7 +543,7 @@ export class Workflow {
       e
         .toJSON()
         .target?.at(0)
-        ?.replace('#' + DefaultWorkflow.id + '.', '') || ''
+        ?.replace('#' + StartupWorkflow.id + '.', '') || ''
     );
   }
 
