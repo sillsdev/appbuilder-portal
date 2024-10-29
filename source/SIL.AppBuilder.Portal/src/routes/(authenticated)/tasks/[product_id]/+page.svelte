@@ -17,10 +17,9 @@
 
 <div class="p-5">
   <div class="flex flex-row gap-x-3 p-2 flex-wrap">
-    <!-- Breadcrumbs was added here so it lines up -->
-    <div class="breadcrumbs"><a class="link" href="/tasks">{m.sidebar_myTasks_zero()}</a></div>
     <div class="breadcrumbs">
       <ul>
+        <li><a class="link" href="/tasks">{m.sidebar_myTasks_zero()}</a></li>
         <li><a class="link" href="/projects/{data.projectId}">{data.fields.projectName}</a></li>
         <li>{data.productDescription}</li>
       </ul>
