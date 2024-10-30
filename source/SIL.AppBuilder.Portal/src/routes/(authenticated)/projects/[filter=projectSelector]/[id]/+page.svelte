@@ -6,7 +6,7 @@
   import * as m from '$lib/paraglide/messages';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import { verifyCanArchive } from '$lib/projects/common';
+  import { canModifyProject } from '$lib/projects/common';
 
   export let data: PageData;
 
@@ -29,14 +29,14 @@
     (p, c) =>
       p &&
       !c.Archived &&
-      verifyCanArchive($page.data.session!, c.OwnerId, parseInt($page.params.id)),
+      canModifyProject($page.data.session!, c.OwnerId, parseInt($page.params.id)),
     true
   );
   $: canReactivate = selectedProjects.reduce(
     (p, c) =>
       p &&
       c.Archived &&
-      verifyCanArchive($page.data.session!, c.OwnerId, parseInt($page.params.id)),
+      canModifyProject($page.data.session!, c.OwnerId, parseInt($page.params.id)),
     true
   );
 </script>

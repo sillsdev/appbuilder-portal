@@ -88,7 +88,8 @@ export const importJSONSchema = v.object({
     v.minLength(1)
   )
 });
-export function verifyCanArchive(user: Session, projectOwnerId: number, organizationId: number) {
+
+export function canModifyProject(user: Session, projectOwnerId: number, organizationId: number) {
   if (projectOwnerId === user.user.userId) return true;
   if (
     user.user.roles.find(
