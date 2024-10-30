@@ -3,7 +3,7 @@
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import * as m from '$lib/paraglide/messages';
   import 'flatpickr/dist/flatpickr.css';
-  import ProjectCard from '../projects/components/ProjectCard.svelte';
+  import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;

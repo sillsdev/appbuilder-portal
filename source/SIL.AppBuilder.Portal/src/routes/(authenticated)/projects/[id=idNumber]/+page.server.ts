@@ -6,7 +6,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { verifyCanViewAndEdit  } from './common';
+import { verifyCanViewAndEdit  } from '$lib/projects/common.server';
 import { Workflow } from 'sil.appbuilder.portal.common';
 import { workflowInputFromDBProductType } from 'sil.appbuilder.portal.common/workflow';
 
