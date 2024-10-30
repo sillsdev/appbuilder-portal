@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import OrganizationSelector from '$lib/components/OrganizationSelector.svelte';
-  import ProjectFilterSelector from '../components/ProjectFilterSelector.svelte';
+  import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
 </script>
 
 <div class="w-full max-w-6xl mx-auto">

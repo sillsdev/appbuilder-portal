@@ -4,8 +4,8 @@
   import { page } from '$app/stores';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import * as m from '$lib/paraglide/messages';
-  import ProjectFilterSelector from '../../components/ProjectFilterSelector.svelte';
-  import ProjectCard from '../../components/ProjectCard.svelte';
+  import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
+  import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import { languageTag } from '$lib/paraglide/runtime';
 
   export let data: PageData;
