@@ -81,7 +81,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
 
     const flow = await Workflow.restore(params.product_id);
-
+    // TODO: What if the parent project is archived? This will create user tasks, which we probably don't want.
     flow.send({
       type: WorkflowAction.Jump,
       target: form.data.state as WorkflowState,
