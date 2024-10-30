@@ -53,7 +53,6 @@
           <option value={org}>{org}</option>
         {/each}
       </select>
-
       <LanguageCodeTypeahead bind:langCode />
       <select class="select select-bordered max-w-full" bind:value={productDefinitionFilter}>
         <option value="" selected>{m.productDefinitions_filterAllProjects()}</option>
