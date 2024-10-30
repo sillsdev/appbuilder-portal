@@ -287,7 +287,7 @@ model Products {
   StoreLanguage       StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
   Store               Stores?               @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
   UserTasks           UserTasks[]
-  WorkflowInstance    WorkflowInstances?
+  WorkflowInstances   WorkflowInstances[]
 
   @@index([ProductDefinitionId], map: "IX_Products_ProductDefinitionId")
   @@index([ProjectId], map: "IX_Products_ProjectId")
@@ -486,6 +486,7 @@ model WorkflowDefinitions {
   StoreType            StoreTypes?          @relation(fields: [StoreTypeId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_WorkflowDefinitions_StoreTypes_StoreTypeId")
   ProductType          Int                  @default(0)
   AdminRequirements    Int[]                @default([0])
+  WorkflowInstances    WorkflowInstances[]
 
   @@index([StoreTypeId], map: "IX_WorkflowDefinitions_StoreTypeId")
 }
@@ -751,8 +752,13 @@ model dwUploadedFiles {
 }
 
 model WorkflowInstances {
-  Id        Int      @id(map: "PK_WorkflowInstances") @default(autoincrement())
-  Snapshot  String
-  ProductId String   @unique @db.Uuid
-  Product   Products @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
+  Id           Int          @id(map: "PK_WorkflowInstances") @default(autoincrement())
+  State        String
+  Context      String
+  WorkflowDefinitionId Int
+  ProductId    String       @db.Uuid
+  DateCreated               DateTime? @default(now()) @db.Timestamp
+  DateUpdated               DateTime? @updatedAt @db.Timestamp
+  Product      Products     @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
+  WorkflowDefinition   WorkflowDefinitions @relation(fields: [WorkflowDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_WorkflowDefinitions_WorkflowDefinitionId")
 }
