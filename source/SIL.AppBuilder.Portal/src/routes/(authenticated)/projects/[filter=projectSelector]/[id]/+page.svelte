@@ -5,7 +5,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import type { PrunedProject } from '$lib/projects/common';
-  import { verifyCanArchive } from '$lib/projects/common';
+  import { canModifyProject } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import { writable } from 'svelte/store';
@@ -49,14 +49,14 @@
     (p, c) =>
       p &&
       !c.Archived &&
-      verifyCanArchive($page.data.session!, c.OwnerId, parseInt($page.params.id)),
+      canModifyProject($page.data.session!, c.OwnerId, parseInt($page.params.id)),
     true
   );
   $: canReactivate = selectedProjects.reduce(
     (p, c) =>
       p &&
       c.Archived &&
-      verifyCanArchive($page.data.session!, c.OwnerId, parseInt($page.params.id)),
+      canModifyProject($page.data.session!, c.OwnerId, parseInt($page.params.id)),
     true
   );
 </script>

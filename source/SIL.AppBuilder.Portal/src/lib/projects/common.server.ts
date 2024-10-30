@@ -2,7 +2,7 @@ import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { verifyCanArchive } from './common';
+import { canModifyProject } from './common';
 
 export async function verifyCanViewAndEdit(user: Session, projectId: number) {
   // Editing is allowed if the user owns the project, or if the user is an organization
@@ -17,7 +17,7 @@ export async function verifyCanViewAndEdit(user: Session, projectId: number) {
     }
   });
   if (!org) return false;
-  return verifyCanArchive(user, org.OwnerId, org.Id);
+  return canModifyProject(user, org.OwnerId, org.Id);
 }
 
 export function projectFilter(args: {
