@@ -1,16 +1,16 @@
-import { projectSearchSchema, pruneProjects } from '$lib/projects/common';
+import { canModifyProject, projectSearchSchema, pruneProjects } from '$lib/projects/common';
 import { projectFilter } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { PageServerLoad } from './$types';
 
 const bulkProjectOperationSchema = v.object({
-  operation: v.picklist(['archive', 'reactivate', 'rebuild/republish']),
+  operation: v.nullable(v.picklist(['archive', 'reactivate'])),
   projects: v.array(v.object({ Id: idSchema, OwnerId: idSchema, Archived: v.boolean() }))
 });
 
@@ -89,12 +89,9 @@ export const load = (async ({ params, url, locals }) => {
     ),
     count: await prisma.projects.count({ where: whereStatements(params.filter, orgId, userId) }),
     productDefinitions: await prisma.productDefinitions.findMany(),
-    actionForm: superValidate(
-      {
-        operation: 'rebuild/republish'
-      },
-      valibot(bulkProjectOperationSchema)
-    )
+    actionForm: await superValidate(valibot(bulkProjectOperationSchema)),
+    allowArchive: params.filter !== 'archived',
+    allowReactivate: params.filter === 'all' || params.filter === 'archived'
   };
 }) satisfies PageServerLoad;
 
@@ -130,5 +127,62 @@ export const actions: Actions = {
     const count = await prisma.projects.count({ where: where });
 
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
+  },
+  archive: async (event) => {
+    const session = await event.locals.auth();
+    if (!session) return fail(403);
+    const orgId = parseInt(event.params.id!);
+    if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
+
+    const form = await superValidate(event.request, valibot(bulkProjectOperationSchema));
+    if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
+    if (
+      !form.data.projects.reduce((p, c) => p && canModifyProject(session, c.OwnerId, orgId), true)
+    ) {
+      return fail(403);
+    }
+
+    await Promise.all(
+      form.data.projects.map(async ({ Id }) => {
+        const project = await prisma.projects.findUnique({
+          where: {
+            Id: Id
+          },
+          select: {
+            Id: true,
+            DateArchived: true
+          }
+        });
+        if (form.data.operation === 'archive' && !project?.DateArchived) {
+          await DatabaseWrites.projects.update(Id, {
+            DateArchived: new Date()
+          });
+          await Queues.UserTasks.add(`Delete UserTasks for Archived Project #${Id}`, {
+            type: BullMQ.JobType.UserTasks_Modify,
+            scope: 'Project',
+            projectId: Id,
+            operation: {
+              type: BullMQ.UserTasks.OpType.Delete,
+              by: 'All'
+            }
+          });
+        } else if (form.data.operation === 'reactivate' && !!project?.DateArchived) {
+          await DatabaseWrites.projects.update(Id, {
+            DateArchived: null
+          });
+          await Queues.UserTasks.add(`Create UserTasks for Reactivated Project #${Id}`, {
+            type: BullMQ.JobType.UserTasks_Modify,
+            scope: 'Project',
+            projectId: Id,
+            operation: {
+              type: BullMQ.UserTasks.OpType.Create,
+              by: 'All'
+            }
+          });
+        }
+      })
+    );
+
+    return { form, ok: true };
   }
 };
