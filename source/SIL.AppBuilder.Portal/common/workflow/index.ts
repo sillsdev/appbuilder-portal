@@ -10,6 +10,7 @@ import type {
 import DatabaseWrites from '../databaseProxy/index.js';
 import {
   WorkflowContext,
+  WorkflowContextBase,
   WorkflowConfig,
   ActionType,
   StateNode,
@@ -66,14 +67,15 @@ export class Workflow {
   /** Restore from a snapshot in the database. */
   public static async restore(productId: string): Promise<Workflow> {
     const snap = await Workflow.getSnapshot(productId);
-    const flow = new Workflow(productId, snap.context);
+    const flow = new Workflow(productId, snap.config);
     const check = await flow.checkAuthorsAndReviewers();
     flow.flow = createActor(StartupWorkflow, {
       snapshot: snap
         ? StartupWorkflow.resolveState({
-            ...snap,
+            value: snap.state,
             context: {
               ...snap.context,
+              ...snap.config,
               productId: productId,
               hasAuthors: check._count.Authors > 0,
               hasReviewers: check._count.Authors > 0
@@ -106,19 +108,30 @@ export class Workflow {
 
   /** Retrieves the workflow's snapshot from the database */
   public static async getSnapshot(productId: string): Promise<Snapshot> {
-    const snap = JSON.parse(
-      (
-        await prisma.workflowInstances.findUnique({
-          where: {
-            ProductId: productId
-          },
+    const snap = await prisma.workflowInstances.findFirst({
+      where: {
+        ProductId: productId,
+        State: { not: WorkflowState.Published }
+      },
+      select: {
+        State: true,
+        Context: true,
+        WorkflowDefinition: {
           select: {
-            Snapshot: true
+            ProductType: true,
+            AdminRequirements: true
           }
-        })
-      )?.Snapshot || 'null'
-    ) as Snapshot | null;
-    return snap;
+        }
+      }
+    });
+    return {
+      state: snap.State,
+      context: JSON.parse(snap.Context) as WorkflowContextBase,
+      config: {
+        productType: snap.WorkflowDefinition.ProductType,
+        adminRequirements: snap.WorkflowDefinition.AdminRequirements
+      }
+    };
   }
 
   /** Returns the name of the current state */
@@ -228,36 +241,57 @@ export class Workflow {
   }
 
   private async createSnapshot(context: WorkflowContext) {
-    return DatabaseWrites.workflowInstances.upsert({
+    const instance = await prisma.workflowInstances.findFirst({
       where: {
-        ProductId: this.productId
-      },
-      create: {
         ProductId: this.productId,
-        Snapshot: JSON.stringify({
-          value: Workflow.stateName(this.currentState),
-          context: {
-            ...context,
-            // don't write these values
-            productId: undefined,
-            hasAuthors: undefined,
-            hasReviewers: undefined
-          }
-        } as Snapshot)
+        State: { not: WorkflowState.Published }
       },
-      update: {
-        Snapshot: JSON.stringify({
-          value: Workflow.stateName(this.currentState),
-          context: {
-            ...context,
-            // don't write these values
-            productId: undefined,
-            hasAuthors: undefined,
-            hasReviewers: undefined
-          }
-        } as Snapshot)
+      select: {
+        Id: true
       }
     });
+
+    const filtered = {
+      ...context,
+      productId: undefined,
+      hasAuthors: undefined,
+      hasReviewers: undefined,
+      productType: undefined,
+      adminRequirements: undefined
+    } as WorkflowContextBase;
+    if (instance) {
+      return DatabaseWrites.workflowInstances.update({
+        where: {
+          Id: instance.Id
+        },
+        data: {
+          State: Workflow.stateName(this.currentState),
+          Context: JSON.stringify(filtered)
+        }
+      });
+    } else {
+      return DatabaseWrites.workflowInstances.create({
+        data: {
+          ProductId: this.productId,
+          State: Workflow.stateName(this.currentState),
+          Context: JSON.stringify(context),
+          WorkflowDefinitionId: (
+            await prisma.products.findUnique({
+              where: {
+                Id: this.productId
+              },
+              select: {
+                ProductDefinition: {
+                  select: {
+                    WorkflowId: true
+                  }
+                }
+              }
+            })
+          ).ProductDefinition.WorkflowId
+        }
+      });
+    }
   }
 
   /** Filter a states transitions based on provided context */
@@ -396,7 +430,11 @@ export class Workflow {
   private async populateTransitions() {
     // TODO: AllowedUserNames
     return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: await Workflow.transitionEntriesFromState(WorkflowState.Start, this.productId, this.config)
+      data: await Workflow.transitionEntriesFromState(
+        WorkflowState.Start,
+        this.productId,
+        this.config
+      )
     });
   }
 
