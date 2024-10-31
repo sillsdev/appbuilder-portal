@@ -128,8 +128,8 @@
           {m.project_products_add()}
         </button>
         <dialog bind:this={addProductModal} class="modal">
-          <form action="?/addProduct" method="POST" use:addProductEnhance>
-            <div class="modal-box items-center text-center {selectingStore ? 'hidden' : ''}">
+          <form class="modal-box" action="?/addProduct" method="POST" use:addProductEnhance>
+            <div class="items-center text-center {selectingStore ? 'hidden' : ''}">
               <h2 class="text-lg font-bold">{m.project_products_popup_addTitle()}</h2>
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
@@ -158,7 +158,7 @@
                 {/each}
               </div>
             </div>
-            <div class="modal-box items-center text-center {selectingStore ? '' : 'hidden'}">
+            <div class="items-center text-center {selectingStore ? '' : 'hidden'}">
               <h2 class="text-lg font-bold">
                 {m.products_storeSelect({ name: data.productsToAdd[selectedProduct].Name || '' })}
               </h2>
