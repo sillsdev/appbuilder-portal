@@ -188,7 +188,7 @@ export const actions: Actions = {
 
       if (projects) {
         // Create products
-        queues.scriptoria.addBulk(
+        await queues.scriptoria.addBulk(
           projects.map((p) => ({
             name: `Create Project #${p}`,
             data: {

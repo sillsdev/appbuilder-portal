@@ -75,7 +75,7 @@ export const actions: Actions = {
     });
 
     if (project !== false) {
-      queues.scriptoria.add(`Create Project #${project}`, {
+      await queues.scriptoria.add(`Create Project #${project}`, {
         type: BullMQ.ScriptoriaJobType.Project_Create,
         projectId: project as number
       },
