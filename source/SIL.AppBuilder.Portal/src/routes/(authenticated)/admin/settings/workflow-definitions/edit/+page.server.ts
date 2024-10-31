@@ -6,16 +6,19 @@ import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
 
 const editSchema = v.object({
   id: idSchema,
   name: v.nullable(v.string()),
   storeType: idSchema,
+  productType: v.pipe(idSchema, v.enum(ProductType)),
   workflowType: idSchema,
   workflowScheme: v.nullable(v.string()),
   workflowBusinessFlow: v.nullable(v.string()),
   description: v.nullable(v.string()),
   properties: v.nullable(v.string()),
+  options: v.array(v.pipe(idSchema, v.enum(WorkflowOptions))),
   enabled: v.boolean()
 });
 export const load = (async ({ url }) => {
@@ -29,22 +32,24 @@ export const load = (async ({ url }) => {
     }
   });
   if (!data) return redirect(302, base + '/admin/settings/workflow-definitions');
-  const options = await prisma.storeTypes.findMany();
+  const storeTypes = await prisma.storeTypes.findMany();
   const form = await superValidate(
     {
       id: data.Id,
       name: data.Name,
       storeType: data.StoreTypeId!,
+      productType: data.ProductType,
       workflowType: data.Type,
       workflowScheme: data.WorkflowScheme,
       workflowBusinessFlow: data.WorkflowBusinessFlow,
       description: data.Description,
       properties: data.Properties,
+      options: data.WorkflowOptions,
       enabled: data.Enabled
     },
     valibot(editSchema)
   );
-  return { form, options };
+  return { form, storeTypes };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -63,7 +68,9 @@ export const actions = {
         storeType,
         workflowBusinessFlow,
         workflowScheme,
-        workflowType
+        workflowType,
+        options,
+        productType
       } = form.data;
       await DatabaseWrites.workflowDefinitions.update({
         where: {
@@ -77,7 +84,9 @@ export const actions = {
           StoreTypeId: storeType,
           Description: description,
           Properties: properties,
-          Enabled: enabled
+          Enabled: enabled,
+          ProductType: productType,
+          WorkflowOptions: options
         }
       });
       return { ok: true, form };
