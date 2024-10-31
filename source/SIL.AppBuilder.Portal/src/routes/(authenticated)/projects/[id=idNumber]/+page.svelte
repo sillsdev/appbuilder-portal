@@ -145,7 +145,11 @@
             <span class="italic">{m.products_definition()}</span>
           </div>
         </div>
-        <button class="btn btn-outline" on:click={() => addProductModal?.showModal()}>
+        <button
+          class="btn btn-outline"
+          on:click={() => addProductModal?.showModal()}
+          disabled={!data.productsToAdd.length}
+        >
           {m.project_products_add()}
         </button>
         <dialog bind:this={addProductModal} class="modal">
@@ -181,11 +185,11 @@
             </div>
             <div class="items-center text-center {selectingStore ? '' : 'hidden'}">
               <h2 class="text-lg font-bold">
-                {m.products_storeSelect({ name: data.productsToAdd[selectedProduct].Name || '' })}
+                {m.products_storeSelect({ name: data.productsToAdd[selectedProduct]?.Name || '' })}
               </h2>
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
-                {#each data.stores.filter((s) => s.StoreTypeId === data.productsToAdd[selectedProduct].Workflow.StoreTypeId) as store}
+                {#each data.stores.filter((s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId) as store}
                   <!-- svelte-ignore a11y-click-events-have-key-events -->
                   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                   <label
@@ -268,7 +272,9 @@
                         {/if}
                         {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin)}
                           <li class="w-full-rounded-none">
-                            <a href="/admin/settings/workflow-instances/{product.Id}">{m.common_workflow()}</a>
+                            <a href="/admin/settings/workflow-instances/{product.Id}">
+                              {m.common_workflow()}
+                            </a>
                           </li>
                         {/if}
                         <li class=" w-full rounded-none">
