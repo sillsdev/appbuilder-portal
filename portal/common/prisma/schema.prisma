@@ -484,6 +484,8 @@ model WorkflowDefinitions {
   RepublishWorkflows   ProductDefinitions[] @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions")
   Workflows            ProductDefinitions[] @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions")
   StoreType            StoreTypes?          @relation(fields: [StoreTypeId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_WorkflowDefinitions_StoreTypes_StoreTypeId")
+  ProductType          Int                  @default(0)
+  AdminRequirements    Int[]                @default([0])
 
   @@index([StoreTypeId], map: "IX_WorkflowDefinitions_StoreTypeId")
 }

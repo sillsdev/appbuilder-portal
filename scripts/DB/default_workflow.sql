@@ -1,5 +1,5 @@
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
-(1,	'sil_android_google_play',	1,	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "AdminRequirements") VALUES
+(1,	'sil_android_google_play',	1,	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1,  '{1, 2}')
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
@@ -8,7 +8,8 @@ DO UPDATE SET
 	"Description" = excluded."Description",
 	"WorkflowScheme" = excluded."WorkflowScheme",
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
-	"StoreTypeId" = excluded."StoreTypeId";
+	"StoreTypeId" = excluded."StoreTypeId",
+  "AdminRequirements" = excluded."AdminRequirements";
 
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
 (2,	'sil_android_google_play_rebuild',	2,	'1',	'SIL Default Workflow for Rebuilding to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay_Rebuild',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1)
@@ -33,8 +34,8 @@ DO UPDATE SET
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId";
 	
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
-(4,	'sil_android_s3',	1,	'1',	'SIL Default Workflow for Publish to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_S3_Flow',	2)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "ProductType", "AdminRequirements") VALUES
+(4,	'sil_android_s3',	1,	'1',	'SIL Default Workflow for Publish to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_S3_Flow',	2,  1,  '{2}')
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
@@ -43,10 +44,12 @@ DO UPDATE SET
 	"Description" = excluded."Description",
 	"WorkflowScheme" = excluded."WorkflowScheme",
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
-	"StoreTypeId" = excluded."StoreTypeId";
+	"StoreTypeId" = excluded."StoreTypeId",
+  "ProductType" = excluded."ProductType",
+  "AdminRequirements" = excluded."AdminRequirements";
 
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
-(5,	'sil_android_s3_rebuild',	2,	'1',	'SIL Default Workflow for Rebuilding to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_Default_AppBuilders_Android_S3_Flow',	2)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "ProductType") VALUES
+(5,	'sil_android_s3_rebuild',	2,	'1',	'SIL Default Workflow for Rebuilding to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_Default_AppBuilders_Android_S3_Flow',	2,  1)
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
@@ -55,10 +58,11 @@ DO UPDATE SET
 	"Description" = excluded."Description",
 	"WorkflowScheme" = excluded."WorkflowScheme",
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
-	"StoreTypeId" = excluded."StoreTypeId";
+	"StoreTypeId" = excluded."StoreTypeId",
+  "ProductType" = excluded."ProductType";
 	
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES 
-(6, 'la_android_google_play', '1', 'Low Admin Workflow for Publishing to Google Play', 'SIL_LowAdmin_AppBuilders_Android_GooglePlay', 'SIL_Default_AppBuilders_Android_GooglePlay_Flow', 1, 1)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "AdminRequirements") VALUES 
+(6, 'la_android_google_play', '1', 'Low Admin Workflow for Publishing to Google Play', 'SIL_LowAdmin_AppBuilders_Android_GooglePlay', 'SIL_Default_AppBuilders_Android_GooglePlay_Flow', 1, 1, '{1}')
 ON CONFLICT ("Id")
 DO UPDATE SET 
 	"Name" = excluded."Name", 
@@ -67,7 +71,8 @@ DO UPDATE SET
 	"WorkflowScheme" = excluded."WorkflowScheme",
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId",
-	"Type" = excluded."Type";
+	"Type" = excluded."Type",
+  "AdminRequirements" = excluded."AdminRequirements";
 
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES 
 (7, 'oa_android_google_play', '1', 'Owner Admin Workflow for Publishing to Google Play', 'SIL_OwnerAdmin_AppBuilders_Android_GooglePlay', 'SIL_Default_AppBuilders_Android_GooglePlay_Flow', 1, 1)
@@ -81,68 +86,8 @@ DO UPDATE SET
 	"StoreTypeId" = excluded."StoreTypeId",
 	"Type" = excluded."Type";
 
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES
-(8, 'na_android_s3', '1', 'No Admin Workflow for Publishing to S3', 'SIL_NoAdmin_AppBuilders_Android_S3', 'SIL_Default_AppBuilders_Android_S3_Flow', 2, 1)
-ON CONFLICT ("Id")
-DO UPDATE SET
-	"Name" = excluded."Name",
-	"Enabled" = excluded."Enabled",
-	"Description" = excluded."Description",
-	"WorkflowScheme" = excluded."WorkflowScheme",
-	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
-	"StoreTypeId" = excluded."StoreTypeId",
-	"Type" = excluded."Type";
-
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES
-(9, 'pwa_cloud', '1', 'SIL Default Workflow for Publishing PWA to Cloud', 'SIL_Default_AppBuilders_Pwa_Cloud', 'SIL_AppBuilders_Web_Flow', 3, 1)
-ON CONFLICT ("Id")
-DO UPDATE SET
-	"Name" = excluded."Name",
-	"Enabled" = excluded."Enabled",
-	"Description" = excluded."Description",
-	"WorkflowScheme" = excluded."WorkflowScheme",
-	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
-	"StoreTypeId" = excluded."StoreTypeId",
-	"Type" = excluded."Type";
-
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES
-(10,	'pwa_cloud_rebuild',	'1',	'SIL Default Workflow for Rebuilding PWA to Cloud',	'SIL_Default_AppBuilders_Pwa_Cloud_Rebuild',	'SIL_AppBuilders_Web_Flow',	3,	2)
-ON CONFLICT ("Id")
-DO UPDATE SET
-	"Name" = excluded."Name",
-	"Enabled" = excluded."Enabled",
-	"Description" = excluded."Description",
-	"WorkflowScheme" = excluded."WorkflowScheme",
-	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
-	"StoreTypeId" = excluded."StoreTypeId",
-	"Type" = excluded."Type";
-
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES
-(11, 'html_cloud', '1', 'SIL Default Workflow for Publishing HTML to Cloud', 'SIL_Default_AppBuilders_Html_Cloud', 'SIL_AppBuilders_Web_Flow', 3, 1)
-ON CONFLICT ("Id")
-DO UPDATE SET
-	"Name" = excluded."Name",
-	"Enabled" = excluded."Enabled",
-	"Description" = excluded."Description",
-	"WorkflowScheme" = excluded."WorkflowScheme",
-	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
-	"StoreTypeId" = excluded."StoreTypeId",
-	"Type" = excluded."Type";
-
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES
-(12,	'html_cloud_rebuild',	'1',	'SIL Default Workflow for Rebuilding HTML to Cloud',	'SIL_Default_AppBuilders_Html_Cloud_Rebuild',	'SIL_AppBuilders_Web_Flow',	3,	2)
-ON CONFLICT ("Id")
-DO UPDATE SET
-	"Name" = excluded."Name",
-	"Enabled" = excluded."Enabled",
-	"Description" = excluded."Description",
-	"WorkflowScheme" = excluded."WorkflowScheme",
-	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
-	"StoreTypeId" = excluded."StoreTypeId",
-	"Type" = excluded."Type";
-
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties") VALUES
-(13,	'asset_package',	'1',	'SIL Default Workflow for Publishing Asset Packages',	'SIL_NoAdmin_AppBuilders_Android_S3',	'SIL_AppBuilders_AssetPackage_Flow',	2,	1, '{ "build:targets" : "asset-package" }')
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
+(8, 'na_android_s3', '1', 'No Admin Workflow for Publishing to S3', 'SIL_NoAdmin_AppBuilders_Android_S3', 'SIL_Default_AppBuilders_Android_S3_Flow', 2, 1, 1)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",
@@ -152,10 +97,76 @@ DO UPDATE SET
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId",
 	"Type" = excluded."Type",
-	"Properties" = excluded."Properties";
+  "ProductType" = excluded."ProductType";
+
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
+(9, 'pwa_cloud', '1', 'SIL Default Workflow for Publishing PWA to Cloud', 'SIL_Default_AppBuilders_Pwa_Cloud', 'SIL_AppBuilders_Web_Flow', 3, 1, 3)
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+  "ProductType" = excluded."ProductType";
+
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
+(10,	'pwa_cloud_rebuild',	'1',	'SIL Default Workflow for Rebuilding PWA to Cloud',	'SIL_Default_AppBuilders_Pwa_Cloud_Rebuild',	'SIL_AppBuilders_Web_Flow',	3,	2,  3)
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+  "ProductType" = excluded."ProductType";
+
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
+(11, 'html_cloud', '1', 'SIL Default Workflow for Publishing HTML to Cloud', 'SIL_Default_AppBuilders_Html_Cloud', 'SIL_AppBuilders_Web_Flow', 3, 1, 3)
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+  "ProductType" = excluded."ProductType";
+
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
+(12,	'html_cloud_rebuild',	'1',	'SIL Default Workflow for Rebuilding HTML to Cloud',	'SIL_Default_AppBuilders_Html_Cloud_Rebuild',	'SIL_AppBuilders_Web_Flow',	3,	2,  3)
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+  "ProductType" = excluded."ProductType";
+
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties", "ProductType") VALUES
+(13,	'asset_package',	'1',	'SIL Default Workflow for Publishing Asset Packages',	'SIL_NoAdmin_AppBuilders_Android_S3',	'SIL_AppBuilders_AssetPackage_Flow',	2,	1, '{ "build:targets" : "asset-package" }', 2)
+ON CONFLICT ("Id")
+DO UPDATE SET
+	"Name" = excluded."Name",
+	"Enabled" = excluded."Enabled",
+	"Description" = excluded."Description",
+	"WorkflowScheme" = excluded."WorkflowScheme",
+	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
+	"StoreTypeId" = excluded."StoreTypeId",
+	"Type" = excluded."Type",
+	"Properties" = excluded."Properties",
+  "ProductType" = excluded."ProductType";
 		
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties") VALUES
-(14,	'asset_package_rebuild',	'1',	'SIL Default Workflow for Rebuilding Asset Packages',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_AppBuilders_AssetPackage_Flow',	2,	2, '{ "build:targets" : "asset-package" }')
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties", "ProductType") VALUES
+(14,	'asset_package_rebuild',	'1',	'SIL Default Workflow for Rebuilding Asset Packages',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_AppBuilders_AssetPackage_Flow',	2,	2, '{ "build:targets" : "asset-package" }', 3)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",
@@ -165,7 +176,8 @@ DO UPDATE SET
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId",
 	"Type" = excluded."Type",
-	"Properties" = excluded."Properties";
+	"Properties" = excluded."Properties",
+  "ProductType" = excluded."ProductType";
 
 INSERT INTO "ProductDefinitions" ("Id", "Name", "TypeId", "Description", "WorkflowId", "RebuildWorkflowId", "RepublishWorkflowId") VALUES
 (1,	'Android App to Google Play',	1,	'Build an Android App from a Scripture App Builder project and publish to a Google Play Store. The Organization Admin has to approve of the project and review the store preview. The Organization Admin has access to Google Play Console.',	1, 2, 3)
