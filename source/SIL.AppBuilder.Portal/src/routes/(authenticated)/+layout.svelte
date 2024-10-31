@@ -93,9 +93,9 @@
     <div class="h-full drawer-side shrink-0 z-10">
       <label for="primary-content-drawer" class="drawer-overlay" />
       <div
-        class="h-full overflow-hidden w-full lg:w-72 lg:border-r min-[480px]:w-1/2 min-[720px]:w-1/3"
+        class="h-full mt-16 lg:mt-0 overflow-hidden w-full lg:w-72 lg:border-r min-[480px]:w-1/2 min-[720px]:w-1/3"
       >
-        <ul class="menu menu-lg mt-16 lg:mt-0 p-0 w-full bg-base-100 text-base-content h-full">
+        <ul class="menu menu-lg p-0 w-full bg-base-100 text-base-content h-full">
           <li>
             <a
               class="rounded-none"
