@@ -116,7 +116,7 @@
           </span>
         </div>
         <input
-          class="checkbox checkbox-info"
+          class="toggle toggle-warning border-warning"
           type="checkbox"
           bind:group={$superFormData.options}
           value={WorkflowOptions.AdminStoreAccess}
@@ -129,7 +129,7 @@
           </span>
         </div>
         <input
-          class="checkbox checkbox-info"
+          class="toggle toggle-warning border-warning"
           type="checkbox"
           bind:group={$superFormData.options}
           value={WorkflowOptions.ApprovalProcess}
@@ -142,7 +142,7 @@
           </span>
         </div>
         <input
-          class="checkbox checkbox-info"
+          class="toggle toggle-warning border-warning"
           type="checkbox"
           bind:group={$superFormData.options}
           value={WorkflowOptions.AllowTransferToAuthors}
