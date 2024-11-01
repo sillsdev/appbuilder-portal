@@ -1,4 +1,5 @@
 import type { Session } from '@auth/sveltekit';
+import type { Prisma } from '@prisma/client';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
@@ -19,4 +20,88 @@ export async function verifyCanViewAndEdit(user: Session, projectId: number) {
   )
     return true;
   return false;
+}
+
+export function projectFilter(args: {
+  organizationId: number | null;
+  langCode: string;
+  productDefinitionId: number | null;
+  dateUpdatedRange: [Date, Date | null] | null;
+  search: string;
+}): Prisma.ProjectsWhereInput {
+  return {
+    OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
+    Language: args.langCode
+      ? {
+          contains: args.langCode,
+          mode: 'insensitive'
+        }
+      : undefined,
+    Products:
+      args.productDefinitionId !== null
+        ? {
+            some: {
+              ProductDefinitionId: args.productDefinitionId
+            }
+          }
+        : undefined,
+    AND: [
+      {
+        OR:
+          args.dateUpdatedRange && args.dateUpdatedRange[1]
+            ? [
+                { DateUpdated: null },
+                {
+                  DateUpdated: {
+                    gt: args.dateUpdatedRange[0],
+                    lt: args.dateUpdatedRange[1]
+                  }
+                }
+              ]
+            : undefined
+      },
+      {
+        OR: args.search
+          ? [
+              {
+                Name: {
+                  contains: args.search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                Language: {
+                  contains: args.search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                Owner: {
+                  Name: {
+                    contains: args.search,
+                    mode: 'insensitive'
+                  }
+                }
+              },
+              {
+                Organization: {
+                  Name: {
+                    contains: args.search,
+                    mode: 'insensitive'
+                  }
+                }
+              },
+              {
+                Group: {
+                  Name: {
+                    contains: args.search,
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            ]
+          : undefined
+      }
+    ]
+  };
 }
