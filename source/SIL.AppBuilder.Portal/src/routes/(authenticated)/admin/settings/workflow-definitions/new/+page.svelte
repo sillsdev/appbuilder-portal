@@ -95,7 +95,7 @@
       bind:value={$form.properties}
     />
   </LabeledFormInput>
-  <div>
+  <div class="border border-warning p-1 my-4 rounded-lg">
     <label>
       <!-- TODO: i18n (add to JSON) -->
       <div class="label">
