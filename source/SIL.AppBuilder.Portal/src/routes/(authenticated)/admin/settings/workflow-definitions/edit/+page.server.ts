@@ -6,20 +6,11 @@ import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+import { workflowDefinitionSchemaBase } from '../common';
 
 const editSchema = v.object({
   id: idSchema,
-  name: v.nullable(v.string()),
-  storeType: idSchema,
-  productType: v.pipe(idSchema, v.enum(ProductType)),
-  workflowType: idSchema,
-  workflowScheme: v.nullable(v.string()),
-  workflowBusinessFlow: v.nullable(v.string()),
-  description: v.nullable(v.string()),
-  properties: v.nullable(v.string()),
-  options: v.array(v.pipe(idSchema, v.enum(WorkflowOptions))),
-  enabled: v.boolean()
+  ...workflowDefinitionSchemaBase.entries
 });
 export const load = (async ({ url }) => {
   const id = parseInt(url.searchParams.get('id') ?? '');
