@@ -247,6 +247,9 @@ model ProductPublications {
 model ProductTransitions {
   Id               Int       @id(map: "PK_ProductTransitions") @default(autoincrement())
   ProductId        String    @db.Uuid
+  // TODO: remove when DWKit is replaced
+  // Could possibly be replaced with regular UserId, but probably shouldn't, because what if a User is deleted?
+  // Maybe replace with name? Or perhaps this would already be taken care of by populating AllowedUserNames with just the name of the user who caused the product transition...
   WorkflowUserId   String?   @db.Uuid
   AllowedUserNames String?
   InitialState     String?
@@ -453,7 +456,7 @@ model Users {
   ExternalId                    String?
   ProfileVisibility             Int                             @default(1)
   EmailNotification             Boolean?                        @default(true)
-  WorkflowUserId                String?                         @db.Uuid
+  WorkflowUserId                String?                         @db.Uuid // TODO: remove when DWKit is replaced
   DateCreated                   DateTime?                       @default(now()) @db.Timestamp
   DateUpdated                   DateTime?                       @updatedAt @db.Timestamp
   Authors                       Authors[]
@@ -475,8 +478,8 @@ model WorkflowDefinitions {
   Name                 String?
   Enabled              Boolean
   Description          String?
-  WorkflowScheme       String?
-  WorkflowBusinessFlow String?
+  WorkflowScheme       String? // TODO: remove when DWKit is replaced
+  WorkflowBusinessFlow String? // TODO: remove when DWKit is replaced
   StoreTypeId          Int?
   Type                 Int                  @default(1)
   Properties           String?
