@@ -1,6 +1,6 @@
 <script lang="ts">
   import SearchBar from '$lib/components/SearchBar.svelte';
-import * as m from '$lib/paraglide/messages';
+  import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
@@ -20,7 +20,7 @@ import * as m from '$lib/paraglide/messages';
       class="content-center m-4 gap-2 flex flex-wrap items-end w-full place-content-between"
     >
       {#if data.organizations.length > 1}
-        <span class="flex flex-wrap items-center gap-x-2">
+        <label class="flex flex-wrap items-center gap-x-2">
           <span>{m.users_organization_filter()}:</span>
           <select class="select select-bordered" name="org" bind:value={selectedOrg}>
             <option value={0}>{m.org_allOrganizations()}</option>
@@ -28,7 +28,7 @@ import * as m from '$lib/paraglide/messages';
               <option value={organization.Id}>{organization.Name}</option>
             {/each}
           </select>
-        </span>
+        </label>
       {/if}
       <SearchBar bind:value={searchQuery} className="w-full max-w-xs md:w-auto md:max-w-none" />
     </div>
