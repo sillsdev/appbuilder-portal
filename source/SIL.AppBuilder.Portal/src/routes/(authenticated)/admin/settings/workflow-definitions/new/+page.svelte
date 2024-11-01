@@ -5,6 +5,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+  import { businessFlows } from '../common';
 
   export let data: PageData;
 
@@ -76,12 +77,15 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowBusinessFlow">
-    <input
-      type="text"
+    <select
+      class="select select-bordered"
       name="workflowBusinessFlow"
-      class="input input-bordered w-full"
       bind:value={$form.workflowBusinessFlow}
-    />
+    >
+      {#each businessFlows as flow}
+      <option value={flow}>{flow}</option>
+      {/each}
+    </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
     <input

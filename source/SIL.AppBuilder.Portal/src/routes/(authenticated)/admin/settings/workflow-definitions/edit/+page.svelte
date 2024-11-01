@@ -5,6 +5,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+  import { businessFlows } from '../common';
 
   export let data: PageData;
   export let form: ActionData;
@@ -80,17 +81,20 @@
       bind:value={$superFormData.workflowScheme}
     >
       {#each data.schemes as scheme}
-      <option value={scheme.Code}>{scheme.Code}</option>
+        <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowBusinessFlow">
-    <input
-      class="input w-full input-bordered"
-      type="text"
+    <select
+      class="select select-bordered"
       name="workflowBusinessFlow"
       bind:value={$superFormData.workflowBusinessFlow}
-    />
+    >
+      {#each businessFlows as flow}
+        <option value={flow}>{flow}</option>
+      {/each}
+    </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
     <textarea
