@@ -103,19 +103,19 @@
       </summary>
       <ul>
         <li>
-          {m.project_title()}: {data.instance?.Product.Project.Name}
+          {m.project_title()}: {data.product?.Project.Name}
         </li>
         <li>
-          {m.project_products_title()}: {data.instance?.Product.ProductDefinition.Name}
+          {m.project_products_title()}: {data.product?.ProductDefinition.Name}
         </li>
         <li>
-          Last Transition: {data.instance?.Product.ProductTransitions[0].InitialState}
-          {data.instance?.Product.ProductTransitions[0].Command
-            ? `(${data.instance?.Product.ProductTransitions[0].Command})`
+          Last Transition: {data.product?.ProductTransitions[0].InitialState}
+          {data.product?.ProductTransitions[0].Command
+            ? `(${data.product?.ProductTransitions[0].Command})`
             : ''}
         </li>
         <li>
-          {m.project_products_transitions_date()}: {data.instance?.Product.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
+          {m.project_products_transitions_date()}: {data.product?.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
         </li>
       </ul>
       <form method="POST" use:enhance>
