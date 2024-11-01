@@ -24,6 +24,7 @@ export const load = (async ({ url }) => {
   });
   if (!data) return redirect(302, base + '/admin/settings/workflow-definitions');
   const storeTypes = await prisma.storeTypes.findMany();
+  const schemes = await prisma.workflowScheme.findMany({ select: { Code: true }});
   const form = await superValidate(
     {
       id: data.Id,
@@ -40,7 +41,7 @@ export const load = (async ({ url }) => {
     },
     valibot(editSchema)
   );
-  return { form, storeTypes };
+  return { form, storeTypes, schemes };
 }) satisfies PageServerLoad;
 
 export const actions = {

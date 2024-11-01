@@ -65,12 +65,15 @@
     />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
-    <input
-      type="text"
+    <select
+      class="select select-bordered"
       name="workflowScheme"
-      class="input input-bordered w-full"
       bind:value={$form.workflowScheme}
-    />
+    >
+      {#each data.options.schemes as scheme}
+      <option value={scheme.Code}>{scheme.Code}</option>
+      {/each}
+    </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowBusinessFlow">
     <input

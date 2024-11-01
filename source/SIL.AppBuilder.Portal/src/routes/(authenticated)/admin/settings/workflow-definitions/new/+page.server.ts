@@ -11,7 +11,8 @@ const createSchema = workflowDefinitionSchemaBase;
 export const load = (async ({ url }) => {
   const form = await superValidate(valibot(createSchema));
   const options = {
-    storeType: await prisma.storeTypes.findMany()
+    storeType: await prisma.storeTypes.findMany(),
+    schemes: await prisma.workflowScheme.findMany({ select: { Code: true }})
   };
 
   return { form, options };
