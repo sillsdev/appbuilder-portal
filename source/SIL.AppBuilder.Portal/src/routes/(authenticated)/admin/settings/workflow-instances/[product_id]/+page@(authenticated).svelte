@@ -110,13 +110,15 @@
         </li>
         <li>
           {m.project_products_transitions_state()}: {data.product?.ProductTransitions[0]
-            .DestinationState}
+            .DestinationState || data.product?.ProductTransitions[0].InitialState}
           {data.product?.ProductTransitions[0].Command
             ? `(${data.product?.ProductTransitions[0].Command})`
             : ''}
         </li>
         <li>
-          {m.project_products_transitions_date()}: {data.product?.ProductTransitions[0].DateTransition?.toLocaleTimeString(languageTag())}
+          {m.project_products_transitions_date()}: {data.product?.ProductTransitions[0].DateTransition?.toLocaleTimeString(
+            languageTag()
+          )}
         </li>
       </ul>
       <form method="POST" use:enhance>

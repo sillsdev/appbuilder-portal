@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
+  import SortTable from '$lib/components/SortTable.svelte';
 
   export let data: PageData;
 </script>
@@ -10,33 +10,34 @@
   <h2>{m.admin_settings_workflowInstances_title()}</h2>
   <div class="m-4 relative mt-0">
     {#if data.instances.length > 0}
-      <table class="w-full">
-        <thead>
-          <tr class="border-b-2 text-left">
-            <th>{m.tasks_product()}</th>
-            <th>{m.project_products_transitions_state()}</th>
-            <th>{m.project_products_transitions_date()}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each data.instances as i}
-            <tr
-              class="cursor-pointer"
-              on:click={() => goto(`/admin/settings/workflow-instances/${i.Product.Id}`)}
-            >
-              <td>
-                {i.Product.Id}
-              </td>
-              <td>
-                {i.Product.ProductTransitions[0].DestinationState}
-              </td>
-              <td>
-                {i.Product.ProductTransitions[0].DateTransition}
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+      <SortTable
+        data={data.instances}
+        columns={[
+          {
+            id: 'product',
+            header: m.tasks_product(),
+            data: (i) => i.Id,
+            render: (c) =>
+              `<a class="link" href="/admin/settings/workflow-instances/${c}">${c}</a>`,
+            sortable: true
+          },
+          {
+            id: 'state',
+            header: m.project_products_transitions_state(),
+            data: (i) => i.Transition.State,
+            sortable: true
+          },
+          {
+            id: 'date',
+            header: m.project_products_transitions_date(),
+            data: (i) => i.Transition.Date,
+            render: (c) => c?.toLocaleString() ?? '',
+            sortable: true
+          }
+        ]}
+        serverSide={true}
+        maxh_class="max-h-full"
+      />
     {:else}
       <p class="m-8">{m.admin_settings_workflowInstances_empty()}</p>
     {/if}
