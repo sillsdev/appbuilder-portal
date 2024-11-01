@@ -69,7 +69,7 @@ export async function update(
 function deleteProduct(productId: string) {
   // Delete all userTasks for this product, and delete the product
   return prisma.$transaction([
-    prisma.workflowInstances.delete({
+    prisma.workflowInstances.deleteMany({
       where: {
         ProductId: productId
       }

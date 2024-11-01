@@ -13,43 +13,39 @@ const jumpStateSchema = v.object({
 
 export const load: PageServerLoad = async ({ params }) => {
   // route already protected by hooks.server.ts
-  const instance = await prisma.workflowInstances.findUnique({
+  const product = await prisma.products.findUnique({
     where: {
-      ProductId: params.product_id
+      Id: params.product_id
     },
     select: {
-      Product: {
+      Id: true,
+      Project: {
         select: {
-          Id: true,
-          Project: {
-            select: {
-              Name: true
-            }
-          },
-          ProductDefinition: {
-            select: {
-              Name: true
-            }
-          },
-          ProductTransitions: {
-            where: {
-              DateTransition: {
-                not: null
-              }
-            },
-            select: {
-              DateTransition: true,
-              InitialState: true,
-              Command: true
-            },
-            orderBy: [
-              {
-                DateTransition: 'desc'
-              }
-            ],
-            take: 1
-          }
+          Name: true
         }
+      },
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
+      },
+      ProductTransitions: {
+        where: {
+          DateTransition: {
+            not: null
+          }
+        },
+        select: {
+          DateTransition: true,
+          InitialState: true,
+          Command: true
+        },
+        orderBy: [
+          {
+            DateTransition: 'desc'
+          }
+        ],
+        take: 1
       }
     }
   });
@@ -59,12 +55,12 @@ export const load: PageServerLoad = async ({ params }) => {
   const snap = await Workflow.getSnapshot(params.product_id);
 
   return {
-    instance: instance,
-    snapshot: { value: snap?.value ?? '' },
+    product: product,
+    snapshot: { value: snap?.state ?? '' },
     machine: snap ? flow.serializeForVisualization() : [],
     form: await superValidate(
       {
-        state: snap?.value
+        state: snap?.state
       },
       valibot(jumpStateSchema)
     )

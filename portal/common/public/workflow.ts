@@ -73,7 +73,7 @@ export enum WorkflowAction {
   Publish_Failed = 'Publish Failed'
 }
 
-export type WorkflowContext = {
+export type WorkflowContextBase = {
   instructions:
     | 'asset_package_verify_and_publish'
     | 'app_configuration'
@@ -103,14 +103,11 @@ export type WorkflowContext = {
   includeReviewers: boolean;
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: WorkflowState;
-  adminRequirements: WorkflowAdminRequirements[];
   // Not sure how this is used, but will figure out when integrating into backend
   environment: { [key: string]: any };
-  productType: ProductType;
-  productId: string;
-  hasAuthors: boolean;
-  hasReviewers: boolean;
 };
+
+export type WorkflowContext = WorkflowContextBase & WorkflowInput;
 
 export type WorkflowConfig = {
   adminRequirements: WorkflowAdminRequirements[];
@@ -246,6 +243,7 @@ export type StateNode = {
 };
 
 export type Snapshot = {
-  value: string;
-  context: Omit<WorkflowContext, 'productId' | 'hasAuthors' | 'hasReviewers'>;
+  state: string;
+  context: WorkflowContextBase;
+  config: WorkflowConfig;
 };
