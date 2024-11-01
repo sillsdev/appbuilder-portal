@@ -4,10 +4,12 @@
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
 
   export let data: PageData;
 
   const { form, enhance, allErrors } = superForm(data.form, {
+    dataType: 'json',
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/workflow-definitions');
@@ -29,6 +31,24 @@
       {/each}
     </select>
   </LabeledFormInput>
+  <div>
+    <label>
+      <!-- TODO: i18n (add to JSON) -->
+      <div class="label">
+        <span class="label-text">Product Type</span>
+      </div>
+      <select
+        class="select select-bordered"
+        name="productType"
+        bind:value={$form.productType}
+      >
+        <option value={ProductType.Android_GooglePlay}>Android GooglePlay</option>
+        <option value={ProductType.Android_S3}>Android S3</option>
+        <option value={ProductType.AssetPackage}>Asset Package</option>
+        <option value={ProductType.Web}>Web</option>
+      </select>
+    </label>
+  </div>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
     <select class="select select-bordered" name="workflowType" bind:value={$form.workflowType}>
       <option value={1}>{m.admin_settings_workflowDefinitions_workflowTypes_1()}</option>
@@ -68,6 +88,53 @@
       bind:value={$form.properties}
     />
   </LabeledFormInput>
+  <div>
+    <label>
+      <!-- TODO: i18n (add to JSON) -->
+      <div class="label">
+        <span class="">Options</span>
+      </div>
+      <div class="label flex flex-row">
+        <div class="label">
+          <span class="label-text">
+            Require an organization admin to access the GooglePlay developer console.
+          </span>
+        </div>
+        <input
+          class="checkbox checkbox-info"
+          type="checkbox"
+          bind:group={$form.options}
+          value={WorkflowOptions.AdminStoreAccess}
+        />
+      </div>
+      <div class="label flex flex-row">
+        <div class="label">
+          <span class="label-text">
+            Require approval by an organization admin before product is created.
+          </span>
+        </div>
+        <input
+          class="checkbox checkbox-info"
+          type="checkbox"
+          bind:group={$form.options}
+          value={WorkflowOptions.ApprovalProcess}
+        />
+      </div>
+      <div class="label flex flex-row">
+        <div class="label">
+          <span class="label-text">
+            Allow project owner to delegate configuration and product uploads to authors.
+          </span>
+        </div>
+        <input
+          class="checkbox checkbox-info"
+          type="checkbox"
+          bind:group={$form.options}
+          value={WorkflowOptions.AllowTransferToAuthors}
+        />
+      </div>
+    </label>
+  </div>
   <div>
     <label>
       <div class="label flex flex-row">

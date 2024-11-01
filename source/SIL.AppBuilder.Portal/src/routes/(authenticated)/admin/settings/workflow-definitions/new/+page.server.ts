@@ -4,17 +4,9 @@ import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { workflowDefinitionSchemaBase } from '../common';
 
-const createSchema = v.object({
-  name: v.nullable(v.string()),
-  storeType: v.pipe(v.number(), v.minValue(1), v.integer()),
-  workflowType: v.pipe(v.number(), v.minValue(1), v.integer()),
-  workflowScheme: v.nullable(v.string()),
-  workflowBusinessFlow: v.nullable(v.string()),
-  description: v.nullable(v.string()),
-  properties: v.nullable(v.string()),
-  enabled: v.boolean()
-});
+const createSchema = workflowDefinitionSchemaBase;
 
 export const load = (async ({ url }) => {
   const form = await superValidate(valibot(createSchema));
@@ -40,7 +32,9 @@ export const actions = {
         storeType,
         workflowBusinessFlow,
         workflowScheme,
-        workflowType
+        workflowType,
+        productType,
+        options
       } = form.data;
       await DatabaseWrites.workflowDefinitions.create({
         data: {
@@ -51,7 +45,9 @@ export const actions = {
           StoreTypeId: storeType,
           WorkflowBusinessFlow: workflowBusinessFlow,
           WorkflowScheme: workflowScheme,
-          Type: workflowType
+          Type: workflowType,
+          ProductType: productType,
+          WorkflowOptions: options
         }
       });
       return { ok: true, form };
