@@ -6,7 +6,7 @@
   import { writable } from 'svelte/store';
   import Pagination from '$lib/components/Pagination.svelte';
   import { superForm, type FormResult } from 'sveltekit-superforms';
-  import type { MinifiedUser } from './proxy+page.server';
+  import type { MinifiedUser } from './common';
 
   export let data: PageData;
 
