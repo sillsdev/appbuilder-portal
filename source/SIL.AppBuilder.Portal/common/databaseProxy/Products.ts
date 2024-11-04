@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import type { RequirePrimitive } from './utility.js';
 
@@ -62,8 +63,30 @@ export async function update(
   return true;
 }
 
-function deleteProduct(productId: string) {
+async function deleteProduct(productId: string) {
   // Delete all userTasks for this product, and delete the product
+  const product = await prisma.products.findUnique({
+    where: {
+      Id: productId
+    },
+    select: {
+      Project: {
+        select: {
+          OrganizationId: true
+        }
+      },
+      WorkflowJobId: true
+    }
+  });
+  Queues.Miscellaneous.add(
+    `Delete Product #${productId} from BuildEngine`,
+    {
+      type: BullMQ.JobType.Product_Delete,
+      organizationId: product.Project.OrganizationId,
+      workflowJobId: product.WorkflowJobId
+    },
+    BullMQ.Retry5e5
+  );
   return prisma.$transaction([
     prisma.workflowInstances.deleteMany({
       where: {
@@ -81,7 +104,6 @@ function deleteProduct(productId: string) {
       }
     })
   ]);
-  // TODO: delete from BuildEngine
 }
 export { deleteProduct as delete };
 

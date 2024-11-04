@@ -45,6 +45,7 @@ export enum JobType {
   Build_Check = 'Check Product Build',
   // Product Tasks
   Product_Create = 'Create Product',
+  Product_Delete = 'Delete Product',
   // Publishing Tasks
   Publish_Product = 'Publish Product',
   Publish_Check = 'Check Product Publish',
@@ -74,6 +75,11 @@ export namespace Product {
   export interface Create {
     type: JobType.Product_Create;
     productId: string;
+  }
+  export interface Delete {
+    type: JobType.Product_Delete;
+    organizationId: number;
+    workflowJobId: number;
   }
 }
 
@@ -145,6 +151,7 @@ export type JobTypeMap = {
   [JobType.Build_Product]: Build.Product;
   [JobType.Build_Check]: Build.Check;
   [JobType.Product_Create]: Product.Create;
+  [JobType.Product_Delete]: Product.Delete;
   [JobType.Publish_Product]: Publish.Product;
   [JobType.Publish_Check]: Publish.Check;
   [JobType.System_CheckStatuses]: System.CheckStatuses;

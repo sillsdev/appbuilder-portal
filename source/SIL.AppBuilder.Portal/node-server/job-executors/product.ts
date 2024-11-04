@@ -60,3 +60,18 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     return response;
   }
 }
+
+export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<unknown> {
+  const response = await BuildEngine.Requests.deleteJob(
+    { type: 'query', organizationId: job.data.organizationId },
+    job.data.workflowJobId
+  );
+  job.updateProgress(50);
+  if (response.responseType === 'error') {
+    job.log(response.message);
+    throw new Error(response.message);
+  } else {
+    job.updateProgress(100);
+    return response.status;
+  }
+}
