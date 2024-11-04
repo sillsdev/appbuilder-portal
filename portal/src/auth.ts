@@ -10,6 +10,7 @@ declare module '@auth/sveltekit' {
   interface Session {
     user: {
       userId: number;
+      /** [organizationId, RoleId][]*/
       roles: [number, number][];
     } & DefaultSession['user'];
   }
