@@ -1,3 +1,19 @@
+interface RetryOptions {
+  readonly attempts: number;
+  readonly backoff: {
+    readonly type: string;
+    readonly delay: number;
+  };
+}
+
+export const Retry5e5: RetryOptions = {
+  attempts: 5,
+  backoff: {
+    type: 'exponential',
+    delay: 5000 // 5 seconds
+  }
+};
+
 export enum ScriptoriaJobType {
   // Test
   Test = 'Test',
