@@ -110,8 +110,10 @@ export type BuildResponse = SuccessResponse &
     artifacts: { [key: string]: string };
   };
 
+export type Channels = 'production' | 'beta' | 'alpha';
+
 type ReleaseCommon = {
-  channel: 'production' | 'beta' | 'alpha';
+  channel: Channels;
   targets: string;
 };
 export type ReleaseConfig = ReleaseCommon & {
