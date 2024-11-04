@@ -225,7 +225,7 @@ export const load = (async ({ locals, params }) => {
         },
         GroupMemberships: {
           some: {
-            GroupId: project.GroupId
+            GroupId: project.Group.Id
           }
         }
       }

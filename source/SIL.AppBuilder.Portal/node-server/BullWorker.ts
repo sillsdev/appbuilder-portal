@@ -62,6 +62,8 @@ export class Miscellaneous extends BullWorker<BullMQ.Job> {
       return Executor.Product.deleteProduct(job as Job<BullMQ.Product.Delete>);
     case BullMQ.JobType.Product_GetVersionCode:
       return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
+    case BullMQ.JobType.Project_Create:
+      return Executor.Project.create(job as Job<BullMQ.Project.Create>);
     }
   }
 }
@@ -88,6 +90,8 @@ export class RemotePolling extends BullWorker<BullMQ.Job> {
       return Executor.Build.check(job as Job<BullMQ.Build.Check>);
     case BullMQ.JobType.Publish_Check:
       return Executor.Publish.check(job as Job<BullMQ.Publish.Check>);
+    case BullMQ.JobType.Project_Check:
+      return Executor.Project.check(job as Job<BullMQ.Project.Check>);
     }
   }
 }
