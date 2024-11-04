@@ -9,6 +9,7 @@ import type {
 import { createActor } from 'xstate';
 import DatabaseWrites from '../databaseProxy/index.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
+import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { ProductTransitionType, RoleId, WorkflowType } from '../public/prisma.js';
 import {
@@ -21,8 +22,7 @@ import {
   WorkflowContext,
   WorkflowContextBase,
   WorkflowEvent,
-  WorkflowState,
-  WorkflowTransitionMeta
+  WorkflowState
 } from '../public/workflow.js';
 import { StartupWorkflow } from './startup-workflow.js';
 
@@ -60,8 +60,22 @@ export class Workflow {
     });
 
     flow.flow.start();
-    flow.populateTransitions();
-    flow.updateUserTasks();
+    await DatabaseWrites.productTransitions.create({
+      data: {
+        ProductId: productId,
+        DateTransition: new Date(),
+        TransitionType: ProductTransitionType.StartWorkflow
+      }
+    });
+    await Queues.UserTasks.add(`Create UserTasks for Product #${productId}`, {
+      type: BullMQ.JobType.UserTasks_Modify,
+      scope: 'Product',
+      productId: productId,
+      operation: {
+        type: BullMQ.UserTasks.OpType.Create,
+        by: 'All'
+      }
+    });
 
     return flow;
   }
@@ -151,7 +165,7 @@ export class Workflow {
     );
   }
 
-  public static availableTransitionsFromNode(s: XStateNode<any, any>, config: WorkflowConfig) {
+  public static availableTransitionsFromNode(s: XStateNode<WorkflowContext, WorkflowEvent>, config: WorkflowConfig) {
     return Workflow.filterTransitions(s.on, config);
   }
 
@@ -244,7 +258,21 @@ export class Workflow {
         });
   
         await this.createSnapshot(snap.context);
-        await this.updateUserTasks(event.event.comment || undefined);
+        await DatabaseWrites.userTasks.deleteMany({
+          where: {
+            ProductId: this.productId
+          }
+        });
+        await Queues.UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
+          type: BullMQ.JobType.UserTasks_Modify,
+          scope: 'Product',
+          productId: this.productId,
+          comment: event.event.comment || undefined,
+          operation: {
+            type: BullMQ.UserTasks.OpType.Update,
+            by: 'All'
+          }
+        });
       }
     }
   }
@@ -298,83 +326,9 @@ export class Workflow {
       .filter((v) => v.length > 0 && includeStateOrTransition(filter, v[0].meta?.includeWhen));
   }
 
-  /**
-   * Delete all tasks for a product.
-   * Then create new tasks based on the provided user roles:
-   * - OrgAdmin for administrative tasks (Product.Project.Organization.UserRoles.User where Role === OrgAdmin)
-   * - AppBuilder for project owner tasks (Product.Project.Owner)
-   * - Author for author tasks (Product.Project.Authors)
-   */
-  private async updateUserTasks(comment?: string) {
-    // Delete all tasks for a product
-    await DatabaseWrites.userTasks.deleteMany({
-      where: {
-        ProductId: this.productId
-      }
-    });
-
-    const product = await prisma.products.findUnique({
-      where: {
-        Id: this.productId
-      },
-      select: {
-        Project: {
-          select: {
-            Organization: {
-              select: {
-                UserRoles: {
-                  where: {
-                    RoleId: RoleId.OrgAdmin
-                  },
-                  select: {
-                    UserId: true
-                  }
-                }
-              }
-            },
-            OwnerId: true,
-            Authors: {
-              select: {
-                UserId: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    const uids = Workflow.availableTransitionsFromNode(this.currentState, this.config)
-      .map((t) => (t[0].meta as WorkflowTransitionMeta)?.user)
-      .filter((u) => u !== undefined)
-      .map((r) => {
-        switch (r) {
-        case RoleId.OrgAdmin:
-          return product.Project.Organization.UserRoles.map((u) => u.UserId);
-        case RoleId.AppBuilder:
-          return [product.Project.OwnerId];
-        case RoleId.Author:
-          return product.Project.Authors.map((a) => a.UserId);
-        default:
-          return [];
-        }
-      })
-      .reduce((p, c) => p.concat(c), [])
-      .filter((u, i, a) => a.indexOf(u) === i);
-
-    return DatabaseWrites.userTasks.createMany({
-      data: uids.map((u) => ({
-        UserId: u,
-        ProductId: this.productId,
-        ActivityName: Workflow.stateName(this.currentState),
-        Status: Workflow.stateName(this.currentState),
-        Comment: comment ?? null
-      }))
-    });
-  }
-
   /** Create ProductTransitions record object */
   private static transitionFromState(
-    state: XStateNode<WorkflowContext, any>,
+    state: XStateNode<WorkflowContext, WorkflowEvent>,
     productId: string,
     config: WorkflowConfig,
     users: Map<RoleId, string[]>
@@ -400,18 +354,6 @@ export class Workflow {
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
       WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
     };
-  }
-
-  /** Create ProductTransitions entries for new product following the "happy" path */
-  private async populateTransitions() {
-    // TODO: AllowedUserNames
-    return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: await Workflow.transitionEntriesFromState(
-        WorkflowState.Start,
-        this.productId,
-        this.config
-      )
-    });
   }
 
   public static async transitionEntriesFromState(
@@ -475,10 +417,7 @@ export class Workflow {
   }
 
   /**
-   * Get all product transitions for a product.
-   * If there are none, create new ones based on main sequence (i.e. no Author steps)
-   * If sequence matching params exists, but no timestamp, update
-   * Otherwise, create.
+   * Update or create product transition
    */
   private async updateProductTransitions(
     userId: number | null,
@@ -540,7 +479,7 @@ export class Workflow {
     }
   }
 
-  private static stateName(s: XStateNode<any, any>): string {
+  private static stateName(s: XStateNode<WorkflowContext, WorkflowEvent>): string {
     return s.id.replace(StartupWorkflow.id + '.', '');
   }
 
@@ -552,7 +491,7 @@ export class Workflow {
     return StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(s));
   }
 
-  private static targetStringFromEvent(e: TransitionDefinition<any, any>): string {
+  private static targetStringFromEvent(e: TransitionDefinition<WorkflowContext, WorkflowEvent>): string {
     return (
       e
         .toJSON()
