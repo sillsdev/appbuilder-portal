@@ -3,11 +3,11 @@ import * as Types from './types.js';
 
 export async function request(
   resource: string,
-  organizationId: number,
+  auth: Types.Auth,
   method: string = 'GET',
   body?: any
 ) {
-  const { url, token } = await getURLandToken(organizationId);
+  const { url, token } = auth.type === 'query'? await getURLandToken(auth.organizationId) : auth;
   return await fetch(`${url}/${resource}`, {
     method: method,
     headers: {
@@ -41,164 +41,164 @@ export async function getURLandToken(organizationId: number) {
       };
 }
 
-export async function systemCheck(organizationId: number) {
-  return (await request('system/check', organizationId)).status;
+export async function systemCheck(auth: Types.Auth) {
+  return (await request('system/check', auth)).status;
 }
 
 export async function createProject(
-  organizationId: number,
+  auth: Types.Auth,
   project: Types.ProjectConfig
 ): Promise<Types.ProjectResponse | Types.ErrorResponse> {
-  const res = await request('project', organizationId, 'POST', project);
+  const res = await request('project', auth, 'POST', project);
   return res.ok
     ? ((await res.json()) as Types.ProjectResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getProjects(
-  organizationId: number
+  auth: Types.Auth
 ): Promise<Types.ProjectResponse[] | Types.ErrorResponse> {
-  const res = await request('project', organizationId);
+  const res = await request('project', auth);
   return res.ok
     ? ((await res.json()) as Types.ProjectResponse[])
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getProject(
-  organizationId: number,
+  auth: Types.Auth,
   projectId: number
 ): Promise<Types.ProjectResponse | Types.ErrorResponse> {
-  const res = await request(`project/${projectId}`, organizationId);
+  const res = await request(`project/${projectId}`, auth);
   return res.ok
     ? ((await res.json()) as Types.ProjectResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function deleteProject(
-  organizationId: number,
+  auth: Types.Auth,
   projectId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
-  const res = await request(`project/${projectId}`, organizationId, 'DELETE');
+  const res = await request(`project/${projectId}`, auth, 'DELETE');
   return res.ok
     ? { responseType: 'delete', status: res.status }
     : ((await res.json()) as Types.ErrorResponse);
 }
 
 export async function getProjectAccessToken(
-  organizationId: number,
+  auth: Types.Auth,
   projectId: number,
   token: Types.TokenConfig
 ): Promise<Types.TokenResponse | Types.ErrorResponse> {
-  const res = await request(`project/${projectId}/token`, organizationId, 'POST', token);
+  const res = await request(`project/${projectId}/token`, auth, 'POST', token);
   return res.ok
     ? ((await res.json()) as Types.TokenResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 
 export async function createJob(
-  organizationId: number,
+  auth: Types.Auth,
   job: Types.JobConfig
 ): Promise<Types.JobResponse | Types.ErrorResponse> {
-  const res = await request('job', organizationId, 'POST', job);
+  const res = await request('job', auth, 'POST', job);
   return res.ok
     ? ((await res.json()) as Types.JobResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getJobs(
-  organizationId: number
+  auth: Types.Auth
 ): Promise<Types.JobResponse[] | Types.ErrorResponse> {
-  const res = await request('job', organizationId);
+  const res = await request('job', auth);
   return res.ok
     ? ((await res.json()) as Types.JobResponse[])
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getJob(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number
 ): Promise<Types.JobResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}`, organizationId);
+  const res = await request(`job/${jobId}`, auth);
   return res.ok
     ? ((await res.json()) as Types.JobResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function deleteJob(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}`, organizationId, 'DELETE');
+  const res = await request(`job/${jobId}`, auth, 'DELETE');
   return res.ok
     ? { responseType: 'delete', status: res.status }
     : ((await res.json()) as Types.ErrorResponse);
 }
 
 export async function createBuild(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number,
   build: Types.BuildConfig
 ): Promise<Types.BuildResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build`, organizationId, 'POST', build);
+  const res = await request(`job/${jobId}/build`, auth, 'POST', build);
   return res.ok
     ? ((await res.json()) as Types.BuildResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getBuild(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number,
   buildId: number
 ): Promise<Types.BuildResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build/${buildId}`, organizationId);
+  const res = await request(`job/${jobId}/build/${buildId}`, auth);
   return res.ok
     ? ((await res.json()) as Types.BuildResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getBuilds(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number
 ): Promise<Types.BuildResponse[] | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build`, organizationId);
+  const res = await request(`job/${jobId}/build`, auth);
   return res.ok
     ? ((await res.json()) as Types.BuildResponse[])
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function deleteBuild(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number,
   buildId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build/${buildId}`, organizationId, 'DELETE');
+  const res = await request(`job/${jobId}/build/${buildId}`, auth, 'DELETE');
   return res.ok
     ? { responseType: 'delete', status: res.status }
     : ((await res.json()) as Types.ErrorResponse);
 }
 
 export async function createRelease(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number,
   buildId: number,
   release: Types.ReleaseConfig
 ): Promise<Types.ReleaseResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build/${buildId}`, organizationId, 'PUT', release);
+  const res = await request(`job/${jobId}/build/${buildId}`, auth, 'PUT', release);
   return res.ok
     ? ((await res.json()) as Types.ReleaseResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function getRelease(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number,
   buildId: number,
   releaseId: number
 ): Promise<Types.ReleaseResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build/${buildId}/release/${releaseId}`, organizationId);
+  const res = await request(`job/${jobId}/build/${buildId}/release/${releaseId}`, auth);
   return res.ok
     ? ((await res.json()) as Types.ReleaseResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 export async function deleteRelease(
-  organizationId: number,
+  auth: Types.Auth,
   jobId: number,
   buildId: number,
   releaseId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
   const res = await request(
     `job/${jobId}/build/${buildId}/release/${releaseId}`,
-    organizationId,
+    auth,
     'DELETE'
   );
   return res.ok
