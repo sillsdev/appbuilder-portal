@@ -14,6 +14,18 @@ export abstract class BullWorker<T> {
   abstract run(job: Job<T>): Promise<unknown>;
 }
 
+export class Builds extends BullWorker<BullMQ.Job> {
+  constructor() {
+    super(BullMQ.QueueName.Builds);
+  }
+  async run(job: Job<BullMQ.Job>) {
+    switch (job.data.type) {
+    case BullMQ.JobType.Build_Product:
+      return Executor.Build.product(job as Job<BullMQ.Build.Product>);
+    }
+  }
+}
+
 export class DefaultRecurring extends BullWorker<BullMQ.Job> {
   constructor() {
     super(BullMQ.QueueName.DefaultRecurring);
@@ -34,6 +46,44 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
     switch (job.data.type) {
     case BullMQ.JobType.System_CheckStatuses:
       return Executor.System.checkStatuses(job as Job<BullMQ.System.CheckStatuses>);
+    }
+  }
+}
+
+export class Miscellaneous extends BullWorker<BullMQ.Job> {
+  constructor() {
+    super(BullMQ.QueueName.Miscellaneous);
+  }
+  async run(job: Job<BullMQ.Job>) {
+    switch (job.data.type) {
+    case BullMQ.JobType.Product_Create:
+      return Executor.Product.create(job as Job<BullMQ.Product.Create>);
+    }
+  }
+}
+
+export class Publishing extends BullWorker<BullMQ.Job> {
+  constructor() {
+    super(BullMQ.QueueName.Publishing);
+  }
+  async run(job: Job<BullMQ.Job>) {
+    switch (job.data.type) {
+    case BullMQ.JobType.Publish_Product:
+      return Executor.Publish.product(job as Job<BullMQ.Publish.Product>);
+    }
+  }
+}
+
+export class RemotePolling extends BullWorker<BullMQ.Job> {
+  constructor() {
+    super(BullMQ.QueueName.RemotePolling);
+  }
+  async run(job: Job<BullMQ.Job>) {
+    switch (job.data.type) {
+    case BullMQ.JobType.Build_Check:
+      return Executor.Build.check(job as Job<BullMQ.Build.Check>);
+    case BullMQ.JobType.Publish_Check:
+      return Executor.Publish.check(job as Job<BullMQ.Publish.Check>);
     }
   }
 }

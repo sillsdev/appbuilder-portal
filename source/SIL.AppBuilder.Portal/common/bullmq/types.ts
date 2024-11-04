@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+import type { Channels } from '../build-engine-api/types.js';
 import { RoleId } from '../public/prisma.js';
 
 interface RetryOptions {
@@ -17,16 +18,82 @@ export const Retry5e5: RetryOptions = {
   }
 };
 
+interface RepeatOptions {
+  readonly repeat: {
+    readonly pattern: string;
+  };
+}
+/** Repeat a job every minute */
+export const RepeatEveryMinute: RepeatOptions = {
+  repeat: {
+    pattern: '*/1 * * * *' // every minute
+  }
+};
+
 export enum QueueName {
+  Builds = 'Builds',
   DefaultRecurring = 'Default Recurring',
+  Miscellaneous = 'Miscellaneous',
+  Publishing = 'Publishing',
+  RemotePolling = 'Remote Polling',
   UserTasks = 'User Tasks'
 }
 
 export enum JobType {
+  // Build Tasks
+  Build_Product = 'Build Product',
+  Build_Check = 'Check Product Build',
+  // Product Tasks
+  Product_Create = 'Create Product',
+  // Publishing Tasks
+  Publish_Product = 'Publish Product',
+  Publish_Check = 'Check Product Publish',
   // System Tasks
   System_CheckStatuses = 'Check System Statuses',
   // UserTasks
   UserTasks_Modify = 'Modify UserTasks'
+}
+
+export namespace Build {
+  export interface Product {
+    type: JobType.Build_Product;
+    productId: string;
+    targets?: string;
+    environment: { [key: string]: string };
+  }
+  export interface Check {
+    type: JobType.Build_Check;
+    organizationId: number;
+    productId: string;
+    jobId: number;
+    buildId: number;
+  }
+}
+
+export namespace Product {
+  export interface Create {
+    type: JobType.Product_Create;
+    productId: string;
+  }
+}
+
+export namespace Publish {
+  export interface Product {
+    type: JobType.Publish_Product;
+    productId: string;
+    channel: Channels;
+    targets: string;
+    environment: { [key: string]: string };
+  }
+
+  export interface Check {
+    type: JobType.Publish_Check;
+    organizationId: number;
+    productId: string;
+    jobId: number;
+    buildId: number;
+    releaseId: number;
+  }
 }
 
 export namespace System {
@@ -75,6 +142,11 @@ export namespace UserTasks {
 export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
+  [JobType.Build_Product]: Build.Product;
+  [JobType.Build_Check]: Build.Check;
+  [JobType.Product_Create]: Product.Create;
+  [JobType.Publish_Product]: Publish.Product;
+  [JobType.Publish_Check]: Publish.Check;
   [JobType.System_CheckStatuses]: System.CheckStatuses;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   // Add more mappings here as needed
