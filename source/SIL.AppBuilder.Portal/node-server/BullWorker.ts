@@ -14,6 +14,8 @@ export abstract class BullWorker<T, R> {
   abstract run(job: Job<T, R>): Promise<R>;
 }
 
+type JobCast<T extends BullMQ.ScriptoriaJob> = Job<T, number, string>;
+
 export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
   constructor() {
     super('scriptoria');
@@ -21,11 +23,9 @@ export class ScriptoriaWorker extends BullWorker<BullMQ.ScriptoriaJob, number> {
   async run(job: Job<BullMQ.ScriptoriaJob, number, string>): Promise<number> {
     switch (job.data.type) {
       case BullMQ.ScriptoriaJobType.Test:
-        return new Executor.Test().execute(job as Job<BullMQ.TestJob, number, string>);
-      case BullMQ.ScriptoriaJobType.ReassignUserTasks:
-        return new Executor.ReassignUserTasks().execute(
-          job as Job<BullMQ.SyncUserTasksJob, number, string>
-        );
+        return new Executor.Test().execute(job as JobCast<BullMQ.Test>);
+      case BullMQ.ScriptoriaJobType.UserTasks_Reassign:
+        return new Executor.UserTasks.Reassign().execute(job as JobCast<BullMQ.UserTasks.Reassign>);
     }
   }
 }

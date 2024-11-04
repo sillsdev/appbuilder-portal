@@ -63,8 +63,8 @@ export async function update(
     // If the owner has changed, we need to reassign all the user tasks related to this project
     // TODO: But we don't need to change *every* user task, just the tasks associated with the owner.
     if (ownerId && ownerId !== existing?.OwnerId) {
-      scriptoriaQueue.add(ScriptoriaJobType.ReassignUserTasks, {
-        type: ScriptoriaJobType.ReassignUserTasks,
+      scriptoriaQueue.add(ScriptoriaJobType.UserTasks_Reassign, {
+        type: ScriptoriaJobType.UserTasks_Reassign,
         projectId: id
       });
     }

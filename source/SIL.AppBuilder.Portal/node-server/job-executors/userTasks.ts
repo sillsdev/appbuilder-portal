@@ -3,8 +3,8 @@ import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { Job } from 'bullmq';
 import { ScriptoriaJobExecutor } from './base.js';
 
-export class ReassignUserTasks extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.ReassignUserTasks> {
-  async execute(job: Job<BullMQ.SyncUserTasksJob, number, string>): Promise<number> {
+export class Reassign extends ScriptoriaJobExecutor<BullMQ.ScriptoriaJobType.UserTasks_Reassign> {
+  async execute(job: Job<BullMQ.UserTasks.Reassign, number, string>): Promise<number> {
     // TODO: Noop
     // Should
     // Clear preexecuteentries (product transition steps)
