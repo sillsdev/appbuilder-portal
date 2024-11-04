@@ -1,5 +1,5 @@
 import { Job, Worker } from 'bullmq';
-import { BullMQ } from 'sil.appbuilder.portal.common';
+import { BullMQ, queues } from 'sil.appbuilder.portal.common';
 import * as Executor from './job-executors/index.js';
 
 export abstract class BullWorker<T, R> {
