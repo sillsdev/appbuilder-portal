@@ -52,12 +52,9 @@ type SuccessResponse = {
 type CommonStatus = 'initialized' | 'accepted' | 'completed';
 
 export type ProjectConfig = {
-  user_id: string;
-  group_id: string;
   app_id: string;
   project_name: string;
   language_code: string;
-  publishing_key: string;
   storage_type: string;
 };
 export type ProjectResponse = SuccessResponse &
@@ -67,6 +64,9 @@ export type ProjectResponse = SuccessResponse &
     result: 'SUCCESS' | 'FAILURE' | null;
     error: string | null;
     url: string;
+    publishing_key: string;
+    user_id: string;
+    group_id: string;
   };
 
 export type TokenConfig = {
