@@ -94,7 +94,7 @@
       </button>
     </div>
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
-      <button class="action btn btn-outline" on:click={() => alert('TODO api proxy')}>
+      <button class="action btn btn-outline" on:click={() => goto(`/projects/import/${$form.organizationId}`)}>
         {m.project_importProjects()}
       </button>
       <button class="action btn btn-outline" on:click={() => goto(`/projects/new/${$form.organizationId}`)}>

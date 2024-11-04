@@ -74,9 +74,88 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
         await DatabaseWrites.projects.update(job.data.projectId, {
           WorkflowProjectUrl: response.url
         });
+
+        const projectImport = (
+          await prisma.projects.findUnique({
+            where: {
+              Id: job.data.projectId
+            },
+            select: {
+              ProjectImport: {
+                select: {
+                  Id: true
+                }
+              }
+            }
+          })
+        )?.ProjectImport;
+        if (projectImport) {
+          await Queues.Miscellaneous.add(`Import Products for Project #${job.data.projectId}`, {
+            type: BullMQ.JobType.Project_ImportProducts,
+            organizationId: job.data.organizationId,
+            importId: projectImport.Id
+          });
+        }
       }
     }
     job.updateProgress(100);
     return response;
   }
+}
+
+export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): Promise<unknown> {
+  const projectImport = await prisma.projectImports.findUnique({
+    where: {
+      Id: job.data.importId
+    }
+  });
+  job.updateProgress(25);
+  const productsToCreate: { Name: string; Store: string }[] = JSON.parse(
+    projectImport.ImportData
+  ).Products;
+  job.updateProgress(30);
+  const products = await Promise.all(
+    productsToCreate.map(async (p) => ({
+      ...p,
+      Id: await DatabaseWrites.products.create({
+        ProjectId: projectImport.OwnerId,
+        ProductDefinitionId: (
+          await prisma.productDefinitions.findFirst({
+            where: {
+              Name: p.Name,
+              OrganizationProductDefinitions: {
+                some: {
+                  OrganizationId: job.data.organizationId
+                }
+              }
+            },
+            select: {
+              Id: true
+            }
+          })
+        )?.Id,
+        StoreId: (
+          await prisma.stores.findFirst({
+            where: {
+              Name: p.Store,
+              OrganizationStores: {
+                some: {
+                  OrganizationId: job.data.organizationId
+                }
+              }
+            },
+            select: {
+              Id: true
+            }
+          })
+        )?.Id,
+        // TODO: StoreLanguage?
+        WorkflowJobId: 0,
+        WorkflowBuildId: 0,
+        WorkflowPublishId: 0
+      })
+    }))
+  );
+  job.updateProgress(100);
+  return { products };
 }

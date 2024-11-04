@@ -64,6 +64,8 @@ export class Miscellaneous extends BullWorker<BullMQ.Job> {
       return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
     case BullMQ.JobType.Project_Create:
       return Executor.Project.create(job as Job<BullMQ.Project.Create>);
+    case BullMQ.JobType.Project_ImportProducts:
+      return Executor.Project.importProducts(job as Job<BullMQ.Project.ImportProducts>);
     }
   }
 }

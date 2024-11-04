@@ -50,6 +50,7 @@ export enum JobType {
   // Project Tasks
   Project_Create = 'Create Project',
   Project_Check = 'Check Project Creation',
+  Project_ImportProducts = 'Import Products for Project',
   // Publishing Tasks
   Publish_Product = 'Publish Product',
   Publish_Check = 'Check Product Publish',
@@ -103,6 +104,12 @@ export namespace Project {
     workflowProjectId: number;
     organizationId: number;
     projectId: number;
+  }
+
+  export interface ImportProducts {
+    type: JobType.Project_ImportProducts;
+    organizationId: number;
+    importId: number;
   }
 }
 
@@ -179,6 +186,7 @@ export type JobTypeMap = {
   [JobType.Product_GetVersionCode]: Product.GetVersionCode;
   [JobType.Project_Create]: Project.Create;
   [JobType.Project_Check]: Project.Check;
+  [JobType.Project_ImportProducts]: Project.ImportProducts;
   [JobType.Publish_Product]: Publish.Product;
   [JobType.Publish_Check]: Publish.Check;
   [JobType.System_CheckStatuses]: System.CheckStatuses;
