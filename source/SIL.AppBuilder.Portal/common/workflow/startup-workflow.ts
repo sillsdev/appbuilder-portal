@@ -1,4 +1,5 @@
 import { assign, setup } from 'xstate';
+import { BullMQ, Queues } from '../index.js';
 import { RoleId } from '../public/prisma.js';
 import type {
   WorkflowContext,
@@ -243,9 +244,12 @@ export const StartupWorkflow = setup({
     [WorkflowState.Product_Creation]: {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Creating Product');
+        ({ context }) => {
+          Queues.Miscellaneous.add(`Create Product #${context.productId}`, {
+            type: BullMQ.JobType.Product_Create,
+            productId: context.productId
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -425,9 +429,14 @@ export const StartupWorkflow = setup({
         assign({
           instructions: 'waiting'
         }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Building Product');
+        ({ context }) => {
+          Queues.Builds.add(`Build Product #${context.productId}`, {
+            type: BullMQ.JobType.Build_Product,
+            productId: context.productId,
+            // TODO: assign targets
+            environment: context.environment
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -665,9 +674,16 @@ export const StartupWorkflow = setup({
     [WorkflowState.Product_Publish]: {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Publishing Product');
+        ({ context }) => {
+          Queues.Publishing.add(`Publish Product #${context.productId}`, {
+            type: BullMQ.JobType.Publish_Product,
+            productId: context.productId,
+            // TODO: How should these values be determined?
+            channel: 'alpha',
+            targets: 'google-play',
+            environment: context.environment
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
