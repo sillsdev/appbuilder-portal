@@ -4,7 +4,7 @@ import {
   WorkflowInput,
   WorkflowStateMeta,
   WorkflowTransitionMeta,
-  WorkflowAdminRequirements,
+  WorkflowOptions,
   ProductType,
   ActionType,
   WorkflowState,
@@ -61,7 +61,7 @@ export const StartupWorkflow = setup({
     includeArtifacts: false,
     environment: {},
     productType: input.productType,
-    adminRequirements: input.adminRequirements,
+    options: input.options,
     productId: input.productId,
     hasAuthors: input.hasAuthors,
     hasReviewers: input.hasReviewers
@@ -72,25 +72,25 @@ export const StartupWorkflow = setup({
         jump({
           target: WorkflowState.Readiness_Check,
           filter: {
-            adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+            options: [WorkflowOptions.ApprovalProcess]
           }
         }),
         jump({
           target: WorkflowState.Approval,
           filter: {
-            adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+            options: [WorkflowOptions.ApprovalProcess]
           }
         }),
         jump({
           target: WorkflowState.Approval_Pending,
           filter: {
-            adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+            options: [WorkflowOptions.ApprovalProcess]
           }
         }),
         jump({
           target: WorkflowState.Terminated,
           filter: {
-            adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+            options: [WorkflowOptions.ApprovalProcess]
           }
         }),
         jump({ target: WorkflowState.Product_Creation }),
@@ -125,7 +125,7 @@ export const StartupWorkflow = setup({
         jump({ target: WorkflowState.Published }),
         {
           guard: ({ context }) =>
-            context.adminRequirements.includes(WorkflowAdminRequirements.ApprovalProcess),
+            context.options.includes(WorkflowOptions.ApprovalProcess),
           target: WorkflowState.Readiness_Check
         },
         {
@@ -140,7 +140,7 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
-                adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+                options: [WorkflowOptions.ApprovalProcess]
               }
             },
             target: WorkflowState.Readiness_Check
@@ -155,7 +155,7 @@ export const StartupWorkflow = setup({
     [WorkflowState.Readiness_Check]: {
       meta: {
         includeWhen: {
-          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          options: [WorkflowOptions.ApprovalProcess]
         }
       },
       entry: assign({
@@ -175,7 +175,7 @@ export const StartupWorkflow = setup({
     [WorkflowState.Approval]: {
       meta: {
         includeWhen: {
-          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          options: [WorkflowOptions.ApprovalProcess]
         }
       },
       entry: assign({
@@ -217,7 +217,7 @@ export const StartupWorkflow = setup({
     [WorkflowState.Approval_Pending]: {
       meta: {
         includeWhen: {
-          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          options: [WorkflowOptions.ApprovalProcess]
         }
       },
       entry: [
@@ -252,7 +252,7 @@ export const StartupWorkflow = setup({
     [WorkflowState.Terminated]: {
       meta: {
         includeWhen: {
-          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          options: [WorkflowOptions.ApprovalProcess]
         }
       },
       entry: assign({
@@ -486,9 +486,9 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.OrgAdmin,
               includeWhen: {
-                adminRequirements: [
-                  WorkflowAdminRequirements.ApprovalProcess,
-                  WorkflowAdminRequirements.StoreAccess
+                options: [
+                  WorkflowOptions.ApprovalProcess,
+                  WorkflowOptions.AdminStoreAccess
                 ]
               }
             },
@@ -499,7 +499,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                adminRequirements: [WorkflowAdminRequirements.None]
+                options: [WorkflowOptions.None]
               }
             },
             target: WorkflowState.Create_App_Store_Entry
@@ -511,9 +511,9 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.OrgAdmin,
               includeWhen: {
-                adminRequirements: [
-                  WorkflowAdminRequirements.ApprovalProcess,
-                  WorkflowAdminRequirements.StoreAccess
+                options: [
+                  WorkflowOptions.ApprovalProcess,
+                  WorkflowOptions.AdminStoreAccess
                 ]
               }
             },
@@ -524,7 +524,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                adminRequirements: [WorkflowAdminRequirements.None]
+                options: [WorkflowOptions.None]
               }
             },
             target: WorkflowState.Synchronize_Data
@@ -555,9 +555,9 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.OrgAdmin,
               includeWhen: {
-                adminRequirements: [
-                  WorkflowAdminRequirements.ApprovalProcess,
-                  WorkflowAdminRequirements.StoreAccess
+                options: [
+                  WorkflowOptions.ApprovalProcess,
+                  WorkflowOptions.AdminStoreAccess
                 ]
               }
             },
@@ -574,7 +574,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                adminRequirements: [WorkflowAdminRequirements.None]
+                options: [WorkflowOptions.None]
               }
             },
             actions: assign({
@@ -592,9 +592,9 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.OrgAdmin,
               includeWhen: {
-                adminRequirements: [
-                  WorkflowAdminRequirements.ApprovalProcess,
-                  WorkflowAdminRequirements.StoreAccess
+                options: [
+                  WorkflowOptions.ApprovalProcess,
+                  WorkflowOptions.AdminStoreAccess
                 ]
               }
             },
@@ -605,7 +605,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                adminRequirements: [WorkflowAdminRequirements.None]
+                options: [WorkflowOptions.None]
               }
             },
             target: WorkflowState.Synchronize_Data
@@ -725,9 +725,9 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.OrgAdmin,
               includeWhen: {
-                adminRequirements: [
-                  WorkflowAdminRequirements.ApprovalProcess,
-                  WorkflowAdminRequirements.StoreAccess
+                options: [
+                  WorkflowOptions.ApprovalProcess,
+                  WorkflowOptions.AdminStoreAccess
                 ]
               }
             },
@@ -738,7 +738,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                adminRequirements: [WorkflowAdminRequirements.None]
+                options: [WorkflowOptions.None]
               }
             },
             target: WorkflowState.Published
@@ -750,9 +750,9 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.OrgAdmin,
               includeWhen: {
-                adminRequirements: [
-                  WorkflowAdminRequirements.ApprovalProcess,
-                  WorkflowAdminRequirements.StoreAccess
+                options: [
+                  WorkflowOptions.ApprovalProcess,
+                  WorkflowOptions.AdminStoreAccess
                 ]
               }
             },
@@ -763,7 +763,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                adminRequirements: [WorkflowAdminRequirements.None]
+                options: [WorkflowOptions.None]
               }
             },
             target: WorkflowState.Synchronize_Data

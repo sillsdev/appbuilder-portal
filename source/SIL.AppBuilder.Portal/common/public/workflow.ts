@@ -13,17 +13,17 @@ export enum ActionType {
 /**
  * The administrative requirements of the workflow.
  * Examples:
- *  - If the flow has `WorkflowAdminRequirements.ApprovalProcess` it will include extra state to represent the organizational approval process
- *  - If the flow has `WorkflowAdminRequirements.StoreAccess` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
- *  - If the flow has `WorkflowAdminRequirements.None` none of the states or actions for the workflow instance will require an OrgAdmin.
+ *  - If the flow has `WorkflowOptions.ApprovalProcess` it will include extra state to represent the organizational approval process
+ *  - If the flow has `WorkflowOptions.AdminStoreAccess` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
+ *  - If the flow has `WorkflowOptions.None` none of the states or actions for the workflow instance will require an OrgAdmin.
  *
- * Any state or transition can have a list of specified `WorkflowAdminRequirements`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `WorkflowAdminRequirements` is in the state's or transition's list.
+ * Any state or transition can have a list of specified `WorkflowOptions`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `WorkflowOptions` is in the state's or transition's list.
  *
- * If a state or transition does not specify any `WorkflowAdminRequirements` it will be included (provided it passes other conditions not dependent on `WorkflowAdminRequirements`).
+ * If a state or transition does not specify any `WorkflowOptions` it will be included (provided it passes other conditions not dependent on `WorkflowOptions`).
  */
-export enum WorkflowAdminRequirements {
+export enum WorkflowOptions {
   None = 0,
-  StoreAccess,
+  AdminStoreAccess,
   ApprovalProcess
 }
 
@@ -115,7 +115,7 @@ export type WorkflowContextBase = {
 export type WorkflowContext = WorkflowContextBase & WorkflowInput;
 
 export type WorkflowConfig = {
-  adminRequirements: WorkflowAdminRequirements[];
+  options: WorkflowOptions[];
   productType: ProductType;
 };
 
@@ -127,7 +127,7 @@ export type WorkflowInput = WorkflowConfig & {
 
 /** Used for filtering based on AdminLevel and/or ProductType */
 export type MetaFilter = {
-  adminRequirements?: WorkflowAdminRequirements[];
+  options?: WorkflowOptions[];
   productTypes?: ProductType[];
 };
 

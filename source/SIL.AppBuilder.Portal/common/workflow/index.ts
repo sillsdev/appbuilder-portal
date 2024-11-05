@@ -130,7 +130,7 @@ export class Workflow {
       context: JSON.parse(snap.Context) as WorkflowContextBase,
       config: {
         productType: snap.WorkflowDefinition.ProductType,
-        adminRequirements: snap.WorkflowDefinition.WorkflowOptions
+        options: snap.WorkflowDefinition.WorkflowOptions
       }
     };
   }
@@ -258,7 +258,7 @@ export class Workflow {
       hasAuthors: undefined,
       hasReviewers: undefined,
       productType: undefined,
-      adminRequirements: undefined
+      options: undefined
     } as WorkflowContextBase;
     if (instance) {
       return DatabaseWrites.workflowInstances.update({
@@ -316,8 +316,8 @@ export class Workflow {
   public static filterMeta(filter: WorkflowConfig, meta?: MetaFilter) {
     return (
       meta === undefined ||
-      ((meta.adminRequirements !== undefined
-        ? meta.adminRequirements.filter((urf) => filter.adminRequirements.includes(urf)).length > 0
+      ((meta.options !== undefined
+        ? meta.options.filter((urf) => filter.options.includes(urf)).length > 0
         : true) &&
         (meta.productTypes !== undefined ? meta.productTypes.includes(filter.productType) : true))
     );

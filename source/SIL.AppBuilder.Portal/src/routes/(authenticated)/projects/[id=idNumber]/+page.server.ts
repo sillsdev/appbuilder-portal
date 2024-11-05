@@ -207,7 +207,7 @@ export const actions = {
       if (flow?.Type === WorkflowType.Startup) {
         Workflow.create(productId, {
           productType: flow.ProductType,
-          adminRequirements: flow.WorkflowOptions
+          options: flow.WorkflowOptions
         });
       }
     }
