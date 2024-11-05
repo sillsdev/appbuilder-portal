@@ -156,7 +156,7 @@ export class Workflow {
   public serializeForVisualization(): StateNode[] {
     const machine = StartupWorkflow;
     const states = Object.entries(machine.states).filter(([k, v]) =>
-      Workflow.filterMeta(this.config, v.meta)
+      Workflow.filterMeta(this.config, v.meta?.includeWhen)
     );
     const lookup = states.map((s) => s[0]);
     const actions: StateNode[] = [];
@@ -301,8 +301,8 @@ export class Workflow {
     filter: WorkflowConfig
   ) {
     return Object.values(on)
-      .map((v) => v.filter((t) => Workflow.filterMeta(filter, t.meta)))
-      .filter((v) => v.length > 0 && Workflow.filterMeta(filter, v[0].meta));
+      .map((v) => v.filter((t) => Workflow.filterMeta(filter, t.meta?.includeWhen)))
+      .filter((v) => v.length > 0 && Workflow.filterMeta(filter, v[0].meta?.includeWhen));
   }
 
   /**

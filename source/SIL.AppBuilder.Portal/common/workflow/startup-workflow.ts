@@ -14,6 +14,7 @@ import {
   jump
 } from '../public/workflow.js';
 import { RoleId } from '../public/prisma.js';
+import { Workflow } from './index.js';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -38,14 +39,7 @@ export const StartupWorkflow = setup({
   },
   guards: {
     canJump: ({ context }, params: JumpParams) => {
-      return (
-        context.start === params.target &&
-        (params.products ? params.products.includes(context.productType) : true) &&
-        (params.adminRequirements
-          ? context.adminRequirements.filter((urf) => params.adminRequirements.includes(urf))
-              .length > 0
-          : true)
-      );
+      return context.start === params.target && Workflow.filterMeta(context, params.filter);
     },
     hasAuthors: ({ context }) => {
       return context.hasAuthors;
@@ -77,19 +71,27 @@ export const StartupWorkflow = setup({
       always: [
         jump({
           target: WorkflowState.Readiness_Check,
-          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          filter: {
+            adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          }
         }),
         jump({
           target: WorkflowState.Approval,
-          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          filter: {
+            adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          }
         }),
         jump({
           target: WorkflowState.Approval_Pending,
-          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          filter: {
+            adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          }
         }),
         jump({
           target: WorkflowState.Terminated,
-          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          filter: {
+            adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+          }
         }),
         jump({ target: WorkflowState.Product_Creation }),
         jump({ target: WorkflowState.App_Builder_Configuration }),
@@ -104,15 +106,22 @@ export const StartupWorkflow = setup({
         jump({ target: WorkflowState.Product_Build }),
         jump({
           target: WorkflowState.App_Store_Preview,
-          products: [ProductType.Android_GooglePlay]
+          filter: {
+            productTypes: [ProductType.Android_GooglePlay]
+          }
         }),
         jump({
           target: WorkflowState.Create_App_Store_Entry,
-          products: [ProductType.Android_GooglePlay]
+          filter: {
+            productTypes: [ProductType.Android_GooglePlay]
+          }
         }),
         jump({ target: WorkflowState.Verify_and_Publish }),
         jump({ target: WorkflowState.Product_Publish }),
-        jump({ target: WorkflowState.Make_It_Live, products: [ProductType.Android_GooglePlay] }),
+        jump({
+          target: WorkflowState.Make_It_Live,
+          filter: { productTypes: [ProductType.Android_GooglePlay] }
+        }),
         jump({ target: WorkflowState.Published }),
         {
           guard: ({ context }) =>
@@ -130,7 +139,9 @@ export const StartupWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+              includeWhen: {
+                adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+              }
             },
             target: WorkflowState.Readiness_Check
           },
@@ -143,7 +154,9 @@ export const StartupWorkflow = setup({
     },
     [WorkflowState.Readiness_Check]: {
       meta: {
-        adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        includeWhen: {
+          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        }
       },
       entry: assign({
         instructions: 'readiness_check',
@@ -161,7 +174,9 @@ export const StartupWorkflow = setup({
     },
     [WorkflowState.Approval]: {
       meta: {
-        adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        includeWhen: {
+          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        }
       },
       entry: assign({
         instructions: null,
@@ -201,7 +216,9 @@ export const StartupWorkflow = setup({
     },
     [WorkflowState.Approval_Pending]: {
       meta: {
-        adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        includeWhen: {
+          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        }
       },
       entry: [
         assign({
@@ -234,7 +251,9 @@ export const StartupWorkflow = setup({
     },
     [WorkflowState.Terminated]: {
       meta: {
-        adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        includeWhen: {
+          adminRequirements: [WorkflowAdminRequirements.ApprovalProcess]
+        }
       },
       entry: assign({
         instructions: null,
@@ -270,7 +289,9 @@ export const StartupWorkflow = setup({
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder,
-            productTypes: [ProductType.Android_GooglePlay]
+            includeWhen: {
+              productTypes: [ProductType.Android_GooglePlay]
+            }
           },
           target: WorkflowState.Product_Build
         },
@@ -278,7 +299,9 @@ export const StartupWorkflow = setup({
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder,
-            productTypes: [ProductType.Android_S3, ProductType.AssetPackage, ProductType.Web]
+            includeWhen: {
+              productTypes: [ProductType.Android_S3, ProductType.AssetPackage, ProductType.Web]
+            }
           },
           target: WorkflowState.Product_Build
         },
@@ -286,7 +309,9 @@ export const StartupWorkflow = setup({
           meta: {
             type: ActionType.User,
             user: RoleId.AppBuilder,
-            productTypes: [ProductType.Android_GooglePlay]
+            includeWhen: {
+              productTypes: [ProductType.Android_GooglePlay]
+            }
           },
           actions: assign({
             environment: ({ context }) => {
@@ -410,7 +435,9 @@ export const StartupWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              productTypes: [ProductType.Android_GooglePlay]
+              includeWhen: {
+                productTypes: [ProductType.Android_GooglePlay]
+              }
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
@@ -434,7 +461,9 @@ export const StartupWorkflow = setup({
     },
     [WorkflowState.App_Store_Preview]: {
       meta: {
-        productTypes: [ProductType.Android_GooglePlay]
+        includeWhen: {
+          productTypes: [ProductType.Android_GooglePlay]
+        }
       },
       entry: assign({
         instructions: null,
@@ -456,10 +485,12 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              adminRequirements: [
-                WorkflowAdminRequirements.ApprovalProcess,
-                WorkflowAdminRequirements.StoreAccess
-              ]
+              includeWhen: {
+                adminRequirements: [
+                  WorkflowAdminRequirements.ApprovalProcess,
+                  WorkflowAdminRequirements.StoreAccess
+                ]
+              }
             },
             target: WorkflowState.Create_App_Store_Entry
           },
@@ -467,7 +498,9 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              adminRequirements: [WorkflowAdminRequirements.None]
+              includeWhen: {
+                adminRequirements: [WorkflowAdminRequirements.None]
+              }
             },
             target: WorkflowState.Create_App_Store_Entry
           }
@@ -477,10 +510,12 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              adminRequirements: [
-                WorkflowAdminRequirements.ApprovalProcess,
-                WorkflowAdminRequirements.StoreAccess
-              ]
+              includeWhen: {
+                adminRequirements: [
+                  WorkflowAdminRequirements.ApprovalProcess,
+                  WorkflowAdminRequirements.StoreAccess
+                ]
+              }
             },
             target: WorkflowState.Synchronize_Data
           },
@@ -488,7 +523,9 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              adminRequirements: [WorkflowAdminRequirements.None]
+              includeWhen: {
+                adminRequirements: [WorkflowAdminRequirements.None]
+              }
             },
             target: WorkflowState.Synchronize_Data
           }
@@ -497,7 +534,9 @@ export const StartupWorkflow = setup({
     },
     [WorkflowState.Create_App_Store_Entry]: {
       meta: {
-        productTypes: [ProductType.Android_GooglePlay]
+        includeWhen: {
+          productTypes: [ProductType.Android_GooglePlay]
+        }
       },
       entry: assign({
         instructions: 'create_app_entry',
@@ -515,10 +554,12 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              adminRequirements: [
-                WorkflowAdminRequirements.ApprovalProcess,
-                WorkflowAdminRequirements.StoreAccess
-              ]
+              includeWhen: {
+                adminRequirements: [
+                  WorkflowAdminRequirements.ApprovalProcess,
+                  WorkflowAdminRequirements.StoreAccess
+                ]
+              }
             },
             actions: assign({
               environment: ({ context }) => {
@@ -532,7 +573,9 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              adminRequirements: [WorkflowAdminRequirements.None]
+              includeWhen: {
+                adminRequirements: [WorkflowAdminRequirements.None]
+              }
             },
             actions: assign({
               environment: ({ context }) => {
@@ -548,10 +591,12 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              adminRequirements: [
-                WorkflowAdminRequirements.ApprovalProcess,
-                WorkflowAdminRequirements.StoreAccess
-              ]
+              includeWhen: {
+                adminRequirements: [
+                  WorkflowAdminRequirements.ApprovalProcess,
+                  WorkflowAdminRequirements.StoreAccess
+                ]
+              }
             },
             target: WorkflowState.Synchronize_Data
           },
@@ -559,7 +604,9 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              adminRequirements: [WorkflowAdminRequirements.None]
+              includeWhen: {
+                adminRequirements: [WorkflowAdminRequirements.None]
+              }
             },
             target: WorkflowState.Synchronize_Data
           }
@@ -638,7 +685,9 @@ export const StartupWorkflow = setup({
           {
             meta: {
               type: ActionType.Auto,
-              productTypes: [ProductType.Android_GooglePlay]
+              includeWhen: {
+                productTypes: [ProductType.Android_GooglePlay]
+              }
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
@@ -661,7 +710,9 @@ export const StartupWorkflow = setup({
     },
     [WorkflowState.Make_It_Live]: {
       meta: {
-        productTypes: [ProductType.Android_GooglePlay]
+        includeWhen: {
+          productTypes: [ProductType.Android_GooglePlay]
+        }
       },
       entry: assign({
         instructions: 'make_it_live',
@@ -673,10 +724,12 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              adminRequirements: [
-                WorkflowAdminRequirements.ApprovalProcess,
-                WorkflowAdminRequirements.StoreAccess
-              ]
+              includeWhen: {
+                adminRequirements: [
+                  WorkflowAdminRequirements.ApprovalProcess,
+                  WorkflowAdminRequirements.StoreAccess
+                ]
+              }
             },
             target: WorkflowState.Published
           },
@@ -684,7 +737,9 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              adminRequirements: [WorkflowAdminRequirements.None]
+              includeWhen: {
+                adminRequirements: [WorkflowAdminRequirements.None]
+              }
             },
             target: WorkflowState.Published
           }
@@ -694,10 +749,12 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.OrgAdmin,
-              adminRequirements: [
-                WorkflowAdminRequirements.ApprovalProcess,
-                WorkflowAdminRequirements.StoreAccess
-              ]
+              includeWhen: {
+                adminRequirements: [
+                  WorkflowAdminRequirements.ApprovalProcess,
+                  WorkflowAdminRequirements.StoreAccess
+                ]
+              }
             },
             target: WorkflowState.Synchronize_Data
           },
@@ -705,7 +762,9 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.User,
               user: RoleId.AppBuilder,
-              adminRequirements: [WorkflowAdminRequirements.None]
+              includeWhen: {
+                adminRequirements: [WorkflowAdminRequirements.None]
+              }
             },
             target: WorkflowState.Synchronize_Data
           }

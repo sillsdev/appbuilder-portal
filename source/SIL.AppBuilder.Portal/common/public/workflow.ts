@@ -131,11 +131,12 @@ export type MetaFilter = {
   productTypes?: ProductType[];
 };
 
-export type WorkflowStateMeta = MetaFilter;
+export type WorkflowStateMeta = { includeWhen?: MetaFilter };
 
-export type WorkflowTransitionMeta = MetaFilter & {
+export type WorkflowTransitionMeta = {
   type: ActionType;
   user?: RoleId;
+  includeWhen?: MetaFilter;
 };
 
 export type WorkflowEvent = {
@@ -147,8 +148,7 @@ export type WorkflowEvent = {
 
 export type JumpParams = {
   target: WorkflowState | string;
-  products?: ProductType[];
-  adminRequirements?: WorkflowAdminRequirements[];
+  filter?: MetaFilter;
 };
 
 /**
@@ -168,7 +168,7 @@ export function jump(
   any,
   never,
   WorkflowEvent,
-  MetaFilter | WorkflowTransitionMeta
+  WorkflowStateMeta | WorkflowTransitionMeta
 > {
   const j = {
     type: 'canJump',
