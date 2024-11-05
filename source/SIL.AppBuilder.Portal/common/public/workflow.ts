@@ -125,62 +125,6 @@ export type WorkflowInput = WorkflowConfig & {
   hasReviewers: boolean;
 };
 
-// TODO: Just put this info directly in the database
-export function workflowInputFromDBProductType(workflowDefinitionId: number): WorkflowConfig {
-  switch (workflowDefinitionId) {
-    case 1: // sil_android_google_play
-      return {
-        adminRequirements: [
-          WorkflowAdminRequirements.ApprovalProcess,
-          WorkflowAdminRequirements.StoreAccess
-        ],
-        productType: ProductType.Android_GooglePlay
-      };
-    case 4: // sil_android_s3
-      return {
-        adminRequirements: [WorkflowAdminRequirements.ApprovalProcess],
-        productType: ProductType.Android_S3
-      };
-    case 6: // la_android_google_play
-      return {
-        adminRequirements: [WorkflowAdminRequirements.StoreAccess],
-        productType: ProductType.Android_GooglePlay
-      };
-    case 7: // na_android_google_play
-      return {
-        adminRequirements: [WorkflowAdminRequirements.None],
-        productType: ProductType.Android_GooglePlay
-      };
-    case 8: // na_android_s3
-      return {
-        adminRequirements: [WorkflowAdminRequirements.None],
-        productType: ProductType.Android_S3
-      };
-    case 9: // pwa_cloud
-    case 11: // html_cloud
-      return {
-        adminRequirements: [WorkflowAdminRequirements.None],
-        productType: ProductType.Web
-      };
-    case 13: // asset_package
-      return {
-        adminRequirements: [WorkflowAdminRequirements.None],
-        productType: ProductType.AssetPackage
-      };
-    default: // would be some other workflow type presumably
-      console.log(
-        `Unrecognized workflow definition: ${workflowDefinitionId}! Returning configuration for sil_android_google_play.`
-      );
-      return {
-        adminRequirements: [
-          WorkflowAdminRequirements.ApprovalProcess,
-          WorkflowAdminRequirements.StoreAccess
-        ],
-        productType: ProductType.Android_GooglePlay
-      };
-  }
-}
-
 /** Used for filtering based on AdminLevel and/or ProductType */
 export type MetaFilter = {
   adminRequirements?: WorkflowAdminRequirements[];

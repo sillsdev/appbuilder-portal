@@ -6,9 +6,8 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { verifyCanViewAndEdit  } from './common';
+import { verifyCanViewAndEdit } from './common';
 import { Workflow } from 'sil.appbuilder.portal.common';
-import { workflowInputFromDBProductType } from 'sil.appbuilder.portal.common/workflow';
 
 const deleteReviewerSchema = v.object({
   id: idSchema
@@ -187,23 +186,29 @@ export const actions = {
     });
 
     if (typeof productId === 'string') {
-      const flow = (await prisma.productDefinitions.findUnique({
-        where: {
-          Id: form.data.productDefinitionId
-        },
-        select: {
-          Workflow: {
-            select: {
-              // TODO: RequiredAdminLevel and ProductType should be directly in the database instead of calling a helper function
-              Id: true,
-              Type: true
+      const flow = (
+        await prisma.productDefinitions.findUnique({
+          where: {
+            Id: form.data.productDefinitionId
+          },
+          select: {
+            Workflow: {
+              select: {
+                Id: true,
+                Type: true,
+                ProductType: true,
+                AdminRequirements: true
+              }
             }
           }
-        }
-      }))?.Workflow;
+        })
+      )?.Workflow;
 
       if (flow?.Type === WorkflowType.Startup) {
-        Workflow.create(productId, workflowInputFromDBProductType(flow.Id));
+        Workflow.create(productId, {
+          productType: flow.ProductType,
+          adminRequirements: flow.AdminRequirements
+        });
       }
     }
 
