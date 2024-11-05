@@ -22,8 +22,7 @@ export enum ActionType {
  * If a state or transition does not specify any `WorkflowOptions` it will be included (provided it passes other conditions not dependent on `WorkflowOptions`).
  */
 export enum WorkflowOptions {
-  None = 0,
-  AdminStoreAccess,
+  AdminStoreAccess = 1,
   ApprovalProcess
 }
 
@@ -125,10 +124,16 @@ export type WorkflowInput = WorkflowConfig & {
   hasReviewers: boolean;
 };
 
-/** Used for filtering based on AdminLevel and/or ProductType */
+type ProductTypeSingleOrList = ProductType | { in: ProductType[] };
+
+/** Used for filtering based on specified WorkflowOptions and/or ProductType */
 export type MetaFilter = {
-  options?: WorkflowOptions[];
-  productTypes?: ProductType[];
+  options?:
+    | { has: WorkflowOptions }      // options contains the provided
+    | { any: WorkflowOptions[] }    // options contains any of the provided
+    | { all: WorkflowOptions[] }    // options contains all of the provided
+    | { none: WorkflowOptions[] };  // options contains none of the provided
+  productType?: ProductTypeSingleOrList | { not: ProductTypeSingleOrList };
 };
 
 export type WorkflowStateMeta = { includeWhen?: MetaFilter };

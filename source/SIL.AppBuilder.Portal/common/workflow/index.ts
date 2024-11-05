@@ -319,7 +319,7 @@ export class Workflow {
       ((meta.options !== undefined
         ? meta.options.filter((urf) => filter.options.includes(urf)).length > 0
         : true) &&
-        (meta.productTypes !== undefined ? meta.productTypes.includes(filter.productType) : true))
+        (meta.productType !== undefined ? meta.productType.includes(filter.productType) : true))
     );
   }
 
