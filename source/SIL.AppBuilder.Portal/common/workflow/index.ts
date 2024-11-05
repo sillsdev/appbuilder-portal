@@ -15,7 +15,7 @@ import {
   ActionType,
   StateNode,
   WorkflowEvent,
-  MetaFilter,
+  filterMeta,
   WorkflowTransitionMeta,
   Snapshot,
   WorkflowState,
@@ -156,7 +156,7 @@ export class Workflow {
   public serializeForVisualization(): StateNode[] {
     const machine = StartupWorkflow;
     const states = Object.entries(machine.states).filter(([k, v]) =>
-      Workflow.filterMeta(this.config, v.meta?.includeWhen)
+      filterMeta(this.config, v.meta?.includeWhen)
     );
     const lookup = states.map((s) => s[0]);
     const actions: StateNode[] = [];
@@ -301,26 +301,8 @@ export class Workflow {
     filter: WorkflowConfig
   ) {
     return Object.values(on)
-      .map((v) => v.filter((t) => Workflow.filterMeta(filter, t.meta?.includeWhen)))
-      .filter((v) => v.length > 0 && Workflow.filterMeta(filter, v[0].meta?.includeWhen));
-  }
-
-  /**
-   * Include state/transition if:
-   *  - no conditions are specified
-   *  - OR
-   *    - One of the provided user role features matches the context
-   *    - AND
-   *    - One of the provided product types matches the context
-   */
-  public static filterMeta(filter: WorkflowConfig, meta?: MetaFilter) {
-    return (
-      meta === undefined ||
-      ((meta.options !== undefined
-        ? meta.options.filter((urf) => filter.options.includes(urf)).length > 0
-        : true) &&
-        (meta.productType !== undefined ? meta.productType.includes(filter.productType) : true))
-    );
+      .map((v) => v.filter((t) => filterMeta(filter, t.meta?.includeWhen)))
+      .filter((v) => v.length > 0 && filterMeta(filter, v[0].meta?.includeWhen));
   }
 
   /**

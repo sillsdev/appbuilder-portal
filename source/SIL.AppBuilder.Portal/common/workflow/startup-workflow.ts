@@ -11,10 +11,10 @@ import {
   WorkflowAction,
   WorkflowEvent,
   JumpParams,
-  jump
+  jump,
+  filterMeta
 } from '../public/workflow.js';
 import { RoleId } from '../public/prisma.js';
-import { Workflow } from './index.js';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -39,7 +39,7 @@ export const StartupWorkflow = setup({
   },
   guards: {
     canJump: ({ context }, params: JumpParams) => {
-      return context.start === params.target && Workflow.filterMeta(context, params.filter);
+      return context.start === params.target && filterMeta(context, params.filter);
     },
     hasAuthors: ({ context }) => {
       return context.hasAuthors;

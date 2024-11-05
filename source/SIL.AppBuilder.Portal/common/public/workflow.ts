@@ -144,6 +144,24 @@ export type WorkflowTransitionMeta = {
   includeWhen?: MetaFilter;
 };
 
+/**
+ * Include state/transition if:
+ *  - no conditions are specified
+ *  - OR
+ *    - One of the provided user role features matches the context
+ *    - AND
+ *    - One of the provided product types matches the context
+ */
+export function filterMeta(filter: WorkflowConfig, meta?: MetaFilter) {
+  return (
+    meta === undefined ||
+    ((meta.options !== undefined
+      ? meta.options.filter((urf) => filter.options.includes(urf)).length > 0
+      : true) &&
+      (meta.productType !== undefined ? meta.productType.includes(filter.productType) : true))
+  );
+}
+
 export type WorkflowEvent = {
   type: WorkflowAction;
   comment?: string;
