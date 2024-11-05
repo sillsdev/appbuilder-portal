@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import type { RoleId } from './prisma.js';
 import { and, type TransitionConfig } from 'xstate';
 import type { GuardPredicate } from 'xstate/guards';
@@ -53,6 +54,10 @@ export enum WorkflowState {
   Make_It_Live = 'Make It Live',
   Published = 'Published'
 }
+
+export const TerminalStateFilter: Prisma.WorkflowInstancesWhereInput = {
+  State: { in: [WorkflowState.Terminated, WorkflowState.Published] }
+};
 
 export enum WorkflowAction {
   Default = 'Default',

@@ -18,7 +18,8 @@ import {
   MetaFilter,
   WorkflowTransitionMeta,
   Snapshot,
-  WorkflowState
+  WorkflowState,
+  TerminalStateFilter
 } from '../public/workflow.js';
 import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType, WorkflowType } from '../public/prisma.js';
@@ -111,7 +112,7 @@ export class Workflow {
     const snap = await prisma.workflowInstances.findFirst({
       where: {
         ProductId: productId,
-        State: { not: WorkflowState.Published }
+        NOT: TerminalStateFilter
       },
       select: {
         State: true,
@@ -244,7 +245,7 @@ export class Workflow {
     const instance = await prisma.workflowInstances.findFirst({
       where: {
         ProductId: this.productId,
-        State: { not: WorkflowState.Published }
+        NOT: TerminalStateFilter
       },
       select: {
         Id: true
