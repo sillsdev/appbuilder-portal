@@ -1,4 +1,4 @@
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "AdminRequirements") VALUES
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "WorkflowOptions") VALUES
 (1,	'sil_android_google_play',	1,	'1',	'SIL Default Workflow for Publishing to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1,  '{1, 2}')
 ON CONFLICT ("Id")
 DO UPDATE SET 
@@ -9,7 +9,7 @@ DO UPDATE SET
 	"WorkflowScheme" = excluded."WorkflowScheme",
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId",
-  "AdminRequirements" = excluded."AdminRequirements";
+  "WorkflowOptions" = excluded."WorkflowOptions";
 
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId") VALUES
 (2,	'sil_android_google_play_rebuild',	2,	'1',	'SIL Default Workflow for Rebuilding to Google Play',	'SIL_Default_AppBuilders_Android_GooglePlay_Rebuild',	'SIL_Default_AppBuilders_Android_GooglePlay_Flow',	1)
@@ -34,7 +34,7 @@ DO UPDATE SET
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId";
 	
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "ProductType", "AdminRequirements") VALUES
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "ProductType", "WorkflowOptions") VALUES
 (4,	'sil_android_s3',	1,	'1',	'SIL Default Workflow for Publish to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3',	'SIL_Default_AppBuilders_Android_S3_Flow',	2,  1,  '{2}')
 ON CONFLICT ("Id")
 DO UPDATE SET 
@@ -46,7 +46,7 @@ DO UPDATE SET
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId",
   "ProductType" = excluded."ProductType",
-  "AdminRequirements" = excluded."AdminRequirements";
+  "WorkflowOptions" = excluded."WorkflowOptions";
 
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Type", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "ProductType") VALUES
 (5,	'sil_android_s3_rebuild',	2,	'1',	'SIL Default Workflow for Rebuilding to Amazon S3 Bucket',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_Default_AppBuilders_Android_S3_Flow',	2,  1)
@@ -61,7 +61,7 @@ DO UPDATE SET
 	"StoreTypeId" = excluded."StoreTypeId",
   "ProductType" = excluded."ProductType";
 	
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "AdminRequirements") VALUES 
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "WorkflowOptions") VALUES 
 (6, 'la_android_google_play', '1', 'Low Admin Workflow for Publishing to Google Play', 'SIL_LowAdmin_AppBuilders_Android_GooglePlay', 'SIL_Default_AppBuilders_Android_GooglePlay_Flow', 1, 1, '{1}')
 ON CONFLICT ("Id")
 DO UPDATE SET 
@@ -72,7 +72,7 @@ DO UPDATE SET
 	"WorkflowBusinessFlow" = excluded."WorkflowBusinessFlow",
 	"StoreTypeId" = excluded."StoreTypeId",
 	"Type" = excluded."Type",
-  "AdminRequirements" = excluded."AdminRequirements";
+  "WorkflowOptions" = excluded."WorkflowOptions";
 
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type") VALUES 
 (7, 'oa_android_google_play', '1', 'Owner Admin Workflow for Publishing to Google Play', 'SIL_OwnerAdmin_AppBuilders_Android_GooglePlay', 'SIL_Default_AppBuilders_Android_GooglePlay_Flow', 1, 1)

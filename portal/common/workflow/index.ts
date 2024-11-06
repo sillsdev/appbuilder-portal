@@ -120,7 +120,7 @@ export class Workflow {
         WorkflowDefinition: {
           select: {
             ProductType: true,
-            AdminRequirements: true
+            WorkflowOptions: true
           }
         }
       }
@@ -130,7 +130,7 @@ export class Workflow {
       context: JSON.parse(snap.Context) as WorkflowContextBase,
       config: {
         productType: snap.WorkflowDefinition.ProductType,
-        adminRequirements: snap.WorkflowDefinition.AdminRequirements
+        adminRequirements: snap.WorkflowDefinition.WorkflowOptions
       }
     };
   }
