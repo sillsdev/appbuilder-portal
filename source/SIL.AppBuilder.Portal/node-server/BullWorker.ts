@@ -60,6 +60,8 @@ export class Miscellaneous extends BullWorker<BullMQ.Job> {
       return Executor.Product.create(job as Job<BullMQ.Product.Create>);
     case BullMQ.JobType.Product_Delete:
       return Executor.Product.deleteProduct(job as Job<BullMQ.Product.Delete>);
+    case BullMQ.JobType.Product_GetVersionCode:
+      return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
     }
   }
 }

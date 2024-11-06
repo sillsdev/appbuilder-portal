@@ -98,9 +98,27 @@ export type WorkflowContextBase = {
   includeReviewers: boolean;
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: WorkflowState;
-  // Not sure how this is used, but will figure out when integrating into backend
-  environment: { [key: string]: unknown };
+  environment: { [key: ENVKeys | string]: string };
 };
+
+export enum ENVKeys {
+  // Set by Workflow
+  PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID = 'PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID',
+  PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE = 'PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE',
+  GOOGLE_PLAY_EXISTING = 'GOOGLE_PLAY_EXISTING',
+  GOOGLE_PLAY_DRAFT = 'GOOGLE_PLAY_DRAFT',
+  // Before Build
+  UI_URL = 'UI_URL',
+  PRODUCT_ID = 'PRODUCT_ID',
+  PROJECT_ID = 'PROJECT_ID',
+  PROJECT_NAME = 'PROJECT_NAME',
+  PROJECT_DESCRIPTION = 'PROJECT_DESCRIPTION',
+  PROJECT_URL = 'PROJECT_URL',
+  PROJECT_LANGUAGE = 'PROJECT_LANGUAGE',
+  PROJECT_ORGANIZATION = 'PROJECT_ORGANIZATION',
+  PROJECT_OWNER_NAME = 'PROJECT_OWNER_NAME',
+  PROJECT_OWNER_EMAIL = 'PROJECT_OWNER_EMAIL'
+}
 
 export type WorkflowContext = WorkflowContextBase & WorkflowInput;
 

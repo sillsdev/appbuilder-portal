@@ -46,6 +46,7 @@ export enum JobType {
   // Product Tasks
   Product_Create = 'Create Product',
   Product_Delete = 'Delete Product',
+  Product_GetVersionCode = 'Get VersionCode for Uploaded Product',
   // Publishing Tasks
   Publish_Product = 'Publish Product',
   Publish_Check = 'Check Product Publish',
@@ -81,6 +82,10 @@ export namespace Product {
     type: JobType.Product_Delete;
     organizationId: number;
     workflowJobId: number;
+  }
+  export interface GetVersionCode {
+    type: JobType.Product_GetVersionCode;
+    productId: string;
   }
 }
 
@@ -154,6 +159,7 @@ export type JobTypeMap = {
   [JobType.Build_Check]: Build.Check;
   [JobType.Product_Create]: Product.Create;
   [JobType.Product_Delete]: Product.Delete;
+  [JobType.Product_GetVersionCode]: Product.GetVersionCode;
   [JobType.Publish_Product]: Publish.Product;
   [JobType.Publish_Check]: Publish.Check;
   [JobType.System_CheckStatuses]: System.CheckStatuses;

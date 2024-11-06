@@ -10,6 +10,7 @@ import type {
 } from '../public/workflow.js';
 import {
   ActionType,
+  ENVKeys,
   ProductType,
   WorkflowAction,
   WorkflowOptions,
@@ -297,10 +298,10 @@ export const StartupWorkflow = setup({
             }
           },
           actions: assign({
-            environment: ({ context }) => {
-              context.environment.googlePlayExisting = true;
-              return context.environment;
-            }
+            environment: ({ context }) => ({
+              ...context.environment,
+              [ENVKeys.GOOGLE_PLAY_EXISTING]: '1'
+            })
           }),
           target: WorkflowState.Product_Build
         },
@@ -450,15 +451,15 @@ export const StartupWorkflow = setup({
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment.googlePlayUploaded,
+              !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.App_Store_Preview
           },
           {
             meta: { type: ActionType.Auto },
             guard: ({ context }) =>
               context.productType !== ProductType.Android_GooglePlay ||
-              !!context.environment.googlePlayExisting ||
-              !!context.environment.googlePlayUploaded,
+              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1' ||
+              !!context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.Verify_and_Publish
           }
         ],
@@ -547,10 +548,10 @@ export const StartupWorkflow = setup({
         instructions: 'create_app_entry',
         includeFields: ['storeDescription', 'listingLanguageCode'],
         includeArtifacts: true,
-        environment: ({ context }) => {
-          context.environment.googlePlayDraft = true;
-          return context.environment;
-        }
+        environment: ({ context }) => ({
+          ...context.environment,
+          [ENVKeys.GOOGLE_PLAY_DRAFT]: '1'
+        })
       }),
       exit: assign({ includeArtifacts: false }),
       on: {
@@ -563,12 +564,13 @@ export const StartupWorkflow = setup({
                 options: { has: WorkflowOptions.AdminStoreAccess }
               }
             },
-            actions: assign({
-              environment: ({ context }) => {
-                context.environment.googlePlayUploaded = true;
-                return context.environment;
-              }
-            }),
+            actions: ({ context }) => {
+              // Given that the Set Google Play Uploaded action in S1 require DB and BuildEngine queries, this is probably the best way to do this
+              Queues.Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
+                type: BullMQ.JobType.Product_GetVersionCode,
+                productId: context.productId
+              });
+            },
             target: WorkflowState.Verify_and_Publish
           },
           {
@@ -579,12 +581,12 @@ export const StartupWorkflow = setup({
                 options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
-            actions: assign({
-              environment: ({ context }) => {
-                context.environment.googlePlayUploaded = true;
-                return context.environment;
-              }
-            }),
+            actions: ({ context }) => {
+              Queues.Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
+                type: BullMQ.JobType.Product_GetVersionCode,
+                productId: context.productId
+              });
+            },
             target: WorkflowState.Verify_and_Publish
           }
         ],
@@ -697,14 +699,14 @@ export const StartupWorkflow = setup({
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment.googlePlayExisting,
+              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING],
             target: WorkflowState.Make_It_Live
           },
           {
             meta: { type: ActionType.Auto },
             guard: ({ context }) =>
               context.productType !== ProductType.Android_GooglePlay ||
-              !!context.environment.googlePlayExisting,
+              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1',
             target: WorkflowState.Published
           }
         ],
