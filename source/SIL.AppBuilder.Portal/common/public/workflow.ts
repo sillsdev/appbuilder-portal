@@ -124,16 +124,18 @@ export type WorkflowInput = WorkflowConfig & {
   hasReviewers: boolean;
 };
 
-type ProductTypeSingleOrList = ProductType | { in: ProductType[] };
-
 /** Used for filtering based on specified WorkflowOptions and/or ProductType */
 export type MetaFilter = {
   options?:
-    | { has: WorkflowOptions }      // options contains the provided
-    | { any: WorkflowOptions[] }    // options contains any of the provided
-    | { all: WorkflowOptions[] }    // options contains all of the provided
-    | { none: WorkflowOptions[] };  // options contains none of the provided
-  productType?: ProductTypeSingleOrList | { not: ProductTypeSingleOrList };
+    | { has: WorkflowOptions } // options contains the provided
+    | { any: WorkflowOptions[] } // options contains any of the provided
+    | { all: WorkflowOptions[] } // options contains all of the provided
+    | { none: WorkflowOptions[] }; // options contains none of the provided
+  productType?:
+    | { is: ProductType } // productType is the provided
+    | { any: ProductType[] } // productType is any of the provided
+    | { not: ProductType } // productType is not the provided
+    | { none: ProductType[] }; // productType is none of the provided
 };
 
 export type WorkflowStateMeta = { includeWhen?: MetaFilter };
@@ -147,19 +149,48 @@ export type WorkflowTransitionMeta = {
 /**
  * Include state/transition if:
  *  - no conditions are specified
- *  - OR
- *    - One of the provided user role features matches the context
- *    - AND
- *    - One of the provided product types matches the context
+ *  - all specified conditions are met
  */
-export function filterMeta(filter: WorkflowConfig, meta?: MetaFilter) {
-  return (
-    meta === undefined ||
-    ((meta.options !== undefined
-      ? meta.options.filter((urf) => filter.options.includes(urf)).length > 0
-      : true) &&
-      (meta.productType !== undefined ? meta.productType.includes(filter.productType) : true))
-  );
+export function filterMeta(config: WorkflowConfig, filter?: MetaFilter) {
+  let include = !!filter;
+  if (!filter) {
+    return true; // no conditions are specified
+  }
+  if (include && filter.options) {
+    if ('has' in filter.options) {
+      // options contains the provided
+      include &&= config.options.includes(filter.options.has);
+    } else if ('any' in filter.options) {
+      // options contains any of the provided
+      let x = filter.options.any;
+      include &&= !!config.options.find((o) => x.includes(o));
+    } else if ('all' in filter.options) {
+      // options contains all of the provided
+      let x = Array.from(new Set(filter.options.all));
+      include &&=
+        Array.from(new Set(config.options.filter((o) => x.includes(o)))).length >= x.length;
+    } else {
+      // options contains none of the provided
+      let x = filter.options.none;
+      include &&= x.filter((o) => config.options.includes(o)).length < 1;
+    }
+  }
+  if (include && filter.productType) {
+    if ('is' in filter.productType) {
+      // productType is the provided
+      include &&= config.productType === filter.productType.is;
+    } else if ('any' in filter.productType) {
+      // productType is any of the provided
+      include &&= filter.productType.any.includes(config.productType);
+    } else if ('not' in filter.productType) {
+      // productType is not the provided
+      include &&= config.productType !== filter.productType.not;
+    } else {
+      // productType is none of the provided
+      include &&= !filter.productType.none.includes(config.productType);
+    }
+  }
+  return include;
 }
 
 export type WorkflowEvent = {

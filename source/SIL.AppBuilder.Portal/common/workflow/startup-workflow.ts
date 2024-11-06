@@ -107,20 +107,20 @@ export const StartupWorkflow = setup({
         jump({
           target: WorkflowState.App_Store_Preview,
           filter: {
-            productType: ProductType.Android_GooglePlay
+            productType: { is: ProductType.Android_GooglePlay }
           }
         }),
         jump({
           target: WorkflowState.Create_App_Store_Entry,
           filter: {
-            productType: ProductType.Android_GooglePlay
+            productType: { is: ProductType.Android_GooglePlay }
           }
         }),
         jump({ target: WorkflowState.Verify_and_Publish }),
         jump({ target: WorkflowState.Product_Publish }),
         jump({
           target: WorkflowState.Make_It_Live,
-          filter: { productType: ProductType.Android_GooglePlay }
+          filter: { productType: { is: ProductType.Android_GooglePlay } }
         }),
         jump({ target: WorkflowState.Published }),
         {
@@ -289,7 +289,7 @@ export const StartupWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder,
             includeWhen: {
-              productType: ProductType.Android_GooglePlay
+              productType: { is: ProductType.Android_GooglePlay }
             }
           },
           target: WorkflowState.Product_Build
@@ -309,7 +309,7 @@ export const StartupWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder,
             includeWhen: {
-              productType: ProductType.Android_GooglePlay
+              productType: { is: ProductType.Android_GooglePlay }
             }
           },
           actions: assign({
@@ -435,7 +435,7 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
-                productType: ProductType.Android_GooglePlay
+                productType: { is: ProductType.Android_GooglePlay }
               }
             },
             guard: ({ context }) =>
@@ -461,7 +461,7 @@ export const StartupWorkflow = setup({
     [WorkflowState.App_Store_Preview]: {
       meta: {
         includeWhen: {
-          productType: ProductType.Android_GooglePlay
+          productType: { is: ProductType.Android_GooglePlay }
         }
       },
       entry: assign({
@@ -530,7 +530,7 @@ export const StartupWorkflow = setup({
     [WorkflowState.Create_App_Store_Entry]: {
       meta: {
         includeWhen: {
-          productType: ProductType.Android_GooglePlay
+          productType: { is: ProductType.Android_GooglePlay }
         }
       },
       entry: assign({
@@ -675,7 +675,7 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
-                productType: ProductType.Android_GooglePlay
+                productType: { is: ProductType.Android_GooglePlay }
               }
             },
             guard: ({ context }) =>
@@ -700,7 +700,7 @@ export const StartupWorkflow = setup({
     [WorkflowState.Make_It_Live]: {
       meta: {
         includeWhen: {
-          productType: ProductType.Android_GooglePlay
+          productType: { is: ProductType.Android_GooglePlay }
         }
       },
       entry: assign({
