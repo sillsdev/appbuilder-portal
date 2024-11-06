@@ -12,7 +12,7 @@ import {
   WorkflowEvent,
   JumpParams,
   jump,
-  filterMeta
+  includeStateOrTransition
 } from '../public/workflow.js';
 import { RoleId } from '../public/prisma.js';
 
@@ -39,7 +39,7 @@ export const StartupWorkflow = setup({
   },
   guards: {
     canJump: ({ context }, params: JumpParams) => {
-      return context.start === params.target && filterMeta(context, params.filter);
+      return context.start === params.target && includeStateOrTransition(context, params.filter);
     },
     hasAuthors: ({ context }) => {
       return context.hasAuthors;

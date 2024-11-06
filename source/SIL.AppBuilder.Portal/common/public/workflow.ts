@@ -146,7 +146,7 @@ export type WorkflowTransitionMeta = {
  *  - no conditions are specified
  *  - all specified conditions are met
  */
-export function filterMeta(config: WorkflowConfig, filter?: MetaFilter) {
+export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFilter) {
   let include = !!filter;
   if (!filter) {
     return true; // no conditions are specified

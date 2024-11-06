@@ -15,7 +15,7 @@ import {
   ActionType,
   StateNode,
   WorkflowEvent,
-  filterMeta,
+  includeStateOrTransition,
   WorkflowTransitionMeta,
   Snapshot,
   WorkflowState,
@@ -156,7 +156,7 @@ export class Workflow {
   public serializeForVisualization(): StateNode[] {
     const machine = StartupWorkflow;
     const states = Object.entries(machine.states).filter(([k, v]) =>
-      filterMeta(this.config, v.meta?.includeWhen)
+      includeStateOrTransition(this.config, v.meta?.includeWhen)
     );
     const lookup = states.map((s) => s[0]);
     const actions: StateNode[] = [];
@@ -301,8 +301,8 @@ export class Workflow {
     filter: WorkflowConfig
   ) {
     return Object.values(on)
-      .map((v) => v.filter((t) => filterMeta(filter, t.meta?.includeWhen)))
-      .filter((v) => v.length > 0 && filterMeta(filter, v[0].meta?.includeWhen));
+      .map((v) => v.filter((t) => includeStateOrTransition(filter, t.meta?.includeWhen)))
+      .filter((v) => v.length > 0 && includeStateOrTransition(filter, v[0].meta?.includeWhen));
   }
 
   /**
