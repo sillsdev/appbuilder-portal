@@ -70,12 +70,6 @@ export const StartupWorkflow = setup({
     [WorkflowState.Start]: {
       always: [
         jump({
-          target: WorkflowState.Readiness_Check,
-          filter: {
-            options: { has: WorkflowOptions.ApprovalProcess }
-          }
-        }),
-        jump({
           target: WorkflowState.Approval,
           filter: {
             options: { has: WorkflowOptions.ApprovalProcess }
@@ -125,7 +119,7 @@ export const StartupWorkflow = setup({
         jump({ target: WorkflowState.Published }),
         {
           guard: ({ context }) => context.options.includes(WorkflowOptions.ApprovalProcess),
-          target: WorkflowState.Readiness_Check
+          target: WorkflowState.Approval
         },
         {
           target: WorkflowState.Product_Creation
@@ -142,33 +136,13 @@ export const StartupWorkflow = setup({
                 options: { has: WorkflowOptions.ApprovalProcess }
               }
             },
-            target: WorkflowState.Readiness_Check
+            target: WorkflowState.Approval
           },
           {
             meta: { type: ActionType.Auto },
             target: WorkflowState.Product_Creation
           }
         ]
-      }
-    },
-    [WorkflowState.Readiness_Check]: {
-      meta: {
-        includeWhen: {
-          options: { has: WorkflowOptions.ApprovalProcess }
-        }
-      },
-      entry: assign({
-        instructions: 'readiness_check',
-        includeFields: ['storeDescription', 'listingLanguageCode']
-      }),
-      on: {
-        [WorkflowAction.Continue]: {
-          meta: {
-            type: ActionType.User,
-            user: RoleId.AppBuilder
-          },
-          target: WorkflowState.Approval
-        }
       }
     },
     [WorkflowState.Approval]: {

@@ -29,7 +29,6 @@ export enum ProductType {
 
 export enum WorkflowState {
   Start = 'Start',
-  Readiness_Check = 'Readiness Check',
   Approval = 'Approval',
   Approval_Pending = 'Approval Pending',
   Terminated = 'Terminated',
