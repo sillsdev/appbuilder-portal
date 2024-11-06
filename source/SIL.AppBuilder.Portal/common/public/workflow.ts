@@ -17,7 +17,9 @@ export enum WorkflowOptions {
   /** Require an OrgAdmin to access the GooglePlay Developer Console */
   AdminStoreAccess = 1,
   /** Require approval from an OrgAdmin before product can be created */
-  ApprovalProcess
+  ApprovalProcess,
+  /** Allow Owner to delegate actions to Authors */
+  AllowTransferToAuthors
 }
 
 export enum ProductType {

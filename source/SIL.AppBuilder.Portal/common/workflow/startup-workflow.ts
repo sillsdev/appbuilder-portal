@@ -89,14 +89,32 @@ export const StartupWorkflow = setup({
         }),
         jump({ target: WorkflowState.Product_Creation }),
         jump({ target: WorkflowState.App_Builder_Configuration }),
-        //@ts-expect-error I couldn't figure out the TS magic to prevent this from complaining. It should work fine though.
-        jump({ target: WorkflowState.Author_Configuration }, [{ type: 'hasAuthors' }]),
+        jump(
+          {
+            target: WorkflowState.Author_Configuration,
+            filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
+          },
+          //@ts-expect-error I couldn't figure out the TS magic to prevent this from complaining. It should work fine though.
+          [{ type: 'hasAuthors' }]
+        ),
         jump({ target: WorkflowState.Synchronize_Data }),
-        //@ts-expect-error
-        jump({ target: WorkflowState.Author_Download }, [{ type: 'hasAuthors' }]),
+        jump(
+          {
+            target: WorkflowState.Author_Download,
+            filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
+          },
+          //@ts-expect-error
+          [{ type: 'hasAuthors' }]
+        ),
         //note: authors can upload at any time, this state is just to prompt an upload
-        //@ts-expect-error
-        jump({ target: WorkflowState.Author_Upload }, [{ type: 'hasAuthors' }]),
+        jump(
+          {
+            target: WorkflowState.Author_Upload,
+            filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
+          },
+          //@ts-expect-error
+          [{ type: 'hasAuthors' }]
+        ),
         jump({ target: WorkflowState.Product_Build }),
         jump({
           target: WorkflowState.App_Store_Preview,
@@ -297,7 +315,10 @@ export const StartupWorkflow = setup({
         [WorkflowAction.Transfer_to_Authors]: {
           meta: {
             type: ActionType.User,
-            user: RoleId.AppBuilder
+            user: RoleId.AppBuilder,
+            includeWhen: {
+              options: { has: WorkflowOptions.AllowTransferToAuthors }
+            }
           },
           guard: { type: 'hasAuthors' },
           target: WorkflowState.Author_Configuration
@@ -305,6 +326,11 @@ export const StartupWorkflow = setup({
       }
     },
     [WorkflowState.Author_Configuration]: {
+      meta: {
+        includeWhen: {
+          options: { has: WorkflowOptions.AllowTransferToAuthors }
+        }
+      },
       entry: assign({
         instructions: 'app_configuration',
         includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
@@ -342,7 +368,10 @@ export const StartupWorkflow = setup({
         [WorkflowAction.Transfer_to_Authors]: {
           meta: {
             type: ActionType.User,
-            user: RoleId.AppBuilder
+            user: RoleId.AppBuilder,
+            includeWhen: {
+              options: { has: WorkflowOptions.AllowTransferToAuthors }
+            }
           },
           guard: { type: 'hasAuthors' },
           target: WorkflowState.Author_Download
@@ -350,6 +379,11 @@ export const StartupWorkflow = setup({
       }
     },
     [WorkflowState.Author_Download]: {
+      meta: {
+        includeWhen: {
+          options: { has: WorkflowOptions.AllowTransferToAuthors }
+        }
+      },
       entry: assign({
         instructions: 'authors_download',
         includeFields: ['storeDescription', 'listingLanguageCode', 'projectURL']
@@ -372,6 +406,11 @@ export const StartupWorkflow = setup({
       }
     },
     [WorkflowState.Author_Upload]: {
+      meta: {
+        includeWhen: {
+          options: { has: WorkflowOptions.AllowTransferToAuthors }
+        }
+      },
       entry: assign({
         instructions: 'authors_upload',
         includeFields: ['storeDescription', 'listingLanguageCode']
