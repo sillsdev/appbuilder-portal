@@ -11,18 +11,12 @@ export enum ActionType {
 }
 
 /**
- * The administrative requirements of the workflow.
- * Examples:
- *  - If the flow has `WorkflowOptions.ApprovalProcess` it will include extra state to represent the organizational approval process
- *  - If the flow has `WorkflowOptions.AdminStoreAccess` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
- *  - If the flow has `WorkflowOptions.None` none of the states or actions for the workflow instance will require an OrgAdmin.
- *
- * Any state or transition can have a list of specified `WorkflowOptions`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `WorkflowOptions` is in the state's or transition's list.
- *
- * If a state or transition does not specify any `WorkflowOptions` it will be included (provided it passes other conditions not dependent on `WorkflowOptions`).
+ * Optional features of the workflow. Different states/transitions can be included based on provided options.
  */
 export enum WorkflowOptions {
+  /** Require an OrgAdmin to access the GooglePlay Developer Console */
   AdminStoreAccess = 1,
+  /** Require approval from an OrgAdmin before product can be created */
   ApprovalProcess
 }
 
