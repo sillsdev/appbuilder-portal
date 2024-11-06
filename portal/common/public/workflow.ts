@@ -11,20 +11,15 @@ export enum ActionType {
 }
 
 /**
- * The administrative requirements of the workflow.
- * Examples:
- *  - If the flow has `WorkflowAdminRequirements.ApprovalProcess` it will include extra state to represent the organizational approval process
- *  - If the flow has `WorkflowAdminRequirements.StoreAccess` it will not include those states, but there are still some states that require action from an OrgAdmin to complete certain actions
- *  - If the flow has `WorkflowAdminRequirements.None` none of the states or actions for the workflow instance will require an OrgAdmin.
- *
- * Any state or transition can have a list of specified `WorkflowAdminRequirements`s. What this means is that those states and transitions will be included in a workflow instance ONLY when the instance's `WorkflowAdminRequirements` is in the state's or transition's list.
- *
- * If a state or transition does not specify any `WorkflowAdminRequirements` it will be included (provided it passes other conditions not dependent on `WorkflowAdminRequirements`).
+ * Optional features of the workflow. Different states/transitions can be included based on provided options.
  */
-export enum WorkflowAdminRequirements {
-  None = 0,
-  StoreAccess,
-  ApprovalProcess
+export enum WorkflowOptions {
+  /** Require an OrgAdmin to access the GooglePlay Developer Console */
+  AdminStoreAccess = 1,
+  /** Require approval from an OrgAdmin before product can be created */
+  ApprovalProcess,
+  /** Allow Owner to delegate actions to Authors */
+  AllowTransferToAuthors
 }
 
 export enum ProductType {
@@ -36,7 +31,6 @@ export enum ProductType {
 
 export enum WorkflowState {
   Start = 'Start',
-  Readiness_Check = 'Readiness Check',
   Approval = 'Approval',
   Approval_Pending = 'Approval Pending',
   Terminated = 'Terminated',
@@ -115,7 +109,7 @@ export type WorkflowContextBase = {
 export type WorkflowContext = WorkflowContextBase & WorkflowInput;
 
 export type WorkflowConfig = {
-  adminRequirements: WorkflowAdminRequirements[];
+  options: WorkflowOptions[];
   productType: ProductType;
 };
 
@@ -125,18 +119,74 @@ export type WorkflowInput = WorkflowConfig & {
   hasReviewers: boolean;
 };
 
-/** Used for filtering based on AdminLevel and/or ProductType */
+/** Used for filtering based on specified WorkflowOptions and/or ProductType */
 export type MetaFilter = {
-  adminRequirements?: WorkflowAdminRequirements[];
-  productTypes?: ProductType[];
+  options?:
+    | { has: WorkflowOptions } // options contains the provided
+    | { any: WorkflowOptions[] } // options contains any of the provided
+    | { all: WorkflowOptions[] } // options contains all of the provided
+    | { none: WorkflowOptions[] }; // options contains none of the provided
+  productType?:
+    | { is: ProductType } // productType is the provided
+    | { any: ProductType[] } // productType is any of the provided
+    | { not: ProductType } // productType is not the provided
+    | { none: ProductType[] }; // productType is none of the provided
 };
 
-export type WorkflowStateMeta = MetaFilter;
+export type WorkflowStateMeta = { includeWhen?: MetaFilter };
 
-export type WorkflowTransitionMeta = MetaFilter & {
+export type WorkflowTransitionMeta = {
   type: ActionType;
   user?: RoleId;
+  includeWhen?: MetaFilter;
 };
+
+/**
+ * Include state/transition if:
+ *  - no conditions are specified
+ *  - all specified conditions are met
+ */
+export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFilter) {
+  let include = !!filter;
+  if (!filter) {
+    return true; // no conditions are specified
+  }
+  if (include && filter.options) {
+    if ('has' in filter.options) {
+      // options contains the provided
+      include &&= config.options.includes(filter.options.has);
+    } else if ('any' in filter.options) {
+      // options contains any of the provided
+      let x = filter.options.any;
+      include &&= !!config.options.find((o) => x.includes(o));
+    } else if ('all' in filter.options) {
+      // options contains all of the provided
+      let x = Array.from(new Set(filter.options.all));
+      include &&=
+        Array.from(new Set(config.options.filter((o) => x.includes(o)))).length >= x.length;
+    } else {
+      // options contains none of the provided
+      let x = filter.options.none;
+      include &&= x.filter((o) => config.options.includes(o)).length < 1;
+    }
+  }
+  if (include && filter.productType) {
+    if ('is' in filter.productType) {
+      // productType is the provided
+      include &&= config.productType === filter.productType.is;
+    } else if ('any' in filter.productType) {
+      // productType is any of the provided
+      include &&= filter.productType.any.includes(config.productType);
+    } else if ('not' in filter.productType) {
+      // productType is not the provided
+      include &&= config.productType !== filter.productType.not;
+    } else {
+      // productType is none of the provided
+      include &&= !filter.productType.none.includes(config.productType);
+    }
+  }
+  return include;
+}
 
 export type WorkflowEvent = {
   type: WorkflowAction;
@@ -147,8 +197,7 @@ export type WorkflowEvent = {
 
 export type JumpParams = {
   target: WorkflowState | string;
-  products?: ProductType[];
-  adminRequirements?: WorkflowAdminRequirements[];
+  filter?: MetaFilter;
 };
 
 /**
@@ -168,7 +217,7 @@ export function jump(
   any,
   never,
   WorkflowEvent,
-  MetaFilter | WorkflowTransitionMeta
+  WorkflowStateMeta | WorkflowTransitionMeta
 > {
   const j = {
     type: 'canJump',
