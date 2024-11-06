@@ -62,7 +62,7 @@
       name="republishWorkflow"
       bind:value={$superFormData.republishWorkflow}
     >
-      <option value={null}>{m.admin_settings_productDefinitions_noWorkflow}</option>
+      <option value={null}>{m.admin_settings_productDefinitions_noWorkflow()}</option>
       {#each republishWorkflows.filter((w) => w.Type) as workflow}
         <option value={workflow.Id}>{workflow.Name}</option>
       {/each}
