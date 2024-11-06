@@ -197,7 +197,7 @@ export const actions = {
                 Id: true,
                 Type: true,
                 ProductType: true,
-                AdminRequirements: true
+                WorkflowOptions: true
               }
             }
           }
@@ -207,7 +207,7 @@ export const actions = {
       if (flow?.Type === WorkflowType.Startup) {
         Workflow.create(productId, {
           productType: flow.ProductType,
-          adminRequirements: flow.AdminRequirements
+          adminRequirements: flow.WorkflowOptions
         });
       }
     }
