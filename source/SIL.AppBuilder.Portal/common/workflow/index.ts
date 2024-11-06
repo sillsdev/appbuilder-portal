@@ -15,7 +15,7 @@ import {
   ActionType,
   StateNode,
   WorkflowEvent,
-  MetaFilter,
+  includeStateOrTransition,
   WorkflowTransitionMeta,
   Snapshot,
   WorkflowState,
@@ -130,7 +130,7 @@ export class Workflow {
       context: JSON.parse(snap.Context) as WorkflowContextBase,
       config: {
         productType: snap.WorkflowDefinition.ProductType,
-        adminRequirements: snap.WorkflowDefinition.WorkflowOptions
+        options: snap.WorkflowDefinition.WorkflowOptions
       }
     };
   }
@@ -156,7 +156,7 @@ export class Workflow {
   public serializeForVisualization(): StateNode[] {
     const machine = StartupWorkflow;
     const states = Object.entries(machine.states).filter(([k, v]) =>
-      Workflow.filterMeta(this.config, v.meta)
+      includeStateOrTransition(this.config, v.meta?.includeWhen)
     );
     const lookup = states.map((s) => s[0]);
     const actions: StateNode[] = [];
@@ -258,7 +258,7 @@ export class Workflow {
       hasAuthors: undefined,
       hasReviewers: undefined,
       productType: undefined,
-      adminRequirements: undefined
+      options: undefined
     } as WorkflowContextBase;
     if (instance) {
       return DatabaseWrites.workflowInstances.update({
@@ -301,26 +301,8 @@ export class Workflow {
     filter: WorkflowConfig
   ) {
     return Object.values(on)
-      .map((v) => v.filter((t) => Workflow.filterMeta(filter, t.meta)))
-      .filter((v) => v.length > 0 && Workflow.filterMeta(filter, v[0].meta));
-  }
-
-  /**
-   * Include state/transition if:
-   *  - no conditions are specified
-   *  - OR
-   *    - One of the provided user role features matches the context
-   *    - AND
-   *    - One of the provided product types matches the context
-   */
-  public static filterMeta(filter: WorkflowConfig, meta?: MetaFilter) {
-    return (
-      meta === undefined ||
-      ((meta.adminRequirements !== undefined
-        ? meta.adminRequirements.filter((urf) => filter.adminRequirements.includes(urf)).length > 0
-        : true) &&
-        (meta.productTypes !== undefined ? meta.productTypes.includes(filter.productType) : true))
-    );
+      .map((v) => v.filter((t) => includeStateOrTransition(filter, t.meta?.includeWhen)))
+      .filter((v) => v.length > 0 && includeStateOrTransition(filter, v[0].meta?.includeWhen));
   }
 
   /**
