@@ -8,6 +8,10 @@ import {
   Workflow
 } from 'sil.appbuilder.portal.common';
 import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
+import {
+  addProductPropertiesToEnvironment,
+  getWorkflowParameters
+} from './common.build-publish.js';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
   const productData = await prisma.products.findUnique({
@@ -20,19 +24,36 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           OrganizationId: true
         }
       },
-      WorkflowJobId: true
+      WorkflowJobId: true,
+      WorkflowInstance: {
+        select: {
+          Id: true
+        }
+      }
     }
   });
   if (!productData) {
     throw new Error(`Product #${job.data.productId} does not exist!`);
   }
-  job.updateProgress(25);
+  job.updateProgress(10);
+  // reset previous build
+  await DatabaseWrites.products.update(job.data.productId, {
+    WorkflowBuildId: 0
+  });
+  await DatabaseWrites.productArtifacts.deleteMany({
+    where: {
+      ProductId: job.data.productId
+    }
+  });
+  job.updateProgress(20);
+  const params = await getWorkflowParameters(productData.WorkflowInstance.Id);
+  const env = await addProductPropertiesToEnvironment(job.data.productId);
   const response = await BuildEngine.Requests.createBuild(
     { type: 'query', organizationId: productData.Project.OrganizationId },
     productData.WorkflowJobId,
     {
-      targets: job.data.targets ?? 'apk play-listing',
-      environment: job.data.environment
+      targets: params.targets ?? job.data.targets,
+      environment: { ...env, ...params.environment, ...job.data.environment }
     }
   );
   job.updateProgress(50);

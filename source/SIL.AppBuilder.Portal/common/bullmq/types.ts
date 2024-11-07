@@ -60,7 +60,7 @@ export namespace Build {
   export interface Product {
     type: JobType.Build_Product;
     productId: string;
-    targets?: string;
+    targets: string;
     environment: { [key: string]: string };
   }
   export interface Check {

@@ -434,7 +434,15 @@ export const StartupWorkflow = setup({
           Queues.Builds.add(`Build Product #${context.productId}`, {
             type: BullMQ.JobType.Build_Product,
             productId: context.productId,
-            // TODO: assign targets
+            targets: context.productType === ProductType.Android_S3
+              ? 'apk'
+              : context.productType === ProductType.AssetPackage
+                ? 'asset-package'
+                : context.productType === ProductType.Web
+                  ? 'html'
+                  : //ProductType.Android_GooglePlay
+                //default
+                  'apk play-listing',
             environment: context.environment
           },
           BullMQ.Retry5e5);
@@ -682,7 +690,15 @@ export const StartupWorkflow = setup({
             productId: context.productId,
             // TODO: How should these values be determined?
             channel: 'alpha',
-            targets: 'google-play',
+            targets: 
+            context.productType === ProductType.Android_S3
+              ? 's3-bucket'
+              : context.productType === ProductType.Web
+                ? 'rclone'
+                : //ProductType.Android_GooglePlay
+                //ProductType.AssetPackage
+                //default
+                'google-play',
             environment: context.environment
           },
           BullMQ.Retry5e5);
