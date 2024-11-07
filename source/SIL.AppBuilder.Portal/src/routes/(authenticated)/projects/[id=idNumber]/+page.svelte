@@ -244,7 +244,7 @@
                         {#if data.session?.user.roles.find((role) => role[0] === data.project?.Organization.Id && role[1] === RoleId.OrgAdmin)}
                           <li class="w-full rounded-none">
                             <span class="text-nowrap">
-                              <!-- TODO: what is this -->
+                              <!-- TODO: figure out Publishing Properties -->
                               {m.project_products_popup_properties()}
                             </span>
                           </li>

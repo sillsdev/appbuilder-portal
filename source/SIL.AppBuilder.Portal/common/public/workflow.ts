@@ -98,8 +98,10 @@ export type WorkflowContextBase = {
   includeReviewers: boolean;
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: WorkflowState;
-  environment: { [key: ENVKeys | string]: string };
+  environment: Environment;
 };
+
+export type Environment = { [key: ENVKeys | string]: string };
 
 export enum ENVKeys {
   // Set by Workflow
