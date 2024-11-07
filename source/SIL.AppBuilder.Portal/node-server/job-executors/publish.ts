@@ -8,6 +8,10 @@ import {
   Workflow
 } from 'sil.appbuilder.portal.common';
 import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
+import {
+  addProductPropertiesToEnvironment,
+  getWorkflowParameters
+} from './common.build-publish.js';
 
 export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown> {
   const productData = await prisma.products.findUnique({
@@ -21,18 +25,32 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
         }
       },
       WorkflowJobId: true,
-      WorkflowBuildId: true
+      WorkflowBuildId: true,
+      WorkflowInstance: {
+        select: {
+          Id: true
+        }
+      }
     }
   });
-  job.updateProgress(25);
+  job.updateProgress(10);
+  await DatabaseWrites.products.update(job.data.productId, {
+    WorkflowPublishId: 0
+  });
+  job.updateProgress(20);
+  const params = await getWorkflowParameters(productData.WorkflowInstance.Id);
+  const channel = params.channel ?? job.data.channel;
+  job.updateProgress(30);
+  const env = await addProductPropertiesToEnvironment(job.data.productId);
+  job.updateProgress(40);
   const response = await BuildEngine.Requests.createRelease(
     { type: 'query', organizationId: productData.Project.OrganizationId },
     productData.WorkflowJobId,
     productData.WorkflowBuildId,
     {
-      channel: job.data.channel,
-      targets: job.data.targets,
-      environment: job.data.environment
+      channel: channel,
+      targets: params.targets ?? job.data.targets,
+      environment: { ...env, ...params.environment, ...job.data.environment }
     }
   );
   job.updateProgress(50);
@@ -53,7 +71,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
         ProductId: job.data.productId,
         ProductBuildId: productData.WorkflowBuildId,
         ReleaseId: response.id,
-        Channel: job.data.channel
+        Channel: channel
       }
     });
 

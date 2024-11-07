@@ -688,8 +688,7 @@ export const StartupWorkflow = setup({
           Queues.Publishing.add(`Publish Product #${context.productId}`, {
             type: BullMQ.JobType.Publish_Product,
             productId: context.productId,
-            // TODO: How should these values be determined?
-            channel: 'alpha',
+            channel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
             targets: 
             context.productType === ProductType.Android_S3
               ? 's3-bucket'
