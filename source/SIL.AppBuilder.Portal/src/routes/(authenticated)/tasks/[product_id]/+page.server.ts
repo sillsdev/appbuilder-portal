@@ -131,7 +131,7 @@ export const load = (async ({ params, url, locals }) => {
     : [];
 
   return {
-    actions: Workflow.availableTransitionsFromName(snap.value, snap.context)
+    actions: Workflow.availableTransitionsFromName(snap.state, snap.config)
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
         switch (a[0].meta?.user) {
@@ -148,7 +148,7 @@ export const load = (async ({ params, url, locals }) => {
         }
       })
       .map((a) => a[0].eventType as WorkflowAction),
-    taskTitle: snap?.value,
+    taskTitle: snap?.state,
     instructions: snap?.context.instructions,
     projectId: product?.Project.Id,
     productDescription: product?.ProductDefinition.Name,
@@ -168,7 +168,7 @@ export const load = (async ({ params, url, locals }) => {
     reviewers: product?.Project.Reviewers,
     taskForm: await superValidate(
       {
-        state: snap?.value as WorkflowState
+        state: snap?.state as WorkflowState
       },
       valibot(sendActionSchema)
     )
