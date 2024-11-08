@@ -14,15 +14,14 @@
 <div class="w-full">
   <div class="flex flex-row place-content-between align-middle flex-wrap items-center">
     <h1 class="pb-6">{m.users_title()}</h1>
-    <!-- TODO i18n -->
     <div
       class="content-center m-4 space-x-2 flex flex-nowrap items-end w-full place-content-between"
     >
       {#if data.organizations.length > 1}
         <span class="flex flex-wrap items-center gap-x-2">
-          <span>Filter organization:</span>
+          <span>{m.users_organization_filter()}:</span>
           <select class="select select-bordered" name="org" bind:value={selectedOrg}>
-            <option value={0}>Any organization</option>
+            <option value={0}>{m.org_allOrganizations()}</option>
             {#each data.organizations as organization}
               <option value={organization.Id}>{organization.Name}</option>
             {/each}
@@ -71,7 +70,14 @@
                   </span>
                   <br />
                   {org.Roles.map(
-                    (r) => ['', 'Super Admin', 'Organization Admin', 'App Builder', 'Author'][r]
+                    (r) =>
+                      [
+                        '',
+                        m.users_roles_superAdmin(),
+                        m.users_roles_orgAdmin(),
+                        m.users_roles_appBuilder(),
+                        m.users_roles_author()
+                      ][r]
                   ).join(', ') || m.users_noRoles()}
                 </div>
               {/each}

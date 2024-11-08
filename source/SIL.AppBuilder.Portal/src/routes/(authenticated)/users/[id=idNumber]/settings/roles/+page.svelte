@@ -15,7 +15,6 @@
   <div class="flex flex-col px-4">
     {#each $form.organizations as org}
       <h3>{org.name}</h3>
-      <!-- TODO i18n -->
       <div class="flex w-full">
         <div class="shrink space-y-2">
           <div class="flex space-x-2">
@@ -25,7 +24,7 @@
               value={RoleId.AppBuilder}
               bind:group={org.roles}
             />
-            <span>AppBuilder</span>
+            <span>{m.users_roles_appBuilder()}</span>
           </div>
           <div class="flex space-x-2">
             <input
@@ -34,7 +33,7 @@
               value={RoleId.Author}
               bind:group={org.roles}
             />
-            <span>Author</span>
+            <span>{m.users_roles_author()}</span>
           </div>
           <div class="flex space-x-2">
             <input
@@ -43,7 +42,7 @@
               value={RoleId.OrgAdmin}
               bind:group={org.roles}
             />
-            <span>Organization Admin</span>
+            <span>{m.users_roles_orgAdmin()}</span>
           </div>
         </div>
         <div class="grow" />
