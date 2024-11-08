@@ -82,7 +82,7 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope?: 
   Object.entries(JSON.parse(instance.WorkflowDefinition.Properties)).forEach(([k, v]) => {
     const strValue = JSON.stringify(v);
     let strKey = k;
-    if (result['environment']) {
+    if (strKey === 'environment') {
       // merge environment
       result['environment'] = {
         ...result['environment'],
@@ -104,7 +104,7 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope?: 
   Object.entries(JSON.parse(instance.Product.ProductDefinition.Properties)).forEach(([k, v]) => {
     const strValue = JSON.stringify(v);
     let strKey = k;
-    if (result['environment']) {
+    if (strKey === 'environment') {
       // merge environment
       result['environment'] = {
         ...result['environment'],
@@ -124,7 +124,15 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope?: 
     }
   });
   Object.entries(scoped).forEach(([k, v]) => {
-    result[k] = v;
+    if (k === 'environment') {
+      result[k] = {
+        ...result[k],
+        ...JSON.parse(v)
+      }
+    }
+    else {
+      result[k] = v;
+    }
   });
 
   return result;
