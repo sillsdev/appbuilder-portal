@@ -119,7 +119,7 @@ export class Workflow {
   }
 
   /** Send a transition event to the workflow. */
-  public async send(event: WorkflowEvent): Promise<void> {
+  public send(event: WorkflowEvent): void {
     this.flow?.send(event);
   }
 
