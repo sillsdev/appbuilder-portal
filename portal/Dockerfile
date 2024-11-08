@@ -1,5 +1,5 @@
 # Temporary container to build output
-FROM node:20-alpine3.19 AS builder
+FROM node:22-alpine3.19 AS builder
 
 WORKDIR /build
 
@@ -25,7 +25,7 @@ RUN (cd /build/node-server/; npx tsc)
 
 
 # Real container that will run
-FROM node:20-alpine3.19
+FROM node:22-alpine3.19
 
 WORKDIR /app
 
