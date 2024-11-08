@@ -6,7 +6,6 @@
 <div class="flex flex-col w-full px-4">
   <form action="" method="post">
     <label class="flex place-content-between items-center">
-      <!-- TODO: i18n -->
       <span>{m.admin_settings_jobAdministration_test_instructions()}</span>
       <div>
         <input type="number" name="seconds" value="10" class="input input-bordered" />
