@@ -6,6 +6,7 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime.js';
 
   export let data;
 
@@ -115,7 +116,7 @@
             : ''}
         </li>
         <li>
-          {m.project_products_transitions_date()}: {data.product?.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
+          {m.project_products_transitions_date()}: {data.product?.ProductTransitions[0].DateTransition?.toLocaleTimeString(languageTag())}
         </li>
       </ul>
       <form method="POST" use:enhance>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -48,7 +49,7 @@
       <tbody>
         {#each data.users
           .filter((u) => (u.Name.toLowerCase().includes(searchQuery.toLowerCase()) || u.Email?.toLowerCase().includes(searchQuery.toLowerCase())) && u.Organizations.find((o) => o.Id === selectedOrg || selectedOrg === 0))
-          .sort((a, b) => a.FamilyName.localeCompare(b.FamilyName)) as user}
+          .sort((a, b) => a.FamilyName.localeCompare(b.FamilyName, languageTag())) as user}
           <tr class="align-top">
             <td class="p-2">
               <p>
