@@ -17,6 +17,21 @@
     dataType: 'json'
   });
 
+  const workflowOptions = [
+    {
+      message: m.admin_settings_workflowDefinitions_options_storeAccess(),
+      value: WorkflowOptions.AdminStoreAccess
+    },
+    {
+      message: m.admin_settings_workflowDefinitions_options_approval(),
+      value: WorkflowOptions.ApprovalProcess
+    },
+    {
+      message: m.admin_settings_workflowDefinitions_options_transferToAuthors(),
+      value: WorkflowOptions.AllowTransferToAuthors
+    }
+  ];
+
   $: if (form?.ok) goto('/admin/settings/workflow-definitions');
 </script>
 
@@ -38,24 +53,22 @@
       {/each}
     </select>
   </LabeledFormInput>
-  <div>
-    <label>
-      <!-- TODO: i18n (add to JSON) -->
-      <div class="label">
-        <span class="label-text">Product Type</span>
-      </div>
-      <select
-        class="select select-bordered"
-        name="productType"
-        bind:value={$superFormData.productType}
-      >
-        <option value={ProductType.Android_GooglePlay}>Android GooglePlay</option>
-        <option value={ProductType.Android_S3}>Android S3</option>
-        <option value={ProductType.AssetPackage}>Asset Package</option>
-        <option value={ProductType.Web}>Web</option>
-      </select>
-    </label>
-  </div>
+  <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
+    <select
+      class="select select-bordered"
+      name="productType"
+      bind:value={$superFormData.productType}
+    >
+      <option value={ProductType.Android_GooglePlay}>Android GooglePlay</option>
+      <option value={ProductType.Android_S3}>Android S3</option>
+      <option value={ProductType.AssetPackage}>
+        {m.admin_settings_workflowDefinitions_productType_assetPackage()}
+      </option>
+      <option value={ProductType.Web}>
+        {m.admin_settings_workflowDefinitions_productType_web()}
+      </option>
+    </select>
+  </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
     <select
       class="select select-bordered"
@@ -103,53 +116,26 @@
       bind:value={$superFormData.properties}
     />
   </LabeledFormInput>
-  <div class="border border-warning p-1 my-4 rounded-lg">
-    <label>
-      <!-- TODO: i18n (add to JSON) -->
-      <div class="label">
-        <span class="">Options</span>
-      </div>
+  <LabeledFormInput
+    name="admin_settings_workflowDefinitions_options"
+    className="border border-warning p-1 my-4 rounded-lg"
+  >
+    {#each workflowOptions as opt}
       <div class="label flex flex-row">
         <div class="label">
           <span class="label-text">
-            Require an organization admin to access the GooglePlay developer console.
+            {opt.message}
           </span>
         </div>
         <input
           class="toggle toggle-warning border-warning"
           type="checkbox"
           bind:group={$superFormData.options}
-          value={WorkflowOptions.AdminStoreAccess}
+          value={opt.value}
         />
       </div>
-      <div class="label flex flex-row">
-        <div class="label">
-          <span class="label-text">
-            Require approval by an organization admin before product is created.
-          </span>
-        </div>
-        <input
-          class="toggle toggle-warning border-warning"
-          type="checkbox"
-          bind:group={$superFormData.options}
-          value={WorkflowOptions.ApprovalProcess}
-        />
-      </div>
-      <div class="label flex flex-row">
-        <div class="label">
-          <span class="label-text">
-            Allow project owner to delegate configuration and product uploads to authors.
-          </span>
-        </div>
-        <input
-          class="toggle toggle-warning border-warning"
-          type="checkbox"
-          bind:group={$superFormData.options}
-          value={WorkflowOptions.AllowTransferToAuthors}
-        />
-      </div>
-    </label>
-  </div>
+    {/each}
+  </LabeledFormInput>
   <div>
     <label>
       <div class="label flex flex-row">
@@ -181,13 +167,14 @@
     </ul>
   {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href="/admin/settings/workflow-definitions">Cancel</a>
+    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <a class="btn" href="/admin/settings/workflow-definitions">{m.common_cancel()}</a>
   </div>
 </form>
 
 <style lang="postcss">
-  input[type="text"], select {
+  input[type='text'],
+  select {
     @apply w-full max-w-xs;
   }
 </style>
