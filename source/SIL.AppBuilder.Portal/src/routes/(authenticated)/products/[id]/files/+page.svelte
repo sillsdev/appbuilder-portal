@@ -42,7 +42,7 @@
         {data.product?.ProductDefinition.Name}
       </span>
       <span>
-        <!-- TODO i18n -->
+        <!-- TODO i18n (requires pluralization support) -->
         {m.project_products_numArtifacts({ amount: selectedBuild?.ProductArtifacts.length })}
       </span>
     </div>

@@ -302,7 +302,7 @@
                   </table>
                 </div>
                 <form method="dialog" class="modal-backdrop">
-                  <button>close</button>
+                  <button>{m.project_side_authors_close()}</button>
                 </form>
               </dialog>
             </div>
@@ -312,7 +312,7 @@
       </div>
     </div>
     <div class="settingsarea my-4">
-      <h2 class="pl-0 pt-0">Settings</h2>
+      <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
       <form
         action="?/editSettings"
         method="post"
@@ -371,8 +371,7 @@
             ({ update }) =>
               update({ reset: false })}
         >
-          <!-- TODO: i18n -->
-          <h2>Settings</h2>
+          <h2>{m.project_settings_title()}</h2>
           <div class="flex flex-col py-4">
             <div class="flex flex-col place-content-between px-4">
               <span class="items-center flex gap-x-1">
@@ -382,7 +381,7 @@
                   icon="mdi:lock"
                   width="16"
                   class="text-slate-400"
-                  tooltip="Organization cannot be changed"
+                  tooltip={m.project_side_organization_noChange()}
                 />
               </span>
               <span class="text-right">
@@ -505,7 +504,7 @@
               </div>
             {/each}
           {:else}
-            <p class="p-2">No authors</p>
+            <p class="p-2">{m.project_side_authors_empty()}</p>
           {/if}
         </div>
         <div class="bg-base-300 p-2">
@@ -547,8 +546,7 @@
               </div>
             {/each}
           {:else}
-            <!-- TODO i18n -->
-            <p class="p-2">No reviewers</p>
+            <p class="p-2">{m.project_side_reviewers_empty()}</p>
           {/if}
         </div>
         <div class="p-2 bg-base-300">
