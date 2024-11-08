@@ -15,8 +15,7 @@
     { text: m.admin_settings_navigation_stores(), route: 'stores' },
     { text: m.admin_settings_navigation_storeTypes(), route: 'store-types' },
     { text: m.admin_settings_navigation_buildEngines(), route: 'build-engines' },
-    // TODO: i18n
-    { text: 'BullMQ', route: 'bullmq' },
+    { text: m.admin_settings_jobAdministration_title(), route: 'bullmq' },
     { text: m.admin_settings_workflowInstances_title(), route: 'workflow-instances'}
   ];
 </script>
