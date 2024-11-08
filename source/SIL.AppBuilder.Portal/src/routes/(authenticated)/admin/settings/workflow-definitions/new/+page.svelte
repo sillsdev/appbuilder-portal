@@ -177,3 +177,9 @@
     <a class="btn" href="/admin/settings/workflow-definitions">Cancel</a>
   </div>
 </form>
+
+<style lang="postcss">
+  input[type="text"], select {
+    @apply w-full max-w-xs;
+  }
+</style>
