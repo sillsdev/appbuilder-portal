@@ -5,6 +5,7 @@
 <div class="flex flex-col w-full px-4">
   <form action="" method="post">
     <label class="flex place-content-between items-center">
+      <!-- TODO: i18n -->
       <span>Choose how long the test task should take</span>
       <div>
         <input type="number" name="seconds" value="10" class="input input-bordered" />
