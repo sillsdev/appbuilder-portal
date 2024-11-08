@@ -185,6 +185,8 @@
   "tasks_waiting": "Waiting {{waitTime}}",
   "tasks_forNames": "for {{allowedNames}} to {{activityName}}",
   "tasks_scriptoria": "Scriptoria",
+  "tasks_storeLanguage": "Store Listing Language",
+  "tasks_appProjectURL": "App Project URL",
   "projects_noBuilds": "No Builds Yet",
   "projects_latestBuild": "Latest Build ({{version}})",
   "projects_buildPending": "Build Pending",
