@@ -10,7 +10,7 @@ export async function POST({ params, request, locals }) {
   const projectId = parseInt(params.id);
   const session = await locals.auth();
 
-  console.log(JSON.stringify(session, null, 4)); // TODO: remove
+  console.log(JSON.stringify(request.headers.get('authorization'), null, 4)); // TODO: remove
 
   if (!session) {
     return error(403);
