@@ -76,6 +76,9 @@ export const load = (async ({ locals, params }) => {
     },
     orderBy: [
       {
+        DateTransition: 'asc'
+      },
+      {
         Id: 'asc'
       }
     ]
