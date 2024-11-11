@@ -479,7 +479,8 @@ export class Workflow {
           DestinationState: destinationState,
           Command: command ?? null,
           DateTransition: new Date(),
-          Comment: comment ?? null
+          Comment: comment ?? null,
+          WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
         }
       });
     }
