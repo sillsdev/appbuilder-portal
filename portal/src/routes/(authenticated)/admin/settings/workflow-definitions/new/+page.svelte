@@ -4,16 +4,34 @@
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+  import { businessFlows } from '../common';
 
   export let data: PageData;
 
   const { form, enhance, allErrors } = superForm(data.form, {
+    dataType: 'json',
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/workflow-definitions');
       }
     }
   });
+
+  const workflowOptions = [
+    {
+      message: m.admin_settings_workflowDefinitions_options_storeAccess(),
+      value: WorkflowOptions.AdminStoreAccess
+    },
+    {
+      message: m.admin_settings_workflowDefinitions_options_approval(),
+      value: WorkflowOptions.ApprovalProcess
+    },
+    {
+      message: m.admin_settings_workflowDefinitions_options_transferToAuthors(),
+      value: WorkflowOptions.AllowTransferToAuthors
+    }
+  ];
 </script>
 
 <h3>{m.admin_settings_workflowDefinitions_add()}</h3>
@@ -27,6 +45,18 @@
       {#each data.options.storeType as type}
         <option value={type.Id}>{type.Name}</option>
       {/each}
+    </select>
+  </LabeledFormInput>
+  <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
+    <select class="select select-bordered" name="productType" bind:value={$form.productType}>
+      <option value={ProductType.Android_GooglePlay}>Android GooglePlay</option>
+      <option value={ProductType.Android_S3}>Android S3</option>
+      <option value={ProductType.AssetPackage}>
+        {m.admin_settings_workflowDefinitions_productType_assetPackage()}
+      </option>
+      <option value={ProductType.Web}>
+        {m.admin_settings_workflowDefinitions_productType_web()}
+      </option>
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
@@ -45,20 +75,22 @@
     />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
-    <input
-      type="text"
-      name="workflowScheme"
-      class="input input-bordered w-full"
-      bind:value={$form.workflowScheme}
-    />
+    <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
+      {#each data.options.schemes as scheme}
+        <option value={scheme.Code}>{scheme.Code}</option>
+      {/each}
+    </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowBusinessFlow">
-    <input
-      type="text"
+    <select
+      class="select select-bordered"
       name="workflowBusinessFlow"
-      class="input input-bordered w-full"
       bind:value={$form.workflowBusinessFlow}
-    />
+    >
+      {#each businessFlows as flow}
+        <option value={flow}>{flow}</option>
+      {/each}
+    </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
     <input
@@ -67,6 +99,26 @@
       class="input input-bordered w-full"
       bind:value={$form.properties}
     />
+  </LabeledFormInput>
+  <LabeledFormInput
+    name="admin_settings_workflowDefinitions_options"
+    className="border border-warning p-1 my-4 rounded-lg"
+  >
+    {#each workflowOptions as opt}
+      <div class="label flex flex-row">
+        <div class="label">
+          <span class="label-text">
+            {opt.message}
+          </span>
+        </div>
+        <input
+          class="toggle toggle-warning border-warning"
+          type="checkbox"
+          bind:group={$form.options}
+          value={opt.value}
+        />
+      </div>
+    {/each}
   </LabeledFormInput>
   <div>
     <label>
@@ -99,7 +151,14 @@
     </ul>
   {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href="/admin/settings/workflow-definitions">Cancel</a>
+    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <a class="btn" href="/admin/settings/workflow-definitions">{m.common_cancel()}</a>
   </div>
 </form>
+
+<style lang="postcss">
+  input[type='text'],
+  select {
+    @apply w-full max-w-xs;
+  }
+</style>

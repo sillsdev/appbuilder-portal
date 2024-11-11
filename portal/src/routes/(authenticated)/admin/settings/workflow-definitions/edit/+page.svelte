@@ -4,10 +4,33 @@
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
+  import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+  import { businessFlows } from '../common';
 
   export let data: PageData;
   export let form: ActionData;
-  const { form: superFormData, enhance, allErrors } = superForm(data.form);
+  const {
+    form: superFormData,
+    enhance,
+    allErrors
+  } = superForm(data.form, {
+    dataType: 'json'
+  });
+
+  const workflowOptions = [
+    {
+      message: m.admin_settings_workflowDefinitions_options_storeAccess(),
+      value: WorkflowOptions.AdminStoreAccess
+    },
+    {
+      message: m.admin_settings_workflowDefinitions_options_approval(),
+      value: WorkflowOptions.ApprovalProcess
+    },
+    {
+      message: m.admin_settings_workflowDefinitions_options_transferToAuthors(),
+      value: WorkflowOptions.AllowTransferToAuthors
+    }
+  ];
 
   $: if (form?.ok) goto('/admin/settings/workflow-definitions');
 </script>
@@ -25,9 +48,25 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
     <select class="select select-bordered" name="storeType" bind:value={$superFormData.storeType}>
-      {#each data.options as option}
-        <option value={option.Id}>{option.Name}</option>
+      {#each data.storeTypes as storeType}
+        <option value={storeType.Id}>{storeType.Name}</option>
       {/each}
+    </select>
+  </LabeledFormInput>
+  <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
+    <select
+      class="select select-bordered"
+      name="productType"
+      bind:value={$superFormData.productType}
+    >
+      <option value={ProductType.Android_GooglePlay}>Android GooglePlay</option>
+      <option value={ProductType.Android_S3}>Android S3</option>
+      <option value={ProductType.AssetPackage}>
+        {m.admin_settings_workflowDefinitions_productType_assetPackage()}
+      </option>
+      <option value={ProductType.Web}>
+        {m.admin_settings_workflowDefinitions_productType_web()}
+      </option>
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
@@ -49,20 +88,26 @@
     />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
-    <input
-      class="input w-full input-bordered"
-      type="text"
+    <select
+      class="select select-bordered"
       name="workflowScheme"
       bind:value={$superFormData.workflowScheme}
-    />
+    >
+      {#each data.schemes as scheme}
+        <option value={scheme.Code}>{scheme.Code}</option>
+      {/each}
+    </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowBusinessFlow">
-    <input
-      class="input w-full input-bordered"
-      type="text"
+    <select
+      class="select select-bordered"
       name="workflowBusinessFlow"
       bind:value={$superFormData.workflowBusinessFlow}
-    />
+    >
+      {#each businessFlows as flow}
+        <option value={flow}>{flow}</option>
+      {/each}
+    </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
     <textarea
@@ -70,6 +115,26 @@
       class="textarea textarea-bordered w-full"
       bind:value={$superFormData.properties}
     />
+  </LabeledFormInput>
+  <LabeledFormInput
+    name="admin_settings_workflowDefinitions_options"
+    className="border border-warning p-1 my-4 rounded-lg"
+  >
+    {#each workflowOptions as opt}
+      <div class="label flex flex-row">
+        <div class="label">
+          <span class="label-text">
+            {opt.message}
+          </span>
+        </div>
+        <input
+          class="toggle toggle-warning border-warning"
+          type="checkbox"
+          bind:group={$superFormData.options}
+          value={opt.value}
+        />
+      </div>
+    {/each}
   </LabeledFormInput>
   <div>
     <label>
@@ -102,7 +167,14 @@
     </ul>
   {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href="/admin/settings/workflow-definitions">Cancel</a>
+    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <a class="btn" href="/admin/settings/workflow-definitions">{m.common_cancel()}</a>
   </div>
 </form>
+
+<style lang="postcss">
+  input[type='text'],
+  select {
+    @apply w-full max-w-xs;
+  }
+</style>

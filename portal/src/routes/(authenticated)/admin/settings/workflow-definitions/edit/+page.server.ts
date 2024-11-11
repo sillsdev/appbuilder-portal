@@ -6,17 +6,11 @@ import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { workflowDefinitionSchemaBase } from '../common';
 
 const editSchema = v.object({
   id: idSchema,
-  name: v.nullable(v.string()),
-  storeType: idSchema,
-  workflowType: idSchema,
-  workflowScheme: v.nullable(v.string()),
-  workflowBusinessFlow: v.nullable(v.string()),
-  description: v.nullable(v.string()),
-  properties: v.nullable(v.string()),
-  enabled: v.boolean()
+  ...workflowDefinitionSchemaBase.entries
 });
 export const load = (async ({ url }) => {
   const id = parseInt(url.searchParams.get('id') ?? '');
@@ -29,22 +23,25 @@ export const load = (async ({ url }) => {
     }
   });
   if (!data) return redirect(302, base + '/admin/settings/workflow-definitions');
-  const options = await prisma.storeTypes.findMany();
+  const storeTypes = await prisma.storeTypes.findMany();
+  const schemes = await prisma.workflowScheme.findMany({ select: { Code: true }});
   const form = await superValidate(
     {
       id: data.Id,
       name: data.Name,
       storeType: data.StoreTypeId!,
+      productType: data.ProductType,
       workflowType: data.Type,
       workflowScheme: data.WorkflowScheme,
       workflowBusinessFlow: data.WorkflowBusinessFlow,
       description: data.Description,
       properties: data.Properties,
+      options: data.WorkflowOptions,
       enabled: data.Enabled
     },
     valibot(editSchema)
   );
-  return { form, options };
+  return { form, storeTypes, schemes };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -63,7 +60,9 @@ export const actions = {
         storeType,
         workflowBusinessFlow,
         workflowScheme,
-        workflowType
+        workflowType,
+        options,
+        productType
       } = form.data;
       await DatabaseWrites.workflowDefinitions.update({
         where: {
@@ -77,7 +76,9 @@ export const actions = {
           StoreTypeId: storeType,
           Description: description,
           Properties: properties,
-          Enabled: enabled
+          Enabled: enabled,
+          ProductType: productType,
+          WorkflowOptions: options
         }
       });
       return { ok: true, form };
