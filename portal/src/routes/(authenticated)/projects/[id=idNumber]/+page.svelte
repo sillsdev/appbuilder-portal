@@ -272,6 +272,7 @@
                             {#if ![2, 3, 4].includes(transition.TransitionType)}
                               {transition.AllowedUserNames || m.appName()}
                             {/if}
+                            <!-- TODO: handle username for Project Access transition types -->
                           </td>
                           <td>{transition.Command ?? ''}</td>
                           <td>
