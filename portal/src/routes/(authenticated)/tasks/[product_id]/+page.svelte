@@ -30,7 +30,7 @@
       <div class="flex flex-row gap-x-3">
         {#each data.actions as action}
           <label class="btn">
-            {action}<!-- TODO: i18n? -->
+            {action}<!-- TODO: i18n (after MVP) -->
             <input
               type="radio"
               name="flowAction"
@@ -121,8 +121,7 @@
         {#if data.fields.listingLanguageCode}
           <label class="form-control w-full md:w-2/4">
             <div class="label">
-              <!-- TODO: i18n (add to locale json)-->
-              <span class="label-text">Store Listing Language</span>
+              <span class="label-text">{m.tasks_storeLanguage()}</span>
             </div>
             <input
               type="text"
@@ -137,8 +136,7 @@
     {#if data.fields.projectURL}
       <label class="form-control w-full">
         <div class="label">
-          <!-- TODO: i18n (add to locale json)-->
-          <span class="label-text">App Project URL</span>
+          <span class="label-text">{m.tasks_appProjectURL()}</span>
         </div>
         <input
           type="text"
@@ -191,13 +189,13 @@
   {/if}
   {#if data?.files?.length}
     <div class="overflow-x-auto max-h-96">
-      <h3>Files</h3>
+      <h3>{m.products_files_title()}</h3>
       <SortTable items={data.files} />
     </div>
   {/if}
   {#if data?.reviewers?.length}
     <div class="overflow-x-auto max-h-96">
-      <h3>Reviewers</h3>
+      <h3>{m.project_side_reviewers_title()}</h3>
       <SortTable items={data.reviewers} />
     </div>
   {/if}

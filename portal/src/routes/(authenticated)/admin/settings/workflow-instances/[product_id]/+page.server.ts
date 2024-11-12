@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ params }) => {
         },
         select: {
           DateTransition: true,
-          InitialState: true,
+          DestinationState: true,
           Command: true
         },
         orderBy: [

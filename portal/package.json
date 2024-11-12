@@ -13,7 +13,6 @@
     "format": "prettier --plugin-search-dir . --write .",
     "test:integration": "playwright test",
     "test:unit": "vitest",
-    "flatten-locales": "ts-node --esm scripts/flatten.ts",
     "prepare": "svelte-kit sync"
   },
   "prisma": {

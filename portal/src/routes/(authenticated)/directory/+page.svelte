@@ -39,7 +39,7 @@
     class="w-full flex flex-row place-content-start p-4 pb-0 space-between-4 flex-wrap gap-1"
   >
     <select class="select select-bordered" bind:value={organizationFilter}>
-      <option value="">All organizations</option>
+      <option value="">{m.org_allOrganizations()}</option>
       {#each new Set(data.projects.map((p) => p.OrganizationName)).values() as org}
         <option value={org}>{org}</option>
       {/each}
@@ -47,8 +47,7 @@
 
     <LanguageCodeTypeahead bind:langCode />
     <select class="select select-bordered max-w-full" bind:value={productDefinitionFilter}>
-      <!-- TODO: i18n -->
-      <option value="" selected>Any product definitions</option>
+      <option value="" selected>{m.productDefinitions_filterAllProjects()}</option>
       {#each data.productDefinitions as pD}
         <option value={pD.Name}>{pD.Name}</option>
       {/each}

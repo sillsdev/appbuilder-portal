@@ -31,9 +31,9 @@ export function getRelativeTime(date: Date | null) {
   return 'ERROR';
 }
 export function getTimeDateString(date: Date | null) {
-  return `${date?.toLocaleDateString() ?? '-'} ${
+  return `${date?.toLocaleDateString(languageTag()) ?? '-'} ${
     date
-      ?.toLocaleTimeString([], {
+      ?.toLocaleTimeString(languageTag(), {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true

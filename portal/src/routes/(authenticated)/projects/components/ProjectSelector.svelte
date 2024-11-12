@@ -4,6 +4,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import { getTimeDateString } from '$lib/timeUtils';
   import type { PrunedProject } from '../common';
   import ProjectFilterSelector from './ProjectFilterSelector.svelte';
@@ -83,7 +84,7 @@
   </slot>
   {#if projects.length > 0}
     <div class="w-full relative p-4">
-      {#each filteredProjects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '')) as project}
+      {#each filteredProjects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '', languageTag())) as project}
         <div class="rounded-md bg-base-300 border border-slate-400 my-4 overflow-hidden w-full">
           <div class="p-4 pb-2 w-full">
             <span class="flex flex-row">
