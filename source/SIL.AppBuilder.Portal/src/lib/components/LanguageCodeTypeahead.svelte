@@ -73,12 +73,13 @@
   let typeaheadInput: HTMLInputElement;
   export let langCode: string;
   export let dropdownClasses: string = '';
+  export let inputClasses: string = '';
 </script>
 
 <TypeaheadInput
   props={{ placeholder: m.project_languageCode() }}
   getList={(search) => fuzzySearch.search(search).slice(0, 5)}
-  classes="pr-20"
+  classes="pr-20 {inputClasses}"
   bind:search={langCode}
   on:itemClicked={(item) => (langCode = item.detail.item.tag)}
   {dropdownClasses}
