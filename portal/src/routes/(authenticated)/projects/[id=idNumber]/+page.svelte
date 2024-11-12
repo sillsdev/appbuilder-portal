@@ -191,7 +191,9 @@
                         {/if}
                         {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin)}
                           <li class="w-full-rounded-none">
-                            <a href="/admin/settings/workflow-instances/{product.Id}">{m.common_workflow()}</a>
+                            <a href="/admin/settings/workflow-instances/{product.Id}">
+                              {m.common_workflow()}
+                            </a>
                           </li>
                         {/if}
                         <li class=" w-full rounded-none">
@@ -418,7 +420,7 @@
                       bind:this={ownerField}
                     />
                     <ul class="menu menu-compact overflow-hidden rounded-md">
-                      {#each data.possibleProjectOwners as owner}
+                      {#each data.possibleProjectOwners.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as owner}
                         <li class="w-full rounded-none">
                           <button
                             class="text-nowrap"
@@ -449,7 +451,7 @@
                     class="btn btn-ghost p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
                   >
                     <span class="flex items-center pl-1">
-                      {data.project?.Group.Abbreviation}
+                      {data.project?.Group.Name}
                       <IconContainer icon="gridicons:dropdown" width="20" />
                     </span>
                   </div>
@@ -465,7 +467,7 @@
                       bind:this={groupField}
                     />
                     <ul class="menu menu-compact overflow-hidden rounded-md">
-                      {#each data.possibleGroups as group}
+                      {#each data.possibleGroups.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as group}
                         <li class="w-full rounded-none">
                           <button
                             class="text-nowrap"
