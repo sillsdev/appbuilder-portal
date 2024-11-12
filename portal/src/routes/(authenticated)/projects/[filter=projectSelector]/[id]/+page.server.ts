@@ -1,7 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import { redirect } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
-import { pruneProjects } from '../../common';
+import { pruneProjects } from '$lib/projects/common';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ params, url, locals }) => {

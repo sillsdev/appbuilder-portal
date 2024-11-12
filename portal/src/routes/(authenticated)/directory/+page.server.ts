@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
-import { pruneProjects } from '../projects/common';
+import { pruneProjects } from '$lib/projects/common';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals }) => {
