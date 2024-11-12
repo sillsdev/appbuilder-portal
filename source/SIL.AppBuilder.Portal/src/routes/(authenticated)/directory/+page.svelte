@@ -5,6 +5,7 @@
   import 'flatpickr/dist/flatpickr.css';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import SearchBar from '$lib/components/SearchBar.svelte';
   import type { PageData } from './$types';
   import { languageTag } from '$lib/paraglide/runtime';
 
@@ -58,10 +59,7 @@
           <option value={org}>{org}</option>
         {/each}
       </select>
-      <div class="input input-bordered flex items-center gap-2 mobile-sizing">
-        <input type="text" placeholder={m.search()} class="flex-grow" bind:value={searchTerm} />
-        <IconContainer icon="mdi:search" class="ml-auto" width={24} />
-      </div>
+      <SearchBar bind:value={searchTerm} className="w-full max-w-xs md:w-auto md:max-w-none" />
     </div>
     <div class="w-full flex flex-row place-content-start mt-1 px-4 pb-0 flex-wrap gap-1">
       <div class="mobile-sizing">
