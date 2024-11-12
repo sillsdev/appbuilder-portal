@@ -1,14 +1,15 @@
 <script lang="ts">
   import { dev } from '$app/environment';
-  </script>
+  import * as m from '$lib/paraglide/messages';
+</script>
 
 <div class="flex flex-col w-full px-4">
   <form action="" method="post">
     <label class="flex place-content-between items-center">
-      <span>Choose how long the test task should take</span>
+      <span>{m.admin_settings_jobAdministration_test_instructions()}</span>
       <div>
         <input type="number" name="seconds" value="10" class="input input-bordered" />
-        seconds
+        {m.admin_settings_jobAdministration_test_seconds()}
       </div>
     </label>
     <div class="flex gap-x-2 my-2">
@@ -17,9 +18,11 @@
         class="btn btn-primary grow"
         target="_blank"
       >
-        Open Bull-board panel
+       {m.admin_settings_jobAdministration_list()} 
       </a>
-      <button type="submit" class="grow btn btn-primary">Add Test BullMQ task</button>
+      <button type="submit" class="grow btn btn-primary">
+        {m.admin_settings_jobAdministration_test_add()}
+      </button>
     </div>
   </form>
 </div>

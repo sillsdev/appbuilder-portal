@@ -6,6 +6,7 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime.js';
 
   export let data;
 
@@ -97,8 +98,7 @@
       <summary class="select-none cursor-pointer">
         <span class="flex flex-row">
           <HamburgerIcon color="white" />
-          <!-- TODO: i18n -->
-          <strong>Information</strong>
+          <strong>{m.common_general()}</strong>
         </span>
       </summary>
       <ul>
@@ -106,21 +106,26 @@
           {m.project_title()}: {data.product?.Project.Name}
         </li>
         <li>
-          {m.project_products_title()}: {data.product?.ProductDefinition.Name}
+          {m.tasks_product()}: {data.product?.ProductDefinition.Name}
         </li>
         <li>
-          Last Transition: {data.product?.ProductTransitions[0].InitialState}
+          {m.project_products_transitions_state()}: {data.product?.ProductTransitions[0]
+            .DestinationState}
           {data.product?.ProductTransitions[0].Command
             ? `(${data.product?.ProductTransitions[0].Command})`
             : ''}
         </li>
         <li>
-          {m.project_products_transitions_date()}: {data.product?.ProductTransitions[0].DateTransition?.toLocaleTimeString()}
+          {m.project_products_transitions_date()}: {data.product?.ProductTransitions[0].DateTransition?.toLocaleTimeString(languageTag())}
         </li>
       </ul>
       <form method="POST" use:enhance>
         <input type="hidden" name="state" bind:value={$form.state} />
-        <input type="submit" class="btn" value="Jump State to {$form.state}" />
+        <input
+          type="submit"
+          class="btn"
+          value={m.admin_settings_workflowInstances_jump({ state: $form.state })}
+        />
       </form>
     </details>
   </div>
