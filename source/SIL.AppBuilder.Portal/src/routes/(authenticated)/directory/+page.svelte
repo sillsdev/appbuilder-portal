@@ -25,11 +25,13 @@
   $: filteredProjects = data.projects.filter((project) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (project.Name?.toLowerCase().includes(searchTermLower.toLowerCase()) ||
-        project.Language?.toLowerCase().includes(searchTermLower) ||
-        project.OwnerName?.toLowerCase().includes(searchTermLower) ||
-        project.OrganizationName?.toLowerCase().includes(searchTermLower) ||
-        project.GroupName?.toLowerCase().includes(searchTermLower)) &&
+      [
+        project.Name,
+        project.Language,
+        project.OwnerName,
+        project.OrganizationName,
+        project.GroupName
+      ].some((field) => field?.toLowerCase().includes(searchTermLower)) &&
       (!updateDates ||
         !updateDates[1] ||
         !project.DateUpdated ||
