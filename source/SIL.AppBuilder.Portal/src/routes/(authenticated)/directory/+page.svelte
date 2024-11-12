@@ -49,28 +49,28 @@
     <div class="inline-block">
       <h1 class="p-4 pl-6">{m.sidebar_projectDirectory()}</h1>
     </div>
-    <div class="flex flex-row flex-wrap place-content-end items-center">
-      <select class="select select-bordered" bind:value={organizationFilter}>
+    <div
+      class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 mobile-sizing"
+    >
+      <select class="select select-bordered mobile-sizing" bind:value={organizationFilter}>
         <option value="">{m.org_allOrganizations()}</option>
         {#each new Set(data.projects.map((p) => p.OrganizationName)).values() as org}
           <option value={org}>{org}</option>
         {/each}
       </select>
-      <div class="p-4 relative">
-        <input
-          type="text"
-          class="input w-full input-bordered pr-9"
-          placeholder={m.search()}
-          bind:value={searchTerm}
-        />
-        <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
-          <IconContainer icon="mdi:search" width={24} />
-        </div>
+      <div class="input input-bordered flex items-center gap-2 mobile-sizing">
+        <input type="text" placeholder={m.search()} class="flex-grow" bind:value={searchTerm} />
+        <IconContainer icon="mdi:search" class="ml-auto" width={24} />
       </div>
     </div>
-    <div class="w-full flex flex-row place-content-start p-4 pb-0 space-between-4 flex-wrap gap-1">
-      <LanguageCodeTypeahead bind:langCode />
-      <select class="select select-bordered max-w-full" bind:value={productDefinitionFilter}>
+    <div class="w-full flex flex-row place-content-start mt-1 px-4 pb-0 flex-wrap gap-1">
+      <div class="mobile-sizing">
+        <LanguageCodeTypeahead bind:langCode inputClasses="w-full max-w-xs" />
+      </div>
+      <select
+        class="select select-bordered mobile-sizing max-w-full"
+        bind:value={productDefinitionFilter}
+      >
         <option value="" selected>{m.productDefinitions_filterAllProjects()}</option>
         {#each data.productDefinitions as pD}
           <option value={pD.Name}>{pD.Name}</option>
@@ -84,7 +84,7 @@
   </div>
   {#if filteredProjects.length > 0}
     <div class="w-full relative p-4">
-      {#each filteredProjects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '', languageTag())) as project}
+      {#each filteredProjects.sort( (a, b) => (a.Name ?? '').localeCompare(b.Name ?? '', languageTag()) ) as project}
         <ProjectCard {project} />
       {/each}
     </div>
@@ -93,7 +93,7 @@
   {/if}
 </div>
 
-<style>
+<style lang="postcss">
   :global(.highlight) {
     background-color: oklch(var(--a));
   }
@@ -106,5 +106,13 @@
   }
   :global(li[aria-selected='true'] .listElement) {
     background-color: oklch(var(--b2));
+  }
+  .mobile-sizing {
+    @apply w-full max-w-xs;
+  }
+  @media screen(md) {
+    .mobile-sizing {
+      @apply w-auto max-w-none;
+    }
   }
 </style>

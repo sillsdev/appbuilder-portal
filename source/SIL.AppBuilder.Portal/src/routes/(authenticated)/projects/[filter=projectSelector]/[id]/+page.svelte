@@ -31,9 +31,11 @@
     <div class="inline-block">
       <ProjectFilterSelector />
     </div>
-    <div class="flex flex-row place-content-end items-center">
+    <div
+      class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 mobile-sizing gap-1"
+    >
       <select
-        class="select select-bordered ml-2"
+        class="select select-bordered mobile-sizing"
         bind:value={selectedOrg}
         on:change={() => goto(selectedOrg + '')}
       >
@@ -41,44 +43,37 @@
           <option value={organization.Id}>{organization.Name}</option>
         {/each}
       </select>
-      <div class="p-4 relative">
-        <input
-          type="text"
-          class="input w-full input-bordered pr-9"
-          placeholder={m.search()}
-          bind:value={searchTerm}
-        />
-        <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
-          <IconContainer icon="mdi:search" width={24} />
-        </div>
+      <div class="input input-bordered flex items-center gap-2 mobile-sizing">
+        <input type="text" placeholder={m.search()} class="flex-grow" bind:value={searchTerm} />
+        <IconContainer icon="mdi:search" class="ml-auto" width={24} />
       </div>
     </div>
   </div>
-  <div class="w-full flex flex-row place-content-between p-4 pb-0 px-6 space-between-4">
-    <div class="space-y-2">
+  <div class="w-full flex flex-row flex-wrap place-content-between gap-1 mt-4">
+    <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
       <button
-        class="btn btn-outline mx-1"
+        class="action"
         disabled={!selectedProjects.length}
         on:click={() => alert(selectedProjects.join(', '))}
       >
         {m.common_archive()}
       </button>
-      <button class="btn btn-outline mx-1" disabled={!selectedProjects.length}>
+      <button class="action" disabled={!selectedProjects.length}>
         {m.common_rebuild()}
       </button>
     </div>
-    <div class="text-right space-y-2">
-      <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
+    <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
+      <button class="action" on:click={() => alert('TODO api proxy')}>
         {m.project_importProjects()}
       </button>
-      <button class="btn btn-outline mx-1" on:click={() => alert('TODO api proxy')}>
+      <button class="action" on:click={() => alert('TODO api proxy')}>
         {m.sidebar_addProject()}
       </button>
     </div>
   </div>
   {#if filteredProjects.length > 0}
     <div class="w-full relative p-4">
-      {#each filteredProjects.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? '', languageTag())) as project}
+      {#each filteredProjects.sort( (a, b) => (a.Name ?? '').localeCompare(b.Name ?? '', languageTag()) ) as project}
         <ProjectCard {project}>
           <span slot="checkbox">
             <input
@@ -95,3 +90,23 @@
     <p class="m-8">{m.projectTable_empty()}</p>
   {/if}
 </div>
+
+<style lang="postcss">
+  .mobile-sizing {
+    @apply w-full max-w-xs;
+  }
+  @media screen(md) {
+    .mobile-sizing {
+      @apply w-auto max-w-none;
+    }
+  }
+  .action {
+    @apply form-control w-full max-w-xs btn btn-outline;
+  }
+  /* This is perfectly valid. I don't have a way to make the error disappear */
+  @media screen(sm) {
+    .action {
+      @apply w-auto max-w-none;
+    }
+  }
+</style>
