@@ -4,6 +4,7 @@
   import * as m from '$lib/paraglide/messages';
   import 'flatpickr/dist/flatpickr.css';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import type { PageData } from './$types';
   import { languageTag } from '$lib/paraglide/runtime';
 
@@ -46,13 +47,26 @@
     <div class="inline-block">
       <h1 class="p-4 pl-6">{m.sidebar_projectDirectory()}</h1>
     </div>
-    <div class="w-full flex flex-row place-content-start p-4 pb-0 space-between-4 flex-wrap gap-1">
+    <div class="flex flex-row flex-wrap place-content-end items-center">
       <select class="select select-bordered" bind:value={organizationFilter}>
         <option value="">{m.org_allOrganizations()}</option>
         {#each new Set(data.projects.map((p) => p.OrganizationName)).values() as org}
           <option value={org}>{org}</option>
         {/each}
       </select>
+      <div class="p-4 relative">
+        <input
+          type="text"
+          class="input w-full input-bordered pr-9"
+          placeholder={m.search()}
+          bind:value={searchTerm}
+        />
+        <div class="absolute right-6 items-center align-middle h-full [top:1.7rem]">
+          <IconContainer icon="mdi:search" width={24} />
+        </div>
+      </div>
+    </div>
+    <div class="w-full flex flex-row place-content-start p-4 pb-0 space-between-4 flex-wrap gap-1">
       <LanguageCodeTypeahead bind:langCode />
       <select class="select select-bordered max-w-full" bind:value={productDefinitionFilter}>
         <option value="" selected>{m.productDefinitions_filterAllProjects()}</option>
