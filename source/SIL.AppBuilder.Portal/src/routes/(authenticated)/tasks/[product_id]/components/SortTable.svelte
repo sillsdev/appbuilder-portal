@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { languageTag } from "$lib/paraglide/runtime";
   import SortDirectionPicker from "./SortDirectionPicker.svelte";
   export let items: {[key: string]: any}[];
 
@@ -24,12 +25,13 @@
     // sort based on current field
     // if blank, sort first field
     const field = current || Object.keys(items[0])[0];
+    const langTag = languageTag();
     items = (typeof items[0][field] === 'string')?
       // sort strings
       items.sort((a, b) => {
         return descending ?
-          b[field].localeCompare(a[field]):
-          a[field].localeCompare(b[field]);
+          b[field].localeCompare(a[field], langTag):
+          a[field].localeCompare(b[field], langTag);
       }):
       // sort non-strings (i.e. numbers)
       items.sort((a, b) => {
