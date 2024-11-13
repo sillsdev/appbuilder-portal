@@ -91,7 +91,12 @@
   {/if}
   <span class="input input-bordered flex items-center gap-2 max-w-xs">
     Show: <!-- TODO: i18n -->
-    <input type="number" name="size" bind:value={size} />
+    <select class="select select-bordered" name="size" bind:value={size}>
+      <option value={10}>10</option>
+      <option value={25}>25</option>
+      <option value={50}>50</option>
+      <option value={100}>100</option>
+    </select>
     / {total}
   </span>
 </div>
