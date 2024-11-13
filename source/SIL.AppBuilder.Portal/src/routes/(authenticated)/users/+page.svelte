@@ -1,5 +1,6 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
+  import SearchBar from '$lib/components/SearchBar.svelte';
+import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
@@ -16,7 +17,7 @@
   <div class="flex flex-row place-content-between align-middle flex-wrap items-center">
     <h1 class="pb-6">{m.users_title()}</h1>
     <div
-      class="content-center m-4 space-x-2 flex flex-nowrap items-end w-full place-content-between"
+      class="content-center m-4 gap-2 flex flex-wrap items-end w-full place-content-between"
     >
       {#if data.organizations.length > 1}
         <span class="flex flex-wrap items-center gap-x-2">
@@ -29,12 +30,7 @@
           </select>
         </span>
       {/if}
-      <input
-        placeholder={m.search()}
-        type="text"
-        class="input input-bordered grow shrink [max-width:20rem]"
-        bind:value={searchQuery}
-      />
+      <SearchBar bind:value={searchQuery} className="w-full max-w-xs md:w-auto md:max-w-none" />
     </div>
   </div>
   <div class="m-4 relative mt-0">
