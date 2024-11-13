@@ -16,11 +16,6 @@
 </script>
 
 <div class="flex flex-row flex-wrap gap-1 w-full max-w-xs md:w-auto md:max-w-none">
-  <span class="input input-bordered flex items-center gap-2 max-w-xs">
-    Show: <!-- TODO: i18n -->
-    <input type="number" name="size" bind:value={size} />
-    / {total}
-  </span>
   {#if pageCount > 1}
     <div class="join max-w-xs overflow-x-auto md:max-w-none">
       <label class="join-item btn btn-square form-control {hasPreviousPage ? '' : 'btn-disabled'}">
@@ -94,4 +89,9 @@
       </label>
     </div>
   {/if}
+  <span class="input input-bordered flex items-center gap-2 max-w-xs">
+    Show: <!-- TODO: i18n -->
+    <input type="number" name="size" bind:value={size} />
+    / {total}
+  </span>
 </div>
