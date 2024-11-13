@@ -6,7 +6,7 @@
   export let value: string;
 </script>
 
-<div class="input input-bordered flex items-center gap-2 {className}">
+<label class="input input-bordered flex items-center gap-2 {className}">
   <input type="text" placeholder={m.search()} class="flex-grow" bind:value={value} />
   <IconContainer icon="mdi:search" class="ml-auto" width={24} />
-</div>
+</label>
