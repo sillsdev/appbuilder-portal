@@ -71,14 +71,16 @@ export type ProjectResponse = SuccessResponse &
 
 export type TokenConfig = {
   name: string;
+  ReadOnly: boolean;
 };
 export type TokenResponse = {
   responseType: 'token';
-  session_token: string;
-  secret_access_key: string;
-  access_key_id: string;
-  expiration: string;
-  region: string;
+  SessionToken: string;
+  SecretAccessKey: string;
+  AccessKeyId: string;
+  Expiration: string;
+  Region: string;
+  ReadOnly: boolean;
 };
 
 export type JobConfig = {
