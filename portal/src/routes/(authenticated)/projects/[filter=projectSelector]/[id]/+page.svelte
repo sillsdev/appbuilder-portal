@@ -2,7 +2,7 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
@@ -43,10 +43,7 @@
           <option value={organization.Id}>{organization.Name}</option>
         {/each}
       </select>
-      <div class="input input-bordered flex items-center gap-2 mobile-sizing">
-        <input type="text" placeholder={m.search()} class="flex-grow" bind:value={searchTerm} />
-        <IconContainer icon="mdi:search" class="ml-auto" width={24} />
-      </div>
+      <SearchBar bind:value={searchTerm} className="w-full max-w-xs md:w-auto md:max-w-none" />
     </div>
   </div>
   <div class="w-full flex flex-row flex-wrap place-content-between gap-1 mt-4">
