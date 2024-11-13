@@ -1,11 +1,13 @@
-export type Auth = {
-  type: 'query';
-  organizationId: number;
-} | {
-  type: 'provided';
-  url: string;
-  token: string;
-}
+export type Auth =
+  | {
+      type: 'query';
+      organizationId: number;
+    }
+  | {
+      type: 'provided';
+      url: string;
+      token: string;
+    };
 
 export type Response =
   | ErrorResponse
@@ -27,7 +29,7 @@ export type ErrorResponse = {
 export type StatusResponse = {
   responseType: 'status';
   status: number;
-}
+};
 
 export type DeleteResponse = {
   responseType: 'delete';
@@ -50,6 +52,7 @@ type SuccessResponse = {
 };
 
 type CommonStatus = 'initialized' | 'accepted' | 'completed';
+type CommonResult = 'SUCCESS' | 'FAILURE' | null;
 
 export type ProjectConfig = {
   app_id: string;
@@ -61,7 +64,7 @@ export type ProjectResponse = SuccessResponse &
   ProjectConfig & {
     responseType: 'project';
     status: CommonStatus | 'delete' | 'deleting';
-    result: 'SUCCESS' | 'FAILURE' | null;
+    result: CommonResult;
     error: string | null;
     url: string;
     publishing_key: string;
@@ -107,7 +110,7 @@ export type BuildResponse = SuccessResponse &
     responseType: 'build';
     job_id: number;
     status: CommonStatus | BuildOrReleaseStatus;
-    result: 'SUCCESS' | 'FAILURE' | 'ABORTED' | null;
+    result: CommonResult | 'ABORTED';
     error: string | null;
     artifacts: { [key: string]: string };
   };
@@ -126,7 +129,7 @@ export type ReleaseResponse = SuccessResponse &
     responseType: 'release';
     buildId: number;
     status: CommonStatus | BuildOrReleaseStatus;
-    result: 'SUCCESS' | 'FAILURE' | 'EXCEPTION' | null;
+    result: CommonResult | 'EXCEPTION';
     error: string | null;
     console_text: string;
     artifacts: { [key: string]: string };
