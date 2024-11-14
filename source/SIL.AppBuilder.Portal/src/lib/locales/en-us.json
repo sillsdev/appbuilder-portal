@@ -44,6 +44,7 @@
   "common_error": "Error",
   "common_workflow": "Workflow",
   "common_default": "Default",
+  "common_total": "Total {{total}}",
   "models_add": "Add {{name}}",
   "models_edit": "Edit {{name}}",
   "models_save": "Save {{name}}",

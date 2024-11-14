@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as m from '$lib/paraglide/messages';
   export let size: number;
   export let total: number;
   export let page: number = 0;
@@ -91,7 +92,7 @@
   {/if}
   <div class="flex flex-row grow">
     <div class="input flex items-center w-fit">
-      Total {total}<!-- TODO: i18n -->
+      {m.common_total({ total })}
     </div>
     <div class="hidden grow md:inline-block">&nbsp;</div>
     <select class="select select-bordered" name="size" bind:value={size}>
