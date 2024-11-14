@@ -80,7 +80,7 @@
       </div>
     </div>
   </form>
-  <div class="w-full flex flex-row flex-wrap place-content-between p-4 pb-0 px-6 gap-4">
+  <div class="w-full flex flex-row flex-wrap place-content-between gap-1 mt-4">
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
       <button
         class="action"
