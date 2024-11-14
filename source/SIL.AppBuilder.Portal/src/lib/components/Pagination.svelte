@@ -15,7 +15,7 @@
   }
 </script>
 
-<div class="flex flex-row flex-wrap gap-1 w-full max-w-xs md:w-auto md:max-w-none">
+<div class="flex flex-row flex-wrap gap-1 w-full">
   {#if pageCount > 1}
     <div class="join max-w-xs overflow-x-auto md:max-w-none">
       <label class="join-item btn btn-square form-control {hasPreviousPage ? '' : 'btn-disabled'}">
@@ -89,14 +89,16 @@
       </label>
     </div>
   {/if}
-  <span class="input flex items-center gap-2 max-w-xs">
-    Show: <!-- TODO: i18n -->
+  <div class="flex flex-row grow">
+    <div class="input flex items-center w-fit">
+      Total {total}<!-- TODO: i18n -->
+    </div>
+    <div class="hidden grow md:inline-block">&nbsp;</div>
     <select class="select select-bordered" name="size" bind:value={size}>
       <option value={10}>10</option>
       <option value={25}>25</option>
       <option value={50}>50</option>
       <option value={100}>100</option>
     </select>
-    / {total}
-  </span>
+  </div>
 </div>
