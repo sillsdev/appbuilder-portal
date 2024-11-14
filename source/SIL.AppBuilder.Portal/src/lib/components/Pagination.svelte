@@ -89,7 +89,7 @@
       </label>
     </div>
   {/if}
-  <span class="input input-bordered flex items-center gap-2 max-w-xs">
+  <span class="input flex items-center gap-2 max-w-xs">
     Show: <!-- TODO: i18n -->
     <select class="select select-bordered" name="size" bind:value={size}>
       <option value={10}>10</option>
