@@ -188,15 +188,71 @@
     </div>
   {/if}
   {#if data?.files?.length}
-    <div class="overflow-x-auto max-h-96">
-      <h3>{m.products_files_title()}</h3>
-      <SortTable items={data.files} />
+    <h3>{m.products_files_title()}</h3>
+    <div class="w-full overflow-x-auto">
+      <SortTable
+        data={data.files}
+        columns={[
+          {
+            id: 'buildId',
+            header: 'BuildId',
+            data: (f) => f.ProductBuildId
+          },
+          {
+            id: 'artifactType',
+            header: 'Type',
+            data: (f) => f.ArtifactType,
+            sortable: true
+          },
+          {
+            id: 'fileSize',
+            header: 'Size',
+            data: (f) => f.FileSize,
+            sortable: true
+          },
+          {
+            id: 'url',
+            header: 'Link',
+            data: (f) => f.Url,
+            render: (u) => `<a class="link" href="${u}">${u}</a>`
+          },
+          {
+            id: 'fileId',
+            header: 'FileId',
+            data: (f) => f.Id,
+            sortable: true
+          }
+        ]}
+      />
     </div>
   {/if}
   {#if data?.reviewers?.length}
-    <div class="overflow-x-auto max-h-96">
-      <h3>{m.project_side_reviewers_title()}</h3>
-      <SortTable items={data.reviewers} />
+    <h3>{m.project_side_reviewers_title()}</h3>
+    <div class="w-full overflow-x-auto">
+      <SortTable
+        data={data.reviewers}
+        columns={[
+          {
+            id: 'id',
+            header: 'Id',
+            data: (r) => r.Id,
+            sortable: true
+          },
+          {
+            id: 'name',
+            header: 'Name',
+            data: (r) => r.Name,
+            sortable: true
+          },
+          {
+            id: 'email',
+            header: 'Email',
+            data: (r) => r.Email,
+            sortable: true
+          }
+        ]}
+        maxh_class="max-h-96"
+      />
     </div>
   {/if}
 </div>
