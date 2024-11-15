@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { instructions } from './instructions';
-  import SortTable from './components/SortTable.svelte';
+  import SortTable from '$lib/components/SortTable.svelte';
   import { superForm } from 'sveltekit-superforms';
   import * as m from '$lib/paraglide/messages';
 
