@@ -65,7 +65,7 @@
             <option value={organization.Id}>{organization.Name}</option>
           {/each}
         </select>
-        <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" />
+        <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" tooltip={m.directory_searchHelp()} />
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 mobile-sizing">
