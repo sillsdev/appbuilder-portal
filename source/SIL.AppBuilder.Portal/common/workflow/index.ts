@@ -1,30 +1,30 @@
-import { StartupWorkflow } from './startup-workflow.js';
-import { createActor } from 'xstate';
+import { Prisma } from '@prisma/client';
 import type {
   Actor,
-  StateNode as XStateNode,
-  TransitionDefinitionMap,
   InspectedSnapshotEvent,
-  TransitionDefinition
+  TransitionDefinition,
+  TransitionDefinitionMap,
+  StateNode as XStateNode
 } from 'xstate';
+import { createActor } from 'xstate';
 import DatabaseWrites from '../databaseProxy/index.js';
+import { allUsersByRole } from '../databaseProxy/UserRoles.js';
+import prisma from '../prisma.js';
+import { ProductTransitionType, RoleId, WorkflowType } from '../public/prisma.js';
 import {
+  ActionType,
+  includeStateOrTransition,
+  Snapshot,
+  StateNode,
+  TerminalStates,
+  WorkflowConfig,
   WorkflowContext,
   WorkflowContextBase,
-  WorkflowConfig,
-  ActionType,
-  StateNode,
   WorkflowEvent,
-  includeStateOrTransition,
-  WorkflowTransitionMeta,
-  Snapshot,
   WorkflowState,
-  TerminalStates
+  WorkflowTransitionMeta
 } from '../public/workflow.js';
-import prisma from '../prisma.js';
-import { RoleId, ProductTransitionType, WorkflowType } from '../public/prisma.js';
-import { allUsersByRole } from '../databaseProxy/UserRoles.js';
-import { Prisma } from '@prisma/client';
+import { StartupWorkflow } from './startup-workflow.js';
 
 /**
  * Wraps a workflow instance and provides methods to interact.
@@ -73,15 +73,15 @@ export class Workflow {
     flow.flow = createActor(StartupWorkflow, {
       snapshot: snap
         ? StartupWorkflow.resolveState({
-            value: snap.state,
-            context: {
-              ...snap.context,
-              ...snap.config,
-              productId: productId,
-              hasAuthors: check._count.Authors > 0,
-              hasReviewers: check._count.Authors > 0
-            }
-          })
+          value: snap.state,
+          context: {
+            ...snap.context,
+            ...snap.config,
+            productId: productId,
+            hasAuthors: check._count.Authors > 0,
+            hasReviewers: check._count.Authors > 0
+          }
+        })
         : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
@@ -114,10 +114,12 @@ export class Workflow {
         ProductId: productId
       },
       select: {
+        Id: true,
         State: true,
         Context: true,
         WorkflowDefinition: {
           select: {
+            Id: true,
             ProductType: true,
             WorkflowOptions: true
           }
@@ -125,6 +127,8 @@ export class Workflow {
       }
     });
     return {
+      instanceId: snap.Id,
+      definitionId: snap.WorkflowDefinition.Id,
       state: snap.State,
       context: JSON.parse(snap.Context) as WorkflowContextBase,
       config: {
@@ -344,14 +348,14 @@ export class Workflow {
       .filter((u) => u !== undefined)
       .map((r) => {
         switch (r) {
-          case RoleId.OrgAdmin:
-            return product.Project.Organization.UserRoles.map((u) => u.UserId);
-          case RoleId.AppBuilder:
-            return [product.Project.OwnerId];
-          case RoleId.Author:
-            return product.Project.Authors.map((a) => a.UserId);
-          default:
-            return [];
+        case RoleId.OrgAdmin:
+          return product.Project.Organization.UserRoles.map((u) => u.UserId);
+        case RoleId.AppBuilder:
+          return [product.Project.OwnerId];
+        case RoleId.Author:
+          return product.Project.Authors.map((a) => a.UserId);
+        default:
+          return [];
         }
       })
       .reduce((p, c) => p.concat(c), [])
@@ -382,13 +386,13 @@ export class Workflow {
       AllowedUserNames:
         t.meta.type === ActionType.User
           ? Array.from(
-              new Set(
-                Array.from(users.entries())
-                  .filter(([role, users]) => t.meta.user === role)
-                  .map(([role, users]) => users)
-                  .reduce((p, c) => p.concat(c), [])
-              )
-            ).join()
+            new Set(
+              Array.from(users.entries())
+                .filter(([role, users]) => t.meta.user === role)
+                .map(([role, users]) => users)
+                .reduce((p, c) => p.concat(c), [])
+            )
+          ).join()
           : null,
       TransitionType: ProductTransitionType.Activity,
       InitialState: Workflow.stateName(state),
@@ -497,14 +501,14 @@ export class Workflow {
 
     const user = userId
       ? await prisma.users.findUnique({
-          where: {
-            Id: userId
-          },
-          select: {
-            Name: true,
-            WorkflowUserId: true
-          }
-        })
+        where: {
+          Id: userId
+        },
+        select: {
+          Name: true,
+          WorkflowUserId: true
+        }
+      })
       : null;
 
     if (transition) {
