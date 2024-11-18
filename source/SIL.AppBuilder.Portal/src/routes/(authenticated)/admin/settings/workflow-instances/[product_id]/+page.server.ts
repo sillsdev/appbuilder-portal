@@ -21,7 +21,12 @@ export const load: PageServerLoad = async ({ params }) => {
       Id: true,
       Project: {
         select: {
-          Name: true
+          Name: true,
+          Organization: {
+            select: {
+              Name: true
+            }
+          }
         }
       },
       ProductDefinition: {
@@ -55,10 +60,20 @@ export const load: PageServerLoad = async ({ params }) => {
 
   const snap = await Workflow.getSnapshot(params.product_id);
 
+  const workflowDefinition = await prisma.workflowDefinitions.findUnique({
+    where: {
+      Id: snap.definitionId
+    },
+    select: {
+      Name: true
+    }
+  });
+
   return {
     product: product,
-    snapshot: { value: snap?.state ?? '' },
+    snapshot: snap,
     machine: snap ? flow.serializeForVisualization() : [],
+    definition: workflowDefinition,
     form: await superValidate(
       {
         state: snap?.state

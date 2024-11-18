@@ -103,10 +103,16 @@
       </summary>
       <ul>
         <li>
+          {m.project_side_organization()}: {data.product?.Project.Organization.Name}
+        </li>
+        <li>
           {m.project_title()}: {data.product?.Project.Name}
         </li>
         <li>
           {m.tasks_product()}: {data.product?.ProductDefinition.Name}
+        </li>
+        <li>
+          {m.common_workflow()}: {data.definition?.Name}
         </li>
         <li>
           {m.project_products_transitions_state()}: {data.product?.ProductTransitions[0]
