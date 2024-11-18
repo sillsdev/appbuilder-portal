@@ -38,6 +38,7 @@ export const load: PageServerLoad = async (event) => {
           Id: true,
           Project: {
             select: {
+              Id: true,
               Name: true,
               Organization: {
                 select: {
@@ -175,6 +176,7 @@ export const actions: Actions = {
             Id: true,
             Project: {
               select: {
+                Id: true,
                 Name: true,
                 Organization: {
                   select: {

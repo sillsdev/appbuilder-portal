@@ -82,16 +82,6 @@
         data={$instances}
         columns={[
           {
-            id: 'product',
-            header: m.tasks_product(),
-            data: (i) => i.Product.Id,
-            render: (c) =>
-              `<a class="link" href="/admin/settings/workflow-instances/${c}">${
-                c.slice(0, 3) + '...' + c.slice(-3)
-              }</a>`,
-            sortable: true
-          },
-          {
             id: 'organization',
             header: m.project_side_organization(),
             data: (i) => i.Product.Project.Organization.Name,
@@ -100,7 +90,18 @@
           {
             id: 'project',
             header: m.project_title(),
-            data: (i) => i.Product.Project.Name,
+            data: (i) => i.Product.Project,
+            render: (c) => `<a class="link" href="/projects/${c.Id}">${c.Name}</a>`,
+            sortable: true
+          },
+          {
+            id: 'product',
+            header: m.tasks_product(),
+            data: (i) => i.Product.Id,
+            render: (c) =>
+              `<a class="link" href="/admin/settings/workflow-instances/${c}">${
+                c.slice(0, 3) + '...' + c.slice(-3)
+              }</a>`,
             sortable: true
           },
           {
