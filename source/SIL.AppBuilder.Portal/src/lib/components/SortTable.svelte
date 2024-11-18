@@ -1,7 +1,7 @@
 <script lang="ts">
   import { languageTag } from '$lib/paraglide/runtime';
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
-  export let items: { [key: string]: any }[];
+  export let data: { [key: string]: any }[];
   export let columns: {
     header: string;
     data: (i: any) => any;
@@ -89,10 +89,10 @@
       </tr>
     </thead>
     <tbody class={className}>
-      {#each items as item}
+      {#each data as d}
         <tr>
           {#each columns as c}
-            <td>{@html c.render ? c.render(c.data(item)) : c.data(item)}</td>
+            <td>{@html c.render ? c.render(c.data(d)) : c.data(d)}</td>
           {/each}
         </tr>
       {/each}
@@ -110,7 +110,7 @@
   thead {
     /* this helps prevent the vertical jankiness */
     line-height: inherit;
-    position: sticky; 
+    position: sticky;
     top: 0;
     @apply bg-base-100;
   }
