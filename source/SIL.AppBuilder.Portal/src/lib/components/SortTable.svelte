@@ -106,7 +106,13 @@
       {#each data as d}
         <tr>
           {#each columns as c}
-            <td>{@html c.render ? c.render(c.data(d)) : c.data(d)}</td>
+            <td>
+              {#if c.render}
+                {@html c.render(c.data(d))}
+              {:else}
+                {c.data(d)}
+              {/if}
+            </td>
           {/each}
         </tr>
       {/each}
