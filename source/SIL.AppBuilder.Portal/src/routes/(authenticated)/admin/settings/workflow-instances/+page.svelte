@@ -58,18 +58,18 @@
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 mobile-sizing">
       <select class="select select-bordered mobile-sizing" bind:value={$form.workflowDefinitionId}>
-        <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
+        <option value={null} selected>{m.admin_settings_workflowDefinitions_all()}</option>
         {#each data.workflowDefinitions as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>
       <DateRangePicker
         bind:chosenDates={$form.dateUpdatedRange}
-        placeholder={m.directory_filters_dateRange()}
+        placeholder={m.admin_settings_workflowInstances_filters_dateRange()}
       />
     </div>
   </form>
-  <div class="m-4 relative mt-0">
+  <div class="m-4 relative mt-1">
     {#if $instances.length > 0}
       <SortTable
         data={$instances}
