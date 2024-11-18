@@ -232,10 +232,8 @@ export class Workflow {
       await DatabaseWrites.productTransitions.createMany({
         data: await Workflow.transitionEntriesFromState(snap.value, this.productId, this.config)
       });
-    }
 
-    await this.createSnapshot(snap.context);
-    if (old && Workflow.stateName(old) !== snap.value) {
+      await this.createSnapshot(snap.context);
       await this.updateUserTasks(event.event.comment || undefined);
     }
   }
