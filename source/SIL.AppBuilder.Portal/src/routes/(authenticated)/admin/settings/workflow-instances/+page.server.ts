@@ -6,7 +6,6 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { error } from '@sveltejs/kit';
 import * as v from 'valibot';
-import * as m from '$lib/paraglide/messages';
 import type { Prisma } from '@prisma/client';
 import { idSchema } from '$lib/valibot';
 
@@ -20,20 +19,35 @@ const tableSchema = v.object({
   ),
   search: v.string(),
   workflowDefinitionId: v.nullable(idSchema),
-  dateUpdatedRange: v.nullable(v.tuple([v.date(), v.nullable(v.date())]))
+  dateUpdatedRange: v.nullable(v.tuple([v.date(), v.nullable(v.date())])),
+  organizationId: v.nullable(idSchema)
 });
 
 export const load: PageServerLoad = async (event) => {
   const instances = await prisma.workflowInstances.findMany({
     select: {
-      ProductId: true,
       WorkflowDefinition: {
         select: {
           Name: true
         }
       },
       State: true,
-      DateUpdated: true
+      DateUpdated: true,
+      Product: {
+        select: {
+          Id: true,
+          Project: {
+            select: {
+              Name: true,
+              Organization: {
+                select: {
+                  Name: true
+                }
+              }
+            }
+          }
+        }
+      }
     },
     take: 50
   });
@@ -86,6 +100,28 @@ export const actions: Actions = {
           ProductId: { in: pids }
         },
         {
+          Product: {
+            Project: {
+              Organization: {
+                Name: {
+                  contains: form.data.search,
+                  mode: 'insensitive'
+                }
+              }
+            }
+          }
+        },
+        {
+          Product: {
+            Project: {
+              Name: {
+                contains: form.data.search,
+                mode: 'insensitive'
+              }
+            }
+          }
+        },
+        {
           WorkflowDefinition: {
             Name: {
               contains: form.data.search,
@@ -98,24 +134,26 @@ export const actions: Actions = {
             contains: form.data.search,
             mode: 'insensitive'
           }
-        },
-        {
-          DateUpdated:
-            form.data.dateUpdatedRange && form.data.dateUpdatedRange[1]
-              ? {
-                  gt: form.data.dateUpdatedRange[0],
-                  lt: form.data.dateUpdatedRange[1]
-                }
-              : undefined
         }
       ],
-      WorkflowDefinitionId: form.data.workflowDefinitionId ?? undefined
+      WorkflowDefinitionId: form.data.workflowDefinitionId ?? undefined,
+      DateUpdated:
+        form.data.dateUpdatedRange && form.data.dateUpdatedRange[1]
+          ? {
+              gt: form.data.dateUpdatedRange[0],
+              lt: form.data.dateUpdatedRange[1]
+            }
+          : undefined
     };
 
     const instances = await prisma.workflowInstances.findMany({
       orderBy:
         form.data.sort?.field === 'product'
           ? { ProductId: form.data.sort.direction }
+          : form.data.sort?.field === 'organization'
+          ? { Product: { Project: { Organization: { Name: form.data.sort.direction } } } }
+          : form.data.sort?.field === 'project'
+          ? { Product: { Project: { Name: form.data.sort.direction } } }
           : form.data.sort?.field === 'workflow'
           ? { WorkflowDefinition: { Name: form.data.sort.direction } }
           : form.data.sort?.field === 'state'
@@ -125,14 +163,28 @@ export const actions: Actions = {
           : undefined,
       where: where,
       select: {
-        ProductId: true,
         WorkflowDefinition: {
           select: {
             Name: true
           }
         },
         State: true,
-        DateUpdated: true
+        DateUpdated: true,
+        Product: {
+          select: {
+            Id: true,
+            Project: {
+              select: {
+                Name: true,
+                Organization: {
+                  select: {
+                    Name: true
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       skip: form.data.page.page * form.data.page.size,
       take: form.data.page.size
