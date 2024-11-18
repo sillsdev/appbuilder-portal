@@ -1,94 +1,115 @@
 <script lang="ts">
-  import DateRangePicker from '$lib/components/DateRangePicker.svelte';
-  import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import * as m from '$lib/paraglide/messages';
   import 'flatpickr/dist/flatpickr.css';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import type { PageData } from './$types';
-  import { languageTag } from '$lib/paraglide/runtime';
-
+  import type { PrunedProject } from '$lib/projects/common';
+  import DateRangePicker from '$lib/components/DateRangePicker.svelte';
+  import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import type { FormResult } from 'sveltekit-superforms';
+  import { writable } from 'svelte/store';
   export let data: PageData;
 
-  // TODO: almost certainly this page needs to be paginated
-  // This means that the filtering here may need to be moved to the server
-  // The alternative is to send all the data to the client at once and show only a
-  // limited portion, which is a possibility depending on how much total data there is
+  const projects = writable(data.projects);
+  const count = writable(data.count);
 
-  let langCode: string;
-  let productDefinitionFilter: string;
-  let organizationFilter: string;
-  let updateDates: [Date, Date] | null;
-
-  let searchTerm: string = '';
-
-  $: filteredProjects = data.projects.filter((project) => {
-    const searchTermLower = searchTerm.toLowerCase();
-    return (
-      [
-        project.Name,
-        project.Language,
-        project.OwnerName,
-        project.OrganizationName,
-        project.GroupName
-      ].some((field) => field?.toLowerCase().includes(searchTermLower)) &&
-      (!updateDates ||
-        !updateDates[1] ||
-        !project.DateUpdated ||
-        (project.DateUpdated > updateDates[0] && project.DateUpdated < updateDates[1])) &&
-      (project.Language ?? '').includes(langCode) &&
-      (!productDefinitionFilter ||
-        project.Products.some((prod) => prod.ProductDefinitionName === productDefinitionFilter)) &&
-      (!organizationFilter || project.OrganizationName === organizationFilter)
-    );
+  const { form, enhance, submit } = superForm(data.form, {
+    dataType: 'json',
+    resetForm: false,
+    onChange(event) {
+      if (
+        !(
+          event.paths.includes('page.size') ||
+          event.paths.includes('langCode') ||
+          event.paths.includes('search')
+        )
+      ) {
+        submit();
+      }
+    },
+    onUpdate(event) {
+      const data = event.result.data as FormResult<{
+        query: { data: PrunedProject[]; count: number };
+      }>;
+      if (event.form.valid && data.query) {
+        projects.set(data.query.data);
+        count.set(data.query.count);
+      }
+    }
   });
 </script>
 
-<div class="w-full max-w-6xl mx-auto relative px-2">
-  <div class="flex flex-row place-content-between w-full pt-4 flex-wrap">
-    <div class="inline-block">
-      <h1 class="p-4 pl-6">{m.sidebar_projectDirectory()}</h1>
-    </div>
+<div class="w-full max-w-6xl mx-auto relative px-2 pt-4">
+  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <form
+    method="POST"
+    action="?/page"
+    use:enhance
+    on:keydown={(event) => {
+      if (event.key === 'Enter') submit();
+    }}
+  >
     <div
-      class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 mobile-sizing"
+      class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center px-4 gap-1 mobile-sizing"
     >
-      <select class="select select-bordered mobile-sizing" bind:value={organizationFilter}>
-        <option value="">{m.org_allOrganizations()}</option>
-        {#each new Set(data.projects.map((p) => p.OrganizationName)).values() as org}
-          <option value={org}>{org}</option>
-        {/each}
-      </select>
-      <SearchBar bind:value={searchTerm} className="w-full max-w-xs md:w-auto md:max-w-none" />
-    </div>
-    <div class="w-full flex flex-row place-content-start mt-1 px-4 pb-0 flex-wrap gap-1">
-      <div class="mobile-sizing">
-        <LanguageCodeTypeahead bind:langCode inputClasses="w-full max-w-xs" />
+      <div class="inline-block grow mobile-sizing">
+        <h1 class="py-4 px-2">{m.sidebar_projectDirectory()}</h1>
       </div>
-      <select
-        class="select select-bordered mobile-sizing max-w-full"
-        bind:value={productDefinitionFilter}
-      >
-        <option value="" selected>{m.productDefinitions_filterAllProjects()}</option>
+      <div class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 mobile-sizing">
+        <select class="select select-bordered mobile-sizing" bind:value={$form.organizationId}>
+          <option value={null} selected>{m.org_allOrganizations()}</option>
+          {#each data.organizations as organization}
+            <option value={organization.Id}>{organization.Name}</option>
+          {/each}
+        </select>
+        <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" tooltip={m.directory_searchHelp()} />
+      </div>
+    </div>
+    <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 mobile-sizing">
+      <div class="mobile-sizing">
+        <LanguageCodeTypeahead
+          bind:langCode={$form.langCode}
+          on:langCodeSelected={() => submit()}
+          inputClasses="w-full max-w-xs"
+        />
+      </div>
+      <select class="select select-bordered max-w-full" bind:value={$form.productDefinitionId}>
+        <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
         {#each data.productDefinitions as pD}
-          <option value={pD.Name}>{pD.Name}</option>
+          <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>
       <DateRangePicker
-        bind:chosenDates={updateDates}
+        bind:chosenDates={$form.dateUpdatedRange}
         placeholder={m.directory_filters_dateRange()}
       />
     </div>
-  </div>
-  {#if filteredProjects.length > 0}
+  </form>
+  {#if $projects.length > 0}
     <div class="w-full relative p-4">
-      {#each filteredProjects.sort( (a, b) => (a.Name ?? '').localeCompare(b.Name ?? '', languageTag()) ) as project}
+      {#each $projects as project}
         <ProjectCard {project} />
       {/each}
     </div>
   {:else}
     <p class="m-8">{m.projectTable_empty()}</p>
   {/if}
+  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <form
+    method="POST"
+    action="?/page"
+    use:enhance
+    on:keydown={(event) => {
+      if (event.key === 'Enter') submit();
+    }}
+  >
+    <div class="w-full flex flex-row place-content-start p-4 space-between-4 flex-wrap gap-1">
+      <Pagination bind:size={$form.page.size} total={$count} bind:page={$form.page.page} />
+    </div>
+  </form>
 </div>
 
 <style lang="postcss">
