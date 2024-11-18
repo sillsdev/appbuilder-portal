@@ -3,6 +3,7 @@
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
   export let data: { [key: string]: any }[];
   export let columns: {
+    id: string;
     header: string;
     data: (i: any) => any;
     render?: (d: any) => string;
@@ -15,7 +16,7 @@
   let descending = false;
 
   const handleClick = (key: (typeof columns)[0]) => {
-    if (current.header !== key.header) {
+    if (current.id !== key.id) {
       // change current field
       descending = false;
       current = key;
@@ -73,7 +74,7 @@
             <label class="form-control flex-row">
               <span class="label-text">{c.header}</span>
               <span class="direction-arrow">
-                {#if current.header === c.header && c.sortable}
+                {#if current.id === c.id && c.sortable}
                   {#if descending}
                     <ArrowDownIcon />
                   {:else}
