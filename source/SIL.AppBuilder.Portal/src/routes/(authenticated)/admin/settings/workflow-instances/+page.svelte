@@ -8,6 +8,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { FormResult } from 'sveltekit-superforms';
   import { writable } from 'svelte/store';
+  import { getRelativeTime } from '$lib/timeUtils';
 
   export let data: PageData;
 
@@ -118,7 +119,7 @@
             id: 'date',
             header: m.admin_settings_buildEngines_lastUpdated(),
             data: (i) => i.DateUpdated,
-            render: (c) => c?.toLocaleString() ?? '',
+            render: (c) => getRelativeTime(c),
             sortable: true
           }
         ]}
