@@ -416,7 +416,6 @@
   "admin_settings_workflowDefinitions_options_storeAccess": "Require an organization admin to access the GooglePlay developer console.",
   "admin_settings_workflowDefinitions_options_approval": "Require approval by an organization admin before product is created.",
   "admin_settings_workflowDefinitions_options_transferToAuthors": "Allow project owner to delegate configuration and product uploads to authors.",
-  "admin_settings_workflowDefinitions_all": "All Workflow Definitions",
   "admin_settings_productDefinitions_title": "Product Definitions",
   "admin_settings_productDefinitions_name": "Product definition Name",
   "admin_settings_productDefinitions_add": "Add Product Definition",

@@ -64,9 +64,9 @@
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 mobile-sizing">
-      <select class="select select-bordered mobile-sizing" bind:value={$form.workflowDefinitionId}>
-        <option value={null} selected>{m.admin_settings_workflowDefinitions_all()}</option>
-        {#each data.workflowDefinitions as pD}
+      <select class="select select-bordered mobile-sizing" bind:value={$form.productDefinitionId}>
+        <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
+        {#each data.productDefinitions as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>
@@ -97,17 +97,9 @@
           {
             id: 'product',
             header: m.tasks_product(),
-            data: (i) => i.Product.Id,
+            data: (i) => i.Product,
             render: (c) =>
-              `<a class="link" href="/admin/settings/workflow-instances/${c}">${
-                c.slice(0, 3) + '...' + c.slice(-3)
-              }</a>`,
-            sortable: true
-          },
-          {
-            id: 'workflow',
-            header: m.common_workflow(),
-            data: (i) => i.WorkflowDefinition.Name,
+              `<a class="link" href="/admin/settings/workflow-instances/${c.Id}">${c.ProductDefinition.Name}</a>`,
             sortable: true
           },
           {

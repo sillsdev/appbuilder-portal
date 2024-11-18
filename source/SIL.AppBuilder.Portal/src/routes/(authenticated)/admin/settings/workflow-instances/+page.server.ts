@@ -18,7 +18,7 @@ const tableSchema = v.object({
     })
   ),
   search: v.string(),
-  workflowDefinitionId: v.nullable(idSchema),
+  productDefinitionId: v.nullable(idSchema),
   dateUpdatedRange: v.nullable(v.tuple([v.date(), v.nullable(v.date())])),
   organizationId: v.nullable(idSchema)
 });
@@ -26,16 +26,16 @@ const tableSchema = v.object({
 export const load: PageServerLoad = async (event) => {
   const instances = await prisma.workflowInstances.findMany({
     select: {
-      WorkflowDefinition: {
-        select: {
-          Name: true
-        }
-      },
       State: true,
       DateUpdated: true,
       Product: {
         select: {
           Id: true,
+          ProductDefinition: {
+            select: {
+              Name: true
+            }
+          },
           Project: {
             select: {
               Id: true,
@@ -61,12 +61,11 @@ export const load: PageServerLoad = async (event) => {
         page: {
           page: 0,
           size: 50
-        },
-        workflowDefinitionId: null
+        }
       },
       valibot(tableSchema)
     ),
-    workflowDefinitions: await prisma.workflowDefinitions.findMany({
+    productDefinitions: await prisma.productDefinitions.findMany({
       select: {
         Id: true,
         Name: true
@@ -83,61 +82,54 @@ export const actions: Actions = {
     const form = await superValidate(request, valibot(tableSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const search = form.data.search
-      ? new RegExp(
-          // escape regex special characters: https://stackoverflow.com/a/6969486
-          form.data.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), //
-          'i'
-        )
-      : null;
-
-    const pids = (await prisma.products.findMany({ select: { Id: true } }))
-      .filter((p) => search?.test(p.Id))
-      .map((p) => p.Id);
-
     const where: Prisma.WorkflowInstancesWhereInput = {
-      OR: [
-        {
-          ProductId: { in: pids }
-        },
-        {
-          Product: {
-            Project: {
-              Organization: {
-                Name: {
-                  contains: form.data.search,
-                  mode: 'insensitive'
+      OR: form.data.search
+        ? [
+            {
+              Product: {
+                Project: {
+                  Organization: {
+                    Name: {
+                      contains: form.data.search,
+                      mode: 'insensitive'
+                    }
+                  }
                 }
               }
-            }
-          }
-        },
-        {
-          Product: {
-            Project: {
-              Name: {
+            },
+            {
+              Product: {
+                Project: {
+                  Name: {
+                    contains: form.data.search,
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            },
+            {
+              Product: {
+                ProductDefinition: {
+                  Name: {
+                    contains: form.data.search,
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            },
+            {
+              State: {
                 contains: form.data.search,
                 mode: 'insensitive'
               }
             }
+          ]
+        : undefined,
+      Product: form.data.productDefinitionId
+        ? {
+            ProductDefinitionId: form.data.productDefinitionId
           }
-        },
-        {
-          WorkflowDefinition: {
-            Name: {
-              contains: form.data.search,
-              mode: 'insensitive'
-            }
-          }
-        },
-        {
-          State: {
-            contains: form.data.search,
-            mode: 'insensitive'
-          }
-        }
-      ],
-      WorkflowDefinitionId: form.data.workflowDefinitionId ?? undefined,
+        : undefined,
       DateUpdated:
         form.data.dateUpdatedRange && form.data.dateUpdatedRange[1]
           ? {
@@ -155,8 +147,8 @@ export const actions: Actions = {
           ? { Product: { Project: { Organization: { Name: form.data.sort.direction } } } }
           : form.data.sort?.field === 'project'
           ? { Product: { Project: { Name: form.data.sort.direction } } }
-          : form.data.sort?.field === 'workflow'
-          ? { WorkflowDefinition: { Name: form.data.sort.direction } }
+          : form.data.sort?.field === 'definition'
+          ? { Product: { ProductDefinition: { Name: form.data.sort.direction } } }
           : form.data.sort?.field === 'state'
           ? { State: form.data.sort.direction }
           : form.data.sort?.field === 'date'
@@ -164,16 +156,16 @@ export const actions: Actions = {
           : undefined,
       where: where,
       select: {
-        WorkflowDefinition: {
-          select: {
-            Name: true
-          }
-        },
         State: true,
         DateUpdated: true,
         Product: {
           select: {
             Id: true,
+            ProductDefinition: {
+              select: {
+                Name: true
+              }
+            },
             Project: {
               select: {
                 Id: true,
