@@ -140,12 +140,18 @@ export async function POST({ params, request, fetch }) {
     return error(400, `Project id=${projectId}: Token.SecretAccessKey is null`);
   }
   const projectToken = {
-    Id: projectId,
-    Url: project.WorkflowProjectUrl,
-    ...tokenResult
+    type: 'project-tokens',
+    attributes: {
+      id: projectId,
+      url: project.WorkflowProjectUrl,
+      'session-token': tokenResult.SessionToken,
+      'secret-access-key': tokenResult.SecretAccessKey,
+      'access-key-id': tokenResult.AccessKeyId,
+      expiration: tokenResult.Expiration,
+      region: tokenResult.Region,
+      'read-only': tokenResult.ReadOnly
+    }
   };
-
-  console.log(JSON.stringify(projectToken, null, 4)); // TODO: Remove
 
   let use = readOnly ? 'ReadOnly Access' : 'ReadWrite Access';
 
