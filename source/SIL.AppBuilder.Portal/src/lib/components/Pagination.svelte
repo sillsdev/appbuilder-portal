@@ -94,7 +94,7 @@
     <div class="input flex items-center w-fit">
       {m.common_total({ total })}
     </div>
-    <div class="hidden grow md:inline-block">&nbsp;</div>
+    <div class="grow">&nbsp;</div>
     <select class="select select-bordered" name="size" bind:value={size}>
       <option value={10}>10</option>
       <option value={25}>25</option>
