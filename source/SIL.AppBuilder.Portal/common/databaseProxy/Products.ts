@@ -241,41 +241,31 @@ async function validateProductBase(
 }
 
 async function updateProjectDateActive(projectId: number) {
+  const maxDate = await prisma.productTransitions.aggregate({
+    _max: {
+      DateTransition: true
+    },
+    where: {
+      Product: {
+        ProjectId: projectId
+      }
+    }
+  });
+
   const project = await prisma.projects.findUnique({
     where: {
       Id: projectId
     },
     select: {
-      DateActive: true,
-      Products: {
-        where: {
-          WorkflowInstance: { isNot: null }
-        },
-        select: {
-          DateUpdated: true
-        }
-      }
+      DateActive: true
     }
   });
 
-  const projectDateActive = project.DateActive;
+  const projectDateActive = maxDate._max.DateTransition;
 
-  let dateActive = new Date(0);
-  project.Products.forEach((product) => {
-    if (product.DateUpdated > dateActive) {
-      dateActive = product.DateUpdated;
-    }
-  });
-
-  if (dateActive > new Date(0)) {
-    project.DateActive = dateActive;
-  } else {
-    project.DateActive = null;
-  }
-
-  if (project.DateActive != projectDateActive) {
+  if (projectDateActive?.valueOf() > project.DateActive?.valueOf()) {
     await projectUpdate(projectId, {
-      DateActive: project.DateActive
+      DateActive: projectDateActive
     });
   }
 }
