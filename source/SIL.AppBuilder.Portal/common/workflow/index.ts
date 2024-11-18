@@ -229,12 +229,19 @@ export class Workflow {
           WorkflowUserId: null
         }
       });
-      await DatabaseWrites.productTransitions.createMany({
-        data: await Workflow.transitionEntriesFromState(snap.value, this.productId, this.config)
-      });
-
-      await this.createSnapshot(snap.context);
-      await this.updateUserTasks(event.event.comment || undefined);
+      if (snap.value in TerminalStates) {
+        await DatabaseWrites.workflowInstances.delete({ where: {
+          ProductId: this.productId
+        }});
+      }
+      else {
+        await DatabaseWrites.productTransitions.createMany({
+          data: await Workflow.transitionEntriesFromState(snap.value, this.productId, this.config)
+        });
+  
+        await this.createSnapshot(snap.context);
+        await this.updateUserTasks(event.event.comment || undefined);
+      }
     }
   }
 
