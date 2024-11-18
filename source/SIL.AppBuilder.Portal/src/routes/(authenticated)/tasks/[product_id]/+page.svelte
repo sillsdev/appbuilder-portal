@@ -195,30 +195,30 @@
         columns={[
           {
             id: 'buildId',
-            header: 'BuildId',
+            header: m.tasks_files_buildId(),
             data: (f) => f.ProductBuildId
           },
           {
             id: 'artifactType',
-            header: 'Type',
+            header: m.project_type(),
             data: (f) => f.ArtifactType,
             sortable: true
           },
           {
             id: 'fileSize',
-            header: 'Size',
+            header: m.project_products_size(),
             data: (f) => f.FileSize,
             sortable: true
           },
           {
             id: 'url',
-            header: 'Link',
+            header: m.tasks_files_link(),
             data: (f) => f.Url,
             render: (u) => `<a class="link" href="${u}">${u}</a>`
           },
           {
             id: 'fileId',
-            header: 'FileId',
+            header: m.tasks_files_fileId(),
             data: (f) => f.Id,
             sortable: true
           }
@@ -234,19 +234,19 @@
         columns={[
           {
             id: 'id',
-            header: 'Id',
+            header: m.common_id(),
             data: (r) => r.Id,
             sortable: true
           },
           {
             id: 'name',
-            header: 'Name',
+            header: m.common_name(),
             data: (r) => r.Name,
             sortable: true
           },
           {
             id: 'email',
-            header: 'Email',
+            header: m.profile_email(),
             data: (r) => r.Email,
             sortable: true
           }
