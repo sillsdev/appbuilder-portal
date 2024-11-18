@@ -215,4 +215,7 @@
   #instructions :global(h3) {
     @apply text-info;
   }
+  #instructions :global(a) {
+    @apply link;
+  }
 </style>
