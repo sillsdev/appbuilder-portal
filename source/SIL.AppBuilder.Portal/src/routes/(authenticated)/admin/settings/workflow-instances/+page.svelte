@@ -93,19 +93,19 @@
           },
           {
             id: 'organization',
-            header: m.org_orgName(),
+            header: m.project_side_organization(),
             data: (i) => i.Product.Project.Organization.Name,
             sortable: true
           },
           {
             id: 'project',
-            header: m.project_projectName(),
+            header: m.project_title(),
             data: (i) => i.Product.Project.Name,
             sortable: true
           },
           {
             id: 'workflow',
-            header: m.admin_settings_workflowDefinitions_name(),
+            header: m.common_workflow(),
             data: (i) => i.WorkflowDefinition.Name,
             sortable: true
           },
@@ -117,7 +117,7 @@
           },
           {
             id: 'date',
-            header: m.admin_settings_buildEngines_lastUpdated(),
+            header: m.common_updated(),
             data: (i) => i.DateUpdated,
             render: (c) => getRelativeTime(c),
             sortable: true
