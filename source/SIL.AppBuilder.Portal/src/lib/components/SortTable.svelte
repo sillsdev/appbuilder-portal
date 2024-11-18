@@ -1,6 +1,7 @@
 <script lang="ts">
   import { languageTag } from '$lib/paraglide/runtime';
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
+  import { createEventDispatcher } from 'svelte';
   export let data: { [key: string]: any }[];
   export let columns: {
     id: string;
@@ -11,6 +12,7 @@
   }[];
   export let className: string = '';
   export let maxh_class: string = 'max-h-96';
+  export let serverSide: boolean = false;
 
   let current = columns.find((c) => c.sortable)!; //current field being sorted
   let descending = false;
@@ -33,29 +35,40 @@
         descending = true;
       }
     }
-    // sort based on current field
-    // if blank, sort first field
-    const data = current.data || columns.find((c) => c.sortable)!.data;
-    const langTag = languageTag();
-    items =
-      typeof data(items[0]) === 'string'
-        ? // sort strings
-          items.sort((a, b) => {
-            return descending
-              ? data(b).localeCompare(data(a), langTag)
-              : data(a).localeCompare(data(b), langTag);
-          })
-        : // sort non-strings (i.e. numbers)
-          items.sort((a, b) => {
-            if (data(a) === data(b)) {
-              return 0;
-            } else if (data(a) > data(b)) {
-              return descending ? -1 : 1;
-            } else {
-              return descending ? 1 : -1;
-            }
-          });
+    if (serverSide) {
+      dispatch('sort', { field: current.id, direction: descending ? 'desc' : 'asc' });
+    } else {
+      // sort based on current field
+      // if blank, sort first field
+      const cell = current.data || columns.find((c) => c.sortable)!.data;
+      const langTag = languageTag();
+      data =
+        typeof cell(data[0]) === 'string'
+          ? // sort strings
+            data.sort((a, b) => {
+              return descending
+                ? cell(b).localeCompare(cell(a), langTag)
+                : cell(a).localeCompare(cell(b), langTag);
+            })
+          : // sort non-strings (i.e. numbers)
+            data.sort((a, b) => {
+              if (cell(a) === cell(b)) {
+                return 0;
+              } else if (cell(a) > cell(b)) {
+                return descending ? -1 : 1;
+              } else {
+                return descending ? 1 : -1;
+              }
+            });
+    }
   };
+
+  const dispatch = createEventDispatcher<{
+    sort: {
+      field: string;
+      direction: 'asc' | 'desc';
+    };
+  }>();
 </script>
 
 <div class="overflow-y {maxh_class}">
