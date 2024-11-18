@@ -1,59 +1,65 @@
 import { error, redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import type { Prisma } from '@prisma/client';
 import type { Actions, PageServerLoad } from './$types';
+import * as v from 'valibot';
+import { idSchema } from '$lib/valibot';
+import { superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import { paginateSchema } from '$lib/table';
+import { minifyUser } from './common';
 
-// Not used, just for reference
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type UserInfo = {
-  Id: number;
-  Name: string;
-  FamilyName: string;
-  Organizations: {
-    Roles: number[];
-    Name: string;
-    Groups: string[];
-  }[];
-  IsLocked: boolean;
-};
+const lockSchema = v.object({
+  user: idSchema,
+  active: v.boolean()
+});
 
-export const load = (async (event) => {
-  const userInfo = (await event.locals.auth())?.user;
-  const userId = userInfo?.userId;
-  if (!userId) return redirect(302, '/');
+const userSchema = v.object({
+  page: paginateSchema,
+  search: v.string(),
+  organizationId: v.nullable(idSchema)
+});
 
-  // If we are a superadmin, collect all users, otherwise
-  // collect every user in one of our organizations and deduplicate them
-  const include = {
+function select(orgIds?: number[]) {
+  return {
+    Id: true,
+    Name: true,
+    Email: true,
+    IsLocked: true,
     UserRoles: {
-      include: {
-        Organization: true
+      where: orgIds ? { OrganizationId: { in: orgIds } } : undefined,
+      select: {
+        RoleId: true,
+        OrganizationId: true
       }
     },
     GroupMemberships: {
-      include: {
-        Group: true
+      where: orgIds ? { Group: { OwnerId: { in: orgIds } } } : undefined,
+      select: {
+        Group: {
+          select: { Id: true, OwnerId: true }
+        }
       }
     },
     OrganizationMemberships: {
-      include: {
-        Organization: true
+      where: orgIds ? { OrganizationId: { in: orgIds } } : undefined,
+      select: {
+        OrganizationId: true
       }
     }
   };
+}
 
-  // Sacrificing perfect type safety for readibility
-  let users;
-  let organizations;
-
-  if (userInfo.roles.find((r) => r[1] === RoleId.SuperAdmin)) {
-    // Get all users that are locked or are a member of at least one organization
-    // (Users that are not in an organization and are not locked are not interesting
-    // because they can't login and behave essentially as locked users or as users
-    // who have never logged in before)
-    users = await prisma.users.findMany({
-      include,
-      where: {
+// If we are a superadmin, collect all users, otherwise
+// collect every user in one of our organizations
+function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
+  return isSuper
+    ? {
+        // Get all users that are locked or are a member of at least one organization
+        // (Users that are not in an organization and are not locked are not interesting
+        // because they can't login and behave essentially as locked users or as users
+        // who have never logged in before)
         OR: [
           {
             OrganizationMemberships: {
@@ -65,92 +71,53 @@ export const load = (async (event) => {
           }
         ]
       }
-    });
-    organizations = await prisma.organizations.findMany({});
-  } else {
-    // For each OrganizationMembership of the current user where they are an organization admin, include all
-    // users of that Organization. This creates duplicates for users that are in multiple of the same
-    // organizations as the current user so we put them in a map by user id to prune duplicates. There may
-    // be a better way to handle this with prisma itself
-
-    // Initially this gives a structure of
-    /**
-     * user: {
-     *  OrganizationMemberships: [{
-     *    Organization: {
-     *      OrganizationMemberships: [{
-     *        User: {}
-     *      }]
-     *    }
-     *  }]
-     * }
-     */
-    // so we flatMap it into an array of all of the OrganizationMemberships Users, and pass it to the Map indexed by user.Id
-    // finally, filter the organizations we return by the organizations the current user is an organizational admin for
-
-    users = [
-      ...[
-        ...new Map(
-          (await prisma.users.findUnique({
-            where: {
-              Id: userId
-            },
-            include: {
-              OrganizationMemberships: {
-                where: {
-                  Organization: {
-                    UserRoles: {
-                      some: {
-                        RoleId: RoleId.OrgAdmin,
-                        UserId: userId
-                      }
-                    }
-                  }
-                },
-                include: {
-                  Organization: {
-                    include: {
-                      OrganizationMemberships: {
-                        include: {
-                          User: {
-                            include
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }))!.OrganizationMemberships.flatMap((org) =>
-            org.Organization.OrganizationMemberships.flatMap((orgMem) => orgMem.User)
-          ).map((user) => [user.Id, user])
-        ).values()
-      ]
-    ];
-    organizations = await prisma.organizations.findMany({
-      where: {
-        UserRoles: {
+    : {
+        OrganizationMemberships: {
           some: {
-            RoleId: RoleId.OrgAdmin,
-            UserId: userId
+            OrganizationId: { in: orgIds }
           }
         }
-      },
-      include: {
-        UserRoles: true
-      }
-    });
-    const currentUserOrgAdmins = new Set(organizations.map((org) => org.Id));
-    users.forEach((user) => {
-      user.OrganizationMemberships = user.OrganizationMemberships.filter((mem) => {
-        return currentUserOrgAdmins.has(mem.OrganizationId);
-      });
-      user.GroupMemberships = user.GroupMemberships.filter((mem) => {
-        return currentUserOrgAdmins.has(mem.Group.OwnerId);
-      });
-    });
-  }
+      };
+}
+
+export const load = (async (event) => {
+  const userInfo = (await event.locals.auth())?.user;
+  const userId = userInfo?.userId;
+  if (!userId) return redirect(302, '/');
+
+  const isSuper = !!userInfo.roles.find((r) => r[1] === RoleId.SuperAdmin);
+
+  const organizations = await prisma.organizations.findMany({
+    where: isSuper
+      ? undefined
+      : {
+          UserRoles: {
+            some: {
+              RoleId: RoleId.OrgAdmin,
+              UserId: userId
+            }
+          }
+        },
+    select: {
+      Id: true,
+      Name: true,
+      UserRoles: true
+    }
+  });
+
+  const orgIds = organizations.map((o) => o.Id);
+
+  const users = await prisma.users.findMany({
+    orderBy: {
+      FamilyName: 'asc'
+    },
+    select: select(isSuper ? undefined : orgIds),
+    where: adminOrDefaultWhere(isSuper, orgIds),
+    // More significantly, could paginate results to around 50 users/page = 10 KB
+    // Done - Aidan
+    take: 50
+  });
+
   return {
     // Only pass essential information to the client.
     // About 120 bytes per small user (with one organization and one group), and 240 for a larger user in several organizations.
@@ -158,48 +125,127 @@ export const load = (async (event) => {
     // The whole page is about 670 KB without this data.
     // Only superadmins would see this larger size, most users have organizations with much fewer users where it does not matter
 
+    users: users.map(minifyUser),
+    userCount: users.length,
     // Could be improved by putting group names into a referenced palette
     // (minimal returns if most users are in different organizations and groups)
-    // or by using smaller (or even minified) keys (eg N instead of Name, O instead of Organizations)
-
-    // More significantly, could paginate results to around 50 users/page = 10 KB
-    users: users.map((user) => ({
-      Id: user.Id,
-      Name: user.Name!,
-      FamilyName: user.FamilyName!,
-      Email: user.Email,
-      Organizations: user.OrganizationMemberships.map((org) => ({
-        Roles: user.UserRoles.filter((r) => r.OrganizationId === org.OrganizationId).map(
-          (r) => r.RoleId
-        ),
-        Id: org.OrganizationId,
-        Groups: user.GroupMemberships.filter(
-          (group) => group.Group.OwnerId === org.OrganizationId
-        ).map((group) => group.Group.Name!)
-      })),
-      IsLocked: user.IsLocked
-    })),
-    organizations: organizations?.map((org) => ({
-      Name: org.Name,
-      Id: org.Id
-    }))
+    // I went ahead and did this too. My assumption is that there will generally be multiple users in each organization and group, so I think this should be a justifiable change. - Aidan
+    groups: Object.fromEntries(
+      (
+        await prisma.groups.findMany({
+          where: {
+            OwnerId: { in: orgIds },
+            GroupMemberships: {
+              some: {}
+            }
+          }
+        })
+      ).map((g) => [g.Id, g.Name])
+    ),
+    organizations: Object.fromEntries(organizations?.map((org) => [org.Id, org.Name])),
+    organizationCount: organizations.length,
+    form: await superValidate(
+      {
+        organizationId: organizations.length > 1 ? null : organizations[0].Id,
+        page: {
+          page: 0,
+          size: 50
+        }
+      },
+      valibot(userSchema)
+    )
   };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
   async lock(event) {
-    const form = await event.request.formData();
-    const userId = parseInt(form.get('id') + '');
-    const enabled = form.get('enabled');
-    if (isNaN(userId)) return error(400);
+    const session = await event.locals.auth();
+    if (!session) return error(403);
+    const form = await superValidate(event, valibot(lockSchema));
+    if (!form.valid || session.user.userId === form.data.user) return { form, ok: false };
     await DatabaseWrites.users.update({
       where: {
-        Id: userId
+        Id: form.data.user
       },
       data: {
-        IsLocked: !enabled
+        // TODO: Are we actually doing anything meaningful with this?
+        IsLocked: !form.data.active
       }
     });
-    return { success: true };
+    return { form, ok: true };
+  },
+
+  async page(event) {
+    const session = await event.locals.auth();
+    if (!session) return error(403);
+    const form = await superValidate(event, valibot(userSchema));
+    if (!form.valid) return { form, ok: false };
+
+    const isSuper = !!session.user.roles.find((r) => r[1] === RoleId.SuperAdmin);
+
+    const organizations = await prisma.organizations.findMany({
+      where:
+        form.data.organizationId !== null
+          ? { Id: form.data.organizationId }
+          : isSuper
+          ? undefined
+          : {
+              UserRoles: {
+                some: {
+                  RoleId: RoleId.OrgAdmin,
+                  UserId: session.user.userId
+                }
+              }
+            },
+      select: {
+        Id: true,
+        Name: true,
+        UserRoles: true
+      }
+    });
+
+    const orgIds = organizations.map((o) => o.Id);
+
+    const where: Prisma.UsersWhereInput = {
+      AND: [
+        adminOrDefaultWhere(isSuper, orgIds),
+        {
+          OR: form.data.search
+            ? [
+                {
+                  Name: {
+                    contains: form.data.search,
+                    mode: 'insensitive'
+                  }
+                },
+                {
+                  Email: {
+                    contains: form.data.search,
+                    mode: 'insensitive'
+                  }
+                }
+              ]
+            : undefined
+        }
+      ]
+    };
+
+    const users = await prisma.users.findMany({
+      orderBy: {
+        FamilyName: 'asc'
+      },
+      select: select(isSuper ? undefined : orgIds),
+      where: where,
+      // More significantly, could paginate results to around 50 users/page = 10 KB
+      // Done - Aidan
+      skip: form.data.page.page * form.data.page.size,
+      take: form.data.page.size
+    });
+
+    return {
+      form,
+      ok: true,
+      query: { data: users.map(minifyUser), count: await prisma.users.count({ where: where }) }
+    };
   }
 };
