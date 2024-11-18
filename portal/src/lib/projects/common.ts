@@ -1,4 +1,7 @@
 import type { Prisma } from '@prisma/client';
+import * as v from 'valibot';
+import { idSchema } from '$lib/valibot';
+import { paginateSchema } from '$lib/table';
 
 export function pruneProjects(
   projects: Prisma.ProjectsGetPayload<{
@@ -46,3 +49,12 @@ export function pruneProjects(
 }
 
 export type PrunedProject = ReturnType<typeof pruneProjects>[0];
+
+export const projectSearchSchema = v.object({
+  organizationId: v.nullable(idSchema),
+  langCode: v.string(),
+  productDefinitionId: v.nullable(idSchema),
+  dateUpdatedRange: v.nullable(v.tuple([v.date(), v.nullable(v.date())])),
+  page: paginateSchema,
+  search: v.string()
+});
