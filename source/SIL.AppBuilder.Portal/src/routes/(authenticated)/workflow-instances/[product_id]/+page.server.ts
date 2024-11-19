@@ -19,8 +19,14 @@ export const load: PageServerLoad = async ({ params }) => {
     },
     select: {
       Id: true,
+      Store: {
+        select: {
+          Description: true
+        }
+      },
       Project: {
         select: {
+          Id: true,
           Name: true,
           Organization: {
             select: {
@@ -35,26 +41,26 @@ export const load: PageServerLoad = async ({ params }) => {
         }
       },
       ProductTransitions: {
-        where: {
-          DateTransition: {
-            not: null
-          }
-        },
         select: {
           DateTransition: true,
           DestinationState: true,
           InitialState: true,
-          Command: true
+          Command: true,
+          TransitionType: true,
+          WorkflowType: true,
+          AllowedUserNames: true,
+          Comment: true
         },
         orderBy: [
           {
-            DateTransition: 'desc'
+            DateTransition: 'asc'
           }
-        ],
-        take: 1
+        ]
       }
     }
   });
+
+  if (!product) return error(404);
 
   const flow = await Workflow.restore(params.product_id);
 
@@ -70,7 +76,11 @@ export const load: PageServerLoad = async ({ params }) => {
   });
 
   return {
-    product: product,
+    product: {
+      ...product,
+      Transitions: product?.ProductTransitions,
+      ProductTransitions: undefined
+    },
     snapshot: snap,
     machine: snap ? flow.serializeForVisualization() : [],
     definition: workflowDefinition,
