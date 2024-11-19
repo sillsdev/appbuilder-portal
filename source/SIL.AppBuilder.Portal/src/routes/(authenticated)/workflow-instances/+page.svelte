@@ -84,7 +84,8 @@
           {
             id: 'organization',
             header: m.project_side_organization(),
-            data: (i) => i.Product.Project.Organization.Name,
+            data: (i) => i.Product.Project.Organization,
+            render: (o) => `<a class="link" href="/projects/organization/${o.Id}">${o.Name}</a>`,
             sortable: true
           },
           {

@@ -30,6 +30,7 @@ export const load: PageServerLoad = async ({ params }) => {
           Name: true,
           Organization: {
             select: {
+              Id: true,
               Name: true
             }
           }

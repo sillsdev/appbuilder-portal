@@ -97,7 +97,9 @@
     <div class="breadcrumbs text-sm grow">
       <ul>
         <li>
-          {data.product?.Project.Organization.Name}
+          <a class="link" href="/projects/organization/{data.product?.Project.Organization.Id}">
+            {data.product?.Project.Organization.Name}
+          </a>
         </li>
         <li>
           <a class="link" href="/projects/{data.product?.Project.Id}">
