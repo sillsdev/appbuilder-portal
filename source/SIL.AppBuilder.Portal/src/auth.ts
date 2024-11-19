@@ -179,7 +179,8 @@ async function validateRouteForAuthenticatedUser(
   const path = route.split('/').filter((r) => !!r);
   // Only guarding authenticated routes
   if (path[0] === '(authenticated)') {
-    if (path[1] === 'admin') return !!session.user.roles.find((r) => r[1] === RoleId.SuperAdmin);
+    if (path[1] === 'admin' || path[1] === 'workflow-instances')
+      return !!session.user.roles.find((r) => r[1] === RoleId.SuperAdmin);
     else if (path[1] === 'directory' || path[1] === 'open-source')
       // Always allowed. Open pages
       return true;

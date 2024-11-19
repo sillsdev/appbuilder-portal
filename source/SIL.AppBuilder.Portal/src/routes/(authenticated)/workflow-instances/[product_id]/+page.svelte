@@ -90,7 +90,7 @@
 </script>
 
 <div id="back-arrow" class="p-5">
-  <a href="/admin/settings/workflow-instances"><ArrowBackIcon color="lightgray" /></a>
+  <a href="/workflow-instances"><ArrowBackIcon color="lightgray" /></a>
 </div>
 <div id="menu" class="p-5">
   <div class="bg-primary border-2 border-primary-content p-2 rounded text-primary-content">
@@ -132,7 +132,7 @@
         <input
           type="submit"
           class="btn"
-          value={m.admin_settings_workflowInstances_jump({ state: $form.state })}
+          value={m.workflowInstances_jump({ state: $form.state })}
         />
       </form>
     </details>

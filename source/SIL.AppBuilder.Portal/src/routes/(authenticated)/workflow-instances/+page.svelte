@@ -49,7 +49,7 @@
       class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center px-4 gap-1 mobile-sizing"
     >
       <div class="inline-block grow mobile-sizing">
-        <h1 class="py-4 px-2">{m.admin_settings_workflowInstances_title()}</h1>
+        <h1 class="py-4 px-2">{m.workflowInstances_title()}</h1>
       </div>
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 mobile-sizing"
@@ -72,7 +72,7 @@
       </select>
       <DateRangePicker
         bind:chosenDates={$form.dateUpdatedRange}
-        placeholder={m.admin_settings_workflowInstances_filters_dateRange()}
+        placeholder={m.workflowInstances_filters_dateRange()}
       />
     </div>
   </form>
@@ -99,7 +99,7 @@
             header: m.tasks_product(),
             data: (i) => i.Product,
             render: (c) =>
-              `<a class="link" href="/admin/settings/workflow-instances/${c.Id}">${c.ProductDefinition.Name}</a>`,
+              `<a class="link" href="/workflow-instances/${c.Id}">${c.ProductDefinition.Name}</a>`,
             sortable: true
           },
           {
@@ -121,7 +121,7 @@
         on:sort={(e) => form.update((data) => ({ ...data, sort: e.detail }))}
       />
     {:else}
-      <p class="m-8">{m.admin_settings_workflowInstances_empty()}</p>
+      <p class="m-8">{m.workflowInstances_empty()}</p>
     {/if}
   </div>
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
