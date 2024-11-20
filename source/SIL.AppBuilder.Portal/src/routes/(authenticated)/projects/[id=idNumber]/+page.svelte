@@ -221,7 +221,7 @@
                   )
                 })}
                 {m.tasks_forNames({
-                  allowedNames: product.ActiveTransition?.AllowedUserNames ?? 'Scriptoria',
+                  allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
                   activityName: product.ActiveTransition?.InitialState ?? ''
                 })}
                 {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
