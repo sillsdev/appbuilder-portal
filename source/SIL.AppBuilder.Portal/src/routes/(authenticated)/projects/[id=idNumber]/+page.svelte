@@ -280,10 +280,10 @@
                       null
                   )
                 })}
-                <!-- TODO: The activity name is sometimes showing up blank -->
                 {m.tasks_forNames({
                   allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
                   activityName: product.ActiveTransition?.InitialState ?? ''
+                  // activityName appears to show up blank primarily at the very startup of a new product?
                 })}
                 {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
                   <a class="link mx-2" href="/tasks/{product.Id}">
