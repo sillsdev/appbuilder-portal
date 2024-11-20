@@ -148,7 +148,7 @@
                     }}
                   >
                     <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                      <!-- TODO: Product icon -->
+                      <IconContainer icon={getIcon(productDef.Name ?? '')} width="24" />
                       {productDef.Name}
                     </div>
                     <p class="p-2 text-neutral-content">{productDef.Description}</p>
