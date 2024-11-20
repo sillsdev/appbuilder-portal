@@ -130,7 +130,7 @@ export class Workflow {
       context: JSON.parse(snap.Context) as WorkflowContextBase,
       config: {
         productType: snap.WorkflowDefinition.ProductType,
-        options: snap.WorkflowDefinition.WorkflowOptions
+        options: new Set(snap.WorkflowDefinition.WorkflowOptions)
       }
     };
   }
