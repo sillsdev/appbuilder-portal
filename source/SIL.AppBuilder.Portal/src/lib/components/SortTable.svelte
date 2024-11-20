@@ -1,23 +1,34 @@
+<!--
+  A table that can be sorted by column.
+  @component
+-->
 <script lang="ts">
   import { languageTag } from '$lib/paraglide/runtime';
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
   import { createEventDispatcher } from 'svelte';
   export let data: { [key: string]: any }[];
+  /** Definition of the columns for the table */
   export let columns: {
+    /** Internal id, used for determining which column is being sorted */
     id: string;
+    /** User-facing string for column headers */
     header: string;
+    /** Accessor method to get the desired data */
     data: (i: any) => any;
+    /** Renders the data to an HTML string */
     render?: (d: any) => string;
+    /** Will not sort a field if this is false or undefined */
     sortable?: boolean;
   }[];
   export let className: string = '';
-  export let maxh_class: string = 'max-h-96';
+  /** If this is true, will defer sorting to the server instead */
   export let serverSide: boolean = false;
 
-  let current = columns.find((c) => c.sortable)!; //current field being sorted
+  /** Current field being sorted. Defaults to first field where `sortable === true` */
+  let current = columns.find((c) => c.sortable)!;
   let descending = false;
 
-  const handleClick = (key: (typeof columns)[0]) => {
+  function sortColByDirection(key: (typeof columns)[0]) {
     if (current.id !== key.id) {
       // change current field
       descending = false;
@@ -26,7 +37,7 @@
       if (descending) {
         // reset to sort default field
         if (current !== columns.find((c) => c.sortable)!) {
-          handleClick(columns.find((c) => c.sortable)!);
+          sortColByDirection(columns.find((c) => c.sortable)!);
           return; //don't sort twice
         } else {
           descending = false;
@@ -36,7 +47,7 @@
       }
     }
     if (serverSide) {
-      dispatch('sort', { field: current.id, direction: descending ? 'desc' : 'asc' });
+      sendSortEvent('sort', { field: current.id, direction: descending ? 'desc' : 'asc' });
     } else {
       // sort based on current field
       // if blank, sort first field
@@ -61,9 +72,9 @@
               }
             });
     }
-  };
+  }
 
-  const dispatch = createEventDispatcher<{
+  const sendSortEvent = createEventDispatcher<{
     sort: {
       field: string;
       direction: 'asc' | 'desc';
@@ -71,7 +82,7 @@
   }>();
 </script>
 
-<div class="overflow-y {maxh_class}">
+<div class="overflow-y {className}">
   <table class="table">
     <thead>
       <tr>
@@ -79,7 +90,7 @@
           <th
             on:click={() => {
               if (c.sortable) {
-                handleClick(c);
+                sortColByDirection(c);
               }
             }}
           >
@@ -102,7 +113,7 @@
         {/each}
       </tr>
     </thead>
-    <tbody class={className}>
+    <tbody>
       {#each data as d}
         <tr>
           {#each columns as c}
@@ -136,7 +147,7 @@
   }
   .direction-arrow {
     display: inline-block;
-    /* these help mitigate some of the visual jankiness */
+    /* reserve space for the arrow, so headers don't expand when arrow is visible */
     min-width: 24px;
     min-height: 26px;
   }
