@@ -226,7 +226,7 @@ export async function POST({ params, request, fetch }) {
   await DatabaseWrites.productTransitions.createMany({
     data: products.map((p) => ({
       ProductId: p.Id,
-      AllowedUserNames: '',
+      AllowedUserNames: user[0].Name,
       TransitionType: ProductTransitionType.ProjectAccess,
       InitialState: 'Project ' + use,
       WorkflowUserId: user[0].WorkflowUserId,
