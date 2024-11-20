@@ -67,11 +67,33 @@ export async function POST({ params, request, fetch }) {
     }
   });
   if (!project) {
-    return error(404, `Project id=${projectId} not found`);
+    return new Response(
+      JSON.stringify({
+        errors: [
+          {
+            error: `Project id=${projectId} not found`
+          }
+        ]
+      }),
+      {
+        status: 404
+      }
+    );
   }
 
   if (!project.WorkflowProjectUrl) {
-    return error(404, `Project id=${projectId}: WorkflowProjectUrl is null`);
+    return new Response(
+      JSON.stringify({
+        errors: [
+          {
+            error: `Project id=${projectId}: WorkflowProjectUrl is null`
+          }
+        ]
+      }),
+      {
+        status: 404
+      }
+    );
   }
 
   // Check ownership
@@ -111,16 +133,32 @@ export async function POST({ params, request, fetch }) {
   }
 
   if (readOnly === null) {
-    return error(
-      403,
-      `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to access`
+    return new Response(
+      JSON.stringify({
+        errors: [
+          {
+            error: `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to access`
+          }
+        ]
+      }),
+      {
+        status: 403
+      }
     );
   }
 
   if (tokenUse && tokenUse === TOKEN_USE_UPLOAD && readOnly) {
-    return error(
-      403,
-      `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to Upload`
+    return new Response(
+      JSON.stringify({
+        errors: [
+          {
+            error: `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to Upload`
+          }
+        ]
+      }),
+      {
+        status: 403
+      }
     );
   }
 
@@ -134,10 +172,32 @@ export async function POST({ params, request, fetch }) {
   );
 
   if (!tokenResult || tokenResult.responseType === 'error') {
-    return error(400, `Project id=${projectId}: GetProjectToken returned null`);
+    return new Response(
+      JSON.stringify({
+        errors: [
+          {
+            error: `Project id=${projectId}: GetProjectToken returned null`
+          }
+        ]
+      }),
+      {
+        status: 400
+      }
+    );
   }
   if (tokenResult.SecretAccessKey == null) {
-    return error(400, `Project id=${projectId}: Token.SecretAccessKey is null`);
+    return new Response(
+      JSON.stringify({
+        errors: [
+          {
+            error: `Project id=${projectId}: Token.SecretAccessKey is null`
+          }
+        ]
+      }),
+      {
+        status: 400
+      }
+    );
   }
   const projectToken = {
     type: 'project-tokens',
