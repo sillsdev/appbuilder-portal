@@ -69,11 +69,7 @@ export async function POST({ params, request, fetch }) {
   if (!project) {
     return new Response(
       JSON.stringify({
-        errors: [
-          {
-            error: `Project id=${projectId} not found`
-          }
-        ]
+        errors: [{ title: `Project id=${projectId} not found` }]
       }),
       {
         status: 404
@@ -84,11 +80,7 @@ export async function POST({ params, request, fetch }) {
   if (!project.WorkflowProjectUrl) {
     return new Response(
       JSON.stringify({
-        errors: [
-          {
-            error: `Project id=${projectId}: WorkflowProjectUrl is null`
-          }
-        ]
+        errors: [{ title: `Project id=${projectId}: WorkflowProjectUrl is null` }]
       }),
       {
         status: 404
@@ -137,7 +129,7 @@ export async function POST({ params, request, fetch }) {
       JSON.stringify({
         errors: [
           {
-            error: `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to access`
+            title: `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to access`
           }
         ]
       }),
@@ -152,7 +144,7 @@ export async function POST({ params, request, fetch }) {
       JSON.stringify({
         errors: [
           {
-            error: `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to Upload`
+            title: `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to Upload`
           }
         ]
       }),
@@ -174,11 +166,7 @@ export async function POST({ params, request, fetch }) {
   if (!tokenResult || tokenResult.responseType === 'error') {
     return new Response(
       JSON.stringify({
-        errors: [
-          {
-            error: `Project id=${projectId}: GetProjectToken returned null`
-          }
-        ]
+        errors: [{ title: `Project id=${projectId}: GetProjectToken returned null` }]
       }),
       {
         status: 400
@@ -188,11 +176,7 @@ export async function POST({ params, request, fetch }) {
   if (tokenResult.SecretAccessKey == null) {
     return new Response(
       JSON.stringify({
-        errors: [
-          {
-            error: `Project id=${projectId}: Token.SecretAccessKey is null`
-          }
-        ]
+        errors: [{ title: `Project id=${projectId}: Token.SecretAccessKey is null` }]
       }),
       {
         status: 400
