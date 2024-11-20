@@ -286,7 +286,6 @@ export const actions = {
       return fail(403);
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    // Appears that CanUpdate is not used TODO
     const productId = await DatabaseWrites.products.create({
       ProjectId: parseInt(event.params.id),
       ProductDefinitionId: form.data.productDefinitionId,
