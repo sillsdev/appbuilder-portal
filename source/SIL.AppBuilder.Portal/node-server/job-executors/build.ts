@@ -40,11 +40,6 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
   await DatabaseWrites.products.update(job.data.productId, {
     WorkflowBuildId: 0
   });
-  await DatabaseWrites.productArtifacts.deleteMany({
-    where: {
-      ProductId: job.data.productId
-    }
-  });
   job.updateProgress(20);
   const params = await getWorkflowParameters(productData.WorkflowInstance.Id);
   job.updateProgress(30);
