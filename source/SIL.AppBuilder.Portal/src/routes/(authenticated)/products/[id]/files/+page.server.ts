@@ -6,17 +6,38 @@ export const load = (async ({ params }) => {
     where: {
       ProductId: params.id
     },
-    include: {
-      ProductArtifacts: true
+    select: {
+      Id: true,
+      Version: true,
+      BuildId: true,
+      Success: true,
+      ProductArtifacts: {
+        select: {
+          ArtifactType: true,
+          Url: true,
+          FileSize: true,
+          DateUpdated: true
+        }
+      }
     }
   });
   const product = await prisma.products.findUnique({
     where: {
       Id: params.id
     },
-    include: {
-      ProductDefinition: true,
-      Project: true
+    select: {
+      WorkflowBuildId: true,
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
+      },
+      Project: {
+        select: {
+          Id: true,
+          Name: true
+        }
+      }
     }
   });
   return { product, builds };
