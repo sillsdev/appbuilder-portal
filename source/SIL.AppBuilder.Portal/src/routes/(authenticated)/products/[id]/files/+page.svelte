@@ -10,6 +10,22 @@
   let selectedBuildId: number;
   $: selectedBuild = data.builds.find((b) => b.Id === selectedBuildId);
   // TODO: test this page with artifacts
+
+  function versionString(build: (typeof data.builds)[0]): string {
+    let version = build.Version;
+    if (version === null) {
+      if (build.Success === false) {
+        version = ` ${m.projects_buildFailed()} `;
+      } else {
+        version = ` ${m.projects_buildPending()} `;
+      }
+    }
+
+    if (build.BuildId === data.product?.WorkflowBuildId) {
+      return m.projects_latestBuild({ version });
+    }
+    return version;
+  }
 </script>
 
 <div class="w-full max-w-6xl mx-auto p-4">
@@ -30,15 +46,7 @@
     {/if}
     {#each data.builds as build}
       <option value={build.Id} class="font-bold text-lg">
-        {#if build.BuildId === data.product?.WorkflowBuildId}
-          {m.projects_latestBuild({
-            version:
-              build.Version ??
-              ` ${build.Success === false ? m.projects_buildFailed() : m.projects_buildPending()} `
-          })}
-        {:else}
-          {build.Version ?? (build.Success ? m.projects_buildPending() : m.projects_buildFailed())}
-        {/if}
+        {versionString(build)}
       </option>
     {/each}
   </select>
