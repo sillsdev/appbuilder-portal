@@ -34,10 +34,10 @@
           {m.projects_latestBuild({
             version:
               build.Version ??
-              ` ${build.Success ? m.projects_buildPending() : m.projects_buildFailed()} `
+              ` ${build.Success === false ? m.projects_buildFailed() : m.projects_buildPending()} `
           })}
         {:else}
-          {build.Version ?? build.Success ? m.projects_buildPending() : m.projects_buildFailed()}
+          {build.Version ?? (build.Success ? m.projects_buildPending() : m.projects_buildFailed())}
         {/if}
       </option>
     {/each}

@@ -3,6 +3,11 @@ import type { PageServerLoad } from './$types';
 
 export const load = (async ({ params }) => {
   const builds = await prisma.productBuilds.findMany({
+    orderBy: [
+      {
+        DateUpdated: 'desc'
+      }
+    ],
     where: {
       ProductId: params.id
     },
@@ -40,5 +45,7 @@ export const load = (async ({ params }) => {
       }
     }
   });
+
+  console.log(JSON.stringify(builds, (_, v) => (typeof v === 'bigint' ? v.toString() : v), 4));
   return { product, builds };
 }) satisfies PageServerLoad;
