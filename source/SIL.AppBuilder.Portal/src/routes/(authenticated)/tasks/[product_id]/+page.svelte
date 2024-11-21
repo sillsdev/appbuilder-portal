@@ -4,6 +4,7 @@
   import SortTable from '$lib/components/SortTable.svelte';
   import { superForm } from 'sveltekit-superforms';
   import * as m from '$lib/paraglide/messages';
+  import { bytesToHumanSize } from '$lib/utils';
 
   export let data: PageData;
   const { form, enhance, submit } = superForm(data.taskForm, {
@@ -209,6 +210,7 @@
             id: 'fileSize',
             header: m.project_products_size(),
             data: (f) => f.FileSize,
+            render: (s) => bytesToHumanSize(s),
             sortable: true
           },
           {
