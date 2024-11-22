@@ -8,8 +8,8 @@
   export let data: PageData;
 </script>
 
-<div class="w-full h-full max-w-6xl mx-auto p-4">
-  <div id="header">
+<div class="w-full h-full max-w-6xl mx-auto p-4 flex flex-col">
+  <div>
     <div class="breadcrumbs text-sm pl-4">
       <ul>
         <li>
@@ -27,7 +27,7 @@
     </div>
     <h1 class="pl-4">{m.products_files_title()}</h1>
   </div>
-  <div id="files">
+  <div id="files" class="overflow-y-auto grow">
     {#each data.builds as build}
       <BuildArtifacts
         {build}
@@ -39,12 +39,7 @@
 </div>
 
 <style lang="postcss">
-  #header {
-    height: 15%;
-  }
   #files {
-    height: 85%;
-    @apply overflow-y-auto;
     scrollbar-gutter: stable both-edges;
   }
 </style>
