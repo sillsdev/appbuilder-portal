@@ -5,7 +5,7 @@ import { BullAdapter } from '@bull-board/api/bullAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import path from 'path';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { prisma, Queues } from 'sil.appbuilder.portal.common';
 import { fileURLToPath } from 'url';
 import * as Workers from './BullWorker.js';
 
@@ -81,7 +81,7 @@ new Workers.UserTasks(BullMQ.QueueName.UserTasks);
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
 createBullBoard({
-  queues: Object.values(BullMQ.QueueName).map((q) => new BullAdapter(q)),
+  queues: Object.values(Queues).map((q) => new BullAdapter(q)),
   serverAdapter
 });
 

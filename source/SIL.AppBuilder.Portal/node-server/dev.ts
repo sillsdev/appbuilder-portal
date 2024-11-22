@@ -8,11 +8,11 @@ process.env.NODE_ENV = 'development';
 
 const app = express();
 
-import { BullMQ } from 'sil.appbuilder.portal.common';
+import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/');
 createBullBoard({
-  queues: Object.values(BullMQ.QueueName).map((q) => new BullAdapter(q)),
+  queues: Object.values(Queues).map((q) => new BullAdapter(q)),
   serverAdapter
 });
 app.use(serverAdapter.getRouter());
