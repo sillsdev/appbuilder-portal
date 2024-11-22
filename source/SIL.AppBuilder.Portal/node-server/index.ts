@@ -76,17 +76,17 @@ import { queues } from 'sil.appbuilder.portal.common';
 // Running on svelte process right now. Consider putting on new thread
 // Fine like this if majority of job time is waiting for network requests
 // If there is much processing it should be moved to another thread
-new ScriptoriaWorker(queues.QueueName.Scriptoria);
+new ScriptoriaWorker(queues.QueueName.Simple);
 new ScriptoriaWorker(queues.QueueName.DefaultRecurring);
-new ScriptoriaWorker(queues.QueueName.Repeating);
+new ScriptoriaWorker(queues.QueueName.RemotePolling);
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
 createBullBoard({
   queues: [
-    new BullAdapter(queues.scriptoria),
+    new BullAdapter(queues.simple),
     new BullAdapter(queues.default_recurring),
-    new BullAdapter(queues.repeating)
+    new BullAdapter(queues.remote_polling)
   ],
   serverAdapter
 });

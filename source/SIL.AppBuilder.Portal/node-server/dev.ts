@@ -13,15 +13,15 @@ const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/');
 createBullBoard({
   queues: [
-    new BullAdapter(queues.scriptoria),
+    new BullAdapter(queues.simple),
     new BullAdapter(queues.default_recurring),
-    new BullAdapter(queues.repeating)
+    new BullAdapter(queues.remote_polling)
   ],
   serverAdapter
 });
 app.use(serverAdapter.getRouter());
 app.listen(3000, () => console.log('Dev server started'));
 
-new ScriptoriaWorker(queues.QueueName.Scriptoria);
+new ScriptoriaWorker(queues.QueueName.Simple);
 new ScriptoriaWorker(queues.QueueName.DefaultRecurring);
-new ScriptoriaWorker(queues.QueueName.Repeating);
+new ScriptoriaWorker(queues.QueueName.RemotePolling);

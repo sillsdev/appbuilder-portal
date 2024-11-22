@@ -17,7 +17,7 @@ export const actions = {
     }
     const form = await superValidate(event.request, valibot(secondsSchema));
     if (!form.valid) return fail(400, { ok: false });
-    await queues.scriptoria.add('Admin Test Task (No-op)', {
+    await queues.simple.add('Admin Test Task (No-op)', {
       type: BullMQ.ScriptoriaJobType.Test,
       time: form.data.seconds
     });

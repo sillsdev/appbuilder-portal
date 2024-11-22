@@ -2,12 +2,12 @@ import { Queue } from 'bullmq';
 import type { ScriptoriaJob } from './BullJobTypes.js';
 
 export enum QueueName {
-  Scriptoria = 'scriptoria',
+  Simple = 'simple',
   DefaultRecurring = 'default recurring',
-  Repeating = 'repeating'
+  RemotePolling = 'remote polling'
 };
 
-export const scriptoria = new Queue<ScriptoriaJob>(QueueName.Scriptoria, {
+export const simple = new Queue<ScriptoriaJob>(QueueName.Simple, {
   connection: {
     host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis'
   }
@@ -19,7 +19,7 @@ export const default_recurring = new Queue<ScriptoriaJob>(QueueName.DefaultRecur
   }
 });
 
-export const repeating = new Queue<ScriptoriaJob>(QueueName.Repeating, {
+export const remote_polling = new Queue<ScriptoriaJob>(QueueName.RemotePolling, {
   connection: {
     host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis'
   }
