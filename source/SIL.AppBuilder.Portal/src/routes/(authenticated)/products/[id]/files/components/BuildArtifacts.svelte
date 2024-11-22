@@ -48,7 +48,7 @@
       <!-- TODO i18n (requires pluralization support) -->
       {m.project_products_numArtifacts({ amount: build.ProductArtifacts.length })}
     </span>
-    <button on:click={() => hidden = !hidden}>
+    <button on:click={() => (hidden = !hidden)}>
       {#if hidden}
         <ArrowUpIcon />
       {:else}
@@ -56,11 +56,11 @@
       {/if}
     </button>
   </div>
-  <div class="p-2" class:hidden>
+  <div class="p-2 overflow-x-auto" class:hidden>
     {#if !build.ProductArtifacts.length}
       {m.project_products_noArtifacts()}
     {:else}
-      <table class="table table-auto">
+      <table class="table table-auto bg-base-100">
         <thead>
           <tr>
             <th>{m.project_products_filename()}</th>
@@ -87,3 +87,15 @@
     {/if}
   </div>
 </div>
+
+<style lang="postcss">
+  tr > th:first-child,
+  tr > td:first-child {
+    position: sticky;
+    left: 0;
+  }
+
+  tr td, tr th {
+    @apply bg-base-100;
+  }
+</style>
