@@ -6,7 +6,7 @@ interface RetryOptions {
     readonly delay: number;
   };
 }
-
+/** Maximum 5 attempts with a 5 second exponential backoff */
 export const Retry5e5: RetryOptions = {
   attempts: 5,
   backoff: {
@@ -15,29 +15,25 @@ export const Retry5e5: RetryOptions = {
   }
 };
 
-export enum ScriptoriaJobType {
-  // Test
-  Test = 'Test',
+export enum QueueName {
+  UserTasks = 'User Tasks'
+}
+
+export enum JobType {
   // UserTasks
   UserTasks_Reassign = 'Reassign UserTasks'
 }
 
 export namespace UserTasks {
   export type Reassign = {
-    type: ScriptoriaJobType.UserTasks_Reassign;
+    type: JobType.UserTasks_Reassign;
     projectId: number;
   };
 }
 
-export interface Test {
-  type: ScriptoriaJobType.Test;
-  time: number;
-}
-
-export type ScriptoriaJob = JobTypeMap[keyof JobTypeMap];
+export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
-  [ScriptoriaJobType.Test]: Test;
-  [ScriptoriaJobType.UserTasks_Reassign]: UserTasks.Reassign;
+  [JobType.UserTasks_Reassign]: UserTasks.Reassign;
   // Add more mappings here as needed
 };

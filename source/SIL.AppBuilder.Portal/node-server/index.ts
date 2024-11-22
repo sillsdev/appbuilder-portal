@@ -7,7 +7,7 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import path from 'path';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { fileURLToPath } from 'url';
-import { ScriptoriaWorker } from './BullWorker.js';
+import { UserTasksWorker } from './BullWorker.js';
 
 // Do not import any functional code from the sveltekit codebase
 // unless you are positive you know what you are doing
@@ -72,22 +72,16 @@ app.get('/healthcheck', (req, res) => {
 });
 
 // BullMQ variables
-import { queues } from 'sil.appbuilder.portal.common';
+import { BullMQ } from 'sil.appbuilder.portal.common';
 // Running on svelte process right now. Consider putting on new thread
 // Fine like this if majority of job time is waiting for network requests
 // If there is much processing it should be moved to another thread
-new ScriptoriaWorker(queues.QueueName.Simple);
-new ScriptoriaWorker(queues.QueueName.DefaultRecurring);
-new ScriptoriaWorker(queues.QueueName.RemotePolling);
+new UserTasksWorker(BullMQ.QueueName.UserTasks);
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
 createBullBoard({
-  queues: [
-    new BullAdapter(queues.simple),
-    new BullAdapter(queues.default_recurring),
-    new BullAdapter(queues.remote_polling)
-  ],
+  queues: Object.values(BullMQ.QueueName).map((q) => new BullAdapter(q)),
   serverAdapter
 });
 
