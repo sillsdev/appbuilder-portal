@@ -20,7 +20,7 @@
 
   export let latestBuildId: number | undefined;
 
-  let hidden = false;
+  export let hidden = false;
 
   function versionString(b: typeof build): string {
     let version = b.Version;

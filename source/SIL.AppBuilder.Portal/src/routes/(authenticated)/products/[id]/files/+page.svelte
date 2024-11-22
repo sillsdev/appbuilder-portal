@@ -9,8 +9,6 @@
 
   export let data: PageData;
   // TODO: test this page with artifacts
-
-  
 </script>
 
 <div class="w-full max-w-6xl mx-auto p-4">
@@ -27,6 +25,10 @@
   </div>
   <h1 class="pl-4">{m.products_files_title()}</h1>
   {#each data.builds as build}
-    <BuildArtifacts {build} latestBuildId={data.product?.WorkflowBuildId}/>
+    <BuildArtifacts
+      {build}
+      latestBuildId={data.product?.WorkflowBuildId}
+      hidden={build.BuildId !== data.product?.WorkflowBuildId}
+    />
   {/each}
 </div>
