@@ -16,7 +16,7 @@ export abstract class BullWorker<T, R> {
 
 type JobCast<T extends BullMQ.Job> = Job<T, number, string>;
 
-export class UserTasksWorker extends BullWorker<BullMQ.Job, number> {
+export class UserTasks extends BullWorker<BullMQ.Job, number> {
   constructor(queue: BullMQ.QueueName) {
     super(queue);
   }

@@ -2,7 +2,7 @@ import { createBullBoard } from '@bull-board/api';
 import { BullAdapter } from '@bull-board/api/bullAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
 import express from 'express';
-import { UserTasksWorker } from './BullWorker.js';
+import * as Workers from './BullWorker.js';
 
 process.env.NODE_ENV = 'development';
 
@@ -19,4 +19,4 @@ app.use(serverAdapter.getRouter());
 app.listen(3000, () => console.log('Dev server started'));
 
 
-new UserTasksWorker(BullMQ.QueueName.UserTasks);
+new Workers.UserTasks(BullMQ.QueueName.UserTasks);
