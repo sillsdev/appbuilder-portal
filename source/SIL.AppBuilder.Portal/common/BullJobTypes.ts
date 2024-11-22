@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */ 
 interface RetryOptions {
   readonly attempts: number;
   readonly backoff: {
