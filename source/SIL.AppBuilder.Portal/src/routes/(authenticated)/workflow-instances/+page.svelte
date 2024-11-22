@@ -19,7 +19,7 @@
     dataType: 'json',
     resetForm: false,
     onChange(event) {
-      if (!(event.paths.includes('page.size') || event.paths.includes('search'))) {
+      if (!event.paths.includes('search')) {
         submit();
       }
     },
