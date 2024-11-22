@@ -8,7 +8,7 @@ process.env.NODE_ENV = 'development';
 
 const app = express();
 
-import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
+import { Queues } from 'sil.appbuilder.portal.common';
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/');
 createBullBoard({
@@ -19,4 +19,4 @@ app.use(serverAdapter.getRouter());
 app.listen(3000, () => console.log('Dev server started'));
 
 
-new Workers.UserTasks(BullMQ.QueueName.UserTasks);
+new Workers.UserTasks();
