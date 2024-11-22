@@ -3,7 +3,8 @@ import type { ScriptoriaJob } from './BullJobTypes.js';
 
 export enum QueueName {
   Scriptoria = 'scriptoria',
-  DefaultRecurring = 'default recurring'
+  DefaultRecurring = 'default recurring',
+  Repeating = 'repeating'
 };
 
 export const scriptoria = new Queue<ScriptoriaJob>(QueueName.Scriptoria, {
@@ -17,3 +18,10 @@ export const default_recurring = new Queue<ScriptoriaJob>(QueueName.DefaultRecur
     host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis'
   }
 });
+
+export const repeating = new Queue<ScriptoriaJob>(QueueName.Repeating, {
+  connection: {
+    host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis'
+  }
+});
+

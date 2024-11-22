@@ -78,11 +78,16 @@ import { queues } from 'sil.appbuilder.portal.common';
 // If there is much processing it should be moved to another thread
 new ScriptoriaWorker(queues.QueueName.Scriptoria);
 new ScriptoriaWorker(queues.QueueName.DefaultRecurring);
+new ScriptoriaWorker(queues.QueueName.Repeating);
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
 createBullBoard({
-  queues: [new BullAdapter(queues.scriptoria), new BullAdapter(queues.default_recurring)],
+  queues: [
+    new BullAdapter(queues.scriptoria),
+    new BullAdapter(queues.default_recurring),
+    new BullAdapter(queues.repeating)
+  ],
   serverAdapter
 });
 

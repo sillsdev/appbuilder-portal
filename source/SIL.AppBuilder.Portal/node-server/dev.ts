@@ -12,7 +12,11 @@ import { queues } from 'sil.appbuilder.portal.common';
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/');
 createBullBoard({
-  queues: [new BullAdapter(queues.scriptoria), new BullAdapter(queues.default_recurring)],
+  queues: [
+    new BullAdapter(queues.scriptoria),
+    new BullAdapter(queues.default_recurring),
+    new BullAdapter(queues.repeating)
+  ],
   serverAdapter
 });
 app.use(serverAdapter.getRouter());
@@ -20,3 +24,4 @@ app.listen(3000, () => console.log('Dev server started'));
 
 new ScriptoriaWorker(queues.QueueName.Scriptoria);
 new ScriptoriaWorker(queues.QueueName.DefaultRecurring);
+new ScriptoriaWorker(queues.QueueName.Repeating);
