@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { instructions } from './instructions';
-  import SortTable from './components/SortTable.svelte';
+  import SortTable from '$lib/components/SortTable.svelte';
   import { superForm } from 'sveltekit-superforms';
   import * as m from '$lib/paraglide/messages';
+  import { bytesToHumanSize } from '$lib/utils';
 
   export let data: PageData;
   const { form, enhance, submit } = superForm(data.taskForm, {
@@ -188,15 +189,73 @@
     </div>
   {/if}
   {#if data?.files?.length}
-    <div class="overflow-x-auto max-h-96">
-      <h3>{m.products_files_title()}</h3>
-      <SortTable items={data.files} />
+    <h3>{m.products_files_title()}</h3>
+    <div class="w-full overflow-x-auto">
+      <SortTable
+        className="max-h-96"
+        data={data.files}
+        columns={[
+          {
+            id: 'buildId',
+            header: m.tasks_files_buildId(),
+            data: (f) => f.ProductBuildId
+          },
+          {
+            id: 'artifactType',
+            header: m.project_type(),
+            data: (f) => f.ArtifactType,
+            sortable: true
+          },
+          {
+            id: 'fileSize',
+            header: m.project_products_size(),
+            data: (f) => f.FileSize,
+            render: (s) => bytesToHumanSize(s),
+            sortable: true
+          },
+          {
+            id: 'url',
+            header: m.tasks_files_link(),
+            data: (f) => f.Url,
+            render: (u) => `<a class="link" href="${u}">${u}</a>`
+          },
+          {
+            id: 'fileId',
+            header: m.tasks_files_fileId(),
+            data: (f) => f.Id,
+            sortable: true
+          }
+        ]}
+      />
     </div>
   {/if}
   {#if data?.reviewers?.length}
-    <div class="overflow-x-auto max-h-96">
-      <h3>{m.project_side_reviewers_title()}</h3>
-      <SortTable items={data.reviewers} />
+    <h3>{m.project_side_reviewers_title()}</h3>
+    <div class="w-full overflow-x-auto">
+      <SortTable
+        className="max-h-96"
+        data={data.reviewers}
+        columns={[
+          {
+            id: 'id',
+            header: m.common_id(),
+            data: (r) => r.Id,
+            sortable: true
+          },
+          {
+            id: 'name',
+            header: m.common_name(),
+            data: (r) => r.Name,
+            sortable: true
+          },
+          {
+            id: 'email',
+            header: m.profile_email(),
+            data: (r) => r.Email,
+            sortable: true
+          }
+        ]}
+      />
     </div>
   {/if}
 </div>
