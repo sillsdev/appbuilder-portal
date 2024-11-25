@@ -4,22 +4,11 @@
   import * as m from '$lib/paraglide/messages';
   import { getTimeDateString } from '$lib/timeUtils';
   import type { PageData } from './$types';
+  import { bytesToHumanSize } from '$lib/utils';
 
   export let data: PageData;
   let selectedBuildId: number;
   $: selectedBuild = data.builds.find((b) => b.Id === selectedBuildId);
-  function bytesToHumanSize(bytes: bigint) {
-    const base = BigInt('1024');
-    if (bytes > base ** BigInt(3)) {
-      return bytes / base ** BigInt(3) + ' GB';
-    } else if (bytes > base * base) {
-      return bytes / (base * base) + ' MB';
-    } else if (bytes > base) {
-      return bytes / base + ' KB';
-    } else {
-      return bytes + ' bytes';
-    }
-  }
   // TODO: test this page with artifacts
 </script>
 
