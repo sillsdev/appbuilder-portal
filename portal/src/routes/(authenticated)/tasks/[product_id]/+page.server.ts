@@ -122,7 +122,7 @@ export const load = (async ({ params, url, locals }) => {
         },
         select: {
           ProductBuildId: true,
-          ContentType: true,
+          ArtifactType: true,
           FileSize: true,
           Url: true,
           Id: true
