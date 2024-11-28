@@ -4,7 +4,7 @@ import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { ScriptoriaJobExecutor } from './base.js';
 
 export class Reassign extends ScriptoriaJobExecutor<BullMQ.JobType.UserTasks_Reassign> {
-  async execute(job: Job<BullMQ.UserTasks.Reassign, number, string>): Promise<number> {
+  async execute(job: Job<BullMQ.UserTasks.Reassign, number, string>) {
     // TODO: Noop
     // Should
     // Clear preexecuteentries (product transition steps)
@@ -19,6 +19,7 @@ export class Reassign extends ScriptoriaJobExecutor<BullMQ.JobType.UserTasks_Rea
         ProductTransitions: true
       }
     });
+    const tasksDeleted = [];
     for (const product of products) {
       // Clear PreExecuteEntries
       await DatabaseWrites.productTransitions.deleteMany({
@@ -29,10 +30,14 @@ export class Reassign extends ScriptoriaJobExecutor<BullMQ.JobType.UserTasks_Rea
         }
       });
       // Clear existing UserTasks
-      await DatabaseWrites.userTasks.deleteMany({
+      const { count: productTasksDeleted } = await DatabaseWrites.userTasks.deleteMany({
         where: {
           ProductId: product.Id
         }
+      });
+      tasksDeleted.push({
+        product: product.Id,
+        count: productTasksDeleted
       });
       // Create tasks for all users that could perform this activity
       // TODO: this comes from dwkit GetAllActorsFor(Direct|Reverse)CommandTransitions
@@ -86,14 +91,24 @@ export class Reassign extends ScriptoriaJobExecutor<BullMQ.JobType.UserTasks_Rea
       // TODO: DWKit: CreatePreExecuteEntries
     }
 
-    return (
-      await prisma.userTasks.findMany({
-        where: {
-          Product: {
-            ProjectId: job.data.projectId
+    return {
+      tasksDeleted,
+      userTasks: (
+        await prisma.userTasks.findMany({
+          where: {
+            Product: {
+              ProjectId: job.data.projectId
+            }
+          },
+          include: {
+            User: true
           }
-        }
-      })
-    ).length;
+        })
+      ).map((task) => ({
+        ...task,
+        User: undefined,
+        Username: task.User.Name
+      }))
+    };
   }
 }
