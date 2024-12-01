@@ -3,6 +3,13 @@ import { signIn } from '../../../../auth';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
-  if ((await event.locals.auth())?.user) return redirect(302, '/tasks');
+  if ((await event.locals.auth())?.user) {
+    if (event.cookies.get('inviteToken')) {
+      const inviteToken = event.cookies.get('inviteToken')!;
+      // event.cookies.set('inviteToken', '', { path: '/' });
+      return redirect(302, '/invitations/organization-membership?t=' + inviteToken);
+    }
+    return redirect(302, '/tasks');
+  }
 };
 export const actions: Actions = { default: signIn };

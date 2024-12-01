@@ -4,7 +4,14 @@ export type RequirePrimitive<T> = {
   [K in keyof T]: Extract<T[K], string | number | boolean | Date>;
 };
 
-export async function getOrCreateUser(profile: {
+export async function getUserIfExists(externalId: string) {
+  return await prisma.users.findFirst({
+    where: {
+      ExternalId: externalId
+    }
+  });
+}
+export async function createUser(profile: {
   sub?: string | null;
   email?: string | null;
   family_name?: string | null;
@@ -14,9 +21,6 @@ export async function getOrCreateUser(profile: {
   const result = await prisma.users.findFirst({
     where: {
       ExternalId: profile.sub
-    },
-    include: {
-      UserRoles: true
     }
   });
   if (result) return result;
@@ -28,9 +32,6 @@ export async function getOrCreateUser(profile: {
       GivenName: profile.given_name,
       Name: profile.name,
       IsLocked: false
-    },
-    include: {
-      UserRoles: true
     }
   });
 }
