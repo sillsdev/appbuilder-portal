@@ -1,13 +1,13 @@
+import { paginateSchema } from '$lib/table';
+import { idSchema } from '$lib/valibot';
+import type { Prisma } from '@prisma/client';
 import { error, redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import type { Prisma } from '@prisma/client';
-import type { Actions, PageServerLoad } from './$types';
-import * as v from 'valibot';
-import { idSchema } from '$lib/valibot';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { paginateSchema } from '$lib/table';
+import * as v from 'valibot';
+import type { Actions, PageServerLoad } from './$types';
 import { minifyUser } from './common';
 
 const lockSchema = v.object({
@@ -56,28 +56,28 @@ function select(orgIds?: number[]) {
 function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
   return isSuper
     ? {
-        // Get all users that are locked or are a member of at least one organization
-        // (Users that are not in an organization and are not locked are not interesting
-        // because they can't login and behave essentially as locked users or as users
-        // who have never logged in before)
-        OR: [
-          {
-            OrganizationMemberships: {
-              some: {}
-            }
-          },
-          {
-            IsLocked: true
+      // Get all users that are locked or are a member of at least one organization
+      // (Users that are not in an organization and are not locked are not interesting
+      // because they can't login and behave essentially as locked users or as users
+      // who have never logged in before)
+      OR: [
+        {
+          OrganizationMemberships: {
+            some: {}
           }
-        ]
-      }
-    : {
-        OrganizationMemberships: {
-          some: {
-            OrganizationId: { in: orgIds }
-          }
+        },
+        {
+          IsLocked: true
         }
-      };
+      ]
+    }
+    : {
+      OrganizationMemberships: {
+        some: {
+          OrganizationId: { in: orgIds }
+        }
+      }
+    };
 }
 
 export const load = (async (event) => {
@@ -91,13 +91,13 @@ export const load = (async (event) => {
     where: isSuper
       ? undefined
       : {
-          UserRoles: {
-            some: {
-              RoleId: RoleId.OrgAdmin,
-              UserId: userId
-            }
+        UserRoles: {
+          some: {
+            RoleId: RoleId.OrgAdmin,
+            UserId: userId
           }
-        },
+        }
+      },
     select: {
       Id: true,
       Name: true,
@@ -146,7 +146,7 @@ export const load = (async (event) => {
     organizationCount: organizations.length,
     form: await superValidate(
       {
-        organizationId: organizations.length > 1 ? null : organizations[0].Id,
+        organizationId: organizations.length !== 1 ? null : organizations[0].Id,
         page: {
           page: 0,
           size: 50
@@ -188,8 +188,8 @@ export const actions: Actions = {
         form.data.organizationId !== null
           ? { Id: form.data.organizationId }
           : isSuper
-          ? undefined
-          : {
+            ? undefined
+            : {
               UserRoles: {
                 some: {
                   RoleId: RoleId.OrgAdmin,
@@ -212,19 +212,19 @@ export const actions: Actions = {
         {
           OR: form.data.search
             ? [
-                {
-                  Name: {
-                    contains: form.data.search,
-                    mode: 'insensitive'
-                  }
-                },
-                {
-                  Email: {
-                    contains: form.data.search,
-                    mode: 'insensitive'
-                  }
+              {
+                Name: {
+                  contains: form.data.search,
+                  mode: 'insensitive'
                 }
-              ]
+              },
+              {
+                Email: {
+                  contains: form.data.search,
+                  mode: 'insensitive'
+                }
+              }
+            ]
             : undefined
         }
       ]
