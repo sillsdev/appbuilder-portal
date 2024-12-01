@@ -4,6 +4,7 @@ import { WRITE_METHODS } from '../ReadonlyPrisma.js';
 import prisma from '../prisma.js';
 import * as groupMemberships from './GroupMemberships.js';
 import * as groups from './Groups.js';
+import * as organizationMemberships from './OrganizationMemberships.js';
 import * as organizationProductDefinitions from './OrganizationProductDefinitions.js';
 import * as organizationStores from './OrganizationStores.js';
 import * as products from './Products.js';
@@ -38,6 +39,7 @@ const handlers = {
   groupMemberships,
   organizationStores,
   organizationProductDefinitions,
+  organizationMemberships,
   userRoles,
   utility
 };
