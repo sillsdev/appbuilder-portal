@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { enhance as svk_enhance } from '$app/forms';
+  import IconContainer from '$lib/components/IconContainer.svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
-  import type { PageData } from './$types';
-  import { enhance as svk_enhance } from '$app/forms';
   import { writable } from 'svelte/store';
-  import Pagination from '$lib/components/Pagination.svelte';
   import { superForm, type FormResult } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
 
   export let data: PageData;
@@ -34,9 +35,13 @@
 </script>
 
 <div class="w-full">
-  <div class="flex flex-row place-content-between w-full pt-4 flex-wrap">
-    <div class="inline-block">
-      <h1 class="p-4 pl-6">{m.users_title()}</h1>
+  <div class="flex flex-row place-content-between w-full flex-wrap items-center">
+    <div class="flex flex-row items-center">
+      <h1>{m.users_title()}</h1>
+      <a href="/users/invite" class="btn btn-secondary">
+        <IconContainer icon="mdi:user-add" width="20" />
+        <span>{m.organizationMembership_invite_create_inviteUserButtonTitle()}</span>
+      </a>
     </div>
     <form
       method="POST"

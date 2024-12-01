@@ -1,3 +1,4 @@
+import { checkInviteErrors } from '$lib/organizationInvites';
 import type { Session } from '@auth/express';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
@@ -14,6 +15,16 @@ declare module '@auth/sveltekit' {
       roles: [number, number][];
     } & DefaultSession['user'];
   }
+}
+
+// Stupidly hacky way to get access to the request data from the auth callbacks
+// This is a global variable that is set in a separate hook handle
+let currentInviteToken: string | null = null;
+let tokenStatus: TokenStatus | null = null;
+enum TokenStatus {
+  Absent,
+  Valid,
+  Invalid
 }
 
 const config: SvelteKitAuthConfig = {
@@ -35,24 +46,57 @@ const config: SvelteKitAuthConfig = {
   },
   callbacks: {
     async signIn({ profile }) {
-      if (!profile) return false;
-      await DatabaseWrites.utility.getOrCreateUser(profile);
-      return true;
+      // The user must exist. Users can only be created initially through an organization invite.
+      // This means all users must have an organization.
+
+      // 1. The user is logging in normally without an invite
+      //   - the user exists -> login normally
+      //   - the user does not exist -> redirect to /login/no-organization
+      // 2. The user is logging in with a provided invite
+      //   - the user exists -> login normally, then redirect to /invitations/organization-membership
+      //   - the user does not exist
+      //     - the invite is invalid -> redirect to /invitations/organization-membership where the relevant error will be displayed
+      //     - the invite is valid -> login normally, then redirect to /invitations/organization-membership
+
+      // 1. The user exists
+      //   - There is an invite -> login, then redirect to /invitations/organization-membership
+      //   - There is no invite -> login normally
+      // 2. The user does not exist and there is an invite
+      //   - invite is invalid -> redirect to /invitations/organization-membership
+      //   - invite is valid -> login, then redirect to /invitations/organization-membership
+      // 3. The user does not exist and there is no invite -> redirect to /login/no-organization
+
+      if (!profile || !profile.sub) return false;
+      const user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+      if (user) {
+        return true;
+      } else {
+        if (tokenStatus === TokenStatus.Absent) return '/login/no-organization';
+        if (tokenStatus === TokenStatus.Invalid)
+          return '/invitations/organization-membership?t=' + currentInviteToken;
+        // If there is a pending invitation, allow the login anyway and create the user account
+        if (tokenStatus === TokenStatus.Valid) {
+          await DatabaseWrites.utility.createUser(profile);
+          return true;
+        }
+      }
+      throw new Error('Invalid state');
     },
     async jwt({ profile, token }) {
       // Called in two cases:
-      // a: client just logged in: profile is passed and token is not (trigger == 'signIn')
-      // b: subsequent calls, token is passed and profile is not (trigger == 'update')
+      // a: client just logged in (new session): profile is passed and token is not (trigger == 'signIn')
+      // b: subsequent calls (during an existing session), token is passed and profile is not (trigger == 'update')
 
       // make sure to handle values that could change mid-session in both cases
       // safest method is just handle such values in session below (see user.roles)
       if (!profile) return token;
-      const dbUser = await DatabaseWrites.utility.getOrCreateUser(profile);
+      if (!profile.sub) throw new Error('No sub in profile');
+      const dbUser = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+      if (!dbUser) throw new Error('User not found');
       token.userId = dbUser.Id;
       return token;
     },
     async session({ session, token }) {
-      // const dbUser = await getUserFromId(token.userId);
       session.user.userId = token.userId as number;
       const userRoles = await prisma.userRoles.findMany({
         where: {
@@ -66,6 +110,28 @@ const config: SvelteKitAuthConfig = {
 };
 // Handles the /auth route, which is used to handle external auth0 authentication
 export const { handle: authRouteHandle, signIn, signOut } = SvelteKitAuth(config);
+
+// Handle organization invites
+export const organizationInviteHandle: Handle = async ({ event, resolve }) => {
+  // Hacky solution to get the request object in the auth callbacks
+  // while making sure it only exists
+  currentInviteToken = event.cookies.get('inviteToken') ?? '';
+
+  // verify the token
+  if (currentInviteToken) {
+    const errors = await checkInviteErrors(currentInviteToken);
+    if (errors.error) tokenStatus = TokenStatus.Invalid;
+    else tokenStatus = TokenStatus.Valid;
+  } else {
+    tokenStatus = TokenStatus.Absent;
+  }
+
+  const result = await resolve(event);
+
+  currentInviteToken = null;
+  tokenStatus = null;
+  return result;
+};
 
 // Locks down the authenticated routes by redirecting to /login
 // This guarantees a logged in user under (authenticated) but does not guarantee
