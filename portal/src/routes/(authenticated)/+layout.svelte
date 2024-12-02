@@ -6,6 +6,7 @@
   import { HamburgerIcon } from '$lib/icons';
   import * as m from '$lib/paraglide/messages';
   import { signOut } from '@auth/sveltekit/client';
+  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import type { LayoutData } from './$types';
 
   export let data: LayoutData;
@@ -158,6 +159,7 @@
               {m.sidebar_organizationSettings()}
             </a>
           </li>
+          {#if !!$page.data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin)}
           <li>
             <a
               class="rounded-none"
@@ -168,6 +170,17 @@
               {m.sidebar_adminSettings()}
             </a>
           </li>
+          <li>
+            <a
+              class="rounded-none"
+              href={dev ? 'http://localhost:3000' : '/admin/jobs'}
+              on:click={closeDrawer}
+              target="_blank"
+            >
+              {m.sidebar_jobAdministration()}
+            </a>
+          </li>
+          {/if}
           <li class="menu-item-divider-top menu-item-divider-bottom">
             <a
               class="rounded-none"
