@@ -3,6 +3,7 @@
   export let size: number;
   export let total: number;
   export let page: number = 0;
+  export let extraSizeOptions: number[] = [];
 
   $: pageCount = Math.ceil(total / size);
   $: collapse = pageCount > 6;
@@ -96,10 +97,9 @@
     </div>
     <div class="grow">&nbsp;</div>
     <select class="select select-bordered" name="size" bind:value={size}>
-      <option value={10}>10</option>
-      <option value={25}>25</option>
-      <option value={50}>50</option>
-      <option value={100}>100</option>
+      {#each [10, 25, 50, 100].concat(extraSizeOptions).sort((a, b) => a - b) as value}
+        <option {value}>{value}</option>
+      {/each}
     </select>
   </div>
 </div>

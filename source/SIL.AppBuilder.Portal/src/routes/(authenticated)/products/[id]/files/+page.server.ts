@@ -1,9 +1,9 @@
-import { prisma } from 'sil.appbuilder.portal.common';
-import type { Actions, PageServerLoad } from './$types';
 import { paginateSchema } from '$lib/table';
+import { error, fail } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { error, fail } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 
 export const load = (async ({ params }) => {
   const builds = await prisma.productBuilds.findMany({
@@ -29,7 +29,7 @@ export const load = (async ({ params }) => {
         }
       }
     },
-    take: 10
+    take: 3
   });
   const product = await prisma.products.findUnique({
     where: {
@@ -53,7 +53,7 @@ export const load = (async ({ params }) => {
   return {
     product,
     builds,
-    form: await superValidate({ page: 0, size: 10 }, valibot(paginateSchema)),
+    form: await superValidate({ page: 0, size: 3 }, valibot(paginateSchema)),
     count: await prisma.productBuilds.count({ where: { ProductId: params.id } })
   };
 }) satisfies PageServerLoad;

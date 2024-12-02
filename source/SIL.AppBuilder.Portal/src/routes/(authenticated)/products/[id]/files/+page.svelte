@@ -1,12 +1,12 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import { writable } from 'svelte/store';
+  import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import BuildArtifacts from './components/BuildArtifacts.svelte';
-  import Pagination from '$lib/components/Pagination.svelte';
-  import { superForm, type FormResult } from 'sveltekit-superforms';
-  import { writable } from 'svelte/store';
 
   export let data: PageData;
 
@@ -58,7 +58,7 @@
     {/each}
   </div>
   <form method="POST" action="?/page" use:enhance>
-    <Pagination bind:page={$form.page} bind:size={$form.size} total={data.count} />
+    <Pagination bind:page={$form.page} bind:size={$form.size} total={data.count} extraSizeOptions={[3]} />
   </form>
 </div>
 
