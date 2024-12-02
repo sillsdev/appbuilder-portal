@@ -1,14 +1,14 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
-  import type { PageData } from './$types';
-  import SortTable from '$lib/components/SortTable.svelte';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
-  import SearchBar from '$lib/components/SearchBar.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import { superForm } from 'sveltekit-superforms';
-  import type { FormResult } from 'sveltekit-superforms';
-  import { writable } from 'svelte/store';
+  import SearchBar from '$lib/components/SearchBar.svelte';
+  import SortTable from '$lib/components/SortTable.svelte';
+  import * as m from '$lib/paraglide/messages';
   import { getRelativeTime } from '$lib/timeUtils';
+  import { writable } from 'svelte/store';
+  import type { FormResult } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -76,7 +76,7 @@
       />
     </div>
   </form>
-  <div class="m-4 relative mt-1">
+  <div class="m-4 relative mt-1 w-full overflow-x-auto">
     {#if $instances.length > 0}
       <SortTable
         data={$instances}
@@ -118,7 +118,7 @@
           }
         ]}
         serverSide={true}
-        maxh_class="max-h-full"
+        className="max-h-full"
         on:sort={(e) => form.update((data) => ({ ...data, sort: e.detail }))}
       />
     {:else}
