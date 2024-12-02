@@ -136,7 +136,7 @@ export const StartupWorkflow = setup({
         }),
         jump({ target: WorkflowState.Published }),
         {
-          guard: ({ context }) => context.options.includes(WorkflowOptions.ApprovalProcess),
+          guard: ({ context }) => context.options.has(WorkflowOptions.ApprovalProcess),
           target: WorkflowState.Approval
         },
         {
@@ -510,7 +510,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                options: { none: [WorkflowOptions.AdminStoreAccess] }
+                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
             target: WorkflowState.Create_App_Store_Entry
@@ -532,7 +532,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                options: { none: [WorkflowOptions.AdminStoreAccess] }
+                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
             target: WorkflowState.Synchronize_Data
@@ -579,7 +579,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                options: { none: [WorkflowOptions.AdminStoreAccess] }
+                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
             actions: assign({
@@ -607,7 +607,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                options: { none: [WorkflowOptions.AdminStoreAccess] }
+                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
             target: WorkflowState.Synchronize_Data
@@ -737,7 +737,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                options: { none: [WorkflowOptions.AdminStoreAccess] }
+                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
             target: WorkflowState.Published
@@ -759,7 +759,7 @@ export const StartupWorkflow = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                options: { none: [WorkflowOptions.AdminStoreAccess] }
+                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
             target: WorkflowState.Synchronize_Data
