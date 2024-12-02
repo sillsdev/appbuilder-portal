@@ -20,13 +20,7 @@
     dataType: 'json',
     resetForm: false,
     onChange(event) {
-      if (
-        !(
-          event.paths.includes('page.size') ||
-          event.paths.includes('langCode') ||
-          event.paths.includes('search')
-        )
-      ) {
+      if (!(event.paths.includes('langCode') || event.paths.includes('search'))) {
         submit();
       }
     },
@@ -58,14 +52,20 @@
       <div class="inline-block grow mobile-sizing">
         <h1 class="py-4 px-2">{m.sidebar_projectDirectory()}</h1>
       </div>
-      <div class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 mobile-sizing">
+      <div
+        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 mobile-sizing"
+      >
         <select class="select select-bordered mobile-sizing" bind:value={$form.organizationId}>
           <option value={null} selected>{m.org_allOrganizations()}</option>
           {#each data.organizations as organization}
             <option value={organization.Id}>{organization.Name}</option>
           {/each}
         </select>
-        <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" tooltip={m.directory_searchHelp()} />
+        <SearchBar
+          bind:value={$form.search}
+          className="w-full max-w-xs md:w-auto md:max-w-none"
+          tooltip={m.directory_searchHelp()}
+        />
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 mobile-sizing">

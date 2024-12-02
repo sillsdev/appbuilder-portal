@@ -22,13 +22,7 @@
     dataType: 'json',
     resetForm: false,
     onChange(event) {
-      if (
-        !(
-          event.paths.includes('page.size') ||
-          event.paths.includes('langCode') ||
-          event.paths.includes('search')
-        )
-      ) {
+      if (!(event.paths.includes('langCode') || event.paths.includes('search'))) {
         submit();
       }
     },
@@ -64,7 +58,9 @@
       <div class="inline-block">
         <ProjectFilterSelector />
       </div>
-      <div class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 mobile-sizing gap-1">
+      <div
+        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 mobile-sizing gap-1"
+      >
         <select
           class="select select-bordered mobile-sizing"
           bind:value={$form.organizationId}
