@@ -109,7 +109,7 @@ export type WorkflowContextBase = {
 export type WorkflowContext = WorkflowContextBase & WorkflowInput;
 
 export type WorkflowConfig = {
-  options: WorkflowOptions[];
+  options: Set<WorkflowOptions>;
   productType: ProductType;
 };
 
@@ -123,14 +123,14 @@ export type WorkflowInput = WorkflowConfig & {
 export type MetaFilter = {
   options?:
     | { has: WorkflowOptions } // options contains the provided
-    | { any: WorkflowOptions[] } // options contains any of the provided
-    | { all: WorkflowOptions[] } // options contains all of the provided
-    | { none: WorkflowOptions[] }; // options contains none of the provided
+    | { any: Set<WorkflowOptions> } // options contains any of the provided
+    | { all: Set<WorkflowOptions> } // options contains all of the provided
+    | { none: Set<WorkflowOptions> }; // options contains none of the provided
   productType?:
     | { is: ProductType } // productType is the provided
-    | { any: ProductType[] } // productType is any of the provided
+    | { any: Set<ProductType> } // productType is any of the provided
     | { not: ProductType } // productType is not the provided
-    | { none: ProductType[] }; // productType is none of the provided
+    | { none: Set<ProductType> }; // productType is none of the provided
 };
 
 export type WorkflowStateMeta = { includeWhen?: MetaFilter };
@@ -154,20 +154,16 @@ export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFi
   if (include && filter.options) {
     if ('has' in filter.options) {
       // options contains the provided
-      include &&= config.options.includes(filter.options.has);
+      include &&= config.options.has(filter.options.has);
     } else if ('any' in filter.options) {
       // options contains any of the provided
-      let x = filter.options.any;
-      include &&= !!config.options.find((o) => x.includes(o));
+      include &&= !config.options.isDisjointFrom(filter.options.any);
     } else if ('all' in filter.options) {
       // options contains all of the provided
-      let x = Array.from(new Set(filter.options.all));
-      include &&=
-        Array.from(new Set(config.options.filter((o) => x.includes(o)))).length >= x.length;
+      include &&= config.options.isSupersetOf(filter.options.all);
     } else {
       // options contains none of the provided
-      let x = filter.options.none;
-      include &&= x.filter((o) => config.options.includes(o)).length < 1;
+      include &&= config.options.isDisjointFrom(filter.options.none);
     }
   }
   if (include && filter.productType) {
@@ -176,13 +172,13 @@ export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFi
       include &&= config.productType === filter.productType.is;
     } else if ('any' in filter.productType) {
       // productType is any of the provided
-      include &&= filter.productType.any.includes(config.productType);
+      include &&= filter.productType.any.has(config.productType);
     } else if ('not' in filter.productType) {
       // productType is not the provided
       include &&= config.productType !== filter.productType.not;
     } else {
       // productType is none of the provided
-      include &&= !filter.productType.none.includes(config.productType);
+      include &&= !filter.productType.none.has(config.productType);
     }
   }
   return include;
