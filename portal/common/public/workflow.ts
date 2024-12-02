@@ -49,9 +49,7 @@ export enum WorkflowState {
   Published = 'Published'
 }
 
-export const TerminalStateFilter: Prisma.WorkflowInstancesWhereInput = {
-  State: { in: [WorkflowState.Terminated, WorkflowState.Published] }
-};
+export const TerminalStates = [WorkflowState.Terminated, WorkflowState.Published];
 
 export enum WorkflowAction {
   Default = 'Default',

@@ -19,7 +19,7 @@ import {
   WorkflowTransitionMeta,
   Snapshot,
   WorkflowState,
-  TerminalStateFilter
+  TerminalStates
 } from '../public/workflow.js';
 import prisma from '../prisma.js';
 import { RoleId, ProductTransitionType, WorkflowType } from '../public/prisma.js';
@@ -109,10 +109,9 @@ export class Workflow {
 
   /** Retrieves the workflow's snapshot from the database */
   public static async getSnapshot(productId: string): Promise<Snapshot> {
-    const snap = await prisma.workflowInstances.findFirst({
+    const snap = await prisma.workflowInstances.findUnique({
       where: {
-        ProductId: productId,
-        NOT: TerminalStateFilter
+        ProductId: productId
       },
       select: {
         State: true,
@@ -230,28 +229,23 @@ export class Workflow {
           WorkflowUserId: null
         }
       });
-      await DatabaseWrites.productTransitions.createMany({
-        data: await Workflow.transitionEntriesFromState(snap.value, this.productId, this.config)
-      });
-    }
-
-    await this.createSnapshot(snap.context);
-    if (old && Workflow.stateName(old) !== snap.value) {
-      await this.updateUserTasks(event.event.comment || undefined);
+      if (snap.value in TerminalStates) {
+        await DatabaseWrites.workflowInstances.delete({ where: {
+          ProductId: this.productId
+        }});
+      }
+      else {
+        await DatabaseWrites.productTransitions.createMany({
+          data: await Workflow.transitionEntriesFromState(snap.value, this.productId, this.config)
+        });
+  
+        await this.createSnapshot(snap.context);
+        await this.updateUserTasks(event.event.comment || undefined);
+      }
     }
   }
 
   private async createSnapshot(context: WorkflowContext) {
-    const instance = await prisma.workflowInstances.findFirst({
-      where: {
-        ProductId: this.productId,
-        NOT: TerminalStateFilter
-      },
-      select: {
-        Id: true
-      }
-    });
-
     const filtered = {
       ...context,
       productId: undefined,
@@ -260,39 +254,34 @@ export class Workflow {
       productType: undefined,
       options: undefined
     } as WorkflowContextBase;
-    if (instance) {
-      return DatabaseWrites.workflowInstances.update({
-        where: {
-          Id: instance.Id
-        },
-        data: {
-          State: Workflow.stateName(this.currentState),
-          Context: JSON.stringify(filtered)
-        }
-      });
-    } else {
-      return DatabaseWrites.workflowInstances.create({
-        data: {
-          ProductId: this.productId,
-          State: Workflow.stateName(this.currentState),
-          Context: JSON.stringify(context),
-          WorkflowDefinitionId: (
-            await prisma.products.findUnique({
-              where: {
-                Id: this.productId
-              },
-              select: {
-                ProductDefinition: {
-                  select: {
-                    WorkflowId: true
-                  }
+    return DatabaseWrites.workflowInstances.upsert({
+      where: {
+        ProductId: this.productId
+      },
+      create: {
+        ProductId: this.productId,
+        State: Workflow.stateName(this.currentState),
+        Context: JSON.stringify(context),
+        WorkflowDefinitionId: (
+          await prisma.products.findUnique({
+            where: {
+              Id: this.productId
+            },
+            select: {
+              ProductDefinition: {
+                select: {
+                  WorkflowId: true
                 }
               }
-            })
-          ).ProductDefinition.WorkflowId
-        }
-      });
-    }
+            }
+          })
+        ).ProductDefinition.WorkflowId
+      },
+      update: {
+        State: Workflow.stateName(this.currentState),
+        Context: JSON.stringify(filtered)
+      }
+    });
   }
 
   /** Filter a states transitions based on provided context */

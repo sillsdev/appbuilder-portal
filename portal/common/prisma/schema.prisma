@@ -290,7 +290,7 @@ model Products {
   StoreLanguage       StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
   Store               Stores?               @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
   UserTasks           UserTasks[]
-  WorkflowInstances   WorkflowInstances[]
+  WorkflowInstance    WorkflowInstances?
 
   @@index([ProductDefinitionId], map: "IX_Products_ProductDefinitionId")
   @@index([ProjectId], map: "IX_Products_ProjectId")
@@ -488,7 +488,7 @@ model WorkflowDefinitions {
   Workflows            ProductDefinitions[] @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions")
   StoreType            StoreTypes?          @relation(fields: [StoreTypeId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_WorkflowDefinitions_StoreTypes_StoreTypeId")
   ProductType          Int                  @default(0)
-  WorkflowOptions      Int[]                @default([0])
+  WorkflowOptions      Int[]                @default([])
   WorkflowInstances    WorkflowInstances[]
 
   @@index([StoreTypeId], map: "IX_WorkflowDefinitions_StoreTypeId")
@@ -759,7 +759,7 @@ model WorkflowInstances {
   State        String
   Context      String
   WorkflowDefinitionId Int
-  ProductId    String       @db.Uuid
+  ProductId    String       @unique @db.Uuid
   DateCreated               DateTime? @default(now()) @db.Timestamp
   DateUpdated               DateTime? @updatedAt @db.Timestamp
   Product      Products     @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
