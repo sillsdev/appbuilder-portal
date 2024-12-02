@@ -17,7 +17,7 @@
     dataType: 'json',
     resetForm: false,
     onChange(event) {
-      if (!(event.paths.includes('page.size') || event.paths.includes('search'))) {
+      if (!event.paths.includes('search')) {
         submit();
       }
     },
@@ -56,7 +56,7 @@
         </label>
       {/if}
       <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" />
-      </form>
+    </form>
   </div>
   <div class="m-4 relative mt-0">
     <table class="w-full">
