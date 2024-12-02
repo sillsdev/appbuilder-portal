@@ -160,9 +160,25 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     // sendNotification(task);
   }
   job.updateProgress(100);
+  const userNameMap = await prisma.users.findMany({
+    where: {
+      Id: { in: Array.from(new Set(createdTasks.map((t) => t.UserId))) }
+    },
+    select: {
+      Id: true,
+      Name: true
+    }
+  });
   return {
     deleted: deletedCount,
-    createdOrUpdated: { count: createdTasks.length, tasks: createdTasks },
+    createdOrUpdated: {
+      count: createdTasks.length,
+      tasks: createdTasks.map((t) => ({
+        productId: t.ProductId,
+        user: (userNameMap.find((m) => m.Id === t.UserId)).Name,
+        task: t.ActivityName
+      }))
+    },
     reassignMap: mapping
   };
 }
