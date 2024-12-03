@@ -168,7 +168,6 @@ export const actions: Actions = {
         Id: form.data.user
       },
       data: {
-        // TODO: Are we actually doing anything meaningful with this?
         IsLocked: !form.data.active
       }
     });
