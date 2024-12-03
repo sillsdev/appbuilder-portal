@@ -106,6 +106,8 @@ model OrganizationMembershipInvites {
   Redeemed       Boolean       @default(false)
   InvitedById    Int
   OrganizationId Int
+  Roles          String?
+  Groups         String?
   DateCreated    DateTime?     @default(now()) @db.Timestamp
   DateUpdated    DateTime?     @updatedAt @db.Timestamp
   Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Organizations_OrganizationId")
@@ -755,13 +757,13 @@ model dwUploadedFiles {
 }
 
 model WorkflowInstances {
-  Id           Int          @id(map: "PK_WorkflowInstances") @default(autoincrement())
-  State        String
-  Context      String
+  Id                   Int                 @id(map: "PK_WorkflowInstances") @default(autoincrement())
+  State                String
+  Context              String
   WorkflowDefinitionId Int
-  ProductId    String       @unique @db.Uuid
-  DateCreated               DateTime? @default(now()) @db.Timestamp
-  DateUpdated               DateTime? @updatedAt @db.Timestamp
-  Product      Products     @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
+  ProductId            String              @db.Uuid
+  DateCreated          DateTime?           @default(now()) @db.Timestamp
+  DateUpdated          DateTime?           @updatedAt @db.Timestamp
+  Product              Products            @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
   WorkflowDefinition   WorkflowDefinitions @relation(fields: [WorkflowDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_WorkflowDefinitions_WorkflowDefinitionId")
 }

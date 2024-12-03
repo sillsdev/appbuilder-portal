@@ -6,7 +6,6 @@ export const load: PageServerLoad = async (event) => {
   if ((await event.locals.auth())?.user) {
     if (event.cookies.get('inviteToken')) {
       const inviteToken = event.cookies.get('inviteToken')!;
-      // event.cookies.set('inviteToken', '', { path: '/' });
       return redirect(302, '/invitations/organization-membership?t=' + inviteToken);
     }
     return redirect(302, '/tasks');

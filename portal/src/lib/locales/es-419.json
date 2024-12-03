@@ -438,7 +438,7 @@
   "organizationMembership_invite_create_inviteUserModalTitle": "Invitar usuario",
   "organizationMembership_invite_create_emailInputPlaceholder": "Introduzca dirección de correo electrónico",
   "organizationMembership_invite_create_sendInviteButton": "Enviar invitación",
-  "organizationMembership_invite_redemptionTitle": "Buscando invitación...",
+  "organizationMembership_invite_redemptionTitle": "¡Se unió a la organización!",
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
   "downloads_title": "Downloads"

@@ -470,7 +470,7 @@
   "organizationMembership_invite_create_inviteUserModalTitle": "Invite User",
   "organizationMembership_invite_create_emailInputPlaceholder": "Enter email address",
   "organizationMembership_invite_create_sendInviteButton": "Send Invite",
-  "organizationMembership_invite_redemptionTitle": "Looking up invitation...",
+  "organizationMembership_invite_redemptionTitle": "Organization joined!",
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
   "downloads_title": "Downloads"

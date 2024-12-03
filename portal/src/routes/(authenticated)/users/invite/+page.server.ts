@@ -1,6 +1,6 @@
 import { idSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
-import { DatabaseWrites } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -9,13 +9,31 @@ import type { Actions, PageServerLoad } from './$types';
 
 const createSchema = v.object({
   email: v.pipe(v.string(), v.email()),
-  organizationId: idSchema
-  // TODO: add roles + groups
+  organizationId: idSchema,
+  roles: v.array(idSchema),
+  groups: v.array(idSchema)
 });
 
-export const load = (async ({ url }) => {
+export const load = (async ({ locals }) => {
   const form = await superValidate(valibot(createSchema));
-  return { form };
+
+  const user = await locals.auth();
+  const accessibleGroups = await prisma.groups.findMany({
+    where: {
+      Owner: {
+        // Only send a list of groups for orgs that the subject user is in and the current user has access to
+        UserRoles: user?.user.roles?.find((r) => r[1] === RoleId.SuperAdmin)
+          ? undefined
+          : {
+            some: {
+              UserId: user?.user.userId,
+              RoleId: RoleId.OrgAdmin
+            }
+          }
+      }
+    }
+  });
+  return { form, groups: accessibleGroups };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -35,14 +53,16 @@ export const actions = {
     )
       return fail(401);
     try {
-      const { email, organizationId } = form.data;
+      const { email, organizationId, roles, groups } = form.data;
       const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
         email,
         organizationId,
-        user.user.userId
+        user.user.userId,
+        roles,
+        groups
       );
       const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
-      // TODO: send email
+      // TODO: send email- log instead
       console.log(inviteLink, email);
       return { ok: true, form };
     } catch (e) {

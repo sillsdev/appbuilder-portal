@@ -7,13 +7,47 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
     }
   });
   if (!invite || invite.Redeemed || !invite.Expires || invite.Expires < new Date()) return false;
+  // Check if the user is already a member of the organization
+  // This could be done such that they can accept the invite to get the roles and groups
+  const existingMembership = await prisma.organizationMemberships.findFirst({
+    where: {
+      UserId: userId,
+      OrganizationId: invite.OrganizationId
+    }
+  });
+  if (existingMembership) return false;
   await prisma.organizationMemberships.create({
     data: {
       UserId: userId,
       OrganizationId: invite.OrganizationId
     }
   });
-  // TODO: Add user roles
+  await prisma.userRoles.createMany({
+    data: invite.Roles.split(',')
+      .filter((a) => !!a)
+      .map((r) => ({
+        UserId: userId,
+        RoleId: parseInt(r),
+        OrganizationId: invite.OrganizationId
+      }))
+  });
+  // Make sure that we don't try to add the user to groups that have since been deleted
+  const existingGroups = (
+    await prisma.groups.findMany({
+      where: {
+        OwnerId: invite.OrganizationId
+      }
+    })
+  ).map((g) => g.Id);
+  await prisma.groupMemberships.createMany({
+    data: invite.Groups.split(',')
+      .filter((a) => !!a)
+      .map((g) => ({
+        UserId: userId,
+        GroupId: parseInt(g)
+      }))
+      .filter((l) => existingGroups.includes(l.GroupId))
+  });
 
   await prisma.organizationMembershipInvites.update({
     where: {
@@ -30,7 +64,9 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
 export async function createOrganizationInvite(
   email: string,
   organizationId: number,
-  invitedById: number
+  invitedById: number,
+  roles: number[],
+  groups: number[]
 ) {
   // Note: this email is never used except to send the initial email.
   // It sits in the database for reference sake only
@@ -38,7 +74,9 @@ export async function createOrganizationInvite(
     data: {
       InvitedById: invitedById,
       Email: email,
-      OrganizationId: organizationId
+      OrganizationId: organizationId,
+      Roles: roles.join(','),
+      Groups: groups.join(',')
     }
   });
   return invite.Token;

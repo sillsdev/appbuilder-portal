@@ -79,7 +79,7 @@ export const load = (async ({ params, locals }) => {
   );
   return {
     form,
-    groups: accessibleGroups.map((uG) => ({ id: uG.Id, name: uG.Name, orgId: uG.OwnerId }))
+    groups: accessibleGroups.map((uG) => ({ id: uG.Id, name: uG.Name!, orgId: uG.OwnerId }))
   };
 }) satisfies PageServerLoad;
 

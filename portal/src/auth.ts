@@ -49,15 +49,6 @@ const config: SvelteKitAuthConfig = {
       // The user must exist. Users can only be created initially through an organization invite.
       // This means all users must have an organization.
 
-      // 1. The user is logging in normally without an invite
-      //   - the user exists -> login normally
-      //   - the user does not exist -> redirect to /login/no-organization
-      // 2. The user is logging in with a provided invite
-      //   - the user exists -> login normally, then redirect to /invitations/organization-membership
-      //   - the user does not exist
-      //     - the invite is invalid -> redirect to /invitations/organization-membership where the relevant error will be displayed
-      //     - the invite is valid -> login normally, then redirect to /invitations/organization-membership
-
       // 1. The user exists
       //   - There is an invite -> login, then redirect to /invitations/organization-membership
       //   - There is no invite -> login normally
@@ -110,6 +101,31 @@ const config: SvelteKitAuthConfig = {
 };
 // Handles the /auth route, which is used to handle external auth0 authentication
 export const { handle: authRouteHandle, signIn, signOut } = SvelteKitAuth(config);
+
+export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
+  // If the user does not exist in the database, invalidate the login and redirect to prevent unauthorized access
+  // This can happen when the user is deleted from the database but still has a valid session.
+  // This should only happen when a superadmin manually deletes a user but is particularly annoying in development
+  // The user should also be redirected if they are not a member of any organizations
+  const userId = (await event.locals.auth())?.user.userId;
+  if (!userId) {
+    // User has no session at all; allow normal events
+    return resolve(event);
+  }
+  const user = await prisma.users.findUnique({
+    where: {
+      Id: userId
+    },
+    include: {
+      OrganizationMemberships: true
+    }
+  });
+  if (!user || (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))) {
+    event.cookies.set('authjs.session-token', '', { path: '/' });
+    return redirect(302, '/login/no-organization');
+  }
+  return resolve(event);
+};
 
 // Handle organization invites
 export const organizationInviteHandle: Handle = async ({ event, resolve }) => {

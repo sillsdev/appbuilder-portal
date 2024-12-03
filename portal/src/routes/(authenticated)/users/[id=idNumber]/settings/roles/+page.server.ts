@@ -22,22 +22,29 @@ export const load = (async ({ locals, params }) => {
   const auth = (await locals.auth())?.user.roles;
   const isSuperAdmin = auth?.find((r) => r[1] === RoleId.SuperAdmin);
   const orgAdmins = auth?.filter((r) => r[1] === RoleId.OrgAdmin).map((r) => r[0]);
-  const userRoles = (
-    await prisma.users.findUnique({
-      where: {
-        Id: parseInt(params.id)
+  const userInfo = await prisma.users.findUnique({
+    where: {
+      Id: parseInt(params.id)
+    },
+    include: {
+      UserRoles: {
+        include: {
+          Organization: true
+        }
       },
-      include: {
-        UserRoles: {
-          include: {
-            Organization: true
-          }
+      OrganizationMemberships: {
+        include: {
+          Organization: true
         }
       }
-    })
-  )?.UserRoles;
+    }
+  });
+  const userRoles = userInfo?.UserRoles;
   if (!userRoles) return error(404);
   const mapping = new Map<number, [string, number[]]>();
+  userInfo.OrganizationMemberships.forEach((org) => {
+    mapping.set(org.OrganizationId, [org.Organization.Name!, []]);
+  });
   for (const role of userRoles) {
     if (!mapping.has(role.OrganizationId)) {
       if (isSuperAdmin || orgAdmins?.includes(role.OrganizationId))

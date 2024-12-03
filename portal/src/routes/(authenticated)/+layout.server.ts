@@ -19,12 +19,12 @@ export const load: LayoutServerLoad = async (event) => {
     where: user?.UserRoles.find((roleDef) => roleDef.RoleId === RoleId.SuperAdmin)
       ? undefined
       : {
-          OrganizationMemberships: {
-            every: {
-              UserId: userId
-            }
+        OrganizationMemberships: {
+          some: {
+            UserId: userId
           }
-        },
+        }
+      },
     select: {
       Id: true,
       Name: true,
