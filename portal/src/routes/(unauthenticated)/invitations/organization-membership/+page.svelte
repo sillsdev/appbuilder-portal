@@ -33,7 +33,9 @@
         </div>
       </div>
       <!-- TODO: i18n -->
-      <a href="/tasks" class="btn btn-primary">Go to dashboard</a>
+      <a href="/tasks" class="btn btn-primary">
+        {m.organizationMembership_invite_returnToDashboard()}
+      </a>
     {/if}
   </div>
 </div>

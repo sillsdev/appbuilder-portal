@@ -106,8 +106,8 @@ model OrganizationMembershipInvites {
   Redeemed       Boolean       @default(false)
   InvitedById    Int
   OrganizationId Int
-  Roles          String?
-  Groups         String?
+  Roles          Int[]         @default([])
+  Groups         Int[]         @default([])
   DateCreated    DateTime?     @default(now()) @db.Timestamp
   DateUpdated    DateTime?     @updatedAt @db.Timestamp
   Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Organizations_OrganizationId")
@@ -761,7 +761,7 @@ model WorkflowInstances {
   State                String
   Context              String
   WorkflowDefinitionId Int
-  ProductId            String              @db.Uuid
+  ProductId            String              @unique @db.Uuid
   DateCreated          DateTime?           @default(now()) @db.Timestamp
   DateUpdated          DateTime?           @updatedAt @db.Timestamp
   Product              Products            @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
