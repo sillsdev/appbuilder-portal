@@ -24,11 +24,9 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
       Organization: true
     }
   });
-
-  if (!invite || !inviteToken) return { error: 'not found' };
-  if (invite.Redeemed) return { error: 'redeemed' };
-  if (!invite.Expires || invite.Expires < new Date()) return { error: 'expired' };
-
+  // Redundant check for invite validity in case checkInviteErrors was not called
+  if (!invite || invite.Redeemed || !invite.Expires || invite.Expires < new Date())
+    return { error: 'failed' };
   if (await DatabaseWrites.organizationMemberships.acceptOrganizationInvite(userId, inviteToken))
     return {
       joinedOrganization: {
