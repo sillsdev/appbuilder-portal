@@ -1,13 +1,12 @@
+import { verifyCanViewAndEdit } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma, Workflow } from 'sil.appbuilder.portal.common';
 import { RoleId, WorkflowType } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { verifyCanViewAndEdit  } from '$lib/projects/common.server';
-import { Workflow } from 'sil.appbuilder.portal.common';
 
 const deleteReviewerSchema = v.object({
   id: idSchema
@@ -269,13 +268,11 @@ export const actions = {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
-    console.log(form);
     if (!form.valid) return fail(400, { form, ok: false });
     const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
       GroupId: form.data.group,
       OwnerId: form.data.owner
     });
-    console.log(success);
     return { form, ok: success };
   }
 } satisfies Actions;
