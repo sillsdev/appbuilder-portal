@@ -3,7 +3,6 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-  console.log('client', data);
 </script>
 
 <div class="grid w-full h-full place-items-center place-content-center">
@@ -15,12 +14,15 @@
     {:else if data.error === 'expired'}
       <h2>{m.organizationMembership_invite_error_expired()}</h2>
     {:else}
-      <!-- TODO: i18n -->
-      <h2>Organization joined!</h2>
+      <h2>{m.organizationMembership_invite_redemptionTitle()}</h2>
       <!-- Organization info -->
       <div class="flex flex-row">
         {#if data.joinedOrganization?.logoUrl}
-          <img src={data.joinedOrganization.logoUrl} alt="Organization logo" />
+          <img
+            class="inline-block p-2 h-16 w-16"
+            src={data.joinedOrganization.logoUrl}
+            alt="Organization logo"
+          />
         {:else}
           <div class="inline-block p-2 h-16 w-16 align-middle">
             <div class="bg-white w-full h-full" />
