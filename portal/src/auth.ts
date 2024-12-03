@@ -107,6 +107,7 @@ export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
   // This can happen when the user is deleted from the database but still has a valid session.
   // This should only happen when a superadmin manually deletes a user but is particularly annoying in development
   // The user should also be redirected if they are not a member of any organizations
+  // Finally, the user should be redirected if they are locked
   const userId = (await event.locals.auth())?.user.userId;
   if (!userId) {
     // User has no session at all; allow normal events
@@ -123,6 +124,10 @@ export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
   if (!user || (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))) {
     event.cookies.set('authjs.session-token', '', { path: '/' });
     return redirect(302, '/login/no-organization');
+  }
+  if (user.IsLocked) {
+    event.cookies.set('authjs.session-token', '', { path: '/' });
+    return redirect(302, '/login/locked');
   }
   return resolve(event);
 };
