@@ -106,8 +106,13 @@
       </ul>
     {/if}
     <div class="my-4 flex justify-end gap-2">
-      <input type="submit" class="btn btn-primary" value="Submit" bind:this={inputEle} />
-      <a class="btn" href="/users">Cancel</a>
+      <input
+        type="submit"
+        class="btn btn-primary"
+        value={m.organizationMembership_invite_create_sendInviteButton()}
+        bind:this={inputEle}
+      />
+      <a class="btn" href="/users">{m.common_cancel()}</a>
     </div>
   </form>
 </div>

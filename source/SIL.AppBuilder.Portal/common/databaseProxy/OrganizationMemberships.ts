@@ -23,13 +23,11 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
     }
   });
   await prisma.userRoles.createMany({
-    data: invite.Roles.split(',')
-      .filter((a) => !!a)
-      .map((r) => ({
-        UserId: userId,
-        RoleId: parseInt(r),
-        OrganizationId: invite.OrganizationId
-      }))
+    data: invite.Roles.map((r) => ({
+      UserId: userId,
+      RoleId: r,
+      OrganizationId: invite.OrganizationId
+    }))
   });
   // Make sure that we don't try to add the user to groups that have since been deleted
   const existingGroups = (
@@ -40,13 +38,10 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
     })
   ).map((g) => g.Id);
   await prisma.groupMemberships.createMany({
-    data: invite.Groups.split(',')
-      .filter((a) => !!a)
-      .map((g) => ({
-        UserId: userId,
-        GroupId: parseInt(g)
-      }))
-      .filter((l) => existingGroups.includes(l.GroupId))
+    data: invite.Groups.map((g) => ({
+      UserId: userId,
+      GroupId: g
+    })).filter((l) => existingGroups.includes(l.GroupId))
   });
 
   await prisma.organizationMembershipInvites.update({
@@ -75,8 +70,8 @@ export async function createOrganizationInvite(
       InvitedById: invitedById,
       Email: email,
       OrganizationId: organizationId,
-      Roles: roles.join(','),
-      Groups: groups.join(',')
+      Roles: roles,
+      Groups: groups
     }
   });
   return invite.Token;

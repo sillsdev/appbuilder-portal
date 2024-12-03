@@ -471,6 +471,7 @@
   "organizationMembership_invite_create_emailInputPlaceholder": "Enter email address",
   "organizationMembership_invite_create_sendInviteButton": "Send Invite",
   "organizationMembership_invite_redemptionTitle": "Organization joined!",
+  "organizationMembership_invite_returnToDashboard": "Go to dashboard",
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
   "downloads_title": "Downloads"
