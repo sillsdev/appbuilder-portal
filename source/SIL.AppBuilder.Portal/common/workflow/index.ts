@@ -64,7 +64,8 @@ export class Workflow {
       data: {
         ProductId: productId,
         DateTransition: new Date(),
-        TransitionType: ProductTransitionType.StartWorkflow
+        TransitionType: ProductTransitionType.StartWorkflow,
+        WorkflowType: WorkflowType.Startup
       }
     });
     await Queues.UserTasks.add(`Create UserTasks for Product #${productId}`, {
@@ -247,22 +248,20 @@ export class Workflow {
           WorkflowUserId: null
         }
       });
+      // Yes, the ModifyUserTasks will also delete tasks. I just have this here so the tasks are cleared immediately, and so that the tasks are also cleared when the instance is deleted.
+      await DatabaseWrites.userTasks.deleteMany({
+        where: {
+          ProductId: this.productId
+        }
+      });
       if (snap.value in TerminalStates) {
         await DatabaseWrites.workflowInstances.delete({ where: {
           ProductId: this.productId
         }});
       }
-      else {
-        await DatabaseWrites.productTransitions.createMany({
-          data: await Workflow.transitionEntriesFromState(snap.value, this.productId, this.config)
-        });
-  
+      else {  
         await this.createSnapshot(snap.context);
-        await DatabaseWrites.userTasks.deleteMany({
-          where: {
-            ProductId: this.productId
-          }
-        });
+        // This will also create the dummy entries in the ProductTransitions table
         await Queues.UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
           type: BullMQ.JobType.UserTasks_Modify,
           scope: 'Product',
