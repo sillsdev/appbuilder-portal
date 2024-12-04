@@ -4,6 +4,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import { writable } from 'svelte/store';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -38,10 +39,12 @@
   <div class="flex flex-row place-content-between w-full flex-wrap items-center">
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
-      <a href="/users/invite" class="btn btn-secondary">
-        <IconContainer icon="mdi:user-add" width="20" />
-        <span>{m.organizationMembership_invite_create_inviteUserButtonTitle()}</span>
-      </a>
+      {#if data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin || r[1] === RoleId.OrgAdmin)}
+        <a href="/users/invite" class="btn btn-secondary">
+          <IconContainer icon="mdi:user-add" width="20" />
+          <span>{m.organizationMembership_invite_create_inviteUserButtonTitle()}</span>
+        </a>
+      {/if}
     </div>
     <form
       method="POST"
