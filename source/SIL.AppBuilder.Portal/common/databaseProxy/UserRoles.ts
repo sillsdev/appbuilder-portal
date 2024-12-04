@@ -35,7 +35,7 @@ export async function setUserRolesForOrganization(
       }))
     })
   ]);
-  if (remove.includes(RoleId.OrgAdmin) || roles.includes(RoleId.OrgAdmin)) {
+  if (remove.includes(RoleId.OrgAdmin) || add.includes(RoleId.OrgAdmin)) {
     const projects = (
       await prisma.projects.findMany({
         where: {
