@@ -1,3 +1,4 @@
+import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { RoleId } from '../public/prisma.js';
 
@@ -34,6 +35,35 @@ export async function setUserRolesForOrganization(
       }))
     })
   ]);
+  if (remove.includes(RoleId.OrgAdmin) || roles.includes(RoleId.OrgAdmin)) {
+    const projects = (
+      await prisma.projects.findMany({
+        where: {
+          OrganizationId: organizationId
+        },
+        select: {
+          Id: true
+        }
+      })
+    ).map((p) => p.Id);
+
+    const del = remove.includes(RoleId.OrgAdmin);
+    await Queues.UserTasks.addBulk(
+      projects.map((pid) => ({
+        name: `${del ? 'Remove' : 'Add'} OrgAdmin tasks for User #${userId} on Project #${pid}`,
+        data: {
+          type: BullMQ.JobType.UserTasks_Modify,
+          scope: 'Project',
+          projectId: pid,
+          operation: {
+            type: del ? BullMQ.UserTasks.OpType.Delete : BullMQ.UserTasks.OpType.Create,
+            users: [userId],
+            roles: [RoleId.OrgAdmin]
+          }
+        }
+      }))
+    );
+  }
 }
 
 export async function allUsersByRole(
