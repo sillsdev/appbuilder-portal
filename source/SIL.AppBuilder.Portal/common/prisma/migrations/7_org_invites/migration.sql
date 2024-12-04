@@ -1,4 +1,4 @@
 -- AlterTable
 ALTER TABLE "OrganizationMembershipInvites"
-ADD "Roles" text NULL,
-ADD "Groups" text NULL;
+ADD "Roles" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
+ADD "Groups" INTEGER[] DEFAULT ARRAY[]::INTEGER[];
