@@ -85,7 +85,10 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     job.updateProgress(90);
   } else {
     job.updateProgress(25);
-    const allUsers = await DatabaseWrites.userRoles.allUsersByRole(projectId);
+    const allUsers = await DatabaseWrites.userRoles.allUsersByRole(
+      projectId,
+      job.data.operation.roles
+    );
     job.updateProgress(30);
     if (job.data.operation.type !== BullMQ.UserTasks.OpType.Create) {
       // Clear existing UserTasks
@@ -93,25 +96,17 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         where: {
           ProductId: { in: productIds },
           UserId:
-            job.data.operation.by === 'All' ||
+            !(job.data.operation.users || job.data.operation.roles) ||
             job.data.operation.type === BullMQ.UserTasks.OpType.Update
               ? undefined
               : {
                 in:
-                    job.data.operation.by === 'UserId'
-                      ? job.data.operation.users
-                      : Array.from(
-                        new Set(
-                          Array.from(allUsers.entries())
-                            .filter(
-                              ([role, uids]) =>
-                                job.data.operation.by === 'Role' &&
-                                  job.data.operation.roles.includes(role)
-                            )
-                            .flatMap(([role, uids]) => uids)
-                        )
-                      )
-              }
+                    job.data.operation.users ??
+                    Array.from(
+                      new Set(Object.entries(allUsers).map(([user, roles]) => parseInt(user)))
+                    )
+              },
+          Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined
         }
       });
       deletedCount = res.count;
@@ -122,27 +117,32 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         const product = products[i];
         // Create tasks for all users that could perform this activity
         const snap = await Workflow.getSnapshot(product.Id);
-        const roles = (
-          Workflow.availableTransitionsFromName(snap.state, snap.config)
-            .filter((t) => t[0].meta.type === ActionType.User)
-            .map((t) => t[0].meta.user) as RoleId[]
-        ).filter((r) => job.data.operation.by !== 'Role' || job.data.operation.roles.includes(r));
+        const roleSet = new Set(
+          (
+            Workflow.availableTransitionsFromName(snap.state, snap.config)
+              .filter((t) => t[0].meta.type === ActionType.User)
+              .map((t) => t[0].meta.user) as RoleId[]
+          ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
+        );
         job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
         createdTasks = Array.from(
           new Set(
-            Array.from(allUsers.entries())
-              .filter(([role, uids]) => roles.includes(role))
-              .flatMap(([role, uids]) => uids)
+            Object.entries(allUsers)
+              .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
+              .map(([user, roles]) => parseInt(user))
           )
         )
-          .filter((u) => job.data.operation.by !== 'UserId' || job.data.operation.users.includes(u))
-          .map((user) => ({
-            UserId: user,
-            ProductId: product.Id,
-            ActivityName: snap.state,
-            Status: snap.state,
-            Comment: job.data.comment
-          }));
+          .filter((u) => job.data.operation.users?.includes(u) ?? true)
+          .flatMap((user) =>
+            Array.from(roleSet).map((r) => ({
+              UserId: user,
+              ProductId: product.Id,
+              ActivityName: snap.state,
+              Status: snap.state,
+              Comment: job.data.comment,
+              Role: r
+            }))
+          );
         await DatabaseWrites.userTasks.createMany({
           data: createdTasks
         });
@@ -175,8 +175,9 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       count: createdTasks.length,
       tasks: createdTasks.map((t) => ({
         productId: t.ProductId,
-        user: (userNameMap.find((m) => m.Id === t.UserId)).Name,
-        task: t.ActivityName
+        user: userNameMap.find((m) => m.Id === t.UserId).Name,
+        task: t.ActivityName,
+        roles: t.Role
       }))
     },
     reassignMap: mapping

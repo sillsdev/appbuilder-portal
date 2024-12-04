@@ -155,21 +155,17 @@ export const actions = {
       return fail(403);
     const form = await superValidate(event.request, valibot(deleteAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    // TODO: Will this result in the desired behavior if a user has multiple roles?
-    // What if, for some unfathomable reason, a user is both a project owner
-    // and an Author on the same project? As of right now, all tasks for that user 
-    // in that project will be deleted, regardless of role. Should a user be prevented from having more than one role for a project?
+    const author = await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
     await Queues.UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Project',
       projectId: parseInt(event.params.id),
       operation: {
         type: BullMQ.UserTasks.OpType.Delete,
-        by: 'UserId',
-        users: [form.data.id]
+        users: [author.UserId],
+        roles: [RoleId.Author]
       }
     });
-    await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
     return { form, ok: true };
   },
   async deleteReviewer(event) {
@@ -236,10 +232,20 @@ export const actions = {
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // Appears that CanUpdate is not used TODO
-    await DatabaseWrites.authors.create({
+    const author = await DatabaseWrites.authors.create({
       data: {
         ProjectId: parseInt(event.params.id),
         UserId: form.data.author
+      }
+    });
+    await Queues.UserTasks.add(`Add UserTasks for Author #${author.Id}`, {
+      type: BullMQ.JobType.UserTasks_Modify,
+      scope: 'Project',
+      projectId: parseInt(event.params.id),
+      operation: {
+        type: BullMQ.UserTasks.OpType.Create,
+        users: [form.data.author],
+        roles: [RoleId.Author]
       }
     });
     return { form, ok: true };

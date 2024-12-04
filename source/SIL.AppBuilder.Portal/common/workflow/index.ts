@@ -73,8 +73,7 @@ export class Workflow {
       scope: 'Product',
       productId: productId,
       operation: {
-        type: BullMQ.UserTasks.OpType.Create,
-        by: 'All'
+        type: BullMQ.UserTasks.OpType.Create
       }
     });
 
@@ -166,7 +165,10 @@ export class Workflow {
     );
   }
 
-  public static availableTransitionsFromNode(s: XStateNode<WorkflowContext, WorkflowEvent>, config: WorkflowConfig) {
+  public static availableTransitionsFromNode(
+    s: XStateNode<WorkflowContext, WorkflowEvent>,
+    config: WorkflowConfig
+  ) {
     return Workflow.filterTransitions(s.on, config);
   }
 
@@ -255,11 +257,12 @@ export class Workflow {
         }
       });
       if (snap.value in TerminalStates) {
-        await DatabaseWrites.workflowInstances.delete({ where: {
-          ProductId: this.productId
-        }});
-      }
-      else {  
+        await DatabaseWrites.workflowInstances.delete({
+          where: {
+            ProductId: this.productId
+          }
+        });
+      } else {
         await this.createSnapshot(snap.context);
         // This will also create the dummy entries in the ProductTransitions table
         await Queues.UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
@@ -268,8 +271,7 @@ export class Workflow {
           productId: this.productId,
           comment: event.event.comment || undefined,
           operation: {
-            type: BullMQ.UserTasks.OpType.Update,
-            by: 'All'
+            type: BullMQ.UserTasks.OpType.Update
           }
         });
       }
@@ -330,7 +332,7 @@ export class Workflow {
     state: XStateNode<WorkflowContext, WorkflowEvent>,
     productId: string,
     config: WorkflowConfig,
-    users: Map<RoleId, string[]>
+    users: Record<string, Set<RoleId>>
   ): Prisma.ProductTransitionsCreateManyInput {
     const t = Workflow.filterTransitions(state.on, config)[0][0];
 
@@ -340,10 +342,9 @@ export class Workflow {
         t.meta.type === ActionType.User
           ? Array.from(
             new Set(
-              Array.from(users.entries())
-                .filter(([role, users]) => t.meta.user === role)
-                .map(([role, users]) => users)
-                .reduce((p, c) => p.concat(c), [])
+              Object.entries(users)
+                .filter(([user, roles]) => roles.has(t.meta.user))
+                .map(([user, roles]) => user)
             )
           ).join()
           : null,
@@ -370,28 +371,20 @@ export class Workflow {
         }
       })
     ).ProjectId;
-    const uidsByRole = await allUsersByRole(projectId);
-    const users = new Map<RoleId, string[]>();
-    (
-      await Promise.all(
-        Array.from(uidsByRole.entries()).map(async ([role, uids]) => ({
-          role: role,
-          users: await prisma.users.findMany({
-            where: {
-              Id: { in: uids }
-            },
-            select: {
-              Name: true
-            }
-          })
-        }))
-      )
-    ).forEach((r) => {
-      users.set(
-        r.role,
-        r.users.map((u) => u.Name)
-      );
-    });
+    const allUsers = await allUsersByRole(projectId);
+    const users = Object.fromEntries(
+      (
+        await prisma.users.findMany({
+          where: {
+            Id: { in: Object.keys(allUsers).map((str) => parseInt(str)) }
+          },
+          select: {
+            Id: true,
+            Name: true
+          }
+        })
+      ).map((u) => [u.Name, allUsers[u.Id]])
+    );
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
@@ -490,7 +483,9 @@ export class Workflow {
     return StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(s));
   }
 
-  private static targetStringFromEvent(e: TransitionDefinition<WorkflowContext, WorkflowEvent>): string {
+  private static targetStringFromEvent(
+    e: TransitionDefinition<WorkflowContext, WorkflowEvent>
+  ): string {
     return (
       e
         .toJSON()

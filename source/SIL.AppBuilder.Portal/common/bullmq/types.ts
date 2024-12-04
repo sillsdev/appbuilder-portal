@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-namespace */ 
+/* eslint-disable @typescript-eslint/no-namespace */
 import { RoleId } from '../public/prisma.js';
 
 interface RetryOptions {
@@ -43,20 +43,16 @@ export namespace UserTasks {
     Reassign = 'Reassign'
   }
   type Config =
-    | ({
+    | {
         type: OpType.Delete | OpType.Create | OpType.Update;
-      } & (
-        | { by: 'All' }
-        | { by: 'Role'; roles: RoleId[] }
-        | {
-            by: 'UserId';
-            users: number[];
-          }
-      ))
+        roles?: RoleId[];
+        users?: number[];
+      }
     | {
         type: OpType.Reassign;
-        by?: 'UserIdMapping'; // <- This is literally just so TS doesn't complain
         userMapping: { from: number; to: number }[];
+        roles?: never;
+        users?: never;
       };
 
   // Using type here instead of interface for easier composition
