@@ -14,8 +14,7 @@
     { text: m.admin_settings_navigation_productDefinitions(), route: 'product-definitions' },
     { text: m.admin_settings_navigation_stores(), route: 'stores' },
     { text: m.admin_settings_navigation_storeTypes(), route: 'store-types' },
-    { text: m.admin_settings_navigation_buildEngines(), route: 'build-engines' },
-    { text: m.admin_settings_workflowInstances_title(), route: 'workflow-instances'}
+    { text: m.admin_settings_navigation_buildEngines(), route: 'build-engines' }
   ];
 </script>
 
