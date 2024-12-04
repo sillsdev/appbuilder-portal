@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
-  import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
   import { getTimeDateString } from '$lib/timeUtils';
+  import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
 
   export let product: {
     Id: string;
@@ -85,7 +85,6 @@
               {#if ![2, 3, 4].includes(transition.TransitionType)}
                 {transition.AllowedUserNames || m.appName()}
               {/if}
-              <!-- TODO: handle username for Project Access transition types -->
             </td>
             <td>{transition.Command ?? ''}</td>
             <td>
