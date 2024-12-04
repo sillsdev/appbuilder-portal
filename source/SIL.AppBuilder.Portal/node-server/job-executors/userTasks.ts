@@ -12,8 +12,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     },
     select: {
       Id: true,
-      ProjectId: true,
-      ProductTransitions: true
+      ProjectId: true
     }
   });
   job.updateProgress(10);
