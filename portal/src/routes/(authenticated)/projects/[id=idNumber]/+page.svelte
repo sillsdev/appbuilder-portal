@@ -374,18 +374,11 @@
             ({ update }) =>
               update({ reset: false })}
         >
-          <h2>{m.project_settings_title()}</h2>
           <div class="flex flex-col py-4">
             <div class="flex flex-col place-content-between px-4">
               <span class="items-center flex gap-x-1">
                 <IconContainer icon="clarity:organization-solid" width="20" />
                 {m.project_side_organization()}
-                <IconContainer
-                  icon="mdi:lock"
-                  width="16"
-                  class="text-slate-400"
-                  tooltip={m.project_side_organization_noChange()}
-                />
               </span>
               <span class="text-right">
                 {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
