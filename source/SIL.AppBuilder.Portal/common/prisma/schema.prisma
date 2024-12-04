@@ -438,6 +438,7 @@ model UserTasks {
   Comment      String?
   DateCreated  DateTime? @default(now()) @db.Timestamp
   DateUpdated  DateTime? @updatedAt @db.Timestamp
+  Role         Int       @default(2) // OrganizationAdmin
   Product      Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Products_ProductId")
   User         Users     @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Users_UserId")
 

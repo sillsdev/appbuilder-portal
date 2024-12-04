@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "UserTasks" ADD COLUMN     "Role" INTEGER NOT NULL DEFAULT 2;
