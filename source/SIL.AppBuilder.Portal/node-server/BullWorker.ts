@@ -1,5 +1,5 @@
 import { Job, Worker } from 'bullmq';
-import { BullMQ } from 'sil.appbuilder.portal.common';
+import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
 import * as Executor from './job-executors/index.js';
 
 export abstract class BullWorker<T> {
@@ -12,6 +12,30 @@ export abstract class BullWorker<T> {
     });
   }
   abstract run(job: Job<T>): Promise<unknown>;
+}
+
+export class DefaultRecurring extends BullWorker<BullMQ.Job> {
+  constructor() {
+    super(BullMQ.QueueName.DefaultRecurring);
+    Queues.DefaultRecurring.add(
+      'Check System Statuses (Recurring)',
+      {
+        type: BullMQ.JobType.System_CheckStatuses
+      },
+      {
+        repeat: {
+          pattern: '*/5 * * * *', // every 5 minutes
+          key: 'defaultCheckSystemStatuses'
+        }
+      }
+    );
+  }
+  async run(job: Job<BullMQ.Job>) {
+    switch (job.data.type) {
+    case BullMQ.JobType.System_CheckStatuses:
+      return Executor.System.checkStatuses(job as Job<BullMQ.System.CheckStatuses>);
+    }
+  }
 }
 
 export class UserTasks extends BullWorker<BullMQ.Job> {

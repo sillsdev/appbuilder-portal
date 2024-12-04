@@ -16,12 +16,21 @@ export const Retry5e5: RetryOptions = {
 };
 
 export enum QueueName {
+  DefaultRecurring = 'Default Recurring',
   UserTasks = 'User Tasks'
 }
 
 export enum JobType {
+  // System Tasks
+  System_CheckStatuses = 'Check System Statuses',
   // UserTasks
   UserTasks_Reassign = 'Reassign UserTasks'
+}
+
+export namespace System {
+  export interface CheckStatuses {
+    type: JobType.System_CheckStatuses;
+  }
 }
 
 export namespace UserTasks {
@@ -34,6 +43,7 @@ export namespace UserTasks {
 export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
+  [JobType.System_CheckStatuses]: System.CheckStatuses;
   [JobType.UserTasks_Reassign]: UserTasks.Reassign;
   // Add more mappings here as needed
 };
