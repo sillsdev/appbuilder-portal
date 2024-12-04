@@ -19,9 +19,21 @@ export const load: PageServerLoad = async ({ params }) => {
     },
     select: {
       Id: true,
+      Store: {
+        select: {
+          Description: true
+        }
+      },
       Project: {
         select: {
-          Name: true
+          Id: true,
+          Name: true,
+          Organization: {
+            select: {
+              Id: true,
+              Name: true
+            }
+          }
         }
       },
       ProductDefinition: {
@@ -30,34 +42,49 @@ export const load: PageServerLoad = async ({ params }) => {
         }
       },
       ProductTransitions: {
-        where: {
-          DateTransition: {
-            not: null
-          }
-        },
         select: {
           DateTransition: true,
           DestinationState: true,
-          Command: true
+          InitialState: true,
+          Command: true,
+          TransitionType: true,
+          WorkflowType: true,
+          AllowedUserNames: true,
+          Comment: true
         },
         orderBy: [
           {
-            DateTransition: 'desc'
+            DateTransition: 'asc'
           }
-        ],
-        take: 1
+        ]
       }
     }
   });
+
+  if (!product) return error(404);
 
   const flow = await Workflow.restore(params.product_id);
 
   const snap = await Workflow.getSnapshot(params.product_id);
 
+  const workflowDefinition = await prisma.workflowDefinitions.findUnique({
+    where: {
+      Id: snap.definitionId
+    },
+    select: {
+      Name: true
+    }
+  });
+
   return {
-    product: product,
-    snapshot: { value: snap?.state ?? '' },
+    product: {
+      ...product,
+      Transitions: product?.ProductTransitions,
+      ProductTransitions: undefined
+    },
+    snapshot: snap,
     machine: snap ? flow.serializeForVisualization() : [],
+    definition: workflowDefinition,
     form: await superValidate(
       {
         state: snap?.state
