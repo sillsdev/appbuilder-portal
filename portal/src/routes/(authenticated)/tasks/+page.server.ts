@@ -18,7 +18,8 @@ export const load: PageServerLoad = async (event) => {
           }
         }
       }
-    }
+    },
+    distinct: 'ProductId'
   });
   return { tasks };
 };

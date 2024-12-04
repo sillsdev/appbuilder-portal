@@ -1,3 +1,4 @@
+import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { RoleId } from '../public/prisma.js';
 
@@ -34,45 +35,95 @@ export async function setUserRolesForOrganization(
       }))
     })
   ]);
+  if (remove.includes(RoleId.OrgAdmin) || add.includes(RoleId.OrgAdmin)) {
+    const projects = (
+      await prisma.projects.findMany({
+        where: {
+          OrganizationId: organizationId
+        },
+        select: {
+          Id: true
+        }
+      })
+    ).map((p) => p.Id);
+
+    const del = remove.includes(RoleId.OrgAdmin);
+    await Queues.UserTasks.addBulk(
+      projects.map((pid) => ({
+        name: `${del ? 'Remove' : 'Add'} OrgAdmin tasks for User #${userId} on Project #${pid}`,
+        data: {
+          type: BullMQ.JobType.UserTasks_Modify,
+          scope: 'Project',
+          projectId: pid,
+          operation: {
+            type: del ? BullMQ.UserTasks.OpType.Delete : BullMQ.UserTasks.OpType.Create,
+            users: [userId],
+            roles: [RoleId.OrgAdmin]
+          }
+        }
+      }))
+    );
+  }
 }
 
-export async function allUsersByRole(projectId: number) {
+export async function allUsersByRole(
+  projectId: number,
+  roles?: RoleId[]
+): Promise<Record<number, Set<RoleId>>> {
   const project = await prisma.projects.findUnique({
     where: {
       Id: projectId
     },
     select: {
-      Organization: {
-        select: {
-          UserRoles: {
-            where: {
-              RoleId: RoleId.OrgAdmin
-            },
+      Organization:
+        !roles || roles.includes(RoleId.OrgAdmin)
+          ? {
+            select: {
+              UserRoles: {
+                where: {
+                  RoleId: RoleId.OrgAdmin
+                },
+                select: {
+                  UserId: true
+                }
+              }
+            }
+          }
+          : undefined,
+      OwnerId: !roles || roles.includes(RoleId.AppBuilder),
+      Authors:
+        !roles || roles.includes(RoleId.Author)
+          ? {
             select: {
               UserId: true
             }
           }
-        }
-      },
-      OwnerId: true,
-      Authors: {
-        select: {
-          UserId: true
-        }
-      }
+          : undefined
     }
   });
 
-  const map = new Map<RoleId, number[]>();
+  const ret: Record<number, Set<RoleId>> = {};
 
-  map.set(
-    RoleId.OrgAdmin,
-    project.Organization.UserRoles.map((u) => u.UserId)
-  );
-  map.set(RoleId.AppBuilder, [project.OwnerId]);
-  map.set(
-    RoleId.Author,
-    project.Authors.map((a) => a.UserId)
-  );
-  return map;
+  if (!roles || roles.includes(RoleId.OrgAdmin)) {
+    project.Organization.UserRoles.forEach((u) => {
+      ret[u.UserId] = new Set([RoleId.OrgAdmin]);
+    });
+  }
+  if (!roles || roles.includes(RoleId.Author)) {
+    project.Authors.forEach((u) => {
+      if (u.UserId in ret) {
+        ret[u.UserId].add(RoleId.Author);
+      } else {
+        ret[u.UserId] = new Set([RoleId.Author]);
+      }
+    });
+  }
+  if (!roles || roles.includes(RoleId.AppBuilder)) {
+    if (project.OwnerId in ret) {
+      ret[project.OwnerId].add(RoleId.AppBuilder);
+    } else {
+      ret[project.OwnerId] = new Set([RoleId.AppBuilder]);
+    }
+  }
+  return ret;
 }
