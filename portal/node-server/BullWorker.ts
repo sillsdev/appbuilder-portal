@@ -44,8 +44,8 @@ export class UserTasks extends BullWorker<BullMQ.Job> {
   }
   async run(job: Job<BullMQ.Job>) {
     switch (job.data.type) {
-    case BullMQ.JobType.UserTasks_Reassign:
-      return Executor.UserTasks.reassign(job as Job<BullMQ.UserTasks.Reassign>);
+    case BullMQ.JobType.UserTasks_Modify:
+      return Executor.UserTasks.modify(job as Job<BullMQ.UserTasks.Modify>);
     }
   }
 }

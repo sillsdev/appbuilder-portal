@@ -9,6 +9,7 @@ import type {
 import { createActor } from 'xstate';
 import DatabaseWrites from '../databaseProxy/index.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
+import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { ProductTransitionType, RoleId, WorkflowType } from '../public/prisma.js';
 import {
@@ -21,8 +22,7 @@ import {
   WorkflowContext,
   WorkflowContextBase,
   WorkflowEvent,
-  WorkflowState,
-  WorkflowTransitionMeta
+  WorkflowState
 } from '../public/workflow.js';
 import { StartupWorkflow } from './startup-workflow.js';
 
@@ -60,8 +60,22 @@ export class Workflow {
     });
 
     flow.flow.start();
-    flow.populateTransitions();
-    flow.updateUserTasks();
+    await DatabaseWrites.productTransitions.create({
+      data: {
+        ProductId: productId,
+        DateTransition: new Date(),
+        TransitionType: ProductTransitionType.StartWorkflow,
+        WorkflowType: WorkflowType.Startup
+      }
+    });
+    await Queues.UserTasks.add(`Create UserTasks for Product #${productId}`, {
+      type: BullMQ.JobType.UserTasks_Modify,
+      scope: 'Product',
+      productId: productId,
+      operation: {
+        type: BullMQ.UserTasks.OpType.Create
+      }
+    });
 
     return flow;
   }
@@ -151,7 +165,10 @@ export class Workflow {
     );
   }
 
-  public static availableTransitionsFromNode(s: XStateNode<any, any>, config: WorkflowConfig) {
+  public static availableTransitionsFromNode(
+    s: XStateNode<WorkflowContext, WorkflowEvent>,
+    config: WorkflowConfig
+  ) {
     return Workflow.filterTransitions(s.on, config);
   }
 
@@ -233,18 +250,30 @@ export class Workflow {
           WorkflowUserId: null
         }
       });
-      if (snap.value in TerminalStates) {
-        await DatabaseWrites.workflowInstances.delete({ where: {
+      // Yes, the ModifyUserTasks will also delete tasks. I just have this here so the tasks are cleared immediately, and so that the tasks are also cleared when the instance is deleted.
+      await DatabaseWrites.userTasks.deleteMany({
+        where: {
           ProductId: this.productId
-        }});
-      }
-      else {
-        await DatabaseWrites.productTransitions.createMany({
-          data: await Workflow.transitionEntriesFromState(snap.value, this.productId, this.config)
+        }
+      });
+      if (snap.value in TerminalStates) {
+        await DatabaseWrites.workflowInstances.delete({
+          where: {
+            ProductId: this.productId
+          }
         });
-  
+      } else {
         await this.createSnapshot(snap.context);
-        await this.updateUserTasks(event.event.comment || undefined);
+        // This will also create the dummy entries in the ProductTransitions table
+        await Queues.UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
+          type: BullMQ.JobType.UserTasks_Modify,
+          scope: 'Product',
+          productId: this.productId,
+          comment: event.event.comment || undefined,
+          operation: {
+            type: BullMQ.UserTasks.OpType.Update
+          }
+        });
       }
     }
   }
@@ -298,86 +327,12 @@ export class Workflow {
       .filter((v) => v.length > 0 && includeStateOrTransition(filter, v[0].meta?.includeWhen));
   }
 
-  /**
-   * Delete all tasks for a product.
-   * Then create new tasks based on the provided user roles:
-   * - OrgAdmin for administrative tasks (Product.Project.Organization.UserRoles.User where Role === OrgAdmin)
-   * - AppBuilder for project owner tasks (Product.Project.Owner)
-   * - Author for author tasks (Product.Project.Authors)
-   */
-  private async updateUserTasks(comment?: string) {
-    // Delete all tasks for a product
-    await DatabaseWrites.userTasks.deleteMany({
-      where: {
-        ProductId: this.productId
-      }
-    });
-
-    const product = await prisma.products.findUnique({
-      where: {
-        Id: this.productId
-      },
-      select: {
-        Project: {
-          select: {
-            Organization: {
-              select: {
-                UserRoles: {
-                  where: {
-                    RoleId: RoleId.OrgAdmin
-                  },
-                  select: {
-                    UserId: true
-                  }
-                }
-              }
-            },
-            OwnerId: true,
-            Authors: {
-              select: {
-                UserId: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    const uids = Workflow.availableTransitionsFromNode(this.currentState, this.config)
-      .map((t) => (t[0].meta as WorkflowTransitionMeta)?.user)
-      .filter((u) => u !== undefined)
-      .map((r) => {
-        switch (r) {
-        case RoleId.OrgAdmin:
-          return product.Project.Organization.UserRoles.map((u) => u.UserId);
-        case RoleId.AppBuilder:
-          return [product.Project.OwnerId];
-        case RoleId.Author:
-          return product.Project.Authors.map((a) => a.UserId);
-        default:
-          return [];
-        }
-      })
-      .reduce((p, c) => p.concat(c), [])
-      .filter((u, i, a) => a.indexOf(u) === i);
-
-    return DatabaseWrites.userTasks.createMany({
-      data: uids.map((u) => ({
-        UserId: u,
-        ProductId: this.productId,
-        ActivityName: Workflow.stateName(this.currentState),
-        Status: Workflow.stateName(this.currentState),
-        Comment: comment ?? null
-      }))
-    });
-  }
-
   /** Create ProductTransitions record object */
   private static transitionFromState(
-    state: XStateNode<WorkflowContext, any>,
+    state: XStateNode<WorkflowContext, WorkflowEvent>,
     productId: string,
     config: WorkflowConfig,
-    users: Map<RoleId, string[]>
+    users: Record<string, Set<RoleId>>
   ): Prisma.ProductTransitionsCreateManyInput {
     const t = Workflow.filterTransitions(state.on, config)[0][0];
 
@@ -387,10 +342,9 @@ export class Workflow {
         t.meta.type === ActionType.User
           ? Array.from(
             new Set(
-              Array.from(users.entries())
-                .filter(([role, users]) => t.meta.user === role)
-                .map(([role, users]) => users)
-                .reduce((p, c) => p.concat(c), [])
+              Object.entries(users)
+                .filter(([user, roles]) => roles.has(t.meta.user))
+                .map(([user, roles]) => user)
             )
           ).join()
           : null,
@@ -400,18 +354,6 @@ export class Workflow {
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
       WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
     };
-  }
-
-  /** Create ProductTransitions entries for new product following the "happy" path */
-  private async populateTransitions() {
-    // TODO: AllowedUserNames
-    return DatabaseWrites.productTransitions.createManyAndReturn({
-      data: await Workflow.transitionEntriesFromState(
-        WorkflowState.Start,
-        this.productId,
-        this.config
-      )
-    });
   }
 
   public static async transitionEntriesFromState(
@@ -429,28 +371,20 @@ export class Workflow {
         }
       })
     ).ProjectId;
-    const uidsByRole = await allUsersByRole(projectId);
-    const users = new Map<RoleId, string[]>();
-    (
-      await Promise.all(
-        Array.from(uidsByRole.entries()).map(async ([role, uids]) => ({
-          role: role,
-          users: await prisma.users.findMany({
-            where: {
-              Id: { in: uids }
-            },
-            select: {
-              Name: true
-            }
-          })
-        }))
-      )
-    ).forEach((r) => {
-      users.set(
-        r.role,
-        r.users.map((u) => u.Name)
-      );
-    });
+    const allUsers = await allUsersByRole(projectId);
+    const users = Object.fromEntries(
+      (
+        await prisma.users.findMany({
+          where: {
+            Id: { in: Object.keys(allUsers).map((str) => parseInt(str)) }
+          },
+          select: {
+            Id: true,
+            Name: true
+          }
+        })
+      ).map((u) => [u.Name, allUsers[u.Id]])
+    );
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
@@ -475,10 +409,7 @@ export class Workflow {
   }
 
   /**
-   * Get all product transitions for a product.
-   * If there are none, create new ones based on main sequence (i.e. no Author steps)
-   * If sequence matching params exists, but no timestamp, update
-   * Otherwise, create.
+   * Update or create product transition
    */
   private async updateProductTransitions(
     userId: number | null,
@@ -540,7 +471,7 @@ export class Workflow {
     }
   }
 
-  private static stateName(s: XStateNode<any, any>): string {
+  private static stateName(s: XStateNode<WorkflowContext, WorkflowEvent>): string {
     return s.id.replace(StartupWorkflow.id + '.', '');
   }
 
@@ -552,7 +483,9 @@ export class Workflow {
     return StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(s));
   }
 
-  private static targetStringFromEvent(e: TransitionDefinition<any, any>): string {
+  private static targetStringFromEvent(
+    e: TransitionDefinition<WorkflowContext, WorkflowEvent>
+  ): string {
     return (
       e
         .toJSON()

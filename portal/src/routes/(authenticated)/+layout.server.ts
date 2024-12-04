@@ -4,11 +4,15 @@ import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
   const userId = (await event.locals.auth())!.user.userId;
-  const numberOfTasks = await prisma.userTasks.count({
+  const numberOfTasks = (await prisma.userTasks.findMany({
     where: {
       UserId: userId
-    }
-  });
+    },
+    select: {
+      Id: true
+    },
+    distinct: 'ProductId'
+  })).length;
   const user = await prisma.users.findUnique({
     where: {
       Id: userId
