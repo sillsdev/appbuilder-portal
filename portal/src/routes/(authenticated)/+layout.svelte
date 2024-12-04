@@ -129,57 +129,68 @@
               {m.sidebar_organizationProjects()}
             </a>
           </li>
-          <li>
-            <a
-              class="rounded-none"
-              class:active-menu-item={isUrlActive($page.url.pathname, '/projects/active')}
-              href="{base}/projects/active"
-              on:click={closeDrawer}
-            >
-              {m.sidebar_activeProjects()}
-            </a>
-          </li>
-          <li>
-            <a
-              class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/users')}
-              href="{base}/users"
-              on:click={closeDrawer}
-            >
-              {m.sidebar_users()}
-            </a>
-          </li>
-          <li>
-            <a
-              class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/organizations')}
-              href="{base}/organizations/"
-              on:click={closeDrawer}
-            >
-              {m.sidebar_organizationSettings()}
-            </a>
-          </li>
+          {#if !!$page.data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin || r[1] === RoleId.OrgAdmin)}
+            <li>
+              <a
+                class="rounded-none"
+                class:active-menu-item={isUrlActive($page.url.pathname, '/projects/active')}
+                href="{base}/projects/active"
+                on:click={closeDrawer}
+              >
+                {m.sidebar_activeProjects()}
+              </a>
+            </li>
+            <li>
+              <a
+                class="rounded-none"
+                class:active-menu-item={isActive($page.route.id, '/users')}
+                href="{base}/users"
+                on:click={closeDrawer}
+              >
+                {m.sidebar_users()}
+              </a>
+            </li>
+            <li>
+              <a
+                class="rounded-none"
+                class:active-menu-item={isActive($page.route.id, '/organizations')}
+                href="{base}/organizations/"
+                on:click={closeDrawer}
+              >
+                {m.sidebar_organizationSettings()}
+              </a>
+            </li>
+          {/if}
           {#if !!$page.data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin)}
-          <li>
-            <a
-              class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/admin/settings')}
-              href="{base}/admin/settings/organizations"
-              on:click={closeDrawer}
-            >
-              {m.sidebar_adminSettings()}
-            </a>
-          </li>
-          <li>
-            <a
-              class="rounded-none"
-              href={dev ? 'http://localhost:3000' : '/admin/jobs'}
-              on:click={closeDrawer}
-              target="_blank"
-            >
-              {m.sidebar_jobAdministration()}
-            </a>
-          </li>
+            <li>
+              <a
+                class="rounded-none"
+                class:active-menu-item={isActive($page.route.id, '/admin/settings')}
+                href="{base}/admin/settings/organizations"
+                on:click={closeDrawer}
+              >
+                {m.sidebar_adminSettings()}
+              </a>
+            </li>
+            <li>
+              <a
+                class="rounded-none"
+                href={dev ? 'http://localhost:3000' : '/admin/jobs'}
+                on:click={closeDrawer}
+                target="_blank"
+              >
+                {m.sidebar_jobAdministration()}
+              </a>
+            </li>
+            <li>
+              <a
+                class:active-menu-item={isActive($page.route.id, '/workflow-instances')}
+                href="{base}/workflow-instances"
+                on:click={closeDrawer}
+              >
+                {m.workflowInstances_title()}
+              </a>
+            </li>
           {/if}
           <li class="menu-item-divider-top menu-item-divider-bottom">
             <a
