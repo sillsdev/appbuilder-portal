@@ -18,7 +18,13 @@ import type { RequirePrimitive } from './utility.js';
 export async function create(
   projectData: RequirePrimitive<Prisma.ProjectsUncheckedCreateInput>
 ): Promise<boolean | number> {
-  if (!(await validateProjectBase(projectData.OrganizationId, projectData.GroupId, projectData.OwnerId)))
+  if (
+    !(await validateProjectBase(
+      projectData.OrganizationId,
+      projectData.GroupId,
+      projectData.OwnerId
+    ))
+  )
     return false;
 
   // No additional verification steps
@@ -60,11 +66,17 @@ export async function update(
       data: projectData
     });
     // If the owner has changed, we need to reassign all the user tasks related to this project
-    // TODO: But we don't need to change *every* user task, just the tasks associated with the owner.
     if (ownerId && ownerId !== existing?.OwnerId) {
-      Queues.UserTasks.add(BullMQ.JobType.UserTasks_Reassign, {
-        type: BullMQ.JobType.UserTasks_Reassign,
-        projectId: id
+      Queues.UserTasks.add(`Reassign tasks for Project #${id} (New Owner)`, {
+        type: BullMQ.JobType.UserTasks_Modify,
+        scope: 'Project',
+        projectId: id,
+        operation: {
+          type: BullMQ.UserTasks.OpType.Reassign,
+          userMapping: [
+            { from: existing.OwnerId, to: ownerId }
+          ]
+        }
       });
     }
   } catch (e) {
