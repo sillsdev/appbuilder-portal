@@ -70,7 +70,7 @@
       </div>
     </div>
     <div class="flex flex-wrap place-content-center gap-4 p-4">
-      <a href="/projects/{$page.params.id}" class="btn w-full max-w-xs">{m.common_cancel()}</a>
+      <a href="/projects/own/{$page.params.id}" class="btn w-full max-w-xs">{m.common_cancel()}</a>
       <button class="btn btn-primary w-full max-w-xs" type="submit">{m.common_save()}</button>
     </div>
   </form>

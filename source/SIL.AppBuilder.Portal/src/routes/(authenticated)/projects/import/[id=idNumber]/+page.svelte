@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import * as m from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
-  import { onMount } from 'svelte';
-  import { safeParse } from 'valibot';
   import { importJSONSchema } from '$lib/projects/common';
+  import { onMount } from 'svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import { safeParse } from 'valibot';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -49,7 +49,7 @@
 
 <div class="w-full max-w-6xl mx-auto relative p-2">
   <form action="" method="post" use:enhance>
-    <h1>{m.project_importProjects()}</h1>
+    <h1 class="pl-4">{m.project_importProjects()}</h1>
     <a
       href="https://sil-prd-scriptoria-resources.s3.amazonaws.com/Project+Import.pdf"
       target="_blank"
@@ -99,9 +99,9 @@
         />
       </label>
     </div>
-    <div class="flex place-content-center space-x-2">
-      <a href="/projects/{$page.params.id}" class="btn">{m.common_cancel()}</a>
-      <button class="btn btn-primary" type="submit" disabled={!canSubmit}>{m.common_save()}</button>
+    <div class="flex flex-wrap place-content-center gap-4 p-4">
+      <a href="/projects/own/{$page.params.id}" class="btn w-full max-w-xs">{m.common_cancel()}</a>
+      <button class="btn btn-primary w-full max-w-xs" type="submit">{m.common_save()}</button>
     </div>
   </form>
 </div>
