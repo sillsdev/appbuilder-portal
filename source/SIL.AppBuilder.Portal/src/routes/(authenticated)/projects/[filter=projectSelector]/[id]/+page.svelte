@@ -160,18 +160,18 @@
       </button>
     </form>
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
-      <button
+      <a
         class="action btn btn-outline"
-        on:click={() => goto(`/projects/import/${$pageForm.organizationId}`)}
+        href="/projects/import/{$pageForm.organizationId}"
       >
         {m.project_importProjects()}
-      </button>
-      <button
+      </a>
+      <a
         class="action btn btn-outline"
-        on:click={() => goto(`/projects/new/${$pageForm.organizationId}`)}
+        href="/projects/new/{$pageForm.organizationId}"
       >
         {m.sidebar_addProject()}
-      </button>
+      </a>
     </div>
   </div>
   {#if $projects.length > 0}
