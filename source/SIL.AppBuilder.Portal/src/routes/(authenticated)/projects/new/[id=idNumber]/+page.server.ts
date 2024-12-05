@@ -1,6 +1,6 @@
 import { projectCreateSchema } from '$lib/projects/common';
 import { verifyCanCreateProject } from '$lib/projects/common.server';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -75,13 +75,14 @@ export const actions: Actions = {
     });
 
     if (project !== false) {
-      Queues.Miscellaneous.add(`Create Project #${project}`, {
+      await Queues.Miscellaneous.add(`Create Project #${project}`, {
         type: BullMQ.JobType.Project_Create,
         projectId: project as number
       },
       BullMQ.Retry5e5);
+      return redirect(302, `/projects/${project}`);
     }
 
-    return { form, ok: project !== false };
+    return { form, ok: false };
   }
 };
