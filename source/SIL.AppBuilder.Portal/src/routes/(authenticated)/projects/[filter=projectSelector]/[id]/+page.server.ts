@@ -162,8 +162,7 @@ export const actions: Actions = {
             scope: 'Project',
             projectId: Id,
             operation: {
-              type: BullMQ.UserTasks.OpType.Delete,
-              by: 'All'
+              type: BullMQ.UserTasks.OpType.Delete
             }
           });
         } else if (form.data.operation === 'reactivate' && !!project?.DateArchived) {
@@ -175,8 +174,7 @@ export const actions: Actions = {
             scope: 'Project',
             projectId: Id,
             operation: {
-              type: BullMQ.UserTasks.OpType.Create,
-              by: 'All'
+              type: BullMQ.UserTasks.OpType.Create
             }
           });
         }
