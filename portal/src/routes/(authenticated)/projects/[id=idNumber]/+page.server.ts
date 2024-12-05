@@ -125,6 +125,11 @@ export const load = (async ({ locals, params }) => {
           some: {
             OrganizationId: project.OrganizationId
           }
+        },
+        GroupMemberships: {
+          some: {
+            GroupId: project.GroupId
+          }
         }
       }
     }),

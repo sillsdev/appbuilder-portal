@@ -96,6 +96,7 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   // and the data was valid already, or PostgreSQL will catch it
   return (
     orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId &&
+    (await prisma.groupMemberships.findMany({ where: { UserId: ownerId, GroupId: groupId } })) &&
     (
       await prisma.organizationMemberships.findMany({
         where: { UserId: ownerId, OrganizationId: orgId }
