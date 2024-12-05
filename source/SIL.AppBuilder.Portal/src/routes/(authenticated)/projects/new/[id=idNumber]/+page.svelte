@@ -19,68 +19,79 @@
 
 <div class="w-full max-w-6xl mx-auto relative p-2">
   <form action="" method="post" use:enhance>
-    <h1>{m.project_newProject()}</h1>
-    <div class="grid gap-2 gap-x-8 gridcont">
-      <div class="w-full flex place-content-between">
-        <label for="name">{m.project_projectName()}:</label>
+    <h1 class="pl-2">{m.project_newProject()}</h1>
+    <div class="grid gap-2 gap-x-4 gridcont">
+      <label class="form-control">
+        <span class="label-text">{m.project_projectName()}:</span>
         <input type="text" id="name" class="input input-bordered" bind:value={$form.Name} />
-      </div>
-      <div class="w-full flex place-content-between">
-        <label for="group">{m.project_projectGroup()}:</label>
+      </label>
+      <label class="form-control">
+        <span class="label-text">{m.project_projectGroup()}:</span>
         <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
           {#each data.organization?.Groups ?? [] as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>
-      </div>
-      <div class="w-full flex place-content-between">
-        <label for="language">{m.project_languageCode()}:</label>
+      </label>
+      <label class="form-control">
+        <span class="label-text">{m.project_languageCode()}:</span>
         <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
-        <LanguageCodeTypeahead bind:langCode={$form.Language} dropdownClasses="right-0" />
-      </div>
-      <div class="w-full flex place-content-between">
-        <label for="type">{m.project_type()}:</label>
+        <LanguageCodeTypeahead bind:langCode={$form.Language} inputClasses="w-full md:max-w-xs" dropdownClasses="left-0" />
+      </label>
+      <label class="form-control">
+        <span class="label-text">{m.project_type()}:</span>
         <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
           {#each data.types ?? [] as type}
             <option value={type.Id}>{type.Description}</option>
           {/each}
         </select>
-      </div>
-      <div class="mt-4">
-        <label for="description">
-          {m.project_projectDescription()}
-          <textarea
-            name="description"
-            id="description"
-            class="textarea textarea-bordered w-full"
-            bind:value={$form.Description}
+      </label>
+      <label class="form-control">
+        <span class="label-text">{m.project_projectDescription()}:</span>
+        <textarea
+          name="description"
+          id="description"
+          class="textarea textarea-bordered w-full"
+          bind:value={$form.Description}
+        />
+      </label>
+      <div class="form-control">
+        <label for="public" class="label">
+          {m.project_public()}:
+          <input
+            type="checkbox"
+            name="public"
+            id="public"
+            class="toggle"
+            bind:checked={$form.IsPublic}
           />
         </label>
-      </div>
-      <div class="w-full flex flex-col">
-        <div class="form-control">
-          <label for="public" class="label">{m.project_public()}:
-            <input type="checkbox" name="public" id="public" class="toggle" bind:checked={$form.IsPublic} />
-          </label>
-        </div>
         <p>{m.project_visibilityDescription()}</p>
       </div>
     </div>
-    <div class="flex place-content-end space-x-2">
-      <a href="/projects/{$page.params.id}" class="btn">{m.common_cancel()}</a>
-      <button class="btn btn-primary" type="submit">{m.common_save()}</button>
+    <div class="flex flex-wrap place-content-center gap-4 p-4">
+      <a href="/projects/{$page.params.id}" class="btn w-full max-w-xs">{m.common_cancel()}</a>
+      <button class="btn btn-primary w-full max-w-xs" type="submit">{m.common_save()}</button>
     </div>
   </form>
 </div>
 
-<style>
+<style lang="postcss">
   .gridcont {
     grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
   }
   .gridcont div.flex label {
     margin-right: 0.4rem;
   }
-  .label[for="public"] {
+  .label[for='public'] {
     padding-left: 0px;
+  }
+  .form-control {
+    @apply w-full;
+  }
+  @media screen(md) {
+    .form-control {
+      @apply max-w-xs;
+    }
   }
 </style>
