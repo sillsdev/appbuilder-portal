@@ -20,7 +20,11 @@
   const projects = writable(data.projects);
   const count = writable(data.count);
 
-  const { form: pageForm, enhance: pageEnhance, submit: pageSubmit } = superForm(data.pageForm, {
+  const {
+    form: pageForm,
+    enhance: pageEnhance,
+    submit: pageSubmit
+  } = superForm(data.pageForm, {
     dataType: 'json',
     resetForm: false,
     onChange(event) {
@@ -60,11 +64,19 @@
     true
   );
 
-  const { form: actionForm, enhance: actionEnhance, submit: actionSubmit } = superForm(data.actionForm, {
+  const {
+    form: actionForm,
+    enhance: actionEnhance,
+    submit: actionSubmit
+  } = superForm(data.actionForm, {
     dataType: 'json',
     invalidateAll: true,
     onChange: (event) => {
-      if (event.paths.includes('operation') && $actionForm.projects.length > 0 && $actionForm.operation) {
+      if (
+        event.paths.includes('operation') &&
+        $actionForm.projects.length > 0 &&
+        $actionForm.operation
+      ) {
         actionSubmit();
       }
     }
@@ -101,7 +113,10 @@
             </option>
           {/each}
         </select>
-        <SearchBar bind:value={$pageForm.search} className="w-full max-w-xs md:w-auto md:max-w-none" />
+        <SearchBar
+          bind:value={$pageForm.search}
+          className="w-full max-w-xs md:w-auto md:max-w-none"
+        />
       </div>
     </div>
   </form>
@@ -145,10 +160,16 @@
       </button>
     </form>
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
-      <button class="action btn btn-outline" on:click={() => goto(`/projects/import/${$pageForm.organizationId}`)}>
+      <button
+        class="action btn btn-outline"
+        on:click={() => goto(`/projects/import/${$pageForm.organizationId}`)}
+      >
         {m.project_importProjects()}
       </button>
-      <button class="action btn btn-outline" on:click={() => goto(`/projects/new/${$pageForm.organizationId}`)}>
+      <button
+        class="action btn btn-outline"
+        on:click={() => goto(`/projects/new/${$pageForm.organizationId}`)}
+      >
         {m.sidebar_addProject()}
       </button>
     </div>
