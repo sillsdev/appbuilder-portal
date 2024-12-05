@@ -1,7 +1,7 @@
 import { importJSONSchema } from '$lib/projects/common';
 import { verifyCanCreateProject } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -101,7 +101,7 @@ export const actions: Actions = {
 
     if (!organization) return error(404);
 
-    const errors: any[] = [];
+    const errors: string[] = [];
 
     const products = await Promise.all(
       form.data.json.Products.map(async (p) => {
@@ -188,7 +188,7 @@ export const actions: Actions = {
 
       if (projects) {
         // Create products
-        await Queues.Creation.addBulk(
+        await Queues.Miscellaneous.addBulk(
           projects.map((p) => ({
             name: `Create Project #${p}`,
             data: {
@@ -204,6 +204,6 @@ export const actions: Actions = {
       return fail(500, { form, ok: false, errors });
     }
 
-    return { form, ok: true };
+    return redirect(302, `/projects/own/${organization.Id}`);
   }
 };
