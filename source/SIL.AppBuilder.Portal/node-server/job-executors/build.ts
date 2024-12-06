@@ -49,7 +49,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     { type: 'query', organizationId: productData.Project.OrganizationId },
     productData.WorkflowJobId,
     {
-      targets: params.targets ?? job.data.targets,
+      targets: params['targets'] ?? job.data.targets,
       environment: { ...env, ...params.environment, ...job.data.environment }
     }
   );

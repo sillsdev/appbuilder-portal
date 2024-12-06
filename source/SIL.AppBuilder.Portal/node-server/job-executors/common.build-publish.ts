@@ -72,20 +72,20 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope?: 
       }
     }
   });
-  const result: { environment: Environment; [key: string]: any } = {
-    environment: {
-      WORKFLOW_TYPE: WorkflowTypeString[instance.WorkflowDefinition.Type],
-      WORKFLOW_PRODUCT_NAME: instance.Product.ProductDefinition.Name
-    }
+  let environment: Environment = {
+    WORKFLOW_TYPE: WorkflowTypeString[instance.WorkflowDefinition.Type],
+    WORKFLOW_PRODUCT_NAME: instance.Product.ProductDefinition.Name
   };
+  
+  const result: { [key: string]: string } = {};
   const scoped: { [key: string]: string } = {};
   Object.entries(JSON.parse(instance.WorkflowDefinition.Properties ?? '{}')).forEach(([k, v]) => {
     const strValue = JSON.stringify(v);
     let strKey = k;
     if (strKey === 'environment') {
       // merge environment
-      result['environment'] = {
-        ...result['environment'],
+      environment = {
+        ...environment,
         ...JSON.parse(strValue)
       };
     }
@@ -106,8 +106,8 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope?: 
     let strKey = k;
     if (strKey === 'environment') {
       // merge environment
-      result['environment'] = {
-        ...result['environment'],
+      environment = {
+        ...environment,
         ...JSON.parse(strValue)
       };
     }
@@ -125,8 +125,8 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope?: 
   });
   Object.entries(scoped).forEach(([k, v]) => {
     if (k === 'environment') {
-      result[k] = {
-        ...result[k],
+      environment = {
+        ...environment,
         ...JSON.parse(v)
       }
     }
@@ -135,5 +135,5 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope?: 
     }
   });
 
-  return result;
+  return { ...result, environment: environment };
 }
