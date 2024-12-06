@@ -33,6 +33,7 @@
           {/each}
         </select>
       </label>
+      <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="form-control">
         <span class="label-text">{m.project_languageCode()}:</span>
         <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
