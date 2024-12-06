@@ -1,11 +1,11 @@
+import { error } from '@sveltejs/kit';
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
-import { WorkflowAction, type WorkflowState } from 'sil.appbuilder.portal.common/workflow';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import type { PageServerLoad, Actions } from './$types';
+import { WorkflowAction, type WorkflowState } from 'sil.appbuilder.portal.common/workflow';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import { error } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 
 const jumpStateSchema = v.object({
   state: v.string()
@@ -66,6 +66,7 @@ export const load: PageServerLoad = async ({ params }) => {
   const flow = await Workflow.restore(params.product_id);
 
   const snap = await Workflow.getSnapshot(params.product_id);
+  if (!(flow && snap)) return error(404);
 
   const workflowDefinition = await prisma.workflowDefinitions.findUnique({
     where: {
@@ -104,6 +105,8 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
 
     const flow = await Workflow.restore(params.product_id);
+
+    if (!flow) return fail(404, { form, ok: false });
 
     flow.send({
       type: WorkflowAction.Jump,
