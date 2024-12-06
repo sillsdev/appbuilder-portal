@@ -52,7 +52,6 @@
       <BuildArtifacts
         {build}
         latestBuildId={data.product?.WorkflowBuildId}
-        hidden={build.BuildId !== data.product?.WorkflowBuildId}
       />
     {/each}
   </div>

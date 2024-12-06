@@ -33,6 +33,18 @@
     }
     return version;
   }
+
+  // temporary fix until paraglide supports pluralization
+  function pluralized(amount: number): string {
+    const message = m.project_products_numArtifacts({ amount });
+    if (amount === 0) {
+      return message.match(/=0 *\{(.*?)\}/)![1];
+    }
+    else {
+      const matches = message.match(/other *\{(.*?)\{ amount \}(.*?)\}/);
+      return `${matches![1]}${amount}${matches![2]}`;
+    }
+  }
 </script>
 
 <div class="rounded-md border border-slate-400 w-full my-2">
@@ -41,8 +53,7 @@
       {versionString(build)}
     </span>
     <span>
-      <!-- TODO i18n (requires pluralization support) -->
-      {m.project_products_numArtifacts({ amount: build.ProductArtifacts.length })}
+      {pluralized(build.ProductArtifacts.length)}
     </span>
   </div>
   <div class="p-2 overflow-x-auto">
