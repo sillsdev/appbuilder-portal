@@ -4,7 +4,7 @@ import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { WorkflowType } from '../public/prisma.js';
 import { update as projectUpdate } from './Projects.js';
-import { RequirePrimitive } from './utility.js';
+import type { RequirePrimitive } from './utility.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -111,12 +111,12 @@ async function deleteProduct(productId: string) {
       WorkflowJobId: true
     }
   });
-  Queues.Miscellaneous.add(
+  await Queues.Miscellaneous.add(
     `Delete Product #${productId} from BuildEngine`,
     {
       type: BullMQ.JobType.Product_Delete,
-      organizationId: product.Project.OrganizationId,
-      workflowJobId: product.WorkflowJobId
+      organizationId: product!.Project.OrganizationId,
+      workflowJobId: product!.WorkflowJobId
     },
     BullMQ.Retry5e5
   );
@@ -137,7 +137,7 @@ async function deleteProduct(productId: string) {
       }
     })
   ]);
-  updateProjectDateActive(product.Project.Id);
+  updateProjectDateActive(product!.Project.Id);
   return res;
 }
 export { deleteProduct as delete };
@@ -263,7 +263,10 @@ async function updateProjectDateActive(projectId: number) {
 
   const projectDateActive = maxDate._max.DateTransition;
 
-  if (projectDateActive?.valueOf() > project.DateActive?.valueOf()) {
+  if (
+    projectDateActive &&
+    (!project?.DateActive || projectDateActive.valueOf() > project.DateActive.valueOf())
+  ) {
     await projectUpdate(projectId, {
       DateActive: projectDateActive
     });

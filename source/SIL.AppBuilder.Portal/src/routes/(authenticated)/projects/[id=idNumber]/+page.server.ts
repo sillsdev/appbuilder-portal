@@ -93,7 +93,7 @@ export const load = (async ({ locals, params }) => {
       Group: {
         select: {
           Id: true,
-          Abbreviation: true
+          Name: true
         }
       },
       Authors: {
