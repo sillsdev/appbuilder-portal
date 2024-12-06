@@ -246,7 +246,7 @@ export class Workflow {
   /* PRIVATE METHODS */
   private async inspect(event: InspectedSnapshotEvent): Promise<void> {
     const old = this.currentState;
-    const snap = this.flow.getSnapshot();
+    const snap = this.flow!.getSnapshot();
     this.currentState = StartupWorkflow.getStateNodeById(`#${StartupWorkflow.id}.${snap.value}`);
 
     if (old && Workflow.stateName(old) !== snap.value) {
@@ -307,7 +307,7 @@ export class Workflow {
       },
       create: {
         ProductId: this.productId,
-        State: Workflow.stateName(this.currentState),
+        State: Workflow.stateName(this.currentState!),
         Context: JSON.stringify(context),
         WorkflowDefinitionId: (
           await prisma.products.findUnique({
@@ -322,10 +322,10 @@ export class Workflow {
               }
             }
           })
-        ).ProductDefinition.WorkflowId
+        )!.ProductDefinition.WorkflowId
       },
       update: {
-        State: Workflow.stateName(this.currentState),
+        State: Workflow.stateName(this.currentState!),
         Context: JSON.stringify(filtered)
       }
     });
@@ -384,7 +384,7 @@ export class Workflow {
           ProjectId: true
         }
       })
-    ).ProjectId;
+    )!.ProjectId;
     const allUsers = await allUsersByRole(projectId);
     const users = Object.fromEntries(
       (
@@ -402,17 +402,17 @@ export class Workflow {
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
-          ? Workflow.availableTransitionsFromName(WorkflowState.Start, config)[0][0].target[0]
+          ? Workflow.availableTransitionsFromName(WorkflowState.Start, config)[0][0]!.target![0]
           : StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
         productId,
         config,
         users
       )
     ];
-    while (ret.at(-1).DestinationState !== WorkflowState.Published) {
+    while (ret.at(-1)!.DestinationState !== WorkflowState.Published) {
       ret.push(
         Workflow.transitionFromState(
-          Workflow.nodeFromName(ret.at(-1).DestinationState),
+          Workflow.nodeFromName(ret.at(-1)!.DestinationState!),
           productId,
           config,
           users
