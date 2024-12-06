@@ -40,7 +40,12 @@
 </script>
 
 <div class="rounded-md border border-slate-400 w-full my-2">
-  <div class="bg-base-300 p-2 flex flex-row rounded-t-md place-content-between">
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div
+    class="bg-base-300 p-2 flex flex-row rounded-t-md place-content-between cursor-pointer select-none"
+    on:click={() => (hidden = !hidden)}
+  >
     <span class="font-bold text-lg text-info grow">
       {versionString(build)}
     </span>
@@ -48,7 +53,7 @@
       <!-- TODO i18n (requires pluralization support) -->
       {m.project_products_numArtifacts({ amount: build.ProductArtifacts.length })}
     </span>
-    <button on:click={() => (hidden = !hidden)}>
+    <button>
       {#if hidden}
         <ArrowUpIcon />
       {:else}
