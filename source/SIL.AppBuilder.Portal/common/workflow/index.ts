@@ -64,6 +64,7 @@ export class Workflow {
     });
 
     flow.flow.start();
+    await flow.createSnapshot(flow.flow.getSnapshot().context);
     await DatabaseWrites.productTransitions.create({
       data: {
         ProductId: productId,
@@ -246,10 +247,10 @@ export class Workflow {
   /* PRIVATE METHODS */
   private async inspect(event: InspectedSnapshotEvent): Promise<void> {
     const old = this.currentState;
-    const snap = this.flow!.getSnapshot();
-    this.currentState = StartupWorkflow.getStateNodeById(`#${StartupWorkflow.id}.${snap.value}`);
+    const xSnap = this.flow!.getSnapshot();
+    this.currentState = StartupWorkflow.getStateNodeById(`#${StartupWorkflow.id}.${xSnap.value}`);
 
-    if (old && Workflow.stateName(old) !== snap.value) {
+    if (old && Workflow.stateName(old) !== xSnap.value) {
       await this.updateProductTransitions(
         event.event.userId,
         Workflow.stateName(old),
@@ -270,14 +271,14 @@ export class Workflow {
           ProductId: this.productId
         }
       });
-      if (snap.value in TerminalStates) {
+      if (xSnap.value in TerminalStates) {
         await DatabaseWrites.workflowInstances.delete({
           where: {
             ProductId: this.productId
           }
         });
       } else {
-        await this.createSnapshot(snap.context);
+        await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
         await Queues.UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
           type: BullMQ.JobType.UserTasks_Modify,
