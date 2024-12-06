@@ -219,7 +219,7 @@ export const actions = {
       if (flow?.Type === WorkflowType.Startup) {
         Workflow.create(productId, {
           productType: flow.ProductType,
-          options: flow.WorkflowOptions
+          options: new Set(flow.WorkflowOptions)
         });
       }
     }
