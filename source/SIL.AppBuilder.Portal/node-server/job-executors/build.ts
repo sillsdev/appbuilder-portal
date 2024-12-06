@@ -110,9 +110,11 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
         job.log(response.error);
       }
       let latestArtifactDate = new Date(0);
+      job.log('ARTIFACTS:');
       await DatabaseWrites.productArtifacts.createMany({
         data: await Promise.all(
           Object.entries(response.artifacts).map(async ([type, url]) => {
+            job.log(`${type}: ${url}`);
             const res = await fetch(url, { method: 'HEAD' });
             const lastModified = new Date(res.headers.get('Last-Modified'));
             if (lastModified > latestArtifactDate) {
