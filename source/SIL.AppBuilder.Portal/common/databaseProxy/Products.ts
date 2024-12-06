@@ -27,7 +27,7 @@ export async function create(
     });
 
     if (res) {
-      const flow = (
+      const flowDefinition = (
         await prisma.productDefinitions.findUnique({
           where: {
             Id: productData.ProductDefinitionId
@@ -45,10 +45,10 @@ export async function create(
         })
       )?.Workflow;
 
-      if (flow?.Type === WorkflowType.Startup) {
+      if (flowDefinition?.Type === WorkflowType.Startup) {
         await Workflow.create(res.Id, {
-          productType: flow.ProductType,
-          options: new Set(flow.WorkflowOptions)
+          productType: flowDefinition.ProductType,
+          options: new Set(flowDefinition.WorkflowOptions)
         });
         updateProjectDateActive(productData.ProjectId);
       }
