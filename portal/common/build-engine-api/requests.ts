@@ -5,7 +5,7 @@ export async function request(
   resource: string,
   auth: Types.Auth,
   method: string = 'GET',
-  body?: any
+  body?: unknown
 ) {
   try {
     const { url, token } = auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
@@ -14,7 +14,7 @@ export async function request(
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': body ? 'application/json' : undefined
+        'Content-Type': 'application/json'
       },
       body: body ? JSON.stringify(body) : undefined
     });
@@ -47,15 +47,19 @@ export async function getURLandToken(organizationId: number) {
     }
   });
 
+  if (!org) {
+    throw new Error(`No organization could be found with ID: ${organizationId}`);
+  }
+
   return org.UseDefaultBuildEngine
     ? {
-        url: process.env.DEFAULT_BUILDENGINE_URL,
-        token: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
-      }
+      url: process.env.DEFAULT_BUILDENGINE_URL,
+      token: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
+    }
     : {
-        url: org.BuildEngineUrl,
-        token: org.BuildEngineApiAccessToken
-      };
+      url: org.BuildEngineUrl,
+      token: org.BuildEngineApiAccessToken
+    };
 }
 
 export async function systemCheck(auth: Types.Auth) {
