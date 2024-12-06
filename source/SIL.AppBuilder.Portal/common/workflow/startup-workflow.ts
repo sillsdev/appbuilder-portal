@@ -1,20 +1,22 @@
-import { setup, assign } from 'xstate';
-import {
+import { assign, setup } from 'xstate';
+import { RoleId } from '../public/prisma.js';
+import type {
   WorkflowContext,
+  WorkflowEvent,
   WorkflowInput,
   WorkflowStateMeta,
-  WorkflowTransitionMeta,
-  WorkflowOptions,
-  ProductType,
-  ActionType,
-  WorkflowState,
-  WorkflowAction,
-  WorkflowEvent,
-  JumpParams,
-  jump,
-  includeStateOrTransition
+  WorkflowTransitionMeta
 } from '../public/workflow.js';
-import { RoleId } from '../public/prisma.js';
+import {
+  ActionType,
+  ProductType,
+  WorkflowAction,
+  WorkflowOptions,
+  WorkflowState,
+  hasAuthors,
+  hasReviewers,
+  jump
+} from '../public/workflow.js';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -36,17 +38,6 @@ export const StartupWorkflow = setup({
     input: {} as WorkflowInput,
     meta: {} as WorkflowStateMeta | WorkflowTransitionMeta,
     events: {} as WorkflowEvent
-  },
-  guards: {
-    canJump: ({ context }, params: JumpParams) => {
-      return context.start === params.target && includeStateOrTransition(context, params.filter);
-    },
-    hasAuthors: ({ context }) => {
-      return context.hasAuthors;
-    },
-    hasReviewers: ({ context }) => {
-      return context.hasReviewers;
-    }
   }
 }).createMachine({
   id: 'StartupWorkflow',
@@ -94,8 +85,7 @@ export const StartupWorkflow = setup({
             target: WorkflowState.Author_Configuration,
             filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
           },
-          //@ts-expect-error I couldn't figure out the TS magic to prevent this from complaining. It should work fine though.
-          [{ type: 'hasAuthors' }]
+          [hasAuthors]
         ),
         jump({ target: WorkflowState.Synchronize_Data }),
         jump(
@@ -103,8 +93,7 @@ export const StartupWorkflow = setup({
             target: WorkflowState.Author_Download,
             filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
           },
-          //@ts-expect-error
-          [{ type: 'hasAuthors' }]
+          [hasAuthors]
         ),
         //note: authors can upload at any time, this state is just to prompt an upload
         jump(
@@ -112,8 +101,7 @@ export const StartupWorkflow = setup({
             target: WorkflowState.Author_Upload,
             filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
           },
-          //@ts-expect-error
-          [{ type: 'hasAuthors' }]
+          [hasAuthors]
         ),
         jump({ target: WorkflowState.Product_Build }),
         jump({
@@ -320,7 +308,7 @@ export const StartupWorkflow = setup({
               options: { has: WorkflowOptions.AllowTransferToAuthors }
             }
           },
-          guard: { type: 'hasAuthors' },
+          guard: hasAuthors,
           target: WorkflowState.Author_Configuration
         }
       }
@@ -373,7 +361,7 @@ export const StartupWorkflow = setup({
               options: { has: WorkflowOptions.AllowTransferToAuthors }
             }
           },
-          guard: { type: 'hasAuthors' },
+          guard: hasAuthors,
           target: WorkflowState.Author_Download
         }
       }
@@ -460,8 +448,8 @@ export const StartupWorkflow = setup({
             meta: { type: ActionType.Auto },
             guard: ({ context }) =>
               context.productType !== ProductType.Android_GooglePlay ||
-              context.environment.googlePlayExisting ||
-              context.environment.googlePlayUploaded,
+              !!context.environment.googlePlayExisting ||
+              !!context.environment.googlePlayUploaded,
             target: WorkflowState.Verify_and_Publish
           }
         ],
@@ -619,24 +607,24 @@ export const StartupWorkflow = setup({
       entry: assign({
         instructions: ({ context }) => {
           switch (context.productType) {
-            case ProductType.Android_GooglePlay:
-              return 'googleplay_verify_and_publish';
-            case ProductType.Android_S3:
-              return 'verify_and_publish';
-            case ProductType.AssetPackage:
-              return 'asset_package_verify_and_publish';
-            case ProductType.Web:
-              return 'web_verify';
+          case ProductType.Android_GooglePlay:
+            return 'googleplay_verify_and_publish';
+          case ProductType.Android_S3:
+            return 'verify_and_publish';
+          case ProductType.AssetPackage:
+            return 'asset_package_verify_and_publish';
+          case ProductType.Web:
+            return 'web_verify';
           }
         },
         includeFields: ({ context }) => {
           switch (context.productType) {
-            case ProductType.Android_GooglePlay:
-            case ProductType.Android_S3:
-              return ['storeDescription', 'listingLanguageCode'];
-            case ProductType.AssetPackage:
-            case ProductType.Web:
-              return ['storeDescription'];
+          case ProductType.Android_GooglePlay:
+          case ProductType.Android_S3:
+            return ['storeDescription', 'listingLanguageCode'];
+          case ProductType.AssetPackage:
+          case ProductType.Web:
+            return ['storeDescription'];
           }
         },
         includeReviewers: true,
@@ -666,7 +654,7 @@ export const StartupWorkflow = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder
           },
-          guard: { type: 'hasReviewers' },
+          guard: hasReviewers,
           actions: () => {
             // TODO: connect to backend to email reviewers
             console.log('Emailing Reviewers');
@@ -700,7 +688,7 @@ export const StartupWorkflow = setup({
             meta: { type: ActionType.Auto },
             guard: ({ context }) =>
               context.productType !== ProductType.Android_GooglePlay ||
-              context.environment.googlePlayExisting,
+              !!context.environment.googlePlayExisting,
             target: WorkflowState.Published
           }
         ],
@@ -779,7 +767,7 @@ export const StartupWorkflow = setup({
     [WorkflowAction.Jump]: {
       actions: [
         assign({
-          start: ({ context, event }) => event.target
+          start: ({ event }) => event.target
         })
       ],
       target: `.${WorkflowState.Start}`

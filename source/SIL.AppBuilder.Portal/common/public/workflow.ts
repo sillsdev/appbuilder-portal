@@ -1,7 +1,5 @@
-import type { Prisma } from '@prisma/client';
-import type { RoleId } from './prisma.js';
 import { and, type TransitionConfig } from 'xstate';
-import type { GuardPredicate } from 'xstate/guards';
+import type { RoleId } from './prisma.js';
 
 export enum ActionType {
   /** Automated Action */
@@ -101,7 +99,7 @@ export type WorkflowContextBase = {
   includeArtifacts: 'apk' | 'aab' | boolean;
   start?: WorkflowState;
   // Not sure how this is used, but will figure out when integrating into backend
-  environment: { [key: string]: any };
+  environment: { [key: string]: unknown };
 };
 
 export type WorkflowContext = WorkflowContextBase & WorkflowInput;
@@ -194,6 +192,17 @@ export type JumpParams = {
   filter?: MetaFilter;
 };
 
+export function canJump(args: { context: WorkflowContext }, params: JumpParams): boolean {
+  return (
+    args.context.start === params.target && includeStateOrTransition(args.context, params.filter)
+  );
+}
+export function hasAuthors(args: { context: WorkflowContext }): boolean {
+  return args.context.hasAuthors;
+}
+export function hasReviewers(args: { context: WorkflowContext }): boolean {
+  return args.context.hasReviewers;
+}
 /**
  * @param params expected params of `canJump` guard from StartupWorkflow
  * @param optionalGuards other guards that can optionally be added.
@@ -201,24 +210,20 @@ export type JumpParams = {
  */
 export function jump(
   params: JumpParams,
-  optionalGuards?: GuardPredicate<WorkflowContext, WorkflowEvent, unknown, any>[]
+  optionalGuards?: (typeof hasAuthors | typeof hasReviewers)[]
 ): TransitionConfig<
   WorkflowContext,
   WorkflowEvent,
   WorkflowEvent,
   never,
   never,
-  any,
+  never,
   never,
   WorkflowEvent,
   WorkflowStateMeta | WorkflowTransitionMeta
-> {
-  const j = {
-    type: 'canJump',
-    params: params
-  };
+> | string {
+  const j = (args: { context: WorkflowContext}) => canJump(args, params);
   return {
-    //@ts-expect-error
     guard: optionalGuards ? and(optionalGuards.concat([j])) : j,
     target: params.target
   };
