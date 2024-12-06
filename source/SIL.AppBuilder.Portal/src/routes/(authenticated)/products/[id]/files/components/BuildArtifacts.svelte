@@ -1,10 +1,8 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import * as m from '$lib/paraglide/messages';
   import { getRelativeTime } from '$lib/timeUtils';
   import { bytesToHumanSize } from '$lib/utils';
-  import ArrowDownIcon from '$lib/icons/ArrowDownIcon.svelte';
-  import ArrowUpIcon from '$lib/icons/ArrowUpIcon.svelte';
 
   export let build: {
     Version: string | null;
@@ -19,8 +17,6 @@
   };
 
   export let latestBuildId: number | undefined;
-
-  export let hidden = false;
 
   function versionString(b: typeof build): string {
     let version = b.Version;
@@ -40,12 +36,7 @@
 </script>
 
 <div class="rounded-md border border-slate-400 w-full my-2">
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div
-    class="bg-base-300 p-2 flex flex-row rounded-t-md place-content-between cursor-pointer select-none"
-    on:click={() => (hidden = !hidden)}
-  >
+  <div class="bg-base-300 p-2 flex flex-row rounded-t-md place-content-between">
     <span class="font-bold text-lg text-info grow">
       {versionString(build)}
     </span>
@@ -53,15 +44,8 @@
       <!-- TODO i18n (requires pluralization support) -->
       {m.project_products_numArtifacts({ amount: build.ProductArtifacts.length })}
     </span>
-    <button>
-      {#if hidden}
-        <ArrowUpIcon />
-      {:else}
-        <ArrowDownIcon />
-      {/if}
-    </button>
   </div>
-  <div class="p-2 overflow-x-auto" class:hidden>
+  <div class="p-2 overflow-x-auto">
     {#if !build.ProductArtifacts.length}
       {m.project_products_noArtifacts()}
     {:else}
@@ -100,7 +84,8 @@
     left: 0;
   }
 
-  tr td, tr th {
+  tr td,
+  tr th {
     @apply bg-base-100;
   }
 </style>

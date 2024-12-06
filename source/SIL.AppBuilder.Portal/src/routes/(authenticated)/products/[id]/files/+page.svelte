@@ -21,7 +21,6 @@
       const data = event.result.data as FormResult<{
         query: { data: any[] };
       }>;
-      console.log(data);
       if (event.form.valid && data.query) {
         builds.set(data.query.data);
       }
@@ -58,12 +57,11 @@
     {/each}
   </div>
   <form method="POST" action="?/page" use:enhance>
-    <Pagination bind:page={$form.page} bind:size={$form.size} total={data.count} extraSizeOptions={[3]} />
+    <Pagination
+      bind:page={$form.page}
+      bind:size={$form.size}
+      total={data.count}
+      extraSizeOptions={[3]}
+    />
   </form>
 </div>
-
-<style lang="postcss">
-  #files {
-    scrollbar-gutter: stable both-edges;
-  }
-</style>
