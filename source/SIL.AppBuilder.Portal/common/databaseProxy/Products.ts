@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import prisma from '../prisma.js';
-import { RequirePrimitive } from './utility.js';
+import type { RequirePrimitive } from './utility.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -41,14 +41,10 @@ export async function update(
   });
   const projectId = productData.ProjectId ?? existing!.ProjectId;
   const productDefinitionId = productData.ProductDefinitionId ?? existing!.ProductDefinitionId;
-  const storeId = productData.StoreId ?? existing!.StoreId;
-  const storeLanguageId = productData.StoreLanguageId ?? existing!.StoreLanguageId;
-  if (!(await validateProductBase(
-    projectId,
-    productDefinitionId,
-    storeId,
-    storeLanguageId
-  ))) return false;
+  const storeId = productData.StoreId ?? existing!.StoreId ?? undefined;
+  const storeLanguageId = productData.StoreLanguageId ?? existing!.StoreLanguageId ?? undefined;
+  if (!(await validateProductBase(projectId, productDefinitionId, storeId, storeLanguageId)))
+    return false;
 
   // No additional verification steps
 
@@ -99,9 +95,12 @@ export { deleteProduct as delete };
 async function validateProductBase(
   projectId: number,
   productDefinitionId: number,
-  storeId: number,
+  storeId?: number,
   storeLanguageId?: number
 ) {
+  if (storeId === undefined) {
+    return false;
+  }
   const productDefinition = await prisma.productDefinitions.findUnique({
     where: {
       Id: productDefinitionId
@@ -140,15 +139,17 @@ async function validateProductBase(
                       // Store type must match Workflow store type
                       Id: true,
                       // StoreLanguage must be allowed by Store, if the StoreLanguage is defined
-                      StoreLanguages: storeLanguageId === undefined || storeLanguageId === null ? 
-                        undefined : {
-                        where: {
-                          Id: storeLanguageId
-                        },
-                        select: {
-                          Id: true
-                        }
-                      }
+                      StoreLanguages:
+                        storeLanguageId === undefined || storeLanguageId === null
+                          ? undefined
+                          : {
+                            where: {
+                              Id: storeLanguageId
+                            },
+                            select: {
+                              Id: true
+                            }
+                          }
                     }
                   }
                 }
@@ -168,15 +169,17 @@ async function validateProductBase(
 
   // 3. The store is allowed by the organization
   return (
-    project?.Organization.OrganizationStores.length > 0 &&
+    (project?.Organization.OrganizationStores.length ?? 0) > 0 &&
     // 1. The store's type matches the Workflow's store type
     productDefinition?.Workflow.StoreTypeId ===
-      project.Organization.OrganizationStores[0].Store.StoreType.Id &&
+      project?.Organization.OrganizationStores[0].Store.StoreType.Id &&
     // 2. The project has a WorkflowProjectUrl
     // handled by query
     // 4. The language is allowed by the store
-    (storeLanguageId ?? project.Organization.OrganizationStores[0].Store.StoreType.StoreLanguages.length > 0) &&
+    (storeLanguageId ??
+      (project?.Organization.OrganizationStores[0].Store.StoreType.StoreLanguages.length ?? 0) >
+        0) &&
     // 5. The product type is allowed by the organization
-    project.Organization.OrganizationProductDefinitions.length > 0
+    (project?.Organization.OrganizationProductDefinitions.length ?? 0) > 0
   );
 }

@@ -75,21 +75,7 @@ export async function allUsersByRole(
       Id: projectId
     },
     select: {
-      Organization:
-        !roles || roles.includes(RoleId.OrgAdmin)
-          ? {
-            select: {
-              UserRoles: {
-                where: {
-                  RoleId: RoleId.OrgAdmin
-                },
-                select: {
-                  UserId: true
-                }
-              }
-            }
-          }
-          : undefined,
+      OrganizationId: true,
       OwnerId: !roles || roles.includes(RoleId.AppBuilder),
       Authors:
         !roles || roles.includes(RoleId.Author)
@@ -102,10 +88,26 @@ export async function allUsersByRole(
     }
   });
 
+  
+  if (!project) return {};
+
+  const admins =
+    !roles || roles.includes(RoleId.OrgAdmin)
+      ? await prisma.userRoles.findMany({
+        where: {
+          OrganizationId: project.OrganizationId,
+          RoleId: RoleId.OrgAdmin
+        },
+        select: {
+          UserId: true
+        }
+      })
+      : [];
+
   const ret: Record<number, Set<RoleId>> = {};
 
   if (!roles || roles.includes(RoleId.OrgAdmin)) {
-    project.Organization.UserRoles.forEach((u) => {
+    admins.forEach((u) => {
       ret[u.UserId] = new Set([RoleId.OrgAdmin]);
     });
   }
