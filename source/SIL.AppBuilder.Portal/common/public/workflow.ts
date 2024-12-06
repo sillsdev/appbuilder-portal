@@ -68,7 +68,7 @@ export enum WorkflowAction {
   Publish_Failed = 'Publish Failed'
 }
 
-export type WorkflowContextBase = {
+export type WorkflowInstanceContext = {
   instructions:
     | 'asset_package_verify_and_publish'
     | 'app_configuration'
@@ -122,7 +122,7 @@ export enum ENVKeys {
   PROJECT_OWNER_EMAIL = 'PROJECT_OWNER_EMAIL'
 }
 
-export type WorkflowContext = WorkflowContextBase & WorkflowInput;
+export type WorkflowContext = WorkflowInstanceContext & WorkflowInput;
 
 export type WorkflowConfig = {
   options: Set<WorkflowOptions>;
@@ -263,6 +263,6 @@ export type Snapshot = {
   instanceId: number;
   definitionId: number;
   state: string;
-  context: WorkflowContextBase;
+  context: WorkflowInstanceContext;
   config: WorkflowConfig;
 };

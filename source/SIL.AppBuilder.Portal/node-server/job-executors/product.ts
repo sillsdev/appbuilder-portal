@@ -9,7 +9,7 @@ import {
 import {
   ENVKeys,
   WorkflowAction,
-  WorkflowContext
+  WorkflowInstanceContext
 } from 'sil.appbuilder.portal.common/workflow';
 
 export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> {
@@ -146,7 +146,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
         Context: true
       }
     });
-    const ctx: WorkflowContext = JSON.parse(instance.Context);
+    const ctx: WorkflowInstanceContext = JSON.parse(instance.Context);
     job.updateProgress(90);
     await DatabaseWrites.workflowInstances.update({
       where: {
@@ -160,7 +160,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
             [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.WorkflowBuildId,
             [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE]: '' + versionCode
           }
-        } as WorkflowContext)
+        } as WorkflowInstanceContext)
       }
     });
   }

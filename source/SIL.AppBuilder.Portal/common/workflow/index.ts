@@ -17,8 +17,8 @@ import type {
   StateNode,
   WorkflowConfig,
   WorkflowContext,
-  WorkflowContextBase,
-  WorkflowEvent
+  WorkflowEvent,
+  WorkflowInstanceContext
 } from '../public/workflow.js';
 import {
   ActionType,
@@ -134,7 +134,7 @@ export class Workflow {
 
   /** Retrieves the workflow's snapshot from the database */
   public static async getSnapshot(productId: string): Promise<Snapshot | null> {
-    const snap = await prisma.workflowInstances.findUnique({
+    const instance = await prisma.workflowInstances.findUnique({
       where: {
         ProductId: productId
       },
@@ -151,17 +151,17 @@ export class Workflow {
         }
       }
     });
-    if (!snap) {
+    if (!instance) {
       return null;
     }
     return {
-      instanceId: snap.Id,
-      definitionId: snap.WorkflowDefinition.Id,
-      state: snap.State,
-      context: JSON.parse(snap.Context) as WorkflowContextBase,
+      instanceId: instance.Id,
+      definitionId: instance.WorkflowDefinition.Id,
+      state: instance.State,
+      context: JSON.parse(instance.Context) as WorkflowInstanceContext,
       config: {
-        productType: snap.WorkflowDefinition.ProductType,
-        options: new Set(snap.WorkflowDefinition.WorkflowOptions)
+        productType: instance.WorkflowDefinition.ProductType,
+        options: new Set(instance.WorkflowDefinition.WorkflowOptions)
       }
     };
   }
@@ -300,7 +300,7 @@ export class Workflow {
       hasReviewers: undefined,
       productType: undefined,
       options: undefined
-    } as WorkflowContextBase;
+    } as WorkflowInstanceContext;
     return DatabaseWrites.workflowInstances.upsert({
       where: {
         ProductId: this.productId
