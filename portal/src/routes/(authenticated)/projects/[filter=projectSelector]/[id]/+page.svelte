@@ -1,15 +1,15 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import { goto, afterNavigate } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
+  import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import type { PrunedProject } from '$lib/projects/common';
-  import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
-  import { superForm } from 'sveltekit-superforms';
-  import type { FormResult } from 'sveltekit-superforms';
-  import { writable } from 'svelte/store';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import Pagination from '$lib/components/Pagination.svelte';
+  import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
+  import { writable } from 'svelte/store';
+  import type { FormResult } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -79,21 +79,21 @@
   <div class="w-full flex flex-row flex-wrap place-content-between gap-1 mt-4">
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
       <button
-        class="action"
+        class="action btn btn-outline"
         disabled={!selectedProjects.length}
         on:click={() => alert(selectedProjects.join(', '))}
       >
         {m.common_archive()}
       </button>
-      <button class="action" disabled={!selectedProjects.length}>
+      <button class="action btn btn-outline" disabled={!selectedProjects.length}>
         {m.common_rebuild()}
       </button>
     </div>
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
-      <button class="action" on:click={() => alert('TODO api proxy')}>
+      <button class="action btn btn-outline" on:click={() => alert('TODO api proxy')}>
         {m.project_importProjects()}
       </button>
-      <button class="action" on:click={() => alert('TODO api proxy')}>
+      <button class="action btn btn-outline" on:click={() => alert('TODO api proxy')}>
         {m.sidebar_addProject()}
       </button>
     </div>
@@ -141,7 +141,7 @@
     }
   }
   .action {
-    @apply form-control w-full max-w-xs btn btn-outline;
+    @apply form-control w-full max-w-xs;
   }
   /* This is perfectly valid. I don't have a way to make the error disappear */
   @media screen(sm) {
