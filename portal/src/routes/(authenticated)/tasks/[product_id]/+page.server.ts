@@ -1,12 +1,12 @@
-import type { PageServerLoad, Actions } from './$types';
+import type { Session } from '@auth/sveltekit';
+import { error, redirect } from '@sveltejs/kit';
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
-import { redirect, error } from '@sveltejs/kit';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { WorkflowAction, WorkflowState } from 'sil.appbuilder.portal.common/workflow';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import type { Session } from '@auth/sveltekit';
-import { WorkflowAction, WorkflowState } from 'sil.appbuilder.portal.common/workflow';
+import type { Actions, PageServerLoad } from './$types';
 
 const sendActionSchema = v.object({
   state: v.enum(WorkflowState),
@@ -31,6 +31,7 @@ export const load = (async ({ params, url, locals }) => {
   const session = await locals.auth();
   if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
   const snap = await Workflow.getSnapshot(params.product_id);
+  if (!snap) return error(404);
 
   const product = await prisma.products.findUnique({
     where: {
@@ -55,12 +56,12 @@ export const load = (async ({ params, url, locals }) => {
           //conditionally include reviewers
           Reviewers: snap?.context.includeReviewers
             ? {
-                select: {
-                  Id: true,
-                  Name: true,
-                  Email: true
-                }
+              select: {
+                Id: true,
+                Name: true,
+                Email: true
               }
+            }
             : undefined,
           Authors: {
             select: {
@@ -80,27 +81,27 @@ export const load = (async ({ params, url, locals }) => {
       },
       Store: snap?.context.includeFields.includes('storeDescription')
         ? {
-            select: {
-              Description: true
-            }
+          select: {
+            Description: true
           }
+        }
         : undefined,
       StoreLanguage: snap?.context.includeFields.includes('listingLanguageCode')
         ? {
-            select: {
-              Name: true
-            }
+          select: {
+            Name: true
           }
+        }
         : undefined,
       ProductDefinition: {
         select: {
           Name: true,
           ApplicationTypes: snap?.context.includeFields.includes('appType')
             ? {
-                select: {
-                  Description: true
-                }
+              select: {
+                Description: true
               }
+            }
             : undefined
         }
       }
@@ -109,25 +110,25 @@ export const load = (async ({ params, url, locals }) => {
 
   const artifacts = snap?.context.includeArtifacts
     ? await prisma.productArtifacts.findMany({
-        where: {
-          ProductId: params.product_id,
-          ProductBuild: {
-            BuildId: product?.WorkflowBuildId
-          },
-          //filter by artifact type
-          ArtifactType:
+      where: {
+        ProductId: params.product_id,
+        ProductBuild: {
+          BuildId: product?.WorkflowBuildId
+        },
+        //filter by artifact type
+        ArtifactType:
             typeof snap.context.includeArtifacts === 'string'
               ? snap.context.includeArtifacts
               : undefined //include all
-        },
-        select: {
-          ProductBuildId: true,
-          ArtifactType: true,
-          FileSize: true,
-          Url: true,
-          Id: true
-        }
-      })
+      },
+      select: {
+        ProductBuildId: true,
+        ArtifactType: true,
+        FileSize: true,
+        Url: true,
+        Id: true
+      }
+    })
     : [];
 
   return {
@@ -135,16 +136,16 @@ export const load = (async ({ params, url, locals }) => {
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
         switch (a[0].meta?.user) {
-          case RoleId.AppBuilder:
-            return session.user.userId === product?.Project.Owner.Id;
-          case RoleId.Author:
-            return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
-          case RoleId.OrgAdmin:
-            return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
-              session.user.userId
-            );
-          default:
-            return false;
+        case RoleId.AppBuilder:
+          return session.user.userId === product?.Project.Owner.Id;
+        case RoleId.Author:
+          return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
+        case RoleId.OrgAdmin:
+          return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
+            session.user.userId
+          );
+        default:
+          return false;
         }
       })
       .map((a) => a[0].eventType as WorkflowAction),
@@ -178,11 +179,13 @@ export const load = (async ({ params, url, locals }) => {
 export const actions = {
   default: async ({ request, params, locals }) => {
     const session = await locals.auth();
-    if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
+    if (!(await verifyCanViewTask(session, params.product_id))) return error(403);
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
     const flow = await Workflow.restore(params.product_id);
+
+    if (!flow) return fail(404, { form, ok: false });
 
     //double check that state matches current snapshot
     if (form.data.state === flow.state()) {
@@ -199,8 +202,9 @@ export const actions = {
 } satisfies Actions;
 
 // allowed if SuperAdmin, or the user has a UserTask for the Product
-async function verifyCanViewTask(session: Session, productId: string): Promise<boolean> {
-  if (!!session.user.roles.find(([org, role]) => role === RoleId.SuperAdmin)) return true;
+async function verifyCanViewTask(session: Session | null, productId: string): Promise<boolean> {
+  if (!session) return false;
+  if (session.user.roles.find(([org, role]) => role === RoleId.SuperAdmin)) return true;
 
   return !!(await prisma.userTasks.findFirst({
     where: {

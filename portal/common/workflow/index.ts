@@ -12,16 +12,18 @@ import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { ProductTransitionType, RoleId, WorkflowType } from '../public/prisma.js';
-import {
-  ActionType,
-  includeStateOrTransition,
+import type {
   Snapshot,
   StateNode,
-  TerminalStates,
   WorkflowConfig,
   WorkflowContext,
   WorkflowContextBase,
-  WorkflowEvent,
+  WorkflowEvent
+} from '../public/workflow.js';
+import {
+  ActionType,
+  includeStateOrTransition,
+  TerminalStates,
   WorkflowState
 } from '../public/workflow.js';
 import { StartupWorkflow } from './startup-workflow.js';
@@ -36,6 +38,8 @@ export class Workflow {
   private config: WorkflowConfig;
 
   private constructor(productId: string, config: WorkflowConfig) {
+    this.flow = null; // to make svelte-check happy
+    this.currentState = null; // ^^^
     this.productId = productId;
     this.config = config;
   }
@@ -80,8 +84,9 @@ export class Workflow {
     return flow;
   }
   /** Restore from a snapshot in the database. */
-  public static async restore(productId: string): Promise<Workflow> {
+  public static async restore(productId: string): Promise<Workflow | null> {
     const snap = await Workflow.getSnapshot(productId);
+    if (!snap) { return null; }
     const flow = new Workflow(productId, snap.config);
     const check = await flow.checkAuthorsAndReviewers();
     flow.flow = createActor(StartupWorkflow, {
@@ -99,6 +104,12 @@ export class Workflow {
         : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
+      },
+      input: {
+        ...snap.config,
+        productId: productId,
+        hasAuthors: check._count.Authors > 0,
+        hasReviewers: check._count.Authors > 0
       }
     });
 
@@ -122,7 +133,7 @@ export class Workflow {
   }
 
   /** Retrieves the workflow's snapshot from the database */
-  public static async getSnapshot(productId: string): Promise<Snapshot> {
+  public static async getSnapshot(productId: string): Promise<Snapshot | null> {
     const snap = await prisma.workflowInstances.findUnique({
       where: {
         ProductId: productId
@@ -140,6 +151,9 @@ export class Workflow {
         }
       }
     });
+    if (!snap) {
+      return null;
+    }
     return {
       instanceId: snap.Id,
       definitionId: snap.WorkflowDefinition.Id,
