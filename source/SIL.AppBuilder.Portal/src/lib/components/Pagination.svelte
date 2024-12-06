@@ -24,7 +24,7 @@
         <span>«</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={page - 1} />
       </label>
-      <label class="join-item btn btn-square form-control {page === 0 ? 'bg-primary' : ''}">
+      <label class="join-item btn btn-square form-control {page === 0 ? 'bg-neutral' : ''}">
         <span>{1}</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={0} />
       </label>
@@ -32,7 +32,7 @@
         {#if page > 3}
           <button class="join-item btn btn-disabled">...</button>
         {:else}
-          <label class="join-item btn btn-square form-control {page === 1 ? 'bg-primary' : ''}">
+          <label class="join-item btn btn-square form-control {page === 1 ? 'bg-neutral' : ''}">
             <span>{2}</span>
             <input class="hidden" type="radio" bind:group={page} name="page" value={1} />
           </label>
@@ -40,7 +40,7 @@
         {#each Array.from({ length: 3 }) as _, i}
           <label
             class="join-item btn btn-square form-control {page === index(i, page)
-              ? 'bg-primary'
+              ? 'bg-neutral'
               : ''}"
           >
             <span>{index(i, page) + 1}</span>
@@ -58,7 +58,7 @@
         {:else}
           <label
             class="join-item btn btn-square form-control {page === pageCount - 2
-              ? 'bg-primary'
+              ? 'bg-neutral'
               : ''}"
           >
             <span>{pageCount - 1}</span>
@@ -73,14 +73,14 @@
         {/if}
       {:else}
         {#each Array.from({ length: pageCount - 2 }) as _, i}
-          <label class="join-item btn btn-square form-control {page === i + 1 ? 'bg-primary' : ''}">
+          <label class="join-item btn btn-square form-control {page === i + 1 ? 'bg-neutral' : ''}">
             <span>{i + 2}</span>
             <input class="hidden" type="radio" bind:group={page} name="page" value={i + 1} />
           </label>
         {/each}
       {/if}
       <label
-        class="join-item btn btn-square form-control {page === pageCount - 1 ? 'bg-primary' : ''}"
+        class="join-item btn btn-square form-control {page === pageCount - 1 ? 'bg-neutral' : ''}"
       >
         <span>{pageCount}</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={pageCount - 1} />
