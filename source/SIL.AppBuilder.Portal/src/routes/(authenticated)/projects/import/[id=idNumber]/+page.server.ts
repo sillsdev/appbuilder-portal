@@ -87,8 +87,6 @@ export const actions: Actions = {
     if (!form.valid) return fail(400, { form, ok: false });
     if (isNaN(parseInt(event.params.id))) return fail(400, { form, ok: false });
 
-    console.log(JSON.stringify(form, null, 4));
-
     const organization = await prisma.organizations.findUnique({
       where: {
         Id: parseInt(event.params.id)
@@ -103,7 +101,7 @@ export const actions: Actions = {
 
     const errors: string[] = [];
 
-    const products = await Promise.all(
+    await Promise.all(
       form.data.json.Products.map(async (p) => {
         const pdi = (
           await prisma.productDefinitions.findFirst({
@@ -154,8 +152,6 @@ export const actions: Actions = {
       })
     );
 
-    console.log(JSON.stringify(products, null, 4));
-
     if (!errors.length) {
       const imp = await DatabaseWrites.projectImports.create({
         data: {
@@ -181,7 +177,6 @@ export const actions: Actions = {
             Description: pj.Description ?? '',
             IsPublic: pj.IsPublic,
             ImportId: imp.Id
-            // TODO: DateActive?
           };
         })
       );

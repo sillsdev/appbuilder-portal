@@ -109,6 +109,14 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
       Id: job.data.importId
     }
   });
+  const project = await prisma.projects.findFirst({
+    where: {
+      ImportId: job.data.importId
+    },
+    select: {
+      Id: true
+    }
+  });
   job.updateProgress(25);
   const productsToCreate: { Name: string; Store: string }[] = JSON.parse(
     projectImport.ImportData
@@ -118,7 +126,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
     productsToCreate.map(async (p) => ({
       ...p,
       Id: await DatabaseWrites.products.create({
-        ProjectId: projectImport.OwnerId,
+        ProjectId: project.Id,
         ProductDefinitionId: (
           await prisma.productDefinitions.findFirst({
             where: {
@@ -149,7 +157,6 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
             }
           })
         )?.Id,
-        // TODO: StoreLanguage?
         WorkflowJobId: 0,
         WorkflowBuildId: 0,
         WorkflowPublishId: 0
