@@ -34,12 +34,32 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     }
   });
   job.updateProgress(10);
+  const productBuild = await prisma.productBuilds.findFirst({
+    where: {
+      BuildId: productData.WorkflowBuildId
+    },
+    select: {
+      Id: true
+    }
+  });
+  if (!productData.WorkflowBuildId || !productBuild) {
+    const flow = await Workflow.restore(job.data.productId);
+    // TODO: How best to notify of failure?
+    flow.send({
+      type: WorkflowAction.Publish_Failed,
+      userId: null,
+      comment: 'Product does not have a ProductBuild available.'
+    });
+    job.updateProgress(100);
+    return productData;
+  }
+  job.updateProgress(15);
   await DatabaseWrites.products.update(job.data.productId, {
     WorkflowPublishId: 0
   });
   job.updateProgress(20);
   const params = await getWorkflowParameters(productData.WorkflowInstance.Id);
-  const channel = params.channel ?? job.data.channel;
+  const channel = params['channel'] ?? job.data.channel;
   job.updateProgress(30);
   const env = await addProductPropertiesToEnvironment(job.data.productId);
   job.updateProgress(40);
@@ -49,7 +69,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     productData.WorkflowBuildId,
     {
       channel: channel,
-      targets: params.targets ?? job.data.targets,
+      targets: params['targets'] ?? job.data.targets,
       environment: { ...env, ...params.environment, ...job.data.environment }
     }
   );
@@ -69,7 +89,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     const pub = await DatabaseWrites.productPublications.create({
       data: {
         ProductId: job.data.productId,
-        ProductBuildId: productData.WorkflowBuildId,
+        ProductBuildId: productBuild.Id,
         ReleaseId: response.id,
         Channel: channel
       }
