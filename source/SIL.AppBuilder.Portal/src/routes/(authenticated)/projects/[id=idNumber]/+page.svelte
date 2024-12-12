@@ -162,7 +162,7 @@
                       <IconContainer icon={getIcon(productDef.Name ?? '')} width="24" />
                       {productDef.Name}
                     </div>
-                    <p class="p-2 text-neutral-content">{productDef.Description}</p>
+                    <p class="p-2 text-sm light:bg-neutral-100 text-neutral-400">{productDef.Description}</p>
                     <input
                       type="radio"
                       name="productDefinitionId"
@@ -201,7 +201,7 @@
                     <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
                       {store.Name}
                     </div>
-                    <p class="p-2 text-neutral-content">{store.Description}</p>
+                    <p class="p-2 text-sm light:bg-neutral-100 text-neutral-400">{store.Description}</p>
                     <input
                       type="submit"
                       name="storeId"
