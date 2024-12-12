@@ -3,6 +3,7 @@
   export let size: number;
   export let total: number;
   export let page: number = 0;
+  export let extraSizeOptions: number[] = [];
 
   $: pageCount = Math.ceil(total / size);
   $: collapse = pageCount > 6;
@@ -23,7 +24,7 @@
         <span>«</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={page - 1} />
       </label>
-      <label class="join-item btn btn-square form-control {page === 0 ? 'bg-primary' : ''}">
+      <label class="join-item btn btn-square form-control {page === 0 ? 'bg-neutral' : ''}">
         <span>{1}</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={0} />
       </label>
@@ -31,7 +32,7 @@
         {#if page > 3}
           <button class="join-item btn btn-disabled">...</button>
         {:else}
-          <label class="join-item btn btn-square form-control {page === 1 ? 'bg-primary' : ''}">
+          <label class="join-item btn btn-square form-control {page === 1 ? 'bg-neutral' : ''}">
             <span>{2}</span>
             <input class="hidden" type="radio" bind:group={page} name="page" value={1} />
           </label>
@@ -39,7 +40,7 @@
         {#each Array.from({ length: 3 }) as _, i}
           <label
             class="join-item btn btn-square form-control {page === index(i, page)
-              ? 'bg-primary'
+              ? 'bg-neutral'
               : ''}"
           >
             <span>{index(i, page) + 1}</span>
@@ -57,7 +58,7 @@
         {:else}
           <label
             class="join-item btn btn-square form-control {page === pageCount - 2
-              ? 'bg-primary'
+              ? 'bg-neutral'
               : ''}"
           >
             <span>{pageCount - 1}</span>
@@ -72,14 +73,14 @@
         {/if}
       {:else}
         {#each Array.from({ length: pageCount - 2 }) as _, i}
-          <label class="join-item btn btn-square form-control {page === i + 1 ? 'bg-primary' : ''}">
+          <label class="join-item btn btn-square form-control {page === i + 1 ? 'bg-neutral' : ''}">
             <span>{i + 2}</span>
             <input class="hidden" type="radio" bind:group={page} name="page" value={i + 1} />
           </label>
         {/each}
       {/if}
       <label
-        class="join-item btn btn-square form-control {page === pageCount - 1 ? 'bg-primary' : ''}"
+        class="join-item btn btn-square form-control {page === pageCount - 1 ? 'bg-neutral' : ''}"
       >
         <span>{pageCount}</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={pageCount - 1} />
@@ -96,10 +97,9 @@
     </div>
     <div class="grow">&nbsp;</div>
     <select class="select select-bordered" name="size" bind:value={size}>
-      <option value={10}>10</option>
-      <option value={25}>25</option>
-      <option value={50}>50</option>
-      <option value={100}>100</option>
+      {#each [10, 25, 50, 100].concat(extraSizeOptions).sort((a, b) => a - b) as value}
+        <option {value}>{value}</option>
+      {/each}
     </select>
   </div>
 </div>
