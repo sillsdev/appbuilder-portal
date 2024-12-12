@@ -182,7 +182,6 @@
                 <button
                   class="btn btn-ghost"
                   on:click={() => {
-                    addProductModal?.close();
                     selectingStore = false;
                   }}
                 >
