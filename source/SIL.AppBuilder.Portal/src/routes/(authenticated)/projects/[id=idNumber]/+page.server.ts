@@ -28,8 +28,7 @@ const updateOwnerGroupSchema = v.object({
 });
 const addProductSchema = v.object({
   productDefinitionId: idSchema,
-  storeId: idSchema,
-  storeLanguageId: v.nullable(idSchema)
+  storeId: idSchema
 });
 
 // Are we sending too much data?
@@ -290,7 +289,6 @@ export const actions = {
       ProjectId: parseInt(event.params.id),
       ProductDefinitionId: form.data.productDefinitionId,
       StoreId: form.data.storeId,
-      StoreLanguageId: form.data.storeLanguageId ?? undefined,
       WorkflowJobId: 0,
       WorkflowBuildId: 0,
       WorkflowPublishId: 0

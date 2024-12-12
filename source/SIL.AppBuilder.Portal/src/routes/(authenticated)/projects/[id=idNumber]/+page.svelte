@@ -216,8 +216,6 @@
                 {/each}
               </div>
             </div>
-            <!-- TODO: StoreLanguage -->
-            <input type="hidden" name="storeLanguageId" value={null} />
           </form>
           <form method="dialog" class="modal-backdrop">
             <button on:click={() => (selectingStore = false)}>close</button>
