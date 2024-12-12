@@ -112,6 +112,7 @@
           <br />
           <p>{data.project?.Description}</p>
         </div>
+        {#if data.project?.WorkflowProjectUrl}
         <div>
           <span>{m.project_side_repositoryLocation()}:</span>
           <br />
@@ -119,6 +120,7 @@
             {data.project?.WorkflowProjectUrl}
           </p>
         </div>
+        {/if}
       </div>
       <div class="flex flex-row place-content-between items-end">
         <div>
