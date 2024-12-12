@@ -44,7 +44,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   });
   if (!productData.WorkflowBuildId || !productBuild) {
     const flow = await Workflow.restore(job.data.productId);
-    // TODO: How best to notify of failure?
+    // TODO: Send notification of failure
     flow.send({
       type: WorkflowAction.Publish_Failed,
       userId: null,
@@ -76,7 +76,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   job.updateProgress(50);
   if (response.responseType === 'error') {
     const flow = await Workflow.restore(job.data.productId);
-    // TODO: How best to notify of failure?
+    // TODO: Send notification of failure
     flow.send({ type: WorkflowAction.Publish_Failed, userId: null, comment: response.message });
     job.updateProgress(100);
     return 0;
@@ -126,8 +126,7 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
   if (response.responseType === 'error') {
     throw new Error(response.message);
   } else {
-    // TODO: what does the 'expired' status mean?
-    if (response.status === 'completed' || response.status === 'expired') {
+    if (response.status === 'completed') {
       await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
       if (response.error) {
         job.log(response.error);
