@@ -71,7 +71,6 @@ export const actions: Actions = {
       TypeId: form.data.type,
       Description: form.data.Description ?? '',
       IsPublic: form.data.IsPublic
-      // TODO: DateActive?
     });
 
     if (project !== false) {
