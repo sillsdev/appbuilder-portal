@@ -3,7 +3,7 @@ import { projectFilter } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -157,26 +157,26 @@ export const actions: Actions = {
           await DatabaseWrites.projects.update(Id, {
             DateArchived: new Date()
           });
-          await Queues.UserTasks.add(`Delete UserTasks for Archived Project #${Id}`, {
+          /*await Queues.UserTasks.add(`Delete UserTasks for Archived Project #${Id}`, {
             type: BullMQ.JobType.UserTasks_Modify,
             scope: 'Project',
             projectId: Id,
             operation: {
               type: BullMQ.UserTasks.OpType.Delete
             }
-          });
+          });*/
         } else if (form.data.operation === 'reactivate' && !!project?.DateArchived) {
           await DatabaseWrites.projects.update(Id, {
             DateArchived: null
           });
-          await Queues.UserTasks.add(`Create UserTasks for Reactivated Project #${Id}`, {
+          /*await Queues.UserTasks.add(`Create UserTasks for Reactivated Project #${Id}`, {
             type: BullMQ.JobType.UserTasks_Modify,
             scope: 'Project',
             projectId: Id,
             operation: {
               type: BullMQ.UserTasks.OpType.Create
             }
-          });
+          });*/
         }
       })
     );
