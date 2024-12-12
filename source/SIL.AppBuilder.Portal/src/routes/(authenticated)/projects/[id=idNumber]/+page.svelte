@@ -138,6 +138,7 @@
                 <h2 class="text-lg font-bold grow">{m.project_products_popup_addTitle()}</h2>
                 <button
                   class="btn btn-ghost"
+                  type="button"
                   on:click={() => {
                     addProductModal?.close();
                   }}
@@ -181,6 +182,7 @@
                 </h2>
                 <button
                   class="btn btn-ghost"
+                  type="button"
                   on:click={() => {
                     selectingStore = false;
                   }}
