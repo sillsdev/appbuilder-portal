@@ -133,8 +133,18 @@
         </button>
         <dialog bind:this={addProductModal} class="modal">
           <form class="modal-box" action="?/addProduct" method="POST" use:addProductEnhance>
-            <div class="items-center text-center {selectingStore ? 'hidden' : ''}">
-              <h2 class="text-lg font-bold">{m.project_products_popup_addTitle()}</h2>
+            <div class="items-center text-center" class:hidden={selectingStore}>
+              <div class="flex flex-row">
+                <h2 class="text-lg font-bold grow">{m.project_products_popup_addTitle()}</h2>
+                <button
+                  class="btn btn-ghost"
+                  on:click={() => {
+                    addProductModal?.close();
+                  }}
+                >
+                  <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+                </button>
+              </div>
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
                 {#each data.productsToAdd as productDef, i}
@@ -162,10 +172,23 @@
                 {/each}
               </div>
             </div>
-            <div class="items-center text-center {selectingStore ? '' : 'hidden'}">
-              <h2 class="text-lg font-bold">
-                {m.products_storeSelect({ name: data.productsToAdd[selectedProduct]?.Name || '' })}
-              </h2>
+            <div class="items-center text-center" class:hidden={!selectingStore}>
+              <div class="flex flex-row">
+                <h2 class="text-lg font-bold">
+                  {m.products_storeSelect({
+                    name: data.productsToAdd[selectedProduct]?.Name || ''
+                  })}
+                </h2>
+                <button
+                  class="btn btn-ghost"
+                  on:click={() => {
+                    addProductModal?.close();
+                    selectingStore = false;
+                  }}
+                >
+                  <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+                </button>
+              </div>
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
                 {#each data.stores.filter((s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId) as store}
@@ -184,8 +207,8 @@
                       value={store.Id}
                       class="hidden"
                       on:click={() => {
-                        selectingStore = false;
                         addProductModal?.close();
+                        selectingStore = false;
                       }}
                     />
                   </label>
@@ -291,7 +314,7 @@
                   </a>
                 {/if}
               </div>
-              <ProductDetails product={product} />
+              <ProductDetails {product} />
             </div>
           {/each}
         {/if}
