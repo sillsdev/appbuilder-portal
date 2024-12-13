@@ -158,7 +158,6 @@ export const actions: Actions = {
         })
       );
 
-
       if (!errors.length) {
         const imp = await DatabaseWrites.projectImports.create({
           data: {
