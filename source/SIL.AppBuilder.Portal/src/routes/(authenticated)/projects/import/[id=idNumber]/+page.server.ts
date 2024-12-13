@@ -50,17 +50,6 @@ export const load = (async ({ locals, params }) => {
   if (!organization) return error(404);
 
   const types = await prisma.applicationTypes.findMany({
-    where: {
-      ProductDefinitions: {
-        some: {
-          OrganizationProductDefinitions: {
-            every: {
-              OrganizationId: organization.Id
-            }
-          }
-        }
-      }
-    },
     select: {
       Id: true,
       Description: true

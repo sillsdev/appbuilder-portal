@@ -20,27 +20,17 @@ export const load = (async ({ locals, params }) => {
           Name: true
         }
       },
-      OrganizationProductDefinitions: {
-        select: {
-          ProductDefinition: {
-            select: {
-              ApplicationTypes: true
-            }
-          }
-        }
-      },
       PublicByDefault: true
     }
   });
 
-  const types = organization?.OrganizationProductDefinitions.map(
-    (opd) => opd.ProductDefinition.ApplicationTypes
-  ).reduce((p, c) => {
-    if (!p.some((e) => e.Id === c.Id)) {
-      p.push(c);
+  // There shouldn't actually be any restriction on this
+  const types = await prisma.applicationTypes.findMany({
+    select: {
+      Id: true,
+      Description: true
     }
-    return p;
-  }, [] as { Id: number; Name: string | null; Description: string | null }[]);
+  });
 
   const form = await superValidate(
     {
