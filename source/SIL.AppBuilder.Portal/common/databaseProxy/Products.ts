@@ -52,6 +52,7 @@ export async function create(
         });
         updateProjectDateActive(productData.ProjectId);
       }
+      await updateProjectDateActive(productData.ProjectId);
     }
 
     return res.Id;
@@ -88,6 +89,7 @@ export async function update(
       },
       data: productData
     });
+    await updateProjectDateActive(projectId);
     // TODO: Are there any other updates that need to be done?
   } catch (e) {
     return false;
@@ -137,7 +139,7 @@ async function deleteProduct(productId: string) {
       }
     })
   ]);
-  updateProjectDateActive(product!.Project.Id);
+  await updateProjectDateActive(product!.Project.Id);
   return res;
 }
 export { deleteProduct as delete };
@@ -242,34 +244,43 @@ async function validateProductBase(
 }
 
 async function updateProjectDateActive(projectId: number) {
-  const maxDate = await prisma.productTransitions.aggregate({
-    _max: {
-      DateTransition: true
-    },
-    where: {
-      Product: {
-        ProjectId: projectId
-      }
-    }
-  });
-
   const project = await prisma.projects.findUnique({
     where: {
       Id: projectId
     },
     select: {
+      Products: {
+        select: {
+          WorkflowInstance: {
+            select: {
+              Id: true
+            }
+          },
+          DateUpdated: true
+        }
+      },
       DateActive: true
     }
   });
 
-  const projectDateActive = maxDate._max.DateTransition;
+  const projectDateActive = project.DateActive;
 
-  if (
-    projectDateActive &&
-    (!project?.DateActive || projectDateActive.valueOf() > project.DateActive.valueOf())
-  ) {
-    await projectUpdate(projectId, {
-      DateActive: projectDateActive
-    });
+  let dateActive = new Date(0);
+  project.Products.forEach((product) => {
+    if (product.WorkflowInstance) {
+      if (product.DateUpdated > dateActive) {
+        dateActive = product.DateUpdated;
+      }
+    }
+  });
+
+  if (dateActive > new Date(0)) {
+    project.DateActive = dateActive;
+  } else {
+    project.DateActive = null;
+  }
+
+  if (project.DateActive != projectDateActive) {
+    await projectUpdate(projectId, { DateActive: project.DateActive });
   }
 }
