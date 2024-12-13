@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import * as m from '$lib/paraglide/messages';
@@ -7,11 +6,11 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-  const { form, enhance } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
-    onUpdated(event) {
-      if (event.form.valid) {
-        goto('/projects/' + $page.params.id);
+    onSubmit(event) {
+      if (!($form.Name.length && $form.Language.length)) {
+        event.cancel();
       }
     }
   });
@@ -40,7 +39,11 @@
         <label class="form-control">
           <span class="label-text">{m.project_languageCode()}:</span>
           <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
-          <LanguageCodeTypeahead bind:langCode={$form.Language} inputClasses="w-full md:max-w-xs" dropdownClasses="left-0" />
+          <LanguageCodeTypeahead
+            bind:langCode={$form.Language}
+            inputClasses="w-full md:max-w-xs"
+            dropdownClasses="left-0"
+          />
         </label>
         <label class="form-control">
           <span class="label-text">{m.project_type()}:</span>
@@ -76,9 +79,25 @@
         </div>
       </div>
     </div>
+    {#if $allErrors.length}
+      <ul>
+        {#each $allErrors as error}
+          <li class="text-red-500">
+            <b>{error.path}:</b>
+            {error.messages.join('. ')}
+          </li>
+        {/each}
+      </ul>
+    {/if}
     <div class="flex flex-wrap place-content-center gap-4 p-4">
       <a href="/projects/own/{$page.params.id}" class="btn w-full max-w-xs">{m.common_cancel()}</a>
-      <button class="btn btn-primary w-full max-w-xs" type="submit">{m.common_save()}</button>
+      <button
+        class="btn btn-primary w-full max-w-xs"
+        class:btn-disabled={!($form.Name.length && $form.Language.length)}
+        type="submit"
+      >
+        {m.common_save()}
+      </button>
     </div>
   </form>
 </div>
