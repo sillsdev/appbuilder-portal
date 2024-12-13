@@ -20,54 +20,60 @@
 <div class="w-full max-w-6xl mx-auto relative p-2">
   <form action="" method="post" use:enhance>
     <h1 class="pl-2">{m.project_newProject()}</h1>
-    <div class="grid gap-2 gap-x-4 gridcont">
-      <label class="form-control">
-        <span class="label-text">{m.project_projectName()}:</span>
-        <input type="text" id="name" class="input input-bordered" bind:value={$form.Name} />
-      </label>
-      <label class="form-control">
-        <span class="label-text">{m.project_projectGroup()}:</span>
-        <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
-          {#each data.organization?.Groups ?? [] as group}
-            <option value={group.Id}>{group.Name}</option>
-          {/each}
-        </select>
-      </label>
-      <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="form-control">
-        <span class="label-text">{m.project_languageCode()}:</span>
-        <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
-        <LanguageCodeTypeahead bind:langCode={$form.Language} inputClasses="w-full md:max-w-xs" dropdownClasses="left-0" />
-      </label>
-      <label class="form-control">
-        <span class="label-text">{m.project_type()}:</span>
-        <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
-          {#each data.types ?? [] as type}
-            <option value={type.Id}>{type.Description}</option>
-          {/each}
-        </select>
-      </label>
-      <label class="form-control">
-        <span class="label-text">{m.project_projectDescription()}:</span>
-        <textarea
-          name="description"
-          id="description"
-          class="textarea textarea-bordered w-full"
-          bind:value={$form.Description}
-        />
-      </label>
-      <div class="form-control">
-        <label for="public" class="label">
-          {m.project_public()}:
-          <input
-            type="checkbox"
-            name="public"
-            id="public"
-            class="toggle"
-            bind:checked={$form.IsPublic}
+    <div class="flex flex-col gap-2 items-center">
+      <div class="row">
+        <label class="form-control grow">
+          <span class="label-text">{m.project_projectName()}:</span>
+          <input type="text" id="name" class="input input-bordered" bind:value={$form.Name} />
+        </label>
+        <label class="form-control">
+          <span class="label-text">{m.project_projectGroup()}:</span>
+          <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
+            {#each data.organization?.Groups ?? [] as group}
+              <option value={group.Id}>{group.Name}</option>
+            {/each}
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label class="form-control">
+          <span class="label-text">{m.project_languageCode()}:</span>
+          <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
+          <LanguageCodeTypeahead bind:langCode={$form.Language} inputClasses="w-full md:max-w-xs" dropdownClasses="left-0" />
+        </label>
+        <label class="form-control">
+          <span class="label-text">{m.project_type()}:</span>
+          <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
+            {#each data.types ?? [] as type}
+              <option value={type.Id}>{type.Description}</option>
+            {/each}
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <label class="form-control">
+          <span class="label-text">{m.project_projectDescription()}:</span>
+          <textarea
+            name="description"
+            id="description"
+            class="textarea textarea-bordered w-full"
+            bind:value={$form.Description}
           />
         </label>
-        <p>{m.project_visibilityDescription()}</p>
+        <div class="form-control">
+          <label for="public" class="label">
+            {m.project_public()}:
+            <input
+              type="checkbox"
+              name="public"
+              id="public"
+              class="toggle"
+              bind:checked={$form.IsPublic}
+            />
+          </label>
+          <p>{m.project_visibilityDescription()}</p>
+        </div>
       </div>
     </div>
     <div class="flex flex-wrap place-content-center gap-4 p-4">
@@ -78,14 +84,11 @@
 </div>
 
 <style lang="postcss">
-  .gridcont {
-    grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
-  }
-  .gridcont div.flex label {
-    margin-right: 0.4rem;
-  }
   .label[for='public'] {
     padding-left: 0px;
+  }
+  .row {
+    @apply flex flex-row flex-wrap gap-2 gap-x-4 w-full justify-center;
   }
   .form-control {
     @apply w-full;
