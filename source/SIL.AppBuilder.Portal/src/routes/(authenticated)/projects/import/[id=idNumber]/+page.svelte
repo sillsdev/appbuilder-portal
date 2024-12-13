@@ -1,35 +1,43 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import * as m from '$lib/paraglide/messages';
   import { importJSONSchema } from '$lib/projects/common';
   import { onMount } from 'svelte';
+  import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
-  import { safeParse } from 'valibot';
+  import { flatten, safeParse } from 'valibot';
   import type { PageData } from './$types';
 
   export let data: PageData;
 
-  let canSubmit = false;
-  const { form, enhance } = superForm(data.form, {
+  let returnedErrors: {
+    path: string;
+    messages: string[];
+  }[] = [];
+  const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     resetForm: false,
     onUpdate(event) {
       if (event.result.type === 'failure') {
-        console.log(event.form.errors.json);
-        if (event.result.data.errors) {
-          console.log(event.result.data.errors); // TODO: display errors
-        }
         event.cancel();
+        const data = event.result.data as FormResult<{
+          errors: {
+            path: string;
+            messages: string[];
+          }[];
+        }>;
+        returnedErrors = data.errors;
       }
-    },
-    onUpdated(event) {
-      goto('/');
     }
   });
 
   let reader: FileReader;
   let lastModified = 0;
+
+  // set to null *only* if the file has been parsed *and* there are no errors
+  let parseErrors: ReturnType<typeof flatten<typeof importJSONSchema>> | null = {};
+
+  $: canSubmit = !$allErrors.length && !parseErrors && !returnedErrors.length;
 
   onMount(() => {
     reader = new FileReader();
@@ -38,10 +46,9 @@
       const res = safeParse(importJSONSchema, JSON.parse((reader.result as string) ?? ''));
       if (res.success) {
         $form.json = res.output;
-        canSubmit = true;
-      }
-      else {
-        console.log(res.issues); // TODO: show errors
+        parseErrors = null;
+      } else {
+        parseErrors = flatten<typeof importJSONSchema>(res.issues);
       }
     };
   });
@@ -82,7 +89,7 @@
           accept="application/json"
           on:change={(e) => {
             if (e.currentTarget?.files?.length) {
-              canSubmit = false;
+              parseErrors = {};
               lastModified = e.currentTarget.files[0].lastModified;
               reader.readAsText(e.currentTarget.files[0]);
             }
@@ -90,7 +97,7 @@
           on:cancel={(e) => {
             if (e.currentTarget?.files?.length) {
               if (e.currentTarget.files[0].lastModified > lastModified) {
-                canSubmit = false;
+                parseErrors = {};
                 lastModified = e.currentTarget.files[0].lastModified;
                 reader.readAsText(e.currentTarget.files[0]);
               }
@@ -99,9 +106,53 @@
         />
       </label>
     </div>
+    {#if $allErrors.length}
+      <ul>
+        {#each $allErrors as error}
+          <li class="text-red-500">
+            <b>{error.path}:</b>
+            {error.messages.join('. ')}
+          </li>
+        {/each}
+      </ul>
+    {/if}
+    {#if returnedErrors.length}
+      <ul>
+        {#each returnedErrors as error}
+          <li class="text-red-500">
+            <b>{error.path}:</b>
+            {error.messages.join('. ')}
+          </li>
+        {/each}
+      </ul>
+    {/if}
+    {#if parseErrors}
+      <ul>
+        {#each parseErrors.root ?? [] as error}
+          <li class="text-red-500">
+            <b>{error}</b>
+          </li>
+        {/each}
+        {#if parseErrors.nested}
+          {#each Object.entries(parseErrors.nested) as error}
+            <li class="text-red-500">
+              <b>{error[0]}:</b>
+              {error[1].join('. ')}
+            </li>
+          {/each}
+        {/if}
+        {#each parseErrors.other ?? [] as error}
+          <li class="text-red-500">
+            <b>{error}</b>
+          </li>
+        {/each}
+      </ul>
+    {/if}
     <div class="flex flex-wrap place-content-center gap-4 p-4">
       <a href="/projects/own/{$page.params.id}" class="btn w-full max-w-xs">{m.common_cancel()}</a>
-      <button class="btn btn-primary w-full max-w-xs" type="submit">{m.common_save()}</button>
+      <button class="btn btn-primary w-full max-w-xs" class:btn-disabled={!canSubmit} type="submit">
+        {m.common_save()}
+      </button>
     </div>
   </form>
 </div>
