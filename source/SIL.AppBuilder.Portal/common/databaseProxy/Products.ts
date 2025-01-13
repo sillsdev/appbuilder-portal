@@ -50,7 +50,6 @@ export async function create(
           productType: flowDefinition.ProductType,
           options: new Set(flowDefinition.WorkflowOptions)
         });
-        updateProjectDateActive(productData.ProjectId);
       }
       await updateProjectDateActive(productData.ProjectId);
     }
